@@ -38,10 +38,39 @@ function labelOf(to: string) {
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
   <div v-else>
-    <div class="site-pc site-inner">
-      <h1>{{ $t('member_user_00183') }}</h1>
-      <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
-      <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
+    <div class="site-pc">
+      <div class="yun_m_index_date_box">
+        <div class="yun_m_index_date_box_c">
+          <div class="yun_m_index_date_list">
+            <NuxtLink to="/user/interviews">
+              <i class="yun_m_index_date_icon1" />
+              <div class="yun_m_index_datename">{{ $t('wap_user_00216') }}</div>
+            </NuxtLink>
+          </div>
+          <div class="yun_m_index_date_list">
+            <NuxtLink to="/user/applications">
+              <i class="yun_m_index_date_icon2" />
+              <div class="yun_m_index_datename">{{ $t('wap_user_00270') }}</div>
+            </NuxtLink>
+          </div>
+          <div class="yun_m_index_date_list">
+            <NuxtLink to="/user/favorites">
+              <i class="yun_m_index_date_icon3" />
+              <div class="yun_m_index_datename">{{ $t('member_user_00103') }}</div>
+            </NuxtLink>
+          </div>
+          <div class="yun_m_index_date_list yun_m_index_date_list_end">
+            <NuxtLink to="/user/follows">
+              <i class="yun_m_index_date_icon4" />
+              <div class="yun_m_index_datename">{{ $t('wap_00385') }}</div>
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+      <div class="yun_m_rightbox">
+        <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
+        <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
+      </div>
     </div>
     <div class="site-h5">
       <div class="userheader">

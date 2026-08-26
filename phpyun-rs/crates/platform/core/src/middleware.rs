@@ -49,15 +49,6 @@ where
     let rules = Arc::new(rules);
     let request_id_header = axum::http::HeaderName::from_static("x-request-id");
 
-    // Per-IP token bucket.
-    let governor_conf = Arc::new(
-        GovernorConfigBuilder::default()
-            .per_second(cfg.rate_limit_per_second)
-            .burst_size(cfg.rate_limit_burst)
-            .finish()
-            .expect("invalid governor config"),
-    );
-
     // Per-request span: method/path/status is auto-added to tracing and also
     // promoted to metric labels.
     let trace = TraceLayer::new_for_http()
@@ -84,15 +75,32 @@ where
             },
         );
 
-    router
+    let router = router
         // Innermost: request-body limit + backpressure.
         .layer(RequestBodyLimitLayer::new(cfg.max_body_mb * 1024 * 1024))
         .layer(ConcurrencyLimitLayer::new(cfg.global_concurrency_limit))
         .layer(TimeoutLayer::with_status_code(
             axum::http::StatusCode::REQUEST_TIMEOUT,
             Duration::from_secs(cfg.request_timeout_secs),
-        ))
-        .layer(GovernorLayer::new(governor_conf).error_handler(governor_error_response))
+        ));
+    // Local Nuxt SSR + curl all share 127.0.0.1; skip Governor in APP_ENV=dev.
+    let router = if cfg.env == crate::config::AppEnvironment::Dev {
+        router
+    } else {
+        // tower_governor `per_second(n)` replenishes 1 token every n seconds.
+        // RATE_LIMIT_PER_SECOND=N means N req/s → replenish every 1000/N ms.
+        let rps = cfg.rate_limit_per_second.max(1);
+        let replenish_ms = (1000 / rps).max(1);
+        let governor_conf = Arc::new(
+            GovernorConfigBuilder::default()
+                .per_millisecond(replenish_ms)
+                .burst_size(cfg.rate_limit_burst.max(1))
+                .finish()
+                .expect("invalid governor config"),
+        );
+        router.layer(GovernorLayer::new(governor_conf).error_handler(governor_error_response))
+    };
+    router
         .layer(CompressionLayer::new())
         .layer(cors)
         // Security response headers (added to every response).

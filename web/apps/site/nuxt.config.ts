@@ -58,6 +58,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'stylesheet', href: '/legacy/pc/style/index.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/style.css', media: 'screen and (min-width: 1200px)' },
         { rel: 'stylesheet', href: '/legacy/pc/style/css.css', media: 'screen and (min-width: 1200px)' },
         { rel: 'stylesheet', href: '/legacy/pc/style/yun_seach.css', media: 'screen and (min-width: 1200px)' },
         { rel: 'stylesheet', href: '/legacy/pc/style/comapply.css', media: 'screen and (min-width: 1200px)' },
@@ -75,6 +76,7 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: '/legacy/h5/css/base.css', media: 'screen and (max-width: 1199px)' },
         { rel: 'stylesheet', href: '/legacy/h5/css/yunwap.css', media: 'screen and (max-width: 1199px)' },
         { rel: 'stylesheet', href: '/legacy/h5/css/css.css', media: 'screen and (max-width: 1199px)' },
+        { rel: 'stylesheet', href: '/legacy/h5/css/job.css', media: 'screen and (max-width: 1199px)' },
       ],
     },
   },

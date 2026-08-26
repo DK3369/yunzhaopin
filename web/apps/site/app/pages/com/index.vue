@@ -39,10 +39,36 @@ function labelOf(to: string) {
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
   <div v-else>
-    <div class="site-pc site-inner">
-      <h1>{{ $t('member_com_00290') }}</h1>
-      <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
-      <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
+    <div class="site-pc">
+      <div class="membRighTops">
+        <ul>
+          <li class="membRighTops_mr">
+            <NuxtLink to="/com/applications" class="membRiTopText">
+              <div class="membRiTopInfo">
+                <span>{{ $t('wap_com_00105') }}</span>
+              </div>
+            </NuxtLink>
+          </li>
+          <li class="membRighTops_mr">
+            <NuxtLink to="/com/jobs" class="membRiTopText">
+              <div class="membRiTopInfo">
+                <span>{{ $t('wap_com_00106') }}</span>
+              </div>
+            </NuxtLink>
+          </li>
+          <li class="membRighTops_mr">
+            <NuxtLink to="/com/talent" class="membRiTopText">
+              <div class="membRiTopInfo">
+                <span>{{ $t('wap_00576') }}</span>
+              </div>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+      <div class="yun_m_rightbox">
+        <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
+        <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
+      </div>
     </div>
     <div class="site-h5">
       <div class="userheader">

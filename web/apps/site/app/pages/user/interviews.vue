@@ -16,14 +16,12 @@ useSeoMeta({ title: t('wap_user_00216') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00216') }}</h1>
-    <p v-if="error" class="muted">{{ $t('common.login') }}</p>
-    <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+  <MemberPanel :title="$t('wap_user_00216')" :error="error" :empty="!error && !(data?.list || []).length">
+    <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
       <p>{{ row.content || row.job_name || row.id }}</p>
       <p class="muted">{{ row.datetime_n || row.status_n }}</p>
       <button type="button" @click="accept(row.id)">{{ $t('common.yes') }}</button>
       <button type="button" @click="reject(row.id)">{{ $t('common.no') }}</button>
     </article>
-  </section>
+  </MemberPanel>
 </template>

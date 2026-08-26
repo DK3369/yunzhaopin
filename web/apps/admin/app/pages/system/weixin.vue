@@ -3,8 +3,8 @@ const api = useApi()
 const { data, refresh } = await useAsyncData('admin-weixin', () =>
   api.post<Array<Record<string, unknown>>>('/v1/admin/site-settings/list', {}),
 )
-const { data: menus } = await useAsyncData('admin-wx-navs', () =>
-  api.post<Array<Record<string, unknown>>>('/v1/admin/wx-navs', {}).catch(() => []),
+const { data: menus, error: menuError } = await useAsyncData('admin-wx-navs', () =>
+  api.post<Array<Record<string, unknown>>>('/v1/admin/wx-navs', {}),
 )
 const form = reactive({ key: 'wx_appid', value: '', description: '', is_public: false })
 const rows = computed(() => {
@@ -44,7 +44,8 @@ function fill(row: Record<string, unknown>) {
       </el-table-column>
     </el-table>
     <h2 style="margin-top: 24px">{{ $t('ui.wx_menu') }}</h2>
-    <el-table :data="menus || []">
+    <AdminState :error="menuError" :empty="!menuError && !(menus || []).length" />
+    <el-table v-if="!menuError && (menus || []).length" :data="menus || []">
       <el-table-column prop="id" label="id" width="80" />
       <el-table-column prop="name" :label="$t('ui.name')" />
       <el-table-column prop="keyid" label="keyid" width="90" />

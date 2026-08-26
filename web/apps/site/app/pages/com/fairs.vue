@@ -16,10 +16,11 @@ useSeoMeta({ title: t('wap_00223') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_00223') }}</h1>
-    <p v-if="error" class="muted">{{ $t('common.login') }}</p>
-    <p v-if="data">{{ JSON.stringify(data) }}</p>
+  <MemberPanel :title="$t('wap_00223')" :error="error" :empty="!error && !(Array.isArray(data?.list) ? data.list.length : false)">
+    <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
+      <h3>{{ row.title || row.name || row.id }}</h3>
+      <p class="muted">{{ row.start_at_n || row.datetime_n }}</p>
+    </article>
     <form class="form" @submit.prevent="reserve">
       <input v-model.number="form.id" placeholder="id" />
       <input v-model="form.name" :placeholder="$t('common.confirm')" />
@@ -27,5 +28,5 @@ useSeoMeta({ title: t('wap_00223') })
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

@@ -235,6 +235,8 @@ pub struct Config {
     // Application rate limiting
     pub global_concurrency_limit: usize,
     pub request_timeout_secs: u64,
+    /// Intended requests per second per IP. Wired via `per_millisecond(1000/N)`
+    /// because tower_governor `per_second(n)` means "1 token every n seconds".
     pub rate_limit_per_second: u64,
     pub rate_limit_burst: u32,
 

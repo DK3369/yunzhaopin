@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const api = useApi()
 const status = ref(0)
-const { data, refresh } = await useAsyncData(
+const { data, error, refresh } = await useAsyncData(
   () => `admin-tiny-${status.value}`,
   () =>
     api.post<{ list: Array<Record<string, unknown>> }>('/v1/admin/tiny', {
@@ -25,7 +25,8 @@ async function review(row: { id: number }, next: number) {
       <el-radio-button :value="0">{{ $t('ui.waiting') }}</el-radio-button>
       <el-radio-button :value="1">{{ $t('ui.passed') }}</el-radio-button>
     </el-radio-group>
-    <el-table :data="data?.list || []">
+    <AdminState :error="error" :empty="!error && !(data?.list || []).length" />
+    <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="username" :label="$t('ui.fullname')" />
       <el-table-column prop="job" :label="$t('common.job')" />

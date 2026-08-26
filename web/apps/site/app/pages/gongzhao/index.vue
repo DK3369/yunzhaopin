@@ -1,33 +1,33 @@
 <script setup lang="ts">
+import { listFailMsg } from '~/utils/site'
+
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
 const { t } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(
+const { data, error } = await useAsyncData(
   () => `gz-${page.value}`,
-  () => api.get('/v1/wap/gongzhao', { page: page.value, page_size: 20 }),
+  () =>
+    api.get<{ list: Array<{ id: number; title: string; start_at_n?: string }>; total: number }>('/v1/wap/gongzhao', {
+      page: page.value,
+      page_size: 20,
+    }),
 )
 useSeoMeta({ title: t('ui.gongzhao') })
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.gongzhao') }}</h1>
-    <p v-if="!(data?.list || []).length" class="muted">{{ $t('home.no_job_data') }}</p>
-    <div class="stack">
-      <SimpleCard
-        v-for="row in data?.list || []"
-        :key="row.id"
-        :to="`/gongzhao/${row.id}`"
-        :title="row.title"
-        :meta="row.start_at_n"
+  <NewsListShell :title="$t('ui.gongzhao')" :error="error" :error-text="failMsg" :count="list.length">
+    <SimpleCard v-for="row in list" :key="row.id" :to="`/gongzhao/${row.id}`" :title="row.title" :meta="row.start_at_n" />
+    <template #pager>
+      <Pager
+        :page="page"
+        :page-size="20"
+        :total="data?.total || 0"
+        @update:page="(p) => navigateTo({ query: { page: p } })"
       />
-    </div>
-    <Pager
-      :page="page"
-      :page-size="20"
-      :total="data?.total || 0"
-      @update:page="(p) => navigateTo({ query: { page: p } })"
-    />
-  </section>
+    </template>
+  </NewsListShell>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { JobLike, CatNode } from '~/utils/site'
+import { catTree, listFailMsg, type CatNode, type JobLike } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
 const route = useRoute()
@@ -15,12 +15,13 @@ const edu = computed(() => numQuery(route.query.edu))
 const exp = computed(() => numQuery(route.query.exp))
 const salaryId = computed(() => numQuery(route.query.salary))
 const urgent = computed(() => route.query.urgent === '1')
+const rec = computed(() => route.query.rec === '1')
 const salaryBound = computed(() => (salaryId.value ? SALARY_BOUNDS[salaryId.value] : undefined))
 const api = useApi()
 
-const { data } = await useAsyncData(
+const { data, error } = await useAsyncData(
   () =>
-    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${urgent.value}`,
+    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${urgent.value}-${rec.value}`,
   () =>
     api.get<{ list: JobLike[]; total: number }>('/v1/wap/jobs', {
       page: page.value,
@@ -36,6 +37,7 @@ const { data } = await useAsyncData(
       min_salary: salaryBound.value?.min_salary,
       max_salary: salaryBound.value?.max_salary,
       urgent: urgent.value ? true : undefined,
+      rec: rec.value ? true : undefined,
     }),
 )
 const list = computed(() => data.value?.list || [])
@@ -78,20 +80,34 @@ const { data: ads } = await useAsyncData('ads-504', () =>
 const jobItems = computed(() => jobRoots.value.map((c) => ({ id: c.id, name: c.name })))
 const job2Items = computed(() => jobLevel2.value.map((c) => ({ id: c.id, name: c.name })))
 const job3Items = computed(() => jobLevel3.value.map((c) => ({ id: c.id, name: c.name })))
-const cityLabel = computed(() => {
-  const hit = [...(provinces.value || []), ...(cities.value || [])].find(
-    (c) => c.id === cityId.value || c.id === provinceId.value,
-  )
-  return hit?.name || ''
-})
 const jobLabel = computed(() => {
   const hit = [...jobItems.value, ...job2Items.value, ...job3Items.value].find(
     (c) => c.id === jobPost.value || c.id === job1Son.value || c.id === job1.value,
   )
   return hit?.name || ''
 })
+const cityLabel = computed(() => {
+  const hit = [...(provinces.value || []), ...(cities.value || [])].find(
+    (c) => c.id === cityId.value || c.id === provinceId.value,
+  )
+  return hit?.name || ''
+})
+const { data: recSide } = await useAsyncData(
+  () => `jobs-rec-side-${locale.value}`,
+  () => api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 10 }).catch(() => ({ list: [] as JobLike[] })),
+)
+
+const selected = computed(() => {
+  const rows: Array<{ param: string; name: string }> = []
+  if (keyword.value) rows.push({ param: 'keyword', name: keyword.value })
+  if (jobLabel.value) rows.push({ param: 'job1', name: jobLabel.value })
+  if (cityLabel.value) rows.push({ param: 'province_id', name: cityLabel.value })
+  return rows
+})
 
 useSeoMeta({ title: keyword.value ? `${keyword.value} - ${t('common.job')}` : t('default_00246') })
+
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 
 function goPage(p: number) {
   return navigateTo({ query: { ...route.query, page: p } })
@@ -122,15 +138,20 @@ function goPage(p: number) {
             </div>
           </div>
         </form>
-        <p>
-          <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined }) }" :class="{ Search_jobs_sub_cur: !urgent }">{{
-            $t('common.latest')
-          }}</NuxtLink>
-          ·
-          <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1' }) }" :class="{ Search_jobs_sub_cur: urgent }">{{
-            $t('wap_com_00250')
-          }}</NuxtLink>
-        </p>
+        <div v-if="selected.length" class="Search_close_box">
+          <div>
+            <div class="Search_clear">
+              <NuxtLink to="/jobs">{{ $t('common.all') }}</NuxtLink>
+            </div>
+            <span class="Search_close_box_s">{{ $t('common.search') }}</span>
+          </div>
+          <NuxtLink
+            v-for="s in selected"
+            :key="s.param"
+            :to="{ path: '/jobs', query: mergeQuery(route.query, { [s.param]: undefined }) }"
+            class="Search_jobs_c_a disc_fac"
+          >{{ s.name }}</NuxtLink>
+        </div>
         <div class="Search_jobs_box">
           <FilterRow
             :label="$t('common.job')"
@@ -200,13 +221,60 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
           />
         </div>
-        <div class="index_newjobbox index_zw_item">
-          <ul>
-            <JobCard v-for="job in list" :key="job.id" :job="job" />
-          </ul>
-          <p v-if="!list.length" class="muted" style="padding: 30px 0">{{ $t('home.no_job_data') }}</p>
+        <div class="search_h1_box">
+          <div class="search_h1_box_title">
+            <ul class="search_h1_box_list">
+              <li :class="{ search_job_all: !urgent && !rec }">
+                <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined, rec: undefined }) }">{{
+                  $t('common.latest')
+                }}</NuxtLink>
+                <i class="search_h1_box_list_icon" />
+              </li>
+              <li :class="{ search_h1_box_cur: urgent }" class="job_jp_t">
+                <NuxtLink
+                  :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: urgent ? undefined : '1', rec: undefined }) }"
+                  class="job_zt"
+                  >{{ $t('wap_com_00250') }}</NuxtLink
+                >
+              </li>
+              <li :class="{ search_h1_box_cur: rec }" class="job_tj_t">
+                <NuxtLink
+                  :to="{ path: '/jobs', query: mergeQuery(route.query, { rec: rec ? undefined : '1', urgent: undefined }) }"
+                  class="job_zt"
+                  >{{ $t('home.recommended_jobs') }}</NuxtLink
+                >
+              </li>
+            </ul>
+          </div>
         </div>
-        <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
+        <div class="left_job_all fl">
+          <div class="job_left_sidebar">
+            <p v-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
+            <template v-else>
+              <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
+              <div v-if="!list.length" class="new_notip">
+                <div class="new_notip_tit">{{ $t('home.no_job_data') }}</div>
+              </div>
+            </template>
+            <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
+          </div>
+        </div>
+        <div v-if="(ads && ads.length) || (recSide?.list || []).length" class="yun_job_list_right">
+          <div v-if="ads?.length" class="yun_job_list_right_banner">
+            <img v-for="(ad, i) in ads" :key="i" :src="ad.image_n" alt="" />
+          </div>
+          <div v-if="(recSide?.list || []).length" class="job_recommendation">
+            <div class="job_recommendation_title">
+              <span class="job_recommendation_span">{{ $t('home.recommended_jobs') }}</span>
+            </div>
+            <ul class="job_recommendation_list">
+              <li v-for="job in recSide?.list || []" :key="job.id">
+                <NuxtLink :to="`/jobs/${job.id}`" class="job_recommendation_jobname">{{ job.name }}</NuxtLink>
+                <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="job_recommendation_Comname">{{ job.com_name }}</NuxtLink>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -226,14 +294,19 @@ function goPage(p: number) {
     <div class="job_header_nav resumeAdeFlex">
       <div class="job_header_nav_left category">
         <ul>
-          <li :class="{ active: !urgent }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined }) }">{{
+          <li :class="{ active: !urgent && !rec }">
+            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined, rec: undefined }) }">{{
               $t('common.latest')
             }}</NuxtLink>
           </li>
           <li :class="{ active: urgent }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1' }) }">{{
+            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1', rec: undefined }) }">{{
               $t('wap_com_00250')
+            }}</NuxtLink>
+          </li>
+          <li :class="{ active: rec }">
+            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { rec: '1', urgent: undefined }) }">{{
+              $t('home.recommended_jobs')
             }}</NuxtLink>
           </li>
           <li>
@@ -254,8 +327,11 @@ function goPage(p: number) {
       <div v-if="ads?.length" class="jobzd_banner">
         <img v-for="(ad, i) in ads" :key="i" :src="ad.image_n" alt="" style="width: 100%" />
       </div>
-      <JobCard v-for="job in list" :key="job.id" :job="job" />
-      <p v-if="!list.length" class="muted" style="padding: 0.4rem">{{ $t('home.no_job_data') }}</p>
+      <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
+      <template v-else>
+        <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
+        <p v-if="!list.length" class="muted" style="padding: 0.4rem">{{ $t('home.no_job_data') }}</p>
+      </template>
       <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
     </div>
   </div>

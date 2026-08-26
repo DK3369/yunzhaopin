@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { listFailMsg, type CompanyLike } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
 const route = useRoute()
@@ -9,10 +10,10 @@ const rec = computed(() => route.query.rec === '1')
 const hy = computed(() => numQuery(route.query.hy))
 const provinceId = computed(() => numQuery(route.query.province_id))
 const api = useApi()
-const { data } = await useAsyncData(
+const { data, error } = await useAsyncData(
   () => `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${hy.value}-${provinceId.value}`,
   () =>
-    api.get('/v1/wap/companies', {
+    api.get<{ list: CompanyLike[]; total: number }>('/v1/wap/companies', {
       page: page.value,
       page_size: 20,
       keyword: keyword.value || undefined,
@@ -30,6 +31,8 @@ const { data: provinces } = await useAsyncData(
   () => api.get<DictItem[]>('/v1/wap/regions', { country: 'CN', level: 1 }).catch(() => [] as DictItem[]),
 )
 useSeoMeta({ title: t('home.famous_companies') })
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
@@ -39,15 +42,23 @@ useSeoMeta({ title: t('home.famous_companies') })
         <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
         <input class="Search_jobs_submit" type="submit" :value="$t('common.search')" />
       </form>
-      <p>
-        <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: undefined }) }" :class="{ Search_jobs_sub_cur: !rec }">{{
-          $t('common.all')
-        }}</NuxtLink>
-        ·
-        <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: '1' }) }" :class="{ Search_jobs_sub_cur: rec }">{{
-          $t('home.famous_companies')
-        }}</NuxtLink>
-      </p>
+      <div class="firmsearch_h1_box_title">
+        <ul class="firmsearch_h1_box_list">
+          <li :class="{ firmsearch_h1_box_cur: !rec }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: undefined }) }">{{
+              $t('common.all')
+            }}</NuxtLink>
+            <i class="firmsearch_h1_box_list_icon" />
+          </li>
+          <li :class="{ firmsearch_h1_box_cur: rec }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: '1' }) }">{{
+              $t('home.famous_companies')
+            }}</NuxtLink>
+            <i class="firmsearch_h1_box_list_icon firmsearch_h1_box_list_icon_jj png" />
+          </li>
+        </ul>
+        <div class="firmsearch_h1_box_line yun_bg_color" />
+      </div>
       <FilterRow
         :label="$t('common.company')"
         param="hy"
@@ -64,15 +75,13 @@ useSeoMeta({ title: t('home.famous_companies') })
         path="/companies"
         :all-label="$t('common.all')"
       />
-      <h1 style="font-size: 22px; margin: 12px 0">{{ $t('home.famous_companies') }}</h1>
-      <div class="index_mq_box">
-        <div class="index_mq_box_cont">
-          <ul>
-            <CompanyCard v-for="c in data?.list || []" :key="c.uid" :company="c" />
-          </ul>
+      <p v-if="error" class="muted">{{ failMsg }}</p>
+      <div v-else class="firm_list_content">
+        <div class="firm_list_content_box">
+          <CompanyCard v-for="c in list" :key="c.uid" :company="c" variant="firm" />
         </div>
+        <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
       </div>
-      <p v-if="!(data?.list || []).length" class="muted">{{ $t('home.no_job_data') }}</p>
       <Pager
         :page="page"
         :page-size="20"
@@ -93,8 +102,11 @@ useSeoMeta({ title: t('home.famous_companies') })
       ]"
     />
     <div class="new_mq" style="margin: 0.2rem">
-      <CompanyCard v-for="c in data?.list || []" :key="c.uid" :company="c" />
-      <p v-if="!(data?.list || []).length" class="muted" style="padding: 0.4rem">{{ $t('home.no_job_data') }}</p>
+      <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
+      <template v-else>
+        <CompanyCard v-for="c in list" :key="c.uid" :company="c" variant="firm" />
+        <p v-if="!list.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_data') }}</p>
+      </template>
     </div>
     <Pager
       :page="page"

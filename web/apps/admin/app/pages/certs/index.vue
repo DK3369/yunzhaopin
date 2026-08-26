@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const api = useApi()
-const { data, refresh } = await useAsyncData('admin-certs', () =>
-  api.post<{ list: Array<Record<string, unknown>> }>('/v1/admin/company-certs', { page: 1, page_size: 20 }),
+const page = ref(1)
+const { data, error, refresh } = await useAsyncData(
+  () => `admin-certs-${page.value}`,
+  () => api.post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/company-certs', { page: page.value, page_size: 20 }),
 )
 async function review(row: { uid: number }, approve: boolean) {
   await api.post('/v1/admin/company-certs/review', { uid: row.uid, approve, note: '' })
@@ -12,7 +14,8 @@ async function review(row: { uid: number }, approve: boolean) {
 <template>
   <div>
     <h1>{{ $t('ui.certs') }}</h1>
-    <el-table :data="data?.list || []">
+    <AdminState :error="error" :empty="!error && !(data?.list || []).length" />
+    <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="uid" label="UID" width="90" />
       <el-table-column prop="status_n" :label="$t('ui.status')" width="110" />
       <el-table-column prop="note" :label="$t('ui.note')" />
@@ -24,5 +27,19 @@ async function review(row: { uid: number }, approve: boolean) {
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      v-if="(data?.total || 0) > 20"
+      style="margin-top: 12px"
+      layout="prev, pager, next"
+      :page-size="20"
+      :current-page="page"
+      :total="data?.total || 0"
+      @current-change="
+        (p: number) => {
+          page = p
+          refresh()
+        }
+      "
+    />
   </div>
 </template>

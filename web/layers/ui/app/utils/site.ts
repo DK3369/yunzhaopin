@@ -37,6 +37,8 @@ export type JobLike = {
   newtime?: boolean
   is_urgent?: boolean
   is_rec?: boolean
+  welfare?: string[] | string
+  welfare_n?: string
 }
 
 export type CompanyLike = {
@@ -130,10 +132,19 @@ export function mapNavUrl(url?: string | null): string {
   return '/'
 }
 
-export function formatSalary(job: JobLike): string {
+export function listFailMsg(err: unknown, rateLimit: string, fallback: string): string {
+  if (!err) return ''
+  const e = err as { data?: { key?: string; msg?: string }; message?: string; statusCode?: number; status?: number }
+  const key = e.data?.key || ''
+  const status = e.statusCode || e.status || 0
+  if (key === 'rate_limit' || status === 429) return e.data?.msg || rateLimit
+  return e.data?.msg || e.message || fallback
+}
+
+export function formatSalary(job: JobLike, negotiable = '面议'): string {
   const min = Number(job.min_salary ?? job.minsalary ?? 0)
   const max = Number(job.max_salary ?? job.maxsalary ?? 0)
-  if (!min && !max) return '面议'
+  if (!min && !max) return negotiable
   if (min && max) return `${min}-${max}`
   return String(min || max)
 }

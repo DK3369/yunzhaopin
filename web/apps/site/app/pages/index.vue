@@ -1,22 +1,30 @@
 <script setup lang="ts">
-import { catTree, formatSalary, mediaUrl, PLACEHOLDER_BANNER, PLACEHOLDER_LOGO, type CatNode, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, listFailMsg, mediaUrl, PLACEHOLDER_BANNER, PLACEHOLDER_LOGO, type CatNode, type JobLike } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
 const { siteName, me, h5Nav } = useSiteChrome()
 
-const { data: home, error } = await useAsyncData('home', () => api.get('/v1/wap/home', { did: 0 }))
+const { data: home, error } = await useAsyncData('home', async () => {
+  const h = (await api.get('/v1/wap/home', { did: 0 })) as {
+    hot_jobs?: JobLike[]
+    rec_companies?: Array<Record<string, unknown>>
+    announcements?: unknown[]
+    hot_keywords?: unknown[]
+    new_articles?: unknown[]
+  }
+  if (!(h.hot_jobs || []).length) {
+    const j = await api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 32 })
+    h.hot_jobs = j.list || []
+  }
+  if (!(h.rec_companies || []).length) {
+    const c = await api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies', { page_size: 12 })
+    h.rec_companies = c.list || []
+  }
+  return h
+})
 const { data: cats } = await useAsyncData('job-cats', () =>
   api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
-)
-const { data: recJobs } = await useAsyncData('rec-jobs', () =>
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 32 }).catch(() => ({ list: [] })),
-)
-const { data: latestJobs } = await useAsyncData('latest-jobs', () =>
-  api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 32 }).catch(() => ({ list: [] })),
-)
-const { data: urgentJobs } = await useAsyncData('urgent-jobs', () =>
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 8 }).catch(() => ({ list: [] })),
 )
 const { data: adsPc } = await useAsyncData('ads-3', () =>
   api.get<Array<{ image_n?: string; image?: string; link?: string; title?: string }>>('/v1/wap/ads', { slot: '3', limit: 5 }).catch(() => []),
@@ -24,24 +32,19 @@ const { data: adsPc } = await useAsyncData('ads-3', () =>
 const { data: adsH5 } = await useAsyncData('ads-50', () =>
   api.get<Array<{ image_n?: string; image?: string; link?: string; title?: string }>>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => []),
 )
-const { data: resumes } = await useAsyncData('home-resumes', () =>
-  api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 }).catch(() => ({ list: [] })),
+const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', () =>
+  api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 }).catch((e: unknown) => {
+    const status = Number((e as { statusCode?: number; code?: number }).statusCode || (e as { code?: number }).code)
+    if (status === 401) return { list: [] as Array<Record<string, unknown>> }
+    throw e
+  }),
 )
 
 const jobCats = computed(() => catTree(cats.value || [], 11))
 const hotJobs = computed(() => (home.value?.hot_jobs || []) as JobLike[])
-const recJobList = computed(() => {
-  const list = recJobs.value?.list || []
-  return list.length ? list : hotJobs.value
-})
-const latestJobList = computed(() => {
-  const list = latestJobs.value?.list || []
-  return list.length ? list : hotJobs.value
-})
-const urgentList = computed(() => {
-  const list = urgentJobs.value?.list || []
-  return list.length ? list : hotJobs.value.slice(0, 8)
-})
+const recJobList = computed(() => hotJobs.value)
+const latestJobList = computed(() => hotJobs.value)
+const urgentList = computed(() => hotJobs.value.slice(0, 8))
 const companies = computed(() => home.value?.rec_companies || [])
 const announcements = computed(() => home.value?.announcements || [])
 const keywords = computed(() => home.value?.hot_keywords || [])
@@ -249,7 +252,10 @@ useHead({
               </div>
             </li>
           </ul>
-          <p v-if="!resumeList.length" class="muted" style="padding: 20px">{{ $t('ui.no_public_resumes') }}</p>
+          <p v-if="resumeError" class="muted" style="padding: 20px">{{
+            listFailMsg(resumeError, $t('ui.rate_limit'), $t('ui.load_failed'))
+          }}</p>
+          <p v-else-if="!resumeList.length" class="muted" style="padding: 20px">{{ $t('ui.no_public_resumes') }}</p>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/resumes">{{ $t('common.view_more') }}</NuxtLink></div>
       </div>

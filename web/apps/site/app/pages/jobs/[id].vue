@@ -80,8 +80,14 @@ const salary = computed(() =>
     name: String(job.value.name || ''),
     min_salary: Number(job.value.minsalary || job.value.min_salary || 0),
     max_salary: Number(job.value.maxsalary || job.value.max_salary || 0),
-  }),
+  }, t('common.negotiable')),
 )
+const welfare = computed(() => {
+  const w = dict.value.welfare_names || job.value.welfare || job.value.job_welfare
+  if (Array.isArray(w)) return w.map(String).filter(Boolean)
+  if (typeof w === 'string') return w.split(/[,，]/).map((s) => s.trim()).filter(Boolean)
+  return [] as string[]
+})
 const description = computed(() =>
   stripHtml(job.value.description || job.value.content || job.value.name || job.value.com_name),
 )
@@ -136,7 +142,22 @@ useHead({
 <template>
   <div v-if="job.name">
     <div class="site-pc">
-      <div class="job_details_top job-detail-sticky">
+      <div class="job_ceil">
+        <div class="w1200">
+          <div class="job_ceil_box">
+            <div class="job_ceil_cont">
+              <span class="job_ceil_jobname">{{ job.name }}</span>
+              <span class="job_ceil_jobxz">{{ salary }}</span>
+              <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="toggleFav">{{
+                fav ? $t('wap_00378') : $t('wap_00379')
+              }}</a>
+              <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="report">{{ $t('common.submit') }}</a>
+              <a href="javascript:;" class="job_ceil_jobtd" @click.prevent="apply">{{ $t('wap_com_00235') }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="job_details_top">
         <div class="w1200">
           <div class="job_details_current">
             {{ $t('common_01498') }}：<NuxtLink to="/">{{ $t('common.home') }}</NuxtLink> >
@@ -149,48 +170,68 @@ useHead({
               <p class="muted" style="margin-top: 12px">
                 {{ dict.city_two || job.city_two }} · {{ dict.job_edu || dict.edu_n }} · {{ dict.job_exp || dict.exp_n }}
               </p>
-              <p>{{ job.com_name }}</p>
-              <div style="margin-top: 16px; display: flex; gap: 12px">
-                <button type="button" class="job_ceil_jobtd" @click="apply">{{ $t('wap_com_00235') }}</button>
-                <button type="button" class="job_ceil_jobtd" @click="toggleFav">
-                  {{ fav ? $t('common.yes') : $t('member_user_00103') }}
-                </button>
-                <button type="button" class="job_ceil_jobtd" @click="showTel">{{ $t('common.phone') }}</button>
-                <button type="button" class="job_ceil_jobtd" @click="report">{{ $t('common.submit') }}</button>
+              <div v-if="welfare.length" class="job_details_welfare">
+                <span v-for="w in welfare" :key="w" class="job_details_welfare_n">{{ w }}</span>
               </div>
               <p v-if="applyMsg" class="muted">{{ applyMsg }}</p>
-              <p v-if="contact?.linktel" class="muted">{{ contact.linkman }} {{ contact.linktel }}</p>
             </div>
           </div>
         </div>
       </div>
-      <div class="yun_content" style="padding: 20px 0 40px; display: flex; gap: 24px">
-        <div style="flex: 1">
-          <h2 style="margin-bottom: 12px">{{ $t('common.job') }}</h2>
-          <div v-html="String(job.description || job.content || '')" />
-          <h2 v-if="similar?.length" style="margin: 24px 0 12px">{{ $t('home.recommended_jobs') }}</h2>
-          <ul v-if="similar?.length" class="index_newjobbox">
-            <JobCard v-for="row in similar" :key="row.id" :job="row" />
-          </ul>
-        </div>
-        <aside style="width: 280px">
-          <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" style="display: flex; gap: 12px; margin-bottom: 16px">
-            <img
-              :src="mediaUrl(String(company.logo_n || company.logo || job.com_logo || ''), PLACEHOLDER_LOGO)"
-              width="64"
-              height="64"
-              alt=""
-            />
-            <div>
-              <strong>{{ job.com_name || company.name }}</strong>
-              <p class="muted">{{ company.hy_n }}</p>
+      <div class="w1200">
+        <div class="job_details_left">
+          <div class="job_details_left_box">
+            <div class="job_details_touch">
+              <div class="job_details_user">
+                <div class="job_details_userpic">
+                  <img
+                    :src="mediaUrl(String(company.logo_n || company.logo || job.com_logo || ''), PLACEHOLDER_LOGO)"
+                    alt=""
+                  />
+                </div>
+                <div>
+                  <span class="job_details_touch_username">{{ contact?.linkman || job.com_name }}</span>
+                </div>
+              </div>
+              <div class="job_details_touch_tel">
+                {{ $t('common.phone') }}：
+                <span class="job_details_touch_tel_n">{{ contact?.linktel || '****' }}</span>
+                <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
+                  $t('common.phone')
+                }}</a>
+              </div>
             </div>
-          </NuxtLink>
-          <h3 v-if="sameCom?.length">{{ $t('home.latest_jobs') }}</h3>
-          <p v-for="row in sameCom || []" :key="row.id">
-            <NuxtLink :to="`/jobs/${row.id}`">{{ row.name }}</NuxtLink>
-          </p>
-        </aside>
+            <h2>{{ $t('common.job') }}</h2>
+            <div v-html="String(job.description || job.content || '')" />
+            <h2 v-if="similar?.length">{{ $t('home.recommended_jobs') }}</h2>
+            <div v-if="similar?.length">
+              <JobCard v-for="row in similar" :key="row.id" :job="row" variant="search" />
+            </div>
+          </div>
+        </div>
+        <div class="Compply_right_sidebar">
+          <div class="Compply_right_qy">
+            <div class="Compply_logo">
+              <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`">
+                <img
+                  :src="mediaUrl(String(company.logo_n || company.logo || job.com_logo || ''), PLACEHOLDER_LOGO)"
+                  alt=""
+                />
+              </NuxtLink>
+            </div>
+            <div class="Compply_right_name">
+              <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`">{{ job.com_name || company.name }}</NuxtLink>
+            </div>
+            <p class="Compply_right_name_all">{{ company.hy_n }}</p>
+          </div>
+          <div v-if="sameCom?.length" class="Compply_right_post">
+            <ul class="Compply_right_post_other">
+              <li v-for="row in sameCom || []" :key="row.id">
+                <NuxtLink :to="`/jobs/${row.id}`" class="Compply_right_post_other_name">{{ row.name }}</NuxtLink>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -218,6 +259,12 @@ useHead({
               </div>
             </div>
           </div>
+          <div v-if="welfare.length" class="job_describe_bottom">
+            <div class="job_describe_cengter_header">{{ $t('common.more') }}</div>
+            <div class="job_describe_bottom_welfare">
+              <span v-for="w in welfare" :key="w">{{ w }}</span>
+            </div>
+          </div>
           <div class="job_describe_box" style="background: #fff; padding: 0.32rem; margin-top: 0.2rem">
             <div v-html="String(job.description || job.content || '')" />
           </div>
@@ -237,23 +284,34 @@ useHead({
             <i class="index_company-name">{{ job.com_name || company.name }}</i>
           </NuxtLink>
           <div v-if="similar?.length" style="background: #fff; margin-top: 0.2rem; padding: 0.2rem">
-            <JobCard v-for="row in similar" :key="row.id" :job="row" />
+            <JobCard v-for="row in similar" :key="row.id" :job="row" variant="search" />
           </div>
         </div>
       </div>
-      <div
-        style="position: fixed; left: 0; right: 0; bottom: 1.82rem; background: #fff; padding: 0.2rem 0.32rem; z-index: 90; display: flex; gap: 0.16rem"
-      >
-        <button type="button" class="login_bth" style="flex: 1; height: 1rem; background: #2778f8; color: #fff; border: 0" @click="apply">
-          {{ applyMsg || $t('wap_com_00235') }}
-        </button>
-        <button type="button" style="width: 1.6rem; height: 1rem" @click="toggleFav">{{ $t('member_user_00103') }}</button>
-        <button type="button" style="width: 1.6rem; height: 1rem" @click="showTel">{{ $t('common.phone') }}</button>
+      <div class="yun_czfoot">
+        <div class="yun_czfootfixed">
+          <div class="yun_czfoot_c">
+            <div class="yun_czfoot_l">
+              <NuxtLink to="/" class="yun_czfoot_s">
+                <div class="yun_czfoot_s_p yun_czfoot_hmicon">{{ $t('common.home') }}</div>
+              </NuxtLink>
+              <a href="javascript:;" class="yun_czfoot_s" @click.prevent="toggleFav">
+                <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ $t('member_user_00103') }}</div>
+              </a>
+            </div>
+            <a href="javascript:;" class="yun_czfoot_s" @click.prevent="apply">
+              <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{ applyMsg || $t('wap_com_00235') }}</div>
+            </a>
+            <a href="javascript:;" class="yun_czfoot_s" @click.prevent="showTel">
+              <div class="yun_czfoot_s_p">{{ $t('common.phone') }}</div>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <div v-else class="site-inner">
     <h1>{{ $t('common.job') }}</h1>
-    <p class="muted">{{ error ? $t('home.no_job_data') : $t('home.no_recruiting_jobs') }}</p>
+    <p class="muted">{{ error ? $t('ui.load_failed') : $t('home.no_recruiting_jobs') }}</p>
   </div>
 </template>

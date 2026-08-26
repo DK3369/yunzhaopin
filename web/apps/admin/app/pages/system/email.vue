@@ -3,10 +3,8 @@ const api = useApi()
 const { data, refresh } = await useAsyncData('admin-email', () =>
   api.post<Array<Record<string, unknown>>>('/v1/admin/site-settings/list', {}),
 )
-const { data: logs } = await useAsyncData('admin-email-logs', () =>
-  api
-    .post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/email-logs', { page: 1, page_size: 20 })
-    .catch(() => ({ list: [], total: 0 })),
+const { data: logs, error: logError } = await useAsyncData('admin-email-logs', () =>
+  api.post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/email-logs', { page: 1, page_size: 20 }),
 )
 const form = reactive({ key: 'sy_email_online', value: '', description: '', is_public: false })
 const rows = computed(() => {
@@ -53,7 +51,8 @@ function fill(row: Record<string, unknown>) {
       </el-table-column>
     </el-table>
     <h2 style="margin-top: 24px">{{ $t('ui.email_log') }}</h2>
-    <el-table :data="logs?.list || []">
+    <AdminState :error="logError" :empty="!logError && !(logs?.list || []).length" />
+    <el-table v-if="!logError && (logs?.list || []).length" :data="logs?.list || []">
       <el-table-column prop="id" label="id" width="80" />
       <el-table-column prop="email" label="email" />
       <el-table-column prop="title" :label="$t('ui.name')" />

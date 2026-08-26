@@ -9,12 +9,10 @@ useSeoMeta({ title: t('wap_00328') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_00328') }}</h1>
-    <p v-if="error" class="muted">{{ $t('common.login') }}</p>
-    <article v-for="row in data?.list || data || []" :key="row.id" class="job-card">
+  <MemberPanel :title="$t('wap_00328')" :error="error" :empty="!error && !(data?.list || data || []).length">
+    <article v-for="row in data?.list || data || []" :key="row.id" class="look_resume_list">
       <h3>{{ row.name }}</h3>
       <button type="button" @click="apply(row.id)">{{ $t('common.confirm') }}</button>
     </article>
-  </section>
+  </MemberPanel>
 </template>

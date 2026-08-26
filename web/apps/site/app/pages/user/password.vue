@@ -16,13 +16,12 @@ useSeoMeta({ title: t('member_user_00226') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_user_00226') }}</h1>
+  <MemberPanel :title="$t('member_user_00226')">
     <form class="form" @submit.prevent="submit">
       <input v-model="form.old_password" type="password" :placeholder="$t('ui.old_password')" />
       <input v-model="form.new_password" type="password" :placeholder="$t('ui.new_password')" />
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg" class="muted">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

@@ -16,10 +16,8 @@ useSeoMeta({ title: t('activate_00005') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('activate_00005') }}</h1>
-    <p v-if="error" class="muted">{{ $t('common.login') }}</p>
-    <p v-if="data">{{ data.status_n || data.status }} {{ data.note }}</p>
+  <MemberPanel :title="$t('activate_00005')" :error="error">
+    <p v-if="data" class="muted">{{ data.status_n || data.status }} {{ data.note }}</p>
     <form class="form" @submit.prevent="submit">
       <input v-model="form.license_photo" :placeholder="$t('common.save')" />
       <input v-model="form.id_photo" />
@@ -27,5 +25,5 @@ useSeoMeta({ title: t('activate_00005') })
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

@@ -9,16 +9,11 @@ useSeoMeta({ title: t('ui.job_mgmt') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.job_mgmt') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+  <MemberPanel :title="$t('ui.job_mgmt')" :error="error" :empty="!error && !list.length">
     <p><NuxtLink to="/com/jobs/new">{{ $t('ui.publish_job') }}</NuxtLink></p>
-    <p v-if="!error && !list.length" class="muted">{{ $t('ui.no_jobs') }}</p>
-    <div class="stack">
-      <article v-for="job in list" :key="job.id" class="job-card">
-        <h3>{{ job.name }}</h3>
-        <p class="muted">{{ $t('ui.status') }} {{ job.state }}</p>
-      </article>
-    </div>
-  </section>
+    <article v-for="job in list" :key="job.id" class="look_resume_list">
+      <h3>{{ job.name }}</h3>
+      <p class="muted">{{ $t('ui.status') }} {{ job.state }}</p>
+    </article>
+  </MemberPanel>
 </template>

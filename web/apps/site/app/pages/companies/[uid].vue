@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 
 const route = useRoute()
 const { t, locale } = useI18n()
 const uid = Number(route.params.uid)
 const tab = computed(() => String(route.query.tab || 'jobs'))
 const api = useApi()
-const { data } = await useAsyncData(
+const { data, error } = await useAsyncData(
   () => `company-${locale.value}-${uid}`,
   () => api.get('/v1/wap/companies/detail', { uid }),
 )
@@ -16,6 +16,7 @@ const { data: jobs } = await useAsyncData(
   () =>
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page: 1, page_size: 20, uid }).catch(() => ({ list: [] as JobLike[] })),
 )
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 useSeoMeta({
   title: () => String(company.value.name || t('common.company')),
   description: () => stripHtml(company.value.content || company.value.hy_n || company.value.name),
@@ -44,29 +45,40 @@ useHead({
 <template>
   <article v-if="company.name">
     <div class="site-pc">
-      <div class="yun_content" style="padding: 20px 0 40px">
-        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px">
-          <img :src="mediaUrl(String(company.logo_n || company.logo || ''), PLACEHOLDER_LOGO)" width="80" height="80" alt="" />
-          <div>
-            <h1>{{ company.name }}</h1>
-            <p class="muted">{{ company.hy_n }} · {{ company.city_two }}</p>
+      <div class="com_details_top">
+        <div class="w1200">
+          <div class="com_details_current">
+            {{ $t('common_01498') }}：<NuxtLink to="/">{{ $t('common.home') }}</NuxtLink> >
+            <NuxtLink to="/companies">{{ $t('common.company') }}</NuxtLink> >
+            <span>{{ company.name }}</span>
           </div>
-        </div>
-        <p>
-          <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ Search_jobs_sub_cur: tab !== 'about' }">{{
-            $t('home.latest_jobs')
-          }}</NuxtLink>
-          ·
-          <NuxtLink :to="{ query: { tab: 'about' } }" :class="{ Search_jobs_sub_cur: tab === 'about' }">{{
-            $t('common.company')
-          }}</NuxtLink>
-        </p>
-        <div v-if="tab === 'about'" v-html="String(company.content || '')" />
-        <div v-else class="index_newjobbox">
-          <ul>
-            <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" />
-          </ul>
-          <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
+          <div class="com_details_top_c">
+            <div class="com_details_info_box">
+              <div class="com_details_logo">
+                <img :src="mediaUrl(String(company.logo_n || company.logo || ''), PLACEHOLDER_LOGO)" width="140" height="140" alt="" />
+              </div>
+              <h1 class="com_details_name">{{ company.name }}</h1>
+              <div class="com_details_info">
+                {{ company.city_one }} <span v-if="company.city_two">- {{ company.city_two }}</span>
+                <span v-if="company.hy_n" class="com_details_line">|</span>{{ company.hy_n }}
+                <span v-if="company.mun_n" class="com_details_line">|</span>{{ company.mun_n }}
+              </div>
+            </div>
+            <p>
+              <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ Search_jobs_sub_cur: tab !== 'about' }">{{
+                $t('home.latest_jobs')
+              }}</NuxtLink>
+              ·
+              <NuxtLink :to="{ query: { tab: 'about' } }" :class="{ Search_jobs_sub_cur: tab === 'about' }">{{
+                $t('common.company')
+              }}</NuxtLink>
+            </p>
+            <div v-if="tab === 'about'" v-html="String(company.content || '')" />
+            <div v-else>
+              <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="search" />
+              <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -90,13 +102,13 @@ useHead({
       </div>
       <div v-if="tab === 'about'" style="background: #fff; margin-top: 0.2rem; padding: 0.32rem" v-html="String(company.content || '')" />
       <div v-else style="margin-top: 0.2rem">
-        <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" />
+        <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="search" />
         <p v-if="!(jobs?.list || []).length" class="muted" style="padding: 0.4rem">{{ $t('home.no_recruiting_jobs') }}</p>
       </div>
     </div>
   </article>
   <article v-else class="site-inner">
     <h1>{{ $t('common.company') }}</h1>
-    <p class="muted">{{ $t('home.no_job_data') }}</p>
+    <p class="muted">{{ error ? failMsg : $t('ui.no_data') }}</p>
   </article>
 </template>

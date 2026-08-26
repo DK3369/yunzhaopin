@@ -42,7 +42,7 @@ const mainClass = computed(() => {
   <div class="site-root">
     <AppHeader v-if="!isAuth" />
     <main :class="mainClass">
-      <MemberShell v-if="isMember" :items="memberItems">
+      <MemberShell v-if="isMember" :items="memberItems" :kind="route.path.startsWith('/com') ? 'com' : 'user'">
         <NuxtPage />
       </MemberShell>
       <NuxtPage v-else />

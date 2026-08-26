@@ -2,13 +2,16 @@
 const api = useApi()
 const rStatus = ref<number | undefined>()
 const keyword = ref('')
-const { data, refresh } = await useAsyncData('admin-resumes', () =>
-  api.post<{ list: Array<Record<string, unknown>> }>('/v1/admin/resumes', {
-    page: 1,
-    page_size: 20,
-    r_status: rStatus.value,
-    keyword: keyword.value || undefined,
-  }),
+const page = ref(1)
+const { data, error, refresh } = await useAsyncData(
+  () => `admin-resumes-${page.value}`,
+  () =>
+    api.post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/resumes', {
+      page: page.value,
+      page_size: 20,
+      r_status: rStatus.value,
+      keyword: keyword.value || undefined,
+    }),
 )
 async function setStatus(row: { uid: number }, r_status: number) {
   await api.post('/v1/admin/resumes/status', { uid: row.uid, r_status })
@@ -45,7 +48,8 @@ async function exportCsv() {
       <el-button type="primary" @click="refresh">{{ $t('ui.query') }}</el-button>
       <el-button @click="exportCsv">{{ $t('ui.export_csv') }}</el-button>
     </el-form>
-    <el-table :data="data?.list || []">
+    <AdminState :error="error" :empty="!error && !(data?.list || []).length" />
+    <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="90" />
       <el-table-column prop="name" :label="$t('ui.fullname')" />
       <el-table-column prop="r_status" label="r_status" width="90" />
@@ -59,5 +63,19 @@ async function exportCsv() {
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      v-if="(data?.total || 0) > 20"
+      style="margin-top: 12px"
+      layout="prev, pager, next"
+      :page-size="20"
+      :current-page="page"
+      :total="data?.total || 0"
+      @current-change="
+        (p: number) => {
+          page = p
+          refresh()
+        }
+      "
+    />
   </div>
 </template>

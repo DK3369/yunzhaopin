@@ -1,5 +1,5 @@
 <template>
-  <li class="site-pc">
+  <li v-if="variant === 'home'" class="site-pc">
     <div class="index_mq_box_pic">
       <NuxtLink :to="`/companies/${company.uid}`" class="tlogo_p_a" :title="title">
         <img class="on" :src="logo" :alt="title" />
@@ -15,7 +15,7 @@
       <span class="index_mq_box_hot_n">{{ company.city_two || company.city_one || '' }}</span>
     </div>
   </li>
-  <NuxtLink class="site-h5 mqnewlist" :to="`/companies/${company.uid}`">
+  <NuxtLink v-if="variant === 'home'" class="site-h5 mqnewlist" :to="`/companies/${company.uid}`">
     <div class="mqnew">
       <div class="mqnewimg">
         <img :src="logo" alt="" style="width: 100%" />
@@ -24,12 +24,40 @@
       <div class="mqnew_comjob">{{ company.hy_n || company.city_two || '' }}</div>
     </div>
   </NuxtLink>
+
+  <div v-else class="firm_list">
+    <div class="firm_det">
+      <div class="firm_list_leftsidebar">
+        <div class="firm_list_logo">
+          <NuxtLink :to="`/companies/${company.uid}`">
+            <img :src="logo" width="100" height="100" :alt="title" />
+          </NuxtLink>
+        </div>
+      </div>
+      <div class="firm_list_rightsidebar">
+        <div class="firm_name">
+          <span>
+            <NuxtLink :to="`/companies/${company.uid}`" class="firm_name_a" :title="title">{{ title }}</NuxtLink>
+          </span>
+        </div>
+        <div class="firm_qy_list">
+          <span v-if="company.city_two || company.city_one" class="firm_qy_list_s">
+            {{ company.city_one }}{{ company.city_two ? `-${company.city_two}` : '' }}
+          </span>
+          <span v-if="company.hy_n" class="firm_qy_list_s">{{ company.hy_n }}</span>
+          <span v-if="company.mun_n" class="firm_qy_list_s">{{ company.mun_n }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { companyName, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../utils/site'
 
-const props = defineProps<{ company: CompanyLike }>()
+const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' | 'firm' }>(), {
+  variant: 'home',
+})
 const title = computed(() => companyName(props.company))
 const logo = computed(() => mediaUrl(props.company.logo_n || props.company.logo, PLACEHOLDER_LOGO))
 </script>

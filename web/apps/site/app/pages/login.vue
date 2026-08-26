@@ -7,7 +7,9 @@ const username = ref('')
 const password = ref('')
 const mobile = ref('')
 const smsCode = ref('')
-const captcha = ref<{ cid: string; image: string } | null>(null)
+const { data: captcha } = await useAsyncData('login-captcha', () =>
+  api.post<{ cid: string; image: string }>('/v1/wap/captcha').catch(() => null),
+)
 const authcode = ref('')
 const err = ref('')
 const oauth = ref<Array<{ name: string; path: string }>>([])
@@ -21,7 +23,7 @@ async function loadCaptcha() {
   }
 }
 onMounted(async () => {
-  await loadCaptcha()
+  if (!captcha.value) await loadCaptcha()
   const redirect_uri = `${siteUrl}/login`
   for (const [name, path] of [
     ['WeChat', '/v1/wap/oauth/wechat/authorize-url'],
@@ -195,6 +197,10 @@ useSeoMeta({ title: t('common.login') })
           </div>
           <div class="login_textbox">
             <input v-model="password" type="password" autocomplete="current-password" />
+          </div>
+          <div v-if="captcha?.image" class="login_textbox" style="display: flex; gap: 0.16rem; align-items: center">
+            <img :src="captcha.image" alt="" style="height: 0.8rem" @click="loadCaptcha" />
+            <input v-model="authcode" :placeholder="$t('ui.captcha_ph')" />
           </div>
         </div>
         <p v-if="err" class="muted">{{ err }}</p>

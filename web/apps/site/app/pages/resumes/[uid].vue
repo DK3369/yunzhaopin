@@ -25,29 +25,41 @@ async function download() {
 
 <template>
   <article>
-    <h1>{{ name || $t('common.resume') }}</h1>
-    <p v-if="row.exp_n || row.edu_n || row.education_n" class="muted">
-      {{ row.exp_n }} · {{ row.edu_n || row.education_n }} · {{ row.age }}
-    </p>
-    <p v-if="expects.length" class="muted">
-      {{ $t('home.intention') }}
-      {{ expects.map((e) => e.name || e.job_classid_n).join(' / ') }}
-    </p>
-    <div v-if="row.description" v-html="String(row.description)" />
-    <p v-else-if="!name" class="muted">{{ $t('auth.company_only_view') }}</p>
-    <h2 v-if="works.length">{{ $t('home.experience_suffix') }}</h2>
-    <div v-for="w in works" :key="String(w.id)" class="muted">
-      <strong>{{ w.name }}</strong> {{ w.title || w.department }} {{ w.sdate_n }} - {{ w.edate_n }}
-      <div v-html="String(w.content || '')" />
+    <div class="resume_body">
+      <div class="resume_body_card">
+        <div class="new_user_box">
+          <span class="new_user_name">{{ name || $t('common.resume') }}</span>
+        </div>
+        <div v-if="row.exp_n || row.edu_n || row.education_n" class="new_user_info">
+          {{ row.exp_n }} · {{ row.edu_n || row.education_n }} · {{ row.age }}
+        </div>
+        <p v-if="expects.length" class="muted">
+          {{ $t('home.intention') }}
+          {{ expects.map((e) => e.name || e.job_classid_n).join(' / ') }}
+        </p>
+      </div>
+      <div v-if="row.description" class="resume_body_card" v-html="String(row.description)" />
+      <p v-else-if="!name" class="muted">{{ $t('auth.company_only_view') }}</p>
+      <div v-if="works.length" class="resume_body_card">
+        <h2>{{ $t('home.experience_suffix') }}</h2>
+        <div v-for="w in works" :key="String(w.id)" class="muted">
+          <strong>{{ w.name }}</strong> {{ w.title || w.department }} {{ w.sdate_n }} - {{ w.edate_n }}
+          <div v-html="String(w.content || '')" />
+        </div>
+      </div>
+      <div v-if="edus.length" class="resume_body_card">
+        <h2>{{ $t('home.education_suffix') }}</h2>
+        <div v-for="e in edus" :key="String(e.id)" class="muted">
+          {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
+        </div>
+      </div>
+      <div v-if="skills.length" class="resume_body_card">
+        <h2>{{ $t('common.more') }}</h2>
+        <p>{{ skills.map((s) => s.name).join(' / ') }}</p>
+      </div>
+      <p style="margin-top: 16px">
+        <button type="button" class="job_ceil_jobtd" @click="download">{{ $t('wap_com_00235') }}</button>
+      </p>
     </div>
-    <h2 v-if="edus.length">{{ $t('home.education_suffix') }}</h2>
-    <div v-for="e in edus" :key="String(e.id)" class="muted">
-      {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
-    </div>
-    <h2 v-if="skills.length">{{ $t('common.more') }}</h2>
-    <p>{{ skills.map((s) => s.name).join(' / ') }}</p>
-    <p style="margin-top: 16px">
-      <button type="button" class="job_ceil_jobtd" @click="download">{{ $t('wap_com_00235') }}</button>
-    </p>
   </article>
 </template>

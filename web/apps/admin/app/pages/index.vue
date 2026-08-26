@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const api = useApi()
 const { t } = useI18n()
-const { data } = await useAsyncData('admin-overview', () =>
+const { data, error } = await useAsyncData('admin-overview', () =>
   api.post<Record<string, number>>('/v1/admin/dashboard/overview', {}),
 )
 const { data: recent } = await useAsyncData('admin-recent', () =>
@@ -27,6 +27,7 @@ const labels = computed<Record<string, string>>(() => ({
 <template>
   <div>
     <h1>{{ $t('ui.dashboard') }}</h1>
+    <AdminState :error="error" :empty="false" />
     <el-row :gutter="16">
       <el-col v-for="(v, k) in data || {}" :key="k" :span="6" style="margin-bottom: 12px">
         <el-card>

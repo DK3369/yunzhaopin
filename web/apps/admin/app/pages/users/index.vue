@@ -1,18 +1,21 @@
 <script setup lang="ts">
 const api = useApi()
-const { t } = useI18n()
 const keyword = ref('')
 const usertype = ref<number | undefined>()
+const page = ref(1)
 const token = ref('')
-const { data, refresh } = await useAsyncData('admin-users', () =>
-  api.post<{ list: Array<Record<string, unknown>> }>('/v1/admin/users', {
-    page: 1,
-    page_size: 20,
-    keyword: keyword.value || undefined,
-    usertype: usertype.value,
-  }),
+const { data, error, refresh } = await useAsyncData(
+  () => `admin-users-${page.value}`,
+  () =>
+    api.post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/users', {
+      page: page.value,
+      page_size: 20,
+      keyword: keyword.value || undefined,
+      usertype: usertype.value,
+    }),
 )
 async function search() {
+  page.value = 1
   await refresh()
 }
 async function setStatus(row: { uid: number }, status: number) {
@@ -46,7 +49,8 @@ async function impersonate(row: { uid: number }) {
       <el-button type="primary" @click="search">{{ $t('ui.query') }}</el-button>
     </el-form>
     <p v-if="token" class="muted">{{ $t('ui.copy_token') }}: {{ token }}</p>
-    <el-table :data="data?.list || []">
+    <AdminState :error="error" :empty="!error && !(data?.list || []).length" />
+    <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="uid" label="UID" width="90" />
       <el-table-column prop="username" :label="$t('ui.username')" />
       <el-table-column prop="usertype_n" :label="$t('ui.type')" width="110" />
@@ -62,5 +66,19 @@ async function impersonate(row: { uid: number }) {
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      v-if="(data?.total || 0) > 20"
+      style="margin-top: 12px"
+      layout="prev, pager, next"
+      :page-size="20"
+      :current-page="page"
+      :total="data?.total || 0"
+      @current-change="
+        (p: number) => {
+          page = p
+          refresh()
+        }
+      "
+    />
   </div>
 </template>
