@@ -39,22 +39,24 @@ const { data: adsH5 } = await useAsyncData('ads-50', () =>
   api.get<Array<{ image_n?: string; image?: string; link?: string; title?: string }>>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => []),
 )
 const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', () =>
-  api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 }),
+  api
+    .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 })
+    .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
 )
 
 const jobCats = computed(() => catTree(cats.value || [], 11))
 const hotJobs = computed(() => (home.value?.hot_jobs || []) as JobLike[])
-const recJobList = computed(() => {
-  const extra = (home.value as { rec_jobs?: JobLike[] } | null)?.rec_jobs || []
-  return extra.length ? extra : hotJobs.value
-})
 const latestJobList = computed(() => {
   const extra = (home.value as { latest_jobs?: JobLike[] } | null)?.latest_jobs || []
   return extra.length ? extra : hotJobs.value
 })
+const recJobList = computed(() => {
+  const extra = (home.value as { rec_jobs?: JobLike[] } | null)?.rec_jobs || []
+  return extra.length ? extra : latestJobList.value
+})
 const urgentList = computed(() => {
   const extra = (home.value as { urgent_jobs?: JobLike[] } | null)?.urgent_jobs || []
-  return extra.length ? extra : hotJobs.value.slice(0, 8)
+  return extra.length ? extra : latestJobList.value.slice(0, 8)
 })
 const companies = computed(() => home.value?.rec_companies || [])
 const announcements = computed(() => home.value?.announcements || [])
