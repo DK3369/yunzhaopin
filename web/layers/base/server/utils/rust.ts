@@ -7,14 +7,11 @@ function fallbackEnvelope(msg = 'upstream error'): Envelope {
   return { code: 502, key: 'upstream_error', msg, data: '' }
 }
 
-export async function rustEnvelope<T = unknown>(
+function rustHeaders(
   event: Parameters<typeof getCookie>[0],
-  path: string,
-  opts: { method?: string; body?: unknown; token?: string } = {},
-): Promise<Envelope<T>> {
-  const rustApi = useRuntimeConfig(event).rustApi
-  const token = opts.token ?? getCookie(event, ACCESS_COOKIE)
-  const method = (opts.method || 'POST') as 'GET' | 'POST'
+  method: 'GET' | 'POST',
+  token?: string,
+): Record<string, string> {
   const headers: Record<string, string> = {
     accept: 'application/json',
     ...rustLangHeaders(event),
@@ -25,10 +22,21 @@ export async function rustEnvelope<T = unknown>(
   if (token) {
     headers.authorization = `Bearer ${token}`
   }
+  return headers
+}
+
+export async function rustEnvelope<T = unknown>(
+  event: Parameters<typeof getCookie>[0],
+  path: string,
+  opts: { method?: string; body?: unknown; token?: string } = {},
+): Promise<Envelope<T>> {
+  const rustApi = useRuntimeConfig(event).rustApi
+  const token = opts.token ?? getCookie(event, ACCESS_COOKIE)
+  const method = (opts.method || 'POST') as 'GET' | 'POST'
   try {
     const res = await $fetch<Envelope<T>>(`${rustApi}${path}`, {
       method,
-      headers,
+      headers: rustHeaders(event, method, token),
       body: method === 'POST' ? (opts.body as Record<string, unknown> | undefined) : undefined,
       query: method === 'GET' ? (opts.body as Record<string, unknown>) : undefined,
       ignoreResponseError: true,
@@ -54,9 +62,22 @@ export async function rustFetch<T>(
   path: string,
   opts: { method?: string; body?: unknown; token?: string } = {},
 ): Promise<T> {
-  const res = await rustEnvelope<T>(event, path, opts)
-  if (res.code !== 200) {
-    throw Object.assign(new Error(res.msg), { envelope: res })
+  const rustApi = useRuntimeConfig(event).rustApi
+  const token = opts.token ?? getCookie(event, ACCESS_COOKIE)
+  const method = (opts.method || 'POST') as 'GET' | 'POST'
+  const res = await $fetch<Envelope>(`${rustApi}${path}`, {
+    method,
+    headers: rustHeaders(event, method, token),
+    body: method === 'POST' ? (opts.body as Record<string, unknown> | undefined) : undefined,
+    query: method === 'GET' ? (opts.body as Record<string, unknown>) : undefined,
+    ignoreResponseError: true,
+  })
+  if (!res || res.code !== 200) {
+    throw createError({
+      statusCode: res?.code || 502,
+      statusMessage: res?.msg || 'upstream error',
+      data: { key: res?.key, msg: res?.msg },
+    })
   }
-  return (res.data === '' ? undefined : res.data) as T
+  return res.data as T
 }
