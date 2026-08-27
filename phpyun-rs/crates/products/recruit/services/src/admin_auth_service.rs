@@ -55,12 +55,19 @@ pub async fn login(
     let account = username.replace(' ', "");
     // Namespace so a member account named `admin` cannot lock the admin user.
     let rl_account = format!("admin:{account}");
-    rate_limit::check_login_fail(&state.redis, &rl_account).await?;
+    // APP_ENV=dev/test skips this lockout (same policy as Governor). Prod keeps
+    // 5 failures / 15 minutes. PHP admin had no equivalent Redis lock.
+    let lock_fails = !state.config.env.is_dev_or_test();
+    if lock_fails {
+        rate_limit::check_login_fail(&state.redis, &rl_account).await?;
+    }
 
     let user = match rbac_repo::find_login_user(state.db.reader(), &account).await? {
         Some(u) => u,
         None => {
-            rate_limit::record_login_fail(&state.redis, &rl_account).await;
+            if lock_fails {
+                rate_limit::record_login_fail(&state.redis, &rl_account).await;
+            }
             return Err(ApiError::bad_credentials());
         }
     };
@@ -70,10 +77,14 @@ pub async fn login(
 
     let hashed = md5_hex(&md5_hex(password));
     if !hashed.eq_ignore_ascii_case(&user.password) {
-        rate_limit::record_login_fail(&state.redis, &rl_account).await;
+        if lock_fails {
+            rate_limit::record_login_fail(&state.redis, &rl_account).await;
+        }
         return Err(ApiError::bad_credentials());
     }
-    rate_limit::clear_login_fail(&state.redis, &rl_account).await;
+    if lock_fails {
+        rate_limit::clear_login_fail(&state.redis, &rl_account).await;
+    }
 
     let did = numeric::checked_db(user.did, "phpyun_admin_user.did")?;
     let JwtIssued {
