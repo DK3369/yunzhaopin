@@ -15,6 +15,12 @@ const works = computed(() => (Array.isArray(row.value.works) ? row.value.works :
 const edus = computed(() => (Array.isArray(row.value.edus) ? row.value.edus : []) as Record<string, unknown>[])
 const skills = computed(() => (Array.isArray(row.value.skills) ? row.value.skills : []) as Record<string, unknown>[])
 const expects = computed(() => (Array.isArray(row.value.expects) ? row.value.expects : []) as Record<string, unknown>[])
+const expect0 = computed(() => expects.value[0] || {})
+const expectTitle = computed(() =>
+  String(expect0.value.name || expect0.value.job_class_n || expect0.value.job_classid_n || ''),
+)
+const expectCity = computed(() => String(expect0.value.city_class_n || ''))
+const expectSalary = computed(() => String(expect0.value.salary_n || ''))
 const hasContact = computed(() => Boolean(row.value.telphone || row.value.email))
 const photo = computed(() => mediaUrl(String(row.value.photo_n || row.value.photo || ''), PLACEHOLDER_LOGO))
 useSeoMeta({ title: () => name.value || t('common.resume') })
@@ -46,7 +52,9 @@ async function download() {
         </div>
         <p v-if="expects.length" class="muted">
           {{ $t('home.intention') }}
-          {{ expects.map((e) => e.name || e.job_class_n || e.job_classid_n).join(' / ') }}
+          {{ expectTitle }}
+          <template v-if="expectCity"> · {{ expectCity }}</template>
+          <template v-if="expectSalary"> · {{ expectSalary }}</template>
         </p>
         <div class="new_user_touchbox">
           <div v-if="hasContact" class="new_user_touch">
@@ -91,14 +99,20 @@ async function download() {
           <template v-if="row.age"> · {{ row.age }}</template>
         </div>
       </div>
-      <div v-if="expects.length" class="Preview_your_resume_intention">
+      <div class="Preview_your_resume_intention">
         <div class="Preview_your_resume_header">
           <div class="Preview_your_resume_word">{{ $t('wap_00460') }}</div>
         </div>
-        <div class="Preview_your_resume_category">
-          {{ expects.map((e) => e.name || e.job_class_n).join(' / ') }}
+        <div class="user_qwinfobox">
+          <div class="user_qwinfo">
+            <span>{{ expectTitle }}</span>
+            <span v-if="expectCity">· {{ expectCity }}</span>
+          </div>
+          <div v-if="expectSalary" class="user_qwxz">{{ expectSalary }}</div>
         </div>
-        <div v-if="row.lastupdate_n" class="Preview_your_resume_category">{{ row.lastupdate_n }}</div>
+        <div v-if="row.lastupdate_n" class="Preview_your_resume_category">
+          {{ row.lastupdate_n }} {{ $t('wap_00225') }}
+        </div>
       </div>
       <div v-if="works.length" class="Preview_your_resume_experience">
         <div class="Preview_your_resume_header">

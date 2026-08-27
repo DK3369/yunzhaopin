@@ -25,7 +25,7 @@
     </div>
   </NuxtLink>
 
-  <div v-else class="firm_list">
+  <div v-else-if="variant === 'firm'" class="firm_list site-pc">
     <div class="firm_det">
       <div class="firm_list_leftsidebar">
         <div class="firm_list_logo">
@@ -65,6 +65,25 @@
       </div>
     </div>
   </div>
+  <NuxtLink v-if="variant === 'firm'" class="site-h5 job_list" :to="`/companies/${company.uid}`" :title="title">
+    <div class="com_list_box">
+      <div class="com_list_t_box">
+        <div class="com_list_logo_box">
+          <img :src="logo" alt="" />
+        </div>
+        <div class="com_list_box_c">
+          <h3>{{ title }}</h3>
+        </div>
+        <div class="com_list_box_js">
+          <span v-if="company.city_one || company.city_two" class="com_list_box_js_n">
+            {{ company.city_one }}{{ company.city_two ? `-${company.city_two}` : '' }}
+          </span>
+          <span v-if="company.mun_n" class="com_list_box_js_n">{{ company.mun_n }}</span>
+          <span v-if="company.pr_n" class="com_list_box_js_n">{{ company.pr_n }}</span>
+        </div>
+      </div>
+    </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">

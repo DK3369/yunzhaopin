@@ -99,17 +99,33 @@ const list = computed(() => data.value?.list || [])
     </div>
   </div>
   <div class="site-h5">
+    <div class="job_header_nav resumeAdeFlex">
+      <div class="job_header_nav_left category" style="width: 30%">
+        <ul>
+          <li :class="{ active: !rec }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: undefined }) }">{{
+              $t('common.all')
+            }}</NuxtLink>
+          </li>
+          <li :class="{ active: rec }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: '1' }) }">{{
+              $t('home.famous_companies')
+            }}</NuxtLink>
+          </li>
+        </ul>
+      </div>
+      <H5FilterBar
+        :all-label="$t('common.all')"
+        :tabs="[
+          { key: 'hy', label: $t('common.company'), items: industries || [] },
+          { key: 'province_id', label: $t('common_02110'), items: provinces || [] },
+        ]"
+      />
+    </div>
     <form action="/companies" method="get" style="padding: 0.2rem 0.32rem">
       <input class="searchnew" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
     </form>
-    <H5FilterBar
-      :all-label="$t('common.all')"
-      :tabs="[
-        { key: 'hy', label: $t('common.company'), items: industries || [] },
-        { key: 'province_id', label: $t('common_02110'), items: provinces || [] },
-      ]"
-    />
-    <div class="new_mq" style="margin: 0.2rem">
+    <div class="com_list_pd">
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>
         <CompanyCard v-for="c in list" :key="c.uid" :company="c" variant="firm" />

@@ -42,6 +42,32 @@ const msgList = computed(
 const alreadyApplied = computed(() => Boolean(userContext.value.is_applied))
 const eduLabel = computed(() => String(dict.value.edu_n || dict.value.job_edu || job.value.edu_n || ''))
 const expLabel = computed(() => String(dict.value.exp_n || dict.value.job_exp || job.value.exp_n || ''))
+const cityLabel = computed(() => {
+  const parts = [
+    dict.value.city_one || job.value.job_city_one || job.value.city_one,
+    dict.value.city_two || job.value.job_city_two || job.value.city_two,
+    dict.value.city_three,
+  ]
+    .map((v) => String(v || ''))
+    .filter(Boolean)
+  return parts.join('-')
+})
+const hyLabel = computed(() => String(dict.value.hy_n || company.value.hy_n || job.value.job_hy || job.value.hy_n || ''))
+const munLabel = computed(() => String(dict.value.mun_n || ''))
+const prLabel = computed(() => String(dict.value.pr_n || ''))
+const hits = computed(() => Number(job.value.jobhits || 0))
+const yqItems = computed(() => {
+  const out: string[] = []
+  if (dict.value.number_n) out.push(String(dict.value.number_n))
+  if (dict.value.type_n) out.push(String(dict.value.type_n))
+  if (dict.value.age_n) out.push(String(dict.value.age_n))
+  if (dict.value.sex_n) out.push(String(dict.value.sex_n))
+  if (dict.value.marriage_n) out.push(String(dict.value.marriage_n))
+  const langs = dict.value.langname
+  if (Array.isArray(langs)) out.push(...langs.map(String).filter(Boolean))
+  else if (typeof langs === 'string' && langs) out.push(langs)
+  return out
+})
 const { data: similar } = await useAsyncData(
   () => `job-similar-${locale.value}-${id}`,
   () => api.get<JobLike[]>('/v1/wap/jobs/similar', { id, limit: 8 }).catch(() => [] as JobLike[]),
@@ -192,16 +218,42 @@ useHead({
             <div class="job_details_topleft">
               <h1 class="job_details_name">{{ job.name }}</h1>
               <span class="job_details_salary_n">{{ salary }}</span>
-              <p class="muted" style="margin-top: 12px">
-                {{ dict.city_two || job.city_two }}
-                <template v-if="eduLabel"> · {{ eduLabel }}</template>
-                <template v-if="expLabel"> · {{ expLabel }}</template>
-                <template v-if="formatted.lastupdate_n"> · {{ formatted.lastupdate_n }}</template>
-              </p>
+              <div class="job_details_info">
+                <template v-if="cityLabel">{{ cityLabel }}</template>
+                <template v-if="expLabel">
+                  <span class="job_details_line">|</span>{{ expLabel }}{{ $t('home.experience_suffix') }}
+                </template>
+                <template v-if="eduLabel">
+                  <span class="job_details_line">|</span>{{ eduLabel }}{{ $t('home.education_suffix') }}
+                </template>
+              </div>
               <div v-if="welfare.length" class="job_details_welfare">
                 <span v-for="w in welfare" :key="w" class="job_details_welfare_n">{{ w }}</span>
               </div>
+              <div class="job_details_topright_data">
+                <span v-if="formatted.lastupdate_n" class="job_details_topright_data_time">
+                  {{ formatted.lastupdate_n }} {{ $t('wap_00225') }}
+                </span>
+                <template v-if="hits">
+                  {{ $t('member_com_00268') }}：{{ hits }} {{ $t('common_02089') }}
+                </template>
+              </div>
               <p v-if="applyMsg" class="muted">{{ applyMsg }}</p>
+            </div>
+            <div class="job_details_topright">
+              <div class="job_details_top_operation">
+                <a href="javascript:;" class="job_details_top_operation_sc" @click.prevent="toggleFav">{{
+                  fav ? $t('wap_00378') : $t('wap_00379')
+                }}</a>
+                <a href="javascript:;" class="job_details_top_operation_sq" @click.prevent="apply">{{
+                  alreadyApplied ? $t('ui.already_applied') : $t('wap_com_00235')
+                }}</a>
+              </div>
+              <div class="job_details_top_extension">
+                <a href="javascript:;" class="job_details_top_extension_jb" @click.prevent="report">{{
+                  $t('wap_com_00350')
+                }}</a>
+              </div>
             </div>
           </div>
         </div>
@@ -225,11 +277,14 @@ useHead({
                 {{ $t('common.phone') }}：
                 <span class="job_details_touch_tel_n">{{ contact?.linktel || '****' }}</span>
                 <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
-                  $t('common.phone')
+                  $t('default_00233')
                 }}</a>
               </div>
             </div>
-            <h2>{{ $t('common.job') }}</h2>
+            <h2>{{ $t('wap_00287') }}</h2>
+            <ul v-if="yqItems.length" class="job_describe_yq">
+              <li v-for="item in yqItems" :key="item">{{ item }}</li>
+            </ul>
             <div v-html="String(job.description || job.content || '')" />
             <div v-if="msgList.length" class="job_details_left_box" style="margin-top: 16px">
               <h2>{{ $t('common.message') }}</h2>
@@ -258,7 +313,18 @@ useHead({
             <div class="Compply_right_name">
               <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`">{{ job.com_name || company.name }}</NuxtLink>
             </div>
-            <p class="Compply_right_name_all">{{ company.hy_n }}</p>
+            <p class="Compply_right_name_all">{{ hyLabel }}</p>
+            <ul class="Compply_right_js">
+              <li v-if="hyLabel">
+                <span class="Compply_right_span_c">{{ hyLabel }}</span>
+              </li>
+              <li v-if="prLabel">
+                <span class="Compply_right_span_c">{{ prLabel }}</span>
+              </li>
+              <li v-if="munLabel">
+                <span class="Compply_right_span_c">{{ munLabel }}</span>
+              </li>
+            </ul>
           </div>
           <div v-if="sameCom?.length" class="Compply_right_post">
             <ul class="Compply_right_post_other">
@@ -280,48 +346,69 @@ useHead({
               <span class="new_jobshowxz">{{ salary }}</span>
             </div>
             <div class="job_describe_top_require">
-              <div class="job_describe_top_require_left">
-                <i>{{ dict.city_two || job.city_two || dict.city_one }}</i>
+              <div v-if="cityLabel" class="job_describe_top_require_left">
+                <i><img src="/legacy/h5/images/icon_orientation.png" alt="" style="width: 100%" /></i>
+                <i>{{ cityLabel }}</i>
               </div>
               <div v-if="eduLabel" class="job_describe_top_require_center">
                 <div class="job_describe_top_require_left">
+                  <i><img src="/legacy/h5/images/icon_fixed.png" alt="" style="width: 100%" /></i>
                   <i>{{ eduLabel }}</i>
                 </div>
               </div>
               <div v-if="expLabel" class="job_describe_top_require_right">
                 <div class="job_describe_top_require_left">
+                  <i><img src="/legacy/h5/images/icon_education.png" alt="" style="width: 100%" /></i>
                   <i>{{ expLabel }}</i>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-if="welfare.length" class="job_describe_bottom">
-            <div class="job_describe_cengter_header">{{ $t('common.more') }}</div>
-            <div class="job_describe_bottom_welfare">
-              <span v-for="w in welfare" :key="w">{{ w }}</span>
+            <div class="newjob_show_sj">
+              <span v-if="formatted.lastupdate_n">{{ $t('wap_00225') }} {{ formatted.lastupdate_n }}</span>
+              <span v-if="hits">{{ $t('wap_user_00221') }} {{ hits }}</span>
             </div>
           </div>
-          <div class="job_describe_box" style="background: #fff; padding: 0.32rem; margin-top: 0.2rem">
-            <div v-html="String(job.description || job.content || '')" />
+          <div v-if="welfare.length" class="job_describe_bottom">
+            <div class="job_describe_cengter_header">{{ $t('wap_00286') }}</div>
+            <div class="job_describe_bottom_welfare">
+              <ul>
+                <li v-for="w in welfare" :key="w">{{ w }}</li>
+              </ul>
+            </div>
           </div>
-          <NuxtLink
-            v-if="job.uid"
-            :to="`/companies/${job.uid}`"
-            class="index_company"
-            style="display: flex; background: #fff; margin-top: 0.2rem; padding: 0.32rem"
-          >
-            <i class="index_company-logo">
-              <img
-                :src="mediaUrl(String(company.logo_n || company.logo || job.com_logo || ''), PLACEHOLDER_LOGO)"
-                alt=""
-                style="width: 100%"
-              />
-            </i>
-            <i class="index_company-name">{{ job.com_name || company.name }}</i>
+          <div class="job_describe_cengter">
+            <div class="job_describe_cengter_header">{{ $t('wap_00287') }}</div>
+            <ul v-if="yqItems.length" class="job_describe_yq">
+              <li v-for="item in yqItems" :key="item">{{ item }}</li>
+            </ul>
+            <div class="newjob_js" v-html="String(job.description || job.content || '')" />
+          </div>
+        </div>
+        <div v-if="job.uid" class="corporate_information">
+          <div class="corporate_information_header">{{ $t('wap_00270') }}</div>
+          <NuxtLink :to="`/companies/${job.uid}`">
+            <div class="corporate_information_message">
+              <div class="corporate_information_message_logo">
+                <img
+                  :src="mediaUrl(String(company.logo_n || company.logo || job.com_logo || ''), PLACEHOLDER_LOGO)"
+                  alt=""
+                  width="100%"
+                />
+              </div>
+              <div class="corporate_information_message_name">
+                <div>{{ job.com_name || company.name }}</div>
+                <div class="com_j_info">
+                  <span v-if="munLabel">{{ munLabel }}</span>
+                  <span v-if="prLabel">· {{ prLabel }} ·</span>
+                  <span>{{ hyLabel }}</span>
+                </div>
+              </div>
+            </div>
           </NuxtLink>
-          <div v-if="similar?.length" style="background: #fff; margin-top: 0.2rem; padding: 0.2rem">
-            <JobCard v-for="row in similar" :key="row.id" :job="row" variant="search" />
-          </div>
+        </div>
+        <div v-if="similar?.length" class="job_describe_cengter">
+          <div class="job_describe_cengter_header">{{ $t('home.recommended_jobs') }}</div>
+          <JobCard v-for="row in similar" :key="row.id" :job="row" variant="search" />
         </div>
       </div>
       <div class="yun_czfoot">

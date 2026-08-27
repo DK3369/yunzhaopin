@@ -115,6 +115,8 @@ pub struct ResumeSummary {
     pub expect_name: String,
     /// Default expect city display name. Additive.
     pub expect_city_n: String,
+    /// Default expect salary dict name (PHP list `$user.salary_n`). Additive.
+    pub expect_salary_n: String,
 
     pub lastupdate: i64,
     pub lastupdate_n: String,
@@ -178,6 +180,7 @@ impl ResumeSummary {
             def_job: r.def_job,
             expect_name: String::new(),
             expect_city_n: String::new(),
+            expect_salary_n: String::new(),
             lastupdate_n: fmt_dt(r.lastupdate),
             lastupdate: r.lastupdate,
             resumetime: r.resumetime,
@@ -233,6 +236,7 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
             def_job: r.def_job,
             expect_name: String::new(),
             expect_city_n: String::new(),
+            expect_salary_n: String::new(),
             lastupdate_n: fmt_dt(r.lastupdate),
             lastupdate: r.lastupdate,
             resumetime: r.resumetime,
@@ -276,12 +280,31 @@ pub async fn list_resumes(
         .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts))
         .collect();
     attach_expect_fields(&state, &dicts, &mut list).await;
+    let mut seen = std::collections::HashSet::new();
+    list.retain(|row| seen.insert(row.uid));
     Ok(ApiResponse::data(Paged::new(
         list,
         r.total,
         page.page,
         page.page_size,
     )))
+}
+
+fn apply_expect(
+    row: &mut ResumeSummary,
+    e: &phpyun_models::resume::expect::Expect,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+) {
+    if row.expect_name.is_empty() {
+        row.expect_name = e.name.clone().unwrap_or_default();
+    }
+    if row.expect_city_n.is_empty() {
+        let city_id = i32::try_from(e.city_classid).unwrap_or(0);
+        row.expect_city_n = dicts.city(city_id).to_string();
+    }
+    if row.expect_salary_n.is_empty() {
+        row.expect_salary_n = dicts.comclass(e.salary).to_string();
+    }
 }
 
 async fn attach_expect_fields(
@@ -299,19 +322,39 @@ async fn attach_expect_fields(
             }
         })
         .collect();
-    let Ok(rows) = phpyun_models::resume::expect::list_by_ids(state.db.reader(), &ids).await else {
+    if let Ok(rows) = phpyun_models::resume::expect::list_by_ids(state.db.reader(), &ids).await {
+        let map: std::collections::HashMap<u64, phpyun_models::resume::expect::Expect> =
+            rows.into_iter().map(|e| (e.id, e)).collect();
+        for row in list.iter_mut() {
+            let Some(id) = u64::try_from(row.def_job).ok().filter(|v| *v > 0) else {
+                continue;
+            };
+            if let Some(e) = map.get(&id) {
+                apply_expect(row, e, dicts);
+            }
+        }
+    }
+    let missing: Vec<u64> = list
+        .iter()
+        .filter(|row| row.expect_name.is_empty())
+        .map(|row| row.uid)
+        .collect();
+    if missing.is_empty() {
+        return;
+    }
+    let Ok(rows) =
+        phpyun_models::resume::expect::list_defaults_by_uids(state.db.reader(), &missing).await
+    else {
         return;
     };
     let map: std::collections::HashMap<u64, phpyun_models::resume::expect::Expect> =
-        rows.into_iter().map(|e| (e.id, e)).collect();
+        rows.into_iter().map(|e| (e.uid, e)).collect();
     for row in list {
-        let Some(id) = u64::try_from(row.def_job).ok().filter(|v| *v > 0) else {
+        if !row.expect_name.is_empty() {
             continue;
-        };
-        if let Some(e) = map.get(&id) {
-            row.expect_name = e.name.clone().unwrap_or_default();
-            let city_id = i32::try_from(e.city_classid).unwrap_or(0);
-            row.expect_city_n = dicts.city(city_id).to_string();
+        }
+        if let Some(e) = map.get(&row.uid) {
+            apply_expect(row, e, dicts);
         }
     }
 }

@@ -80,8 +80,22 @@
     </div>
   </div>
 
-  <!-- H5 职位列表 tab_card -->
-  <NuxtLink v-if="variant !== 'home'" class="site-h5" :to="`/jobs/${job.id}`" :title="job.name">
+  <!-- H5 企业详情在招职位，对齐 company_show.htm comnew_joblist -->
+  <NuxtLink v-if="variant === 'com'" class="site-h5" :to="`/jobs/${job.id}`" :title="job.name">
+    <div class="comnew_joblist">
+      <div class="comnew_jobtop">
+        <div class="comnew_jobname">{{ job.name }}</div>
+        <span v-if="posted" class="comnew_jobinfo_time">{{ posted }}</span>
+      </div>
+      <div class="comnew_jobxz">{{ salary }}</div>
+      <div class="comnew_jobinfo">
+        <span>{{ city }}</span>
+        <template v-if="job.edu_n"> · {{ job.edu_n }}{{ $t('home.education_suffix') }}</template>
+        <template v-if="job.exp_n"> · {{ job.exp_n }}{{ $t('home.experience_suffix') }}</template>
+      </div>
+    </div>
+  </NuxtLink>
+  <NuxtLink v-if="variant !== 'home' && variant !== 'com'" class="site-h5" :to="`/jobs/${job.id}`" :title="job.name">
     <div class="tab_card">
       <div class="tab_card_top">
         <div class="tab_card_job">
@@ -112,16 +126,22 @@
 </template>
 
 <script setup lang="ts">
-import { formatSalary, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '../utils/site'
+import { formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '../utils/site'
 
 const props = withDefaults(
-  defineProps<{ job: JobLike; variant?: 'home' | 'search' | 'tab' }>(),
+  defineProps<{ job: JobLike; variant?: 'home' | 'search' | 'tab' | 'com' }>(),
   { variant: 'home' },
 )
 const { t } = useI18n()
 const salary = computed(() => formatSalary(props.job, t('common.negotiable')))
 const city = computed(
-  () => props.job.job_city_two || props.job.city_two || props.job.job_city_one || '',
+  () => {
+    const one = props.job.job_city_one || ''
+    const two = props.job.job_city_two || props.job.city_two || ''
+    if (one && two) return `${one}-${two}`
+    return two || one
+  },
 )
 const logo = computed(() => mediaUrl(props.job.com_logo || props.job.logo, PLACEHOLDER_LOGO))
+const posted = computed(() => props.job.lastupdate_n || formatUnixDate(props.job.lastupdate))
 </script>

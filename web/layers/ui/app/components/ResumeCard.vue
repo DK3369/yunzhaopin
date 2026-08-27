@@ -44,14 +44,22 @@
       </div>
     </div>
   </div>
-  <NuxtLink class="site-h5 table-card" :to="`/resumes/${row.uid}`">
-    <div class="card_post">
-      <i class="table-card-word">{{ expectName }}</i>
+  <NuxtLink class="site-h5 yun_newedition_resumelist" :to="`/resumes/${row.uid}`">
+    <div class="yun_newedition_resumepic">
+      <img :src="photo" alt="" />
     </div>
-    <div class="table-card-require">
-      <i class="requir-area">{{ personName }}</i>
-      <i v-if="meta" class="requir_area_parting_line" />
-      <i v-if="meta" class="requir-area">{{ meta }}</i>
+    <div class="yun_newedition_resume_wantjob">
+      <span class="yun_newedition_resume_wantjob_n">{{ personName }}</span>
+    </div>
+    <div class="new_userlist_info">
+      <template v-if="row.exp_n">{{ row.exp_n }}{{ $t('home.experience_suffix') }}</template>
+      <template v-if="eduName"> · {{ eduName }}{{ $t('home.education_suffix') }}</template>
+      <template v-if="row.age"> · {{ row.age }}{{ $t('home.age_suffix') }}</template>
+    </div>
+    <div class="new_userlist_p">
+      {{ $t('wap_00586') }} {{ expectName }}
+      <template v-if="salaryName">，{{ salaryName }}</template>
+      <span v-if="row.lastupdate_n" class="yun_newedition_resume_zd">{{ row.lastupdate_n }}</span>
     </div>
   </NuxtLink>
 </template>
@@ -66,12 +74,10 @@ const personName = computed(() =>
 const expectName = computed(() =>
   String(props.row.expect_name || props.row.job_classid_n || props.row.expect || personName.value),
 )
+const salaryName = computed(() => String(props.row.expect_salary_n || props.row.salary_n || ''))
 const eduName = computed(() => String(props.row.edu_n || props.row.education_n || ''))
 const cityName = computed(() =>
   String(props.row.expect_city_n || props.row.city_two || props.row.living || ''),
-)
-const meta = computed(() =>
-  [props.row.exp_n, eduName.value, cityName.value].filter(Boolean).join(' · '),
 )
 const photo = computed(() =>
   mediaUrl(String(props.row.photo_n || props.row.photo || ''), PLACEHOLDER_LOGO),

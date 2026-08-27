@@ -37,6 +37,8 @@ export type JobLike = {
   newtime?: boolean
   is_urgent?: boolean
   is_rec?: boolean
+  lastupdate?: number
+  lastupdate_n?: string
   welfare?: string[] | string
   welfare_n?: string
 }
@@ -150,8 +152,20 @@ export function formatSalary(job: JobLike, negotiable = '面议'): string {
   const min = Number(job.min_salary ?? job.minsalary ?? 0)
   const max = Number(job.max_salary ?? job.maxsalary ?? 0)
   if (!min && !max) return negotiable
-  if (min && max) return `${min}-${max}`
-  return String(min || max)
+  // PHP `salaryUnit`（resume_salarytype=1）：min-max + 元
+  if (min && max) return `${min}-${max}元`
+  return `${min || max}元`
+}
+
+export function formatUnixDate(ts?: number | string | null): string {
+  const n = Number(ts || 0)
+  if (!n) return ''
+  const d = new Date(n * 1000)
+  if (Number.isNaN(d.getTime())) return ''
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 export function companyName(c: CompanyLike): string {

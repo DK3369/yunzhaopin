@@ -11,6 +11,15 @@ const { data, error } = await useAsyncData(
   () => api.get('/v1/wap/companies/detail', { uid }),
 )
 const company = computed(() => (data.value || {}) as Record<string, unknown>)
+const shows = computed(
+  () => (Array.isArray(company.value.show) ? company.value.show : []) as Array<Record<string, unknown>>,
+)
+const welfare = computed(() => {
+  const w = company.value.welfare_n || company.value.welfare
+  if (Array.isArray(w)) return w.map(String).filter(Boolean)
+  if (typeof w === 'string') return w.split(/[,，]/).map((s) => s.trim()).filter(Boolean)
+  return [] as string[]
+})
 const { data: jobs } = await useAsyncData(
   () => `company-jobs-${locale.value}-${uid}`,
   () =>
@@ -82,14 +91,23 @@ useHead({
             </div>
             <p>
               <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ Search_jobs_sub_cur: tab !== 'about' }">{{
-                $t('home.latest_jobs')
+                $t('wap_00190')
               }}</NuxtLink>
               ·
               <NuxtLink :to="{ query: { tab: 'about' } }" :class="{ Search_jobs_sub_cur: tab === 'about' }">{{
-                $t('common.company')
+                $t('wap_00189')
               }}</NuxtLink>
             </p>
-            <div v-if="tab === 'about'" v-html="String(company.content || '')" />
+            <div v-if="tab === 'about'">
+              <p v-if="company.address" class="muted">{{ $t('wap_00040') }}：{{ company.address }}</p>
+              <div v-if="welfare.length" class="job_details_welfare">
+                <span v-for="w in welfare" :key="w" class="job_details_welfare_n">{{ w }}</span>
+              </div>
+              <div v-if="shows.length" class="business_album">
+                <img v-for="s in shows" :key="String(s.id)" :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)" alt="" />
+              </div>
+              <div class="phpyunabout" v-html="String(company.content || '')" />
+            </div>
             <div v-else>
               <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="search" />
               <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
@@ -120,20 +138,48 @@ useHead({
           </div>
         </div>
       </div>
-      <div class="job_header_nav_left category">
+      <div class="phpyuncomnav">
         <ul>
-          <li :class="{ active: tab !== 'about' }">
-            <NuxtLink :to="{ query: { tab: 'jobs' } }">{{ $t('home.latest_jobs') }}</NuxtLink>
+          <li>
+            <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ colorshow: tab !== 'about' }">{{
+              $t('wap_00190')
+            }}</NuxtLink>
+            <span class="phpyunjobn">{{ company.zp_num ?? jobs?.list?.length ?? 0 }}</span>
           </li>
-          <li :class="{ active: tab === 'about' }">
-            <NuxtLink :to="{ query: { tab: 'about' } }">{{ $t('common.company') }}</NuxtLink>
+          <li>
+            <NuxtLink :to="{ query: { tab: 'about' } }" :class="{ colorshow: tab === 'about' }">{{
+              $t('wap_00189')
+            }}</NuxtLink>
           </li>
         </ul>
       </div>
-      <div v-if="tab === 'about'" class="job_describe_box" v-html="String(company.content || '')" />
-      <div v-else>
-        <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="search" />
-        <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
+      <div v-if="tab === 'about'" class="company_generalize">
+        <div v-if="company.address" class="job_describe_bottom">
+          <div class="job_describe_cengter_header">{{ $t('wap_00040') }}</div>
+          <div class="newcom_add">
+            <div class="newcom_add_dz">{{ company.address }}</div>
+          </div>
+        </div>
+        <div v-if="welfare.length" class="job_describe_bottom">
+          <div class="job_describe_cengter_header">{{ $t('wap_com_00167') }}</div>
+          <div class="job_describe_bottom_welfare">
+            <ul>
+              <li v-for="w in welfare" :key="w">{{ w }}</li>
+            </ul>
+          </div>
+        </div>
+        <div v-if="shows.length">
+          <div class="job_describe_cengter_header">{{ $t('wap_com_00401') }}</div>
+          <div class="business_album">
+            <img v-for="s in shows" :key="String(s.id)" :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)" alt="" />
+          </div>
+        </div>
+        <div class="job_describe_cengter_header">{{ $t('wap_com_00168') }}</div>
+        <div class="phpyunabout" v-html="String(company.content || '')" />
+      </div>
+      <div v-else id="company_job_list">
+        <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="com" />
+        <div v-if="!(jobs?.list || []).length" class="wap_member_no">{{ $t('home.no_recruiting_jobs') }}</div>
       </div>
     </div>
   </article>

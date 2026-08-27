@@ -450,6 +450,7 @@ pub async fn build_job_detail_value(
             "provinceid": d.com_provinceid,
             "cityid": d.com_cityid,
             "mun": d.com_mun,
+            "pr": d.com_pr,
             "hy": d.com_hy,
             "rating": d.com_rating,
             "qcode": d.comqcode,
@@ -473,6 +474,14 @@ pub async fn build_job_detail_value(
             "city_two": city_two,
             "edu_n": dicts.comclass(d.job.edu).to_string(),
             "exp_n": dicts.comclass(d.job.exp).to_string(),
+            "city_three": dicts.city(d.job.three_cityid).to_string(),
+            "number_n": dicts.comclass(d.job.number).to_string(),
+            "age_n": dicts.comclass(d.job.age).to_string(),
+            "sex_n": dicts.comclass(d.job.sex).to_string(),
+            "marriage_n": dicts.comclass(d.job.marriage).to_string(),
+            "type_n": dicts.comclass(d.job.r#type).to_string(),
+            "mun_n": dicts.comclass(d.com_mun).to_string(),
+            "pr_n": dicts.comclass(d.com_pr).to_string(),
         },
 
         // Currently logged-in user context (all 0 when not logged in)

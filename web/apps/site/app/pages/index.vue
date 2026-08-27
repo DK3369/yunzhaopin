@@ -258,7 +258,7 @@ useHead({
                 <NuxtLink :to="`/resumes/${r.uid}`">{{ r.display_name || r.name || r.uname || $t('common_02430') }}</NuxtLink>
               </div>
               <div class="tjuser_nameinfo">
-                {{ r.exp_n }}<i v-if="r.exp_n && r.edu_n" class="index_resume_userinfo_line">|</i>{{ r.edu_n }}
+                {{ r.exp_n }}<i v-if="r.exp_n && (r.edu_n || r.education_n)" class="index_resume_userinfo_line">|</i>{{ r.edu_n || r.education_n }}
               </div>
               <div class="tjuser_yx">
                 {{ $t('home.intention') }}<span class="index_resume_useryx_n">{{ r.expect_name || r.job_classid_n || r.expect || r.job_post_n || '' }}</span>

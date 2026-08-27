@@ -69,12 +69,20 @@ pub async fn list_public(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Resume>, sqlx::Error> {
+    // `phpyun_resume.uid` is a non-unique KEY; this database has duplicate
+    // rows per person. Public list is one card per uid (PHP lists people,
+    // not raw table copies).
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
     qb.push(" FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ");
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
-    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push(
+        " AND (uid, lastupdate) IN (SELECT uid, MAX(lastupdate) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ",
+    );
+    qb.push_bind(f.did);
+    push_filters(&mut qb, f);
+    qb.push(" GROUP BY uid) ORDER BY lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -83,7 +91,7 @@ pub async fn list_public(
 
 pub async fn count_public(pool: &MySqlPool, f: &ResumeFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ",
+        "SELECT COUNT(DISTINCT uid) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ",
     );
     qb.push_bind(f.did);
     push_filters(&mut qb, f);

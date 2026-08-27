@@ -129,6 +129,7 @@ pub struct JobDetailData {
     pub com_provinceid: i32,
     pub com_cityid: i32,
     pub com_mun: i32,
+    pub com_pr: i32,
     pub com_hy: i32,
     pub com_rating: i32,
     pub comqcode: String,
@@ -160,6 +161,7 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         com_provinceid,
         com_cityid,
         com_mun,
+        com_pr,
         com_hy,
         com_rating,
         comqcode,
@@ -172,13 +174,14 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
             c.logo.unwrap_or_default(),
             c.provinceid,
             c.cityid,
-            0, // mun is not defined on the entity; default to 0
+            c.mun,
+            c.pr,
             c.hy,
-            c.rec,         // reuse rec as the rating tier for now
-            String::new(), // comqcode requires a separate query
+            c.rating,
+            c.comqcode.unwrap_or_default(),
             c.linkman.unwrap_or_default(),
+            c.linktel.clone().filter(|s| !s.is_empty()).unwrap_or_else(|| c.linkphone.clone().unwrap_or_default()),
             c.linkphone.unwrap_or_default(),
-            String::new(), // linkphone vs linktel: PHPYun's linkphone is the phone, linktel is the extension; entity only has linkphone
             c.linkmail.unwrap_or_default(),
         )
     } else {
@@ -191,6 +194,7 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         com_provinceid,
         com_cityid,
         com_mun,
+        com_pr,
         com_hy,
         com_rating,
         comqcode,

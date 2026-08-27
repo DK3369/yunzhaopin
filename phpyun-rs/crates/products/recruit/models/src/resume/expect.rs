@@ -110,6 +110,22 @@ pub async fn list_by_ids(pool: &MySqlPool, ids: &[u64]) -> Result<Vec<Expect>, s
     q.fetch_all(pool).await
 }
 
+/// PHP public resume list uses `resume_expect.defaults = 1` when `resume.def_job` is 0.
+pub async fn list_defaults_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<Vec<Expect>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let placeholders = vec!["?"; uids.len()].join(",");
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_resume_expect WHERE defaults = 1 AND uid IN ({placeholders})"
+    );
+    let mut q = sqlx::query_as::<_, Expect>(&sql);
+    for uid in uids {
+        q = q.bind(*uid);
+    }
+    q.fetch_all(pool).await
+}
+
 pub struct ExpectInput<'a> {
     pub name: Option<&'a str>,
     pub job_classid: i64,
