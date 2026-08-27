@@ -129,8 +129,14 @@ async function remove() {
       <el-table-column prop="lastupdate_n_n" width="140" />
       <el-table-column prop="xsdate" label="xsdate" width="90" />
       <el-table-column prop="isrec" label="isrec" width="70" />
-      <el-table-column :label="$t('ui.status')" width="90">
-        <template #default="{ row }">{{ row.state }} / {{ row.r_status }}</template>
+      <el-table-column :label="$t('ui.status')" width="110">
+        <template #default="{ row }">
+          <span v-if="String(row.r_status) === '2'">{{ $t('ui.freeze') }}</span>
+          <span v-else-if="String(row.state) === '1'">{{ $t('ui.passed') }}</span>
+          <span v-else-if="String(row.state) === '0'">{{ $t('ui.waiting') }}</span>
+          <span v-else-if="String(row.state) === '3'">{{ $t('ui.rejected') }}</span>
+          <span v-else>{{ row.state }} / {{ row.r_status }}</span>
+        </template>
       </el-table-column>
       <el-table-column :label="$t('ui.action')" width="280">
         <template #default="{ row }">

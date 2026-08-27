@@ -24,7 +24,7 @@ async function submit() {
     await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' })
     return
   }
-  await navigateTo(me.path || '/')
+  await navigateTo(me.path || '/index')
 }
 </script>
 

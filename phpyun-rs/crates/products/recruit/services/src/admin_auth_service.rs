@@ -114,10 +114,11 @@ pub async fn login(
     let power = rbac_repo::group_power_ids(state.db.reader(), user.m_id)
         .await
         .unwrap_or_default();
+    // PHP adminCommon::admin_get_user_login
     let path = if power.iter().any(|id| *id == 216) && !power.iter().any(|id| *id == 226) {
-        "/jobs".to_string()
+        "/jobtai".to_string()
     } else {
-        "/".to_string()
+        "/index".to_string()
     };
 
     let _ = audit::emit(
@@ -192,65 +193,13 @@ fn nav_item(n: AdminNavRow) -> AdminMenuItem {
     }
 }
 
-fn map_php_path(path: &str, url: &str) -> String {
-    match path {
-        "" | "/" | "/index" => "/".into(),
-        "/userscrm" => "/users".into(),
-        "/companycrm" => "/companies".into(),
-        "/resume" => "/resumes".into(),
-        "/companyjob" => "/jobs".into(),
-        "/weipin_tiny" => "/jobs/tiny".into(),
-        "/weipin_once" => "/jobs/once".into(),
-        "/companyrz" => "/certs".into(),
-        "/feedback" => "/feedback".into(),
-        "/question" => "/content/questions".into(),
-        "/announcement" => "/content/announcements".into(),
-        "/newsmanage" => "/content/articles".into(),
-        "/xczph" => "/content/fairs".into(),
-        "/special" => "/content/specials".into(),
-        "/ad" => "/ads".into(),
-        "/shopreward" => "/redeem/rewards".into(),
-        "/shoplist" => "/redeem/orders".into(),
-        "/shopclass" => "/redeem/classes".into(),
-        "/user" | "/myaccount" => "/system/admins".into(),
-        "/ugroup" => "/system/rbac".into(),
-        "/logrecord" | "/userlog" => "/ops/audit".into(),
-        "/loginlog" => "/ops/login-logs".into(),
-        "/set" | "/yemainset" | "/jibenset" | "/payset" | "/jifenset" | "/regset" | "/moduleset" => {
-            "/system/settings".into()
-        }
-        "/seoset" => "/system/seo".into(),
-        "/emailset" => "/system/email".into(),
-        "/messageset" | "/messagelog" => "/system/sms".into(),
-        "/weixinmenu" | "/weixinrecord" => "/system/weixin".into(),
-        "/cron" => "/system/cron".into(),
-        "/city" => "/system/geo".into(),
-        "/job_class" | "/industry" | "/member_index" | "/partclass" | "/reason"
-        | "/question_class" => "/categories".into(),
-        "/navigation" => "/nav".into(),
-        "/recycle" => "/ops/recycle".into(),
-        "/warning" => "/ops/warnings".into(),
-        "/chongzhidd" => "/orders".into(),
-        "/houtaicz" => "/finance/recharge".into(),
-        "/reportjob" | "/reportresume" | "/reportask" | "/reportadvise" => "/reports".into(),
-        "/gongzhao" => "/content/gongzhao".into(),
-        "/friendlink" => "/content/links".into(),
-        _ => {
-            if url.contains("c=partjob") {
-                "/jobs/parts".into()
-            } else if url.contains("c=hotjob") {
-                "/ops/hotjobs".into()
-            } else if url.contains("c=company_expire") {
-                "/ops/expire".into()
-            } else if url.contains("c=dataRecycle") {
-                "/ops/recycle".into()
-            } else if url.contains("c=set_friendlink") {
-                "/content/links".into()
-            } else if url.contains("c=gongzhao") {
-                "/content/gongzhao".into()
-            } else {
-                String::new()
-            }
-        }
+fn map_php_path(path: &str, _url: &str) -> String {
+    let p = path.trim();
+    if p.is_empty() || p == "/" {
+        String::new()
+    } else if p.starts_with('/') {
+        p.to_string()
+    } else {
+        format!("/{p}")
     }
 }
