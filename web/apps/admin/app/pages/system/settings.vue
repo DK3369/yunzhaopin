@@ -11,7 +11,11 @@ const groups = computed(() => [
   { name: `${t('ui.integral_sy')} sy_integral`, prefixes: ['sy_integral'] },
   { name: `${t('ui.pay_sy')} sy_alipay / sy_wxpay`, prefixes: ['sy_alipay', 'sy_wxpay', 'sy_tenpay'] },
   { name: 'SEO sy_seo', prefixes: ['sy_seo'] },
+  { name: `${t('ui.email')} sy_email`, prefixes: ['sy_email'] },
+  { name: `${t('ui.sms')} sy_msg`, prefixes: ['sy_msg'] },
+  { name: `${t('ui.weixin')} wx_ / sy_wx`, prefixes: ['wx_', 'sy_wx'] },
   { name: `${t('ui.locoy')} locoy_`, prefixes: ['locoy_'] },
+  { name: 'code_', prefixes: ['code_'] },
 ])
 function rowsOf(prefixes: string[]) {
   const all = Array.isArray(data.value) ? data.value : []
@@ -49,29 +53,31 @@ function fill(row: Record<string, unknown>) {
       <el-form-item><el-checkbox v-model="form.is_public">{{ $t('ui.open') }}</el-checkbox></el-form-item>
       <el-button type="primary" @click="upsert">{{ $t('common.save') }}</el-button>
     </el-form>
-    <section v-for="g in groups" :key="g.name" style="margin-top: 20px">
-      <h2 style="font-size: 15px">{{ g.name }}</h2>
-      <el-table :data="rowsOf(g.prefixes)" size="small">
-        <el-table-column prop="key" label="key" />
-        <el-table-column prop="value" label="value" />
-        <el-table-column :label="$t('ui.action')" width="160">
-          <template #default="{ row }">
-            <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
-            <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </section>
-    <h2 style="font-size: 15px; margin-top: 20px">{{ $t('ui.other_keys') }}</h2>
-    <el-table :data="ungrouped" size="small">
-      <el-table-column prop="key" label="key" />
-      <el-table-column prop="value" label="value" />
-      <el-table-column :label="$t('ui.action')" width="160">
-        <template #default="{ row }">
-          <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
-          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-tabs>
+      <el-tab-pane v-for="g in groups" :key="g.name" :label="g.name">
+        <el-table :data="rowsOf(g.prefixes)" size="small">
+          <el-table-column prop="key" label="key" />
+          <el-table-column prop="value" label="value" />
+          <el-table-column :label="$t('ui.action')" width="160">
+            <template #default="{ row }">
+              <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
+              <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane :label="$t('ui.other_keys')">
+        <el-table :data="ungrouped" size="small">
+          <el-table-column prop="key" label="key" />
+          <el-table-column prop="value" label="value" />
+          <el-table-column :label="$t('ui.action')" width="160">
+            <template #default="{ row }">
+              <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
+              <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>

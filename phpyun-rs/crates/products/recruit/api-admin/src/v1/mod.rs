@@ -6,6 +6,7 @@ pub mod announcements;
 pub mod app_versions;
 pub mod articles;
 pub mod audit_log;
+pub mod auth;
 pub mod broadcasts;
 pub mod categories;
 pub mod companies;
@@ -45,6 +46,7 @@ use phpyun_core::AppState;
 
 pub fn router() -> Router<AppState> {
     Router::new()
+        .merge(auth::guarded_routes())
         .merge(users::routes())
         .merge(reports::routes())
         .merge(feedback::routes())

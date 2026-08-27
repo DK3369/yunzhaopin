@@ -117,4 +117,20 @@ pub struct Job {
     /// Application count
     #[sqlx(default)]
     pub snum: i32,
+    /// PHP `xsdate` 置顶到期
+    #[sqlx(default)]
+    pub xsdate: i64,
+    /// PHP `jobexpoure` 曝光
+    #[sqlx(default)]
+    pub jobexpoure: i32,
+    /// PHP `statusbody` 审核说明
+    #[serde(default)]
+    #[sqlx(default)]
+    pub statusbody: String,
+    /// PHP `rating` 企业套餐 id
+    #[sqlx(default)]
+    pub rating: i32,
+    /// PHP `source`
+    #[sqlx(default)]
+    pub source: i32,
 }

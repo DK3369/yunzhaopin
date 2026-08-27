@@ -32,6 +32,9 @@ async function remove(row: { id: number }) {
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column prop="nickname" :label="$t('ui.name')" />
+      <el-table-column prop="category_id" label="cid" width="80" />
+      <el-table-column prop="is_recom" label="is_recom" width="90" />
       <el-table-column prop="status" label="state" width="80" />
       <el-table-column :label="$t('ui.action')" width="220">
         <template #default="{ row }">

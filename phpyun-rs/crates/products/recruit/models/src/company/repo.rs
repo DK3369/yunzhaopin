@@ -694,6 +694,12 @@ pub struct AdminCompanyRow {
     pub hy: i32,
     pub cityid: i32,
     pub hits: i32,
+    pub rating: i32,
+    pub rating_name: String,
+    pub yyzz_status: i32,
+    pub login_date: i64,
+    pub lastupdate: i64,
+    pub logo: String,
 }
 
 pub async fn list_admin(
@@ -709,7 +715,13 @@ pub async fn list_admin(
                   CAST(COALESCE(r_status, 0) AS SIGNED) AS r_status,
                   CAST(COALESCE(hy, 0) AS SIGNED) AS hy,
                   CAST(COALESCE(cityid, 0) AS SIGNED) AS cityid,
-                  CAST(COALESCE(hits, 0) AS SIGNED) AS hits
+                  CAST(COALESCE(hits, 0) AS SIGNED) AS hits,
+                  CAST(COALESCE(rating, 0) AS SIGNED) AS rating,
+                  COALESCE(rating_name, '') AS rating_name,
+                  CAST(COALESCE(yyzz_status, 0) AS SIGNED) AS yyzz_status,
+                  CAST(COALESCE(login_date, 0) AS SIGNED) AS login_date,
+                  CAST(COALESCE(lastupdate, 0) AS SIGNED) AS lastupdate,
+                  COALESCE(logo, '') AS logo
            FROM phpyun_company WHERE 1=1"#,
     );
     push_admin_company_filters(&mut qb, r_status, keyword);
@@ -747,6 +759,38 @@ fn push_admin_company_filters<'a>(
             qb.push_bind(format!("%{kw}%"));
         }
     }
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct CompanyRatingOpt {
+    pub id: i32,
+    pub name: String,
+}
+
+pub async fn list_rating_options(pool: &MySqlPool) -> Result<Vec<CompanyRatingOpt>, sqlx::Error> {
+    sqlx::query_as::<_, CompanyRatingOpt>(
+        r#"SELECT CAST(id AS SIGNED) AS id, COALESCE(name, '') AS name
+           FROM phpyun_company_rating
+           WHERE category = 1
+           ORDER BY sort DESC, id ASC"#,
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn set_rating(
+    pool: &MySqlPool,
+    uid: u64,
+    rating: i32,
+    rating_name: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company SET rating = ?, rating_name = ? WHERE uid = ?")
+        .bind(rating)
+        .bind(rating_name)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn set_r_status(pool: &MySqlPool, uid: u64, r_status: i32) -> Result<u64, sqlx::Error> {

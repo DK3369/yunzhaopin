@@ -2,8 +2,10 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
+
+use crate::dto::AdminPaged;
 use phpyun_models::company::repo::AdminCompanyRow;
 use phpyun_services::admin_longtail_service::{self, CsvExport};
 use serde::Deserialize;
@@ -15,6 +17,8 @@ pub fn routes() -> Router<AppState> {
         .route("/companies", post(list))
         .route("/companies/status", post(set_status))
         .route("/companies/export", post(export_csv))
+        .route("/companies/ratings", post(list_ratings))
+        .route("/companies/rating", post(set_rating))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
@@ -30,12 +34,12 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminCompanyRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminCompanyRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_longtail_service::list_companies(&state, q.r_status, q.keyword.as_deref(), page)
             .await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -53,6 +57,36 @@ pub async fn set_status(
 ) -> AppResult<ApiResponse> {
     user.require_admin()?;
     admin_longtail_service::set_company_r_status(&state, &user, f.uid, f.r_status).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/companies/ratings", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn list_ratings(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Vec<phpyun_models::company::repo::CompanyRatingOpt>>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_longtail_service::list_company_ratings(&state).await?,
+    ))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct SetRatingForm {
+    #[validate(range(min = 1))]
+    pub uid: u64,
+    #[validate(range(min = 1))]
+    pub rating: i32,
+}
+
+#[utoipa::path(post, path = "/v1/admin/companies/rating", tag = "admin", security(("bearer" = [])), request_body = SetRatingForm, responses((status = 200, description = "ok")))]
+pub async fn set_rating(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<SetRatingForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_longtail_service::set_company_rating(&state, &user, f.uid, f.rating).await?;
     Ok(ApiResponse::message("ok"))
 }
 

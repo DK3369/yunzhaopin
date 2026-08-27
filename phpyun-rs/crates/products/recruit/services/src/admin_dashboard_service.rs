@@ -1,6 +1,8 @@
 //! Admin dashboard aggregation: pending counts for each review queue plus the last 24h of registrations/applications/postings overview.
 
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
+use phpyun_models::admin_msg::repo as admin_msg_repo;
+use phpyun_models::admin_msg::repo::AdminMsgNum;
 use phpyun_models::company_cert::repo as cert_repo;
 use phpyun_models::feedback::repo as feedback_repo;
 use phpyun_models::job::repo as job_repo;
@@ -99,4 +101,9 @@ pub async fn recent_signups(
         limit,
     )
     .await?)
+}
+
+pub async fn msg_num(state: &AppState, admin: &AuthenticatedUser) -> AppResult<AdminMsgNum> {
+    admin.require_admin()?;
+    Ok(admin_msg_repo::load(state.db.reader(), clock::now_ts()).await)
 }

@@ -66,6 +66,33 @@ pub async fn set_company_r_status(
     Ok(())
 }
 
+pub async fn list_company_ratings(
+    state: &AppState,
+) -> AppResult<Vec<phpyun_models::company::repo::CompanyRatingOpt>> {
+    Ok(company_repo::list_rating_options(state.db.reader()).await?)
+}
+
+pub async fn set_company_rating(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    uid: u64,
+    rating: i32,
+) -> AppResult<()> {
+    let opts = company_repo::list_rating_options(state.db.reader()).await?;
+    let name = opts
+        .iter()
+        .find(|r| r.id == rating)
+        .map(|r| r.name.clone())
+        .ok_or_else(|| ApiError::param_invalid("rating"))?;
+    let n = company_repo::set_rating(state.db.pool(), uid, rating, &name).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("company_not_found"));
+    }
+    let _ = statis_repo::set_rating(state.db.pool(), uid, rating).await;
+    audit_write(state, actor, "admin.company.rating", format!("uid:{uid}")).await;
+    Ok(())
+}
+
 pub async fn export_companies_csv(
     state: &AppState,
     r_status: Option<i32>,

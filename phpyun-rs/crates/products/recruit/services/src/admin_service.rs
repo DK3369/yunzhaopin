@@ -5,9 +5,10 @@
 //! `state.db.pool()` (writer) and emit audit logs synchronously.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::feedback::{entity::Feedback, repo as feedback_repo};
 use phpyun_models::job::{entity::Job, repo as job_repo};
+use phpyun_models::job::repo::AdminJobFilter;
 use phpyun_models::report::{entity::Report, repo as report_repo};
 use phpyun_models::user::{entity::Member, repo as user_repo};
 
@@ -124,10 +125,114 @@ pub async fn list_jobs(
     state_filter: Option<i32>,
     page: Pagination,
 ) -> AppResult<Paged<Job>> {
+    list_jobs_filtered(
+        state,
+        &AdminJobFilter {
+            state: state_filter,
+            ..AdminJobFilter::default()
+        },
+        page,
+    )
+    .await
+}
+
+pub async fn list_jobs_filtered(
+    state: &AppState,
+    f: &AdminJobFilter<'_>,
+    page: Pagination,
+) -> AppResult<Paged<Job>> {
     let db = state.db.reader();
-    let list = job_repo::admin_list(db, state_filter, page.offset, page.limit).await?;
-    let total = job_repo::admin_count(db, state_filter).await?;
+    let list = job_repo::admin_list_filtered(db, f, page.offset, page.limit).await?;
+    let total = job_repo::admin_count_filtered(db, f).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
+}
+
+pub async fn job_stats(state: &AppState) -> AppResult<serde_json::Value> {
+    let db = state.db.reader();
+    let pending = job_repo::admin_count(db, Some(0)).await?;
+    let passed = job_repo::admin_count(db, Some(1)).await?;
+    let rejected = job_repo::admin_count(db, Some(3)).await?;
+    let offline = job_repo::admin_count_filtered(
+        db,
+        &AdminJobFilter {
+            status: Some(2),
+            ..AdminJobFilter::default()
+        },
+    )
+    .await?;
+    Ok(serde_json::json!({
+        "total": pending + passed + rejected,
+        "dsh": pending,
+        "wtg": rejected,
+        "xj": offline,
+        "tg": passed,
+    }))
+}
+
+pub async fn set_job_publish(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    job_id: u64,
+    status: i32,
+) -> AppResult<()> {
+    job_repo::admin_set_publish(state.db.pool(), job_id, status).await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("admin.job.publish", Actor::uid(actor.uid))
+            .target(format!("job:{job_id}"))
+            .meta(&serde_json::json!({ "status": status })),
+    )
+    .await;
+    Ok(())
+}
+
+pub async fn promote_jobs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+    kind: &str,
+    on: bool,
+    days: i32,
+) -> AppResult<u64> {
+    let n = job_repo::admin_promote(state.db.pool(), ids, kind, on, days, clock::now_ts()).await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("admin.job.promote", Actor::uid(actor.uid)).meta(&serde_json::json!({
+            "ids": ids, "kind": kind, "on": on, "days": days
+        })),
+    )
+    .await;
+    Ok(n)
+}
+
+pub async fn refresh_jobs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<u64> {
+    let n = job_repo::admin_refresh(state.db.pool(), ids, clock::now_ts()).await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("admin.job.refresh", Actor::uid(actor.uid))
+            .meta(&serde_json::json!({ "ids": ids })),
+    )
+    .await;
+    Ok(n)
+}
+
+pub async fn delete_jobs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<u64> {
+    let n = job_repo::admin_delete(state.db.pool(), ids).await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("admin.job.delete", Actor::uid(actor.uid))
+            .meta(&serde_json::json!({ "ids": ids })),
+    )
+    .await;
+    Ok(n)
 }
 
 /// Moderation: `state_val=1` approved, `state_val=2` rejected.

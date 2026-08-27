@@ -23,11 +23,26 @@ fn resolve(kind: &str) -> Option<(&'static str, &'static str)> {
         "city" => Some(("phpyun_city_class", "keyid")),
         "part" | "partclass" => Some(("phpyun_partclass", "keyid")),
         "question" | "qa" | "q" | "q_class" => Some(("phpyun_q_class", "pid")),
+        "userclass" | "user" => Some(("phpyun_userclass", "keyid")),
+        "reason" => Some(("phpyun_reason", "id")),
         _ => None,
     }
 }
 
 fn select_sql(table: &str, parent_col: &str, kind: &str) -> String {
+    if kind == "reason" {
+        return format!(
+            "SELECT \
+               CAST(id AS UNSIGNED) AS id, \
+               CAST(0 AS UNSIGNED) AS parent_id, \
+               '{kind}' AS `kind`, \
+               COALESCE(name, '') AS name, \
+               CAST(0 AS SIGNED) AS sort, \
+               CAST(1 AS SIGNED) AS status, \
+               CAST(0 AS SIGNED) AS updated_at \
+             FROM {table}"
+        );
+    }
     // CAST coerces PHPYun INT columns into the BIGINT UNSIGNED / SIGNED
     // types expected by the Rust entity.
     format!(

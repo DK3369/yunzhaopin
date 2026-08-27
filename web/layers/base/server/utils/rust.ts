@@ -26,9 +26,14 @@ export async function rustFetch<T>(
     headers,
     body: method === 'POST' ? (opts.body as Record<string, unknown> | undefined) : undefined,
     query: method === 'GET' ? (opts.body as Record<string, unknown>) : undefined,
+    ignoreResponseError: true,
   })
-  if (res.code !== 200) {
-    throw createError({ statusCode: res.code, statusMessage: res.msg, data: { key: res.key } })
+  if (!res || res.code !== 200) {
+    throw createError({
+      statusCode: res?.code || 502,
+      statusMessage: res?.msg || 'upstream error',
+      data: { key: res?.key, msg: res?.msg },
+    })
   }
   return res.data as T
 }

@@ -15,7 +15,7 @@
 //!   - status     ↔ is_open (1=open / 0=closed; PHP's `status` column is a workflow state, while is_open is the listing flag)
 //!   - created_at ↔ ctime
 
-use super::entity::{Zph, ZphCompany, ZphReservation};
+use super::entity::{Zph, ZphCompany, ZphReservation, ZphSpace};
 use sqlx::MySqlPool;
 
 const ZPH_FIELDS: &str = "\
@@ -229,6 +229,91 @@ pub async fn upsert_reservation(
         .await?;
         phpyun_core::numeric::checked_db_u64(row.0, "zph_reservation.id")
     }
+}
+
+const ZS_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    COALESCE(name, '') AS name, \
+    CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
+    CAST(COALESCE(keyid, 0) AS SIGNED) AS keyid, \
+    COALESCE(pic, '') AS pic, \
+    COALESCE(content, '') AS content, \
+    CAST(COALESCE(price, 0) AS SIGNED) AS price";
+
+pub async fn list_spaces(
+    pool: &MySqlPool,
+    keyid: Option<i64>,
+    keyword: Option<&str>,
+) -> Result<Vec<ZphSpace>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE 1=1 \
+         {key} {kw} ORDER BY sort ASC, id ASC",
+        key = if keyid.is_some() { "AND keyid = ?" } else { "AND keyid = 0" },
+        kw = if keyword.map(|s| !s.is_empty()).unwrap_or(false) {
+            "AND name LIKE ?"
+        } else {
+            ""
+        }
+    );
+    let mut q = sqlx::query_as::<_, ZphSpace>(&sql);
+    if let Some(k) = keyid {
+        q = q.bind(k);
+    }
+    if let Some(kw) = keyword {
+        if !kw.is_empty() {
+            q = q.bind(format!("%{kw}%"));
+        }
+    }
+    q.fetch_all(pool).await
+}
+
+pub struct SpaceUpsert<'a> {
+    pub id: Option<u64>,
+    pub name: &'a str,
+    pub sort: i32,
+    pub keyid: i64,
+    pub pic: &'a str,
+    pub content: &'a str,
+    pub price: i32,
+}
+
+pub async fn upsert_space(pool: &MySqlPool, s: SpaceUpsert<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = s.id {
+        sqlx::query(
+            "UPDATE phpyun_zhaopinhui_space SET name=?, sort=?, keyid=?, pic=?, content=?, price=? WHERE id=?",
+        )
+        .bind(s.name)
+        .bind(s.sort)
+        .bind(s.keyid)
+        .bind(s.pic)
+        .bind(s.content)
+        .bind(s.price)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_zhaopinhui_space (name, sort, keyid, pic, content, price) VALUES (?,?,?,?,?,?)",
+        )
+        .bind(s.name)
+        .bind(s.sort)
+        .bind(s.keyid)
+        .bind(s.pic)
+        .bind(s.content)
+        .bind(s.price)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn delete_space(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_zhaopinhui_space WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn find_my_reservation(

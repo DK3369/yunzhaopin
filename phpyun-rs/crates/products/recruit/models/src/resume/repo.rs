@@ -315,6 +315,10 @@ pub struct AdminResumeRow {
     pub r_status: i32,
     pub status: i32,
     pub lastupdate: i64,
+    pub sex: i32,
+    pub edu: i32,
+    pub exp: i32,
+    pub telphone: String,
 }
 
 pub async fn list_admin(
@@ -329,7 +333,11 @@ pub async fn list_admin(
                   COALESCE(name, '') AS name,
                   CAST(COALESCE(r_status, 0) AS SIGNED) AS r_status,
                   CAST(COALESCE(status, 0) AS SIGNED) AS status,
-                  CAST(COALESCE(lastupdate, 0) AS SIGNED) AS lastupdate
+                  CAST(COALESCE(lastupdate, 0) AS SIGNED) AS lastupdate,
+                  CAST(COALESCE(sex, 0) AS SIGNED) AS sex,
+                  CAST(COALESCE(edu, 0) AS SIGNED) AS edu,
+                  CAST(COALESCE(exp, 0) AS SIGNED) AS exp,
+                  COALESCE(telphone, '') AS telphone
            FROM phpyun_resume WHERE 1=1"#,
     );
     push_admin_resume_filters(&mut qb, r_status, keyword);

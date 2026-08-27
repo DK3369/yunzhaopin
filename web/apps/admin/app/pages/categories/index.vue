@@ -1,6 +1,16 @@
 <script setup lang="ts">
 const api = useApi()
 const kind = ref('job')
+const kinds = [
+  { value: 'job', label: 'job_class' },
+  { value: 'city', label: 'city' },
+  { value: 'industry', label: 'industry' },
+  { value: 'userclass', label: 'userclass' },
+  { value: 'comclass', label: 'comclass' },
+  { value: 'partclass', label: 'partclass' },
+  { value: 'reason', label: 'reason' },
+  { value: 'question', label: 'question_class' },
+]
 const form = reactive({ kind: 'job', name: '', parent_id: 0, sort: 0 })
 const { data, refresh } = await useAsyncData(
   () => `admin-cats-${kind.value}`,
@@ -24,7 +34,9 @@ async function setStatus(row: { id: number }, status: number) {
     <h1>{{ $t('ui.categories') }}</h1>
     <el-form inline>
       <el-form-item>
-        <el-input v-model="kind" placeholder="kind" />
+        <el-select v-model="kind" style="width: 180px">
+          <el-option v-for="k in kinds" :key="k.value" :value="k.value" :label="k.label" />
+        </el-select>
       </el-form-item>
       <el-form-item><el-input v-model="form.name" :placeholder="$t('ui.name')" /></el-form-item>
       <el-button type="primary" @click="create">{{ $t('ui.add') }}</el-button>

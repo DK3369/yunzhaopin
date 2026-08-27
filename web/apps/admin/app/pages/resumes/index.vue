@@ -37,7 +37,6 @@ async function exportCsv() {
 <template>
   <div>
     <h1>{{ $t('ui.resume_audit') }}</h1>
-    <p>{{ $t('ui.resume_php_hint') }}</p>
     <el-form inline>
       <el-form-item>
         <el-input v-model="keyword" :placeholder="$t('ui.fullname')" clearable />
@@ -56,8 +55,12 @@ async function exportCsv() {
     <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="90" />
       <el-table-column prop="name" :label="$t('ui.fullname')" />
+      <el-table-column prop="sex" label="sex" width="70" />
+      <el-table-column prop="edu" label="edu" width="70" />
+      <el-table-column prop="exp" label="exp" width="70" />
+      <el-table-column prop="telphone" :label="$t('ui.mobile')" />
       <el-table-column prop="r_status" label="r_status" width="90" />
-      <el-table-column prop="status" :label="$t('ui.open')" width="110" />
+      <el-table-column prop="status" :label="$t('ui.open')" width="90" />
       <el-table-column prop="lastupdate" label="lastupdate" width="120" />
       <el-table-column :label="$t('ui.action')" width="220">
         <template #default="{ row }">
@@ -70,7 +73,7 @@ async function exportCsv() {
     <el-pagination
       v-if="(data?.total || 0) > 20"
       style="margin-top: 12px"
-      layout="prev, pager, next"
+      layout="total, prev, pager, next"
       :page-size="20"
       :current-page="page"
       :total="data?.total || 0"

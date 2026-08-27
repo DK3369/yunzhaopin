@@ -77,7 +77,10 @@ const FIELDS: &str = "id, uid, name, com_name, \
     COALESCE(zp_maxage, 0) AS zp_maxage, \
     COALESCE(urgent_time, 0) AS urgent_time, x, y, \
     COALESCE(pr, 0) AS pr, COALESCE(com_provinceid, 0) AS com_provinceid, \
-    com_logo, COALESCE(jobhits, 0) AS jobhits, COALESCE(snum, 0) AS snum";
+    com_logo, COALESCE(jobhits, 0) AS jobhits, COALESCE(snum, 0) AS snum, \
+    COALESCE(xsdate, 0) AS xsdate, COALESCE(jobexpoure, 0) AS jobexpoure, \
+    COALESCE(statusbody, '') AS statusbody, COALESCE(rating, 0) AS rating, \
+    COALESCE(source, 0) AS source";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_company_job WHERE id = ? LIMIT 1");
@@ -552,18 +555,148 @@ pub async fn admin_list(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Job>, sqlx::Error> {
+    admin_list_filtered(
+        pool,
+        &AdminJobFilter {
+            state: state_filter,
+            ..AdminJobFilter::default()
+        },
+        offset,
+        limit,
+    )
+    .await
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct AdminJobFilter<'a> {
+    /// PHP `state`: 1 已审 / 4→0 待审 / 3 未通过 / 2 企业锁定 r_status=2
+    pub state: Option<i32>,
+    /// PHP `status`: 1 招聘中 / 2→0 已下架
+    pub status: Option<i32>,
+    /// PHP `jtype`: rec / urgent / xuanshang
+    pub jtype: Option<&'a str>,
+    pub edu: Option<i32>,
+    pub exp: Option<i32>,
+    pub source: Option<i32>,
+    pub rating: Option<i32>,
+    pub keyword: Option<&'a str>,
+    /// PHP `type`: 1 名称 / 3 id / 4 ip
+    pub keyword_type: Option<i32>,
+    pub uid: Option<u64>,
+    /// PHP `job_class` → job1 / job1_son / job_post
+    pub job_class: Option<i32>,
+    /// PHP `city_class` → provinceid / cityid / three_cityid
+    pub city_class: Option<i32>,
+}
+
+fn push_admin_job_filters(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &AdminJobFilter<'_>) {
+    if let Some(st) = f.state {
+        if st == 2 {
+            qb.push(" AND r_status = 2");
+        } else {
+            let state = if st == 4 { 0 } else { st };
+            qb.push(" AND state = ");
+            qb.push_bind(state);
+        }
+    }
+    if let Some(status) = f.status {
+        let status = if status == 2 { 0 } else { status };
+        qb.push(" AND status = ");
+        qb.push_bind(status);
+    }
+    match f.jtype {
+        Some("rec") => {
+            qb.push(" AND rec_time > UNIX_TIMESTAMP()");
+        }
+        Some("urgent") => {
+            qb.push(" AND urgent_time > UNIX_TIMESTAMP()");
+        }
+        Some("xuanshang") => {
+            qb.push(" AND xsdate > UNIX_TIMESTAMP()");
+        }
+        _ => {}
+    }
+    if let Some(edu) = f.edu {
+        qb.push(" AND edu = ");
+        qb.push_bind(edu);
+    }
+    if let Some(exp) = f.exp {
+        qb.push(" AND exp = ");
+        qb.push_bind(exp);
+    }
+    if let Some(source) = f.source {
+        qb.push(" AND source = ");
+        qb.push_bind(source);
+    }
+    if let Some(rating) = f.rating {
+        qb.push(" AND rating = ");
+        qb.push_bind(rating);
+    }
+    if let Some(uid) = f.uid {
+        qb.push(" AND uid = ");
+        qb.push_bind(uid);
+    }
+    if let Some(jc) = f.job_class {
+        qb.push(" AND (job1 = ");
+        qb.push_bind(jc);
+        qb.push(" OR job1_son = ");
+        qb.push_bind(jc);
+        qb.push(" OR job_post = ");
+        qb.push_bind(jc);
+        qb.push(")");
+    }
+    if let Some(cc) = f.city_class {
+        qb.push(" AND (provinceid = ");
+        qb.push_bind(cc);
+        qb.push(" OR cityid = ");
+        qb.push_bind(cc);
+        qb.push(" OR three_cityid = ");
+        qb.push_bind(cc);
+        qb.push(")");
+    }
+    if let Some(kw) = f.keyword {
+        let like = format!("%{kw}%");
+        match f.keyword_type.unwrap_or(1) {
+            3 => {
+                if let Ok(id) = kw.parse::<u64>() {
+                    qb.push(" AND id = ");
+                    qb.push_bind(id);
+                }
+            }
+            _ => {
+                qb.push(" AND (com_name LIKE ");
+                qb.push_bind(like.clone());
+                qb.push(" OR name LIKE ");
+                qb.push_bind(like);
+                qb.push(")");
+            }
+        }
+    }
+}
+
+pub async fn admin_list_filtered(
+    pool: &MySqlPool,
+    f: &AdminJobFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Job>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
     qb.push(" FROM phpyun_company_job WHERE 1=1");
-    if let Some(s) = state_filter {
-        qb.push(" AND state = ");
-        qb.push_bind(s);
-    }
+    push_admin_job_filters(&mut qb, f);
     qb.push(" ORDER BY lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
     qb.build_query_as::<Job>().fetch_all(pool).await
+}
+
+pub async fn admin_count_filtered(pool: &MySqlPool, f: &AdminJobFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company_job WHERE 1=1");
+    push_admin_job_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn admin_count(pool: &MySqlPool, state_filter: Option<i32>) -> Result<u64, sqlx::Error> {
@@ -685,6 +818,95 @@ pub async fn admin_set_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u6
         .execute(pool)
         .await?;
     Ok(res.rows_affected())
+}
+
+/// PHP `checkstate_action`: `status` 1 招聘中 / 0 下架.
+pub async fn admin_set_publish(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET status = ? WHERE id = ?")
+        .bind(status)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn admin_refresh(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_company_job SET lastupdate = ");
+    qb.push_bind(now);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn admin_delete(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_company_job WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// PHP `addRecJob` / `addUrgentJob` / `addTopJob`.
+/// `kind`: rec | urgent | xuanshang. `on=false` clears; `days` extends from now or current expiry.
+pub async fn admin_promote(
+    pool: &MySqlPool,
+    ids: &[u64],
+    kind: &str,
+    on: bool,
+    days: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let col = match kind {
+        "rec" => "rec_time",
+        "urgent" => "urgent_time",
+        "xuanshang" | "top" => "xsdate",
+        _ => return Ok(0),
+    };
+    let extra = if kind == "rec" {
+        ", rec = "
+    } else if kind == "urgent" {
+        ", urgent = "
+    } else {
+        ""
+    };
+    let flag: i32 = i32::from(on);
+    let ts = if on {
+        now + i64::from(days.max(0)) * 86_400
+    } else {
+        0
+    };
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("UPDATE phpyun_company_job SET ");
+    qb.push(col);
+    qb.push(" = ");
+    qb.push_bind(ts);
+    if !extra.is_empty() {
+        qb.push(extra);
+        qb.push_bind(flag);
+    }
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
 // ==================== Job hits counter ====================

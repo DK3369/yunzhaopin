@@ -12,6 +12,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/dashboard/overview", post(overview))
         .route("/dashboard/recent-signups", post(recent_signups))
+        .route("/dashboard/msg-num", post(msg_num))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -136,5 +137,23 @@ pub async fn recent_signups(
                 login_date: m.login_date,
             })
             .collect(),
+    ))
+}
+
+/// PHP `msgNum()` pending-review badges.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/dashboard/msg-num",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn msg_num(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<phpyun_models::admin_msg::repo::AdminMsgNum>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_dashboard_service::msg_num(&state, &user).await?,
     ))
 }

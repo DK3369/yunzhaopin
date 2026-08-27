@@ -7,18 +7,20 @@ const err = ref('')
 async function submit() {
   err.value = ''
   try {
-    const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/login', {
+    const me = await $fetch<{ uid: number; usertype: number; path?: string }>(bffUrl('/api/auth/admin-login'), {
       method: 'POST',
+      credentials: 'include',
       body: { username: username.value, password: password.value },
     })
     if (me.usertype !== 3) {
       err.value = t('ui.need_admin')
-      await $fetch('/api/auth/logout', { method: 'POST' })
+      await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' })
       return
     }
-    await navigateTo('/')
+    await navigateTo(me.path || '/')
   } catch (e: unknown) {
-    err.value = e instanceof Error ? e.message : t('ui.login_failed')
+    const anyErr = e as { data?: { msg?: string; statusMessage?: string }; statusMessage?: string }
+    err.value = anyErr?.data?.msg || anyErr?.statusMessage || (e instanceof Error ? e.message : t('ui.login_failed'))
   }
 }
 </script>

@@ -1,36 +1,113 @@
-//! Job review (admin).
+//! Job review (admin) — PHP `user/company_job`.
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    dto::BatchResult, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    dto::BatchResult, utils::fmt_dt, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination,
     ValidatedJson,
 };
-use phpyun_services::admin_service;
-use serde::Deserialize;
+use phpyun_models::job::entity::Job;
+use phpyun_models::job::repo::AdminJobFilter;
+use phpyun_services::{admin_service, dict_service};
+use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/jobs", post(list))
         .route("/jobs/state", post(set_state))
         .route("/jobs/batch/state", post(batch_set_state))
+        .route("/jobs/stats", post(stats))
+        .route("/jobs/publish", post(set_publish))
+        .route("/jobs/promote", post(promote))
+        .route("/jobs/refresh", post(refresh))
+        .route("/jobs/delete", post(delete_jobs))
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
 pub struct JobListQuery {
-    /// 0=pending / 1=approved / 2=rejected
-    #[validate(range(min = 0, max = 99))]
     pub state: Option<i32>,
+    pub status: Option<i32>,
+    #[validate(length(max = 32))]
+    pub jtype: Option<String>,
+    pub edu: Option<i32>,
+    pub exp: Option<i32>,
+    pub source: Option<i32>,
+    pub rating: Option<i32>,
+    #[validate(length(max = 80))]
+    pub keyword: Option<String>,
+    pub r#type: Option<i32>,
+    pub uid: Option<u64>,
+    pub job_class: Option<i32>,
+    pub city_class: Option<i32>,
 }
 
-/// Job review queue
+/// PHP `company_job` 列表行（对照 `company_job.vue`）。
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AdminJobRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub com_name: Option<String>,
+    pub snum: i32,
+    pub jobhits: i32,
+    pub jobexpoure: i32,
+    pub status: i32,
+    pub state: i32,
+    pub r_status: i32,
+    pub statusbody: String,
+    pub xsdate: i64,
+    pub rec_time: i64,
+    pub urgent_time: i64,
+    pub isrec: bool,
+    pub sdate: i64,
+    pub sdate_n: String,
+    pub lastupdate: i64,
+    pub lastupdate_n_n: String,
+    pub edu: i32,
+    pub edu_n: String,
+    pub exp: i32,
+    pub exp_n: String,
+    pub rating: i32,
+}
+
+fn row_from(j: Job, dicts: &dict_service::LocalizedDicts, now: i64) -> AdminJobRow {
+    AdminJobRow {
+        id: j.id,
+        uid: j.uid,
+        name: j.name,
+        com_name: j.com_name,
+        snum: j.snum,
+        jobhits: j.jobhits,
+        jobexpoure: j.jobexpoure,
+        status: j.status,
+        state: j.state,
+        r_status: j.r_status,
+        statusbody: j.statusbody,
+        xsdate: j.xsdate,
+        rec_time: j.rec_time,
+        urgent_time: j.urgent_time,
+        isrec: j.rec == 1 && j.rec_time > now,
+        sdate: j.sdate,
+        sdate_n: fmt_dt(j.sdate),
+        lastupdate: j.lastupdate,
+        lastupdate_n_n: fmt_dt(j.lastupdate),
+        edu: j.edu,
+        edu_n: dicts.comclass(j.edu).to_string(),
+        exp: j.exp,
+        exp_n: dicts.comclass(j.exp).to_string(),
+        rating: j.rating,
+    }
+}
+
 #[utoipa::path(
     post,
     path = "/v1/admin/jobs",
     tag = "admin",
     security(("bearer" = [])),
-    params(JobListQuery),
+    request_body = JobListQuery,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
@@ -38,32 +115,43 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<JobListQuery>,
-) -> AppResult<ApiResponse<Paged<phpyun_models::job::view::JobSummary>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminJobRow>>> {
     user.require_admin()?;
-    let r = admin_service::list_jobs(&state, q.state, page).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let jtype = q.jtype.clone();
+    let keyword = q.keyword.clone();
+    let f = AdminJobFilter {
+        state: q.state,
+        status: q.status,
+        jtype: jtype.as_deref(),
+        edu: q.edu,
+        exp: q.exp,
+        source: q.source,
+        rating: q.rating,
+        keyword: keyword.as_deref(),
+        keyword_type: q.r#type,
+        uid: q.uid,
+        job_class: q.job_class,
+        city_class: q.city_class,
+    };
+    let r = admin_service::list_jobs_filtered(&state, &f, page).await?;
+    let dicts = dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiResponse::data(Paged::new(
-        r.list
-            .into_iter()
-            .map(|j| phpyun_handlers::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
-            .collect(),
+    Ok(ApiResponse::data(AdminPaged::from(phpyun_core::Paged::new(
+        r.list.into_iter().map(|j| row_from(j, &dicts, now)).collect(),
         r.total,
-        page.page,
-        page.page_size,
-    )))
+        r.page,
+        r.page_size,
+    ))))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetJobStateForm {
     #[validate(range(min = 1, max = 999_999_999))]
     pub id: u64,
-    /// 1=approved / 2=rejected
-    #[validate(range(min = 1, max = 2))]
+    #[validate(range(min = 1, max = 3))]
     pub state: i32,
 }
 
-/// Review a job
 #[utoipa::path(post,
     path = "/v1/admin/jobs/state",
     tag = "admin",
@@ -86,11 +174,10 @@ pub async fn set_state(
 pub struct BatchStateForm {
     #[validate(length(min = 1, max = 200))]
     pub ids: Vec<u64>,
-    #[validate(range(min = 1, max = 2))]
+    #[validate(range(min = 1, max = 3))]
     pub state: i32,
 }
 
-/// Batch review jobs
 #[utoipa::path(
     post,
     path = "/v1/admin/jobs/batch/state",
@@ -110,4 +197,81 @@ pub async fn batch_set_state(
         requested: r.requested,
         affected: r.affected,
     }))
+}
+
+#[utoipa::path(post, path = "/v1/admin/jobs/stats", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn stats(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(admin_service::job_stats(&state).await?))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PublishForm {
+    #[validate(range(min = 1))]
+    pub id: u64,
+    pub status: i32,
+}
+
+#[utoipa::path(post, path = "/v1/admin/jobs/publish", tag = "admin", security(("bearer" = [])), request_body = PublishForm, responses((status = 200, description = "ok")))]
+pub async fn set_publish(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<PublishForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_service::set_job_publish(&state, &user, f.id, f.status).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PromoteForm {
+    #[validate(length(min = 1, max = 200))]
+    pub ids: Vec<u64>,
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+    pub on: bool,
+    #[serde(default)]
+    pub days: i32,
+}
+
+#[utoipa::path(post, path = "/v1/admin/jobs/promote", tag = "admin", security(("bearer" = [])), request_body = PromoteForm, responses((status = 200, description = "ok")))]
+pub async fn promote(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<PromoteForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_service::promote_jobs(&state, &user, &f.ids, &f.kind, f.on, f.days).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct IdsForm {
+    #[validate(length(min = 1, max = 200))]
+    pub ids: Vec<u64>,
+}
+
+#[utoipa::path(post, path = "/v1/admin/jobs/refresh", tag = "admin", security(("bearer" = [])), request_body = IdsForm, responses((status = 200, description = "ok")))]
+pub async fn refresh(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdsForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_service::refresh_jobs(&state, &user, &f.ids).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/jobs/delete", tag = "admin", security(("bearer" = [])), request_body = IdsForm, responses((status = 200, description = "ok")))]
+pub async fn delete_jobs(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdsForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_service::delete_jobs(&state, &user, &f.ids).await?;
+    Ok(ApiResponse::message("ok"))
 }

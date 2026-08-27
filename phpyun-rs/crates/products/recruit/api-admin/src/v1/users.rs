@@ -3,8 +3,10 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Pagination, ValidatedJson,
 };
+
+use crate::dto::AdminPaged;
 use phpyun_services::admin_service::{self, UserFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -98,7 +100,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<UserListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminUserItem>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminUserItem>>> {
     user.require_admin()?;
     let filter = UserFilter {
         keyword: q.keyword.as_deref(),
@@ -106,9 +108,9 @@ pub async fn list(
         status: q.status,
     };
     let r = admin_service::list_users(&state, &filter, page).await?;
-    Ok(ApiResponse::data(Paged::from_listing(
+    Ok(ApiResponse::data(AdminPaged::from(phpyun_core::Paged::from_listing(
         r.list, r.total, page,
-    )))
+    ))))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

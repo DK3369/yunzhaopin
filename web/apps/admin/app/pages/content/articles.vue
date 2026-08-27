@@ -77,6 +77,9 @@ function edit(row: Record<string, unknown>) {
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="nid" label="nid" width="80" />
       <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column prop="author" :label="$t('ui.author')" />
+      <el-table-column prop="hits" label="hits" width="80" />
+      <el-table-column prop="published_at" label="datetime" width="120" />
       <el-table-column :label="$t('ui.action')" width="180">
         <template #default="{ row }">
           <el-button size="small" @click="edit(row)">{{ $t('common.edit') }}</el-button>

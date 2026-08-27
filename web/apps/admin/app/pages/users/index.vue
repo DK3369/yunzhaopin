@@ -55,7 +55,8 @@ async function impersonate(row: { uid: number }) {
       <el-table-column prop="username" :label="$t('ui.username')" />
       <el-table-column prop="usertype_n" :label="$t('ui.type')" width="110" />
       <el-table-column prop="status_n" :label="$t('ui.status')" width="110" />
-      <el-table-column prop="moblie" :label="$t('ui.mobile')" />
+      <el-table-column prop="email" label="email" />
+      <el-table-column prop="login_date_n" :label="$t('ui.time')" />
       <el-table-column :label="$t('ui.action')" width="280">
         <template #default="{ row }">
           <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.unfreeze') }}</el-button>

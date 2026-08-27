@@ -1,9 +1,17 @@
 <script setup lang="ts">
 const api = useApi()
 const selected = ref<number[]>([])
-const { data, refresh } = await useAsyncData('admin-reports', () =>
-  api.post<{ list: Array<Record<string, unknown>> }>('/v1/admin/reports', { page: 1, page_size: 20 }),
+const status = ref<number | undefined>(0)
+const { data, refresh } = await useAsyncData(
+  () => `admin-reports-${status.value}`,
+  () =>
+    api.post<{ list: Array<Record<string, unknown>> }>('/v1/admin/reports', {
+      page: 1,
+      page_size: 20,
+      status: status.value,
+    }),
 )
+watch(status, () => refresh())
 function onSelect(rows: Array<{ id: number }>) {
   selected.value = rows.map((r) => r.id)
 }
@@ -22,6 +30,11 @@ async function batch(status: number) {
 <template>
   <div>
     <h1>{{ $t('ui.reports') }}</h1>
+    <el-radio-group v-model="status" style="margin-bottom: 12px">
+      <el-radio-button :value="0">{{ $t('ui.waiting') }}</el-radio-button>
+      <el-radio-button :value="1">{{ $t('ui.handle') }}</el-radio-button>
+      <el-radio-button :value="2">{{ $t('ui.dismiss') }}</el-radio-button>
+    </el-radio-group>
     <div style="margin-bottom: 12px">
       <el-button size="small" @click="batch(1)">{{ $t('ui.batch_handle') }}</el-button>
       <el-button size="small" type="danger" @click="batch(2)">{{ $t('ui.batch_dismiss') }}</el-button>

@@ -397,6 +397,58 @@ pub async fn set_fair_open(
     Ok(())
 }
 
+pub async fn list_fair_spaces(
+    state: &AppState,
+    keyid: Option<i64>,
+    keyword: Option<&str>,
+) -> AppResult<Vec<phpyun_models::zph::entity::ZphSpace>> {
+    Ok(zph_repo::list_spaces(state.db.reader(), keyid, keyword).await?)
+}
+
+pub struct FairSpaceIn<'a> {
+    pub id: Option<u64>,
+    pub name: &'a str,
+    pub sort: i32,
+    pub keyid: i64,
+    pub pic: &'a str,
+    pub content: &'a str,
+    pub price: i32,
+}
+
+pub async fn upsert_fair_space(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    a: FairSpaceIn<'_>,
+) -> AppResult<u64> {
+    if a.name.trim().is_empty() {
+        return Err(ApiError::param_invalid("name"));
+    }
+    let id = zph_repo::upsert_space(
+        state.db.pool(),
+        zph_repo::SpaceUpsert {
+            id: a.id,
+            name: a.name.trim(),
+            sort: a.sort,
+            keyid: a.keyid,
+            pic: a.pic,
+            content: a.content,
+            price: a.price,
+        },
+    )
+    .await?;
+    audit_write(state, actor, "admin.fair.space", format!("space:{id}")).await;
+    Ok(id)
+}
+
+pub async fn delete_fair_space(state: &AppState, actor: &AuthenticatedUser, id: u64) -> AppResult<()> {
+    let n = zph_repo::delete_space(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("space_not_found"));
+    }
+    audit_write(state, actor, "admin.fair.space.delete", format!("space:{id}")).await;
+    Ok(())
+}
+
 pub async fn list_gongzhao(state: &AppState, page: Pagination) -> AppResult<Paged<Gongzhao>> {
     let db = state.db.reader();
     let list = gongzhao_repo::list(db, None, page.offset, page.limit).await?;

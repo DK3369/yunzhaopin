@@ -79,8 +79,16 @@ pub async fn try_deduct_integral(
     Ok(1)
 }
 
-/// Read the company's rating tier (1..n). Returns 0 when the row doesn't
-/// exist.
+pub async fn set_rating(pool: &MySqlPool, uid: u64, rating: i32) -> Result<u64, sqlx::Error> {
+    ensure_row(pool, uid).await?;
+    let res = sqlx::query("UPDATE phpyun_company_statis SET rating = ? WHERE uid = ?")
+        .bind(rating)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn read_rating(pool: &MySqlPool, uid: u64) -> Result<i32, sqlx::Error> {
     let row: Option<(i32,)> = sqlx::query_as(
         "SELECT CAST(COALESCE(rating, 0) AS SIGNED) FROM phpyun_company_statis \

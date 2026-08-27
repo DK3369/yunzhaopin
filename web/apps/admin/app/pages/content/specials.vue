@@ -15,6 +15,8 @@ async function setDisplay(row: { id: number }, display: number) {
 <template>
   <div>
     <h1>{{ $t('ui.specials') }}</h1>
+    <el-table :data="data?.list || []">
+      <el-table-column prop="id" label="id" width="80" />
       <el-table-column prop="title" :label="$t('ui.title')" />
       <el-table-column prop="status" label="display" width="90" />
       <el-table-column :label="$t('ui.action')" width="180">

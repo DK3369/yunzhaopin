@@ -1,4 +1,5 @@
 import { unwrapEnvelope, ApiError, type ApiEnvelope } from '~/utils/envelope'
+import { bffUrl } from '~/utils/bff'
 
 type Verb = 'GET' | 'POST'
 type Loc = 'zh' | 'en'
@@ -31,7 +32,7 @@ export function useApi() {
   }
 
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
-    const url = `/api/proxy${path}`
+    const url = bffUrl(`/api/proxy${path}`)
     const loc = currentLoc()
     const query = {
       ...(method === 'GET' ? payload : pagingQuery(payload)),
@@ -51,7 +52,7 @@ export function useApi() {
       const anyErr = err as { data?: ApiEnvelope<unknown>; statusCode?: number }
       const envelope = anyErr?.data
       if (envelope?.key === 'session_expired') {
-        await $fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' }).catch(() => undefined)
+        await $fetch(bffUrl('/api/auth/refresh'), { method: 'POST', credentials: 'include' }).catch(() => undefined)
         const retry = await $fetch<ApiEnvelope<T>>(url, {
           method,
           query,

@@ -80,6 +80,18 @@ pub struct ZphCompany {
     pub created_at: i64,
 }
 
+/// PHP `phpyun_zhaopinhui_space` (`zph_space`).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct ZphSpace {
+    pub id: u64,
+    pub name: String,
+    pub sort: i32,
+    pub keyid: i64,
+    pub pic: String,
+    pub content: String,
+    pub price: i32,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct ZphReservation {
     pub id: u64,

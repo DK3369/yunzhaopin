@@ -11,21 +11,24 @@
 //! The admin JWT role check is applied inside [`router`] — callers cannot
 //! obtain an unguarded admin tree.
 
+pub mod dto;
 pub mod openapi;
 pub mod v1;
 
 use axum::Router;
 use phpyun_core::AppState;
 
-/// Admin routes nested at `/v1/admin`, with the router-level admin guard
-/// applied internally so a missed `require_admin()` cannot leak an endpoint.
+/// Admin routes nested at `/v1/admin`. Login is public; everything else
+/// is wrapped in the router-level admin guard.
 pub fn router(state: AppState) -> Router<AppState> {
     Router::new().nest(
         "/v1/admin",
-        v1::router().layer(axum::middleware::from_fn_with_state(
-            state,
-            phpyun_core::admin_guard::layer,
-        )),
+        Router::new()
+            .merge(v1::auth::public_routes())
+            .merge(v1::router().layer(axum::middleware::from_fn_with_state(
+                state,
+                phpyun_core::admin_guard::layer,
+            ))),
     )
 }
 

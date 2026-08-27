@@ -2,8 +2,10 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
+
+use crate::dto::AdminPaged;
 use phpyun_models::resume::edu::Edu;
 use phpyun_models::resume::repo::AdminResumeRow;
 use phpyun_models::resume::training::Training;
@@ -36,11 +38,11 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminResumeRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminResumeRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_longtail_service::list_resumes(&state, q.r_status, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

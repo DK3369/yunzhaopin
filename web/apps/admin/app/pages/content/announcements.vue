@@ -41,6 +41,7 @@ function edit(row: Record<string, unknown>) {
 <template>
   <div>
     <h1>{{ $t('ui.announcements') }}</h1>
+    <el-form label-width="90px" style="max-width: 720px">
       <el-form-item :label="$t('ui.title')"><el-input v-model="form.title" /></el-form-item>
       <el-form-item label="startime"><el-input-number v-model="form.startime" :min="0" /></el-form-item>
       <el-form-item label="endtime"><el-input-number v-model="form.endtime" :min="0" /></el-form-item>

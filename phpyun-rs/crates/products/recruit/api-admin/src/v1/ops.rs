@@ -18,6 +18,9 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/fairs", post(list_fairs))
         .route("/fairs/open", post(set_fair_open))
+        .route("/fairs/spaces", post(list_fair_spaces))
+        .route("/fairs/spaces/upsert", post(upsert_fair_space))
+        .route("/fairs/spaces/delete", post(delete_fair_space))
         .route("/gongzhao", post(upsert_gongzhao))
         .route("/gongzhao/list", post(list_gongzhao))
         .route("/gongzhao/delete", post(delete_gongzhao))
@@ -54,6 +57,77 @@ pub async fn set_fair_open(
 ) -> AppResult<ApiResponse> {
     user.require_admin()?;
     admin_cms_service::set_fair_open(&state, &user, f.id, f.is_open).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct FairSpaceQuery {
+    pub keyid: Option<i64>,
+    #[validate(length(max = 80))]
+    pub keyword: Option<String>,
+}
+
+#[utoipa::path(post, path = "/v1/admin/fairs/spaces", tag = "admin", security(("bearer" = [])), request_body = FairSpaceQuery, responses((status = 200, description = "ok")))]
+pub async fn list_fair_spaces(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(q): ValidatedJson<FairSpaceQuery>,
+) -> AppResult<ApiResponse<Vec<phpyun_models::zph::entity::ZphSpace>>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_cms_service::list_fair_spaces(&state, q.keyid, q.keyword.as_deref()).await?,
+    ))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct FairSpaceForm {
+    pub id: Option<u64>,
+    #[validate(length(min = 1, max = 200))]
+    pub name: String,
+    #[serde(default)]
+    pub sort: i32,
+    #[serde(default)]
+    pub keyid: i64,
+    #[serde(default)]
+    pub pic: String,
+    #[serde(default)]
+    pub content: String,
+    #[serde(default)]
+    pub price: i32,
+}
+
+#[utoipa::path(post, path = "/v1/admin/fairs/spaces/upsert", tag = "admin", security(("bearer" = [])), request_body = FairSpaceForm, responses((status = 200, description = "ok")))]
+pub async fn upsert_fair_space(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<FairSpaceForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
+    user.require_admin()?;
+    let id = admin_cms_service::upsert_fair_space(
+        &state,
+        &user,
+        admin_cms_service::FairSpaceIn {
+            id: f.id,
+            name: &f.name,
+            sort: f.sort,
+            keyid: f.keyid,
+            pic: &f.pic,
+            content: &f.content,
+            price: f.price,
+        },
+    )
+    .await?;
+    Ok(ApiResponse::data(CreatedId { id }))
+}
+
+#[utoipa::path(post, path = "/v1/admin/fairs/spaces/delete", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
+pub async fn delete_fair_space(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_cms_service::delete_fair_space(&state, &user, f.id).await?;
     Ok(ApiResponse::message("ok"))
 }
 

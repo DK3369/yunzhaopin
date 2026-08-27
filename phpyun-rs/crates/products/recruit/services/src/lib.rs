@@ -42,6 +42,7 @@
 //! stays grep-able.
 
 pub mod ad_service;
+pub mod admin_auth_service;
 pub mod admin_cms_service;
 pub mod admin_dashboard_service;
 pub mod admin_longtail_service;

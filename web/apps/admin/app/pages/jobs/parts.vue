@@ -31,6 +31,8 @@ async function review(row: { id: number }, next: number) {
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="name" :label="$t('common.job')" />
       <el-table-column prop="com_name" :label="$t('common.company')" />
+      <el-table-column prop="linktel" :label="$t('ui.mobile')" />
+      <el-table-column prop="salary" :label="$t('ui.amount')" width="90" />
       <el-table-column prop="state" label="state" width="80" />
       <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
