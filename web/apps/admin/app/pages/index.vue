@@ -1,6 +1,6 @@
 <script setup>
 import PhpPage from '~/admin-php/index/index/index.vue'
-definePageMeta({ alias: ['/'] })
+definePageMeta({ path: '/index', alias: ['/'] })
 </script>
 <template>
   <PhpPage />
