@@ -335,6 +335,8 @@ class index_controller extends adminCommon{
         $data['messages'] = $data['auto'];
 
         header("content-type:application/json; charset=utf-8");
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Pragma: no-cache');
         echo json_encode($data, defined("JSON_UNESCAPED_UNICODE") ? JSON_UNESCAPED_UNICODE : 0);
         exit;
     }

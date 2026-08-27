@@ -12,8 +12,16 @@ class adminCommon extends common{
     public $adminPower = null;
     // admin/siteadmin后台公共部分
     function admin(){
+        // 后台页禁止被 CDN 缓存成登录页，否则登录成功后会一直回到 /admin/
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
         // 登录接口不用验证权限
         if (empty($_GET['m']) && ($_GET['c'] == 'login'||$_GET['c'] == 'wxlogin'||$_GET['c'] == 'getwxloginstatus')){
+            return true;
+        }
+        // 登录页 api.js 会拉语言包；未登录不能 777，否则浏览器当失败请求
+        if (isset($_GET['c']) && $_GET['c'] === 'langpack' && (empty($_GET['m']) || $_GET['m'] === 'index')) {
             return true;
         }
         $this -> get_admin_user_shell(); // 权限

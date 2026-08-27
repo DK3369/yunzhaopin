@@ -187,9 +187,8 @@
 						        // {yun:}t key='member_user_00259'{/yun}localStorage
 								localStorage.clear();
 								
-								// window.location.reload();
+								localStorage.setItem('indexPath', (res.data && res.data.path) ? res.data.path : '/index');
 								window.location.href = location.origin + location.pathname;
-								localStorage.setItem('indexPath', res.data.path); // 解决默认进首页还是进工作台
 						    });
 						}else if(res.msg!=''){
 							message.error(res.msg);
@@ -271,15 +270,15 @@
 							// {yun:}t key='member_user_00259'{/yun}localStorage
 							localStorage.clear();
 
-							// window.location.reload();
+							localStorage.setItem('indexPath', (res.data && res.data.path) ? res.data.path : '/index');
 							window.location.href = location.origin + location.pathname;
-							localStorage.setItem('indexPath', res.data.path); // 解决默认进首页还是进工作台
 						} else {
 							_this.cannext = true;
 							_this.$message.error(res.msg);
 							_this.checkCode('vcode_imgs');
 						}
 					}).catch(function (error) {
+						_this.cannext = true;
 						console.log(error);
 					})
 				},

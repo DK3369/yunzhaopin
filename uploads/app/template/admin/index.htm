@@ -313,7 +313,15 @@
         </div>
     </section>
     <!-- script -->
-    <script src="../app/template/admin/js/router.js?v={yun:}$config.cachecode{/yun}"></script>
+    <script>
+    (function () {
+        var p = localStorage.getItem('indexPath') || '';
+        if (!/^\/[A-Za-z0-9_]+$/.test(p)) {
+            localStorage.setItem('indexPath', '/index');
+        }
+    })();
+    </script>
+    <script src="../app/template/admin/js/router.js?v={yun:}$config.cachecode{/yun}&r=20260827ip"></script>
     <script>
     
     localStorage.setItem("pytoken", '{yun:}$pytoken{/yun}');

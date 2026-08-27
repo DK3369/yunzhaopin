@@ -2,7 +2,15 @@
 // Create the router instance with route configuration
 
 const view_path = "../app/template/admin/";
-const indexPath = localStorage.getItem('indexPath');
+function resolveIndexPath() {
+    var p = localStorage.getItem('indexPath') || '';
+    // Nuxt leftover like "/" or "/admin/" would redirect #/ to itself forever
+    if (typeof p === 'string' && /^\/[A-Za-z0-9_]+$/.test(p)) {
+        return p;
+    }
+    return '/index';
+}
+const indexPath = resolveIndexPath();
 
 const router = new VueRouter({
     routes: [
