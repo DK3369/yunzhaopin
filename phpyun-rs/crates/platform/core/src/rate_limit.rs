@@ -1,8 +1,9 @@
 //! Redis-backed distributed rate limiting + login risk control.
 //!
 //! Three granularities:
-//! - `rl:login:<account>` — per account, at most N failures every 15 minutes
-//!   (credential stuffing protection).
+//! - `rl:login:fail:<account>` — per account, at most N **failures** every 15
+//!   minutes (credential stuffing protection). Count only after a failed
+//!   attempt; a correct password must not consume the budget.
 //! - `rl:sms:<mobile>` — per number, 1 per minute + 5 per hour.
 //! - `rl:ip:<ip>:<route>` — per IP (`governor` already does the coarse layer; we
 //!   use Redis here for the distributed layer).
@@ -44,17 +45,39 @@ fn prefix(key: &str) -> &'static str {
     }
 }
 
-/// Preset: login-failure counter (5 failures within 15 minutes triggers a lockout).
+const LOGIN_FAIL_MAX: u64 = 5;
+const LOGIN_FAIL_WINDOW: Duration = Duration::from_secs(900);
+
+fn login_fail_key(account: &str) -> String {
+    format!("rl:login:fail:{account}")
+}
+
+/// Peek the failure counter. Does **not** increment — callers increment only
+/// after a real failed attempt via [`record_login_fail`].
 pub async fn check_login_fail(kv: &Kv, account: &str) -> Result<(), ApiError> {
-    check_and_incr(
+    let current = match kv.get_str(&login_fail_key(account)).await? {
+        Some(s) => s.parse::<u64>().unwrap_or(u64::MAX),
+        None => 0,
+    };
+    if current >= LOGIN_FAIL_MAX {
+        rate_limit_blocked("rl:login");
+        return Err(ApiError::rate_limit());
+    }
+    Ok(())
+}
+
+/// Count one failed login. Redis errors are ignored so a blip cannot turn a
+/// 401 into a 500 on the failure path.
+pub async fn record_login_fail(kv: &Kv, account: &str) {
+    let _ = check_and_incr(
         kv,
-        &format!("rl:login:fail:{account}"),
+        &login_fail_key(account),
         LimitRule {
-            max: 5,
-            window: Duration::from_secs(900),
+            max: LOGIN_FAIL_MAX,
+            window: LOGIN_FAIL_WINDOW,
         },
     )
-    .await
+    .await;
 }
 
 /// Preset: SMS sending — 1 per minute + 5 per hour.
@@ -82,5 +105,5 @@ pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
 /// Reset the failure counter on a successful login. Errors are ignored (must not
 /// disturb the main flow).
 pub async fn clear_login_fail(kv: &Kv, account: &str) {
-    let _ = kv.del(&format!("rl:login:fail:{account}")).await;
+    let _ = kv.del(&login_fail_key(account)).await;
 }

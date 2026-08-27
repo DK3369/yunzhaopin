@@ -66,30 +66,19 @@ pub async fn login(
     password: &str,
     ctx: LoginContext<'_>,
 ) -> AppResult<LoginResult> {
-    // 1. Pre-check the login-failure counter (distributed via Redis)
-    let account_key = format!("rl:login:fail:{account}");
-    if rate_limit::check_and_incr(
-        &state.redis,
-        &account_key,
-        rate_limit::LimitRule {
-            max: 5,
-            window: Duration::from_secs(900),
-        },
-    )
-    .await
-    .is_err()
-    {
-        auth_event("login_blocked", Some("too_many_fails"));
-        return Err(ApiError::rate_limit());
-    }
+    // 1. Pre-check the login-failure counter (distributed via Redis).
+    //    Peek only — increment happens after a real failed attempt.
+    rate_limit::check_login_fail(&state.redis, account).await?;
 
     // 2. Look up the user (use the reader pool to offload the writer)
-    let user: Member = user_repo::find_for_login(state.db.reader(), account)
-        .await?
-        .ok_or_else(|| {
+    let user: Member = match user_repo::find_for_login(state.db.reader(), account).await? {
+        Some(u) => u,
+        None => {
             auth_event("login_fail", Some("not_found"));
-            ApiError::bad_credentials()
-        })?;
+            rate_limit::record_login_fail(&state.redis, account).await;
+            return Err(ApiError::bad_credentials());
+        }
+    };
 
     if user.status == 2 {
         auth_event("login_fail", Some("locked"));
@@ -105,6 +94,7 @@ pub async fn login(
     .await;
     if !valid {
         auth_event("login_fail", Some("bad_password"));
+        rate_limit::record_login_fail(&state.redis, account).await;
         return Err(ApiError::bad_credentials());
     }
 
@@ -248,36 +238,25 @@ pub async fn login_with_sms_code(
     use phpyun_core::verify::{self, VerifyKind};
 
     // 1. Rate limit (shares the same account key with password login to defend against
-    //    credential-stuffing)
-    let rl_key = format!("rl:login:fail:{mobile}");
-    if rate_limit::check_and_incr(
-        &state.redis,
-        &rl_key,
-        rate_limit::LimitRule {
-            max: 5,
-            window: Duration::from_secs(900),
-        },
-    )
-    .await
-    .is_err()
-    {
-        auth_event("login_blocked", Some("too_many_fails"));
-        return Err(ApiError::rate_limit());
-    }
+    //    credential-stuffing). Peek only; increment after a real failed attempt.
+    rate_limit::check_login_fail(&state.redis, mobile).await?;
 
     // 2. Verify the SMS code
     if !verify::verify(&state.redis, VerifyKind::SmsLogin, mobile, sms_code).await? {
         auth_event("login_fail", Some("bad_sms_code"));
+        rate_limit::record_login_fail(&state.redis, mobile).await;
         return Err(ApiError::bad_credentials());
     }
 
     // 3. Look up the user by phone number
-    let user = user_repo::find_by_mobile(state.db.reader(), mobile)
-        .await?
-        .ok_or_else(|| {
+    let user = match user_repo::find_by_mobile(state.db.reader(), mobile).await? {
+        Some(u) => u,
+        None => {
             auth_event("login_fail", Some("not_found"));
-            ApiError::bad_credentials()
-        })?;
+            rate_limit::record_login_fail(&state.redis, mobile).await;
+            return Err(ApiError::bad_credentials());
+        }
+    };
     if user.status == 2 {
         auth_event("login_fail", Some("locked"));
         return Err(ApiError::locked());
