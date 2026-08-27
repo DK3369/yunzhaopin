@@ -123,6 +123,12 @@ pub struct JobListQuery {
     /// `rec=true` keeps only sticky/promoted postings (`rec_time >= now`).
     #[serde(default)]
     pub rec: bool,
+    /// `cert=true` keeps jobs whose company has `yyzz_status=1` (PHP `cert`).
+    #[serde(default)]
+    pub cert: bool,
+    /// PHP `order=lastdate|sdate`
+    #[validate(length(max = 16))]
+    pub order: Option<String>,
     /// Company uid — company profile “open jobs” list.
     #[validate(range(min = 1, max = 99_999_999))]
     pub uid: Option<u64>,
@@ -171,6 +177,12 @@ pub fn job_summary_from_dict_fav(
     let job_hy = dicts.industry(j.hy).to_string();
     let job_city_one = dicts.city(j.provinceid).to_string();
     let job_city_two = dicts.city(j.cityid).to_string();
+    let job_city_three = dicts.city(j.three_cityid).to_string();
+    let welfare_n = j
+        .welfare
+        .as_deref()
+        .map(|s| dicts.welfare_labels(s))
+        .unwrap_or_default();
 
     let is_rec = j.rec == 1 && j.rec_time > now;
     let is_urgent = j.urgent == 1 && j.urgent_time > now;
@@ -199,6 +211,7 @@ pub fn job_summary_from_dict_fav(
         three_city_id: j.three_cityid,
         job_city_one,
         job_city_two,
+        job_city_three,
 
         salary: (j.minsalary + j.maxsalary) / 2,
         min_salary: j.minsalary,
@@ -208,6 +221,11 @@ pub fn job_summary_from_dict_fav(
         exp_n: dicts.comclass(j.exp).to_string(),
         edu: j.edu,
         edu_n: dicts.comclass(j.edu).to_string(),
+        pr_n: String::new(),
+        mun_n: String::new(),
+        welfare_n,
+        yyzz_status: 0,
+        fact_status: 0,
 
         rec: j.rec,
         urgent: j.urgent,
@@ -218,10 +236,39 @@ pub fn job_summary_from_dict_fav(
 
         sdate: j.sdate,
         lastupdate: j.lastupdate,
+        lastupdate_n: fmt_ts(j.lastupdate, "%Y-%m-%d"),
         newtime,
 
         jobhits: j.jobhits,
         is_favorited,
+    }
+}
+
+async fn attach_company_card_fields(
+    state: &AppState,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+    jobs: &mut [JobSummary],
+) {
+    let mut uids: Vec<u64> = jobs.iter().map(|j| j.uid).collect();
+    uids.sort_unstable();
+    uids.dedup();
+    let Ok(cards) =
+        phpyun_models::company::repo::list_cards_by_uids(state.db.reader(), &uids).await
+    else {
+        return;
+    };
+    let map: std::collections::HashMap<u64, phpyun_models::company::repo::CompanyCard> =
+        cards.into_iter().map(|c| (c.uid, c)).collect();
+    for j in jobs {
+        if let Some(c) = map.get(&j.uid) {
+            j.pr_n = dicts.comclass(c.pr).to_string();
+            j.mun_n = dicts.comclass(c.mun).to_string();
+            j.yyzz_status = c.yyzz_status;
+            j.fact_status = c.fact_status;
+            if j.job_hy.is_empty() {
+                j.job_hy = dicts.industry(c.hy).to_string();
+            }
+        }
     }
 }
 
@@ -285,6 +332,8 @@ pub async fn list_jobs(
         uptime: q.uptime,
         urgent: q.urgent,
         rec: q.rec,
+        cert: q.cert,
+        order: q.order.clone(),
         uid: q.uid,
         did: q.did,
     };
@@ -298,18 +347,18 @@ pub async fn list_jobs(
         &job_ids,
     )
     .await;
-    let paged: Paged<JobSummary> = Paged::new(
-        r.list
+    let paged: Paged<JobSummary> = {
+        let mut list: Vec<JobSummary> = r
+            .list
             .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
                 crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
-            .collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    );
+            .collect();
+        attach_company_card_fields(&state, &dicts, &mut list).await;
+        Paged::new(list, r.total, page.page, page.page_size)
+    };
     Ok(ApiResponse::data(
         json::to_value(&paged).map_err(phpyun_core::ApiError::internal)?,
     ))
@@ -376,7 +425,7 @@ pub async fn build_job_detail_value(
         .job
         .welfare
         .as_deref()
-        .map(|s| dicts.comclass_csv(s))
+        .map(|s| dicts.welfare_labels(s))
         .unwrap_or_default();
     let langname = d
         .job
@@ -459,6 +508,8 @@ pub async fn build_job_detail_value(
             "linkphone": d.linkphone,
             "linkmail": d.linkmail,
             "login_date": d.login_date,
+            "address": d.com_address,
+            "name": d.com_name,
         },
 
         // Dictionary translation results (display-only, read-only)
@@ -544,14 +595,17 @@ pub async fn similar_jobs(
         &job_ids,
     )
     .await;
-    Ok(ApiResponse::data(
-        list.into_iter()
+    Ok(ApiResponse::data({
+        let mut out: Vec<JobSummary> = list
+            .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
                 crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
-            .collect(),
-    ))
+            .collect();
+        attach_company_card_fields(&state, &dicts, &mut out).await;
+        out
+    }))
 }
 
 /// Other jobs from the same company
@@ -578,14 +632,17 @@ pub async fn same_company_jobs(
         &job_ids,
     )
     .await;
-    Ok(ApiResponse::data(
-        list.into_iter()
+    Ok(ApiResponse::data({
+        let mut out: Vec<JobSummary> = list
+            .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
                 crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
-            .collect(),
-    ))
+            .collect();
+        attach_company_card_fields(&state, &dicts, &mut out).await;
+        out
+    }))
 }
 
 /// Public job list for a given company (paginated)
@@ -612,18 +669,18 @@ pub async fn company_jobs(
         &job_ids,
     )
     .await;
-    Ok(ApiResponse::data(Paged::new(
-        r.list
+    Ok(ApiResponse::data({
+        let mut list: Vec<JobSummary> = r
+            .list
             .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
                 crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
-            .collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+            .collect();
+        attach_company_card_fields(&state, &dicts, &mut list).await;
+        Paged::new(list, r.total, page.page, page.page_size)
+    }))
 }
 
 // ==================== Phone click logging ====================

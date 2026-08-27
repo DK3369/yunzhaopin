@@ -58,6 +58,10 @@ pub struct ResumeFilter<'a> {
     /// LIKE match against `name`. Resumes with nametype=2 (hidden real name) also participate in matching, but their names are masked when returned.
     pub keyword: Option<&'a str>,
     pub education: Option<i32>,
+    pub exp: Option<i32>,
+    pub job1: Option<i32>,
+    pub province_id: Option<i32>,
+    pub city_id: Option<i32>,
     pub sex: Option<i32>,
     pub marriage: Option<i32>,
     pub did: u32,
@@ -109,6 +113,29 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
     if let Some(v) = f.education {
         qb.push(" AND edu = ");
         qb.push_bind(v);
+    }
+    if let Some(v) = f.exp {
+        qb.push(" AND exp = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.job1 {
+        qb.push(
+            " AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE FIND_IN_SET(",
+        );
+        qb.push_bind(v);
+        qb.push(", job_classid) OR job_classid = ");
+        qb.push_bind(v.to_string());
+        qb.push(")");
+    }
+    if let Some(v) = f.province_id {
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE provinceid = ");
+        qb.push_bind(v);
+        qb.push(")");
+    }
+    if let Some(v) = f.city_id {
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE cityid = ");
+        qb.push_bind(v);
+        qb.push(")");
     }
     if let Some(v) = f.sex {
         qb.push(" AND sex = ");

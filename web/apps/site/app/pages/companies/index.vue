@@ -10,9 +10,10 @@ const rec = computed(() => route.query.rec === '1')
 const cert = computed(() => route.query.cert === '1')
 const hy = computed(() => numQuery(route.query.hy))
 const provinceId = computed(() => numQuery(route.query.province_id))
+const cityId = computed(() => numQuery(route.query.city_id))
 const api = useApi()
 const { data, error } = await useAsyncData(
-  () => `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${cert.value}-${hy.value}-${provinceId.value}`,
+  () => `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${cert.value}-${hy.value}-${provinceId.value}-${cityId.value}`,
   () =>
     api.get<{ list: CompanyLike[]; total: number }>('/v1/wap/companies', {
       page: page.value,
@@ -22,6 +23,7 @@ const { data, error } = await useAsyncData(
       cert: cert.value || undefined,
       hy: hy.value,
       province_id: provinceId.value,
+      city_id: cityId.value,
     }),
 )
 const { data: industries } = await useAsyncData(
@@ -29,8 +31,17 @@ const { data: industries } = await useAsyncData(
   () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
 )
 const { data: provinces } = await useAsyncData(
-  () => `regions-cn-1-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/regions', { country: 'CN', level: 1 }).catch(() => [] as DictItem[]),
+  () => `dict-city-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
+)
+const { data: cities } = await useAsyncData(
+  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
+  () =>
+    provinceId.value
+      ? api
+          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value })
+          .catch(() => [] as DictItem[])
+      : Promise.resolve([] as DictItem[]),
 )
 useSeoMeta({ title: t('home.famous_companies') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
@@ -68,7 +79,7 @@ const list = computed(() => data.value?.list || [])
         <div class="firmsearch_h1_box_line yun_bg_color" />
       </div>
       <FilterRow
-        :label="$t('common.company')"
+        :label="$t('admin_user_company_00373')"
         param="hy"
         :items="industries || []"
         :current="hy"
@@ -80,6 +91,15 @@ const list = computed(() => data.value?.list || [])
         param="province_id"
         :items="provinces || []"
         :current="provinceId"
+        path="/companies"
+        :all-label="$t('common.all')"
+      />
+      <FilterRow
+        v-if="provinceId && (cities || []).length"
+        :label="$t('common_02110')"
+        param="city_id"
+        :items="cities || []"
+        :current="cityId"
         path="/companies"
         :all-label="$t('common.all')"
       />
@@ -117,7 +137,7 @@ const list = computed(() => data.value?.list || [])
       <H5FilterBar
         :all-label="$t('common.all')"
         :tabs="[
-          { key: 'hy', label: $t('common.company'), items: industries || [] },
+          { key: 'hy', label: $t('admin_user_company_00373'), items: industries || [] },
           { key: 'province_id', label: $t('common_02110'), items: provinces || [] },
         ]"
       />

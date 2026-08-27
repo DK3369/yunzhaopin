@@ -43,6 +43,14 @@ pub struct ResumeListQuery {
     pub keyword: Option<String>,
     #[validate(range(min = 0, max = 99))]
     pub education: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
+    pub exp: Option<i32>,
+    #[validate(range(min = 0, max = 9_999_999))]
+    pub job1: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub province_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub city_id: Option<i32>,
     #[validate(range(min = 0, max = 9))]
     pub sex: Option<i32>,
     #[validate(range(min = 0, max = 9))]
@@ -157,9 +165,9 @@ impl ResumeSummary {
             living: r.living,
             domicile: r.domicile,
             address: r.address,
-            education_n: dicts.comclass(r.education).to_string(),
+            education_n: dicts.user_or_com(r.education).to_string(),
             education: r.education,
-            exp_n: dicts.comclass(r.exp).to_string(),
+            exp_n: dicts.user_or_com(r.exp).to_string(),
             exp: r.exp,
             has_photo: r.photo.as_deref().is_some_and(|p| !p.is_empty()),
             photo_n,
@@ -268,6 +276,10 @@ pub async fn list_resumes(
     let filter = ResumeFilter {
         keyword: q.keyword.as_deref(),
         education: q.education,
+        exp: q.exp,
+        job1: q.job1,
+        province_id: q.province_id,
+        city_id: q.city_id,
         sex: q.sex,
         marriage: q.marriage,
         did: q.did,
@@ -303,7 +315,14 @@ fn apply_expect(
         row.expect_city_n = dicts.city(city_id).to_string();
     }
     if row.expect_salary_n.is_empty() {
-        row.expect_salary_n = dicts.comclass(e.salary).to_string();
+        row.expect_salary_n = {
+            let u = dicts.userclass(e.salary);
+            if u.is_empty() {
+                dicts.comclass(e.salary).to_string()
+            } else {
+                u.to_string()
+            }
+        };
     }
 }
 
@@ -379,7 +398,7 @@ pub fn resume_expect_item_from_dict(
     Ok(ResumeExpectItem {
         job_class_n: dicts.job(job_classid).to_string(),
         city_class_n: dicts.city(city_classid).to_string(),
-        salary_n: dicts.comclass(e.salary).to_string(),
+        salary_n: dicts.user_or_com(e.salary).to_string(),
         id: e.id,
         uid: e.uid,
         name: e.name,
@@ -404,7 +423,7 @@ pub fn resume_edu_item_from_dict(
     dicts: &phpyun_services::dict_service::LocalizedDicts,
 ) -> ResumeEduItem {
     ResumeEduItem {
-        education_n: dicts.comclass(e.education).to_string(),
+        education_n: dicts.user_or_com(e.education).to_string(),
         id: e.id,
         uid: e.uid,
         eid: e.eid,
@@ -558,9 +577,9 @@ pub async fn resume_detail(
         birthday: r.birthday,
         marriage: r.marriage,
         education: r.education,
-        education_n: dicts.comclass(r.education).to_string(),
+        education_n: dicts.user_or_com(r.education).to_string(),
         exp: r.exp,
-        exp_n: dicts.comclass(r.exp).to_string(),
+        exp_n: dicts.user_or_com(r.exp).to_string(),
         nationality: r.nationality,
 
         height: r.height,

@@ -34,13 +34,18 @@ export type JobLike = {
   edu_n?: string
   job_hy?: string
   hy_n?: string
+  pr_n?: string
+  mun_n?: string
+  job_city_three?: string
   newtime?: boolean
   is_urgent?: boolean
   is_rec?: boolean
   lastupdate?: number
   lastupdate_n?: string
   welfare?: string[] | string
-  welfare_n?: string
+  welfare_n?: string[] | string
+  yyzz_status?: number
+  fact_status?: number
 }
 
 export type CompanyLike = {

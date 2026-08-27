@@ -260,6 +260,11 @@ pub struct CompanyDetail {
     /// How many times the current jobseeker has applied to this company (PHP `userid_job`)
     pub userid_job: i32,
 
+    /// PHP `$com.welfare_n` tags. Additive.
+    pub welfare_n: Vec<String>,
+    /// PHP `$invite_resume` (面试邀请数). Additive.
+    pub invite_resume: u64,
+
     // ---- Company showcase items (PHP `show[]` from `phpyun_company_show`) ----
     pub show: Vec<CompanyShowItem>,
 }
@@ -300,6 +305,9 @@ pub async fn company_detail(
     let zp_num = phpyun_models::company::repo::count_open_jobs(state.db.reader(), uid)
         .await
         .unwrap_or(0);
+    let invite_resume = phpyun_models::company::repo::count_interview_invites(state.db.reader(), uid)
+        .await
+        .unwrap_or(0);
     // Bump hit + expoure counters (fire-and-forget — page renders even if write fails).
     let pool = state.db.pool().clone();
     phpyun_core::background::spawn_best_effort("company.hits", async move {
@@ -311,6 +319,11 @@ pub async fn company_detail(
     let mun_n = dicts.comclass(c.mun).to_string();
     let city_one = dicts.city(c.provinceid).to_string();
     let city_two = dicts.city(c.cityid).to_string();
+    let welfare_n = c
+        .welfare
+        .as_deref()
+        .map(|s| dicts.welfare_labels(s))
+        .unwrap_or_default();
 
     // Company showcase items (phpyun_company_show, status=0 means active)
     let show_items: Vec<CompanyShowItem> =
@@ -417,6 +430,8 @@ pub async fn company_detail(
 
         isatn,
         userid_job,
+        welfare_n,
+        invite_resume,
 
         show: show_items,
     }))

@@ -30,6 +30,7 @@
 
 use phpyun_core::{AppResult, AppState, Lang};
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -105,9 +106,21 @@ pub struct Dicts {
     pub industry: DictTable,
     /// `phpyun_comclass`: welfare / language / education / marriage / company-size / etc.
     pub comclass: DictTable,
+    /// `phpyun_userclass`: resume edu / exp / salary / marriage (PHP `userclass` cache)
+    pub userclass: DictTable,
     pub city: DictTable,
     pub part: DictTable,
     pub question: DictTable,
+    /// `variable` → parent id (`job_edu` → 38).
+    comclass_var: HashMap<String, i32>,
+    userclass_var: HashMap<String, i32>,
+    /// parent `keyid` → child ids
+    comclass_children: HashMap<i32, Vec<i32>>,
+    userclass_children: HashMap<i32, Vec<i32>>,
+    /// PHP `$city_index` province ids (from `data/plus/city.cache.php`)
+    city_index: Vec<i32>,
+    /// PHP `$city_type[parent]` children
+    city_children: HashMap<i32, Vec<i32>>,
 }
 
 impl Dicts {
@@ -185,6 +198,7 @@ impl LocalizedDicts {
             "part" => &self.inner.part,
             "question" | "qa" | "q" => &self.inner.question,
             "comclass" => &self.inner.comclass,
+            "userclass" | "user" => &self.inner.userclass,
             _ => return None,
         };
         table.find_id_by_name(name)
@@ -206,12 +220,115 @@ impl LocalizedDicts {
     pub fn city(&self, id: i32) -> &str {
         self.inner.city.resolve(id, self.lang)
     }
+    pub fn userclass(&self, id: i32) -> &str {
+        self.inner.userclass.resolve(id, self.lang)
+    }
+    /// Resume fields: try `userclass` then `comclass` (PHP mixed ids in the wild).
+    pub fn user_or_com(&self, id: i32) -> &str {
+        let u = self.userclass(id);
+        if !u.is_empty() {
+            u
+        } else {
+            self.comclass(id)
+        }
+    }
     pub fn part(&self, id: i32) -> &str {
         self.inner.part.resolve(id, self.lang)
     }
     pub fn question(&self, id: i32) -> &str {
         self.inner.question.resolve(id, self.lang)
     }
+
+    /// PHP `welfarename`: job.welfare is a CSV of **names** (not ids).
+    pub fn welfare_labels(&self, raw: &str) -> Vec<String> {
+        let from_ids = self.comclass_csv(raw);
+        if !from_ids.is_empty() {
+            return from_ids;
+        }
+        raw.split([',', '，', '|'])
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .map(|s| s.to_string())
+            .collect()
+    }
+
+    pub fn comclass_by_variable(&self, variable: &str) -> Vec<(i32, String)> {
+        group_named(
+            &self.inner.comclass,
+            &self.inner.comclass_children,
+            &self.inner.comclass_var,
+            variable,
+            self.lang,
+        )
+    }
+    pub fn userclass_by_variable(&self, variable: &str) -> Vec<(i32, String)> {
+        group_named(
+            &self.inner.userclass,
+            &self.inner.userclass_children,
+            &self.inner.userclass_var,
+            variable,
+            self.lang,
+        )
+    }
+    /// PHP `$city_index` + `$city_name` (job/company/resume search filters).
+    pub fn city_provinces(&self) -> Vec<(i32, String)> {
+        self.inner
+            .city_index
+            .iter()
+            .filter_map(|id| {
+                let n = self.city(*id);
+                (!n.is_empty()).then(|| (*id, n.to_string()))
+            })
+            .collect()
+    }
+    pub fn city_of_parent(&self, parent_id: i32) -> Vec<(i32, String)> {
+        self.inner
+            .city_children
+            .get(&parent_id)
+            .into_iter()
+            .flatten()
+            .filter_map(|id| {
+                let n = self.city(*id);
+                (!n.is_empty()).then(|| (*id, n.to_string()))
+            })
+            .collect()
+    }
+    pub fn industry_all(&self) -> Vec<(i32, String)> {
+        let mut rows: Vec<(i32, String)> = self
+            .inner
+            .industry
+            .default_zh
+            .iter()
+            .filter(|(id, name)| **id > 0 && !name.is_empty())
+            .map(|(id, name)| {
+                let n = self.industry(*id);
+                (*id, if n.is_empty() { name.clone() } else { n.to_string() })
+            })
+            .collect();
+        rows.sort_by_key(|(id, _)| *id);
+        rows
+    }
+}
+
+fn group_named(
+    table: &DictTable,
+    children: &HashMap<i32, Vec<i32>>,
+    vars: &HashMap<String, i32>,
+    variable: &str,
+    lang: Lang,
+) -> Vec<(i32, String)> {
+    let Some(&parent) = vars.get(variable) else {
+        return Vec::new();
+    };
+    children
+        .get(&parent)
+        .into_iter()
+        .flatten()
+        .filter_map(|id| {
+            let n = table.resolve(*id, lang);
+            (!n.is_empty()).then(|| (*id, n.to_string()))
+        })
+        .collect()
 }
 
 // Internal helper on Dicts so LocalizedDicts doesn't need to re-implement CSV parsing
@@ -385,36 +502,258 @@ fn empty_dicts() -> Dicts {
         job: DictTable::default(),
         industry: DictTable::default(),
         comclass: DictTable::default(),
+        userclass: DictTable::default(),
         city: DictTable::default(),
         part: DictTable::default(),
         question: DictTable::default(),
+        comclass_var: HashMap::new(),
+        userclass_var: HashMap::new(),
+        comclass_children: HashMap::new(),
+        userclass_children: HashMap::new(),
+        city_index: Vec::new(),
+        city_children: HashMap::new(),
     }
 }
 
 async fn load_all(state: &AppState) -> AppResult<Dicts> {
     let db = state.db.reader();
 
-    // Load all 6 primary tables in parallel (zh-CN default values)
-    let (job, ind, com, city, part, q) = tokio::join!(
+    let (job, ind, com_rows, city, part, q, user_rows) = tokio::join!(
         load_default(db, "phpyun_job_class"),
         load_default(db, "phpyun_industry"),
-        load_default(db, "phpyun_comclass"),
+        load_class_rows(db, "phpyun_comclass"),
         load_default(db, "phpyun_city_class"),
         load_default(db, "phpyun_partclass"),
         load_default(db, "phpyun_q_class"),
+        load_class_rows(db, "phpyun_userclass"),
     );
 
-    // Load the translation table in one shot (bucketed by `kind`). If the table is missing, fall back silently to an empty map.
     let i18n = load_i18n(db).await.unwrap_or_default();
+    let (comclass, comclass_var, comclass_children) = split_class_rows(com_rows?);
+    let (userclass, userclass_var, userclass_children) = split_class_rows(user_rows?);
+
+    let mut city_zh = city?;
+    let (city_index, city_children, plus_names) = load_php_city_cache(state);
+    for (id, name) in plus_names {
+        if !name.is_empty() {
+            city_zh.insert(id, name);
+        }
+    }
 
     Ok(Dicts {
         job: build_table(job?, i18n.get("job").cloned().unwrap_or_default()),
         industry: build_table(ind?, i18n.get("industry").cloned().unwrap_or_default()),
-        comclass: build_table(com?, i18n.get("comclass").cloned().unwrap_or_default()),
-        city: build_table(city?, i18n.get("city").cloned().unwrap_or_default()),
+        comclass: build_table(comclass, i18n.get("comclass").cloned().unwrap_or_default()),
+        userclass: build_table(userclass, i18n.get("userclass").cloned().unwrap_or_default()),
+        city: build_table(city_zh, i18n.get("city").cloned().unwrap_or_default()),
         part: build_table(part?, i18n.get("part").cloned().unwrap_or_default()),
         question: build_table(q?, i18n.get("question").cloned().unwrap_or_default()),
+        comclass_var,
+        userclass_var,
+        comclass_children,
+        userclass_children,
+        city_index,
+        city_children,
     })
+}
+
+fn split_class_rows(
+    rows: Vec<(i32, Option<String>, i32, Option<String>)>,
+) -> (
+    HashMap<i32, String>,
+    HashMap<String, i32>,
+    HashMap<i32, Vec<i32>>,
+) {
+    let mut names = HashMap::new();
+    let mut vars = HashMap::new();
+    let mut children: HashMap<i32, Vec<i32>> = HashMap::new();
+    for (id, name, keyid, variable) in rows {
+        names.insert(id, name.unwrap_or_default());
+        if keyid > 0 {
+            children.entry(keyid).or_default().push(id);
+        }
+        if let Some(v) = variable {
+            let v = v.trim();
+            if !v.is_empty() {
+                vars.insert(v.to_string(), id);
+            }
+        }
+    }
+    (names, vars, children)
+}
+
+async fn load_class_rows(
+    pool: &sqlx::MySqlPool,
+    table: &str,
+) -> AppResult<Vec<(i32, Option<String>, i32, Option<String>)>> {
+    phpyun_models::dict_i18n::repo::list_class_rows(pool, table)
+        .await
+        .map_err(phpyun_core::ApiError::internal)
+}
+
+/// PHP `CacheM->GetCache('city')` reads `data/plus/city.cache.php`.
+/// `phpyun_city_class` in this database is the world-country tree (ids ≥ 4001),
+/// while jobs/resumes still store the legacy China ids (6=广东, 81=河源).
+fn load_php_city_cache(state: &AppState) -> (Vec<i32>, HashMap<i32, Vec<i32>>, HashMap<i32, String>) {
+    let Some(path) = city_cache_path(state) else {
+        return (Vec::new(), HashMap::new(), HashMap::new());
+    };
+    let Ok(text) = std::fs::read_to_string(&path) else {
+        tracing::warn!(path = %path.display(), "city.cache.php unreadable");
+        return (Vec::new(), HashMap::new(), HashMap::new());
+    };
+    let index = parse_city_index(&text);
+    let children = parse_city_type(&text);
+    let names = parse_city_name(&text);
+    tracing::info!(
+        path = %path.display(),
+        provinces = index.len(),
+        names = names.len(),
+        "loaded PHP city.cache.php"
+    );
+    (index, children, names)
+}
+
+fn city_cache_path(state: &AppState) -> Option<PathBuf> {
+    let mut cands: Vec<PathBuf> = Vec::new();
+    if let Some(root) = state.config.storage_fs_root.as_deref() {
+        cands.push(Path::new(root).join("data/plus/city.cache.php"));
+    }
+    cands.push(PathBuf::from("./uploads/data/plus/city.cache.php"));
+    cands.push(PathBuf::from("/www/wwwroot/zzzz.com/uploads/data/plus/city.cache.php"));
+    cands.into_iter().find(|p| p.is_file())
+}
+
+fn slice_after<'a>(src: &'a str, marker: &str) -> Option<&'a str> {
+    src.split_once(marker).map(|(_, rest)| rest)
+}
+
+fn parse_city_index(src: &str) -> Vec<i32> {
+    let Some(rest) = slice_after(src, "$city_index=array(") else {
+        return Vec::new();
+    };
+    let body = rest.split_once(')').map(|(b, _)| b).unwrap_or(rest);
+    parse_quoted_ints(body)
+}
+
+fn parse_city_name(src: &str) -> HashMap<i32, String> {
+    let Some(rest) = slice_after(src, "$city_name=array(") else {
+        return HashMap::new();
+    };
+    parse_int_string_pairs(rest)
+}
+
+fn parse_city_type(src: &str) -> HashMap<i32, Vec<i32>> {
+    let Some(rest) = slice_after(src, "$city_type=array(") else {
+        return HashMap::new();
+    };
+    let end = rest.find("$city_name=").unwrap_or(rest.len());
+    let body = &rest[..end];
+    let mut map = HashMap::new();
+    let bytes = body.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'\'' {
+            let key_start = i + 1;
+            let mut j = key_start;
+            while j < bytes.len() && bytes[j] != b'\'' {
+                j += 1;
+            }
+            let parent = std::str::from_utf8(&bytes[key_start..j])
+                .ok()
+                .and_then(|s| s.parse::<i32>().ok());
+            i = j + 1;
+            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                i += 1;
+            }
+            if i + 1 < bytes.len() && bytes[i] == b'=' && bytes[i + 1] == b'>' {
+                i += 2;
+                while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                    i += 1;
+                }
+                if body[i..].starts_with("array(") {
+                    i += 6;
+                    let inner_end = body[i..].find(')').map(|p| i + p).unwrap_or(body.len());
+                    let kids = parse_int_string_pairs(&body[i..inner_end])
+                        .into_iter()
+                        .filter_map(|(_, v)| v.parse::<i32>().ok())
+                        .collect::<Vec<_>>();
+                    if let Some(p) = parent {
+                        map.insert(p, kids);
+                    }
+                    i = inner_end;
+                    continue;
+                }
+            }
+        }
+        i += 1;
+    }
+    map
+}
+
+fn parse_quoted_ints(src: &str) -> Vec<i32> {
+    let mut out = Vec::new();
+    let bytes = src.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'\'' {
+            let s = i + 1;
+            let mut j = s;
+            while j < bytes.len() && bytes[j] != b'\'' {
+                j += 1;
+            }
+            if let Ok(n) = std::str::from_utf8(&bytes[s..j]).unwrap_or("").parse::<i32>() {
+                out.push(n);
+            }
+            i = j + 1;
+            continue;
+        }
+        i += 1;
+    }
+    out
+}
+
+fn parse_int_string_pairs(src: &str) -> HashMap<i32, String> {
+    let mut out = HashMap::new();
+    let bytes = src.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'\'' {
+            let ks = i + 1;
+            let mut j = ks;
+            while j < bytes.len() && bytes[j] != b'\'' {
+                j += 1;
+            }
+            let key = std::str::from_utf8(&bytes[ks..j])
+                .ok()
+                .and_then(|s| s.parse::<i32>().ok());
+            i = j + 1;
+            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                i += 1;
+            }
+            if i + 1 < bytes.len() && bytes[i] == b'=' && bytes[i + 1] == b'>' {
+                i += 2;
+                while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                    i += 1;
+                }
+                if i < bytes.len() && bytes[i] == b'\'' {
+                    i += 1;
+                    let vs = i;
+                    while i < bytes.len() && bytes[i] != b'\'' {
+                        i += 1;
+                    }
+                    if let (Some(k), Ok(v)) = (key, std::str::from_utf8(&bytes[vs..i])) {
+                        out.insert(k, v.to_string());
+                    }
+                    i += 1;
+                    continue;
+                }
+            }
+            continue;
+        }
+        i += 1;
+    }
+    out
 }
 
 fn build_table(

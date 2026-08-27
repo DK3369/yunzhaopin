@@ -116,6 +116,9 @@ pub struct Company {
     #[sqlx(default)]
     pub fact_status: i32,
 
+    #[serde(default)]
+    pub welfare: Option<String>,
+
     #[sqlx(try_from = "i32")]
     pub did: u64,
 }

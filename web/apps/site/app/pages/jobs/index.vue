@@ -11,17 +11,24 @@ const job1Son = computed(() => numQuery(route.query.job1_son))
 const jobPost = computed(() => numQuery(route.query.job_post))
 const provinceId = computed(() => numQuery(route.query.province_id))
 const cityId = computed(() => numQuery(route.query.city_id))
+const threeCityId = computed(() => numQuery(route.query.three_city_id))
 const edu = computed(() => numQuery(route.query.edu))
 const exp = computed(() => numQuery(route.query.exp))
 const salaryId = computed(() => numQuery(route.query.salary))
+const hy = computed(() => numQuery(route.query.hy))
+const welfare = computed(() => numQuery(route.query.welfare))
+const report = computed(() => numQuery(route.query.report))
+const uptime = computed(() => numQuery(route.query.uptime))
 const urgent = computed(() => route.query.urgent === '1')
 const rec = computed(() => route.query.rec === '1')
+const cert = computed(() => route.query.cert === '1')
+const order = computed(() => String(route.query.order || ''))
 const salaryBound = computed(() => (salaryId.value ? SALARY_BOUNDS[salaryId.value] : undefined))
 const api = useApi()
 
 const { data, error } = await useAsyncData(
   () =>
-    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${urgent.value}-${rec.value}`,
+    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${uptime.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
   () =>
     api.get<{ list: JobLike[]; total: number }>('/v1/wap/jobs', {
       page: page.value,
@@ -32,12 +39,19 @@ const { data, error } = await useAsyncData(
       job_post: jobPost.value,
       province_id: provinceId.value,
       city_id: cityId.value,
+      three_city_id: threeCityId.value,
       edu: edu.value,
       exp: exp.value,
+      hy: hy.value,
+      welfare: welfare.value,
+      report: report.value,
+      uptime: uptime.value,
       min_salary: salaryBound.value?.min_salary,
       max_salary: salaryBound.value?.max_salary,
       urgent: urgent.value ? true : undefined,
       rec: rec.value ? true : undefined,
+      cert: cert.value ? true : undefined,
+      order: order.value || undefined,
     }),
 )
 const list = computed(() => data.value?.list || [])
@@ -51,14 +65,16 @@ const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === job1.value)
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === job1Son.value)?.children || [])
 
 const { data: provinces } = await useAsyncData(
-  () => `regions-cn-1-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/regions', { country: 'CN', level: 1 }).catch(() => [] as DictItem[]),
+  () => `dict-city-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
 )
 const { data: cities } = await useAsyncData(
-  () => `regions-child-${locale.value}-${provinceId.value || 0}`,
+  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
   () =>
     provinceId.value
-      ? api.get<DictItem[]>('/v1/wap/regions/children', { id: provinceId.value }).catch(() => [] as DictItem[])
+      ? api
+          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value })
+          .catch(() => [] as DictItem[])
       : Promise.resolve([] as DictItem[]),
 )
 const { data: edus } = await useAsyncData(
@@ -72,6 +88,27 @@ const { data: exps } = await useAsyncData(
 const { data: salaries } = await useAsyncData(
   () => `dict-salary-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/salaries').catch(() => [] as DictItem[]),
+)
+const { data: industries } = await useAsyncData(
+  () => `dict-hy-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
+)
+const { data: welfares } = await useAsyncData(
+  () => `dict-welfare-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/welfares').catch(() => [] as DictItem[]),
+)
+const { data: reports } = await useAsyncData(
+  () => `dict-report-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/reports').catch(() => [] as DictItem[]),
+)
+const { data: districts } = await useAsyncData(
+  () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
+  () =>
+    cityId.value
+      ? api
+          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: cityId.value })
+          .catch(() => [] as DictItem[])
+      : Promise.resolve([] as DictItem[]),
 )
 const { data: ads } = await useAsyncData('ads-504', () =>
   api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '504', limit: 3 }).catch(() => []),
@@ -87,11 +124,20 @@ const jobLabel = computed(() => {
   return hit?.name || ''
 })
 const cityLabel = computed(() => {
-  const hit = [...(provinces.value || []), ...(cities.value || [])].find(
-    (c) => c.id === cityId.value || c.id === provinceId.value,
+  const hit = [...(provinces.value || []), ...(cities.value || []), ...(districts.value || [])].find(
+    (c) => c.id === threeCityId.value || c.id === cityId.value || c.id === provinceId.value,
   )
   return hit?.name || ''
 })
+const dictName = (items: DictItem[] | null | undefined, id?: number) =>
+  items?.find((x) => x.id === id)?.name || ''
+const uptimeItems = computed<DictItem[]>(() => [
+  { id: 1, name: t('common_01940') },
+  { id: 3, name: t('wap_00432') },
+  { id: 7, name: t('wap_00433') },
+  { id: 30, name: t('admin_user_00175') },
+  { id: 90, name: t('wap_00431') },
+])
 const { data: recSide } = await useAsyncData(
   () => `jobs-rec-side-${locale.value}`,
   () => api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 10 }).catch(() => ({ list: [] as JobLike[] })),
@@ -102,6 +148,21 @@ const selected = computed(() => {
   if (keyword.value) rows.push({ param: 'keyword', name: keyword.value })
   if (jobLabel.value) rows.push({ param: 'job1', name: jobLabel.value })
   if (cityLabel.value) rows.push({ param: 'province_id', name: cityLabel.value })
+  const hyN = dictName(industries.value, hy.value)
+  if (hyN) rows.push({ param: 'hy', name: hyN })
+  const eduN = dictName(edus.value, edu.value)
+  if (eduN) rows.push({ param: 'edu', name: eduN })
+  const expN = dictName(exps.value, exp.value)
+  if (expN) rows.push({ param: 'exp', name: expN })
+  const salaryN = dictName(salaries.value, salaryId.value)
+  if (salaryN) rows.push({ param: 'salary', name: salaryN })
+  const welN = dictName(welfares.value, welfare.value)
+  if (welN) rows.push({ param: 'welfare', name: welN })
+  const reportN = dictName(reports.value, report.value)
+  if (reportN) rows.push({ param: 'report', name: reportN })
+  const upN = dictName(uptimeItems.value, uptime.value)
+  if (upN) rows.push({ param: 'uptime', name: upN })
+  if (cert.value) rows.push({ param: 'cert', name: t('common_02393') })
   return rows
 })
 
@@ -141,9 +202,9 @@ function goPage(p: number) {
         <div v-if="selected.length" class="Search_close_box">
           <div>
             <div class="Search_clear">
-              <NuxtLink to="/jobs">{{ $t('common.all') }}</NuxtLink>
+              <NuxtLink to="/jobs">{{ $t('default_00059') }}</NuxtLink>
             </div>
-            <span class="Search_close_box_s">{{ $t('common.search') }}</span>
+            <span class="Search_close_box_s">{{ $t('default_00058') }}</span>
           </div>
           <NuxtLink
             v-for="s in selected"
@@ -197,7 +258,32 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
           />
           <FilterRow
-            :label="$t('home.education_suffix')"
+            v-if="cityId && (districts || []).length"
+            :label="$t('common_01936')"
+            param="three_city_id"
+            :items="districts || []"
+            :current="threeCityId"
+            path="/jobs"
+            :all-label="$t('common.all')"
+          />
+          <FilterRow
+            :label="$t('member_user_00106')"
+            param="salary"
+            :items="salaries || []"
+            :current="salaryId"
+            path="/jobs"
+            :all-label="$t('common.all')"
+          />
+          <FilterRow
+            :label="$t('wap_com_00167')"
+            param="welfare"
+            :items="welfares || []"
+            :current="welfare"
+            path="/jobs"
+            :all-label="$t('common.all')"
+          />
+          <FilterRow
+            :label="$t('wap_com_00283')"
             param="edu"
             :items="edus || []"
             :current="edu"
@@ -205,7 +291,7 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
           />
           <FilterRow
-            :label="$t('home.experience_suffix')"
+            :label="$t('wap_com_00287')"
             param="exp"
             :items="exps || []"
             :current="exp"
@@ -213,10 +299,27 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
           />
           <FilterRow
-            :label="$t('common.negotiable')"
-            param="salary"
-            :items="salaries || []"
-            :current="salaryId"
+            v-if="(reports || []).length"
+            :label="$t('wap_com_00279')"
+            param="report"
+            :items="reports || []"
+            :current="report"
+            path="/jobs"
+            :all-label="$t('common.all')"
+          />
+          <FilterRow
+            :label="$t('default_00360')"
+            param="hy"
+            :items="industries || []"
+            :current="hy"
+            path="/jobs"
+            :all-label="$t('common.all')"
+          />
+          <FilterRow
+            :label="$t('wap_00326')"
+            param="uptime"
+            :items="uptimeItems"
+            :current="uptime"
             path="/jobs"
             :all-label="$t('common.all')"
           />
@@ -224,25 +327,43 @@ function goPage(p: number) {
         <div class="search_h1_box">
           <div class="search_h1_box_title">
             <ul class="search_h1_box_list">
-              <li :class="{ search_job_all: !urgent && !rec }">
-                <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined, rec: undefined }) }">{{
-                  $t('common.latest')
+              <li :class="{ search_job_all: !urgent && !rec && !order && !cert }">
+                <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined, rec: undefined, order: undefined, cert: undefined }) }">{{
+                  $t('common_02394')
                 }}</NuxtLink>
                 <i class="search_h1_box_list_icon" />
               </li>
+              <li :class="{ search_Filter_current: order === 'lastdate' }">
+                <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { order: order === 'lastdate' ? undefined : 'lastdate' }) }">
+                  <span>{{ $t('wap_00326') }}</span><i class="search_Filter_icon" />
+                </NuxtLink>
+              </li>
+              <li :class="{ search_Filter_current: order === 'sdate' }">
+                <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { order: order === 'sdate' ? undefined : 'sdate' }) }">
+                  <span>{{ $t('admin_user_weipin_00030') }}</span><i class="search_Filter_icon" />
+                </NuxtLink>
+              </li>
               <li :class="{ search_h1_box_cur: urgent }" class="job_jp_t">
                 <NuxtLink
-                  :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: urgent ? undefined : '1', rec: undefined }) }"
+                  :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: urgent ? undefined : '1' }) }"
                   class="job_zt"
-                  >{{ $t('wap_com_00250') }}</NuxtLink
+                  >{{ $t('member_com_00326') }}</NuxtLink
                 >
               </li>
               <li :class="{ search_h1_box_cur: rec }" class="job_tj_t">
                 <NuxtLink
-                  :to="{ path: '/jobs', query: mergeQuery(route.query, { rec: rec ? undefined : '1', urgent: undefined }) }"
+                  :to="{ path: '/jobs', query: mergeQuery(route.query, { rec: rec ? undefined : '1' }) }"
                   class="job_zt"
                   >{{ $t('home.recommended_jobs') }}</NuxtLink
                 >
+              </li>
+              <li :class="{ search_h1_box_cur: cert }">
+                <NuxtLink
+                  :to="{ path: '/jobs', query: mergeQuery(route.query, { cert: cert ? undefined : '1' }) }"
+                  class="job_zt"
+                >
+                  <i class="job_tj_chk" /><em>{{ $t('common_02395') }}</em>
+                </NuxtLink>
               </li>
             </ul>
           </div>
@@ -294,19 +415,14 @@ function goPage(p: number) {
     <div class="job_header_nav resumeAdeFlex">
       <div class="job_header_nav_left category">
         <ul>
-          <li :class="{ active: !urgent && !rec }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined, rec: undefined }) }">{{
+          <li :class="{ active: !urgent }">
+            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined }) }">{{
               $t('common.latest')
             }}</NuxtLink>
           </li>
           <li :class="{ active: urgent }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1', rec: undefined }) }">{{
+            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1' }) }">{{
               $t('wap_com_00250')
-            }}</NuxtLink>
-          </li>
-          <li :class="{ active: rec }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { rec: '1', urgent: undefined }) }">{{
-              $t('home.recommended_jobs')
             }}</NuxtLink>
           </li>
           <li>
@@ -319,7 +435,7 @@ function goPage(p: number) {
         :tabs="[
           { key: 'province_id', label: $t('common_02110'), current: cityLabel, items: provinces || [] },
           { key: 'job1', label: $t('wap_00576'), current: jobLabel, items: jobItems },
-          { key: 'edu', label: $t('wap_00238'), current: '', items: edus || [] },
+          { key: 'edu', label: $t('wap_00238'), current: dictName(edus, edu), items: edus || [] },
         ]"
       />
     </div>

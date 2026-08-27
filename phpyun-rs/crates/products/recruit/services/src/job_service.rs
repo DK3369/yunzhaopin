@@ -37,6 +37,9 @@ pub struct JobSearch {
     pub uptime: Option<i32>,
     pub urgent: bool,
     pub rec: bool,
+    pub cert: bool,
+    /// PHP `order=lastdate|sdate`
+    pub order: Option<String>,
     pub uid: Option<u64>,
     pub did: u32,
 }
@@ -89,6 +92,8 @@ pub async fn list_public(
         uptime: search.uptime,
         urgent: search.urgent,
         rec: search.rec,
+        cert: search.cert,
+        order: search.order.as_deref(),
         uid: search.uid,
         did: search.did,
     };
@@ -138,6 +143,8 @@ pub struct JobDetailData {
     pub linkphone: String,
     pub linkmail: String,
     pub login_date: i64,
+    pub com_address: String,
+    pub com_name: String,
 }
 
 pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
@@ -169,6 +176,8 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         linktel,
         linkphone,
         linkmail,
+        com_address,
+        com_name,
     ) = if let Some(c) = company {
         (
             c.logo.unwrap_or_default(),
@@ -183,9 +192,26 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
             c.linktel.clone().filter(|s| !s.is_empty()).unwrap_or_else(|| c.linkphone.clone().unwrap_or_default()),
             c.linkphone.unwrap_or_default(),
             c.linkmail.unwrap_or_default(),
+            c.address.unwrap_or_default(),
+            c.name.unwrap_or_default(),
         )
     } else {
-        Default::default()
+        (
+            String::new(),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+        )
     };
 
     Ok(JobDetailData {
@@ -203,6 +229,8 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         linkphone,
         linkmail,
         login_date,
+        com_address,
+        com_name,
     })
 }
 

@@ -11,10 +11,11 @@
 //! serialization we call `phpyun_core::i18n::t()` to translate using the current request language.
 //! Translation entries are maintained under the `dict.*` namespace of `locales/<lang>.json`.
 
-use axum::{routing::get, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::i18n::{current_lang, t, Lang};
 use phpyun_core::ValidatedJsonOrQuery;
 use phpyun_core::{ApiResponse, AppResult, AppState};
+use phpyun_services::dict_service;
 use serde::Deserialize;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -29,6 +30,8 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/dict/experiences",
     "/v1/wap/dict/salaries",
     "/v1/wap/dict/job-types",
+    "/v1/wap/dict/welfares",
+    "/v1/wap/dict/reports",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -50,6 +53,8 @@ pub fn routes() -> Router<AppState> {
         .route("/dict/experiences", get(experiences).post(experiences))
         .route("/dict/salaries", get(salaries).post(salaries))
         .route("/dict/job-types", get(job_types).post(job_types))
+        .route("/dict/welfares", get(welfares).post(welfares))
+        .route("/dict/reports", get(reports).post(reports))
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -83,28 +88,35 @@ fn render(entries: &[DictEntry], lang: Lang) -> Vec<DictItem> {
         .collect()
 }
 
-/// Province / centrally-administered municipality dictionary
-///
-/// ⚠️ **Deprecated** in favour of `GET /v1/wap/regions?country=CN&level=1`,
-/// which is i18n-aware and returns the live region tree (not the static
-/// hand-coded list this endpoint serves). Kept for backward compatibility
-/// with existing clients.
+fn named_items(rows: Vec<(i32, String)>) -> Vec<DictItem> {
+    rows.into_iter()
+        .map(|(id, name)| DictItem { id, name })
+        .collect()
+}
+
+#[derive(Debug, Deserialize, Validate, utoipa::ToSchema, Default)]
+pub struct DictSourceQuery {
+    /// `job` (comclass, default) or `user` (userclass) — PHP job vs resume filters.
+    #[validate(length(max = 16))]
+    pub source: Option<String>,
+}
+
+/// Province dictionary — PHP `$city_index` / `$city_name` from city.cache.php
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/cities",
     tag = "wap",
-    responses((status = 200, description = "DEPRECATED — prefer GET /v1/wap/regions"))
+    responses((status = 200, description = "ok"))
 )]
-#[deprecated(note = "use GET /v1/wap/regions?country=CN&level=1 instead")]
-pub async fn cities() -> AppResult<ApiResponse<Vec<DictItem>>> {
-    Ok(ApiResponse::data(render(PROVINCES, current_lang())))
+pub async fn cities(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    let rows = dicts.city_provinces();
+    if rows.is_empty() {
+        return Ok(ApiResponse::data(render(PROVINCES, current_lang())));
+    }
+    Ok(ApiResponse::data(named_items(rows)))
 }
 
-/// Cities under a given province
-///
-/// ⚠️ **Deprecated** in favour of
-/// `GET /v1/wap/regions/{id}/children` (live, i18n-aware, all provinces
-/// supported — not just hand-coded BJ/SH). Kept for backward compatibility.
 #[derive(Debug, Deserialize, Validate, utoipa::ToSchema)]
 pub struct ProvinceBody {
     #[validate(range(min = 0, max = 9_999_999))]
@@ -116,34 +128,99 @@ pub struct ProvinceBody {
     path = "/v1/wap/dict/cities/by-province",
     tag = "wap",
     request_body = ProvinceBody,
-    responses((status = 200, description = "DEPRECATED — prefer POST /v1/wap/regions/children"))
+    responses((status = 200, description = "ok"))
 )]
-#[deprecated(note = "use POST /v1/wap/regions/children instead")]
 pub async fn cities_of_province(
+    State(state): State<AppState>,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ProvinceBody>,
 ) -> AppResult<ApiResponse<Vec<DictItem>>> {
-    let pid = b.province_id;
-    let lang = current_lang();
-    let v = match pid {
-        1 => render(BEIJING_DISTRICTS, lang),
-        2 => render(SHANGHAI_DISTRICTS, lang),
-        _ => vec![DictItem {
-            id: 0,
-            name: t("dict.all", lang),
-        }],
-    };
-    Ok(ApiResponse::data(v))
+    let dicts = dict_service::get(&state).await?;
+    let rows = dicts.city_of_parent(b.province_id);
+    if rows.is_empty() {
+        let lang = current_lang();
+        let v = match b.province_id {
+            1 => render(BEIJING_DISTRICTS, lang),
+            2 => render(SHANGHAI_DISTRICTS, lang),
+            _ => Vec::new(),
+        };
+        return Ok(ApiResponse::data(v));
+    }
+    Ok(ApiResponse::data(named_items(rows)))
 }
 
-/// Industry categories
+/// Industry categories from `phpyun_industry` (PHP `$industry_name`)
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/industries",
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn industries() -> AppResult<ApiResponse<Vec<DictItem>>> {
-    Ok(ApiResponse::data(render(INDUSTRIES, current_lang())))
+pub async fn industries(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    let rows = dicts.industry_all();
+    if rows.is_empty() {
+        return Ok(ApiResponse::data(render(INDUSTRIES, current_lang())));
+    }
+    Ok(ApiResponse::data(named_items(rows)))
+}
+
+/// Education levels — `source=user` uses resume userclass; default is job comclass `job_edu`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/educations",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn educations(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<DictSourceQuery>,
+) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    let rows = if q.source.as_deref() == Some("user") {
+        dicts.userclass_by_variable("user_edu")
+    } else {
+        dicts.comclass_by_variable("job_edu")
+    };
+    if rows.is_empty() {
+        return Ok(ApiResponse::data(render(EDUCATIONS, current_lang())));
+    }
+    Ok(ApiResponse::data(named_items(rows)))
+}
+
+/// Work experience — `source=user` uses resume `user_word`; default job `job_exp`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/experiences",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn experiences(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<DictSourceQuery>,
+) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    let rows = if q.source.as_deref() == Some("user") {
+        dicts.userclass_by_variable("user_word")
+    } else {
+        dicts.comclass_by_variable("job_exp")
+    };
+    if rows.is_empty() {
+        return Ok(ApiResponse::data(render(EXPERIENCES, current_lang())));
+    }
+    Ok(ApiResponse::data(named_items(rows)))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/welfares",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn welfares(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(named_items(
+        dicts.comclass_by_variable("job_welfare"),
+    )))
 }
 
 /// Top-level job categories
@@ -155,28 +232,6 @@ pub async fn industries() -> AppResult<ApiResponse<Vec<DictItem>>> {
 )]
 pub async fn job_categories() -> AppResult<ApiResponse<Vec<DictItem>>> {
     Ok(ApiResponse::data(render(JOB_CATEGORIES, current_lang())))
-}
-
-/// Education levels
-#[utoipa::path(
-    post,
-    path = "/v1/wap/dict/educations",
-    tag = "wap",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn educations() -> AppResult<ApiResponse<Vec<DictItem>>> {
-    Ok(ApiResponse::data(render(EDUCATIONS, current_lang())))
-}
-
-/// Work experience
-#[utoipa::path(
-    post,
-    path = "/v1/wap/dict/experiences",
-    tag = "wap",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn experiences() -> AppResult<ApiResponse<Vec<DictItem>>> {
-    Ok(ApiResponse::data(render(EXPERIENCES, current_lang())))
 }
 
 /// Salary ranges
@@ -199,6 +254,20 @@ pub async fn salaries() -> AppResult<ApiResponse<Vec<DictItem>>> {
 )]
 pub async fn job_types() -> AppResult<ApiResponse<Vec<DictItem>>> {
     Ok(ApiResponse::data(render(JOB_TYPES, current_lang())))
+}
+
+/// Salary cycle / report-time (PHP `$comdata.job_report`, `phpyun_comclass.variable=job_report`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/reports",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn reports(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(named_items(
+        dicts.comclass_by_variable("job_report"),
+    )))
 }
 
 // ==================== Static data: (id, i18n key) ====================

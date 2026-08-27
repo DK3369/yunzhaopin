@@ -53,6 +53,8 @@ pub struct JobSummary {
     pub job_city_one: String,
     /// City name (PHP `job_city_two`)
     pub job_city_two: String,
+    /// District name (PHP `job_city_three`). Additive.
+    pub job_city_three: String,
 
     // Salary
     pub salary: i32,
@@ -68,6 +70,16 @@ pub struct JobSummary {
     /// Education-level name (PHP `comclass` dict, e.g. "本科") —
     /// filled by `job_summary_from_dict*`; empty for `From<Job>`.
     pub edu_n: String,
+    /// Company nature name (PHP `pr_n`). Additive.
+    pub pr_n: String,
+    /// Company size name (PHP `mun_n`). Additive.
+    pub mun_n: String,
+    /// Welfare tags (PHP `welfarename`). Additive.
+    pub welfare_n: Vec<String>,
+    /// Business-license verified (PHP `yyzz_status`). Additive.
+    pub yyzz_status: i32,
+    /// On-site verified (PHP `fact_status`). Additive.
+    pub fact_status: i32,
 
     // Promotion status (computed from rec_time / urgent_time vs. now)
     pub rec: i32,
@@ -80,6 +92,8 @@ pub struct JobSummary {
     // Time
     pub sdate: i64,
     pub lastupdate: i64,
+    /// `Y-m-d` of lastupdate. Additive.
+    pub lastupdate_n: String,
     /// Posted within the last 2 days (PHP `newtime`); requires `now` ts to
     /// derive — `From<Job>` leaves this `false`.
     pub newtime: bool,
@@ -121,6 +135,7 @@ impl From<Job> for JobSummary {
             three_city_id: j.three_cityid,
             job_city_one: String::new(),
             job_city_two: String::new(),
+            job_city_three: String::new(),
 
             salary: (j.minsalary + j.maxsalary) / 2,
             min_salary: j.minsalary,
@@ -130,6 +145,11 @@ impl From<Job> for JobSummary {
             exp_n: String::new(),
             edu: j.edu,
             edu_n: String::new(),
+            pr_n: String::new(),
+            mun_n: String::new(),
+            welfare_n: Vec::new(),
+            yyzz_status: 0,
+            fact_status: 0,
 
             rec: j.rec,
             urgent: j.urgent,
@@ -140,6 +160,7 @@ impl From<Job> for JobSummary {
 
             sdate: j.sdate,
             lastupdate: j.lastupdate,
+            lastupdate_n: String::new(),
             newtime: false,
 
             jobhits: j.jobhits,

@@ -23,7 +23,7 @@
         <template v-if="eduName">{{ eduName }}{{ $t('home.education_suffix') }}</template>
       </div>
       <div class="resume_newlist_city">
-        <span v-if="cityName" class="user_tag">{{ cityName }}</span>
+        <span v-for="c in cityTags" :key="c" class="user_tag">{{ c }}</span>
       </div>
       <div v-if="row.lastupdate_n" class="resume_newlist_date">{{ row.lastupdate_n }}</div>
     </div>
@@ -36,8 +36,16 @@
       <div class="usersearch_job_left_siaber">
         <div class="user_listinfo_job">
           {{ $t('wap_user_00055') }}：
-          <span class="user_tag">{{ expectName }}</span>
+          <span v-for="j in expectJobs" :key="j" class="user_tag">{{ j }}</span>
         </div>
+        <ul v-if="personTags.length" class="user_tag_user">
+          <li v-for="tag in personTags" :key="tag" class="user_tag_user_a">
+            <i class="user_tag_user_icon" />{{ tag }}
+          </li>
+        </ul>
+      </div>
+      <div v-if="salaryName" class="user_want">
+        <div class="user_undergo">{{ $t('wap_user_00016') }}：{{ salaryName }}</div>
       </div>
       <div class="yun_look_right">
         <NuxtLink :to="`/resumes/${row.uid}`" class="yun_look_bth">{{ $t('wap_com_00427') }}</NuxtLink>
@@ -67,18 +75,27 @@
 <script setup lang="ts">
 import { mediaUrl, PLACEHOLDER_LOGO } from '../utils/site'
 
+function splitTags(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw.map(String).filter(Boolean).slice(0, 5)
+  if (typeof raw === 'string' && raw) return raw.split(/[,，|/]/).map((s) => s.trim()).filter(Boolean).slice(0, 5)
+  return []
+}
+
 const props = defineProps<{ row: Record<string, unknown> }>()
 const personName = computed(() =>
   String(props.row.display_name || props.row.name || props.row.uname || props.row.uid || ''),
 )
-const expectName = computed(() =>
-  String(props.row.expect_name || props.row.job_classid_n || props.row.expect || personName.value),
-)
+const expectJobs = computed(() => {
+  const tags = splitTags(props.row.expect_name || props.row.job_classid_n || props.row.expect)
+  return tags.length ? tags : [personName.value]
+})
+const expectName = computed(() => expectJobs.value[0] || personName.value)
 const salaryName = computed(() => String(props.row.expect_salary_n || props.row.salary_n || ''))
 const eduName = computed(() => String(props.row.edu_n || props.row.education_n || ''))
-const cityName = computed(() =>
-  String(props.row.expect_city_n || props.row.city_two || props.row.living || ''),
+const cityTags = computed(() =>
+  splitTags(props.row.expect_city_n || props.row.city_two || props.row.living),
 )
+const personTags = computed(() => splitTags(props.row.tag))
 const photo = computed(() =>
   mediaUrl(String(props.row.photo_n || props.row.photo || ''), PLACEHOLDER_LOGO),
 )

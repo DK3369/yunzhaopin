@@ -26,6 +26,28 @@ const { data: jobs } = await useAsyncData(
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page: 1, page_size: 20, uid }).catch(() => ({ list: [] as JobLike[] })),
 )
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+const following = ref(false)
+const followMsg = ref('')
+watch(
+  () => company.value.isatn,
+  (v) => {
+    following.value = Number(v) === 1
+  },
+  { immediate: true },
+)
+async function toggleFollow() {
+  followMsg.value = ''
+  try {
+    const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
+      target_kind: 2,
+      target_uid: uid,
+    })
+    following.value = Boolean(r.following)
+  } catch (e: unknown) {
+    followMsg.value = e instanceof Error ? e.message : t('common.no')
+    await navigateTo('/login')
+  }
+}
 useSeoMeta({
   title: () => String(company.value.name || t('common.company')),
   description: () => stripHtml(company.value.content || company.value.hy_n || company.value.name),
@@ -68,49 +90,91 @@ useHead({
               </div>
               <h1 class="com_details_name">
                 {{ company.name }}
-                <img
-                  v-if="Number(company.yyzz_status) === 1"
-                  src="/legacy/pc/images/disc_icon10.png"
-                  alt=""
-                  class="png"
-                  width="16"
-                />
+                <i v-if="Number(company.yyzz_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_zz" />
+                <i v-if="Number(company.moblie_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_sj" />
+                <i v-if="Number(company.email_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_yx" />
               </h1>
               <div class="com_details_info">
-                {{ company.city_one }} <span v-if="company.city_two">- {{ company.city_two }}</span>
+                <template v-if="company.city_one">{{ company.city_one }}</template>
+                <template v-if="company.city_two"> - {{ company.city_two }}</template>
                 <span v-if="company.hy_n" class="com_details_line">|</span>{{ company.hy_n }}
                 <span v-if="company.pr_n" class="com_details_line">|</span>{{ company.pr_n }}
                 <span v-if="company.mun_n" class="com_details_line">|</span>{{ company.mun_n }}
+                <span v-if="company.sdate" class="com_details_line">|</span>
+                <template v-if="company.sdate">{{ company.sdate }}</template>
               </div>
-              <p v-if="company.address" class="muted">{{ company.address }}</p>
-              <p class="muted">
-                <template v-if="company.sdate">{{ company.sdate }} · </template>
-                <template v-if="company.zp_num != null">{{ $t('wap_00185') }} {{ company.zp_num }}</template>
-                <template v-if="Number(company.isatn) === 1"> · {{ $t('wap_00378') }}</template>
-              </p>
+              <div class="com_details_data_box">
+                <div class="com_details_data_box_c">
+                  <div class="com_details_data">
+                    <div class="com_details_data_n">{{ company.zp_num ?? jobs?.list?.length ?? 0 }}</div>
+                    <div class="com_details_dataname">{{ $t('wap_00190') }}</div>
+                    <i class="com_details_data_line" />
+                  </div>
+                  <div class="com_details_data">
+                    <div class="com_details_data_n">{{ company.invite_resume ?? 0 }}</div>
+                    <div class="com_details_dataname">{{ $t('company_00009') }}</div>
+                    <i class="com_details_data_line" />
+                  </div>
+                  <div class="com_details_data">
+                    <div class="com_details_data_n">{{ company.login_date_n || $t('admin_user_00139') }}</div>
+                    <div class="com_details_dataname">{{ $t('admin_yunying_00131') }}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p>
-              <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ Search_jobs_sub_cur: tab !== 'about' }">{{
-                $t('wap_00190')
-              }}</NuxtLink>
-              ·
-              <NuxtLink :to="{ query: { tab: 'about' } }" :class="{ Search_jobs_sub_cur: tab === 'about' }">{{
-                $t('wap_00189')
-              }}</NuxtLink>
-            </p>
-            <div v-if="tab === 'about'">
-              <p v-if="company.address" class="muted">{{ $t('wap_00040') }}：{{ company.address }}</p>
-              <div v-if="welfare.length" class="job_details_welfare">
-                <span v-for="w in welfare" :key="w" class="job_details_welfare_n">{{ w }}</span>
+            <div class="com_details_opt">
+              <div class="com_details_opt_fxbox">
+                <a href="javascript:;" class="com_details_opt_gz" :class="{ company_att: following }" @click.prevent="toggleFollow">
+                  {{ following ? $t('wap_js_00140') : `+ ${$t('common_01949')}` }}
+                </a>
               </div>
-              <div v-if="shows.length" class="business_album">
-                <img v-for="s in shows" :key="String(s.id)" :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)" alt="" />
-              </div>
-              <div class="phpyunabout" v-html="String(company.content || '')" />
+              <p v-if="followMsg" class="muted">{{ followMsg }}</p>
             </div>
-            <div v-else>
-              <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="search" />
-              <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="w1200">
+        <div class="com_details_left">
+          <div v-if="welfare.length" class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('company_00007') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <div class="com_welfare">
+              <span v-for="w in welfare" :key="w" class="com_welfare_s">{{ w }}</span>
+            </div>
+          </div>
+          <div class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('wap_com_00168') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <div class="com_show_leftcont">
+              <div v-if="company.content" class="con_show_introduction company_img_auto" v-html="String(company.content)" />
+              <div v-else class="firm_ment">
+                <div class="firm_tips_no">{{ $t('wap_00028') }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-if="shows.length" class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('company_00008') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <div class="com_show_image" id="layer-pic">
+              <div v-for="s in shows" :key="String(s.id)" class="com_show_image_list">
+                <img :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)" width="260" height="160" alt="" />
+              </div>
+            </div>
+          </div>
+          <div class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('wap_00190') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <div id="company_job_list" class="comshow_job">
+              <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="firm" />
+              <div v-if="!(jobs?.list || []).length" class="firm_tips_no">{{ $t('home.no_recruiting_jobs') }}</div>
             </div>
           </div>
         </div>
@@ -135,6 +199,9 @@ useHead({
             </div>
             <p v-if="company.zp_num != null" class="muted">{{ $t('wap_00185') }} {{ company.zp_num }}</p>
             <p v-if="company.address" class="muted">{{ company.address }}</p>
+            <a href="javascript:;" class="com_details_opt_gz" @click.prevent="toggleFollow">
+              {{ following ? $t('wap_js_00140') : $t('common_01949') }}
+            </a>
           </div>
         </div>
       </div>

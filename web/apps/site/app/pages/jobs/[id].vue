@@ -3,6 +3,7 @@ import { formatSalary, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/
 
 const route = useRoute()
 const { t, locale } = useI18n()
+const { siteName, settings } = useSiteChrome()
 const id = Number(route.params.id)
 const api = useApi()
 const { data, error } = await useAsyncData(
@@ -137,6 +138,9 @@ const welfare = computed(() => {
   if (typeof w === 'string') return w.split(/[,，]/).map((s) => s.trim()).filter(Boolean)
   return [] as string[]
 })
+const comAddress = computed(() => String(company.value.address || job.value.address || ''))
+const shenming = computed(() => String(settings.value.sy_shenming || ''))
+const similarList = computed(() => similar.value || [])
 const description = computed(() =>
   stripHtml(job.value.description || job.value.content || job.value.name || job.value.com_name),
 )
@@ -405,10 +409,63 @@ useHead({
               </div>
             </div>
           </NuxtLink>
+          <div v-if="comAddress" class="corporate_information_map_p">{{ comAddress }}</div>
         </div>
-        <div v-if="similar?.length" class="job_describe_cengter">
-          <div class="job_describe_cengter_header">{{ $t('home.recommended_jobs') }}</div>
-          <JobCard v-for="row in similar" :key="row.id" :job="row" variant="search" />
+        <div v-if="shenming" class="wxtipbox">
+          <div class="wxtip">
+            <div class="wxtip_tit">{{ siteName }}{{ $t('wap_user_00205') }}</div>
+          </div>
+          <div>
+            {{ shenming }}
+            <span class="wxtip_bth" @click="report">{{ $t('wap_00283') }}</span>
+          </div>
+        </div>
+        <div class="company_questions">
+          <div class="company_questions_header">
+            <div class="company_questions_header_left">{{ $t('wap_00271') }}</div>
+          </div>
+          <div v-for="m in msgList" :key="String(m.id)" class="company_questions_body">
+            <div class="company_questions_body_top">
+              <i class="company_questions_body_top_ask">{{ m.content }}</i>
+            </div>
+            <div class="company_questions_body_top">
+              <i class="company_questions_body_top_answer">{{ m.reply || $t('wap_01589') }}</i>
+            </div>
+          </div>
+        </div>
+        <div class="recommend_post" style="margin-top: 0">
+          <div class="recommend_post_header" style="margin: 0.4rem 0">{{ $t('wap_00282') }}</div>
+          <div class="recommend_post_card_box">
+            <div v-for="row in similarList" :key="row.id" class="recommend_post_card">
+              <NuxtLink :to="`/jobs/${row.id}`" :title="row.name">
+                <div class="recommend_post_card_top">
+                  <div class="recommend_post_card_name">{{ row.name }}</div>
+                  <div class="recommend_post_card_money">{{ formatSalary(row, $t('common.negotiable')) }}</div>
+                </div>
+                <div class="newjob_info">
+                  <span>{{ row.job_city_one }}{{ row.job_city_two ? `-${row.job_city_two}` : '' }}</span>
+                  <template v-if="row.edu_n">
+                    <i class="newjob_info_line" /><span>{{ row.edu_n }}{{ $t('home.education_suffix') }}</span>
+                  </template>
+                  <template v-if="row.exp_n">
+                    <i class="newjob_info_line" /><span>{{ row.exp_n }}{{ $t('home.experience_suffix') }}</span>
+                  </template>
+                </div>
+                <div class="recommend_post_card_bottom">
+                  <div class="recommend_post_card_bottom_left">
+                    <div class="recommend_post_card_bottom_left_logo">
+                      <img :src="mediaUrl(row.com_logo || row.logo, PLACEHOLDER_LOGO)" alt="" width="100%" />
+                    </div>
+                    <i class="recommend_post_card_bottom_left_word">{{ row.com_name }}</i>
+                  </div>
+                  <div class="recommend_post_card_bottom_right">{{ row.lastupdate_n }}</div>
+                </div>
+              </NuxtLink>
+            </div>
+            <div v-if="!similarList.length" class="company_questions">
+              <div class="wap_member_no">{{ $t('wap_00253') }}</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="yun_czfoot">

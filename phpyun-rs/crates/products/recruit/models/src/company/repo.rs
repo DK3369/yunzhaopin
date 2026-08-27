@@ -35,6 +35,7 @@ const FIELDS: &str = "\
     COALESCE(addtime, 0) AS addtime, \
     COALESCE(login_date, 0) AS login_date, \
     COALESCE(fact_status, 0) AS fact_status, \
+    welfare, \
     COALESCE(did, 0) AS did";
 
 // ==================== Public search ====================
@@ -286,6 +287,15 @@ pub async fn count_open_jobs(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Er
     Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
+/// PHP `$invite_resume`: interview invitations this company has sent.
+pub async fn count_interview_invites(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_userid_msg WHERE fid = ?")
+        .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
+}
+
 /// Open-job counts for a batch of company uids (one round-trip).
 pub async fn count_open_jobs_by_uids(
     pool: &MySqlPool,
@@ -385,6 +395,8 @@ pub struct CompanyCard {
     pub mun: i32,
     pub provinceid: i32,
     pub cityid: i32,
+    pub yyzz_status: i32,
+    pub fact_status: i32,
 }
 
 pub async fn list_cards_by_uids(
@@ -405,7 +417,9 @@ pub async fn list_cards_by_uids(
             CAST(COALESCE(pr,0) AS SIGNED) AS pr, \
             CAST(COALESCE(mun,0) AS SIGNED) AS mun, \
             CAST(COALESCE(provinceid,0) AS SIGNED) AS provinceid, \
-            CAST(COALESCE(cityid,0) AS SIGNED) AS cityid \
+            CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, \
+            CAST(COALESCE(yyzz_status,0) AS SIGNED) AS yyzz_status, \
+            CAST(COALESCE(fact_status,0) AS SIGNED) AS fact_status \
          FROM phpyun_company WHERE uid IN ({placeholders})"
     );
     let signed_uids = uids

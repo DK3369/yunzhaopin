@@ -46,6 +46,10 @@ pub struct JobFilter<'a> {
     pub urgent: bool,
     /// `rec=true` → only sticky/promoted listings (`rec_time >= now`).
     pub rec: bool,
+    /// `cert=true` → company business license verified (`yyzz_status=1`).
+    pub cert: bool,
+    /// PHP `order`: `lastdate` / `sdate`. Empty keeps sticky-then-refresh sort.
+    pub order: Option<&'a str>,
     /// Company uid (`phpyun_company_job.uid`). Additive filter for company pages.
     pub uid: Option<u64>,
     pub did: u32,
@@ -130,7 +134,17 @@ pub async fn list_public(
     qb.push(") AND did = ");
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
-    qb.push(" ORDER BY rec DESC, rec_time DESC, lastupdate DESC LIMIT ");
+    match f.order {
+        Some("sdate") => {
+            qb.push(" ORDER BY sdate DESC LIMIT ");
+        }
+        Some("lastdate") => {
+            qb.push(" ORDER BY lastupdate DESC LIMIT ");
+        }
+        _ => {
+            qb.push(" ORDER BY rec DESC, rec_time DESC, lastupdate DESC LIMIT ");
+        }
+    }
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -234,6 +248,9 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
     if f.rec {
         qb.push(" AND rec_time >= ");
         qb.push_bind(now);
+    }
+    if f.cert {
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_company WHERE yyzz_status = 1)");
     }
     if let Some(uid) = f.uid {
         qb.push(" AND uid = ");

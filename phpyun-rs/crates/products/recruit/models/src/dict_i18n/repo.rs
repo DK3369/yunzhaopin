@@ -18,6 +18,22 @@ pub async fn list_default(
     sqlx::query_as(&sql).fetch_all(pool).await
 }
 
+/// Load `(id, name, keyid, variable)` for `phpyun_comclass` / `phpyun_userclass`.
+/// PHP groups children by parent `keyid` (`job_edu` / `user_edu` / …).
+pub async fn list_class_rows(
+    pool: &MySqlPool,
+    table: &str,
+) -> Result<Vec<(i32, Option<String>, i32, Option<String>)>, sqlx::Error> {
+    match table {
+        "phpyun_comclass" | "phpyun_userclass" => {}
+        _ => return Ok(Vec::new()),
+    }
+    let sql = format!(
+        "SELECT id, name, COALESCE(keyid, 0) AS keyid, variable FROM {table}"
+    );
+    sqlx::query_as(&sql).fetch_all(pool).await
+}
+
 /// Load every translation row across all kinds. Used at startup to seed the
 /// in-memory cache.
 pub async fn list_all(pool: &MySqlPool) -> Result<Vec<(String, i32, String, String)>, sqlx::Error> {
