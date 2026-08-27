@@ -1,0 +1,286 @@
+<template>
+    <div style="overflow: hidden; position: relative; height: 100%; padding: 0 20px;">
+        <div class="moduleTable">
+            <table class="tableVue">
+                <thead>
+                    <tr align="left">
+                        <th width="20%">{{ lc('member_com_00021') }}</th>
+                        <th>{{ lc('member_user_00181') }}</th>
+                        <th width="20%">{{ lc('member_com_00207') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00787') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="info.title">
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>{{ lc('admin_00787') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00233') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableSelect" style="display: flex;align-items: center;">
+                                <el-select v-model="info.pid" :placeholder="lc('wap_user_00100')" style="width: 50%;" @change="classchange">
+                                    <el-option v-for="item in positionOne" :key="item.id" :label="item.name"
+                                        :value="item.id">
+                                    </el-option>
+                                </el-select>
+                                <el-select v-model="info.cid" :placeholder="lc('wap_user_00100')" style="width: 50%;" >
+                                    <el-option v-for="item in positionTwo" :key="item.id" :label="item.name"
+                                        :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>{{ lc('admin_00233') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00232') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="info.visit">
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>{{ lc('admin_00232') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00231') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-switch v-model="info.is_recom_n" active-color="#1890FF" inactive-color="#B8BDC9">
+                                </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>{{ lc('admin_00231') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00788') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <div id="editor—wrapper" style="border: 1px solid #ccc;">
+                                    <div id="toolbar-container"><!-- 工具栏 --></div>
+                                    <div id="editor-container" style="height: 300px;"><!-- 编辑器 --></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>{{ lc('admin_00788') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{{ lc('wap_00225') }}</el-button>
+        </div>
+    </div>
+</template>
+    <!-- script -->
+    <script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+        let editor = null,editorInterval = null;
+        const { createEditor, createToolbar } = window.wangEditor;
+		export default {
+			props: {
+				id_v: {
+					type: String,
+					default: ''
+				}
+			},
+            data: function () {
+                return {
+                    id: '',
+                    info:[],
+                    positionOne:[],
+                    positionTwo:[],
+					submitLoading:false,
+                }
+            },
+			watch: {
+				id_v: {
+					handler(n) {
+						if (n != '') {
+							this.id = n.trim();
+							this.getInfo();
+						}
+					},
+					deep: true,
+					immediate: true
+				},
+			},
+            mounted() {
+                this.initEditor();
+                
+            },
+            beforeDestroy() {
+                editor = null; 
+                editorInterval = null;
+            },
+            methods: {
+                initEditor: function (content=null) {
+                    clearInterval(editorInterval);
+                    editorInterval = setInterval(()=>{
+                        if (editor !== null){
+                            clearInterval(editorInterval);
+                            if(content!==null){
+                                editor.setHtml(content);
+                            }
+                        }else{
+                            let editorConfig = {
+                                MENU_CONF: {
+                                    uploadImage: {
+                                        server: baseUrl + 'm=index&c=uploadfile',
+                                        fieldName: 'file'
+                                    }
+                                }
+                            };
+                            editor = createEditor({
+                                selector: '#editor-container',
+                                html: '',
+                                config: editorConfig,
+                                mode: 'simple'
+                            });
+                            
+                            let toolbar = createToolbar({
+                                editor,
+                                selector: '#toolbar-container',
+                                config: {
+                                    excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
+                                },
+                                mode: 'simple'
+                            });
+                        }
+                    },50);
+                    
+                },
+                save(){
+                    let that = this;
+                    let formData = new FormData();
+                    if (that.info.title == '' ||  that.info.title == undefined) {
+                        message.error(lc('admin_vue_00087'));
+                        return false;
+                    }
+                    if (that.info.cid == '' ||  that.info.cid == undefined) {
+                        message.error(lc('admin_vue_00083'));
+                        return false;
+                    }
+
+                    formData.append('title', that.info.title);
+                    formData.append('cid', that.info.cid);
+                    formData.append('visit', that.info.visit);
+                    formData.append('is_recom', that.info.is_recom?1:0);
+                    let content = editor.getHtml();
+                    formData.append('content', content);
+                    if (that.id > 0) {
+                        formData.append('id', that.id);
+                    }
+					that.submitLoading = true;
+                    httpPost('m=yunying&c=report_ask&a=save', formData).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.$emit("child-event");
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    }).finally(function () {
+						setTimeout(function () {
+						    that.submitLoading = false;
+						}, 2000);
+					});
+                },
+                getInfo() {
+                    let that = this;
+                    let params = {};
+                    if (this.id !='') {
+                        params.id = this.id;
+                    }
+                    httpPost('m=yunying&c=report_ask&a=edit', params).then(function (response) {
+                        let res = response.data,
+							data = res.data;
+                        if (res.error==0) {
+                            that.info = data.info;
+                            if (that.info.content !== '') {
+                                that.initEditor(that.info.content);
+                            }
+                        }
+                        that.positionOne = data.class;
+						that.info.pid = data.pid ? data.pid : '';
+						if (data.pid){
+							that.getclass(data.pid)
+						}
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+                classchange(){
+                    this.info.cid = '';
+                    this.getclass(this.info.pid);
+                },
+                getclass:function(pid){
+                    let that = this;
+                    let params = {};
+                    if (pid){
+                        params.pid = pid;
+                    }
+                    httpPost('m=yunying&c=report_ask&a=getclass', params,{hideloading: true}).then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+                        that.positionTwo = data.class;
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+
+            }
+        };
+    </script>

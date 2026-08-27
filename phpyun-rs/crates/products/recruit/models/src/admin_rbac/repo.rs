@@ -81,6 +81,7 @@ pub struct AdminLoginRow {
     pub status: i32,
     pub did: u64,
     pub control_login: String,
+    pub index_lookstatistc: i32,
 }
 
 pub async fn find_login_user(
@@ -95,7 +96,8 @@ pub async fn find_login_user(
                   COALESCE(password, '') AS password,
                   CAST(COALESCE(status, 0) AS SIGNED) AS status,
                   CAST(COALESCE(did, 0) AS UNSIGNED) AS did,
-                  COALESCE(control_login, '') AS control_login
+                  COALESCE(control_login, '') AS control_login,
+                  CAST(COALESCE(index_lookstatistc, 2) AS SIGNED) AS index_lookstatistc
            FROM phpyun_admin_user
            WHERE username = ? AND status = 1
            LIMIT 1"#,
@@ -114,7 +116,8 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<AdminLogin
                   COALESCE(password, '') AS password,
                   CAST(COALESCE(status, 0) AS SIGNED) AS status,
                   CAST(COALESCE(did, 0) AS UNSIGNED) AS did,
-                  COALESCE(control_login, '') AS control_login
+                  COALESCE(control_login, '') AS control_login,
+                  CAST(COALESCE(index_lookstatistc, 2) AS SIGNED) AS index_lookstatistc
            FROM phpyun_admin_user
            WHERE uid = ?
            LIMIT 1"#,

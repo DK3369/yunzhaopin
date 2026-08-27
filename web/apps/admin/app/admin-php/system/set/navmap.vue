@@ -1,0 +1,466 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div style="overflow: hidden; position: relative; width: calc(100% - 130px); display: flex; flex-wrap: wrap; align-items: center;">
+                <div class="moduleSeachInpt" style="margin-right: 8px;">
+                    <el-input :placeholder="lc('admin_00340')" v-model="keyword" class="input-with-select" size="small" clearable>
+                        <template #prepend><el-select v-model="search_type">
+                            <el-option :label="lc('admin_system_00331')" value="1"></el-option>
+                            <el-option :label="lc('admin_00101')" value="2"></el-option>
+                        </el-select></template>
+                    </el-input>
+                </div>
+                <div class="tableSeachInpt" style="margin-bottom: 0px;">
+                    <el-select size="small" v-model="ctype" clearable :placeholder="lc('admin_system_00688')" @change="search">
+                        <el-option :label="lc('admin_00198')" value="1"></el-option>
+                        <el-option :label="lc('admin_00204')" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt" style="margin-bottom: 0px;">
+                    <el-select size="small" v-model="eject" clearable :placeholder="lc('member_com_00020')" @change="search">
+                        <el-option :label="lc('admin_00205')" value="1"></el-option>
+                        <el-option :label="lc('admin_00203')" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt" size="small" style="margin-bottom: 0px;">
+                    <el-select size="small" v-model="display" clearable :placeholder="lc('admin_00285')" @change="search">
+                        <el-option :label="lc('common_02085')" value="1"></el-option>
+                        <el-option :label="lc('common_02063')" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt" style="margin-bottom: 0px;">
+                    <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+                </div>
+                <!-- <div class="tableSeachInpt" style="margin-bottom: 0px; margin-left: auto;">
+                    <el-button type="primary" icon="el-icon-document-add" size="small" @click="add">添加网站地图</el-button>
+                </div> -->
+            </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="small" @click="add">{{ lc('admin_system_00472') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable moduleElTableSizes">
+            <el-table :data="tableData" border style="width: 100%"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80">
+                </el-table-column>
+                <el-table-column prop="name" :label="lc('member_com_00021')">
+                </el-table-column>
+                <el-table-column prop="typename" :label="lc('admin_00223')">
+                </el-table-column>
+                <el-table-column prop="url" :label="lc('admin_00101')">
+                </el-table-column>
+                <el-table-column :label="lc('admin_system_00689')">
+                    <template #default="scope">
+                        <span v-if="scope.row.type == '1'">{{ lc('admin_00198') }}</span>
+                        <span v-else>{{ lc('admin_00204') }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="sort" :label="lc('admin_vue_00044')">
+                </el-table-column>
+                <el-table-column :label="lc('member_com_00020')">
+                    <template #default="scope">
+                        <span @click="ejectchange(scope.row)" v-if="scope.row.eject == '1'">{{ lc('admin_00205') }}</span>
+                        <span @click="ejectchange(scope.row)" v-else>{{ lc('admin_00203') }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_com_00023')">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.display_n" @change="displayChange($event, scope.row)"></el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="edit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="small" type="danger" @click="delrow(scope.row)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="small" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 抽屉弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer :title="title" v-model="showadd" :modal-append-to-body="false" :show-close="true"
+                :with-header="true" size="40%">
+                <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto;">
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_00223') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-select v-model="info.nid" :placeholder="lc('admin_system_00473')">
+                                <el-option v-for="item in type" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('member_com_00021') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.name" :placeholder="lc('admin_00210')"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_00101') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.url" :placeholder="lc('admin_00812')"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_00185') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.furl" :placeholder="lc('admin_00813')"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_system_00688') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-select v-model="info.type" :placeholder="lc('admin_system_00287')">
+                                <el-option v-for="item in link_types" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert :title="lc('admin_00175')" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_vue_00044') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.sort" @input="inputIntNumber($event, 'info', 'sort')" :placeholder="lc('admin_00814')"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('member_com_00020') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-radio v-model="info.eject" label="1">{{ lc('admin_00205') }}</el-radio>
+                            <el-radio v-model="info.eject" label="0">{{ lc('admin_00203') }}</el-radio>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('member_com_00023') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-switch v-model="info.display_n" :active-text="lc('common_02085')" :inactive-text="lc('common_02063')"></el-switch>
+                        </div>
+                    </div>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" :loading="save_load" @click="submitForm">{{ lc('wap_user_00176') }}</el-button>
+                </div>
+            </el-drawer>
+        </div>
+    </div>
+</template>
+
+<script>
+import Jibenset from './component/jibenset.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    emptytext: lc('wap_js_00113'),
+                    loading: false,
+                    showadd: false,
+                    currentPage: 1,
+                    prevPage: 0,
+                    perPage: 0,
+                    pageSizes: [],
+                    total: 0,
+                    checkedAll: false,
+                    selectedItem: [],
+                    tableData: [],
+                    info: null,
+                    title: lc('admin_system_00472'),
+                    link_types: [
+                        { label: lc('admin_00198'), value: '1' },
+                        { label: lc('admin_00204'), value: '2' },
+                    ],
+                    type: [],
+                    search_type: '1',
+                    keyword: '',
+                    
+					ctype:'',
+					eject:'',
+					display:'',
+					save_load:false,
+				}
+            },
+            components: {
+                // 'jibenset': Jibenset,
+            },
+            created: function () {
+                var that = this
+                that.initData()
+                that.getList();
+
+
+            },
+            methods: {
+                inputIntNumber(val, form, key) {
+                    this.$data[form][key] = val.replace(/[^0-9]/g,'');
+                },
+                submitxianshi(params) {
+                    var that = this
+                    httpPost('m=system&c=set_navmap&a=nav_xianshi', params).then(function (res) {
+                        if (res.data.error == 0) {
+                            if (params.type == 'eject') {
+                                that.tableData.forEach(item => {
+                                    if (item.id == params.id) {
+                                        item.eject = params.rec
+                                    }
+                                })
+                            }
+                        }
+                    });
+                },
+                displayChange(val, row) {
+                    var params = { type: 'display', id: row.id }
+                    if (val == true) {
+                        params.rec = 1
+                    } else {
+                        params.rec = 0
+                    }
+                    this.submitxianshi(params);
+                },
+                ejectchange(row) {
+                    var params = { type: 'eject', id: row.id }
+                    if (row.eject == '1') {
+                        params.rec = 0
+                    } else {
+                        params.rec = 1
+                    }
+                    this.submitxianshi(params);
+                },
+                search() {
+                    this.currentPage = 1;
+                    this.getList();
+                },
+                handleSelectionChange(val) {
+                    this.selectedItem = [];
+                    let _this = this;
+                    if (val.length) {
+                        val.forEach(item => {
+                            _this.selectedItem.push(item.id);
+                        });
+                    }
+                    if (_this.selectedItem.length == 0) {
+                        _this.checkedAll = false;
+                    } else {
+                        if (_this.selectedItem.length == _this.tableData.length) {
+                            _this.checkedAll = true;
+                        } else {
+                            _this.checkedAll = false;
+                        }
+                    }
+                },
+                selectAllBottom(value) {
+                    value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+                },
+                // 初始化用户信息
+                initData(row = null) {
+                    var that = this
+                    if (row) {
+                        that.title = lc('admin_system_00471')
+                        that.info = row
+                        if (that.info.nid == '0') {
+                            that.info.nid = ''
+                        }
+						if (that.info.type == '0') {
+						    that.info.type = ''
+						}
+                    } else {
+                        that.title = lc('admin_system_00472')
+                        this.info = {
+                            id: '',
+                            nid: '',
+                            name: '',
+                            url: '',
+                            furl: '',
+                            type: '',
+                            sort: '',
+                            eject: '0',
+                            display_n: false
+                        }
+                    }
+                },
+                add() {
+                    var that = this
+                    that.getTypes();
+                    that.initData();
+                    that.showadd = true;
+                },
+                edit(row) {
+                    var that = this
+                    that.getTypes();
+                    that.initData(row);
+                    that.showadd = true;
+                },
+                handleSizeChange(val) {
+                    this.perPage = val;
+                    this.getList()
+                },
+                handleCurrentChange(val) {
+                    this.currentPage = val;
+                    this.getList();
+                },
+                async getList() {
+                    let that = this;
+                    let params = {
+                        page: that.currentPage,
+                        pageSize: that.perPage
+                    }
+                    if (that.search_type) {
+                        params.type = that.search_type
+                    }
+                    if (that.keyword) {
+                        params.keyword = that.keyword
+                    }
+					params.ctype = that.ctype;
+					params.eject = that.eject;
+					params.display = that.display;
+                    that.loading = true;
+                    that.emptytext = lc('admin_user_weipin_00026');
+                    httpPost('m=system&c=set_navmap&a=index', params).then(function (result) {
+                        var res = result.data
+                        if (res.error == 0) {
+                            that.tableData = res.data.list
+                            that.perPage = parseInt(res.data.perPage)
+                            that.pageSizes = res.data.pageSizes
+                            that.total = parseInt(res.data.total);
+                            if (that.prevPage != that.currentPage) {
+                                that.prevPage = that.currentPage;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+                            if (that.tableData.length === 0){
+                                that.emptytext = lc('wap_js_00113');
+                            }
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                },
+                async getTypes() {
+                    let that = this;
+                    httpPost('m=system&c=set_navmap&a=getTypes', {}).then(function (result) {
+                        var res = result.data
+                        if (res.error == 0) {
+                            that.type = res.data.type
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                },
+                submitForm() {
+                    let that = this;
+                    if (!that.info.name) {
+                        message.error(lc('admin_system_00352'));
+                        return false;
+                    }
+                    if (!that.info.url) {
+                        message.error(lc('admin_system_00286'));
+                        return false;
+                    }
+                    if (!that.info.sort) {
+                        message.error(lc('admin_system_00353'));
+                        return false;
+                    }
+                    var params = that.info
+                    params.submit = 1
+                    if (params.display_n == true) {
+                        params.display = 1
+                    } else {
+                        params.display = 0
+                    }
+					that.save_load = true;
+                    httpPost('m=system&c=set_navmap&a=save', params).then(function (res) {
+						that.save_load = false;
+                        if (res.data.error == 0) {
+                            that.$message.success({
+                                message: res.data.msg,
+                                onClose: function () {
+                                    that.showadd = false
+                                    that.getList()
+                                }
+                            });
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    });
+                },
+                delrow(row) {
+                    delConfirm(this, row.id, this.delete);
+                },
+                delAllBottom() {
+                    if (!this.selectedItem.length) {
+                        this.$message({ showClose: true, message: lc('admin_user_weipin_00005'), type: 'warning' });
+                        return false;
+                    }
+                    delConfirm(this, this.selectedItem, this.delete);
+                },
+                async delete(id) {
+                    let that = this;
+                    let params = {
+                        del: id
+                    };
+                    httpPost('m=system&c=set_navmap&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success(lc('wap_user_00264'));
+                            that.getList();
+                        } else {
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+            }
+        }
+</script>

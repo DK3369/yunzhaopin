@@ -187,3 +187,252 @@ pub async fn month_bucket_trend(
     sql.push_str(" GROUP BY ym ORDER BY ym ASC");
     sqlx::query_as(&sql).bind(since_ts).fetch_all(pool).await
 }
+
+async fn count1(pool: &MySqlPool, sql: &str, a: i64) -> u64 {
+    let row: Result<(i64,), _> = sqlx::query_as(sql).bind(a).fetch_one(pool).await;
+    row.map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0)
+}
+
+async fn count2(pool: &MySqlPool, sql: &str, a: i64, b: i64) -> u64 {
+    let row: Result<(i64,), _> = sqlx::query_as(sql).bind(a).bind(b).fetch_one(pool).await;
+    row.map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0)
+}
+
+async fn sum1(pool: &MySqlPool, sql: &str, a: i64) -> String {
+    let row: Result<(Option<f64>,), _> = sqlx::query_as(sql).bind(a).fetch_one(pool).await;
+    match row {
+        Ok((Some(v),)) => {
+            let s = format!("{v:.2}");
+            s.trim_end_matches('0').trim_end_matches('.').to_string()
+        }
+        _ => "0".into(),
+    }
+}
+
+pub async fn members_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_member WHERE reg_date >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn members_usertype_since(pool: &MySqlPool, usertype: i32, since: i64) -> u64 {
+    let row: Result<(i64,), _> = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_member WHERE usertype = ? AND reg_date >= ?",
+    )
+    .bind(usertype)
+    .bind(since)
+    .fetch_one(pool)
+    .await;
+    row.map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0)
+}
+
+pub async fn companies_pid0_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_member WHERE usertype = 2 AND pid = 0 AND reg_date >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn other_members_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_member WHERE usertype <> 1 AND usertype <> 2 AND reg_date >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn expects_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_resume_expect WHERE ctime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn expects_between(pool: &MySqlPool, start: i64, end: i64) -> u64 {
+    count2(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_resume_expect WHERE ctime >= ? AND ctime < ?",
+        start,
+        end,
+    )
+    .await
+}
+
+pub async fn jobs_sdate_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE sdate >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn jobs_sdate_between(pool: &MySqlPool, start: i64, end: i64) -> u64 {
+    count2(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE sdate >= ? AND sdate < ?",
+        start,
+        end,
+    )
+    .await
+}
+
+pub async fn userid_job_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_userid_job WHERE datetime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn userid_job_between(pool: &MySqlPool, start: i64, end: i64) -> u64 {
+    count2(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_userid_job WHERE datetime >= ? AND datetime < ?",
+        start,
+        end,
+    )
+    .await
+}
+
+pub async fn down_resume_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_down_resume WHERE downtime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn down_resume_between(pool: &MySqlPool, start: i64, end: i64) -> u64 {
+    count2(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_down_resume WHERE downtime >= ? AND downtime < ?",
+        start,
+        end,
+    )
+    .await
+}
+
+pub async fn free_down_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_freedown_resume WHERE downtime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn tellog_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_job_tellog WHERE ctime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn tellog_between(pool: &MySqlPool, start: i64, end: i64) -> u64 {
+    count2(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_job_tellog WHERE ctime >= ? AND ctime < ?",
+        start,
+        end,
+    )
+    .await
+}
+
+pub async fn yqms_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_userid_msg WHERE datetime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn adclick_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_adclick WHERE addtime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn wx_bound(pool: &MySqlPool, usertype: i32) -> u64 {
+    let row: Result<(i64,), _> = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_member WHERE usertype = ? AND wxid IS NOT NULL AND wxid <> ''",
+    )
+    .bind(usertype)
+    .fetch_one(pool)
+    .await;
+    row.map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0)
+}
+
+pub async fn wx_bound_since(pool: &MySqlPool, since: i64) -> u64 {
+    count1(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_member WHERE wxid IS NOT NULL AND wxid <> '' AND wxbindtime >= ?",
+        since,
+    )
+    .await
+}
+
+pub async fn members_usertype(pool: &MySqlPool, usertype: i32) -> u64 {
+    let row: Result<(i64,), _> =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_member WHERE usertype = ?")
+            .bind(usertype)
+            .fetch_one(pool)
+            .await;
+    row.map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0)
+}
+
+/// `kind`: 0 total (type<>6), 1 vip, 5 service, -1 other.
+pub async fn order_sum_since(pool: &MySqlPool, since: i64, kind: i32) -> String {
+    let sql = match kind {
+        1 => {
+            "SELECT SUM(order_price) FROM phpyun_company_order WHERE order_state = 2 AND type = 1 AND order_time >= ?"
+        }
+        5 => {
+            "SELECT SUM(order_price) FROM phpyun_company_order WHERE order_state = 2 AND type = 5 AND order_time >= ?"
+        }
+        -1 => {
+            "SELECT SUM(order_price) FROM phpyun_company_order WHERE order_state = 2 AND type <> 1 AND type <> 5 AND type <> 6 AND order_time >= ?"
+        }
+        _ => {
+            "SELECT SUM(order_price) FROM phpyun_company_order WHERE order_state = 2 AND type <> 6 AND order_time >= ?"
+        }
+    };
+    sum1(pool, sql, since).await
+}
+
+/// Day-of-month buckets. `sql` must be a static whitelist query with two
+/// bind slots (`start`, `end`) returning `(dd, count)` where `dd` is `%d`.
+pub async fn daily_day_counts(
+    pool: &MySqlPool,
+    sql: &'static str,
+    start: i64,
+    end: i64,
+) -> Vec<(String, i64)> {
+    let rows: Result<Vec<(String, i64)>, _> = sqlx::query_as(sql)
+        .bind(start)
+        .bind(end)
+        .fetch_all(pool)
+        .await;
+    rows.unwrap_or_default()
+}

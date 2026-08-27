@@ -1,0 +1,372 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+		<div class="moduleSeachs">
+		    <div class="moduleSeachleft">
+				<div class="moduleInptList">
+				    <el-input :placeholder="lc('admin_user_weipin_00003')" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+				        <template #prepend><el-select v-model="searchForm.ctype" :placeholder="lc('wap_user_00100')">
+				            <el-option :label="lc('member_user_00039')" value="1"></el-option>
+				            <el-option :label="lc('admin_yunying_00117') + integral_pricename" value="2"></el-option>
+				        </el-select></template>
+				    </el-input>
+				</div>
+				<div v-for="(searchItem, searchIndex) in searchList" class="tableSeachInptsmall newsinput">
+                    <el-select v-model="searchForm[searchItem.param]" size="small" :clearable="true" :placeholder="searchItem.name" @change="search">
+                        <el-option v-for="(searchLabel, searchValue) in searchItem.value" :label="searchLabel" :value="searchValue"></el-option>
+                    </el-select>
+                </div>
+		        <div class="newsbtnbox"  >
+		            <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+		        </div>
+		    </div>
+			<div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="small" @click="openAdd('')">{{ lc('admin_01202') }}</el-button>
+            </div>
+		</div>
+			
+        
+        <div class="moduleElTable">
+            <el-table :data="list" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange"
+				:default-sort = "{prop: 'id', order: 'descending'}"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading">
+                <template #empty>
+                    <p>{{dataText}}</p>
+                </template>
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="name" :label="lc('member_user_00039')">
+                </el-table-column>
+                <el-table-column prop="classname" :label="lc('admin_00223')" width="180">
+                </el-table-column>
+                <el-table-column prop="integral" :label="lc('admin_yunying_00117') + integral_pricename" width="120">
+                </el-table-column>
+                <el-table-column prop="number" :label="lc('wap_00406')" width="120">
+                    <template #default="scope">
+                        <span v-if="scope.row.restriction==0">{{ lc('admin_company_00054') }}</span>
+                        <span v-else>{{scope.row.restriction}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="stock" :label="lc('admin_yunying_00118')" width="120">
+                </el-table-column>
+                <el-table-column prop="sort" :label="lc('admin_vue_00044')" width="90">
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00181')" width="70">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.status_n" active-color="#1890FF" inactive-color="#B8BDC9" @change="checkStatus(scope.row.status_n,scope.row.id)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('wap_01465')" width="70">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.rec_n" active-color="#1890FF" inactive-color="#B8BDC9" @change="checkRec(scope.row.rec_n,scope.row.id)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('wap_js_00093')" width="70">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.hot_n" active-color="#1890FF" inactive-color="#B8BDC9" @change="checkHot(scope.row.hot_n,scope.row.id)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="130"  align="center">
+                    <template #default="scope">
+                        <div class="cz_button">
+              			    <el-button  size="small" @click="openAdd(scope.row)" type=" " >{{ lc('wap_js_00073') }}</el-button>
+              		        <el-button type="danger" size="small "  @click="del(scope.$index)">{{ lc('wap_js_00077') }}</el-button>
+                      
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                   :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                   layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+		<div class="modluDrawer">
+		    <el-drawer :title="infotitle" v-model="infoBox" :modal-append-to-body="false" :show-close="true"
+		        :with-header="true" size="68%">
+                <div style="overflow: hidden; position: relative; padding: 0 20px; height: 100%;">
+                    <addshop :id_p="id" @child-event="closeAdd" v-if="infoBox"></addshop>
+                </div>
+		        
+		    </el-drawer>
+		</div>
+    </div>
+</template>
+
+<script>
+import Addshop from './component/addshop.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    loading: false,
+                    dataText: lc('admin_user_weipin_00026'),
+                    // 搜索筛选项
+                    searchList: [],
+                    searchForm: {
+                        ctype: '1',
+                        keyword: ''
+                    },
+                    page: 1,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+
+                    checkedAll: false, // 全选
+                    checkedAllIndeterminate: false,
+                    multipleSelection: [], // 多选值存储
+                    idArr: [],
+
+                    integral_pricename:'',
+					
+					infoBox:false,
+					infotitle:'',
+                    id: '',
+					sort_t:'',
+					order:'',
+                    prevPage:0
+                }
+            },
+			components: {
+			    'addshop': Addshop,
+			},
+            created: function () {
+                this.getList();
+
+
+                this.getPriceName();
+                this.getBaseData();
+            },
+            methods: {
+				closeAdd() {
+				    this.infoBox = false;
+					this.id = '';
+				    this.getList();
+				},
+                openAdd(data) {
+					if (data != ''){
+						this.id = data.id;
+						this.infotitle = lc('admin_01203');
+					}else{
+						this.id = '';
+						this.infotitle = lc('admin_01202');
+					}
+                    this.infoBox = true;
+                },
+                checkStatus(status,id){
+                    var that = this;
+                    if (status == true) {
+                        status = 1;
+                    }else{
+                        status = 0;
+                    }
+                    httpPost('m=yunying&c=shop_reward&a=status', {id:id,status:status}).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+                checkRec(rec,id){
+                    var that = this;
+                    if(rec == true){
+                        rec = 1;
+                    }else{
+                        rec = 0;
+                    }
+                    httpPost('m=yunying&c=shop_reward&a=rec', {id:id,rec:rec}).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+                checkHot(hot,id){
+                    var that = this;
+                    if (hot == true) {
+                        hot = 1;
+                    }else{
+                        hot = 0;
+                    }
+                    httpPost('m=yunying&c=shop_reward&a=hot', {id:id,hot:hot}).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+                
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+				sortChange:function(e){
+				    this.sort_t = e.prop;
+				    this.order = e.order=='ascending'?'asc':'desc';
+				    this.search();
+				},
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+                getList() {
+                    let that = this,
+                        searchForm = that.searchForm,
+                        params = {
+                            page: that.page,
+                            limit: that.limit,
+							t:that.sort_t,
+							order:that.order,
+                        };
+                    that.loading = true;
+                    httpPost('m=yunying&c=shop_reward', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.list = data.list;
+                        that.total = parseInt(data.total);
+                        that.pageSizes = data.page_sizes;
+                        if (that.limit === 0) {
+                            that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        }
+                        if (that.page > data.page) {
+                            that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        }
+                        if(that.prevPage != that.page){
+                            that.prevPage = that.page;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.list.length === 0) {
+                            that.dataText = lc('wap_js_00113');
+                        }
+                    })
+                },
+                getPriceName() {
+                    let url = 'm=common&c=cache&a=getPriceName'
+                    let that = this;
+                    httpPost(url, {}, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            that.integral_pricename = res.data.integral_pricename;
+                        }
+                    })
+                },
+                getBaseData() {
+                    let _this = this;
+                    httpPost('m=yunying&c=shop_reward&a=index_base_data', {}, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        _this.searchList = Object.freeze(res.data.search_list);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+                handleSelectionChange(val) {
+                    if (val.length == 0) {
+                        this.checkedAll = false;
+                        this.checkedAllIndeterminate = false;
+                    } else {
+                        if (val.length === this.list.length) {
+                            this.checkedAll = true;
+                            this.checkedAllIndeterminate = false;
+                        } else {
+                            this.checkedAll = false;
+                            this.checkedAllIndeterminate = true;
+                        }
+                    }
+                    this.multipleSelection = val;
+                },
+                batch(type) {
+                    if (this.multipleSelection.length == 0) {
+                        message.error(lc('admin_user_weipin_00005'));
+                        return false;
+                    }
+
+                    let idArr = [];
+                    this.multipleSelection.forEach(function(item) {
+                        idArr.push(item.id);
+                    })
+                    this.idArr = idArr;
+
+                    if (type == 'del') {
+                        this.del();
+                    }
+                },
+                checkAll(val) {
+                    val ? this.checkedAllIndeterminate = false : '';
+                    this.$refs.multipleTable.toggleAllSelection();
+                },
+                del(idx) {
+                    let that = this,
+                        params = {},
+                        msg = '';
+
+                    if (typeof idx == 'undefined') { // 批量删除
+                        params.del = this.idArr;
+                        msg = lc('common_00853');
+                    } else {// 单个删除
+                        params.del = that.list[idx].id;
+                        msg = lc('admin_00333');
+                    }
+
+                    delConfirm(this, params, function (params) {
+                        httpPost('m=yunying&c=shop_reward&a=del', params).then(function(res) {
+                            if (res.data.error > 0) {
+                                message.error(res.data.msg);
+                            } else {
+                                message.success(res.data.msg, function () {
+                                    that.$refs.multipleTable.clearSelection();
+                                    that.getList();
+                                });
+                            }
+                        })
+                    }, msg)
+                },
+                sortChange(event) {
+                    this.searchForm.t = event.order ? event.prop : '';
+                    this.searchForm.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+                    this.search();
+                },
+            }
+        }
+</script>

@@ -1,0 +1,222 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt">
+				<el-input :placeholder="lc('admin_00340')" v-model="searchOption.keyword" style="margin-right: 8px;" clearable size="small">
+					<template #prepend><el-select v-model="searchOption.type" size="small" @clear="search" :placeholder="lc('admin_user_00130')">
+					    <el-option :label="lc('admin_user_00130')" value="1"></el-option>
+					    <el-option :label="lc('wap_user_00102')" value="2"></el-option>
+					</el-select></template>
+				</el-input>
+
+                <el-select v-model="searchOption.ctime" size="small" style="margin-right: 8px;" clearable @change="search" :placeholder="lc('admin_user_weipin_00030')">
+                    <el-option :label="lc('common_01940')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                    <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                    <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                    <el-option :label="lc('admin_user_00175')" value="30"></el-option>
+                </el-select>
+                <el-select v-model="searchOption.logtype" size="small" style="margin-right: 8px;" clearable @change="search" :placeholder="lc('admin_system_00689')">
+                    <el-option :label="lc('wap_00242')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00296')" value="2"></el-option>
+                    <el-option :label="lc('wap_com_00235')" value="3"></el-option>
+                    <el-option :label="lc('wap_00322')" value="4"></el-option>
+                    <el-option :label="lc('wap_com_00029')" value="5"></el-option>
+                    <el-option :label="lc('wap_00451')" value="6"></el-option>
+                    <el-option :label="lc('resume_00029')" value="7"></el-option>
+                    <el-option :label="lc('admin_user_00166')" value="8"></el-option>
+                    <el-option :label="lc('admin_user_00167')" value="9"></el-option>
+                    
+                    
+                </el-select>
+                <el-button type="primary" size="small" icon="el-icon-search" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" border style="width: 100%"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @sort-change="shortChange"
+                @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" :label="lc('common_02108')" width="80" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" width="100">
+                </el-table-column>
+
+                <el-table-column prop="type_n" :label="lc('admin_system_00689')" width="130">
+                </el-table-column>
+                <el-table-column prop="content" :label="lc('wap_user_00102')">
+                </el-table-column>
+                <el-table-column prop="ctime_n" :label="lc('wap_js_00088')" width="180">
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00181')" width="100">
+                    <template #default="scope">
+                        <el-tag type="success" size="small" v-if="scope.row.isread==1">{{ lc('admin_system_00197') }}</el-tag>
+                        <el-tag type="danger" size="small" v-else>{{ lc('member_user_00289') }}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="delrow(scope.row)" type="danger">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="small" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                   :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                   layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    emptytext: window.lc('wap_js_00113'),
+                    loading: false,
+                    tableData: [],
+                    searchOption: {
+                        type: '1',
+                        ctime: '',
+                        logtype: '',
+                        keyword: ''
+                    },
+                    page: 1,
+                    prevPage: 0,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+                    checkedAll: false,
+                    selectedItem: [],
+                }
+            },
+            created() {
+                this.getList();
+            },
+            methods: {
+                shortChange(e) {
+                    let orderMap = {ascending: 'asc', descending: 'desc'}
+                    this.searchOption.t = e.order ? e.prop : null;
+                    this.searchOption.order = orderMap[e.order];
+                    this.search();
+                },
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+                async getList() {
+                    let that = this;
+                    let searchOption = that.searchOption;
+                    let params = {
+                        page: that.page,
+                        pageSize: that.limit,
+                    };
+                    that.loading = true;
+                    that.emptytext = window.lc('admin_user_weipin_00026');
+                    httpPost('m=system&c=info_errorlog&a=index',  {...params, ...searchOption}, {hideloading: true}).then(function (data) {
+                        let res = data.data;
+                        if (res.error == 0) {
+                            that.tableData = res.data.list;
+                            if (that.prevPage != that.page) {
+                                that.prevPage = that.page;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+                            that.total = parseInt(res.data.total);
+                            that.pageSizes = res.data.pageSizes;
+                            that.limit = parseInt(res.data.pageSize);
+                            if (that.page > res.data.page) {
+                                that.page = parseInt(res.data.page); // 最后一页被删除后，取最新的页数
+                            }
+                            if (that.tableData.length === 0){
+                                that.emptytext = window.lc('wap_js_00113');
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error)
+                    })
+                },
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+                selectAllBottom(value) {
+                    value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+                },
+                handleSelectionChange(val) {
+                    this.selectedItem = [];
+                    let _this = this;
+                    if (val.length) {
+                        val.forEach(item => {
+                            _this.selectedItem.push(item.id);
+                        });
+                    }
+                    if (_this.selectedItem.length == 0) {
+                        _this.checkedAll = false;
+                    } else {
+                        if (_this.selectedItem.length == _this.tableData.length) {
+                            _this.checkedAll = true;
+                        } else {
+                            _this.checkedAll = false;
+                        }
+                    }
+                },
+                delrow(row) {
+                    delConfirm(this, row.id, this.delete);
+                },
+                delAllBottom() {
+                    if (!this.selectedItem.length) {
+                        this.$message({ showClose: true, message: lc('admin_user_weipin_00005'), type: 'warning' });
+                        return false;
+                    }
+                    delConfirm(this, this.selectedItem, this.delete);
+                },
+                async delete(Ids) {
+                    let _this = this;
+                    let params = {
+                        del: Ids
+                    };
+                    httpPost('m=system&c=info_errorlog&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success(window.lc('wap_user_00264'));
+                            _this.getList();
+                        } else {
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+            }
+        }
+</script>

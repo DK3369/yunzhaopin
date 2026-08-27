@@ -1,0 +1,217 @@
+<template>
+<div id="yemanapp" class="moduleDome">
+       
+        <div class="moduleTable" style=" padding-top:15px;">
+            <table class="tableVue">
+                <thead>
+                    <tr align="left">
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="400">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00240') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input :placeholder="lc('admin_00245')" v-model="ruleForm.sy_day_ask_num"
+                                          @input="inputIntNumber($event, 'ruleForm', 'sy_day_ask_num')">
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>{{ lc('admin_00241') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00239') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input :placeholder="lc('admin_00245')" v-model="ruleForm.sy_ip_ask_num"
+                                          @input="inputIntNumber($event, 'ruleForm', 'sy_ip_ask_num')">
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>{{ lc('admin_00241') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00243') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-switch v-model="ruleForm.ask_check"
+                                           active-value="1" inactive-value="0">
+                              </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>{{ lc('admin_00237') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00242') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-switch v-model="ruleForm.answer_check"
+                                           active-value="0" inactive-value="1">
+                              </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>{{ lc('admin_00236') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00234') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-switch v-model="ruleForm.answer_review_check"
+                                           active-value="0" inactive-value="1">
+                                </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>{{ lc('admin_00238') }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{{ lc('admin_00244') }}</div>
+                        </td>
+                        <td>
+                            <div class="TableUpload">
+                                <el-upload class="upload-demo" :accept="pic_accept"
+                                           list-type="picture"
+                                           action=""
+                                           :auto-upload="false"
+                                           :on-change="handleChangeLogo"
+                                           :show-file-list="false">
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
+                                    <img class="el-upload-list__item-thumbnail" width="100" height="100" style="padding-left: 5px;"
+                                         v-if="ruleForm.sy_friend_icon_n" :src="ruleForm.sy_friend_icon_n"/>
+                                </el-upload>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span></span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('wap_user_00176') }}</el-button>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    pic_accept: localStorage.getItem("pic_accept"),
+
+                    ruleForm: {},
+
+                    saveLoading: false,
+                }
+            },
+            created() {
+                this.getData();
+            },
+            methods: {
+                getData() {
+                    let that = this;
+                    httpPost('m=neirong&c=question&a=config').then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.ruleForm = data.config;
+                    })
+                },
+
+                inputIntNumber(val, form, key) {
+                    this.$data[form][key] = val.replace(/[^0-9]/g,'');
+                },
+
+                // 上传时触发
+                handleChangeLogo(file, fileList) {
+                    this.$set(this.ruleForm, 'sy_friend_icon', file.raw);
+                    this.$set(this.ruleForm, 'sy_friend_icon_n', file.url);
+                },
+
+                save() {
+                    let that = this,
+                        ruleForm = that.ruleForm,
+                        formData = new FormData();
+
+                    if (that.saveLoading) {
+                        return false;
+                    }
+                    that.saveLoading = true;
+
+                    $.each(ruleForm, function(key, value){
+                        if (key != 'sy_friend_icon_n') {
+                            formData.append(key, value);
+                        }
+                    });
+
+                    httpPost('m=neirong&c=question&a=configSave', formData).then(function (response) {
+                        let res = response.data;
+
+                        if (res.error > 0) {
+                            message.error(res.msg, function () {
+                                that.saveLoading = false;
+                            });
+                        } else {
+                            message.success(res.msg, function() {
+                                // that.$set(that.ruleForm, 'sy_friend_icon', '');
+                                that.saveLoading = false;
+                                that.getData();
+                            });
+                        }
+                    })
+                },
+            }
+        }
+</script>

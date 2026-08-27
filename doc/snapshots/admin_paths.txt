@@ -19,6 +19,8 @@
 /v1/admin/broadcasts
 /v1/admin/broadcasts/delete
 /v1/admin/broadcasts/list
+/v1/admin/cache/clear
+/v1/admin/cache/php-dicts
 /v1/admin/categories
 /v1/admin/categories/list
 /v1/admin/categories/update
@@ -35,6 +37,11 @@
 /v1/admin/countries/patch
 /v1/admin/countries/reload
 /v1/admin/cron
+/v1/admin/dashboard/ajax-right
+/v1/admin/dashboard/ajax-statis
+/v1/admin/dashboard/chart
+/v1/admin/dashboard/home-data
+/v1/admin/dashboard/month-statis
 /v1/admin/dashboard/msg-num
 /v1/admin/dashboard/overview
 /v1/admin/dashboard/recent-signups
@@ -74,6 +81,7 @@
 /v1/admin/jobs/stats
 /v1/admin/login
 /v1/admin/login-logs
+/v1/admin/logout
 /v1/admin/me
 /v1/admin/menu
 /v1/admin/nav
@@ -119,6 +127,7 @@
 /v1/admin/rewards/list
 /v1/admin/rewards/status
 /v1/admin/site-settings
+/v1/admin/site-settings/batch
 /v1/admin/site-settings/delete
 /v1/admin/site-settings/list
 /v1/admin/sms-logs

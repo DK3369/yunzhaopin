@@ -1,0 +1,1506 @@
+<template>
+    <div class="moduleElHight">
+        <div class="moduleSeachbig">
+            <div class="moduleSeacFouyr" style="padding: 2px 8px 12px 0;">
+                <el-input v-model="search_params.keyword" @keyup.enter="search" :placeholder="lc('admin_00340')" size="small"
+                    clearable>
+                    <template #prepend><el-select v-model="search_params.type" size="small" :placeholder="lc('wap_01403')">
+                        <el-option :label="lc('wap_user_00080')" value="1"></el-option>
+                        <el-option :label="lc('wap_com_00288')" value="2"></el-option>
+                    </el-select></template>
+                </el-input>
+
+            </div>
+            <!-- Collapsed section -->
+            <div class="tableSeachInpt tableSeachInptsmall" v-for="(searchitem, searchidx) in searchlist" :key="searchidx"
+                :class="{ 'searchbutnOnff': seachbutn }">
+                <el-select v-model="search_params[searchidx]" size="small" :placeholder="searchitem.name"
+                    clearable @change="search">
+                    <el-option v-for="(item, index) in searchitem.value" :label="item" :key="index"
+                        :value="index"></el-option>
+                </el-select>
+            </div>
+
+            <div class="tableSeachInpt">
+                <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+            <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 8px;">
+                <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
+                    aria-disabled="false" size="small" plain>{{ lc('admin_user_00145') }}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
+                    aria-disabled="false" size="small" plain>{{ lc('admin_user_00144') }}<i class="el-icon-arrow-up el-icon--right"></i></el-button>
+            </div>
+        </div>
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_data_stats") }}
+            <span class="admin_datatip_n">{{ lc("admin_total_count", [partAllNum]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [status1Num]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [status2Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_expired_count", [status3Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }} </span>
+        </div>
+        <div class="moduleElTable moduleElMediDFur" :class="{ 'modulElTableGaiPart': tableHig }"
+            style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
+            <el-table :data="tableData" style="width: 100%" stripe @sort-change='sortChange'
+                @mousedown="mouseDownHandler"
+                @mouseup="mouseUpHandler"
+                @mousemove="mouseMoveHandler"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
+                :default-sort="{ prop: 'id', order: 'descending' }" @selection-change="handleSelectionChange"
+                ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" :label="lc('admin_user_company_00370')" width="120" sortable="custom"></el-table-column>
+                <el-table-column :label="lc('admin_user_company_00360')" min-width="180" show-overflow-tooltip>
+                    <template #default="props">
+                        <div class="moduleProps">
+                            <div class=" ">
+                                <el-link type="primary" target="_blank" :href="props.row.webjob_url">{{ props.row.name
+                                }}
+                                </el-link>
+                            </div>
+                            <div class=" ">
+                                <el-link target="_blank" :href="props.row.webcom_url">{{ props.row.com_name }}</el-link>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_user_company_00383')" width="130">
+                    <template #default="props">
+                        <div class="moduleProps">
+                            <span class=" ">{{ props.row.type_n }}</span>
+                            <span class=" ">{{ lc("admin_hiring_count", [props.row.number]) }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_user_company_00387')" width="130">
+                    <template #default="props">
+                        <div class="moduleProps">
+                            <span class=" ">{{ props.row.salary }}{{ props.row.salary_type_n }}</span>
+                            <span class=" ">{{ props.row.billing_cycle_n }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="logintime" :label="lc('admin_00772')" width="150">
+                    <template #default="props">
+                        <div class="moduleProps">
+                            <span>{{ props.row.lastupdate_n_n }}</span>
+                            <span class="gsd">{{ props.row.end_n }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="logintime" :label="lc('member_com_00303')" width="150">
+                    <template #default="props">
+                        <!--<a href="index.php?m=admin_comlog&c=partapply&jobid={yun:}$v.id{/yun}" class="admin_cz_sc">-->
+                        
+                        <!--</a>-->
+                        <div class="moduleProps" v-if="props.row.applynum > 0">
+                            <span>{{ lc("admin_applicants_count", [props.row.applynum]) }}</span>
+                            <div class="jobtj">
+                                <el-link @click="applylog(props.row)">{{ lc('wap_com_00427') }}<i class="el-icon-view el-icon--right"></i>
+                                </el-link>
+                            </div>
+                        </div>
+                        <span v-else>{{ lc('admin_00768') }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('wap_com_00236')" width="130">
+                    <template #default="props">
+                        <el-tooltip class="item" effect="dark" placement="top-start">
+                            <div>
+                                <span style="line-height: 20px;">{{ lc("admin_rec_days_left", [props.row.isrec ? props.row.rec_day : 0]) }}</span>
+                            </div>
+                            <div class="job_tg_bth">
+                                <el-switch v-model="props.row.isrec" @change="tgchange($event, props.row, 2)"
+                                    :inactive-text="lc('wap_com_00237')"></el-switch>
+                            </div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('member_user_00178')" width="130">
+                    <template #default="props">
+                        <el-switch v-model="props.row.iszp" @change="zpstatuschange($event, props.row)"></el-switch>
+                        {{ lc('admin_00748') }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="zt" :label="lc('member_user_00181')">
+                    <template #default="props">
+                        <div class="admin_state">
+                            <span v-if="(props.row.edate > 0 && props.row.edate < nowtime) || props.row.state == 2"
+                                class="admin_state5">{{ lc('member_com_00304') }}</span>
+                            <div v-else-if="props.row.r_status == '2'">
+                                <span class="admin_state3">{{ lc('admin_user_00138') }}</span>
+                                <div style="display:inline-block">
+                                    <el-popover trigger="hover" placement="right" v-if="props.row.lock_info">
+                                        <p>{{ props.row.lock_info }}</p>
+                                        <template #reference><div class="name-wrapper">
+                                            <i class="el-icon-question el-icon--right"></i>
+                                        </div></template>
+                                    </el-popover>
+                                </div>
+                            </div>
+                            <span v-else-if="props.row.state == 1" class="admin_state1">{{ lc('wap_user_00165') }}</span>
+                            <span v-else-if="props.row.state == 0" class="admin_state4">{{ lc('wap_user_00006') }}</span>
+                            <div v-else-if="props.row.state == 3">
+                                <span class="admin_state2">{{ lc('wap_user_00167') }}</span>
+                                <div style="display:inline-block">
+                                    <el-popover trigger="hover" placement="right" v-if="props.row.lock_info">
+                                        <p>{{ props.row.statusbody }}</p>
+                                        <template #reference><div class="name-wrapper">
+                                            <i class="el-icon-question el-icon--right"></i>
+                                        </div></template>
+                                    </el-popover>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="200" fixed="right">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small " plain @click="jobAudit(scope.row)">{{ lc('member_user_00152') }}</el-button>
+                            <el-button size="small " plain @click="edit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger  " size=" " @click="delrow(scope.row.id)">{{ lc('common.delete') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom" size="small">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="multipleStatus" size="small">{{ lc('member_user_00152') }}</el-button>
+                <el-button @click="multipleyq" size="small">{{ lc('admin_user_company_00391') }}</el-button>
+                <el-button @click="refresh" size="small">{{ lc('wap_user_00334') }}</el-button>
+                <el-button @click="multitg" size="small">{{ lc('common.recommended') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total" :pager-count="pagerCount">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- Part-time application records dialog -->
+        <div class="modluDrawer" v-if="curr_job">
+            <el-drawer :title="lc('member_com_00296')" v-model="drawerapplylog" :modal-append-to-body="false" append-to-body
+                :show-close="true" :with-header="true" size="95%">
+                <comlog_partapply style="margin-left: 10px;" ref="partapplylog" :job="curr_job"></comlog_partapply>
+            </el-drawer>
+        </div>
+        <!-- Job promotion dialog -->
+        <div class="modluDrawer">
+            <el-dialog :title="jobtgtit" v-model="jobtgdrawer" :with-header="true" append-to-body :show-close="true"
+                width="400px">
+                <div class="wxsettip_small">{{ lc('wap_com_00041') }}</div>
+                <el-input type="number" :placeholder="lc('admin_00614')" v-model="jobtgdays">
+                    <template #append>{{ lc('common_02067') }}</template>
+                </el-input>
+                <div class="wxsettip_small" v-if="jobtgetime != ''">{{ lc('admin_00613') }}</div>
+                <el-input v-if="jobtgetime != ''" v-model="jobtgetime" disabled>
+                </el-input>
+                <div style="margin-top:10px;">
+                    <i class="el-icon-warning"></i>
+                    {{ lc('admin_00769') }}
+                    <el-checkbox v-model="qxtgchecked" true-label="1" false-label="0"></el-checkbox>
+                    <span>{{ lc('admin_user_company_00036') }}</span>
+                </div>
+                <template #footer><span class="dialog-footer">
+                    <el-button @click="jobtgdrawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="jobTgSubmit" :loading="tg_loading">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+        <!-- Batch extension dialog -->
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_user_weipin_00038')" v-model="yqdrawer" :with-header="true" append-to-body :show-close="true"
+                width="400px">
+                <div class="wxsettip_small">{{ lc('admin_user_company_00389') }}</div>
+                <el-input type="number" :placeholder="lc('admin_00614')" v-model="yqdays">
+                    <template #append>{{ lc('common_02067') }}</template>
+                </el-input>
+                <template #footer><span class="dialog-footer">
+                    <el-button @click="yqdrawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="yqSubmit" :loading="yq_loading">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+        <!-- Batch job review -->
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_user_company_00350')" width="300px" v-model="drawerauditmultiple" append-to-body
+                :modal-append-to-body="false">
+                <div class="toolClasDia fenpeizhand">
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>{{ lc('admin_user_weipin_00065') }}</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-radio v-model="multiStatus" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                            <el-radio v-model="multiStatus" label="3">{{ lc('wap_user_00167') }}</el-radio>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>{{ lc('member_user_00450') }}</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-input type="textarea" v-model="multiStatusBody" :rows="2" :placeholder="lc('admin_00676')">
+                            </el-input>
+                        </div>
+                    </div>
+                </div>
+                <template #footer><span class="dialog-footer">
+                    <el-button @click="drawerauditmultiple = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="multipleStatusSave" :loading="status_loading">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+        <!-- Job detail review ---------------------------------------------------------------------->
+        <el-drawer :title="lc('admin_00773')" v-model="jobdrawersh" :modal-append-to-body="false" size="80%">
+            <div class="shbox" v-if="auditInfo">
+                <div class="shinfo">
+                    <div class="shcomname">{{ auditInfo.name }}</div>
+                    <div class="jobshcom">{{ auditInfo.com_name }}
+                        <!--<el-tag type="danger" size="small">{{searchlist['rating'].value[auditInfo.rating]}}</el-tag>-->
+                    </div>
+                    <div class="sh_zwsz_add">
+                        {{ lc("admin_contact_person_value", [auditInfo.linkman]) }} <span class="shcomtel_n"
+                            v-if="auditInfo.linktel">{{ lc("admin_contact_phone_value", [auditInfo.linktel]) }} </span>
+                        <span v-if="auditInfo.crm_salesman">{{ lc("admin_salesperson_value", [auditInfo.crm_salesman]) }}</span>
+                    </div>
+                    
+                    -->
+                    <!--<span v-if="auditInfo.add_ip">IP：{{auditInfo.add_ip}}</span>-->
+                    -->
+                    <!--</div>-->
+                    <div class="shshowall">
+                        <div class="shshow">
+                            <div class="shshow_tit"><i class="el-icon-document"></i> {{ lc('member_user_00194') }}</div>
+                            <div class="shshow_p">
+                                <div class="">{{ lc("admin_work_requirement_value", [auditInfo.type_n]) }}</div>
+                                <div class="" v-if="auditInfo.number">{{ lc("admin_headcount_value", [auditInfo.number]) }}</div>
+                                <div class="" v-if="auditInfo.sex_n">{{ lc("admin_gender_requirement_value", [auditInfo.sex_n]) }}</div>
+                                <div class="" v-if="auditInfo.billing_cycle_n">{{ lc("admin_billing_cycle_value", [auditInfo.billing_cycle_n]) }}</div>
+                                <div class="" v-if="auditInfo.sdate_n">{{ lc("admin_part_valid_until_value", [auditInfo.sdate_n]) }}</div>
+                                <div class="" v-if="auditInfo.address">{{ lc("admin_work_address_value", [auditInfo.address]) }}</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span>{{ lc('admin_user_00223') }}</span>
+                                <table class="tjob_timetable" style="float:left; margin-top: 5px;">
+                                    <tbody>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>{{ lc('wap_com_00338') }}</th>
+                                            <th>{{ lc('wap_com_00339') }}</th>
+                                            <th>{{ lc('wap_js_00029') }}</th>
+                                            <th>{{ lc('wap_js_00032') }}</th>
+                                            <th>{{ lc('wap_js_00030') }}</th>
+                                            <th>{{ lc('wap_js_00031') }}</th>
+                                            <th>{{ lc('wap_js_00033') }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>{{ lc('wap_com_00336') }}</th>
+                                            <td v-for="val in cacheData.part_morning" :key="val">
+                                                <el-checkbox
+                                                    :checked="auditInfo.worktime_n.findIndex(item => item === val) !== -1"
+                                                    disabled></el-checkbox>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>{{ lc('wap_com_00337') }}</th>
+                                            <td v-for="val in cacheData.part_noon" :key="val">
+                                                <el-checkbox
+                                                    :checked="auditInfo.worktime_n.findIndex(item => item === val) !== -1"
+                                                    disabled></el-checkbox>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>{{ lc('wap_com_00340') }}</th>
+                                            <td v-for="val in cacheData.part_afternoon" :key="val">
+                                                <el-checkbox
+                                                    :checked="auditInfo.worktime_n.findIndex(item => item === val) !== -1"
+                                                    disabled></el-checkbox>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="shshow_tit"><i class="el-icon-office-building"></i> {{ lc('wap_user_00086') }}</div>
+                            <div class="shshow_p">
+                                <div class="" v-html="auditInfo.content"></div>
+                            </div>
+                        </div>
+                        <div v-if="auditInfo.c_status == 2">
+                            <div class="wxsettip_small ">{{ lc('admin_00743') }}</div>
+                            <template>
+                                <el-radio v-model="auditInfo.c_status" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                                <el-radio v-model="auditInfo.c_status" label="2">{{ lc('admin_user_00150') }}</el-radio>
+                            </template>
+                            <div class="wxsettip_small ">{{ lc('admin_00744') }}</div>
+                            <el-input type="textarea" disabled :rows="2" :placeholder="lc('admin_00744')" :value="auditInfo.statusbody">
+                            </el-input>
+                        </div>
+                        <div v-else class="shcz">
+                            <div class="wxsettip_small ">{{ lc('admin_user_company_00326') }}</div>
+                            <template>
+                                <el-radio v-model="auditInfo.state" label="1">{{ lc('admin_user_company_00161') }}</el-radio>
+                                <el-radio v-model="auditInfo.state" label="3">{{ lc('wap_user_00167') }}</el-radio>
+                            </template>
+                            <div class="wxsettip_small " v-if="auditInfo.r_status == 0">{{ lc('admin_user_company_00134') }}</div>
+                            <template>
+                                <el-checkbox v-if="auditInfo.r_status == 0" :value="true" disabled>{{ lc('admin_user_company_00325') }}</el-checkbox>
+                            </template>
+                            <div class="wxsettip_small ">{{ lc('admin_user_00365') }}</div>
+                            <el-input type="textarea" :rows="2" :placeholder="lc('admin_00745')" v-model="auditInfo.statusbody">
+                            </el-input>
+                            <div class=" shczbth">
+                                <el-button type="primary" :loading="audit_load" @click="audit(1)">{{ lc('member_com_00248') }}</el-button>
+                            </div>
+                            <div class=" shczbth" v-if="sh_num > 0">
+                                <el-button type="primary" :loading="audit_load" @click="audit(2)"
+                                    plain>{{ lc('admin_user_00239') }}</el-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-drawer>
+        <!-- Edit job notice -->
+        <el-drawer :title="lc('admin_00754')" v-model="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
+            <div class="uploadTable" style="padding:0px 20px;" v-if="curr_job">
+                <table class="tableVue">
+                    <thead>
+                        <tr align="left">
+                            <th width="120">{{ lc('member_com_00021') }}</th>
+                            <th width=" ">{{ lc('member_user_00181') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_com_00288') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="curr_job.name" :placeholder="lc('admin_user_weipin_00014')"></el-input>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('member_com_00313') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-select v-model="curr_job.type" :placeholder="lc('admin_00774')">
+                                        <el-option v-for="item in cacheData.partdata.part_type" :key="item"
+                                            :label="cacheData.partclass_name[item]" :value="item">
+                                        </el-option>
+                                    </el-select>
+                                    <!--<el-cascader style="width: 480px;" v-model="sel_jobtype" :options="job_types" filterable-->
+                                    <!--clearable></el-cascader>-->
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_com_00333') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="curr_job.number" :placeholder="lc('admin_00579')"></el-input>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_com_00328') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <table class="tjob_timetable" style="float:left">
+                                        <tbody>
+                                            <tr>
+                                                <th>&nbsp;</th>
+                                                <th>{{ lc('wap_com_00338') }}</th>
+                                                <th>{{ lc('wap_com_00339') }}</th>
+                                                <th>{{ lc('wap_js_00029') }}</th>
+                                                <th>{{ lc('wap_js_00032') }}</th>
+                                                <th>{{ lc('wap_js_00030') }}</th>
+                                                <th>{{ lc('wap_js_00031') }}</th>
+                                                <th>{{ lc('wap_js_00033') }}</th>
+                                            </tr>
+                                            <tr>
+                                                <th>{{ lc('wap_com_00336') }}</th>
+                                                <td v-for="val in cacheData.part_morning" :key="val">
+                                                    <el-checkbox
+                                                        :checked="checkedworktime.findIndex(item => item === val) !== -1"
+                                                        @change="worktimeChange(val)"></el-checkbox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>{{ lc('wap_com_00337') }}</th>
+                                                <td v-for="val in cacheData.part_noon" :key="val">
+                                                    <el-checkbox
+                                                        :checked="checkedworktime.findIndex(item => item === val) !== -1"
+                                                        @change="worktimeChange(val)"></el-checkbox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>{{ lc('wap_com_00340') }}</th>
+                                                <td v-for="val in cacheData.part_afternoon" :key="val">
+                                                    <el-checkbox
+                                                        :checked="checkedworktime.findIndex(item => item === val) !== -1"
+                                                        @change="worktimeChange(val)"></el-checkbox>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-bottom: none;">
+                                                <td colspan="8">
+                                                    <el-checkbox style="width:110px;margin-left:0" size="small" border
+                                                        :indeterminate="isIndeterminate" v-model="worktimeCheckAll"
+                                                        @change="handleColCheckAllChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('member_com_00632') }}</div>
+                            </td>
+                            <td>
+                                <div style="display: flex;">
+                                    <div class="TableInpt">
+                                        <el-date-picker readonly v-model="curr_job.sdate_n" value-format="YYYY-MM-dd"
+                                            type="date" :placeholder="lc('admin_00346')" :picker-options="pickerOptions">
+                                        </el-date-picker>
+                                    </div>
+                                    <div class="TableInptline">-</div>
+                                    <div class="TableInpt" v-if="!iscq">
+                                        <el-date-picker v-model="curr_job.edate_n" value-format="YYYY-MM-dd" type="date"
+                                            :placeholder="lc('admin_00346')" :picker-options="pickerOptions">
+                                        </el-date-picker>
+                                    </div>
+                                    <el-checkbox style="margin-left:10px;" v-model="iscq" :label="lc('wap_js_00135')" size="medium"
+                                        border></el-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('member_com_00017') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="curr_job.salary" :placeholder="lc('wap_01148')"></el-input>
+                                    <el-select style="margin-left:10px;" v-model="curr_job.salary_type"
+                                        :placeholder="lc('wap_01696')">
+                                        <el-option v-for="item in cacheData.partdata.part_salary_type" :key="item"
+                                            :label="cacheData.partclass_name[item]" :value="item">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_user_company_00390') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-select v-model="curr_job.billing_cycle" :placeholder="lc('admin_user_company_00386')">
+                                        <el-option v-for="item in cacheData.partdata.part_billing_cycle" :key="item"
+                                            :label="cacheData.partclass_name[item]" :value="item">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_user_00086') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <div id="partjobeditor—wrapper" style="border: 1px solid #ccc;">
+                                        <div id="partjobtoolbar-container"><!-- Toolbar --></div>
+                                        <div id="partjobeditor-container" style="height: 300px;"><!-- Editor --></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_com_00303') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-select v-model="curr_job.sex" :placeholder="lc('wap_js_00134')">
+                                        <el-option v-for="(item, index) in cacheData.part_sex" :key="index" :label="item"
+                                            :value="index">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('member_user_00198') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-cascader v-model="sel_city" :options="cacheData.citys" @change="citychange"
+                                        filterable collapse-tags clearable></el-cascader>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_01362') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableSelect">
+                                    <el-input v-model="curr_job.address" :placeholder="lc('wap_00905')"></el-input>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="mapurl">
+                            <td>
+                                <div class="TableTite"> </div>
+                            </td>
+                            <td>
+                                <div id="conrtainer" style="width:100%;height:300px; position:relative; z-index:1"></div>
+                            </td>
+                        </tr>
+                        <tr v-if="curr_job.id">
+                            <td>
+                                <div class="TableTite">{{ lc('wap_com_00406') }}</div>
+                            </td>
+                            <td>
+                                <div class="job_set_list">
+                                    <font v-if="curr_job.state == 1" color="blue">{{ lc('wap_user_00165') }}</font>
+                                    <font v-else-if="curr_job.state == 3" color="red">{{ lc('wap_user_00167') }}</font>
+                                    <font v-else color="red">{{ lc('wap_user_00166') }}</font>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="setBasicButn" style="border: none; height: 80px;">
+                <el-button type="primary" size="medium" :loading="save_load" @click="jobsave">{{ lc('common.submit') }}</el-button>
+            </div>
+        </el-drawer>
+    </div>
+</template>
+<script>
+import ComlogPartapply from './comlog_partapply.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+
+let jobeditor = null, jobtoolbar = null,editorInterval = null;
+
+const { createEditor, createToolbar } = window.wangEditor;
+export default {
+    props: {
+        state: { type: String, default: '' }
+    },
+    data: function () {
+        return {
+            mouseFlag: false,
+            mouseOffset: 0,
+            loading: false,
+            pagerCount: 5,
+            emptytext: lc('wap_js_00113'),
+            searchlist: null,
+            search_params: {
+                type: '1',
+                keyword: '',
+                state: this.state,
+                status: '',
+                lastupdate: '',
+                edate: '',
+                billing_cycle: ''
+            },
+            checkedAll: false,
+            selectedItem: [],
+            tableData: [],
+            currentPage: 1,
+            perPage: 0,
+            pageSizes: [],
+            total: 0,
+            sort_type: '',
+            sort_col: '',
+            partAllNum: 0,
+            status1Num: 0,
+            status2Num: 0,
+            status3Num: 0,
+            seachbutn: true,
+            tableHig: true,
+            cacheData: [],
+            nowtime: 0,
+            curr_job: null,
+            drawerapplylog: false,
+            // {{ lc('wap_com_00237') }}
+            jobtgtit: '',
+            jobtgdays: '',
+            jobtgetime: '',
+            qxtgchecked: '0',
+            jobtgdrawer: false,
+            // {{ lc('admin_user_weipin_00038') }}
+            yqdays: '',
+            yqdrawer: false,
+            // BatchAudit
+            drawerauditmultiple: false,
+            multiStatus: '',
+            multiStatusBody: '',
+            // {{ lc('admin_user_company_00326') }}
+            jobdrawersh: false,
+            auditInfo: null,
+            audit_load: false,
+            sh_num: 0,
+            //{{ lc('admin_00754') }}
+            drawerEditJob: false,
+            jobCompany: null,
+            showJob: false,
+            isIndeterminate: true,
+            checkedworktime: [],
+            worktimeCheckAll: false,
+            pickerOptions: {// el-date-picker date limits
+                disabledDate(time) {
+                    // Today and earlier dates
+                    // return time.getTime() > Date.now();
+                    // Today and later dates
+                    return time.getTime() < Date.now() - 8.64e7;
+                }
+            },
+            iscq: false,// Whether recruitment is long-term
+            sel_city: [],
+            mapkey: '',
+            mapurl: '',
+            mapsecret: '',
+            today: '',
+            save_load: false,
+            islook: false,
+            tg_loading: false,
+            yq_loading: false,
+            status_loading: false,
+            prevPage: 0
+        }
+    },
+    created() {
+        this.getList();
+    },
+    mounted() {
+        var that = this
+        setTimeout(function () {
+            that.getTjNum();
+            that.getCacheFun();
+        }, 200)
+    },
+    beforeDestroy() {
+        jobeditor = null; 
+        jobtoolbar = null;
+        editorInterval = null;
+    },
+    components: {
+        'comlog_partapply': ComlogPartapply,
+    },
+    methods: {
+
+
+
+        mouseDownHandler(e) {
+            this.mouseOffset = e.clientX;
+            this.mouseFlag = true;
+        },
+        mouseUpHandler(e) {
+            this.mouseFlag = false;
+        },
+        mouseMoveHandler(e) {
+            // The ref must point to the parent element that contains the table element
+            let divData = this.$refs.multipleTable.bodyWrapper;
+            if (this.mouseFlag) {
+                // Set horizontal scroll position
+                divData.scrollLeft -= (- this.mouseOffset + (this.mouseOffset = e.clientX));
+            }
+        },
+
+
+
+        getParams: function (params = {}) {
+            var that = this;
+            for (let i in params) {
+                if (i != 'page' && typeof that.search_params[i] != 'undefined') {
+                    that.search_params[i] = params[i];
+                }
+            }
+        },
+        writeJs: function (url, secret) {
+            return new Promise((resolve, reject) => {
+                // Return directly if already loaded
+                if (typeof window.AMap !== 'undefined') {
+                    resolve(window.AMap);
+                    return true;
+                }
+                // Handle async map loading callback
+                window.onAMapCallback = function () {
+                    resolve(AMap);
+                };
+                // Set security key
+                window._AMapSecurityConfig = {
+                    securityJsCode: secret,
+                }
+                // Insert script tag
+                let scriptNode = document.createElement('script');
+                scriptNode.setAttribute('type', 'text/javascript');
+                scriptNode.setAttribute('src', url);
+                document.body.appendChild(scriptNode);
+            });
+        },
+        citychange: function (data) {
+            this.sel_city = data
+        },
+        jobsave: function () {
+            var that = this
+            that.checkedworktime
+            if (that.curr_job.name == '') {
+                message.error(lc('member_com_00585'))
+                return false;
+            }
+            if (that.curr_job.type == "") {
+                message.error(lc('wap_01693')); return false;
+            }
+            if (that.curr_job.number < 1) {
+                message.error(lc('admin_00579')); return false;
+            }
+            if (that.checkedworktime.length == 0) {
+                message.error(lc('wap_01159')); return false;
+            }
+            if (that.curr_job.sdate_n == "") {
+                message.error(lc('member_user_00304')); return false;
+            } else {
+                that.curr_job.sdate = that.curr_job.sdate_n
+            }
+            if (!that.iscq) {
+                if (that.edate_n == "") {
+                    message.error(lc('member_user_00305')); return false;
+                }
+                if (toDate(that.curr_job.edate_n).getTime() < toDate(that.curr_job.sdate_n).getTime() || toDate(that.curr_job.edate_n).getTime() < toDate(that.today).getTime()) {
+                    message.error(lc('admin_user_company_00382')); return false;
+                }
+                that.curr_job.edate = that.curr_job.edate_n
+            }
+            if (that.curr_job.salary == "" || that.curr_job.salary < 1) {
+                message.error(lc('admin_user_company_00385')); return false;
+            }
+            if (that.curr_job.salary_type == "") {
+                message.error(lc('wap_01851')); return false;
+            }
+            if (that.curr_job.billing_cycle == "") {
+                message.error(lc('wap_01695')); return false;
+            }
+            // Check whether content is empty after removing HTML tags
+            var regex = /(<([^>]+)>)/ig
+            var content = jobeditor.getHtml().replace(regex, "")
+            if (content == "") {
+                message.error(lc('wap_01669'))
+                return false;
+            } else {
+                that.curr_job.content = jobeditor.getHtml();
+            }
+
+            if (that.cacheData.city_type.length) {
+                if (that.sel_city[0] == '') {
+                    message.error(lc('wap_com_00146'))
+                    return false;
+                }
+            } else {
+                if (that.sel_city[1] == '') {
+                    message.error(lc('wap_00901'))
+                    return false;
+                }
+            }
+            if (that.sel_city[0] > 0) {
+                that.curr_job.provinceid = that.sel_city[0]
+            }
+            that.curr_job.cityid = that.sel_city[1] ? that.sel_city[1] : 0
+            that.curr_job.three_cityid = that.sel_city[2] ? that.sel_city[2] : 0
+            if (that.curr_job.address == "") {
+                message.error(lc('wap_00905')); return false;
+            }
+            if (that.curr_job.x == "" || that.curr_job.y == "") {
+                message.error(lc('wap_01709')); return false;
+            }
+            if (that.curr_job.linkman == "") {
+                message.error(lc('wap_com_00013')); return false;
+            }
+            if (that.curr_job.linktel == "") {
+                message.error(lc('wap_com_00142')); return false;
+            }
+            if (isjsMobile(that.curr_job.linktel) == false) {
+                message.error(lc('admin_user_company_00381')); return false;
+            }
+            that.curr_job.update = 1;
+            that.save_load = true;
+            httpPost('m=user&c=partjob&a=show', that.curr_job).then(function (result) {
+                var res = result.data
+                if (res.error == 0) {
+                    message.success(res.msg, function () {
+                        that.drawerEditJob = false
+                        that.getList()
+                    })
+                } else {
+                    message.error(res.msg)
+                }
+            }).catch(function (e) {
+                console.log(e)
+            }).finally(function () {
+                setTimeout(function () {
+                    that.save_load = false;
+                }, 2000);
+            });
+        },
+        // Edit job part-time schedule select-all checkbox
+        handleColCheckAllChange(val) {
+            var that = this
+            if (val) {
+                that.checkedworktime = []
+                that.cacheData.part_morning.forEach(item => {
+                    that.checkedworktime.push(item);
+                });
+                that.cacheData.part_noon.forEach(item => {
+                    that.checkedworktime.push(item);
+                });
+                that.cacheData.part_afternoon.forEach(item => {
+                    that.checkedworktime.push(item);
+                });
+            } else {
+                that.checkedworktime = []
+            }
+            this.isIndeterminate = false;
+        },
+        // Edit job part-time schedule checkbox
+        worktimeChange(value) {
+            var idx = this.checkedworktime.findIndex(item => item === value)
+            if (idx !== -1) {
+                this.checkedworktime.splice(idx, 1)
+            } else {
+                this.checkedworktime.push(value)
+            }
+            this.checkedworktime
+            let totallen = this.cacheData.part_morning.length + this.cacheData.part_noon.length + this.cacheData.part_afternoon.length
+            this.worktimeCheckAll = this.checkedworktime.length === totallen;
+            this.isIndeterminate = this.checkedworktime.length > 0 && this.checkedworktime.length < totallen;
+        },
+        // Edit job
+        edit: function (row) {
+            var that = this
+            httpPost('m=user&c=partjob&a=show', { id: row.id }).then(function (result) {
+                var res = result.data
+                if (res.error == 0) {
+                    that.curr_job = res.data.show
+                    that.today = res.data.today
+                    that.checkedworktime = that.curr_job.worktime_n
+                    that.jobCompany = res.data.company
+                    that.showJob = true
+                    if (that.curr_job.edate == 0) {
+                        that.curr_job.edate_n = ''
+                        that.iscq = true
+                    } else {
+                        that.iscq = false
+                    }
+                    that.sel_city = []
+                    if (that.curr_job.provinceid > 0) {
+                        that.sel_city.push(that.curr_job.provinceid)
+                    }
+                    if (that.curr_job.cityid > 0) {
+                        that.sel_city.push(that.curr_job.cityid)
+                    }
+                    if (that.curr_job.three_cityid > 0) {
+                        that.sel_city.push(that.curr_job.three_cityid)
+                    }
+                    that.initEditor(that.curr_job.content);
+                    setTimeout(function () {
+                        
+                        var map_url = that.mapurl + "&callback=onAMapCallback";
+                        that.writeJs(map_url, that.mapsecret).then(value => {
+                            that.openMap();
+                        });
+                    }, 300)
+                    that.drawerEditJob = true
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        getMap: function () {
+            var map = new AMap.Map('conrtainer', {
+                zoom: 15,
+                center: [this.curr_job.x, this.curr_job.y]
+            });
+            var marker = new AMap.Marker({
+                position: new AMap.LngLat(this.curr_job.x, this.curr_job.y)
+            });
+            map.add(marker);
+            return map;
+        },
+        openMap: function () {
+            var that = this;
+            var data = get_map_config();
+            if (data && data.indexOf('map_x') > -1) {
+                var config = eval('(' + data + ')');
+                var rating, map_control_type, map_control_anchor;
+                if (!that.curr_job.x && !that.curr_job.y) {
+                    that.curr_job.x = config.map_x;
+                    that.curr_job.y = config.map_y;
+                }
+                var map = that.getMap();
+                map.on("click", function (e) {
+                    var lngLat = e.lnglat;
+                    that.curr_job.x = lngLat.lng
+                    that.curr_job.y = lngLat.lat
+                    map.clearMap();
+                    var marker = new AMap.Marker({
+                        position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                    });
+                    map.add(marker);
+                });
+            }
+        },
+        initEditor: function (content=null) {
+            var that = this
+            clearInterval(editorInterval);
+            editorInterval = setInterval(()=>{
+                if (jobeditor !== null){
+                    clearInterval(editorInterval);
+                    if(content!==null){
+                        jobeditor.setHtml(content);
+                    }
+                }else{
+                    let editorConfig = {
+                        MENU_CONF: {
+                            uploadImage: {
+                                server: baseUrl + 'm=index&c=uploadfile',
+                                fieldName: 'file'
+                            }
+                        }
+                    };
+                    if (!jobeditor) {
+                        jobeditor = createEditor({
+                            selector: '#partjobeditor-container',
+                            html: '',
+                            config: editorConfig,
+                            mode: 'simple'
+                        });
+                    }
+                    if (!jobtoolbar) {
+                        jobtoolbar = createToolbar({
+                            editor: jobeditor,
+                            selector: '#partjobtoolbar-container',
+                            config: {
+                                excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
+                            },
+                            mode: 'simple'
+                        });
+                    }
+                }
+            },300);
+            
+        },
+        audit: function (atype) {
+            var that = this
+            if (!that.auditInfo.state) {
+                message.error(lc('admin_user_weipin_00015'))
+                return false;
+            }
+            var params = {
+                single: 1,
+                status: that.auditInfo.state,
+                pid: that.auditInfo.id,
+                uid: that.auditInfo.uid,
+                statusbody: that.auditInfo.statusbody,
+                atype: atype
+            };
+            if (that.auditInfo.c_status == 2) {
+                message.error(lc('admin_company_00036'))
+                return false;
+            } else {
+                params.lock_status = 1;
+            }
+            if (that.auditInfo.r_status == '0') {
+                var url = 'm=user&c=partjob&a=tbStatus';
+            } else {
+                var url = 'm=user&c=partjob&a=status';
+            }
+            that.audit_load = true;
+            httpPost(url, params).then(function (result) {
+                that.audit_load = false;
+                var res = result.data
+                if (res.error == 0) {
+                    message.success(res.msg, function () {
+                        if (res.data == undefined) {
+                            that.jobdrawersh = false
+                        } else if (res.data.job) {
+                            that.jobAudit(res.data.job)
+                        }
+                        that.getList()
+                    })
+                } else {
+                    message.error(res.msg)
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // Job review dialog
+        jobAudit: function (row) {
+            var that = this
+            httpPost('m=user&c=partjob&a=partAudit', { id: row.id }).then(function (result) {
+                var res = result.data
+                if (res.error == 0) {
+                    that.auditInfo = res.data.info
+                    that.auditInfo.state = that.auditInfo.state == 3 ? '3' : '1'
+                    that.sh_num = res.data.snum
+                    that.jobdrawersh = true
+                } else {
+                    message.error(lc('admin_user_company_00380'))
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // Batch recommendation
+        multitg: function () {
+            this.jobtgetime = ''
+            if (this.selectedItem.length == 0) {
+                message.error(lc('admin_user_weipin_00001'))
+                return false
+            }
+            this.jobtgtit = lc('admin_company_00044')
+            this.tgjid = this.selectedItem.join(',')
+            this.jobtgdrawer = true
+        },
+        // {{ lc('admin_user_weipin_00038') }}
+        multipleyq() {
+            var that = this
+            if (!that.selectedItem.length) {
+                message.error(lc('admin_user_weipin_00001'))
+                return false;
+            }
+            that.yqdrawer = true
+            that.yqdays = ''
+        },
+        // Save batch extension
+        yqSubmit() {
+            var that = this
+            if (!that.selectedItem.length) {
+                message.error(lc('admin_user_weipin_00001'))
+                return false;
+            }
+            that.yq_loading = true;
+            httpPost('m=user&c=partjob&a=ctime', {
+                jobid: that.selectedItem.join(','),
+                days: that.yqdays
+            }).then(function (result) {
+                that.yq_loading = false;
+                var res = result.data
+                if (res.error == 0) {
+                    message.success(res.msg, function () {
+                        that.yqdrawer = false
+                        that.getList()
+                    })
+                } else {
+                    message.error(res.msg)
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // BatchAudit
+        multipleStatus() {
+            var that = this
+            if (!that.selectedItem.length) {
+                message.error(lc('admin_user_weipin_00001'))
+                return false;
+            }
+            that.drawerauditmultiple = true
+        },
+        // Save batch review
+        multipleStatusSave() {
+            var that = this
+            if (!that.selectedItem.length) {
+                message.error(lc('admin_user_weipin_00001'))
+                return false;
+            }
+            that.status_loading = true;
+            httpPost('m=user&c=partjob&a=status', {
+                pid: that.selectedItem.join(','),
+                status: that.multiStatus,
+                statusbody: that.multiStatusBody
+            }).then(function (result) {
+                that.status_loading = false;
+                var res = result.data
+                if (res.error == 0) {
+                    message.success(res.msg, function () {
+                        that.drawerauditmultiple = false
+                        that.multiStatus = ''
+                        that.multiStatusBody = ''
+                        that.getList()
+                    })
+                } else {
+                    message.error(res.msg)
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // Batch refresh
+        refresh: function () {
+            var that = this
+            if (this.selectedItem.length == 0) {
+                message.error(lc('admin_user_weipin_00001'))
+                return false
+            }
+            httpPost('m=user&c=partjob&a=refresh', {
+                ids: this.selectedItem.join(',')
+            }).then(function (result) {
+                var res = result.data
+                if (res.error == 0) {
+                    message.success(lc('wap_user_00198'), function () {
+                        that.getList()
+                    })
+                } else {
+                    message.error(lc('admin_user_company_00388'))
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // Job recommendation settings
+        tgchange: function (val, data) {
+            this.curr_job = data
+            this.tgjid = data.id
+            this.curr_job.isrec = !this.curr_job.isrec// Prevent switch state from changing before request result
+            this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
+            this.jobtgtit = lc('wap_com_00237')
+            this.jobtgdrawer = true
+        },
+        // Submit job promotion
+        jobTgSubmit: function () {
+            var that = this
+            var url = 'm=user&c=partjob&a=recommend'
+            if (that.qxtgchecked == 0 && that.jobtgdays == '') {
+                message.error(lc('common_06282'))
+                return false
+            }
+            var params = {
+                pid: that.tgjid,
+                days: that.jobtgdays,
+                s: that.qxtgchecked
+            }
+            that.tg_loading = true;
+            httpPost(url, params).then(function (result) {
+                that.tg_loading = false;
+                var res = result.data
+                if (res.error == 0) {
+                    message.success(res.msg, function () {
+                        that.getList()
+                        that.jobtgdrawer = false
+                        that.jobtgdays = ''
+                        that.qxtgchecked = '0'
+                    })
+                } else {
+                    message.error(res.msg)
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // Change job recruitment status
+        zpstatuschange: function (val, row) {
+            var that = this
+            that.curr_job = row
+            that.curr_job.iszp = !that.curr_job.iszp// Prevent switch state changes before submitting request
+            httpPost('m=user&c=partjob&a=checkstate', {
+                id: that.curr_job.id,
+                state: val ? 2 : 1
+            }).then(function (result) {
+                var res = result.data
+                if (res.error == 0) {
+                    that.curr_job.iszp = !that.curr_job.iszp// Change switch selected state after successful operation
+                    that.getList()
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        // Part-time application records
+        applylog: function (row) {
+            var that = this
+            this.curr_job = row
+            this.drawerapplylog = true
+            this.$nextTick(function () {
+                that.$refs.partapplylog.getList()
+            })
+        },
+        // Get job count statistics
+        getTjNum: function () {
+            var that = this;
+            httpPost('m=user&c=partjob&a=partNum', {}, { hideloading: true }).then(function (result) {
+                var res = result.data;
+                if (res.error == 0) {
+
+                    that.partAllNum = res.data.partAllNum ? res.data.partAllNum : 0
+                    that.status1Num = res.data.partStatusNum1 ? res.data.partStatusNum1 : 0
+                    that.status2Num = res.data.partStatusNum2 ? res.data.partStatusNum2 : 0
+                    that.status3Num = res.data.partStatusNum3 ? res.data.partStatusNum3 : 0
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        handleSelectionChange(val) {
+            this.selectedItem = [];
+            let _this = this;
+            if (val.length) {
+                val.forEach(item => {
+                    _this.selectedItem.push(item.id);
+                });
+            }
+            if (_this.selectedItem.length == 0) {
+                _this.checkedAll = false;
+            } else {
+                if (_this.selectedItem.length == _this.tableData.length) {
+                    _this.checkedAll = true;
+                } else {
+                    _this.checkedAll = false;
+                }
+            }
+        },
+        selectAllBottom(value) {
+            value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+        },
+        handleSizeChange(val) {
+            this.perPage = val;
+            scrollToTop()
+            this.getList()
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val;
+            this.getList()
+        },
+        sortChange: function (column) {
+            if (column.order == 'descending') {
+                this.sort_type = 'desc';
+            } else if (column.order == 'ascending') {
+                this.sort_type = 'asc';
+            } else {
+                this.sort_type = '';
+            }
+            this.sort_col = column.prop
+            this.search();
+        },
+        search() {
+            this.currentPage = 1;
+            this.getList();
+        },
+        getCacheFun: function () {
+            let that = this;
+            httpPost('m=user&c=partjob&a=getCacheData', {}, { hideloading: true }).then(function (response) {
+                let res = response.data;
+                if (res.error == 0) {
+                    that.cacheData = res.data.cache;
+                    that.mapkey = res.data.mapkey;
+                    that.mapurl = res.data.mapurl;
+                    that.mapsecret = res.data.mapsecret;
+                    that.nowtime = parseInt(new Date().getTime() / 1000);
+                    that.searchlist = res.data.search_list
+                }
+            })
+        },
+        async getList() {
+            let that = this;
+            let params = {
+                page: that.currentPage,
+                pageSize: that.perPage
+            }
+            if (that.search_params.type) {
+                params.type = that.search_params.type
+            }
+            if (that.search_params.keyword) {
+                params.keyword = that.search_params.keyword
+            }
+            if (that.search_params.state) {
+                params.state = that.search_params.state
+            }
+            if (that.search_params.status) {
+                params.status = that.search_params.status
+            }
+            if (that.search_params.lastupdate) {
+                params.lastupdate = that.search_params.lastupdate
+            }
+            if (that.search_params.edate) {
+                params.edate = that.search_params.edate
+            }
+            if (that.search_params.billing_cycle) {
+                params.billing_cycle = that.search_params.billing_cycle
+            }
+            if (that.sort_type && that.sort_col) {
+                params.order = that.sort_type
+                params.t = that.sort_col
+            }
+            that.loading = true;
+            that.emptytext = lc('admin_user_weipin_00026');
+            httpPost('m=user&c=partjob&a=index', params, { hideloading: true }).then(function (result) {
+                var res = result.data
+                if (res.error == 0) {
+                    that.tableData = res.data.list
+                    that.perPage = parseInt(res.data.perPage)
+                    that.pageSizes = res.data.pageSizes
+                    that.total = parseInt(res.data.total)
+
+                    that.loading = false;
+                    if (that.prevPage != that.currentPage) {
+                        that.prevPage = that.currentPage;
+                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        scrollToTop()
+                    }
+                    if (that.tableData.length === 0) {
+                        that.emptytext = lc('wap_js_00113');
+                    }
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        delrow(id) {
+            delConfirm(this, id, this.delete);
+        },
+        delAllBottom() {
+            if (!this.selectedItem.length) {
+                message.error(lc('admin_user_weipin_00005'));
+                return false;
+            }
+            delConfirm(this, this.selectedItem, this.delete);
+        },
+        async delete(id) {
+            let that = this;
+            let params = {
+                del: id
+            };
+            httpPost('m=user&c=partjob&a=del', params).then(function (response) {
+                if (response.data.error == 0) {
+                    message.success(lc('wap_user_00264'), function () {
+                        that.$refs.multipleTable.clearSelection();
+                        that.getList();
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function (error) {
+                console.log(error);
+            })
+        },
+    },
+};
+function get_map_config(){
+    var config="";
+    var weburl = localStorage.getItem("sy_weburl");
+    $.ajax( {
+        async : false,
+        type : "post",
+        url : weburl + '/index.php?m=ajax&c=mapconfig',
+        data : {id:""},
+        success : function(set) {
+            config=set;
+        }
+    });
+    return config;
+}
+</script>
+<style scoped>
+.tjob_timetable {
+    width: 360px;
+    background: #ddd;
+}
+
+.tjob_timetable th,
+.tjob_timetable td {
+    background: #fff;
+    font-weight: normal;
+    padding: 5px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.tjob_timetable th {
+    background: #f8f8f8
+}
+
+.tjob_timetable tr th {
+    height: 27px;
+    width: 45px;
+    min-width: 45px;
+    text-align: center;
+}
+
+.tableSeacFromer {
+    margin-right: 8px;
+}
+
+.tableSeacFromer .el-input-group__prepend {
+    padding: 0;
+    background: none;
+}
+
+.tableSeacFromer .el-select {
+    margin-right: 0;
+    width: 160px;
+}
+
+.tableSeacFromer .el-input {
+    margin-right: 0;
+}
+
+.moduleSeacFouyr {
+    overflow: hidden;
+    position: relative;
+    padding-right: 8px;
+    padding-bottom: 12px;
+}
+
+.moduleSeacFouyr .el-select {
+    overflow: hidden;
+    position: relative;
+    width: 120px;
+}
+
+.moduleElMediDFur {
+    height: calc(100% - 140px);
+}
+
+@media (max-width: 1480px) {
+
+    .moduleElMediDFur {
+        height: calc(100% - 180px) !important;
+    }
+
+    .modulElTableGaiPart {
+        height: calc(100% - 130px) !important;
+    }
+}</style>

@@ -1,0 +1,553 @@
+<template>
+<div id="guanapp" class="moduleElenAl">
+
+    <div class="moduleSeachs">
+        <div class="moduleSeachInpt">
+			<div class="moduleInptList" style="margin-bottom: 0;">
+				<el-input :placeholder="lc('wap_00510')" v-model="search.keyword" class="input-with-select" size="small" clearable>
+					<template #prepend><el-select v-model="search.type" :placeholder="lc('admin_system_00439')">
+						<el-option v-for="(value, k) in keywordArr" :key="k" :label="value" :value="k"></el-option>
+					</el-select></template>
+				</el-input>
+			</div>
+            <div class="tableSeachInpt tableSeachInptsmall" style="margin-bottom: 0;">
+                <el-select v-model="search.rec" :placeholder="lc('admin_00231')" size="small" clearable @change="doUserQuery">
+                    <el-option :label="lc('admin_system_00448')" value="2"></el-option>
+                    <el-option :label="lc('wap_01465')" value="1"></el-option>
+                </el-select>
+            </div>
+            <div class="tableSeachInpt tableSeachInptsmall" style="margin-bottom: 0;">
+                <el-select v-model="search.check" size="small" :placeholder="lc('member_user_00152')" clearable @change="doUserQuery">
+                    <el-option :label="lc('wap_user_00166')" value="2"></el-option>
+                    <el-option :label="lc('wap_user_00165')" value="1"></el-option>
+                </el-select>
+            </div>
+            <div style="overflow: hidden;position: relative;display: flex;flex-wrap: wrap;align-items: center;">
+                <el-button type="primary" icon="el-icon-search" size="small" @click="doUserQuery">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleSeachButn">
+            <el-button type="primary" icon="el-icon-document-add" size="small" @click="addkeyword">{{ lc('admin_system_00442') }}</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable" style="padding-bottom: 0;">
+        <el-table ref="multipleTable" :data="tableData" border style="width: 100%" @selection-change="selectChange"
+                  :header-cell-style="{background:'#f5f7fa',color:'#606266'}" @sort-change="shortChange" height="100%" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55">
+            </el-table-column>
+            <el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom" width="100">
+            </el-table-column>
+            <el-table-column prop="key_name" :label="lc('admin_system_00443')">
+                <template #default="scope">
+                    <font :color="scope.row.color">{{scope.row.key_name}}</font>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_system_00439')" width="100">
+                <template #default="scope">
+                    {{scope.row.type?keywordArr[scope.row.type]:''}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="num" :label="lc('admin_system_00446')" width="100">
+            </el-table-column>
+            <el-table-column :label="lc('wap_js_00078')" width="90">
+                <template #default="scope">
+                    <el-switch v-model="scope.row.bold" active-color="#1890FF" inactive-color="#B8BDC9"
+                               @change="changeDefault(scope.row,'bold')">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('wap_01465')" width="90">
+                <template #default="scope">
+                    <el-switch v-model="scope.row.tuijian" active-color="#1890FF" inactive-color="#B8BDC9"
+                               @change="changeDefault(scope.row,'tuijian')">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('member_user_00152')" width="90">
+                <template #default="scope">
+                    <el-switch v-model="scope.row.check" active-color="#1890FF" inactive-color="#B8BDC9"
+                               @change="changeDefault(scope.row,'check')">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
+                <template #default="scope">
+                    <div class="cz_button">
+                        <el-button size="small" @click="addKeyWordDrawer(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                        <el-button size="small" type="danger" @click="del(scope.row)">{{ lc('wap_js_00077') }}</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulePagButn">
+			<el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button size="small" @click="editDelBatch">{{ lc('member_com_00055') }}</el-button>
+            <el-button size="small" @click="CheckBatchDrawer">{{ lc('member_user_00152') }}</el-button>
+            <el-button size="small" @click="handleBatch">{{ lc('wap_js_00078') }}</el-button>
+            <el-button size="small" @click="handleBatch">{{ lc('wap_01465') }}</el-button>
+            <el-button size="small" @click="handleBatch">{{ lc('admin_system_00444') }}</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination :total="total" @current-change="userPageChange" :page-size="pageSize"
+                           :page-sizes="pageSizes"
+                           v-model:current-page="page" layout="total, sizes, prev, pager, next, jumper"
+                           @size-change="userPageSizeChange" background :pager-count="pagerCount"></el-pagination>
+        </div>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog :title="lc('admin_system_00440')" v-model="drawer" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="600px">
+            <div class="alogModlue">
+                <div class="alogModlList" v-if="!saveType">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_system_00438') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-input v-model="ruleForm.key_name" :placeholder="lc('wap_user_00076')"></el-input>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert :title="lc('admin_system_00285')" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_system_00439') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-select v-model="ruleForm.type" :placeholder="lc('wap_user_00100')">
+                            <el-option v-for="(value, k) in keywordArr" :key="k" :label="value" :value="k">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert :title="lc('admin_system_00285')" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_system_00445') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-input v-model="ruleForm.size" :placeholder="lc('wap_user_00076')"></el-input>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert :title="lc('admin_system_00437')" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>{{ lc('wap_js_00069') }}</span>
+                    </div>
+                    <div class="alogModInpt" style="display: flex;align-items: center;">
+                        <el-input v-model="ruleForm.color" :placeholder="lc('wap_user_00076')"></el-input>
+                        <div class="block" style="margin-left: 8px;">
+                            <el-color-picker v-model="ruleForm.color"></el-color-picker>
+                        </div>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert title="#1890FF" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_system_00447') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-switch v-model="ruleForm.bold">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_00231') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-switch v-model="ruleForm.tuijian">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="alogModlList" v-if="saveType">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_user_weipin_00032') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-switch v-model="ruleForm.status">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="alogModlList" v-if="!saveType">
+                    <div class="alogModlTite">
+                        <span>{{ lc('admin_system_00446') }}</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-input v-model="ruleForm.num" :placeholder="lc('wap_user_00076')"></el-input>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert :title="lc('admin_system_00289')" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+            </div>
+            <template #footer><span class="dialog-footer">
+                    <el-button @click="drawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" :loading="save_load" @click="changeSave">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+        </el-dialog>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog :title="lc('admin_user_weipin_00037')" v-model="shenheDrawer" :append-to-body="true" width="500px">
+            <div class="alogModlList">
+                <div class="alogModlTite">
+                    <span>{{ lc('admin_system_00441') }}</span>
+                </div>
+                <div class="alogModInpt">
+                    <el-radio-group v-model="status">
+                        <el-radio label="0" value="0">{{ lc('wap_user_00166') }}</el-radio>
+                        <el-radio label="1" value="1">{{ lc('wap_user_00165') }}</el-radio>
+                    </el-radio-group>
+                </div>
+            </div>
+            <template #footer><span class="dialog-footer">
+                    <el-button @click="shenheDrawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="editCheckBatch">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+        </el-dialog>
+    </div>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+				pagerCount: 5,
+                emptytext: lc('wap_js_00113'),
+                loading: false,
+                searchForm: [],
+                keywordArr: [],
+                input3: '',
+                select: '',
+                currentPage4: 4,
+                color2: null,
+                drawer: false,
+                shenheDrawer: false, // 审核弹窗控制
+                status: '',
+                title: lc('admin_system_00440'),
+                drawer2: false,
+                input: '',
+                list: [],
+                page: 1,
+                prevPage: 0,
+                pageSizes:[],
+                pageSize: 0,
+                total: 0,
+                tableData: [],
+                search: {
+                    type: '',
+                    rec: '',
+                    keyword: '',
+                    check: ''
+                },
+                ruleForm: {
+                    key_name: '',
+                    type: '',
+                    size: '',
+                    color: '',
+                    num: '',
+                    id: 0
+                },
+                value: '',
+                idsArr: [],
+                uri: "m=system&c=",
+                //  查看是否是(新建编辑) 或者是批量操作
+                saveType: false,
+
+                
+				save_load:false,
+				
+				allchecked:false,
+            }
+        },
+        components: {},
+        created() {
+            this.getKeywordArr();
+            this.getList();
+        },
+        methods: {
+            shortChange(e) {
+                let orderMap = {ascending: 'asc', descending: 'desc'}
+                this.searchForm.t = e.order ? e.prop : null;
+                this.searchForm.order = orderMap[e.order];
+                this.doUserQuery();
+            },
+            doUserQuery() {
+                this.page = 1
+                this.getList()
+            },
+            changeSave: function () {
+                if (this.saveType == false) {
+                    this.save();
+                } else {
+                    this.batchHandle();
+                }
+            },
+            save: function () {
+                let ruleForm = this.ruleForm;
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=save';
+				_this.save_load = true;
+                httpPost(url, ruleForm).then(function (response) {
+					_this.save_load = false;
+                    var res = response.data;
+                    if (res.error == 0) {
+                        message.success(lc('wap_user_00264'));
+                        _this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+                        _this.doUserQuery();
+						_this.drawer = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                    
+                })
+            },
+            batchHandle() {
+                let _this = this;
+                let ruleForm = {
+                    size: this.ruleForm.size,
+                    check: this.ruleForm.status,
+                    tuijian: this.ruleForm.tuijian,
+                    bold: this.ruleForm.bold,
+                    type: this.ruleForm.type,
+                    color: this.ruleForm.color,
+                    pid: this.idsArr
+                }
+                let url = _this.uri + 'set_guanjianci&a=status';
+				_this.save_load = true;
+                httpPost(url, ruleForm).then(function (response) {
+					_this.save_load = false;
+                    var res = response.data;
+                    if (res.error == 0) {
+                        message.success(lc('wap_user_00264'));
+                        _this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+                        _this.doUserQuery();
+						_this.drawer = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                    
+                })
+            },
+            getKeywordArr: function () {
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=keyWord';
+                httpPost(url, {}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.keywordArr = res.data;
+                    }
+                })
+            },
+            getList: function () {
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=index';
+                let searchForm = _this.searchForm;
+                let sendData = {
+                    page: this.page,
+                    pageSize: this.pageSize,
+                    type: this.search.type,
+                    rec: this.search.rec,
+                    keyword: this.search.keyword,
+                    check: this.search.check
+                    // searchName: this.searchName,
+                    // searchValue: this.userQueryData.searchValue,
+                    // sex: this.userQueryData.sex,
+                    // status: this.userQueryData.status,
+                    // name: this.userQueryData.name,
+                    // edu_id: this.userQueryData.edu_id,
+                    // create_uid: this.userQueryData.create_uid,
+                    // showChild: this.userQueryData.checkedShowChild ? 1 : 0,
+                }
+                _this.loading = true;
+                _this.emptytext = lc('admin_user_weipin_00026');
+                httpPost(url, {...sendData, ...searchForm}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.tableData = res.data.list;
+                        _this.total = res.data.total;
+                        _this.pageSize = parseInt(res.data.pageSize);
+                        _this.pageSizes = res.data.pageSizes;
+                        if (_this.prevPage != _this.page) {
+                            _this.prevPage = _this.page;
+                            _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        _this.loading = false;
+                        if (_this.tableData.length === 0){
+                            _this.emptytext = lc('wap_js_00113');
+                        }
+                    }
+                })
+            },
+            userPageChange(val) {
+                this.page = val
+                this.getList();
+            },
+            userPageSizeChange(val) {
+                this.pageSize = val
+                this.getList()
+            },
+            addkeyword: function () {
+                this.saveType = false;
+                this.drawer = true
+                this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+            },
+            addKeyWordDrawer: function (row) {
+                this.ruleForm = row;
+                // this.ruleForm.type = row.type);
+                this.drawer = true;
+                this.saveType = false;
+            },
+            changeDefault: function (row, type) {
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=recup';
+                const defaultVal = row[type];
+                let sendData = {
+                    page: this.page,
+                    type: type,
+                    rec: defaultVal,
+                    id: row.id
+                }
+                httpPost(url, sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.$message({
+                            message: res.msg,
+                            type: 'success',
+                            onClose: function () {
+                                _this.getList();
+                            }
+                        });
+                    }
+                })
+            },
+            selectChange: function (val) {
+                this.idsArr = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.idsArr.push(item.id);
+                    });
+                }
+				
+				if (_this.idsArr.length == _this.tableData.length) {
+					_this.allchecked = true;
+				} else {
+					_this.allchecked = false;
+				}
+			},
+			allcheckChange: function () {
+			
+			    this.$refs.multipleTable.toggleAllSelection();
+			
+			},
+            del: function (row) {
+                let _this = this;
+                const id = row.id;
+                let url = _this.uri + 'set_guanjianci&a=del';
+                let sendData = {
+                    id: id
+                };
+                _this.$confirm(lc('admin_00333'), lc('wap_user_00205'), {
+                    confirmButtonText: lc('common_02016'),
+                    cancelButtonText: lc('wap_js_00080'),
+                    type: 'warning'
+                }).then(() => {
+                    httpPost(url, sendData).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, _this.getList());
+                        }
+                    })
+                })
+            },
+            // 批量操作
+            editDelBatch: function () {
+                let _this = this;
+                if (!_this.idsArr.length) {
+                    message.error(lc('admin_system_00433'));
+                    return;
+                }
+                let url = _this.uri + 'set_guanjianci&a=del';
+                let sendData = {
+                    del: _this.idsArr
+                };
+                httpPost(url, sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, _this.getList());
+                    }
+                })
+            },
+            CheckBatchDrawer: function () {
+                let _this = this;
+                if (!_this.idsArr.length) {
+                    message.error(lc('admin_system_00435'));
+                    return;
+                }
+                this.shenheDrawer = true;
+            },
+            editCheckBatch: function () {
+                let _this = this;
+                if (_this.status == '') {
+                    message.error(lc('admin_system_00436'));
+                    return;
+                }
+
+                let url = _this.uri + 'set_guanjianci&a=state';
+                let sendData = {
+                    sid: _this.idsArr,
+                    status: _this.status
+                };
+                httpPost(url, sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error > 0) {
+                        message.error(res.msg);
+                    } else {
+                        message.success(res.msg, _this.getList())
+                        _this.shenheDrawer = false;
+                        _this.status = "";
+                    }
+                })
+            },
+            handleBatch: function () {
+                let _this = this;
+                if (!_this.idsArr.length) {
+                    message.error(lc('admin_system_00434'));
+                    return;
+                }
+                _this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+                _this.drawer = true;
+                _this.saveType = true;
+            }
+        }
+    }
+</script>

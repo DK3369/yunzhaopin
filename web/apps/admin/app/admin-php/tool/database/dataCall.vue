@@ -1,0 +1,611 @@
+<template>
+<div id="dataCallApp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt">{{ lc('admin_tool_00298') }}</div>
+            <div class="">
+                <a href="javascript:;">
+                    <el-button type="primary" icon="el-icon-document-add" size="small" @click="newDataCall">{{ lc('admin_tool_00300') }}</el-button>
+                </a>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="handleSelectionChange" ref="dataTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="name" :label="lc('admin_tool_00306')" min-width="220"></el-table-column>
+                <el-table-column prop="type_n" :label="lc('admin_tool_00307')" width="180"></el-table-column>
+                <el-table-column prop="num" :label="lc('admin_tool_00303')" width="180" align="center"></el-table-column>
+                <el-table-column prop="time_n" :label="lc('wap_00326')" width="180" align="center"></el-table-column>
+                <el-table-column :label="lc('admin_tool_00308')" width="260" align="center">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button type="primary" plain size="small" @click="internalCall(scope.row.id)">{{ lc('admin_yunying_00053') }}</el-button>
+                            <el-button type="success" plain size="small" @click="externalCall(scope.row.id)">{{ lc('admin_system_00271') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('wap_00071')" width="120" align="center">
+                    <template #default="scope">
+                        <el-button type="text" @click="previewCall(scope.row.id)"><i class="el-icon-view el-icon--left"></i>{{ lc('wap_00071') }}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="210" align="center">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" type="" @click="modifyDataCall(scope)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="small" type="" @click="upData(scope)">{{ lc('wap_00225') }}</el-button>
+                            <el-button type="danger" size="small" @click="delData(scope)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz">
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="small" @click="delDataSel">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <div class="modulePagNum" style="margin: 0 auto;">
+                    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+                </div>
+            </div>
+        </div>
+        <!-- 内部调用弹窗 -->
+        <el-dialog :title="lc('admin_tool_00309')" v-model="internalCallShow" :with-header="true" :modal-append-to-body="false" :show-close="true" width="30%">
+            <div class="wxsettip_small ">{{ lc('admin_tool_00293') }}</div>
+            <el-input placeholder="{yun:}datacall id=99{/yun}" id="internalCall" v-model="internalCallText" readonly></el-input>
+            <div class="wxsettip">{{ lc('admin_tool_00285') }}</div>
+            <template #footer><span class="dialog-footer">
+                <el-button @click="internalCallShow = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" id="inCopyBtn" data-clipboard-action="copy" data-clipboard-target="#internalCall" @click="handleCopyText('inCopyBtn')">{{ lc('admin_tool_00304') }}</el-button>
+            </span></template>
+        </el-dialog>
+        <!-- 外调用弹窗 -->
+        <el-dialog :title="lc('admin_tool_00309')" v-model="externalCallShow" :with-header="true" :modal-append-to-body="false" :show-close="true" width="30%">
+            <div class="wxsettip_small ">{{ lc('admin_tool_00294') }}</div>
+            <el-input placeholder="{yun:}datacall id=88{/yun}" id="externalCall" v-model="externalCallText" readonly></el-input>
+            <div class="wxsettip">{{ lc('admin_tool_00285') }}</div>
+            <template #footer><span class="dialog-footer">
+                <el-button @click="externalCallShow = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" id="exCopyBtn" data-clipboard-action="copy" data-clipboard-target="#externalCall" @click="handleCopyText('exCopyBtn')">{{ lc('admin_tool_00304') }}</el-button>
+            </span></template>
+        </el-dialog>
+        <!-- 预览弹窗 -->
+        <el-drawer :title="lc('admin_tool_00310')" v-model="PreviewDrawer" :modal-append-to-body="false" size="60%">
+            <div class="shbox">
+                <table class="cominfotable">
+                    <thead>
+                        <tr>
+                            <th>{{ lc('member_com_00021') }}</th>
+                            <th>{{ lc('member_user_00181') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ lc('admin_yunying_00056') }}</td>
+                            <td>
+                                <div class="cz_button">
+                                    <el-button type="primary" plain size="small" @click="internalCall(dataCallId)">{{ lc('admin_yunying_00053') }}</el-button>
+                                    <el-button type="success" plain size="small" @click="externalCall(dataCallId)">{{ lc('admin_system_00271') }}</el-button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ lc('admin_tool_00302') }}</td>
+                            <td>{{ lc('admin_tool_00283') }}<span style="color: #ff2b00;">{{ lc('admin_tool_00284') }}</span>）</td>
+                        </tr>
+                        <tr>
+                            <td>{{ lc('admin_tool_00311') }}</td>
+                            <td>
+                                <div class="data_sj">{{previewList}}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </el-drawer>
+        <!-- 外调用弹窗 -->
+        <el-dialog :title="lc('admin_tool_00312')" v-model="typeDrawer" :with-header="true" :modal-append-to-body="false" :show-close="true" width="520px">
+            <div class="datacallLepys">
+                <el-row>
+                    <el-button plain v-for="(item, key) in dataCall" :key="key" @click="handleSelType(key)">{{item[0]}}
+                    </el-button>
+                </el-row>
+            </div>
+        </el-dialog>
+        <!-- 新增/修改弹窗 -->
+        <el-drawer :title="lc('admin_tool_00313')" v-model="callDrawer" :modal-append-to-body="false" size="60%">
+            <div class="shbox">
+                <div class="dataDiaoyong">
+                    <el-tabs v-model="activeName">
+                        <el-tab-pane :label="lc('admin_tool_00314')" name="first">
+                            <div class="dataDdiaoTable">
+                                <table class="cominfotable">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ lc('member_com_00021') }}</th>
+                                            <th>{{ lc('member_user_00181') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00306') }}</td>
+                                            <td>
+                                                <div class="TableInpt">
+                                                    <el-input v-model="callInfo.name" :placeholder="lc('admin_tool_00316')"></el-input>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00315') }}</td>
+                                            <td>
+                                                <div class="TableInpt">
+                                                    <el-input type="textarea" :rows="7" :placeholder="lc('wap_user_00076')" v-model="callInfo.code"></el-input>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00299') }}</td>
+                                            <td>
+                                                <div class="TableInpt">
+                                                    <el-input v-model="callInfo.titlelen" @input="inputIntNumber($event, 'callInfo', 'titlelen')" :placeholder="lc('admin_tool_00289')"></el-input>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00295') }}</td>
+                                            <td>
+                                                <div class="TableInpt">
+                                                    <el-input v-model="callInfo.infolen" @input="inputIntNumber($event, 'callInfo', 'infolen')" :placeholder="lc('admin_tool_00287')"></el-input>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00301') }}</td>
+                                            <td>
+                                                <div class="TableInpt">
+                                                    <el-input v-model="callInfo.num" @input="inputIntNumber($event, 'callInfo', 'num')" :placeholder="lc('admin_tool_00290')"></el-input>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00317') }}</td>
+                                            <td>
+                                                <div class="TableInpt">
+                                                    <el-input v-model="callInfo.edittime" @input="inputIntNumber($event, 'callInfo', 'edittime')" :placeholder="lc('admin_tool_00288')">
+                                                        <template #append>{{ lc('wap_com_00247') }}</template>
+                                                    </el-input>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00292') }}</td>
+                                            <td>
+                                                <div class="TableSelect">
+                                                    <el-select v-model="callInfo.urltype" :placeholder="lc('wap_user_00100')">
+                                                        <el-option :label="lc('admin_00205')" value="1"></el-option>
+                                                        <el-option :label="lc('admin_00203')" value="2"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr v-if="trShow">
+                                            <td>{{trName}}</td>
+                                            <td>
+                                                <div class="TableSelect">
+                                                    <el-select v-model="callInfo.where" :placeholder="lc('wap_user_00100')">
+                                                        <el-option v-for="(item,key) in optionS" :key="key" :label="item.label" :value="item.value"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00297') }}</td>
+                                            <td>
+                                                <div class="TableSelect">
+                                                    <el-select v-model="callInfo.byorder" :placeholder="lc('admin_tool_00291')">
+                                                        <el-option v-for="(item,key) in orderArr" :key="key" :label="item.label" :value="item.value"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ lc('admin_tool_00318') }}</td>
+                                            <td>
+                                                <div class="TableSelect">
+                                                    <el-select v-model="callInfo.timetype" :placeholder="lc('admin_tool_00319')">
+                                                        <el-option :label="lc('admin_tool_00282')" value="Y-m-d H:i"></el-option>
+                                                        <el-option :label="lc('admin_tool_00321')" value="Y-m-d"></el-option>
+                                                        <el-option :label="lc('admin_tool_00322')" value="m-d"></el-option>
+                                                        <el-option :label="lc('admin_tool_00286')" value="H:i"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="setBasicButn" style="border: none; height: 80px;">
+                                <el-button type="primary" size="medium" @click="saveDataCall" :loading="saveLoading">{{ lc('wap_user_00176') }}</el-button>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane :label="lc('admin_tool_00320')" name="second">
+                            <div class="dataDdiaoTable" style="height: calc(100% - 5px);">
+                                <table class="cominfotable">
+                                    <thead>
+                                        <tr>
+                                            <th width="200">{{ lc('member_com_00021') }}</th>
+                                            <th>{{ lc('admin_system_00379') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(v, k) in fieldArr" :key="k">
+                                            <td>{{v.name}}</td>
+                                            <td>
+                                                {{v.value}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+        </el-drawer>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function() {
+            return {
+                loading: false,
+                emptytext: window.lc('wap_js_00113'),
+                dataCall: [],
+
+                tableData: [],
+
+                total: 0,
+                currentPage: 1,
+				prevPage:0,
+                pageSize: 0,
+                pageSizes: [],
+
+                // 批量选择
+                checkAll: false,
+                isIndeterminate: false,
+                selectedItem: [],
+
+                internalCallShow: false,
+                internalCallText: '{yun:}datacall id=1{/yun}',
+                externalCallShow: false,
+                externalCallText: '{yun:}datacall id=2{/yun}',
+                webUrl: localStorage.getItem("sy_weburl"),
+
+                PreviewDrawer: false,
+                dataCallId: 0,
+                previewList: '',
+
+                typeDrawer: false,
+                callDrawer: false,
+                activeName: 'first',
+                callType: '',
+                callId: '',
+                callInfo: {},
+                orderArr: [],
+                fieldArr: [],
+
+                trShow: false,
+                trName: '',
+                optionS: [],
+                saveLoading: false
+            }
+        },
+        created: function() {
+            this.getBaseData();
+            this.getDataList();
+        },
+        methods: {
+            inputIntNumber(val, form, key) {
+                this.$data[form][key] = val.replace(/[^0-9]/g, '');
+            },
+            getDataList() {
+                var that = this;
+                var params = {};
+                params.pageSize = that.pageSize;
+                params.page = that.currentPage;
+                that.loading = true;
+                that.emptytext = window.lc('admin_user_weipin_00026');
+                httpPost('m=tool&c=dataCall', params, {hideloading: true}).then(function(res) {
+                    let data = res.data.data;
+                    that.tableData = data.list;
+                    that.total = data.total;
+                    that.pageSize = parseInt(data.pageSize);
+                    that.pageSizes = data.pageSizes;
+                    that.loading = false;
+					
+					if(that.prevPage != that.currentPage){
+						that.prevPage = that.currentPage;
+						that.$refs.dataTable.bodyWrapper.scrollTop = 0;
+					}
+                    if (that.tableData.length === 0) {
+                        that.emptytext = window.lc('wap_js_00113');
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                })
+            },
+            getBaseData() {
+                let _this = this;
+                httpPost('m=tool&c=dataCall&a=index_base_data', {}, { hideloading: true }).then(function(response) {
+                    let res = response.data;
+                    _this.dataCall = Object.freeze(res.data.dataCall);
+                }).catch(function(error) {
+                    console.log(error);
+                });
+            },
+            newDataCall: function() {
+                let that = this;
+                that.callInfo = {};
+                that.callInfo.code = '<ul>\n' +
+                    ' <!-- loop start -->\n' +
+                    ' <loop>\n' +
+                    '  <li><a href="{url}">{name}</a></li>\n' +
+                    ' </loop>\n' +
+                    ' <!-- loop end -->\n' +
+                    '</ul>'
+                that.typeDrawer = true;
+            },
+            handleSelType(type) {
+
+                let that = this;
+                that.callType = type;
+                that.setOrderAndFiled();
+                that.callId = '';
+                that.typeDrawer = false;
+                that.callDrawer = true;
+            },
+            internalCall: function(id) {
+
+                let that = this;
+                that.internalCallText = '{yun:}datacall id=' + id + '{/yun}';
+                that.internalCallShow = true;
+            },
+            externalCall: function(id) {
+                let that = this;
+                that.externalCallText = '<script src=' + that.webUrl + '/index.php?m=call&id=' + id + ' language=javascript><\/script>';
+                that.externalCallShow = true;
+            },
+            handleCopyText: function(id) {
+                let clipboard = new ClipboardJS('#' + id); // 获取点击按钮的元素
+                clipboard.on('success', (e) => {
+                    e.clearSelection();
+                    clipboard.destroy();
+                    message.success(window.lc('admin_user_company_00368'));
+                });
+                // 复制失败
+                clipboard.on('error', (e) => {
+                    clipboard.destroy();
+                    message.error(window.lc('admin_user_company_00339'));
+                });
+            },
+
+            previewCall: function(id) {
+                let that = this;
+                that.dataCallId = id;
+                var params = {};
+                params.id = that.dataCallId;
+                httpPost('m=tool&c=dataCall&a=getPreviewData', params).then(function(res) {
+                    let data = res.data.data;
+                    document.getElementsByClassName('data_sj')[0].innerHTML = data.list;
+                }).catch(function(error) {
+                    console.log(error);
+                })
+                that.PreviewDrawer = true;
+            },
+
+            modifyDataCall: function(scope) {
+
+                let that = this;
+                that.callId = scope.row.id;
+                that.callType = scope.row.type;
+                that.setOrderAndFiled();
+                that.callInfo = JSON.parse(JSON.stringify(scope.row));
+                that.callDrawer = true;
+            },
+            setOrderAndFiled: function() {
+                let that = this;
+                that.fieldArr=[];
+                that.orderArr=[];
+                for (let i in that.dataCall[that.callType].field) {
+                    that.fieldArr.push({
+                        'name': that.dataCall[that.callType].field[i],
+                        'value': '{' + i + '}'
+                    });
+                }
+                for (let i in that.dataCall[that.callType].order) {
+                    that.orderArr.push({
+                        'label': that.dataCall[that.callType].order[i],
+                        'value': i.replace(',',' ')
+                    });
+                }
+                if (that.dataCall[that.callType].where != undefined) {
+
+                    that.trShow = true;
+                    that.optionS = [];
+
+                    if (that.callType == 'member') {
+                        that.trName = that.dataCall[that.callType].where.usertype[0];
+                        for (let i in that.dataCall[that.callType].where.usertype) {
+                            if (i > 0) {
+                                that.optionS.push({
+                                    'label': that.dataCall[that.callType].where.usertype[i],
+                                    'value': 'usertype_' + i
+                                });
+                            }
+                        }
+                    } else if (that.callType == 'link') {
+                        that.trName = that.dataCall[that.callType].where.img_type[0];
+                        for (let i in that.dataCall[that.callType].where.img_type) {
+                            if (i > 0) {
+                                that.optionS.push({
+                                    'label': that.dataCall[that.callType].where.img_type[i],
+                                    'value': 'img_type_' + i
+                                });
+                            }
+                        }
+
+                    } else if (that.callType == 'keyword') {
+                        that.trName = that.dataCall[that.callType].where.keytype[0];
+                        for (let i in that.dataCall[that.callType].where.keytype) {
+                            if (i > 0) {
+                                that.optionS.push({
+                                    'label': that.dataCall[that.callType].where.keytype[i],
+                                    'value': 'keytype_' + i
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checkAll = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checkAll = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checkAll = false;
+                    }
+                }
+            },
+            handleCheckAllChange(val) {
+                val ? this.$refs.dataTable.toggleAllSelection() : this.$refs.dataTable.clearSelection();
+            },
+            upData(scope) {
+                var that = this;
+                let name = '';
+                let idArr = [],
+                    nameArr = [];
+                let params = {};
+                name = scope.row.name;
+                params.id = scope.row.id;
+                delConfirm(this, params, this.upDataCall, window.lc('admin_update_data_call_confirm', [name]));
+            },
+            upDataCall(params) {
+                var self = this;
+                httpPost('m=tool&c=dataCall&a=upCall', params).then(function(response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function() {
+                            self.getDataList();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                })
+            },
+            delData(scope, isMore) {
+                var that = this;
+                let name = '';
+                let idArr = [],
+                    nameArr = [];
+                let params = {};
+
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+
+                        idArr.push(item.id);
+                        nameArr.push(item.name);
+                    });
+                    name = nameArr.join(', ');
+                    params.id = idArr;
+                } else {
+
+                    name = scope.row.name;
+                    params.id = scope.row.id;
+                }
+
+                delConfirm(this, params, this.delete, window.lc('admin_delete_data_call_confirm', [name]));
+            },
+            delDataSel() {
+                var that = this;
+                if (!that.selectedItem.length) {
+                    message.error(window.lc('admin_user_weipin_00005'));
+                    return;
+                }
+                this.delData(null, true);
+            },
+            delete(params) {
+                var self = this;
+                httpPost('m=tool&c=dataCall&a=delCall', params).then(function(response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function() {
+                            self.getDataList();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                })
+            },
+            handleSizeChange(val) {
+                this.pageSize = val;
+                this.getDataList();
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getDataList();
+            },
+            saveDataCall: function() {
+                let self = this;
+                var params = {};
+                if (self.callInfo.name == '') {
+                    message.error(window.lc('admin_tool_00316'));
+                    return false;
+                }
+                params = self.callInfo;
+                params.type = self.callType;
+                self.saveLoading = true;
+                httpPost('m=tool&c=dataCall&a=saveCall', params).then(function(res) {
+                    if (res.data.error == 0) {
+                        message.success(res.data.msg, function() {
+                            self.callDrawer = false;
+                            self.getDataList();
+                        });
+                    } else {
+
+                        message.error(res.data.msg);
+                    }
+                }).finally(function() {
+                    setTimeout(function() {
+                        self.saveLoading = false;
+                    }, 2000);
+                });
+            }
+        }
+    }
+</script>

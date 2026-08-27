@@ -1,0 +1,313 @@
+<template>
+    <div class="homeCenterAll">
+        <div class="homeCentLeft">
+            <div class="homeCentLeTite">
+                <div class="homeCentLeName"><span>{{ lc('admin_00072') }}</span></div>
+                <div class="homeCentLeTime">
+                    <el-date-picker v-model="date" type="month" value-format="YYYY-MM" :placeholder="lc('admin_user_00192')" @change="dateChange" :disabled-date="disableFutureMonth" :clearable="false">
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="homeCentLeEchat">
+                <div class="homeLeEchatInfo">
+                    <ul>
+                        <li :class="tjTbName=='getweb'?'spanCurs':''" @click="clicktb('getweb')">
+                            <span>{{ lc('admin_00073') }}</span>
+                            <b>{{userNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='resumetj'?'spanCurs':''" @click="clicktb('resumetj')">
+                            <span>{{ lc('common.resume') }}</span>
+                            <b>{{resumeNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='comtj'?'spanCurs':''" @click="clicktb('comtj')">
+                            <span>{{ lc('admin_00074') }}</span>
+                            <b>{{companyNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='jobtj'?'spanCurs':''" @click="clicktb('jobtj')">
+                            <span>{{ lc('common.job') }}</span>
+                            <b>{{jobNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='ujobtj'?'spanCurs':''" @click="clicktb('ujobtj')">
+                            <span>{{ lc('member_com_00152') }}</span>
+                            <b>{{userjobNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='yqmstj'?'spanCurs':''" @click="clicktb('yqmstj')">
+                            <span>{{ lc('resume_00029') }}</span>
+                            <b>{{yqmsNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='downresumetj'?'spanCurs':''" @click="clicktb('downresumetj')">
+                            <span>{{ lc('wap_com_00042') }}</span>
+                            <b>{{downreusmeNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='adtj'?'spanCurs':''" @click="clicktb('adtj')">
+                            <span>{{ lc('admin_00075') }}</span>
+                            <b>{{ggNumMon}}</b>
+                        </li>
+                        <li :class="tjTbName=='wxbdtj'?'spanCurs':''" @click="clicktb('wxbdtj')">
+                            <span>{{ lc('wap_user_00115') }}</span>
+                            <b>{{wxbdNumMon}}</b>
+                        </li>
+                    </ul>
+                </div>
+                <div class="homeEchatSubject" v-show="tjTbName=='wxbdtj'">
+                    <div class="homeEchatWebChat">
+                        <div class="echatSubBine" id="main2"></div>
+                    </div>
+                    <div class="homeEchatWebText">
+                        <div class="homeEchatWebInfo">
+                            <h3>{{ lc('admin_00071') }}</h3>
+                            <b>{{wxbdcomNumMon}}</b>
+                            <span>{{ lc("admin_percent_value", [comwx_percent]) }}</span>
+                        </div>
+                        <div class="homeEchatWebInfo">
+                            <h3>{{ lc('admin_00070') }}</h3>
+                            <b>{{wxbduserNumMon}}</b>
+                            <span>{{ lc("admin_percent_value", [userwx_percent]) }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="homeEchatMain1" id="main1" v-show="tjTbName!='wxbdtj'"></div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+    data: function() {
+        return {
+            activeName: '1',
+            erjilName: 'downresumedt',
+            erjilLog: 'userrz',
+
+            date: '',
+            resumeNumMon: 0,
+            jobNumMon: 0,
+            companyNumMon: 0,
+            userNumMon: 0,
+            ggNumMon: 0,
+            
+            userjobNumMon: 0,
+            yqmsNumMon: 0,
+            downreusmeNumMon: 0,
+            wxbdNumMon: 0,
+
+            list: [],
+            tjTbName: 'getweb',
+
+            legendData: [],
+            xAxisData: [],
+            seriesList: [],
+            msgNumData: [],
+
+            wxbduserNumMon: 0,
+            wxbdcomNumMon: 0,
+			comwx_percent:0,
+			userwx_percent:0,
+
+        }
+    },
+
+    mounted() {
+        this.date = formatMonth(new Date());
+        this.monthTj();
+        this.tjChangeSrc();
+    },
+    methods: {
+        disableFutureMonth: function(time) {
+            return formatMonth(time) > formatMonth(new Date());
+        },
+        dateChange: function() {
+            this.monthTj();
+            this.tjChangeSrc();
+        },
+
+        monthTj: function() {
+            var that = this;
+            var param = {};
+            if (this.date != '') {
+                var datearr = this.date.split('-');
+                let ym = new Date(datearr[0], datearr[1], 0).getDate(); // 月未最后一天
+                var edate = this.date + '-' + (ym < 10 ? "0" + ym : ym);
+
+                param.sdate = this.date;
+                param.edate = edate;
+            }
+            httpPost('m=index&c=monthStatis', param, { hideloading: true }).then(function(response) {
+                let res = response.data;
+                if (res.error == 0) {
+                    that.resumeNumMon = res.data.resumeNumMon;
+                    that.jobNumMon = res.data.jobNumMon;
+                    that.companyNumMon = res.data.companyNumMon;
+                    that.userNumMon = res.data.userNumMon;
+                    that.ggNumMon = res.data.ggNumMon;
+                    
+                    that.userjobNumMon = res.data.userjobNumMon;
+                    that.yqmsNumMon = res.data.yqmsNumMon;
+                    that.downreusmeNumMon = res.data.downreusmeNumMon;
+                    that.wxbdNumMon = res.data.wxbdNumMon;
+					that.wxbduserNumMon = res.data.wxbduserNumMon;
+					that.wxbdcomNumMon = res.data.wxbdcomNumMon;
+					that.userwx_percent = res.data.userwx_percent;
+					that.comwx_percent = res.data.comwx_percent;
+                    
+                }
+            })
+        },
+        clicktb: function(name) {
+            this.tjTbName = name;
+            this.tjChangeSrc();
+        },
+        tjChangeSrc: function() {
+            var that = this;
+            var param = {};
+            var c = this.tjTbName;
+            if (this.date != '') {
+                var datearr = this.date.split('-');
+                let ym = new Date(datearr[0], datearr[1], 0).getDate(); // 月未最后一天
+                var edate = this.date + '-' + (ym < 10 ? "0" + ym : ym);
+
+                param.sdate = this.date;
+                param.edate = edate;
+            }
+            httpPost(`m=index&c=${c}`, param, { hideloading: true }).then(function(response) {
+                let res = response.data;
+                if (res.error == 0) {
+                    
+					var tjlist = res.data.list;
+					var legendData = res.data.name;
+
+					var xAxisData = [],
+						seriesList = [],
+						seriesObj = {},
+						seriesData = [],
+						seriesColor = ['#2778F8', '#F6B44C', '#20EBDA', '#F86138'];
+
+					tjlist.forEach(function(item, key) {
+						seriesData = [];
+						for (let sdkey in item.list) {
+							if (key == 0) {
+								xAxisData.push(item.list[sdkey].td);
+							}
+							seriesData.push(item.list[sdkey].cnt);
+						}
+
+						seriesObj = {
+							name: legendData[key],
+							type: 'line',
+							symbol: 'emptyCircle',
+							itemStyle: {
+								normal: {
+									areaStyle: {
+										width: 2,
+										color: seriesColor[key]
+									}
+								}
+							},
+							areaStyle: {
+								normal: {
+									color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+											offset: 0,
+											color: seriesColor[key]
+										},
+										{
+											offset: 0.9,
+											color: '#fff'
+										}
+									], false),
+								}
+							},
+							data: seriesData
+						};
+						seriesList.push(seriesObj);
+					})
+
+					that.xAxisData = xAxisData;
+					that.seriesList = seriesList;
+					that.legendData = legendData;
+					
+					that.initCharts();
+					
+
+                }
+            })
+        },
+        initCharts() {
+            var that = this;
+			
+			var chartID = that.tjTbName == 'wxbdtj'?'main2':'main1';
+            var myChart = echarts.init(document.getElementById(`${chartID}`));
+            var option = {
+                color: ['#2778F8', '#F6B44C', '#20EBDA', '#F86138'],
+                legend: {
+                    data: that.legendData
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    top: '10%',
+                    left: '2%',
+                    right: '3%',
+                    bottom: '4%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: that.xAxisData,
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#f3f3f3'
+                        },
+                        show: true
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: { //网格线
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#f3f3f3'
+                        },
+                        show: true
+                    }
+                },
+                series: that.seriesList
+            };
+            myChart.setOption(option, true);
+            setTimeout(function() {
+                window.addEventListener("resize", () => {
+                    myChart.resize();
+                });
+            }, 200);
+        },
+        
+        toMsgPath: function(item) {
+            window.parent.homeapp.checkMenuTwo(item.menudata.nval, item.menudata.oval, item.menudata.tval, item.menudata.name, item.menudata.path, item.menudata.query)
+        }
+    },
+};
+</script>
+<style scoped></style>

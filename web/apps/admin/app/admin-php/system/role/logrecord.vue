@@ -1,0 +1,121 @@
+<template>
+<div id="logRecordApp" class="moduleElenAl">
+    <div class="moduleSeachmore">
+        <div class="tableSeachInpt">
+            <el-input v-model="ukeyword" :placeholder="lc('admin_system_00217')" size="small" prefix-icon="el-icon-search" clearable></el-input>
+        </div>
+        <div class="tableSeachInpt">
+            <el-input v-model="keyword" :placeholder="lc('wap_user_00076')" size="small" prefix-icon="el-icon-search" clearable></el-input>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall">
+            <el-date-picker v-model="time" size="small" type="daterange" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" value-format="YYYY-MM-dd" style="margin-right: 10px; text-align: left; width: 260px;" @change="search"></el-date-picker>
+        </div>
+        <div class="tableSeachInpt">
+            <el-button type="primary" size="small" icon="el-icon-search" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="80"></el-table-column>
+            <el-table-column prop="username" :label="lc('admin_system_00218')"></el-table-column>
+            <el-table-column prop="content" :label="lc('wap_user_00102')"></el-table-column>
+            <el-table-column prop="ip" label="IP"></el-table-column>
+            <el-table-column prop="did_name" :label="lc('admin_00151')"></el-table-column>
+            <el-table-column prop="ctime_n" :label="lc('member_user_00241')"></el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+        </div>
+    </div>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: window.lc('wap_js_00113'),
+                loading: false,
+                currentPage: 1,
+                prevPage: 0,
+                perPage: 0,
+                pageSizes: [],
+                total: 0,
+                tableData: [],
+                time: '',
+                keyword: '',
+                ukeyword: '',
+            }
+        },
+        created: function () {
+            this.getList();
+        },
+        methods: {
+            search() {
+                this.currentPage = 1;
+                this.getList();
+            },
+            handleSizeChange(val) {
+                this.perPage = val;
+                this.getList()
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList();
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    pageSize: that.perPage
+                }
+                if (that.time) {
+                    params.time = that.time[0] + '~' + that.time[1]
+                }
+                if (that.ukeyword) {
+                    params.ukeyword = that.ukeyword
+                }
+                if (that.keyword) {
+                    params.keyword = that.keyword
+                }
+                that.loading = true;
+                that.emptytext = window.lc('admin_user_weipin_00026');
+                httpPost('m=system&c=role_logrecord&a=index', params).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.perPage = parseInt(res.data.perPage)
+                        that.pageSizes = res.data.pageSizes
+                        that.total = parseInt(res.data.total);
+                        if (that.prevPage != that.currentPage) {
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0) {
+                            that.emptytext = window.lc('wap_js_00113');
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            }
+        }
+    }
+</script>

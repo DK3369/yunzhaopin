@@ -1,0 +1,442 @@
+<template>
+    <div class="moduleElHight">
+        <div class="tableDome_tip">
+            <el-alert :title="lc('admin_tool_00641')" type="success"
+                      :closable="false">
+            </el-alert>
+        </div>
+        <div class="moduleSeachs">
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="small" @click="navsync"
+                           plain>{{ lc('admin_tool_00659') }}
+                </el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="small" @click="addinfo">{{ lc('admin_tool_00660') }}</el-button>
+            </div>
+        </div>
+
+        <div class="moduleElTable">
+            <el-table ref="table" :data="tableData" v-loading="list_loading" @selection-change="selectionChange"
+                      style="width: 100%" row-key="id" border default-expand-all
+                      :tree-props="{ children: 'list'}"
+                      :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                      :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="name" :label="lc('admin_tool_00654')">
+                    <template #default="scope">
+				        <span v-if="editname_id==scope.row.id">
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editname" :data-preval="scope.row.name"
+                                      data-type="name" @blur="editChange" clearable></el-input>
+				        </span>
+                        <div class="moduleElTaPax" v-else>
+                            <span>{{ scope.row.name }}</span>
+                            <img src="/admin/php-admin/images/bine.png"
+                                 @click="editcolumn('name',scope.row.name,scope.row.id)" alt="">
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="type" :label="lc('admin_tool_00655')" width="180">
+                </el-table-column>
+                <el-table-column prop="key" :label="lc('admin_tool_00650')">
+                </el-table-column>
+                <el-table-column prop="url" :label="lc('admin_tool_00656')">
+                </el-table-column>
+                <el-table-column :label="lc('admin_vue_00044')" width="180">
+                    <template #default="scope">
+                        <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editsort" :data-preval="scope.row.sort"
+                                      onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')" data-type="sort"
+                                      @blur="editChange" clearable></el-input>
+                        </div>
+                        <div class="moduleElTaPax" v-else>
+                            <span>{{ scope.row.sort }}</span>
+                            <img src="/admin/php-admin/images/bine.png"
+                                 @click="editcolumn('sort',scope.row.sort,scope.row.id)" alt="">
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="130" fixed="right" header-align="center">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="editinfo(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="small" type="danger" @click="deleteinfo(scope.row.id)">{{ lc('common.delete') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+        </div>
+        <div class="otherPageButn">
+            <div class="modulePaging">
+                <div class="modulecz modulePagButn">
+                    <el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button size="small" @click="deleteAll">{{ lc('member_com_00055') }}</el-button>
+                </div>
+            </div>
+        </div>
+        <!--新增微信菜单-->
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_tool_00661')" v-model="editshow" :with-header="true" :modal-append-to-body="false"
+                       :show-close="true" width="440px">
+                <div>
+                    <div class="wxsettip_small ">{{ lc('admin_tool_00654') }}</div>
+                    <el-input v-model="einfo.name"></el-input>
+                    <div class="wxsettip_small ">{{ lc('admin_tool_00653') }}</div>
+                    <div class="wxsettip_smallselect ">
+                        <el-select v-model="einfo.keyid">
+                            <el-option key="0" :label="lc('admin_tool_00651')" value="0"></el-option>
+                            <el-option v-for="item in tableData" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="wxsettip_small ">{{ lc('admin_tool_00655') }}</div>
+                    <div class="wxsettip_smallselect ">
+                        <el-select v-model="einfo.type" :placeholder="lc('wap_user_00100')">
+                            <el-option :label="lc('admin_tool_00652')" value="click"></el-option>
+                            <el-option :label="lc('admin_tool_00657')" value="view"></el-option>
+                            <el-option :label="lc('admin_tool_00658')" value="miniprogram"></el-option>
+                        </el-select>
+                    </div>
+                    <div v-show="einfo.type=='click'">
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00650') }}</div>
+                        <el-input v-model="einfo.key"></el-input>
+                    </div>
+                    <div v-show="einfo.type=='view'">
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00656') }}</div>
+                        <el-input v-model="einfo.url"></el-input>
+                    </div>
+                    <div v-show="einfo.type=='miniprogram'">
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00656') }}</div>
+                        <el-input v-model="einfo.url"></el-input>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00648') }}</div>
+                        <el-input v-model="einfo.appid"></el-input>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00649') }}</div>
+                        <el-input v-model="einfo.apppage"></el-input>
+                    </div>
+
+                    <div class="wxsettip_small ">{{ lc('member_com_00022') }}</div>
+                    <el-input v-model="einfo.sort"></el-input>
+                </div>
+                <template #footer><span class="dialog-footer">
+					<el-button @click="editshow = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="saveinfo" :loading="post_loading">{{ lc('wap_com_00019') }}</el-button>
+				</span></template>
+            </el-dialog>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+var timer = null;
+export default {
+    data: function () {
+        return {
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
+            tableData: [],
+            list_loading: false,
+            choosedata: [],
+            allchecked: false,
+            editshow: false,
+            einfo: {},
+            post_loading: false,
+
+            editname_id: '',
+            editsort_id: '',
+            editname: '',
+            editsort: '',
+        }
+    },
+
+    mounted() {
+        this.getList();
+    },
+    methods: {
+        async getList() {
+            let that = this;
+            let params = {};
+
+            this.list_loading = true;
+            that.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
+            httpPost('m=tool&c=weixinmenu&a=wxnav', params).then((result) => {
+                this.list_loading = false;
+                var res = result.data
+                if (res.error == 0) {
+                    that.tableData = res.data.list;
+                    if (that.tableData.length === 0) {
+                        that.emptytext = window.yunAdminT(lc('wap_js_00113'));
+                    }
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        selectionChange: function (e) {
+
+            this.choosedata = e;
+        },
+        allcheckChange: function () {
+
+            this.$refs.table.toggleAllSelection();
+
+        },
+        deleteinfo: function (id) {
+            var _this = this;
+
+            var params = {
+                del: id
+            };
+            delConfirm(_this, params, this.deletePost)
+        },
+        deleteAll: function () {
+            var _this = this;
+            var idarr = [];
+            if (this.choosedata.length > 0) {
+                for (let i in this.choosedata) {
+                    idarr.push(this.choosedata[i].id);
+                }
+            } else {
+                message.error(window.yunAdminT(lc('admin_user_weipin_00005')));
+                return;
+            }
+            var params = {
+                del: idarr
+            };
+
+            delConfirm(_this, params, this.deletePost)
+        },
+        async deletePost(params) {
+
+            let that = this;
+
+            httpPost('m=tool&c=weixinmenu&a=delnav', params).then(function (result) {
+
+                var res = result.data;
+                if (res.error == 0) {
+                    message.success(res.msg, function () {
+                        that.getList();
+                    });
+                    return;
+                } else {
+                    message.error(res.msg);
+                    return;
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        editinfo: function (row) {
+
+            this.einfo = deepClone(row);
+            this.editshow = true;
+        },
+        addinfo: function () {
+            var that = this;
+            this.einfo = {
+                id: '',
+                appid: '',
+                apppage: '',
+                key: '',
+                keyid: '0',
+                name: '',
+                type: '',
+                url: '',
+                sort: '',
+            };
+            this.editshow = true;
+        },
+        saveinfo: function () {
+
+            var that = this,
+                param = {};
+            if (this.einfo.name == '') {
+                message.warning(window.yunAdminT(lc('admin_tool_00646')));
+                return;
+            }
+            if (this.einfo.keyid != '0' && this.einfo.type == 'click' && this.einfo.key == '') {
+                message.warning(window.yunAdminT(lc('admin_tool_00642')));
+                return;
+            }
+            if (this.einfo.keyid != '0' && this.einfo.type == 'view' && this.einfo.url == '') {
+                message.warning(window.yunAdminT(lc('admin_tool_00644')));
+                return;
+            }
+
+            param.navid = this.einfo.id;
+            param.name = this.einfo.name;
+            param.keyid = this.einfo.keyid;
+            param.type = this.einfo.type;
+            param.key = this.einfo.key;
+            param.url = this.einfo.url;
+            param.sort = this.einfo.sort;
+            param.appid = this.einfo.appid;
+            param.apppage = this.einfo.apppage;
+            param.apppage = this.einfo.apppage;
+
+            that.post_loading = true;
+
+            httpPost('m=tool&c=weixinmenu&a=savenav', param).then((result) => {
+
+                that.post_loading = false;
+
+                var res = result.data;
+
+                if (res.error == 1) {
+                    message.error(window.yunAdminT(lc('admin_tool_00647')));
+                    return false;
+                } else if (res.error == 2) {
+                    message.error(window.yunAdminT(lc('admin_tool_00645')));
+                    return false;
+                } else if (res.error == 3) {
+                    message.success(window.yunAdminT(lc('wap_js_00159')), () => {
+                        that.editshow = false;
+                        that.getList();
+                    });
+                    return false;
+                } else if (res.error == 4) {
+                    message.success(window.yunAdminT(lc('wap_js_00159')), () => {
+                        that.editshow = false;
+                        that.getList();
+                    });
+                    return false;
+                }
+            }).catch(function (e) {
+                console.log(e)
+            })
+        },
+        editcolumn: function (type, def, id) {
+
+            this[`edit${type}_id`] = id;
+            this[`edit${type}`] = def;
+
+            this.$nextTick(() => {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(() => {
+                    document.getElementById('inputref').focus();
+                }, 100);
+            })
+
+        },
+        async editChange(e) {
+
+            var that = this;
+
+            var preval = e.target.dataset.preval;
+            var type = e.target.dataset.type;
+
+            var val = this[`edit${type}`];
+            var id = this[`edit${type}_id`];
+
+            if (val == preval) {
+
+                this[`edit${type}_id`] = '';
+                this[`edit${type}`] = '';
+
+            } else {
+                if (type == 'name' && val == '') {
+                    this[`edit${type}_id`] = '';
+                    message.error(window.yunAdminT(lc('admin_00208')));
+                    return;
+                }
+                var param = {id: id};
+                param[`${type}`] = val;
+
+                httpPost('m=tool&c=weixinmenu&a=ajaxnav', param).then(function (result) {
+
+                    for (let i in that.tableData) {
+                        if (that.tableData[i].id == id) {
+                            that.tableData[i][`${type}`] = val;
+                            break;
+                        }
+                    }
+
+                    that[`edit${type}_id`] = '';
+                    that[`edit${type}`] = '';
+                    message.success(window.yunAdminT(lc('admin_user_company_00208')), function () {
+                        that.getList()
+                    });
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            }
+
+        },
+
+        async navsync(params) {
+
+            let that = this;
+            delConfirm(this, {}, function () {
+                httpPost('m=tool&c=weixinmenu&a=creatnav', {}).then(function (response) {
+                    let res = response.data;
+
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                    } else {
+                        message.error(res.msg);
+                    }
+                })
+            }, window.yunAdminT(lc('admin_tool_00643')));
+        },
+        doLayout(){
+            if (this.$refs.table) {
+                this.$nextTick(() => {
+                    this.$refs.table.doLayout();
+                })
+            }
+        }
+    },
+};
+</script>
+<style scoped>
+.moduleSeachmore {
+    padding: 0px;
+}
+
+.moduleSeachs {
+    padding: 0px 0px 12px 0px;
+    width: 100%;
+}
+
+.moduleElTable {
+    padding: 0;
+    margin: 0;
+    height: calc(100% - 136px);
+    width: 100%;
+}
+
+.tableSeachInptsmalltwo {
+    margin-bottom: 0px;
+    margin-right: 12px;
+}
+
+.tableSeachInptsmalltwo .el-input__inner {
+    height: 32px;
+    line-height: 32px;
+    width: 260px;
+    padding: 0px 5px;;
+}
+
+.el-table .cell {
+    display: flex;
+    align-items: center;
+}
+
+.el-dialog__body {
+    padding: 0px 20px;
+}
+</style>

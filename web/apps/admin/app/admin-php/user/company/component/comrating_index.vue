@@ -1,0 +1,335 @@
+<template>
+    <!--会员-企业-套餐服务：套餐设置-->
+    <div class="moduleElHight">
+        <div class="tableSeachInpt">
+            <el-button type="primary" icon="el-icon-plus" size="small" @click="handleAdd">{{ lc('admin_00689') }}</el-button>
+        </div>
+        <div class="admin_datatip" style="margin-bottom: 12px;">
+            <i class="el-icon-document"></i>
+            <span>{{ lc('admin_user_company_00164') }}</span>
+        </div>
+        <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }"
+            style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 132px) !important;">
+            <el-table :data="tableData" style="width: 100%" stripe
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom" width="80"></el-table-column>
+                <el-table-column :label="lc('admin_00690')" width="140">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <div class=" ">{{ scope.row.name }}</div>
+                            <span class="gsd">{{ scope.row.type_n }} </span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_user_company_00165')" width="140">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <div class="tcjiage ">{{ lc("admin_currency_yuan", [scope.row.service_price]) }}</div>
+                            <span class="tctime">
+                                 <template v-if="scope.row.service_time != ''">
+                                    {{ lc("admin_day_count", [scope.row.service_time]) }}
+                                 </template>
+                                <template v-else>
+                                    {{ lc('common_01936') }}
+                                </template>
+                            </span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_user_company_00168')" width="140">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <template v-if="scope.row.type == 1">
+                                <div>{{ lc("admin_refresh_count", [lc("admin_piece_count", [scope.row.breakjob_num])]) }}</div>
+                                <div>{{ lc("admin_post_job_count", [lc("admin_piece_count", [scope.row.job_num])]) }}</div>
+                            </template>
+                            <template v-else-if="scope.row.type == 2">
+                                <div>{{ lc("admin_refresh_count", [scope.row.breakjob_num == 0 ? '-' : lc("admin_daily_piece_count", [scope.row.breakjob_num])]) }}</div>
+                                <div>{{ lc("admin_post_job_count", [lc("admin_piece_count", [scope.row.job_num])]) }}</div>
+                            </template>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_user_company_00167')" width="140">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <template v-if="scope.row.type == 1">
+                                <div>{{ lc("admin_interview_count", [lc("admin_times_count", [scope.row.interview])]) }}</div>
+                                <div>{{ lc("admin_download_count", [lc("admin_piece_count", [scope.row.resume])]) }}</div>
+                            </template>
+                            <template v-else-if="scope.row.type == 2">
+                                <div>{{ lc("admin_interview_count", [scope.row.interview == 0 ? '-' : lc("admin_daily_piece_count", [scope.row.interview])]) }}</div>
+                                <div>{{ lc("admin_download_count", [scope.row.resume == 0 ? '-' : lc("admin_daily_piece_count", [scope.row.resume])]) }}</div>
+                            </template>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_00691')" width="140">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <span class=" ">{{ lc("admin_top_days", [lc("admin_day_count", [scope.row.top_num])]) }}</span>
+                            <span class=" ">{{ lc("admin_urgent_days", [lc("admin_day_count", [scope.row.urgent_num])]) }}</span>
+                            <span class=" ">{{ lc("admin_recommend_days", [lc("admin_day_count", [scope.row.rec_num])]) }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="comd" :label="lc('admin_00692')" min-width="300">
+                    <template #default="scope">
+                        <div class="modulePropsbox">
+                            <div class="modulePropsboxsmall">
+                                <template v-if="scope.row.type == 1">
+                                    <div>{{ lc("admin_job_fair_signup", [lc("admin_session_count", [scope.row.zph_num])]) }}</div>
+                                </template>
+                                <template v-else-if="scope.row.type == 2">
+                                    <div>{{ lc("admin_job_fair_signup", [scope.row.zph_num == 0 ? '-' : lc("admin_daily_session_count", [scope.row.zph_num])]) }}</div>
+                                </template>
+                            </div>
+                            <div class="modulePropsboxsmall">
+                                
+                                <div></div>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="sort" :label="lc('member_com_00022')" sortable="custom" width="80"></el-table-column>
+                <el-table-column prop="zt" :label="lc('admin_user_company_00166')" width="80">
+                    <template #default="scope">
+                        <div class="admin_state">
+                            <span v-if="scope.row.display == 1" class="admin_state1">{{ lc('admin_user_company_00171') }}</span>
+                            <span v-else class="admin_state2">{{ lc('admin_user_company_00173') }}</span>
+                            <!--<span class="admin_state1"> 已开启</span>-->
+                            <!--<span class="admin_state2">未通过</span>-->
+                            <!--<span class="admin_state3">已锁定</span>-->
+                            <!--<span class="admin_state4">待审核</span>-->
+                            <!--<span class="admin_state5">已暂停</span>-->
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" plain @click="editRow(scope)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="small">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    v-model:current-page="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!--设置会员套餐-->
+        <el-drawer :title="titleAddEdit" v-model="addVisible" :destroy-on-close="true" :modal-append-to-body="false" append-to-body  :wrapper-closable="false" size="770px">
+            <comrating_index_edit :id="info.id?info.id:0" :config="config" @child-event-list="handleCloseList"></comrating_index_edit>
+        </el-drawer>
+    </div>
+</template>
+
+<script>
+import ComratingIndexEdit from './comrating_index_edit.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+
+export default {
+    data: function () {
+        return {
+            loading: false,
+            emptytext: lc('wap_js_00113'),
+            searchForm: {
+                page: 1,
+                limit: null,
+            },
+            total: 0,
+            tableData: [],
+            pageSizes: [],
+            tableHig: true,
+            checked: false,//全选
+            isIndeterminate: false,// checkbox 的不确定状态
+            selectedItem: [],
+            addVisible: false,
+            titleAddEdit: lc('admin_00689'),
+            config: {},
+            info: {},
+
+            prevPage: 0
+        }
+    },
+    created() {
+        this.getBaseData();
+
+        this.getList();
+    },
+    methods: {
+        handleSelectionChange(val) {
+            this.selectedItem = val;
+            if (this.selectedItem.length == 0) {
+                this.isIndeterminate = false;
+                this.checked = false;
+            } else {
+                if (this.selectedItem.length == this.tableData.length) {
+                    this.isIndeterminate = false;
+                    this.checked = true;
+                } else {
+                    this.isIndeterminate = true;
+                    this.checked = false;
+                }
+            }
+        },
+        selectAllBottom(value) {
+            value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+        },
+        shortChange(e) {
+            let orderMap = {ascending: 'asc', descending: 'desc'}
+            this.searchForm.t = e.order ? e.prop : null;
+            this.searchForm.order = orderMap[e.order];
+            this.searchForm.page = 1;
+            this.getList();
+        },
+        handleSizeChange(val) {
+            this.searchForm.limit = val;
+            this.getList();
+        },
+        handleCurrentChange(val) {
+            this.searchForm.page = val;
+            this.getList();
+        },
+        getList() {
+            let _this = this;
+            let params = JSON.parse(JSON.stringify(this.searchForm));
+            for (let index in params) {
+                (params[index] === '') && (params[index] = null);
+            }
+            _this.loading = true;
+            _this.emptytext = lc('admin_user_weipin_00026');
+            httpPost('m=user&c=company_comrating&a=index', params, {hideloading: true}).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    _this.tableData = res.data.list;
+                    _this.total = res.data.total;
+                    _this.searchForm.limit = res.data.perPage;
+                    _this.pageSizes = res.data.pageSizes;
+                    _this.loading = false;
+                    if(_this.prevPage != _this.searchForm.page){
+                        _this.prevPage = _this.searchForm.page;
+                        _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
+                    if (_this.tableData.length === 0){
+                        _this.emptytext = lc('wap_js_00113');
+                    }
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        getBaseData() {
+            let _this = this;
+            httpPost('m=user&c=company_comrating&a=baseData', {}, {hideloading: true}).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    _this.config = res.data.config;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        getInfo() {
+
+        },
+        handleAdd() {
+            this.titleAddEdit = lc('admin_00689');
+            this.info = {};
+            this.addVisible = true;
+        },
+        handleCloseList() {
+            this.addVisible = false;
+            this.getList();
+        },
+        handleClose(done) {
+            done();
+            this.addVisible = false;
+        },
+        editRow(scope) {
+            this.titleAddEdit = lc('admin_company_00009');
+            this.info = scope.row;
+            this.addVisible = true;
+        },
+        deleteRow(scope, isMore) {
+            let params = {};
+            if (isMore) {
+                if (!this.selectedItem.length) {
+                    message.error(lc('admin_user_weipin_00005'));
+                    return false;
+                }
+                let list = [];
+                for (let item of this.selectedItem) {
+                    list.push(item.id);
+                }
+                params.del = list;
+            } else {
+                // let index = scope.$index;
+                // this.tableData.splice(index, 1);
+                params.id = scope.row.id;
+            }
+
+            delConfirm(this, params, this.delete);
+        },
+        delete(params) {
+            let _this = this;
+            httpPost('m=user&c=company_comrating&a=delrating', params).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success(lc('admin_user_00187'));
+                    _this.getList();
+                } else {
+                    message.error(lc('admin_user_00186'));
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        doLayout(){
+            if (this.$refs.multipleTable) {
+                this.$nextTick(() => {
+                    this.$refs.multipleTable.doLayout();
+                })
+            }
+        }
+    },
+    components: {
+        'comrating_index_edit': ComratingIndexEdit,
+    }
+};
+</script>
+<style scoped>
+.mt-10 {
+    margin-top: 10px;
+}
+.drawerModInfo{
+    overflow-y: auto;
+    height: calc(100% - 85px);
+}
+</style>

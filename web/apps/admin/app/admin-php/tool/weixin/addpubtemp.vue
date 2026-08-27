@@ -1,0 +1,646 @@
+<template>
+<div id="moduapp" class="drawerModlue" style="padding: 0; background: #fff;">
+        <div v-if="islook" style="position: relative;overflow: hidden; width: 100%; height: 100%;">
+            <div class="drawerModElink">
+                <!-- <el-link @click="back" type="primary">返回</el-link> -->
+                <el-page-header @back="goBack" :content="id=='' ? lc('member_com_00354') : lc('member_com_00355')">
+                </el-page-header>
+                <el-alert :title="lc('admin_tool_00511')" type="success" :closable="false"
+                    v-if="temptype == 1"></el-alert>
+                <el-alert :title="lc('admin_tool_00509')" type="success" :closable="false"
+                    v-else></el-alert>
+            </div>
+
+            <div class="drawerModFlexds">
+                <div class="drawerModInfo">
+                    <div class="drawerModLis" v-if="id == ''">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_tool_00518') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-radio-group v-model="type" @input="typeFun">
+                                <el-radio label="job">{{ lc('admin_tool_00557') }}</el-radio>
+                                <el-radio label="resume">{{ lc('member_user_00189') }}</el-radio>
+                                <el-radio label="company">{{ lc('admin_user_company_00135') }}</el-radio>
+                            </el-radio-group>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('member_com_00356') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.title" :placeholder="lc('wap_com_00411')"></el-input>
+                        </div>
+                    </div>
+
+                    <div class="drawerModLis" style="align-items: initial;">
+                        <div class="drawerModTite" style="line-height: 36px;">
+                            <span>{{ lc('admin_system_00660') }}</span>
+                        </div>
+
+                        <div class="drawerModConts">
+                            <div class="drawerModAler">
+                                <el-alert :title="lc('admin_tool_00512')" :closable="false" type="warning" show-icon></el-alert>
+                                <el-button @click="header_column = !header_column">{{ lc('admin_tool_00517') }}</el-button>
+                            </div>
+
+                            <div v-show="header_column">
+                                <div class="canshuFlwx">
+                                    <span @click="header_column = false" class="canshu">{{ lc('admin_tool_00517') }}</span>
+                                    <span>{{ lc('admin_tool_00513') }}</span>
+                                </div>
+                                <div class="csnhuTips">
+                                    <div v-for="item in totalcolumn" :key="item.key">
+                                        <el-button size="small" type="primary" plain
+                                            @click="copyMsg(item.data[1], 'tem_header');">{{
+                                            item.data[0]
+                                            }}</el-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea v-if="temptype == '1'" id="tem_header" name="tem_header" class="txtctrl"
+                                wrap="hard" style="width:calc(100% - 20px);height:150px;">{{ info.header }}</textarea>
+
+                            <script v-else id="tem_header" name="tem_header" type="text/plain"
+                                style="width:calc(100% - 10px);height:150px;">
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+                                {{info.header}}</script>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" style="align-items: initial;">
+                        <div class="drawerModTite" style="line-height: 36px;">
+                            <span v-if="info.type == 'resume'">{{ lc('admin_tool_00519') }}</span>
+                            <span v-else-if="info.type == 'company'">{{ lc('admin_tool_00516') }}</span>
+                            <span v-else>{{ lc('admin_tool_00520') }}</span>
+                        </div>
+
+                        <div class="drawerModConts">
+                            <div class="drawerModAler">
+                                <el-alert :closable="false" :title="lc('admin_tool_00510')" type="warning"
+                                    show-icon></el-alert>
+                                <el-button plain @click="body_column = !body_column">{{ lc('admin_tool_00517') }}</el-button>
+                            </div>
+
+                            <div v-show="body_column">
+                                <div class="canshuFlwx">
+                                    <span @click="body_column = false" class="canshu">{{ lc('admin_tool_00517') }}</span>
+                                    <span>{{ lc('admin_tool_00513') }}</span>
+                                </div>
+                                <div class="csnhuTips">
+                            		<template v-for="item in typecolumn" :key="item.key">
+                            			<div v-if="item.data[2] == `${type}_column` || item.data[2] == 'total_column' || item.data[2] == 'public_column'">
+                            			    <el-button type="primary" plain size="small" @click="copyMsg(item.data[1], 'tem_body');">{{ item.data[0]}}</el-button>
+                            			</div>
+                            		</template>
+                                    
+                                </div>
+                            </div>
+
+                            <textarea v-if="temptype == '1'" id="tem_body" name="tem_body" class="txtctrl" wrap="hard"
+                                style="width:calc(100% - 10px);height:330px;">{{ info.body }}</textarea>
+
+                            <script v-else id="tem_body" name="tem_body" type="text/plain"
+                                style="width:calc(100% - 10px);height:300px;">{{info.body}}</script>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" style="align-items: initial;">
+                        <div class="drawerModTite" style="line-height: 36px;">
+                            <span>{{ lc('admin_tool_00514') }}</span>
+                        </div>
+
+                        <div class="drawerModConts">
+                            <div class="drawerModAler">
+                                <el-alert :closable="false" :title="lc('admin_tool_00512')" type="warning" show-icon></el-alert>
+                                <el-button @click="footer_column = !footer_column">{{ lc('admin_tool_00517') }}</el-button>
+                            </div>
+
+                            <div v-show="footer_column">
+                                <div class="canshuFlwx">
+                                    <span @click="footer_column = false" class="canshu">{{ lc('admin_tool_00517') }}</span>
+                                    <span>{{ lc('admin_tool_00513') }}</span>
+                                </div>
+                                <div class="csnhuTips">
+                                    <div v-for="item in totalcolumn" :key="item.key">
+                                        <el-button type="primary" plain size="small"
+                                            @click="copyMsg(item.data[1], 'tem_footer');">{{ item.data[0]
+                                            }}</el-button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <textarea v-if="temptype == '1'" id="tem_footer" name="tem_footer" class="txtctrl"
+                                wrap="hard" style="width:calc(100% - 10px);height:150px;">{{ info.footer }}</textarea>
+
+                            <script v-else id="tem_footer" name="tem_footer" type="text/plain"
+                                style="width:calc(100% - 10px);height:150px;">{{info.footer}}</script>
+
+                        </div>
+                    </div>
+                    <div class="setBasicButn" style="border: none;">
+                        <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{{ lc('wap_user_00176') }}</el-button>
+                        <!-- <el-button type="primary" size="medium" @click="previewTemp">预览</el-button> -->
+                    </div>
+                </div>
+                <!--预览-->
+                <div class="wxpubtool_sj">
+                    <div class="wxpubtoolYula">
+                        <div class="wxpubtooConts">
+                            <div class="wxpubtooNeiru">
+                                <div class="wxpubtool_sj_tit"></div>
+                                <div class="wxpubtool_sj_show">
+                                    <div class="wxpubtool_sj_all">
+                                        <div class="wxpubtool_sj_sx">
+                                            <div :class="temptype != '1' ? 'wxpubtool_gj_con_1' : 'wxpubtool_gj_con'"
+                                                id="content" v-html="previewhtml"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wxpubtool_CZ">
+                                <el-button type="primary" size="medium" @click="previewTemp">{{ lc('wap_00071') }}</el-button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+            data: function () {
+                return {
+                    islook: false,
+                    id: '',
+                    temptype: '',
+                    parentPage:'',
+
+                    info: {},
+                    type: 'job',
+
+                    header_column: true,
+                    body_column: true,
+                    footer_column: true,
+
+                    typecolumn: [],
+                    totalcolumn: [],
+
+                    job_map: [],
+                    resume_map: [],
+                    company_map: [],
+                    public_map: [],
+                    total_map: [],
+
+                    previewhtml: '',
+
+                    addloading: false,
+                    saveloading: false,
+                    // 跳转
+                    setType:false
+                }
+            },
+
+            created: function () {
+				this.id = window.parent.homeapp.$route.params.sid;
+                this.temptype = window.parent.homeapp.$route.params.temptype_v;
+                this.type = window.parent.homeapp.$route.params.type;
+                this.setType = window.parent.homeapp.$route.params.setType;
+                this.parentPage = window.parent.homeapp.$route.params.page;
+                this.defalutVal();
+                this.getInfo();
+            },
+            methods: {
+                goBack() {
+                    var activeName = 'second';
+
+                    if (this.setType == true){
+                        activeName = 'first'
+                    }else {
+                        if(this.temptype=='1'){
+                            activeName = 'third';
+                        }
+                    }
+
+					window.parent.homeapp.topage({name: 'fabutool',path: '/fabutool',params:{activeName:activeName,page:this.parentPage}});
+                },
+                defalutVal: function () {
+                    this.info = {};
+                    // this.type = 'job';
+                    this.header_column = true;
+                    this.body_column = true;
+                    this.footer_column = true;
+                    this.typecolumn = [];
+                    this.totalcolumn = [];
+
+                    this.job_map = [];
+                    this.resume_map = [];
+                    this.company_map = [];
+                    this.public_map = [];
+                    this.total_map = [];
+
+                    this.previewhtml = '';
+
+                    if (tem_header) {
+                        tem_header.setContent('');
+                    }
+                    if (tem_body) {
+                        tem_body.setContent('');
+                    }
+                    if (tem_footer) {
+                        tem_footer.setContent('');
+                    }
+
+                },
+                editorInit: function () {
+                    var msg = window.lc('admin_tool_00521');
+                    if (this.temptype != '1') {
+
+                        msg = window.lc('admin_tool_00522');
+                        if (tem_header) {
+                            tem_header.setContent(this.info.header);
+                        } else {
+                            tem_header = UE.getEditor('tem_header', {
+                                toolbars: [['Source', '|', 'Undo', 'Redo', 'Bold', 'italic',
+                                    'underline', 'fontborder', 'strikethrough',
+                                    'fontfamily', 'fontsize', 'forecolor', 'backcolor',
+                                    'removeformat', 'autotypeset', 'pasteplain', '|',
+                                    'insertorderedlist', 'insertunorderedlist',
+                                    'selectall', 'cleardoc', '|', 'simpleupload', '|',
+                                    'link', 'unlink', 'indent', '|', 'justifyleft',
+                                    'justifycenter', 'justifyright', 'justifyjustify']],
+                                wordCount: false,
+                                elementPathEnabled: false,
+                                initialFrameHeight: 150
+                            });
+                        }
+
+
+                        if (tem_body) {
+                            tem_body.setContent(this.info.body);
+                        } else {
+                            tem_body = UE.getEditor('tem_body', {
+                                toolbars: [['Source', '|', 'Undo', 'Redo', 'Bold', 'italic',
+                                    'underline', 'fontborder', 'strikethrough',
+                                    'fontfamily', 'fontsize', 'forecolor', 'backcolor',
+                                    'removeformat', 'autotypeset', 'pasteplain', '|',
+                                    'insertorderedlist', 'insertunorderedlist',
+                                    'selectall', 'cleardoc', '|', 'simpleupload', '|',
+                                    'link', 'unlink', 'indent', '|', 'justifyleft',
+                                    'justifycenter', 'justifyright', 'justifyjustify']],
+                                wordCount: false,
+                                elementPathEnabled: false,
+                                initialFrameHeight: 330,
+                            });
+                        }
+                        if (tem_footer) {
+                            tem_footer.setContent(this.info.footer);
+                        } else {
+                            tem_footer = UE.getEditor('tem_footer', {
+                                toolbars: [['Source', '|', 'Undo', 'Redo', 'Bold', 'italic',
+                                    'underline', 'fontborder', 'strikethrough',
+                                    'fontfamily', 'fontsize', 'forecolor', 'backcolor',
+                                    'removeformat', 'autotypeset', 'pasteplain', '|',
+                                    'insertorderedlist', 'insertunorderedlist',
+                                    'selectall', 'cleardoc', '|', 'simpleupload', '|',
+                                    'link', 'unlink', 'indent', '|', 'justifyleft',
+                                    'justifycenter', 'justifyright', 'justifyjustify']],
+                                wordCount: false,
+                                elementPathEnabled: false,
+                                initialFrameHeight: 150
+                            });
+                        }
+                    }
+
+                    this.$notify.info({
+                        title: window.lc('wap_js_00125'),
+                        message: msg,
+                        duration: 3000
+                    });
+
+                },
+                async getInfo() {
+                    let that = this;
+                    let params = {
+                        id: that.id,
+                        temptype: that.temptype
+                    }
+
+                    this.addloading = true;
+
+                    httpPost('m=tool&c=fabutool&a=wxPubTemp', params).then((result) => {
+
+                        this.addloading = false;
+
+                        var res = result.data;
+                        if (res.error == 0) {
+                            if (that.id != '') {
+                                that.info = res.data.info;
+                                that.type = that.info.type;
+                            }
+                            that.temptype = res.data.temptype;
+                            that.typecolumn = res.data.typecolumn;
+                            that.totalcolumn = res.data.totalcolumn;
+
+                            that.job_map = res.data.job_map;
+                            that.resume_map = res.data.resume_map;
+                            that.company_map = res.data.company_map;
+                            that.public_map = res.data.public_map;
+                            that.total_map = res.data.total_map;
+                        }
+						that.islook = true;
+						that.editorInit();
+
+
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                },
+                replaceAll: function (str, s1, s2) {
+                    return str.replace(new RegExp(s1, "gm"), s2);
+                },
+                typeFun: function () {
+					
+					this.info.type = this.type;
+					
+                    this.info.header = '';
+                    this.info.body = '';
+                    this.info.footer = '';
+
+                    if (this.temptype != '1') {
+                        tem_header.setContent('');
+                        tem_body.setContent('');
+                        tem_footer.setContent('');
+                    }
+                },
+                previewTemp: function () {
+
+                    var html = '',
+                        column_map = [],
+                        forData = [],
+                        for_arr = [],
+                        forstart = '',
+                        forend = '',
+                        type = this.type,
+                        temptype = this.temptype,
+                        header_html = '',
+                        body_html = '',
+                        footer_html = '',
+                        public_map = deepClone(this.public_map),
+                        total_map = deepClone(this.total_map),
+                        enter = '';
+
+                    if (temptype != '1') {
+
+                        header_html = this.escape2Html(tem_header.getContent());
+                        body_html = this.escape2Html(tem_body.getContent());
+                        footer_html = this.escape2Html(tem_footer.getContent());
+
+                    } else {
+                        header_html = $('#tem_header').val();
+                        body_html = $('#tem_body').val();
+                        footer_html = $('#tem_footer').val();
+                        enter = '\n';
+
+                    }
+
+                    var regPos = /\{img\|(.*?)\}/g;
+                    var imgres = body_html.match(regPos);
+                    var img_arr = [];
+                    var img_tag = '';
+                    var img_style = '';
+                    var img_html = '';
+                    if (imgres) {
+
+                        for (let i in imgres) {
+
+                            img_arr = imgres[i].split('|');
+                            if (img_arr.length > 1) {
+                                img_tag = '{' + img_arr[1] + '}';
+                                img_style = img_arr[2];
+                                img_style = img_style.replace('样式=', '');
+                                img_style = img_style.replace('}', '');
+                                img_html = '<img src="' + img_tag + '" style=' + img_style + '/>';
+
+                                body_html = body_html.replace(imgres[i], img_html);
+
+                            }
+
+                        }
+                    }
+
+                    var regstrPos = /\{str\|(.*?)\}/g;
+                    var strres = body_html.match(regstrPos);
+                    var str_arr = [];
+                    var str_tag = '';
+                    if (strres) {
+                        for (let i in strres) {
+                            str_arr = strres[i].split('|');
+                            if (str_arr.length > 1) {
+                                str_tag = '{' + str_arr[1] + '}';
+
+                                body_html = body_html.replace(strres[i], str_tag);
+                            }
+                        }
+                    }
+
+                    if (type == 'job') {
+                        column_map = deepClone(this.job_map);
+                    } else if (type == 'resume') {
+                        column_map = deepClone(this.resume_map);
+                    } else if (type == 'company') {
+                        column_map = deepClone(this.company_map);
+                    }
+
+
+                    for (let i in public_map) {
+                        column_map.push(public_map[i]);
+                    }
+                    for (let i in total_map) {
+                        column_map.push(total_map[i]);
+                        header_html = this.replaceAll(header_html, total_map[i].search, total_map[i].replace);
+                        footer_html = this.replaceAll(footer_html, total_map[i].search, total_map[i].replace);
+                    }
+
+
+                    for (let i in column_map) {
+                        if (column_map[i].replace.indexOf('forstart') != '-1') {
+                            forData.push(column_map[i].replace);
+                        }
+                        body_html = this.replaceAll(body_html, column_map[i].search, column_map[i].replace);
+                    }
+
+                    if (forData.length > 0) {
+
+                        for (let i in forData) {
+                            for_arr = forData[i].split('_');
+                            forstart = forData[i];
+                            forend = '{forend_' + for_arr[1];
+
+                            if (body_html.indexOf(forstart) != -1) {
+                                search_html = body_html.substring(body_html.indexOf(forstart), body_html.indexOf(forend) + forend.length);
+
+                                replace_html = body_html.substring(body_html.indexOf(forstart) + forstart.length, body_html.indexOf(forend));
+
+                                replace_html += replace_html;
+                                replace_html += replace_html;
+
+                                body_html = this.replaceAll(body_html, search_html, replace_html);
+                            }
+
+                        }
+                    }
+
+                    html += header_html;
+                    html += enter;
+                    html += body_html;
+                    html += enter;
+                    html += footer_html;
+                    
+                    this.previewhtml = html.replace(/\n/g,'<br>')
+                },
+                escape2Html: function (str) {
+                    var arrEntities = { 'lt': '<', 'gt': '>', 'nbsp': ' ', 'amp': '&', 'quot': '"' };
+                    str = str.replace(/&(lt|gt|nbsp|amp|quot);/ig, function (all, t) { return arrEntities[t]; });
+
+
+                    return str;
+                },
+                copyMsg: function (msg, temcon) {
+
+                    var temptype = this.temptype;
+                    var oInput = document.createElement('input');
+                    oInput.className = 'oInput';
+
+                    if (msg.indexOf('H5xcx_') != -1) {
+                        msg = msg.replace('H5xcx_', '');
+
+                        var msg_arr = msg.split('_');
+
+                        msg = '<a data-miniprogram-type="text"  data-miniprogram-appid="' + msg_arr[0] + '" data-miniprogram-path="' + msg_arr[1] + '">' + window.lc('wap_00561') + '</a>';
+                    }
+
+                    oInput.value = msg;
+                    document.body.appendChild(oInput);
+                    oInput.select();
+                    document.execCommand("Copy");
+                    oInput.style.display = 'none';
+
+                    $("input").remove(".oInput");
+
+                    if (temptype != '1') {
+                        if (temcon == 'tem_body') {
+                            tem_editor = tem_body;
+                        } else if (temcon == 'tem_footer') {
+                            tem_editor = tem_footer;
+                        } else if (temcon == 'tem_header') {
+                            tem_editor = tem_header;
+                        }
+                        if (tem_editor.queryCommandState('Source') == 0) {
+                            tem_editor.execCommand('inserthtml', msg);
+
+                        }
+                    } else {
+                        this.grin(msg, temcon);
+                    }
+                },
+                grin: function (tag, temcon) {
+
+                    var myField;
+                    myField = document.getElementById(temcon);
+
+                    if (document.selection) {
+                        myField.focus();
+                        sel = document.selection.createRange();
+                        sel.text = tag;
+                        myField.focus();
+                    } else if (myField.selectionStart || myField.selectionStart == '0') {
+
+                        var startPos = myField.selectionStart;
+                        var endPos = myField.selectionEnd;
+                        var cursorPos = endPos;
+                        myField.value = myField.value.substring(0, startPos) + tag + myField.value.substring(endPos, myField.value.length);
+
+                        cursorPos += tag.length;
+                        myField.focus();
+                        myField.selectionStart = cursorPos;
+                        myField.selectionEnd = cursorPos;
+                    } else {
+                        myField.value += tag;
+                        myField.focus();
+                    }
+                },
+                saveinfo: function () {
+                    var tem_title = this.info.title,
+                        tem_header_v = '',
+                        tem_body_v = '',
+                        tem_footer_v = '',
+                        tem_id = this.id,
+                        tem_type = this.type,
+                        temptype = this.temptype;
+
+                    if (temptype == '1') {
+                        tem_header_v = $('#tem_header').val();
+                        tem_body_v = $('#tem_body').val();
+                        tem_footer_v = $('#tem_footer').val();
+                    } else {
+                        tem_header_v = tem_header.getContent();
+                        tem_body_v = tem_body.getContent();
+                        tem_footer_v = tem_footer.getContent();
+                    }
+
+                    if (tem_title == '') {
+                        message.error(window.lc('member_com_00357'));
+                        return false
+                    }
+                    if (tem_body_v == '') {
+                        message.error(window.lc('admin_tool_00523'));
+                        return false
+                    }
+
+                    var param = {
+                        title: tem_title,
+                        header: tem_header_v,
+                        body: tem_body_v,
+                        footer: tem_footer_v,
+                        id: tem_id,
+                        type: tem_type,
+                        temptype: temptype,
+                    };
+                    this.saveloading = true;
+
+                    httpPost('m=tool&c=fabutool&a=wxPubTempSave', param).then((res) => {
+
+                        this.saveloading = false;
+
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, () => {
+
+                                this.goBack();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+
+            },
+        }
+</script>

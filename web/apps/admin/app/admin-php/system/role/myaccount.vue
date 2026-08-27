@@ -1,0 +1,364 @@
+<template>
+<div id="moduapp" class="moduleDome">
+    <div class="moduleElTable">
+        <template>
+            <el-descriptions :title="lc('admin_system_00224')" direction="vertical" :column="4" border>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-user"></i>
+                        {{ lc('admin_user_00140') }}</template>
+                    {{user.username}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-mobile-phone"></i>
+                        {{ lc('wap_01619') }}</template>
+                    {{user.mobile}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-postcard"></i>
+                        {{ lc('member_user_00230') }}</template>
+                    {{user.real_name}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-alarm-clock"></i>
+                        {{ lc('admin_system_00222') }}</template>
+                    {{user.last_login}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-tickets"></i>
+                        {{ lc('admin_user_company_00372') }}</template>
+                    <el-tag size="small" type="warning">{{user.group_name}}</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-alarm-clock"></i>
+                        {{ lc('wap_user_00371') }}</template>
+                    <div class="admin_item">
+                        <div class=""> *********</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">{{ lc('wap_js_00073') }}</el-button>
+                    </div>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-link"></i>
+                        {{ lc('wap_user_00115') }}</template>
+                    <div class="admin_item" v-if="user.wxid == ''">
+                        <div class="">{{ lc('admin_system_00225') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">{{ lc('member_user_00234') }}</el-button>
+                    </div>
+                    <div class="admin_item" v-else>
+                        <div class="">{{ lc('wap_user_00127') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="delwxid()">{{ lc('wap_js_00080') }}</el-button>
+                    </div>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template>
+                        <i class="el-icon-link"></i>
+                        {{ lc('admin_system_00223') }}</template>
+                    <div class="admin_item" v-if="user.qy_wxid == ''">
+                        <div class="">{{ lc('admin_system_00225') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">{{ lc('member_user_00234') }}</el-button>
+                    </div>
+                    <div class="admin_item" v-else>
+                        <div class="">{{ lc('wap_user_00127') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="delQyuserid()">{{ lc('wap_js_00080') }}</el-button>
+                    </div>
+                </el-descriptions-item>
+            </el-descriptions>
+        </template>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog :title="lc('member_user_00222')" v-model="code" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="300px">
+            <div class="codeFldex">
+                <div>
+                    <div class="code_img">
+                        <img :src="code_img" width="200" height="200">
+                    </div>
+                    <div class="code_p">{{ lc('member_user_00049') }}</div>
+                </div>
+            </div>
+
+        </el-dialog>
+    </div>
+    <div class="modluDrawer" v-if="qycode">
+        <el-dialog :title="lc('admin_system_00220')" v-model="qycode" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="350px" :append-to-body="true">
+            <div id="qyQrCode" class="code_img"></div>
+            <div class="code_p">{{ lc('admin_system_00219') }}</div>
+        </el-dialog>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog :title="lc('member_user_00226')" v-model="drawer" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="30%">
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('member_com_00351') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="old_pwd" :placeholder="lc('admin_system_00221')" show-password></el-input>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('wap_00173') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="new_pwd" :placeholder="lc('wap_00207')" show-password></el-input>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('member_user_00224') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="re_pwd" :placeholder="lc('wap_00410')" show-password></el-input>
+                </div>
+            </div>
+            <template #footer><span class="dialog-footer">
+				<el-button @click="drawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+				<el-button type="primary" @click="submitPwd" :disabled="saveLoading">{{ lc('wap_com_00019') }}</el-button>
+			</span></template>
+        </el-dialog>
+    </div>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                activeName: 'first',
+                drawer: false,
+                code: false,
+                qycode: false,
+                user: {
+                    username: '',
+                    mobile: '',
+                    name: '',
+                    wxid: '',
+                    qy_wxid: '',
+                    last_login: '',
+                    group_name: '',
+                    qy_app_id: '',
+                    agent_id: '',
+                    redirect_uri: '',
+                    state: ''
+                },
+                old_pwd: '',
+                new_pwd: '',
+                re_pwd: '',
+                code_img: null,
+                codesetval: null,
+                qw_tk: '',
+                qw_state: '',
+                ly: '',
+                firstOpen: true, // 头部客勤首次弹窗
+                saveLoading: false
+            }
+        },
+        components: {},
+        watch: {
+            '$route.query.code': function () {
+                this.qw_tk = this.$route.query.code
+                if (this.$route.query.qw_state) {
+                    this.qw_state = this.$route.query.qw_state
+                }
+                if (this.qw_tk && this.qw_state) {
+                    this.qwcallback()
+                }
+            },
+        },
+        created: function () {
+            let query = getUrlParams(window.parent.location);
+            if (query.ly) {
+                this.ly = query.ly;
+            }
+            this.getInfo();
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            },
+            async getInfo() {
+                let that = this;
+                httpPost('m=system&c=role_myuser&a=index', {}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.user = res.data
+                    }
+                    if (that.ly == 'pass') { // 弹出修改密码框
+                        that.drawer = true;
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            //修改密码
+            async submitPwd() {
+                let that = this;
+                if (!that.old_pwd) {
+                    message.error(window.lc('admin_system_00226'));
+                    return false;
+                }
+                if (!that.new_pwd) {
+                    message.error(window.lc('admin_system_00227'));
+                    return false;
+                }
+                if (!that.re_pwd) {
+                    message.error(window.lc('admin_system_00228'));
+                    return false;
+                }
+                if (that.new_pwd == that.old_pwd) {
+                    message.error(window.lc('admin_system_00229'));
+                    return false;
+                }
+                if (that.new_pwd != that.re_pwd) {
+                    message.error(window.lc('admin_system_00230'));
+                    return false;
+                }
+                that.drawer = false;
+                that.saveLoading = true;
+                httpPost('m=system&c=role_myuser&a=savePass', {
+                    old_pwd: that.old_pwd,
+                    new_pwd: that.new_pwd,
+                    re_pwd: that.re_pwd,
+                    useradd: 'savepwd'
+                }).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            parent.location.reload()
+                        })
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).finally(function () {
+                    setTimeout(function () {
+                        that.saveLoading = false;
+                    }, 2000);
+                });
+            },
+            async wxbindstatus() {
+                var that = this;
+                httpPost('m=index&c=getwxbindstatus', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success(window.lc('wap_user_00145'), function () {
+                            clearInterval(that.codesetval);
+                            that.user.wxid = res.data.wxid;
+                            that.code = false
+                        });
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            // 获取微信绑定二维码
+            async getcode() {
+                var that = this;
+                httpPost('m=index&c=wxbind', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        that.code_img = res.data.code_url;
+                        that.code = true;
+                        that.codesetval = setInterval(function () {
+                            that.wxbindstatus()
+                        }, 2500);
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            //解绑微信
+            async delwxid() {
+                var that = this;
+                httpPost('m=system&c=role_myuser&a=delAdminWxBind', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.user.wxid = '';
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            // 企业微信绑定
+            async getQycode() {
+                var that = this;
+                that.qycode = true;
+                this.$nextTick(function () {
+                    var wwLogin = new WwLogin({
+                        "id": "qyQrCode",
+                        "appid": that.user.qy_app_id,
+                        "agentid": that.user.agent_id,
+                        "redirect_uri": that.user.redirect_uri,
+                        "state": that.user.state,
+                        "lang": (localStorage.getItem("lang") || "en_us") === "zh_cn" ? "zh" : "en",
+                    });
+                })
+            },
+            // 企业微信扫码回调
+            async qwcallback() {
+                var that = this;
+                if (that.qw_tk && that.qw_state) {
+                    httpPost('m=system&c=role_myuser&a=qwcallback', {
+                        code: that.qw_tk,
+                        state: that.qw_state
+                    }).then(function (result) {
+                        var res = result.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                that.user.qy_wxid = res.data.qy_userid;
+                                that.qycode = false;
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                }
+            },
+            // 企业微信解绑
+            async delQyuserid() {
+                var that = this;
+                httpPost('m=system&c=role_myuser&a=delAdminQyUserId', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.user.qy_wxid = '';
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            }
+        }
+    }
+</script>

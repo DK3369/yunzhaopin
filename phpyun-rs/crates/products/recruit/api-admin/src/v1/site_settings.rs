@@ -1,6 +1,6 @@
 //! Site settings management (admin).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::site_setting_service::{self, UpsertInput};
@@ -13,6 +13,7 @@ pub fn routes() -> Router<AppState> {
         .route("/site-settings", post(upsert))
         .route("/site-settings/list", post(list))
         .route("/site-settings/delete", post(remove))
+        .route("/site-settings/batch", post(batch))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -128,4 +129,50 @@ pub struct RemoveBody {
         custom(function = "phpyun_core::validators::path_token")
     )]
     pub key: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/batch",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn batch(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    let obj = body.as_object().cloned().unwrap_or_default();
+    for (k, v) in obj {
+        if k.is_empty() || k.len() > 64 || k == "pytoken" || k == "m" || k == "c" || k == "a" {
+            continue;
+        }
+        if phpyun_core::validators::path_token(&k).is_err() {
+            continue;
+        }
+        let value = match v {
+            serde_json::Value::String(s) => s,
+            serde_json::Value::Number(n) => n.to_string(),
+            serde_json::Value::Bool(b) => if b { "1".into() } else { "0".into() },
+            serde_json::Value::Null => continue,
+            other => other.to_string(),
+        };
+        if value.len() > 65_000 {
+            continue;
+        }
+        site_setting_service::admin_upsert(
+            &state,
+            &user,
+            UpsertInput {
+                key: &k,
+                value: &value,
+                description: "",
+                is_public: false,
+            },
+        )
+        .await?;
+    }
+    Ok(ApiResponse::message("ok"))
 }

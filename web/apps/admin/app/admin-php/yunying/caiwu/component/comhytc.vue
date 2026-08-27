@@ -1,0 +1,489 @@
+<template>
+    <div class="moduleElHight">
+
+        <div style="overflow: hidden; position: relative; height: 100%; height: 100%;">
+            <div style="overflow-y: auto; position: relative; height: auto; max-height: calc(100% - 80px);">
+                <table class="tableVue">
+                    <thead>
+                        <tr align="left">
+                            <th width="200">{{ lc('member_com_00021') }}</th>
+                            <th width="440">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01238') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-autocomplete v-model="save.username" :fetch-suggestions="remoteMethod"
+                                        :placeholder="lc('wap_user_00076')" :trigger-on-focus="false" @select="usernameChange"
+                                        size="small"></el-autocomplete>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_01239') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01240') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-autocomplete v-model="save.comname" :fetch-suggestions="remoteMethodCom"
+                                        :placeholder="lc('wap_user_00076')" :trigger-on-focus="false" @select="comnameChange"
+                                        size="small"></el-autocomplete>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_01240') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01241') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableButn">
+                                    <el-radio-group v-model="save.leijia" @change="leijiaFun">
+                                        <el-radio label="1">{{ lc('common.yes') }} </el-radio>
+                                        <el-radio label="2">{{ lc('common.no') }}</el-radio>
+                                    </el-radio-group>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_01241') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="leijiaStatus">
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01242') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableButn">
+                                    <span style="margin-right: 10px;">{{ lc("admin_package_name_value", [package_data.rating_name]) }}</span>
+                                    <span style="margin-right: 10px;">{{ lc('admin_01243') }}
+                                        <span v-if="expireTimeStatus" style="color: red">{{ package_data.time_ymd }}</span>
+                                        <span v-else>{{ package_data.time_ymd }}</span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01244') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableSelect" style="display: flex;align-items: center;">
+                                    <el-select v-model="save.ratingid" :placeholder="lc('wap_user_00100')" @change="ratingFun">
+                                        <el-option v-for="item in ratinglist" :key="item.id" :label="item.name"
+                                            :value="item.id">
+                                        </el-option>
+                                    </el-select>
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01245') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="save.taocanshijian" placeholder=" " disabled>
+                                        <template #suffix><span class="slotspan">{{ lc('common_02067') }}</span></template>
+                                    </el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('wap_00563') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="save.vipprice" placeholder=" ">
+                                        <template #suffix><span class="slotspan">{{ lc('common_02056') }}</span></template>
+                                    </el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_user_company_00052') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-date-picker v-model="save.vipetime" type="date" :placeholder="lc('admin_00346')"
+                                        @change="changeDate" :picker-options="pickerOptions">
+                                    </el-date-picker>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_01246') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="save.remark">
+                                    </el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="setBasicButn" style="border: none;">
+                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{{ lc('admin_01247') }}</el-button>
+            </div>
+        </div>
+    </div>
+</template>
+    
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+    props: {
+        ratinglist: Array,
+        ratingid: String
+    },
+    watch: {
+        ratingid: {
+            handler(newValue, oldValue) {
+                console.log(newValue)
+                this.save.ratingid = newValue;
+            },
+            deep: true,
+            immediate: true
+        }
+    },
+    data: function () {
+        return {
+            select: '',
+            input: '',
+            value: '',
+            radio: '1',
+            options: [],
+            comnameList: [],
+            usernameList: [],
+            save: {
+                username: '',
+                comname: '',
+                leijia: '2',
+                ratingid: "0",
+                taocanshijian: '0',
+                vipprice: 0,
+                vipetime: '',
+                remark: '',
+                uid: '',
+            },
+            uri: "m=yunying&c=",
+            leijiaStatus: false,
+            package_data: {
+                time: '',
+                rating_name: ''
+            },
+            expireTimeStatus: true,
+            pickerOptions: {// el-date-picker date limits
+                disabledDate(time) {
+                    // Today and earlier dates
+                    // return time.getTime() > Date.now();
+                    // Today and later dates
+                    return time.getTime() < Date.now() - 8.64e7;
+                }
+            },
+            submitLoading: false,
+        }
+    },
+    mounted() {
+
+    },
+    methods: {
+        remoteMethod: function (query, cb) {
+            let url = this.uri + "finance_recharge&a=searchname";
+            this.save.comname = '';
+            let sendData = {
+                username: query
+            }
+            let _this = this;
+            httpPost(url, sendData).then(function (response) {
+                let res = response.data;
+                if (res.error == 0) {
+                    _this.usernameList = res.namelist;
+                    let callBackArr = []; // Prepare the result array returned to the input
+                    // res is data fetched from the backend
+                    _this.usernameList.forEach((item) => {
+                        // if (item.value.indexOf(queryString) == 0) { // equals 0 means starts with the query string
+                        item.value = item.username;
+                        if (item.value.indexOf(query) > -1) { // greater than -1 means any matching position is allowed
+                            // If related data exists
+                            callBackArr.push(item); // Store it in callBackArr for display
+                        }
+                    });
+                    // If the array is still empty after filtering, return no-data to the user
+                    if (callBackArr.length == 0) {
+                        cb([]);
+                    } else {
+                        cb(callBackArr);
+                    }
+                } else {
+                    cb([]);
+                }
+            })
+        },
+        usernameChange(item) {
+            this.comnameList = [];
+            this.save.comname = item.comname;
+            this.save.uid = item.uid;
+            let vipetime = item.vipetime;
+            let vipetime_ymd = item.vipetime_ymd;
+            let $time = parseInt(Date.now() / 1000);
+            if (vipetime_ymd == lc('common_01936') || vipetime > $time) {
+                this.expireTimeStatus = false;
+            } else {
+                this.expireTimeStatus = true;
+            }
+            this.package_data.time = vipetime
+            this.package_data.time_ymd = vipetime_ymd
+            this.package_data.rating_name = item.rating_name
+        },
+
+        remoteMethodCom: function (query, cb) {
+            let url = this.uri + "finance_recharge&a=searchcom";
+            let sendData = {
+                comname: query
+            }
+            this.save.username = '';
+            let _this = this;
+            httpPost(url, sendData, { hideloading: true }).then(function (response) {
+                let res = response.data;
+                if (res.error == 0) {
+                    _this.comnameList = res.namelist;
+                    let callBackArr = []; // Prepare the result array returned to the input
+                    // res is data fetched from the backend
+                    _this.comnameList.forEach((item) => {
+                        // if (item.value.indexOf(queryString) == 0) { // equals 0 means starts with the query string
+                        item.value = item.comname;
+                        if (item.value.indexOf(query) > -1) { // greater than -1 means any matching position is allowed
+                            // If related data exists
+                            callBackArr.push(item); // Store it in callBackArr for display
+                        }
+                    });
+                    // If the array is still empty after filtering, return no-data to the user
+                    if (callBackArr.length == 0) {
+                        cb([]);
+                    } else {
+                        cb(callBackArr);
+                    }
+                } else {
+                    cb([]);
+                }
+            })
+        },
+        comnameChange(item) {
+            // let key = this.comnameList.findIndex(item => item.comname === e);
+            // console.log(key);
+            this.save.username = item.username;
+            this.save.uid = item.uid;
+            let vipetime = item.vipetime;
+            let vipetime_ymd = item.vipetime_ymd;
+            let $time = parseInt(Date.now() / 1000);
+            if (vipetime_ymd == lc('common_01936') || vipetime > $time) {
+                this.expireTimeStatus = false;
+            } else {
+                this.expireTimeStatus = true;
+            }
+            this.package_data.time = vipetime
+            this.package_data.time_ymd = vipetime_ymd
+            this.package_data.rating_name = item.rating_name;
+        },
+        ratingFun(e) {
+            let key = this.ratinglist.findIndex(item => item.id === e);
+            this.save.vipprice = this.ratinglist[key]['service_price'];
+            this.save.taocanshijian = this.ratinglist[key]['service_time'];
+            let taocanshijian = this.save.taocanshijian;
+            var $time = parseInt(Date.now() / 1000);
+            var service_timeSec = taocanshijian * 86400;
+            let vipetime = '';
+            if (this.leijiaStatus) {
+                let oldeTime = parseInt(this.package_data.time);
+                if (oldeTime < $time) {
+                    oldeTime = $time;
+                }
+                vipetime = (oldeTime + service_timeSec) * 1000;
+            } else {
+                vipetime = ($time + service_timeSec) * 1000;
+            }
+            this.save.vipetime = timestampToTime(vipetime);
+        },
+        leijiaFun: function () {
+            let leijia = this.save.leijia;
+            if (!this.save.comname) {
+                message.error(lc('admin_yunying_00090'));
+                return;
+            }
+            if (!this.save.username) {
+                message.error(lc('admin_vue_00077'));
+                return;
+            }
+            if (leijia == '1') {
+                this.leijiaStatus = true;
+            } else {
+                this.leijiaStatus = false;
+            }
+        },
+        changeDate: function (e) {
+            if (e == null) {
+                this.save.taocanshijian = 0;
+                return;
+            }
+            let time = (Date.parse(e)) / 1000
+            let oldeTime = '';
+            if (this.leijiaStatus) {
+                oldeTime = this.package_data.time
+                var $time = parseInt(Date.now() / 1000);
+                if (oldeTime < $time) {
+                    oldeTime = $time;
+                }
+            } else {
+                if (!this.save.comname) {
+                    message.error(lc('admin_yunying_00090'));
+                    return;
+                }
+                if (!this.save.username) {
+                    message.error(lc('admin_vue_00077'));
+                    return;
+                }
+                oldeTime = (Date.parse(new Date())) / 1000;
+            }
+            let days = Math.ceil((time - oldeTime) / 86400);
+            this.save.taocanshijian = days;
+            this.save.vipetime = e;
+        },
+        saveFun: function () {
+
+            if (!this.save.comname) {
+                message.error(lc('admin_yunying_00090'));
+                return;
+            }
+            if (!this.save.username) {
+                message.error(lc('admin_vue_00077'));
+                return;
+            }
+
+            if (!this.save.ratingid) {
+                message.error(lc('admin_yunying_00091'));
+                return;
+            }
+            let url = this.uri + "finance_recharge&a=comvip";
+            let _this = this;
+            _this.submitLoading = true;
+            httpPost(url, _this.save).then(function (response) {
+                let res = response.data;
+                if (res.error == 0) {
+                    message.success(res.msg);
+                    _this.save = {
+                        username: '',
+                        comname: '',
+                        leijia: '2',
+                        ratingid: _this.ratingid,
+                        taocanshijian: '0',
+                        vipprice: 0,
+                        vipetime: '',
+                        remark: '',
+                        uid: ''
+                    };
+                } else {
+                    message.error(res.msg);
+                }
+            }).catch(function (error) {
+                console.log(error);
+            }).finally(function () {
+                _this.submitLoading = false;
+            });
+        }
+    },
+};
+function timestampToTime(timestamp) {
+    var date = new Date(timestamp);
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+    var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ';
+    // var h = (date.getHours() < 10 ? '0'+date.getHours() : date.getHours()) + ':';
+    // var m = (date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes()) + ':';
+    // var s = (date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds());
+    // strDate = Y+M+D+h+m+s;
+    strDate = Y + M + D;
+    return strDate;
+
+}
+</script>
+<style scoped>
+.moduleTable {
+    max-height: calc(100% - (60px + 10px));
+}
+
+.TableFlexty {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.TableFlexty .TableInpt {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 70px);
+}
+</style>

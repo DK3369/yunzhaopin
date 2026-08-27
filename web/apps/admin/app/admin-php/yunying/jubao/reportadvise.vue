@@ -1,0 +1,285 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+            <div class="moduleInptList">
+                <el-input :placeholder="lc('admin_user_weipin_00003')" v-model="searchForm.keyword" size="small" class="input-with-select"
+                          clearable>
+                    <template #prepend><el-select v-model="searchForm.ftype" :placeholder="lc('member_com_00333')">
+                        <el-option :label="lc('member_com_00333')" value="1"></el-option>
+                        <el-option :label="lc('member_com_00334')" value="2"></el-option>
+                    </el-select></template>
+                </el-input>
+            </div>
+            <div class="moduleInptList">
+                <el-select v-model="searchForm.status" size="small" clearable :placeholder="lc('admin_user_00161')" @change="search">
+                    <el-option :label="lc('admin_user_00164')" value="0"></el-option>
+                    <el-option :label="lc('admin_user_00163')" value="1"></el-option>
+                </el-select>
+            </div>
+            <div class="newsbtnbox">
+                <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <el-table :data="list" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange"
+                  :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @sort-change="shortChange"
+                  v-loading="loading">
+            <template #empty>
+                <p>{{dataText}}</p>
+            </template>
+            <el-table-column type="selection" width="55">
+            </el-table-column>
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom">
+            </el-table-column>
+            <el-table-column prop="r_name" :label="lc('admin_01179')" width="180">
+            </el-table-column>
+            <el-table-column prop="username" :label="lc('wap_com_00095')" width="220">
+            </el-table-column>
+            <el-table-column prop="r_reason" :label="lc('member_com_00331')" min-width="220">
+            </el-table-column>
+            <el-table-column prop="inputtime" :label="lc('member_com_00332')" width="160" sortable="custom">
+                <template #default="scope">
+                    <span>{{scope.row.inputtime_n}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="zt" :label="lc('member_user_00181')" width="100">
+                <template #default="scope">
+                    <div class="admin_state">
+                        <span class="admin_state1" v-if="scope.row.status==1">{{ lc('admin_user_00163') }}</span>
+                        <span class="admin_state2" v-else>{{ lc('admin_user_00164') }}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="130" align="center">
+                <template #default="scope">
+                    <div class="cz_button">
+                        <el-button size="small" @click="resultReport(scope.row)" type=" ">{{ lc('admin_user_00165') }}</el-button>
+                        <el-button size="small " type="danger" @click="del(scope.$index)">{{ lc('wap_js_00077') }}</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz modulePagButn">
+            <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="batch('del')">{{ lc('member_com_00055') }}</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                           :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                           layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </div>
+    </div>
+    <!--处理举报-->
+    <div class="modluDrawer">
+        <el-dialog :title="lc('admin_01180')" v-model="statusBox" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="30%">
+            <div>
+                <el-input type="textarea" :rows="2" :placeholder="lc('admin_yunying_00098')" v-model="result">
+                </el-input>
+            </div>
+            <template #footer><span class="dialog-footer">
+                  <el-button @click="statusBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                  <el-button type="primary" @click="submitStatus" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
+              </span></template>
+        </el-dialog>
+    </div>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                loading: false,
+                dataText: lc('admin_user_weipin_00026'),
+                // 搜索筛选项
+                searchForm: {
+                    ftype: '1',
+                    keyword: '',
+                    status:'',
+                },
+                page: 1,
+                limit: 0,
+                list: [],
+                total: 0,
+                pageSizes: [],
+
+                checkedAll: false, // 全选
+                checkedAllIndeterminate: false,
+                multipleSelection: [], // 多选值存储
+                idArr: [],
+
+                result: '',
+                pid: '',
+                statusBox: false,
+
+                submitLoading: false,
+                prevPage:0
+            }
+        },
+        created: function () {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+            if (query.status) {
+                that.searchForm.status = query.status;
+            }
+            this.getList();
+        },
+        methods: {
+            resultReport(row) {
+                this.pid = row.id;
+                this.result = row.result;
+                this.statusBox = true;
+            },
+            submitStatus() {
+                let that = this;
+                let params = {
+                    pid: this.pid,
+                    result: this.result
+                }
+                that.statusBox = false;
+                that.submitLoading = true;
+                httpPost('m=yunying&c=report_advise&a=saveresult', params).then(function (res) {
+                    if (res.data.error > 0) {
+                        message.error(res.data.msg);
+                    } else {
+                        message.success(res.data.msg, function () {
+                            that.getList();
+                        });
+                    }
+                }).finally(function () {
+                    that.submitLoading = false;
+                });
+            },
+            shortChange(e) {
+                let orderMap = {ascending: 'asc', descending: 'desc'}
+                this.searchForm.t = e.order ? e.prop : null;
+                this.searchForm.order = orderMap[e.order];
+                this.page = 1;
+                this.getList();
+            },
+            handleSizeChange(val) {
+                this.limit = val;
+                this.getList();
+            },
+            handleCurrentChange(val) {
+                this.page = val;
+                this.getList();
+            },
+            search() {
+                this.page = 1;
+                this.getList();
+            },
+            getList() {
+                let that = this,
+                        params = {
+                            page: that.page,
+                            limit: that.limit,
+                        };
+                    let searchForm = that.searchForm;
+                    that.loading = true;
+                httpPost('m=yunying&c=report_advise', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
+                    let res = response.data,
+                        data = res.data;
+                    that.list = data.list;
+                    that.total = parseInt(data.total);
+                    that.pageSizes = data.page_sizes;
+                    if (that.limit === 0) {
+                        that.limit = parseInt(data.limit); // 取系统配置默认数量
+                    }
+                    if (that.page > data.page) {
+                        that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    }
+                    if(that.prevPage != that.page){
+                        that.prevPage = that.page;
+                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
+                    that.loading = false;
+                    if (that.list.length === 0) {
+                        that.dataText = lc('wap_js_00113');
+                    }
+                })
+            },
+            handleSelectionChange(val) {
+                if (val.length == 0) {
+                    this.checkedAll = false;
+                    this.checkedAllIndeterminate = false;
+                } else {
+                    if (val.length === this.list.length) {
+                        this.checkedAll = true;
+                        this.checkedAllIndeterminate = false;
+                    } else {
+                        this.checkedAll = false;
+                        this.checkedAllIndeterminate = true;
+                    }
+                }
+                this.multipleSelection = val;
+            },
+            batch(type) {
+                if (this.multipleSelection.length == 0) {
+                    message.error(lc('admin_user_weipin_00005'));
+                    return false;
+                }
+
+                let idArr = [];
+                this.multipleSelection.forEach(function (item) {
+                    idArr.push(item.id);
+                })
+                this.idArr = idArr;
+
+                if (type == 'del') {
+                    this.del();
+                }
+            },
+            checkAll(val) {
+                val ? this.checkedAllIndeterminate = false : '';
+                this.$refs.multipleTable.toggleAllSelection();
+            },
+            del(idx) {
+                let that = this,
+                    params = {},
+                    msg = '';
+
+                if (typeof idx == 'undefined') { // 批量删除
+                    params.del = this.idArr;
+                    msg = lc('common_00853');
+                } else {// 单个删除
+                    params.del = that.list[idx].id;
+                    msg = lc('admin_00333');
+                }
+
+                delConfirm(this, params, function (params) {
+                    httpPost('m=yunying&c=report_advise&a=del', params).then(function (res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        } else {
+                            message.success(res.data.msg, function () {
+                                that.$refs.multipleTable.clearSelection();
+                                that.getList();
+                            });
+                        }
+                    })
+                }, msg)
+            },
+        }
+    }
+</script>

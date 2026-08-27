@@ -1,0 +1,485 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachleft">
+                <div class="moduleInptList">
+                    <el-input :placeholder="lc('admin_user_weipin_00003')" v-model="searchForm.keyword" size="small" class="input-with-select" clearable>
+                        <template #prepend><el-select v-model="searchForm.ftype" :placeholder="lc('admin_vue_00017')">
+                            <el-option :label="lc('admin_vue_00017')" value="1"></el-option>
+                            <el-option :label="lc('admin_user_00185')" value="2"></el-option>
+                            <el-option :label="lc('admin_01190')" value="3"></el-option>
+                        </el-select></template>
+                    </el-input>
+                </div>
+                <div class="moduleInptList">
+                    <el-select v-model="searchForm.status" size="small" clearable :placeholder="lc('admin_user_00161')" @change="search">
+                        <el-option :label="lc('admin_user_00164')" value="0"></el-option>
+                        <el-option :label="lc('admin_user_00163')" value="1"></el-option>
+                    </el-select>
+                </div>
+                <div class="newsbtnbox"  >
+                  <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+                </div>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="list" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @sort-change="shortChange" v-loading="loading">
+                <template #empty>
+                    <p>{{dataText}}</p>
+                </template>
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" label="ID" width="80" sortable="custom">
+                </el-table-column>
+                <el-table-column :label="lc('admin_vue_00017')" width="230">
+                    <template #default="scope">
+                        <el-button type="text" @click="handlePreview(scope)" style="padding: 0">{{ scope.row.name }}
+                        </el-button>
+                        <div>{{ lc('admin_01189') }}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_yunying_00109')" width="230">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <span>{{ scope.row.c_mobile }}</span>
+                            <span>{{ scope.row.r_name }}</span>
+                            <span>UID：{{ scope.row.c_uid }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_01190')" width="260">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <span>{{ scope.row.p_mobile }}</span>
+                            <span>{{ scope.row.p_name }}</span>
+                            <span>UID：{{ scope.row.p_uid }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="inputtime" :label="lc('admin_01184')" width="160" sortable="custom">
+                    <template #default="scope">
+                        <span>{{scope.row.inputtime_n}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="r_reason" :label="lc('admin_yunying_00102')" min-width="220">
+                </el-table-column>
+               <el-table-column prop="zt" :label="lc('member_user_00181')" width="100">
+                   <template #default="scope">
+                       <div class="admin_state">
+                           <span class="admin_state1" v-if="scope.row.status==1">{{ lc('admin_user_00163') }}</span>
+                           <span class="admin_state2" v-else>{{ lc('admin_user_00164') }}</span>
+                       </div>
+                   </template>
+               </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="138">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="resultReport(scope.row)" style="margin-right: 10px;">{{ lc('admin_user_00165') }}</el-button>
+                            <el-popover placement="bottom" width="90" trigger="hover">
+                                <div class="moduleMores">
+                                    <el-button type="text" @click="del(scope.$index)">{{ lc('admin_01181') }}</el-button>
+                                    <el-button type="text" @click="delResume(scope.row)">{{ lc('admin_yunying_00108') }}</el-button>
+                                    <el-button type="text" @click="del(scope.$index,'pldel')">{{ lc('admin_yunying_00106') }}</el-button>
+                                </div>
+                                <template #reference><el-button size="small">{{ lc('admin_company_00025') }}</el-button></template>
+                            </el-popover>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="batchDel">{{ lc('admin_yunying_00105') }}</el-button>
+                <el-button @click="batchResume">{{ lc('admin_yunying_00107') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total" :pager-count="pagerCount">
+                </el-pagination>
+            </div>
+        </div>
+        <!--处理举报-->
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_01180')" v-model="statusBox" :with-header="true" :modal-append-to-body="false"
+                :show-close="true" width="500px">
+                <el-form label-width="110px">
+                    <el-form-item :label="lc('admin_yunying_00110') + integral_pricename">
+                        <el-radio v-model="datafh" label="1">{{ lc('common_02085') }}</el-radio>
+                        <el-radio v-model="datafh" label="2">{{ lc('common_02063') }}</el-radio>
+                    </el-form-item>
+                    <el-form-item :label="lc('admin_yunying_00105')">
+                        <el-radio v-model="tongbu" label="1">{{ lc('common_02085') }}</el-radio>
+                        <el-radio v-model="tongbu" label="2">{{ lc('common_02063') }}</el-radio>
+                        <div>{{ lc('admin_yunying_00104') }}</div>
+                    </el-form-item>
+                    <el-form-item :label="lc('admin_yunying_00098')">
+                        <el-input type="textarea" :rows="2" :placeholder="lc('admin_yunying_00098')" v-model="result">
+                        </el-input>
+                    </el-form-item>
+                </el-form>
+                <template #footer><span class="dialog-footer">
+                    <el-button @click="statusBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="submitStatus" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+		<div class="modluDrawer">
+		    <el-dialog :title="lc('admin_yunying_00105')" v-model="statusAllBox" :with-header="true" :modal-append-to-body="false"
+		        :show-close="true" width="30%">
+		        <el-form label-width="130px">
+					<el-form-item :label="lc('admin_yunying_00110') + integral_pricename">
+						<el-radio v-model="datafh" label="1">{{ lc('common_02085') }}</el-radio>
+						<el-radio v-model="datafh" label="2">{{ lc('common_02063') }}</el-radio>
+					</el-form-item>
+				   <el-form-item :label="lc('admin_yunying_00098')">
+					   <el-input type="textarea" :rows="2" :placeholder="lc('admin_yunying_00098')" v-model="result">
+					   </el-input>
+				   </el-form-item>
+				</el-form>
+				<template #footer><span class="dialog-footer">
+					<el-button @click="statusAllBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitAllStatus" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
+				</span></template>
+		    </el-dialog>
+		</div>
+		<div class="modluDrawer">
+		    <el-drawer :title="lc('member_user_00037')" :append-to-body="true" v-model="resumePreviewVisible" :destroy-on-close="true" size="530px">
+		        <resume_preview :id="info.eid" :uid="info.uid"></resume_preview>
+		    </el-drawer>
+		</div>
+    </div>
+</template>
+
+<script>
+import ResumePreview from '../../component/resume_preview.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    loading: false,
+					pagerCount: 5,
+                    dataText: lc('admin_user_weipin_00026'),
+                    // 搜索筛选项
+                    searchForm: {
+                        ftype: '1',
+                        keyword: '',
+                        status:'',
+                    },
+                    page: 1,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+
+                    checkedAll: false, // 全选
+                    checkedAllIndeterminate: false,
+                    multipleSelection: [], // 多选值存储
+                    idArr: [],
+
+                    integral_pricename:'',
+                    result:'',
+                    datafh: '',
+                    tongbu: '',
+                    statusBox: false,
+                    pid: '',
+                    c_uid: '',
+                    eid: '',
+
+					submitLoading:false,
+					resumePreviewVisible:false,
+					info: {},
+					statusAllBox:false,
+					rid:'',
+                    prevPage:0
+                }
+            },
+			components: {
+			    'resume_preview': ResumePreview,
+			},
+            created: function () {
+                var that = this
+                let query = window.parent.homeapp.$route.query;
+
+
+                if (query.status) {
+                    that.searchForm.status = query.status;
+                }
+                this.getList();
+                this.getBaseData();
+            },
+            methods: {
+				batchResume(){
+					if (this.multipleSelection.length == 0) {
+					    message.error(lc('admin_user_weipin_00001'));
+					    return false;
+					}
+					let idArr = [];
+					this.multipleSelection.forEach(function(item) {
+					    idArr.push(item.id);
+					})
+					this.idArr = idArr;
+					let that = this;
+					let params = {
+				        rid: that.idArr,
+				    }
+					let msg = lc('admin_01191');
+					delConfirm(this, params, function (params) {
+					    httpPost('m=yunying&c=report_resume&a=delresumeall', params).then(function(res) {
+					        if (res.data.error > 0) {
+					            message.error(res.data.msg);
+					        } else {
+					            message.success(res.data.msg, function () {
+					                that.$refs.multipleTable.clearSelection();
+					                that.getList();
+					            });
+					        }
+					    })
+					}, msg)
+				},
+				submitAllStatus(){
+				    let that = this;
+				    if (that.datafh == '') {
+				        message.error(lc('admin_01192'))
+                        return false
+                    }
+				    let params = {
+				        rid: that.idArr,
+				        result: that.result,
+				        datafh: that.datafh,
+				    }
+				    that.statusAllBox = false;
+					that.submitLoading = true;
+				    httpPost('m=yunying&c=report_resume&a=saveresultall', params).then(function(res) {
+				        if (res.data.error > 0) {
+				            message.error(res.data.msg);
+				        } else {
+				            message.success(res.data.msg, function () {
+								that.$refs.multipleTable.clearSelection();
+				                that.getList();
+				            });
+				        }
+				    }).finally(function () {
+                        setTimeout(function(){
+                            that.submitLoading = false;
+                        }, 200)
+					});
+				},
+				batchDel(){
+					if (this.multipleSelection.length == 0) {
+					    message.error(lc('admin_user_weipin_00001'));
+					    return false;
+					}
+					let idArr = [];
+					this.multipleSelection.forEach(function(item) {
+					    idArr.push(item.id);
+					})
+					this.idArr = idArr;
+					this.statusAllBox = true;
+				},
+				shortChange(e) {
+				    let orderMap = {ascending: 'asc', descending: 'desc'}
+				    this.searchForm.t = e.order ? e.prop : null;
+				    this.searchForm.order = orderMap[e.order];
+				    this.page = 1;
+				    this.getList();
+				},
+                resultReport(row){
+                    this.result = row.result;
+                    this.pid = row.id;
+                    this.c_uid = row.c_uid;
+                    this.eid = row.eid;
+                    this.statusBox = true;
+                },
+                submitStatus(){
+                    let that = this;
+                    if (that.datafh == '') {
+                        message.error(lc('admin_01192'))
+                        return false
+                    }
+                    let params = {
+                        pid: that.pid,
+                        result: that.result,
+                        uid: that.c_uid,
+                        eid: that.eid,
+                        tongbu: that.tongbu,
+                        datafh: that.datafh,
+                    }
+                    that.statusBox = false;
+					that.submitLoading = true;
+                    httpPost('m=yunying&c=report_resume&a=saveresult', params).then(function(res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        } else {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        }
+                    }).finally(function () {
+                        setTimeout(function(){
+                            that.submitLoading = false;
+                        }, 200)
+					});
+                },
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+                getList() {
+                    let that = this,
+                        params = {
+                            page: that.page,
+                            limit: that.limit,
+                        };
+                    let searchForm = that.searchForm;
+                    that.loading = true;
+                    httpPost('m=yunying&c=report_resume', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.list = data.list;
+                        that.total = parseInt(data.total);
+                        that.pageSizes = data.page_sizes;
+                        if (that.limit === 0) {
+                            that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        }
+                        if (that.page > data.page) {
+                            that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        }
+                        if(that.prevPage != that.page){
+                            that.prevPage = that.page;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.list.length === 0) {
+                            that.dataText = lc('wap_js_00113');
+                        }
+                    })
+                },
+                getBaseData() {
+                    let _this = this;
+                    httpPost('m=yunying&c=report_resume&a=index_base_data', {}, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        _this.integral_pricename = Object.freeze(res.data.integral_pricename);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+                handleSelectionChange(val) {
+                    if (val.length == 0) {
+                        this.checkedAll = false;
+                        this.checkedAllIndeterminate = false;
+                    } else {
+                        if (val.length === this.list.length) {
+                            this.checkedAll = true;
+                            this.checkedAllIndeterminate = false;
+                        } else {
+                            this.checkedAll = false;
+                            this.checkedAllIndeterminate = true;
+                        }
+                    }
+                    this.multipleSelection = val;
+                },
+
+                batch(type) {
+                    if (this.multipleSelection.length == 0) {
+                        message.error(lc('admin_user_weipin_00005'));
+                        return false;
+                    }
+
+                    let idArr = [];
+                    this.multipleSelection.forEach(function(item) {
+                        idArr.push(item.id);
+                    })
+                    this.idArr = idArr;
+
+                    if (type == 'del') {
+                        this.del();
+                    }
+                },
+                checkAll(val) {
+                    val ? this.checkedAllIndeterminate = false : '';
+                    this.$refs.multipleTable.toggleAllSelection();
+                },
+                del(idx,type) {
+                    let that = this,
+                        params = {},
+                        msg = '';
+
+                    if (typeof idx == 'undefined') { // 批量删除
+                        params.del = this.idArr;
+                        msg = lc('common_00853');
+                    } else {// 单个删除
+                        params.del = that.list[idx].id;
+                        msg = lc('admin_00333');
+                    }
+                    if (type) {
+                        params.type = type;
+						msg = lc('admin_yunying_00200');
+                    }
+                    delConfirm(this, params, function (params) {
+                        httpPost('m=yunying&c=report_resume&a=del', params).then(function(res) {
+                            if (res.data.error > 0) {
+                                message.error(res.data.msg);
+                            } else {
+                                message.success(res.data.msg, function () {
+                                    that.$refs.multipleTable.clearSelection();
+                                    that.getList();
+                                });
+                            }
+                        })
+                    }, msg)
+                },
+                delResume(row){
+                    let that = this,
+                        params = {};
+                        params.id = row.id;
+                        params.eid = row.eid;
+                        params.uid = row.c_uid;
+					let msg = lc('admin_01193');
+                    delConfirm(this, params, function (params) {
+                        httpPost('m=yunying&c=report_resume&a=delresume', params).then(function(res) {
+                            if (res.data.error > 0) {
+                                message.error(res.data.msg);
+                            } else {
+                                message.success(res.data.msg, function () {
+                                    that.$refs.multipleTable.clearSelection();
+                                    that.getList();
+                                });
+                            }
+                        })
+                    }, msg)
+                },
+				handlePreview(scope) {
+				    this.info = scope.row;
+				    this.resumePreviewVisible = true;
+				},
+            }
+        }
+</script>

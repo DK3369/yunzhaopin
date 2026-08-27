@@ -1,0 +1,227 @@
+<template>
+    <div class="drawerModlue">
+        <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto; border: none;">
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('admin_00787') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="ruleForm.title" :placeholder="lc('admin_00789')"></el-input>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('admin_00233') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-cascader v-model="ruleForm.cid" :options="classList" :show-all-levels="false"
+                                 :props="{value: 'id', label: 'name', emitPath: false}">
+                    </el-cascader>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('admin_00232') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="ruleForm.visit" :placeholder="lc('admin_00786')"
+                              @input="inputIntNumber($event, 'ruleForm', 'visit')"></el-input>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>{{ lc('admin_00231') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-switch v-model="ruleForm.is_recom" active-value="1" inactive-value="0">
+                    </el-switch>
+                </div>
+            </div>
+            <div class="drawerModLis" style="align-items: initial;">
+                <div class="drawerModTite">
+                    <span>{{ lc('admin_00788') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <div id="editor—wrapper" style="border: 1px solid #ccc;">
+                        <div id="toolbar-container"><!-- 工具栏 --></div>
+                        <div id="editor-container" style="height: 300px;"><!-- 编辑器 --></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="setBasicButn" style="border-top: 0px solid #E4E7ED;">
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+let editor = null,editorInterval = null;
+const { createEditor, createToolbar } = window.wangEditor;
+export default {
+    props: ['id'],
+    data: function () {
+        return {
+            classList: [],
+
+            ruleForm: {},
+
+            saveLoading: false,
+        }
+    },
+    mounted() {
+        
+        this.initEditor();
+    },
+    beforeDestroy() {
+        editor = null; 
+        editorInterval = null;
+    },
+    created: function () {
+        this.getInfo();
+    },
+    methods: {
+        initEditor: function (content=null) {
+            
+            clearInterval(editorInterval);
+            editorInterval = setInterval(()=>{
+                
+                if (editor !== null){
+                    clearInterval(editorInterval);
+                    if(content!==null){
+                        editor.setHtml(content);
+                    }
+                }else{
+                    let editorConfig = {
+                        MENU_CONF: {
+                            uploadImage: {
+                                server: baseUrl + 'm=index&c=uploadfile',
+                                fieldName: 'file'
+                            }
+                        }
+                    };
+                    editor = createEditor({
+                        selector: '#editor-container',
+                        html: '',
+                        config: editorConfig,
+                        mode: 'simple'
+                    });
+                    
+                    let toolbar = createToolbar({
+                        editor,
+                        selector: '#toolbar-container',
+                        config: {
+                            'toolbarKeys': [
+                                "bold",
+                                "underline",
+                                "italic",
+                                "clearStyle",
+                                "|",
+                                "bulletedList",
+                                "numberedList",
+                                "justifyLeft",
+                                "justifyRight",
+                                "justifyCenter"
+                            ]
+                        },
+                        mode: 'simple'
+                    });
+                }
+            },300);
+            
+        },
+        getInfo() {
+            let that = this;
+
+            httpPost('m=neirong&c=question&a=add', {id: that.id ? that.id : ''}).then(function (response) {
+                let res = response.data,
+                    data = res.data,
+                    info = data.info;
+
+                that.classList = data.classList;
+                if (that.id) {
+                    that.ruleForm = {
+                        id: info.id,
+                        title: info.title,
+                        cid: info.cid,
+                        visit: info.visit,
+                        is_recom: info.is_recom
+                    };
+
+                    that.initEditor(info.content);
+                } else {
+                    that.ruleForm = {};
+                }
+            })
+        },
+
+        inputIntNumber(val, form, key) {
+            this.$data[form][key] = val.replace(/[^0-9]/g,'');
+        },
+
+        save() {
+            let that = this,
+                params = that.ruleForm,
+                content = editor.getHtml();
+
+            if (typeof params.title == 'undefined' || params.title == '') {
+                message.warning(lc('admin_00789'));
+                return;
+            }
+            if (typeof params.cid == 'undefined' || params.cid == '') {
+                message.warning(lc('admin_vue_00064'));
+                return;
+            }
+
+            // if (content == '' || content == '<p><br></p>') {
+            //     message.warning('请输入问答内容');
+            //     return false;
+            // }
+
+            if (that.saveLoading) {
+                return false;
+            }
+            that.saveLoading = true;
+
+            params.content = content;
+
+            httpPost('m=neirong&c=question&a=save', params).then(function (response) {
+                let res = response.data;
+
+                if (res.error > 0) {
+                    message.error(res.msg, function() {
+                        that.saveLoading = false;
+                    });
+                } else {
+                    that.$emit("child-event");
+                    message.success(res.msg, function() {
+                        that.saveLoading = false;
+                    });
+                }
+            })
+        },
+    },
+    watch: {
+        id: function (val, oldVal) {
+            this.ruleForm = {};
+            this.initEditor('');
+            this.getInfo();
+        },
+    }
+};
+</script>
+<style scoped></style>

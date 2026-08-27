@@ -1,0 +1,264 @@
+<template>
+<div id="cityfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+			<div class="moduleInptList">
+				<el-input :placeholder="lc('admin_00340')" v-model="keyword" class="input-with-select" clearable>
+					<template #prepend><el-select v-model="type" :placeholder="lc('member_com_00021')">
+						<el-option :label="lc('member_com_00021')" value="1"></el-option>
+						<el-option :label="lc('admin_00215')" value="2"></el-option>
+					</el-select></template>
+				</el-input>
+			</div>
+            <div class="newsbtnbox" style="margin-bottom: 0px;;">
+                <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+        </div>
+        <div class="nrtopbtn">
+            <el-button type="primary" icon="el-icon-document-add" size="small"
+                       @click="edit({id: ''})">{{ lc('admin_00213') }}</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <el-table :data="tableData" stripe border
+                  style="width: 100%;height: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                  @selection-change="handleSelectionChange" ref="multipleTable" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change="sortChange" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom">
+            </el-table-column>
+            <el-table-column prop="name" :label="lc('member_com_00021')">
+            </el-table-column>
+            <el-table-column prop="value" :label="lc('admin_00214')">
+            </el-table-column>
+            <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
+                <template #default="scope">
+                    <div class="cz_button">
+                        <el-button size="small " plain @click="edit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                        <el-button type="danger" size="small " @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="">
+            <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="delAllBottom" size="small">{{ lc('member_com_00055') }}</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                           :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                           layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </div>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog :title="lc('admin_00212')" width="500px" v-model="dialogVisible" :modal-append-to-body="false">
+            <div class="hydialog_item">
+                <span style="padding-bottom: 5px; overflow: hidden;position: relative;display: block;">{{ lc('admin_00209') }}</span>
+                <el-input v-model="curr_data.name" :placeholder="lc('wap_user_00076')"></el-input>
+            </div>
+            <div class="hydialog_item" style="padding-top: 15px;">
+                <span style="padding-bottom: 5px; overflow: hidden;position: relative;display: block;">{{ lc('admin_00211') }}</span>
+                <el-input v-model="curr_data.value" :placeholder="lc('wap_user_00076')"></el-input>
+            </div>
+            <template #footer><div class="dialog-footer">
+                <el-button type="primary" @click="save" :disabled="submitLoading">{{btntitle}}</el-button>
+            </div></template>
+        </el-dialog>
+    </div>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: lc('wap_js_00113'),
+                loading: false,
+                type: '1',
+                keyword: '',
+                tableData: [],
+                checkedAll: false,
+                selectedItem: [],
+                currentPage: 1,
+                perPage: 0,
+                pageSizes: [],
+                total: 0,
+                dialogVisible: false,
+                curr_data: {},
+                sort_type: '',
+                sort_col: '',
+                islook: false,
+				submitLoading: false,
+				btntitle: lc('wap_js_00091'),
+                prevPage:0
+            }
+        },
+        created: function () {
+            this.getList();
+        },
+        methods: {
+            edit(data){
+                if (data.id) {
+                    this.curr_data = deepClone(data);
+					this.btntitle = lc('wap_01384');
+                } else {
+                    this.curr_data = {id: '', name: '', value: ''};
+					this.btntitle = lc('wap_js_00091');
+                }
+
+                this.dialogVisible = true
+            },
+            sortChange: function (column) {
+                if (column.order == 'descending') {
+                    this.sort_type = 'desc';
+                } else if (column.order == 'ascending') {
+                    this.sort_type = 'asc';
+                } else {
+                    this.sort_type = '';
+                }
+                this.sort_col = column.prop
+                this.search();
+            },
+            save(){
+                var that = this
+                var params = that.curr_data
+                if (params.name == '') {
+                    message.error(lc('admin_00210'))
+                    return false
+                }
+                if (params.value == '') {
+                    message.error(lc('admin_00817'))
+                    return false
+                }
+				that.submitLoading = true;
+                httpPost('m=neirong&c=news&a=property', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg, function(){
+                            that.getList();
+                            that.dialogVisible = false
+                        });
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+					that.submitLoading = false;
+				});
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.selectedItem.push(item.id);
+                    });
+                }
+                if (_this.selectedItem.length == 0) {
+                    _this.checkedAll = false;
+                } else {
+                    if (_this.selectedItem.length == _this.tableData.length) {
+                        _this.checkedAll = true;
+                    } else {
+                        _this.checkedAll = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            handleSizeChange(val) {
+                this.perPage = val;
+                this.getList()
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList()
+            },
+            search() {
+                this.currentPage = 1;
+                this.getList();
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    pageSize: that.perPage
+                }
+                if (that.type) {
+                    params.type = that.type
+                }
+                if (that.keyword) {
+                    params.keyword = that.keyword
+                }
+                if (that.sort_type && that.sort_col) {
+                    params.order = that.sort_type
+                    params.t = that.sort_col
+                }
+                that.loading = true;
+                that.emptytext = lc('admin_user_weipin_00026');
+                httpPost('m=neirong&c=news&a=type', params).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.perPage = parseInt(res.data.perPage)
+                        that.pageSizes = res.data.pageSizes
+                        that.total = parseInt(res.data.total)
+                        if(that.prevPage != that.currentPage){
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = lc('wap_js_00113');
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            delAllBottom() {
+                if (!this.selectedItem.length) {
+					message.error(lc('admin_00136'));
+                    return false;
+                }
+                delConfirm(this, this.selectedItem, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=news&a=delpro', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(lc('wap_user_00264'));
+                        that.getList();
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+        }
+    }
+</script>

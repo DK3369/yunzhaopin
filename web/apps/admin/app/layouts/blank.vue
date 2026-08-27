@@ -1,5 +1,5 @@
 <template>
-  <div style="max-width: 420px; margin: 10vh auto">
+  <div class="php-admin-blank">
     <slot />
   </div>
 </template>

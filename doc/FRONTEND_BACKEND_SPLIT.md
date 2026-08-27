@@ -464,19 +464,19 @@ zzzz.com/
 
 **目标**：替换 PHP 的 120 个 admin 控制器和 219 个 Vue 2 组件。前后端一起做：后端补 `api-admin` 的缺口接口，前端做 `apps/admin` 页面。
 
+**执行约定（2026-08-27 起）**：按 PHP 源码 **完整复刻** 到 Nuxt 4，不自造列表、不折叠路由。`uploads/` 只读。接口 **只走 `/v1/admin/*`（api-admin）**，不进 `/v1/wap`。细则：[ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)。
+
 **前置**：T3（crate 已拆）、T4（缺口决定工作量）、T7
 
-**后端**：缺的接口加在 `api-admin` 里，业务逻辑复用 `services`，缺 service 才新增。每个写操作落审计日志。遵守 2.5 的唯一性与完整性检查。
+**后端**：缺的接口加在 `api-admin` 里，业务逻辑复用 `services`，缺 service 才新增。每个写操作落审计日志。遵守 2.5 的唯一性与完整性检查。**不要**新增通用 `invoke`。
 
-**前端**：`apps/admin`，Nuxt 4.5.2 + `ssr: false` + Element Plus + TypeScript，产物是纯静态 SPA。
+**前端**：`apps/admin`，Nuxt 4.5.2 + `ssr: false` + Element Plus + TypeScript，产物是纯静态 SPA。页面 path 与 PHP `router.js` 一致；从 PHP html/vue **拷到 web 后只改 Vue2/Plus 语法**。
 
-现有 219 个 Vue 2 组件的**业务逻辑和表单结构可以参考，但代码不能直接用**——Vue 2 选项式 API + httpVueLoader 运行时加载，和 Vue 3 SFC 编译差异太大，强行迁移比重写还慢。不过 UI 库同样是 Element 系，字段定义、校验规则、表格列配置能大段照搬。
+优先级：壳+登录 → `/index` → `/companyjob` `/companycrm` `/resume` → 系统分屏 → 其余运营工具。
 
-优先级：dashboard → 用户管理 → 职位审核 → 内容管理 → 运营工具 → system 配置类（38 个，最后做）。
+**验收**：日常运营用得到的功能与 PHP 同 path 对照可用。部署时确认 `/admin` 已加访问控制。
 
-**验收**：日常运营用得到的功能全部可用，system 配置项可以分批补。部署时确认 `/admin` 已加 IP 白名单或其他访问控制。
-
-**提交**：按模块分批提交。
+**提交**：按模块分批提交；不改 `uploads/`。
 
 ---
 
@@ -601,7 +601,7 @@ zzzz.com/
 - [x] T8 公开前台页面（2026-08-26：优先级页 + Rust 已有 GET 的公开频道 SSR：兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分商城/HR/友情链接/静态页/找回密码/地图。禁用 JS 时列表页 HTML 含 h1 与空状态。不是 PHP default 100 + wap 209 模板逐页搬运；校园/猎头/培训/spview 无 Rust 命名空间，Web 不做。验收打本仓库 rust `:3003`：systemd `:3000` 旧二进制对 GET 仍 405）
 - [x] T9 SEO 配套（2026-08-26：`/sitemap.xml` 200，含静态频道与动态 `/jobs/5`、`/companies/90001`；职位页 JobPosting、企业页 Organization 在 HTML 的 ld+json 中。未跑 Google 富媒体测试工具，因其需要公网 URL。空库时动态 URL 不会出现）
 - [x] T10 会员中心（2026-08-26：注册(regway=1)→填简历→投递→投递列表；企业资料→发职位→人才库→收到简历→邀面试。Nuxt 登录 cookie 无 JWT。发职位默认待审，e2e 在测试库把职位 `state=1` 后才公开可投。`phpyun_test` 无 `phpyun_company_rating` 套餐行，mock-paid UI 在但未实购。顺带修：注册 argon2 带 salt 导致无法登录；职位/投递/面试 INSERT 缺 NOT NULL 列）
-- [x] T11 管理后台（2026-08-26 晚：`apps/admin` 覆盖现有 **115** 条 `/v1/admin`（含资讯/公告/问答写、兼职/once/tiny、友链、招聘会开关、公招、专题、热招、到期、企业档案/`r_status`/CSV、简历 `r_status`/CSV/经历树只读、财务充值、SEO/邮件/短信/微信 KV 分屏、RBAC 表只读）。**不是** PHP 120 个控制器 1:1。未补：模拟登录、微信自定义菜单表、system 其余分屏。JWT 仍 `usertype=3`，不解析 `group_power`）
+- [x] T11 管理后台（2026-08-27：Nuxt `apps/admin` 按 PHP `router.js` **118 path 各一页**（`admin-php/` + `httpPost`→`/v1/admin/*`），壳/登录对照 `index.htm`/`login.htm`。约定与进度见 [ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)。JWT 仍 `usertype=3`）
 - [x] T12 后端补齐 PHP 独占功能（2026-08-26：`/callback/alipay` `/callback/wechat-pay` `/callback/locoy`、`/v1/wap/oauth/wechat/wxapp-login`、`/v1/wap/upload/*`、server `Scheduler` 均已接线。locoy：新闻/全职/兼职（企业须已存在）可入库；`m=user` 空 `info_name`→码 `2`，否则建 member+resume+expect。**未跑**支付沙箱完整一单、**未测**小程序登录拉职位）
 - [x] T13 重写失真文档（2026-08-26：根 `README.md`、`phpyun-rs/README.md`、`phpyun-rs/docs/CRATE_LAYERING.md` 指向本方案；`PROJECT_PLAN.md` 已废弃横幅）
 - [x] T14 现网切走 PHP 页面（2026-08-26：vhost 反代 Nuxt+Rust，见 `ops/T14_RETIRE_PHP.md`。**未**停 php-fpm、**未**删 `uploads/`。完整「卸载 PHP」仍未做）

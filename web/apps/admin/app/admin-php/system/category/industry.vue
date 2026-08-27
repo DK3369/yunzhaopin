@@ -1,0 +1,265 @@
+<template>
+<div id="hyfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="">{{ lc('admin_system_00126') }}</div>
+            <div class="nrtopbtn">
+                <el-button type="primary" icon="el-icon-document-add" @click="addVisible = true" size="small">{{ lc('admin_00197') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" stripe border style="width: 100%;" height="100%"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" ref="multipleTable"
+                @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" :label="lc('admin_system_00127')" width="180">
+                </el-table-column>
+                <el-table-column :label="lc('admin_00323')" property="name">
+                    <template #default="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                            :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                            v-model="scope.row.name" @blur="alterData(scope)"></el-input>
+                        <span v-else>
+                            {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
+                                src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_00324')" property="sort">
+                    <template #default="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                            :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                            v-model="scope.row.sort" @blur="alterData(scope, 'int')"
+                            onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                        <span v-else>
+                            {{ scope.row.sort }}<img @click="editData(scope)" class="editIcon"
+                                src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
+                    <template #default="scope">
+                        <!-- <div class="TableLink">
+                            <el-link :underline="false" type="primary" @click="deleteRow(scope)">删除</el-link>
+                        </div> -->
+                        <div class="cz_button">
+                            <el-button size="small" type="danger" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
+                          </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <div class="modulecz modulePagButn">
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="small">{{ lc('member_com_00055') }}</el-button>
+                </div>
+            </div>
+        </div>
+        <el-dialog :title="lc('admin_00222')" width="580px" v-model="addVisible" :modal-append-to-body="false">
+            <div class="hydialog_item">
+                <span>{{ lc('admin_00260') }}</span>
+                <el-input type="textarea" v-model="ruleForm.name" style="flex: 1;"></el-input>
+            </div>
+            <div style="overflow: hidden;position: relative;padding-left: 74px;">
+                <i class="el-icon-info" style="margin-top: 10px;">{{ lc('admin_system_00091') }}</i>
+            </div>
+            
+            <template #footer><div class="dialog-footer">
+                <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('wap_js_00091') }}</el-button>
+            </div></template>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: window.lc('wap_js_00113'),
+                loading: false,
+                tableData: [], //表格数据
+                checked: false,
+                isIndeterminate: false,// checkbox 的不确定状态
+                selectedItem: [],
+                addVisible: false,
+                oldData: null,
+                ruleForm: {
+                    name: '',
+                },
+                submitLoading: false,
+                
+            }
+        },
+        mounted() {
+            this.getList();
+        },
+        methods: {
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checked = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checked = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checked = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            getList() {
+                this.addVisible = false;
+                let _this = this;
+                _this.loading = true;
+                _this.emptytext = window.lc('admin_user_weipin_00026');
+                httpPost('m=system&c=category_industry&a=index').then(function (response) {
+                    let res = response.data;
+                    _this.tableData = res.data;
+                    _this.loading = false;
+                    if (_this.tableData.length === 0){
+                        _this.emptytext = window.lc('wap_js_00113');
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            submitForm(formName) {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleForm));
+                params.name = params.name.split("\n").join("-");
+
+                if (params.name == '') {
+                    message.error(window.lc('admin_00208'));
+                    return;
+                }
+                _this.submitLoading = true;
+                httpPost('m=system&c=category_industry&a=add', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(res.msg);
+                        _this.clearForm();
+                        _this.addVisible = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                    _this.getList();
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            clearForm() {
+                this.ruleForm.nid = null;
+                this.ruleForm.name = '';
+                this.ruleForm.str = '';
+            },
+            deleteRow(scope, isMore) {
+                let params = {};
+                if (isMore) {
+                    if (!this.selectedItem.length) {
+                        message.error(window.lc('admin_user_weipin_00005'));
+                        return false;
+                    }
+                    let list = [];
+                    for (let item of this.selectedItem) {
+                        list.push(item.id);
+                    }
+                    params.delType = 'more';
+                    params.del = list;
+                } else {
+                    // let index = scope.$index;
+                    // this.tableData.splice(index, 1);
+                    params.delType = 'single';
+                    params.delid = scope.row.id;
+                }
+
+                delConfirm(this, params, this.delete);
+            },
+            delete(params) {
+                let _this = this;
+                httpPost('m=system&c=category_industry&a=del', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(window.lc('admin_user_00187'));
+                        _this.getList();
+                    } else {
+                        message.error(window.lc('admin_user_00186'));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            editData(scope) {
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                this.oldData = JSON.parse(JSON.stringify(row));
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.tableData, index, copyRow);
+                this.$nextTick(() => {
+                    let ref = column.property + index;
+                    $("#" + ref).focus();
+                });
+            },
+            alterData(scope, type) {
+                if (this.oldData == null) {
+                    return false;
+                }
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                if (type === 'int') {
+                    row[column.property] = row[column.property].replace(/[^0-9]/g, '');
+                }
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.tableData, index, copyRow);
+                if (row[column.property] === this.oldData[column.property]) {
+                    return false;
+                }
+                let _this = this;
+                let sendData = { id: row.id };
+                sendData[column.property] = row[column.property];
+                httpPost('m=system&c=category_industry&a=ajax', sendData, { hideloading: true }).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(window.lc('admin_user_company_00208'));
+                    } else {
+                        message.error(window.lc('admin_00187'));
+                    }
+                    _this.oldData = null;
+                    _this.getList();
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            openManage(scope) {
+                let v = Date.now();
+                let item = scope.row;
+                window.location.href = './grmanage.html?v=' + v + '&id=' + item.id;
+            }
+        }
+    }
+</script>

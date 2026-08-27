@@ -1,0 +1,901 @@
+<template>
+<div id="hyfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="">{{ lc('admin_00170') }}</div>
+            <div class="nrtopbtn">
+                <el-button size="small" @click="makeCache" :disabled="submitLoading">{{ lc('admin_00196') }}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="small">{{ lc('admin_00197') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <div class="admin_datatip"><i class="el-icon-document"></i>{{ lc('admin_00173') }}</div>
+            <el-table :data="list" stripe border style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="calc(100% - 44px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="90">
+                </el-table-column>
+                <el-table-column :label="lc('admin_00219')" property="name">
+                    <template #default="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
+                        <span v-else>{{ scope.row.name }}
+                            <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 1)">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_00206')" property="number">
+                    <template #default="scope">
+                        {{ lc('admin_00189') }}<font color="#0033FF">
+                            <el-link @click="newslist(scope.row.id)">{{scope.row.count != 0 ? scope.row.count :
+                                0}}</el-link>
+                        </font> {{ lc('admin_00186') }}<font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> {{ lc('common_02050') }}</template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_vue_00044')" property="sort" width="80">
+                    <template #default="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
+                        <span v-else>
+                            {{ scope.row.sort }}
+                            <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 1)">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_00195')" property="newsindex" width="90">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.rec_news" @change="recNewsChange($event,scope.row, 1)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_00183')" property="rec" width="110">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.rec" @change="recNewsChange($event,scope.row, 2)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_00200')" width="90">
+                    <template #default="scope">
+                        <div class="TableLink">
+                            <el-link type="primary" v-if="scope.row.is_menu == 0" @click="setmenu(scope.row.id)">{{ lc('admin_00200') }}</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="setmenu(scope.row.id)">{{ lc('admin_00188') }}</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="delmenu(scope.row.id)">{{ lc('admin_00190') }}</el-link>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small " plain @click="editClass(scope.$index)">{{ lc('wap_com_00304') }}</el-button>
+                            <el-button type="danger" size="small" @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <div class="">
+                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="delAllBottom" size="small">{{ lc('member_com_00055') }}</el-button>
+                    <el-button @click="fpClassAllBottom" size="small">{{ lc('admin_00164') }}</el-button>
+                </div>
+            </div>
+        </div>
+        <!-- Category management drawer -->
+        <el-drawer :title="lc('admin_00199')" :close-on-press-escape="false" :wrapper-closable="false" v-model="draweredit" append-to-body :modal-append-to-body="false" size="80%">
+            <div class="tctable_cont">
+                <div class="moduleSeachs" style="padding: 0; width: 100%;flex-wrap: wrap;">
+                    <div class="admin_datatip" style="margin-bottom: 0;"><i class="el-icon-document"></i>{{ lc('admin_00173') }}</div>
+                    <div class="nrtopbtn" style="padding: 8px 0;">
+                        <el-button size="small" @click="makeCache">{{ lc('admin_00196') }}</el-button>
+                        <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="small">{{ lc('admin_00197') }}</el-button>
+                    </div>
+                </div>
+                <el-table :data="subTableData" style="width: 100%;margin-bottom: 6px;" row-key="id" border default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="85%" @selection-change="handleSubTblSelectionChange" ref="multipleSubTable" v-loading="loading" :empty-text="emptytext">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" :label="lc('member_com_00345')" width="90">
+                    </el-table-column>
+                    <el-table-column :label="lc('admin_00219')" property="name">
+                        <template #default="scope">
+                            <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 2)"></el-input>
+                            <span v-else>{{ scope.row.name }}
+                                <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 2)">
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column :label="lc('admin_00206')" property="number">
+                        <template #default="scope">
+                            {{ lc('admin_00189') }}<font color="#0033FF">
+                                <el-link @click="newslist(scope.row.id)">{{scope.row.count != 0 && scope.row.count ?
+                                    scope.row.count : 0}}</el-link>
+                            </font> {{ lc('common_02097') }}<span v-if="scope.row.children">
+                                {{ lc('admin_00202') }}<font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> {{ lc('common_02050') }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column :label="lc('admin_vue_00044')" property="sort">
+                        <template #default="scope">
+                            <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 2)"></el-input>
+                            <span v-else>
+                                {{ scope.row.sort }}
+                                <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 2)">
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
+                        <template #default="scope">
+                            <div class="cz_button">
+                                <el-button type="danger" size="small " @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div style="padding-bottom: 12px;">
+                    <div class="">
+                        <div class="">
+                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                            <el-button size="small" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
+                            <el-button size="small" @click="fpClassAllBottom">{{ lc('admin_00164') }}</el-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-drawer>
+        <!-- Batch transfer category -->
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_00164')" width="400px" v-model="drawerClassMultiple" append-to-body :modal-append-to-body="false">
+                <div class="toolClasDia fenpeizhand">
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>{{ lc('admin_00799') }}</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-select v-model="classid" filterable :placeholder="lc('admin_00159')" clearable>
+                                <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span></span>
+                        </div>
+                        <div class="toolClasCont">
+                            <span style="color:red;">{{ lc('admin_00174') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <template #footer><span class="dialog-footer">
+                    <el-button @click="drawerClassMultiple = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveClass" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+        <!-- News management -->
+        <el-drawer :title="lc('admin_00194')" :close-on-press-escape="false" :wrapper-closable="false" v-model="shownewslist" append-to-body :modal-append-to-body="false" size="80%">
+            <news ref="newsmanage"></news>
+        </el-drawer>
+        <!-- Add category dialog -->
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_00222')" v-model="draweraddclass" width="500px" append-to-body :modal-append-to-body="false">
+                <div class="wxsettip_small ">{{ lc('admin_00182') }}</div>
+                 <div class="wxsettip_Sealect">
+				<el-select v-model="classid" filterable :placeholder="lc('admin_00159')" clearable>
+                    <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
+                    </el-option>
+                </el-select>
+				</div>
+                <div class="wxsettip_small ">{{ lc('admin_00219') }}<el-tooltip class="item" effect="dark" :content="lc('admin_00177')" placement="right-start"><i class="el-icon-warning-outline"></i>
+                        <el-button>{{ lc('admin_00207') }}</el-button>
+                    </el-tooltip>
+                </div>
+                <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="classname">
+                </el-input>
+                <div class="wxsettip_small ">{{ lc('admin_00184') }}</div>
+                <template>
+                    <el-radio v-model="rec" label="1">{{ lc('common_02085') }}</el-radio>
+                    <el-radio v-model="rec" label="0">{{ lc('common_02063') }}</el-radio>
+                </template>
+                <template #footer><span class="dialog-footer">
+                    <el-button @click="draweraddclass = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveAddClass" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+        <!-- Set/edit navigation drawer -->
+        <div class="modluDrawer">
+            <el-drawer :title="lc('admin_00201')" :close-on-press-escape="false" :wrapper-closable="false" v-model="drawersetmenu" size="800px" top="0" append-to-body :modal-append-to-body="false">
+                <div class="moduleTable" style="margin: 0 20px; width: calc(100% - 40px);">
+                    <table class="tableVue">
+                        <thead>
+                            <tr align="left">
+                                <th width="140">{{ lc('member_com_00021') }}</th>
+                                <th width="340">{{ lc('member_user_00181') }}</th>
+                                <th>{{ lc('member_com_00207') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('admin_00192') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-select v-model="menu.nid" filterable :placeholder="lc('admin_00181')">
+                                            <el-option v-for="item in typearr" :key="item.id" :label="item.typename" :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('admin_00191') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input :placeholder="lc('admin_00180')" v-model="menu.name">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('admin_00101') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input :placeholder="lc('admin_00812')" v-model="menu.url">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('admin_00185') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input :placeholder="lc('admin_00813')" v-model="menu.furl">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('admin_00193') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.type" label="1">{{ lc('admin_00198') }}</el-radio>
+                                        <el-radio v-model="menu.type" label="2">{{ lc('admin_00204') }}</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span>{{ lc('admin_00175') }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('admin_vue_00044') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input :placeholder="lc('admin_00814')" v-model="menu.sort">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('member_com_00020') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.eject" label="1">{{ lc('admin_00205') }}</el-radio>
+                                        <el-radio v-model="menu.eject" label="0">{{ lc('admin_00203') }}</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('member_user_00181') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.model" label="hot">{{ lc('common_02091') }}</el-radio>
+                                        <el-radio v-model="menu.model" label="new">{{ lc('common_02081') }}</el-radio>
+                                        <el-radio v-model="menu.model" label="">{{ lc('common_02082') }}</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('wap_js_00078') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.bold" label="1">{{ lc('common_02085') }}</el-radio>
+                                        <el-radio v-model="menu.bold" label="0">{{ lc('common_02063') }}</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">{{ lc('member_com_00023') }}</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.display" label="1">{{ lc('common_02085') }}</el-radio>
+                                        <el-radio v-model="menu.display" label="0">{{ lc('common_02063') }}</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <!-- <el-button type="primary" size="medium" @click="save">Submit</el-button> -->
+                    <!-- <el-button @click="drawersetmenu = false">Cancel</el-button> -->
+                    <el-button type="primary" @click="saveMenu" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
+                </div>
+                <!-- <div class="setdaohanNvas">
+                    <div class="wxsettip_small ">Navigation Category</div>
+                    <el-select v-model="menu.nid" filterable placeholder="Select navigation category">
+                        <el-option v-for="item in typearr" :key="item.id" :label="item.typename" :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <div class="wxsettip_small ">Navigation Name</div>
+                    <el-input placeholder="Enter navigation name" v-model="menu.name">
+                    </el-input>
+                    <div class="wxsettip_small ">Link URL</div>
+                    <el-input placeholder="Enter link URL" v-model="menu.url">
+                    </el-input>
+                    <div class="wxsettip_small ">Pseudo-static URL</div>
+                    <el-input placeholder="Enter pseudo-static URL" v-model="menu.furl">
+                    </el-input>
+                    <div class="wxsettip_small ">Navigation Type</div>
+                    <template>
+                        <el-radio v-model="menu.type" label="1">Internal Link</el-radio>
+                        <el-radio v-model="menu.type" label="2">Original Link</el-radio>
+                    </template>
+                    <div class="adminav_set_r">Internal link example: http://www.ov6.com; original link example: index.php?m=com </div>
+                    <div class="wxsettip_small ">Sort</div>
+                    <el-input placeholder="Enter sort order" v-model="menu.sort">
+                    </el-input>
+                    <div class="wxsettip_small ">Popup Window</div>
+                    <template>
+                        <el-radio v-model="menu.eject" label="1">New Window</el-radio>
+                        <el-radio v-model="menu.eject" label="0">Current Window</el-radio>
+                    </template>
+                    <div class="wxsettip_small ">Status</div>
+                    <template>
+                        <el-radio v-model="menu.model" label="hot">Hot</el-radio>
+                        <el-radio v-model="menu.model" label="new">New</el-radio>
+                        <el-radio v-model="menu.model" label="">None</el-radio>
+                    </template>
+                    <div class="wxsettip_small ">Bold</div>
+                    <template>
+                        <el-radio v-model="menu.bold" label="1">Yes</el-radio>
+                        <el-radio v-model="menu.bold" label="0">No</el-radio>
+                    </template>
+                    <div class="wxsettip_small ">Display</div>
+                    <template>
+                        <el-radio v-model="menu.display" label="1">Yes</el-radio>
+                        <el-radio v-model="menu.display" label="0">No</el-radio>
+                    </template>
+                    <div class="dialGooter">
+                        <el-button @click="drawersetmenu = false">Cancel</el-button>
+                        <el-button type="primary" @click="saveMenu" :disabled="submitLoading">Confirm</el-button>
+                    </div>
+                </div> -->
+            </el-drawer>
+        </div>
+    </div>
+</template>
+
+<script>
+import News from './component/news.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+    data: function() {
+        return {
+            emptytext: lc('wap_js_00113'),
+            loading: false,
+            newsindex: false,
+            draweraddclass: false,
+			list: [],
+            tableData: [],
+            subTableData: [], // Current top-level category and child category data being edited
+            draweredit: false,
+            zmselect: '',
+            options: [],
+            sfoptions: [],
+            dialogVisible: false,
+            lbname: '',
+            deldialog: false,
+            oldData: null,
+            checkedAll: false,
+            checkedSubTblAll: false,
+            selectedItem: [],
+            drawerClassMultiple: false,
+            classid: '',
+            classname: '',
+            rec: '0',
+            typearr: [],
+            menu: {
+                id: '',
+                nid: '',
+                name: '',
+                url: '',
+                furl: '',
+                type: '1',
+                sort: '',
+                eject: '0',
+                model: '',
+                bold: '0',
+                display: '0',
+                did: '0'
+            },
+            drawersetmenu: false,
+            shownewslist: false,
+
+            submitLoading: false,
+            curkey: '',
+        }
+    },
+    components: {
+        'news': News,
+    },
+    created: function() {
+        this.getList();
+
+
+    },
+    methods: {
+        newslist(nid) {
+            var that = this
+            that.shownewslist = true
+            setTimeout(() => {
+                that.$refs.newsmanage.cate = nid
+                this.$refs.newsmanage.getList();
+            }, 200)
+        },
+        setmenu(id) {
+            var that = this
+            httpPost('m=neirong&c=news&a=ajax_menu', { id: id }).then(function(response) {
+                var data = response.data
+                that.menu.name = data.name ? data.name : ''
+                that.menu.url = data.url ? data.url : ''
+                that.menu.furl = data.furl ? data.furl : ''
+                that.menu.id = data.id ? data.id : ''
+                that.menu.nid = data.nid ? data.nid : that.typearr[0].id
+                that.menu.sort = data.sort ? data.sort : ''
+                that.menu.eject = data.eject ? data.eject : '0'
+                that.menu.model = data.model ? data.model : ''
+                that.menu.bold = data.bold ? data.bold : '0'
+                that.menu.display = data.display ? data.display : '0'
+                that.menu.did = id
+                that.drawersetmenu = true
+            }).catch(function(error) {
+                console.log(error);
+            })
+        },
+        // Set navigation
+        saveMenu() {
+            var that = this
+            var params = that.menu
+            params.submit = 1
+            that.submitLoading = true;
+            httpPost('m=neirong&c=news&a=set_menu', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                        that.drawersetmenu = false
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+        // Add category
+        addclass() {
+            this.classid = ''
+            this.classname = ''
+            this.rec = '0'
+            this.draweraddclass = true
+        },
+        // Save added category
+        saveAddClass() {
+            var that = this
+            if (that.classname == '') {
+                message.error(lc('admin_00208'));
+                return false;
+            }
+            that.submitLoading = true;
+            httpPost('m=neirong&c=news&a=addgroup', { name: that.classname.split("\n").join("-"), fid: that.classid, rec: that.rec }).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                        that.draweraddclass = false;
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+        fpClassAllBottom() {
+            if (!this.selectedItem.length) {
+                message.error(lc('admin_00815'));
+                return false;
+            }
+            this.drawerClassMultiple = true
+        },
+        saveClass() {
+            let that = this;
+            let params = {
+                id: this.selectedItem.join(','),
+                nid: this.classid
+            };
+            that.submitLoading = true;
+            httpPost('m=neirong&c=news&a=changeSon', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                        for (let i = that.subTableData[0]['children'].length - 1; i >= 0; i--) {
+                            if (that.selectedItem.indexOf(that.subTableData[0]['children'][i]['id']) != -1) {
+                                that.subTableData[0]['children'].splice(i, 1);
+                            }
+                        }
+                        that.drawerClassMultiple = false
+                    });
+
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+        editClass(key) {
+            this.subTableData = [this.tableData[key]];
+            this.curkey = key;
+            this.draweredit = true
+        },
+        recNewsChange(val, row, type) {
+            var params = {
+                id: row.id,
+                type: type == 1 ? 'rec_news' : 'rec',
+                rec: row.rec_news == true ? 1 : 0
+            }
+            if (type == 1) {
+                params.rec = row.rec_news == true ? 1 : 0;
+            } else {
+                params.rec = row.rec == true ? 1 : 0
+            }
+            httpPost('m=neirong&c=news&a=recommend', params, { hideloading: true }).then(function(response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success(lc('admin_user_company_00208'));
+                } else {
+                    message.error(lc('admin_00187'));
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        editData(scope, type) {
+            let index = scope.$index;
+            let row = scope.row;
+            let column = scope.column;
+            this.oldData = JSON.parse(JSON.stringify(row));
+            let copyRow = JSON.parse(JSON.stringify(row));
+            if (type == 1) {
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.list, index, copyRow);
+            } else {
+                if (index === 0) { // Edit top-level category
+                    this.subTableData[0][column.property + "isShow"] = true;
+                } else { // Edit second-level category
+                    this.subTableData[0].children.forEach((item) => {
+                        if (item.id == row.id) {
+                            item[column.property + "isShow"] = true
+                        }
+                    })
+                }
+                var tmp = deepClone(this.subTableData)
+                this.subTableData = tmp
+            }
+            this.$nextTick(() => {
+                let ref = null
+                if (type == 1) {
+                    ref = column.property + index;
+                } else {
+                    ref = 'edit' + column.property + index;
+                }
+                $("#" + ref).focus();
+            });
+        },
+        alterData(scope, type) {
+            if (this.oldData == null) {
+                return false;
+            }
+            let index = scope.$index;
+            let row = scope.row;
+            let column = scope.column;
+            let copyRow = JSON.parse(JSON.stringify(row));
+            if (type == 1) {
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.list, index, copyRow);
+            } else { // Edit name and sort in the management drawer table
+                if (index === 0) { // Edit top-level category
+                    this.subTableData[0][column.property + "isShow"] = false;
+                } else { // Edit second-level category
+                    this.subTableData[0].children.forEach((item) => {
+                        if (item.id == row.id) {
+                            item[column.property + "isShow"] = false
+                        }
+                    })
+                }
+                var tmp = deepClone(this.subTableData)
+                this.subTableData = tmp
+            }
+            if (row[column.property] === this.oldData[column.property]) {
+                return false;
+            }
+            let _this = this;
+            let sendData = { id: row.id };
+            sendData[column.property] = row[column.property];
+            httpPost('m=neirong&c=news&a=ajax', sendData, { hideloading: true }).then(function(response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success(lc('admin_user_company_00208'));
+                } else {
+                    message.error(lc('admin_00187'));
+                }
+                _this.oldData = null;
+                // if (type == 1) {
+                _this.getList();
+                // }
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        handleSubTblSelectionChange(val) {
+            this.selectedItem = [];
+            let _this = this;
+            if (val.length) {
+                val.forEach(item => {
+                    _this.selectedItem.push(item.id);
+                });
+            }
+            if (_this.selectedItem.length == 0) {
+                _this.checkedSubTblAll = false;
+            } else {
+                var all_len = 1
+                if (this.subTableData[0].children) {
+                    all_len += this.subTableData[0].children.length
+                }
+                if (_this.selectedItem.length == all_len) {
+                    _this.checkedSubTblAll = true;
+                } else {
+                    _this.checkedSubTblAll = false;
+                }
+            }
+        },
+        handleSelectionChange(val) {
+            this.selectedItem = [];
+            let _this = this;
+            if (val.length) {
+                val.forEach(item => {
+                    _this.selectedItem.push(item.id);
+                });
+            }
+            if (_this.selectedItem.length == 0) {
+                _this.checkedAll = false;
+            } else {
+                if (_this.selectedItem.length == _this.tableData.length) {
+                    _this.checkedAll = true;
+                } else {
+                    _this.checkedAll = false;
+                }
+            }
+        },
+        selectAllBottom(value) {
+            value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+        },
+        selectSubTblAllBottom(value) {
+            // Handle nested data selection
+            if (this.subTableData[0].children) {
+                this.subTableData[0].children.forEach((row) => {
+                    if (this.selectedItem.indexOf(row.id) < 0) {
+                        this.$refs.multipleSubTable.toggleRowSelection(row, value)
+                        if (value) {
+                            this.selectedItem.push(row.id)
+                        }
+                    }
+                })
+            }
+            if (!value) {
+                this.selectedItem = []
+            }
+            value ? this.$refs.multipleSubTable.toggleAllSelection() : this.$refs.multipleSubTable.clearSelection();
+        },
+        handleSizeChange(val) {
+            this.perPage = val;
+            this.getList()
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val;
+            this.getList()
+        },
+        search() {
+            this.currentPage = 1;
+            this.getList();
+        },
+        async getList(nid = '') {
+            let that = this;
+            that.loading = true;
+            that.emptytext = lc('admin_user_weipin_00026');
+            httpPost('m=neirong&c=news&a=group', {}).then(function(result) {
+                var res = result.data
+                if (res.error == 0) {
+                    that.tableData = res.data.list;
+                    if (that.tableData != null) {
+                        that.tableData.forEach(item => {
+                            if (item.keyid == 0) {
+                                that.list.push(item);
+                            }
+                        });
+                    }
+
+                    that.typearr = res.data.type
+                    that.islook = true
+                    if (that.curkey !== '' && that.draweredit == true) {
+                        // that.subTableData = [that.tableData[that.curkey]];
+                        let subId = that.subTableData[0]['id'];
+                        let styIndex = that.tableData.findIndex(item => item.id === subId);
+                        that.curkey = styIndex;
+                        that.subTableData = [that.tableData[styIndex]];
+                    }
+                    that.loading = false;
+                    if (that.tableData.length === 0) {
+                        that.emptytext = lc('wap_js_00113');
+                    }
+                }
+            }).catch(function(e) {
+                console.log(e)
+            })
+        },
+        delmenu(id) {
+            delConfirm(this, id, this.deletemenu, lc('admin_00816'));
+        },
+        async deletemenu(id) {
+            let that = this;
+            let params = {
+                id: id
+            };
+            httpPost('m=neirong&c=news&a=delmenu', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            })
+        },
+        delrow(id) {
+            delConfirm(this, id, this.delete);
+        },
+        delAllBottom() {
+            if (!this.selectedItem.length) {
+                message.error(lc('admin_00136'));
+                return false;
+            }
+            delConfirm(this, this.selectedItem, this.delete);
+        },
+        async delete(id) {
+            let that = this;
+            let params = {
+                del: id
+            };
+            httpPost('m=neirong&c=news&a=delgroup', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.draweredit = false
+                        that.getList();
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            })
+        },
+        async makeCache() {
+            let that = this;
+            this.submitLoading = true;
+            httpPost('m=neirong&c=news&a=make_cache', {}).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg);
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+    },
+}
+</script>

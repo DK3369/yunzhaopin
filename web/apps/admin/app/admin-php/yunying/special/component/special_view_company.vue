@@ -1,0 +1,396 @@
+<template>
+  <div class="jobspecial_box">
+    <!--添加参会企业-->
+    <div class="jobspecial_box" style="padding: 0;">
+      <div class="moduleSeachbig">
+        <!--关键字搜索和查询在一起-------------------------------------------------------------------->
+        <div class="tableSeakusydsg" style="padding: 2px 0;">
+          <el-input v-model="searchForm.keyword" :placeholder="lc('admin_00340')" class="input-with-select" size="small"
+            prefix-icon="el-icon-search" clearable>
+            <template #prepend><el-select v-model="searchForm.type" size="small" :placeholder="lc('wap_com_00288')">
+              <el-option :label="lc('admin_yunying_00125')" value="1"></el-option>
+              <el-option :label="lc('admin_user_company_00144')" value="2"></el-option>
+              <el-option :label="lc('wap_01431')" value="3"></el-option>
+              <el-option :label="lc('admin_company_00023')" value="4"></el-option>
+              <el-option :label="lc('admin_00673')" value="5"></el-option>
+              <el-option :label="lc('admin_user_00130')" value="6"></el-option>
+            </el-select></template>
+          </el-input>
+        </div>
+        <!--收起部分-->
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.rating" size="small" :placeholder="lc('admin_user_company_00018')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in ratingList" :label="item.label" :value="item.value"
+              :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.time" size="small" :placeholder="lc('admin_user_company_00052')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in timeList" :label="item.label" :value="item.value" :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.status" size="small" :placeholder="lc('wap_com_00406')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in statusList" :label="item.label" :value="item.value"
+              :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.source" size="small" :placeholder="lc('admin_yunying_00139')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in sourceList" :label="item.label" :value="item.value"
+              :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.rec" size="small" :placeholder="lc('admin_user_company_00145')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in recList" :label="item.label" :value="item.value" :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.gw" size="small" :placeholder="lc('admin_01231')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in gwList" :label="item.label" :value="item.value" :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.lotime" size="small" :placeholder="lc('admin_yunying_00131')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in lotimeList" :label="item.label" :value="item.value"
+              :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.adtime" size="small" :placeholder="lc('admin_yunying_00130')" clearable @change="handleSearch">
+            <el-option v-for="(item, index) in adtimeList" :label="item.label" :value="item.value"
+              :key="index"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
+          <el-select v-model="searchForm.job" size="small" :placeholder="lc('admin_yunying_00132')" clearable @change="handleSearch">
+            <el-option :label="lc('admin_yunying_00135')" value="1"></el-option>
+            <el-option :label="lc('admin_yunying_00134')" value="2"></el-option>
+          </el-select>
+        </div>
+        <div class="tableSeachInpt">
+          <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
+        </div>
+        <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 12px;">
+          <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
+            aria-disabled="false" size="small" plain>{{ lc('admin_user_00145') }}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+          <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
+            aria-disabled="false" size="small" plain>{{ lc('admin_user_00144') }}<i class="el-icon-arrow-up el-icon--right"></i></el-button>
+        </div>
+      </div>
+
+
+      <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_data_stats") }} {{ lc("admin_company_total_count", [totalNum]) }}
+        <span class="admin_datatip_n">{{ lc("admin_not_joined_count", [noNum]) }}</span>
+        <span class="admin_datatip_n">{{ lc("admin_joined_count", [applyNum]) }} </span>
+      </div>
+      <div class="moduleElenAlRight" :class="{ 'moduleElenkuandu': seachbutn }">
+        <div class="moduleElTable">
+          <el-table :data="tableData" border style="width: 100%"
+            :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable"
+            @selection-change="handleSelectionChange" v-loading="loading">
+            <template #empty>
+              <p>{{ dataText }}</p>
+            </template>
+            <el-table-column type="selection" width="55" :selectable="selectable"></el-table-column>
+            <el-table-column :label="lc('wap_com_00157')" min-width="180">
+              <template #default="scope">
+                <el-popover trigger="hover" placement="top">
+                  <p>{{ scope.row.name }}<span v-if="scope.row.shortname">{{ lc('admin_01230') }}</span></p>
+                  <template #reference><span class="name-wrapper">
+                    <el-link type="primary" :href="scope.row.comUrl" target="_blank">{{ scope.row.name }}</el-link>
+                  </span></template>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column prop="rating_name" :label="lc('admin_user_company_00018')"></el-table-column>
+            <el-table-column :label="lc('admin_company_00023')">
+              <template #default="scope">
+                <template v-if="scope.row.linktel">{{ scope.row.linktel }}</template>
+                <template v-else-if="scope.row.linkphone">{{ scope.row.linkphone }}</template>
+              </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_user_company_00049')">
+              <template #default="scope">
+                <span v-if="scope.row.crm_uid <= 0" style="color:#c1c1c1;">{{ scope.row.crm_uid_n }}</span>
+                <span v-else-if="scope.row.crm_uid > 0">{{ scope.row.crm_uid_n }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="zz_jobnum" :label="lc('admin_yunying_00127')" width="150"></el-table-column>
+            <el-table-column :label="lc('admin_yunying_00128')">
+              <template #default="scope">
+                <span v-if="scope.row.join == '1'">{{ lc('admin_yunying_00133') }}</span>
+                <span v-else style="color: #c1c1c1;">{{ lc('admin_yunying_00136') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="210" align="center">
+              <template #default="scope">
+                <div class="cz_button">
+                  <template v-if="scope.row.jobnum > 0 && scope.row.r_status == 1">
+                    <el-button size="small" @click="handleInsert(scope)">{{ lc('admin_yunying_00138') }}</el-button>
+                  </template>
+                  <template v-else>
+                    <template v-if="scope.row.r_status != 1">{{ lc('admin_yunying_00126') }}</template>
+                    <template v-if="scope.row.jobnum <= 0">-</template>
+                  </template>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="modulePaging">
+          <div>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="handleInsert(null, true)" size="small">{{ lc('admin_yunying_00129') }}</el-button>
+          </div>
+          <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+              :current-page="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes"
+              layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+  props: {
+    //special_com.sid
+    id: { type: [String, Number], default: 0 },
+  },
+  data: function () {
+    return {
+      loading: false,
+      dataText: lc('admin_user_weipin_00026'),
+      pytoken: localStorage.getItem("pytoken"),
+      searchForm: {
+        page: 1,
+        limit: null,
+        type: '1',
+        keyword: null,//{{ lc('admin_tool_00574') }}
+        rating: null,//{{ lc('admin_user_company_00018') }}
+        time: null,//{{ lc('admin_user_company_00052') }}
+        status: null,//{{ lc('wap_com_00406') }}
+        source: null,//{{ lc('admin_yunying_00139') }}
+        rec: null,//{{ lc('admin_user_company_00145') }}
+        gw: null,//{{ lc('admin_01231') }}
+        lotime: null,//{{ lc('admin_yunying_00131') }}
+        adtime: null,//{{ lc('admin_yunying_00130') }}
+        job: null,//{{ lc('admin_yunying_00132') }}
+      },
+      total: 0,
+      tableData: [],
+      pageSizes: [],
+      checked: false,//{{ lc('wap_js_00074') }}
+      isIndeterminate: false,// checkbox 的不确定状态
+      selectedItem: [],
+      //搜索条件的基本数据
+      ratingList: [],//{{ lc('admin_user_company_00018') }}
+      timeList: [],//{{ lc('admin_user_company_00052') }}
+      statusList: [],//{{ lc('wap_com_00406') }}
+      sourceList: [],//{{ lc('admin_yunying_00139') }}
+      recList: [],//{{ lc('admin_user_company_00145') }}
+      gwList: [],//{{ lc('admin_01231') }}
+      lotimeList: [],//{{ lc('admin_yunying_00131') }}
+      adtimeList: [],//{{ lc('admin_yunying_00130') }}
+      totalNum: 0,
+      applyNum: 0,//参会企业的数量
+      noNum: 0,//未加入
+      statuscomVisible: false,//{{ lc('admin_user_weipin_00037') }}
+
+      tableHig: 100,
+      seachbutn: false,
+        prevPage:0
+    }
+  },
+  created: function () {
+    this.getList();
+    this.getBaseData();
+  },
+  methods: {
+    selectable(row, index) {
+      if (row.jobnum <= 0 || row.r_status != '1') {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    handleSelectionChange(val) {
+      this.selectedItem = val;
+      if (this.selectedItem.length == 0) {
+        this.isIndeterminate = false;
+        this.checked = false;
+      } else {
+        if (this.selectedItem.length == this.tableData.length) {
+          this.isIndeterminate = false;
+          this.checked = true;
+        } else {
+          this.isIndeterminate = true;
+          this.checked = false;
+        }
+      }
+    },
+    selectAllBottom(value) {
+      value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+    },
+    handleSizeChange(val) {
+      this.searchForm.limit = val;
+      this.getList();
+    },
+    handleCurrentChange(val) {
+      this.searchForm.page = val;
+      this.getList();
+    },
+    handleSearch() {
+      this.searchForm.page = 1
+      this.getList()
+    },
+    getList() {
+      let _this = this;
+      let params = JSON.parse(JSON.stringify(this.searchForm));
+      params.id = this.id;
+      for (let index in params) {
+        (params[index] === '') && (params[index] = null);
+      }
+      _this.loading = true;
+      httpPost('m=yunying&c=special_special&a=addlist', params).then(function (response) {
+        let res = response.data;
+        if (res.error === 0) {
+          _this.tableData = res.data.list;
+          _this.total = res.data.total;
+          _this.searchForm.limit = res.data.perPage;
+          _this.pageSizes = res.data.pageSizes;
+          _this.totalNum = res.data.totalNum;
+          _this.applyNum = res.data.applyNum;
+          _this.noNum = res.data.noNum;
+          if(_this.prevPage != _this.searchForm.page){
+              _this.prevPage = _this.searchForm.page;
+              _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+          }
+          _this.loading = false;
+          if (_this.tableData.length === 0) {
+            _this.dataText = lc('wap_js_00113');
+          }
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    getBaseData() {
+      let _this = this;
+      httpPost('m=yunying&c=special_special&a=set_comaddsearch', {}, { hideloading: true }).then(function (response) {
+        let res = response.data;
+        if (res.error === 0) {
+          _this.ratingList = res.data.ratingList;
+          _this.timeList = res.data.timeList;
+          _this.statusList = res.data.statusList;
+          _this.sourceList = res.data.sourceList;
+          _this.recList = res.data.recList;
+          _this.gwList = res.data.gwList;
+          _this.lotimeList = res.data.lotimeList;
+          _this.adtimeList = res.data.adtimeList;
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    handleInsert(scope, isMore) {
+      let params = {};
+      if (isMore) {
+        if (!this.selectedItem.length) {
+          message.error(lc('admin_yunying_00123'));
+          return false;
+        }
+        let list = [];
+        for (let item of this.selectedItem) {
+          list.push(item.uid);
+        }
+        params.sid = this.id;
+        params.uid = list.join(',');
+        params.type = 'more';
+      } else {
+        // let index = scope.$index;
+        // this.tableData.splice(index, 1);
+        params.sid = this.id;
+        params.uid = scope.row.uid;
+        params.type = 'one';
+      }
+
+      delConfirm(this, params, this.insert, lc('admin_yunying_00124'));
+    },
+    insert(params) {
+      let _this = this;
+      let url = params.type === 'one' ? 'm=yunying&c=special_special&a=savespecial' : 'm=yunying&c=special_special&a=mutiAddCom';
+      httpPost(url, params).then(function (response) {
+        let res = response.data;
+        if (res.error === 0) {
+          message.success(res.msg);
+          _this.$emit("child-event");
+        } else {
+          message.error(res.msg);
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+  },
+  watch: {
+    id: {
+      handler: function (newValue, oldValue) {
+      },
+      deep: true,
+      immediate: true
+    },
+  }
+};
+</script>
+<style scoped>
+.drawerModInfo::-webkit-scrollbar {
+  display: none;
+}
+
+.moduleElenAlRight {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 130px);
+}
+
+.jobspecial_box {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.moduleElTable {
+  margin-top: 0;
+  padding: 0;
+  width: 100%;
+  height: calc(100% - 55px);
+}
+
+.moduleElenkuand {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 5px) !important;
+}</style>

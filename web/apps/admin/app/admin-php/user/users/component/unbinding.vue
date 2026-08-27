@@ -1,0 +1,311 @@
+<template>
+	<div class="moduleElHight">
+		<div class="moduleElSearchInf">
+			<div class="moduleElTabInpt" style="flex-wrap: wrap;">
+				<div class="moduleInptList moduleInptWidt">
+					<el-input :placeholder="lc('admin_user_weipin_00003')" @keyup.enter="search" size="small" v-model="searchForm.keyword" clearable>
+						<template #prepend><el-select v-model="searchForm.type" :placeholder="lc('wap_user_00100')">
+							<el-option :label="lc('admin_user_00140')" :value="1"></el-option>
+							<el-option :label="lc('wap_user_00102')" :value="2"></el-option>
+						</el-select></template>
+					</el-input>
+				</div>
+				<div class="moduleInptList">
+					<el-date-picker v-model="daterange" size="small" type="daterange" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')"
+									:end-placeholder="lc('admin_00344')" style="width: 280px;" @change="search">
+					</el-date-picker>
+				</div>
+				<div class="moduleInptList">
+					<el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+				</div>
+			</div>
+		</div>
+		<div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
+			<el-table :data="list" stripe style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange"
+					  @sort-change="sortChange" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading">
+				<template #empty>
+					<p>{{dataText}}</p>
+				</template>
+				<el-table-column type="selection" width="55">
+				</el-table-column>
+				<el-table-column prop="id" :label="lc('member_com_00345')" width="120" sortable="custom">
+				</el-table-column>
+				<el-table-column prop="username" :label="lc('admin_user_00140')">
+				</el-table-column>
+				<el-table-column prop="content" :label="lc('wap_user_00102')" min-width="220">
+				</el-table-column>
+				<el-table-column prop="ip" label="IP">
+				</el-table-column>
+				<el-table-column prop="ctime_n" :label="lc('wap_js_00088')">
+				</el-table-column>
+				<el-table-column fixed="right" :label="lc('member_user_00048')" width="90">
+					<template #default="scope">
+						<div class="moduleElTaCaoz">
+							<el-button type="danger" size="small" @click="del(scope.$index)">{{ lc('common.delete') }}</el-button>
+						</div>
+					</template>
+				</el-table-column>
+			</el-table>
+		</div>
+		<div class="modulePaging">
+			<div>
+				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
+							 @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button @click="batch('del')" size="small">{{ lc('member_com_00055') }}</el-button>
+				<el-button @click="del('all')" size="small">{{ lc('admin_user_00260') }}</el-button>
+			</div>
+			<div class="modulePagNum">
+				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+							   :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+							   layout="total, sizes, prev, pager, next, jumper" :total="total">
+				</el-pagination>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+	export default {
+		data: function () {
+			return {
+				loading: false,
+				dataText: lc('admin_user_weipin_00026'),
+				// date selection
+				daterange: '',
+
+				// 搜索筛选项
+				searchForm: {
+					type: 1
+				},
+
+				// list
+				page: 1,
+				limit: 0,
+				list: [],
+				total: 0,
+				pageSizes: [],
+
+				// {{ lc('admin_00959') }}
+				t: '',
+				order: '',
+
+				checkedAll: false, // {{ lc('wap_js_00074') }}
+				checkedAllIndeterminate: false,
+				multipleSelection: [], // 多选值存储
+				idArr: [],
+
+				prevPage: 0
+			}
+		},
+
+		mounted() {
+
+		},
+		created() {
+			var that = this;
+			let params = window.parent.homeapp.$route.params;
+			let query = window.parent.homeapp.$route.query;
+			
+			if (!$.isEmptyObject(query)) {
+				params = {...query,...params};
+			}
+			
+			if (!$.isEmptyObject(params)) {
+				delete params.activeName;
+				this.getParams(params);
+			}
+			this.init();
+		},
+		methods: {
+			init() {
+				this.resetSearch();
+				this.search();
+			},
+			getParams:function(params={},search=false){
+				var that = this;
+				for(let i in params){
+					if(typeof that.searchForm[i]!='undefined'){
+						that.searchForm[i] = params[i];
+					}
+				}
+
+				if(search){
+					this.search();
+				}
+			},
+			resetSearch() {
+				this.searchForm = {
+					type: 1
+				};
+				this.limit = 0;
+			},
+
+			handleSizeChange(val) {
+				this.limit = val;
+				scrollToTop()
+				this.getList();
+			},
+			handleCurrentChange(val) {
+				this.page = val;
+				this.getList();
+			},
+			sortChange(event) {
+				this.t = event.order ? event.prop : '';
+				this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+				this.search();
+			},
+			search() {
+				this.page = 1;
+				let daterange = this.daterange;
+				if (daterange) {
+					this.searchForm.time_start = formatDate(daterange[0]);
+					this.searchForm.time_end = formatDate(daterange[1]);
+				} else {
+					this.searchForm.time_start = '';
+					this.searchForm.time_end = '';
+				}
+				this.getList();
+			},
+			getList() {
+				let that = this,
+						searchForm = that.searchForm,
+						params = {
+							page: that.page,
+							limit: that.limit,
+							t: that.t,
+							order: that.order,
+						};
+					that.loading = true;
+				httpPost('m=user&c=users_member&a=writtenOffLog', { ...params, ...searchForm }, {hideloading: true}).then(function (response) {
+					let res = response.data,
+							data = res.data;
+
+					that.list = data.list;
+					that.total = parseInt(data.total);
+					that.pageSizes = data.page_sizes;
+					if (that.limit === 0) {
+						that.limit = parseInt(data.limit); // 取系统配置默认数量
+					}
+					if (that.page > data.page) {
+						that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+					}
+					that.loading = false;
+					if(that.prevPage != that.page){
+	                    that.prevPage = that.page;
+	                    that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+	                    scrollToTop()
+	                }
+					if (that.list.length === 0) {
+	                    that.dataText = lc('wap_js_00113');
+	                }
+				})
+			},
+
+			// 批量操作
+			handleSelectionChange(val) {
+				if (val.length == 0) {
+					this.checkedAll = false;
+					this.checkedAllIndeterminate = false;
+				} else {
+					if (val.length === this.list.length) {
+						this.checkedAll = true;
+						this.checkedAllIndeterminate = false;
+					} else {
+						this.checkedAll = false;
+						this.checkedAllIndeterminate = true;
+					}
+				}
+				this.multipleSelection = val;
+			},
+			batch(type) {
+				if (this.multipleSelection.length == 0 && type == 'del') {
+	                message.error(lc('admin_user_weipin_00005'));
+	                return false;
+	            }else if(this.multipleSelection.length == 0){
+	                message.error(lc('admin_user_weipin_00001'));
+	                return false;
+	            }
+
+				let idArr = [];
+				this.multipleSelection.forEach(function (item) {
+					idArr.push(item.id);
+				})
+				this.idArr = idArr;
+
+				if (type == 'del') {
+					this.del();
+				}
+			},
+			checkAll(val) {
+				val ? this.checkedAllIndeterminate = false : '';
+				this.$refs.multipleTable.toggleAllSelection();
+			},
+
+			del(idx) {
+				let that = this,
+						params = {},
+						msg = '';
+
+				if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
+					params.del = this.idArr;
+					msg = lc('common_00853');
+				} else if (idx == 'all') { // {{ lc('admin_user_00260') }}
+					params.del = 'all';
+					msg = lc('admin_company_00007');
+				} else {// 单个删除
+					params.del = that.list[idx].id;
+					msg = lc('admin_00333');
+				}
+
+				delConfirm(this, params, function (params) {
+					httpPost('m=user&c=users_member&a=delwflog', params).then(function(res) {
+						if (res.data.error > 0) {
+							message.error(res.data.msg);
+						} else {
+							that.getList();
+							that.$refs.multipleTable.clearSelection();
+							message.success(res.data.msg);
+						}
+					})
+				}, msg)
+			},
+		},
+	};
+</script>
+<style scoped>
+	.el-input-group__prepend{
+		 	   background-color: #ffffff;
+		 	   padding: 0 20px;
+		 }
+	.el-button--primary.is-plain {
+		background: #f4f4f5;
+		border: none;
+	}
+
+	.el-button--primary.is-plain:hover {
+		color: #409eff;
+	}
+
+	.moduleElTaCaoz {
+		justify-content: space-between;
+	}
+
+	.moduleElTaCaoz .el-button {
+		/* width: 60px; */
+		margin: 3px 0;
+	}
+</style>

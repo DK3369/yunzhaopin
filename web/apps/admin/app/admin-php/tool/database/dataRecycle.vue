@@ -1,0 +1,373 @@
+<template>
+<div id="recycleApp" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+            <div class="tableSeachInpt" style="margin-bottom: 0px;;">
+                <el-input :placeholder="lc('admin_system_00217')" v-model="search.username" size="small" clearable></el-input>
+                <el-input :placeholder="lc('admin_tool_00335')" v-model="search.keyword" size="small" clearable></el-input>
+                <el-input :placeholder="lc('admin_tool_00336')" v-model="search.table" size="small" clearable></el-input>
+                <el-date-picker v-model="search.time" style="width: 230px;" type="daterange" size="small" align="right" unlink-panels :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" :picker-options="pickerOptions" value-format="timestamp" @change="handelSearch"></el-date-picker>
+            </div>
+            <div class="tableSeachInpt" style="margin-bottom: 0px;;">
+                <el-button type="primary" icon="el-icon-search" size="small" @click="handelSearch" style="margin-left: 8px">{{ lc('admin_user_weipin_00049') }}</el-button>
+                <el-button icon="el-icon-back" size="small" @click="handelBack" style="margin-left: 8px" v-if="identShow">{{ lc('common_02039') }}</el-button>
+            </div>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <div class="tableDome_tip">
+            <el-alert :title="lc('admin_tool_00343')" :closable="false" type="info"></el-alert>
+        </div>
+        <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="handleSelectionChange" ref="recycleTable" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="80"></el-table-column>
+            <el-table-column prop="username" :label="lc('admin_system_00218')"></el-table-column>
+            <el-table-column prop="tablename" :label="lc('admin_tool_00339')"></el-table-column>
+            <el-table-column prop="time_n" :label="lc('wap_js_00088')"></el-table-column>
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="310" align="center">
+                <template #default="scope">
+                    <div class="cz_button">
+                        <el-button size="small" type="info" plain @click="detail(scope.row)">{{ lc('admin_tool_00340') }}</el-button>
+                        <el-button size="small" @click="recoverRecycle(scope)">{{ lc('admin_tool_00068') }}</el-button>
+                        <el-button size="small" @click="handelIdentList(scope)">{{ lc('admin_tool_00342') }}</el-button>
+                        <el-button size="small" type="danger" @click="delRecycle(scope)">{{ lc('admin_tool_00344') }}</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz" style="margin-left: 10px;">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button size="small" plain @click="recoverRecycleSel">{{ lc('admin_tool_00338') }}</el-button>
+            <el-button size="small" plain v-if="identShow"  @click="recoverAll">{{ lc('admin_tool_00337') }}</el-button>
+            <el-button size="small" plain @click="delRecycleSel">{{ lc('member_com_00055') }}</el-button>
+            <el-button size="small" @click="truncateRecycle">{{ lc('admin_tool_00341') }}</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total" :pager-count="pagerCount"></el-pagination>
+        </div>
+    </div>
+    <div class="modluDrawer">
+        <el-drawer :title="lc('admin_tool_00345')" v-model="recycleDetail" :modal-append-to-body="false" size="50%">
+            <div class="moduleSchools">
+                <div class="drawerModLis" v-for="(item, key) in info" :key="key">
+                    <div class="drawerModTite" style="width:30%">
+                        <span>{{ lc("admin_field_name_value", [key]) }}</span>
+                    </div>
+                    <div class="drawerModInpt" style="width:60%">
+                        {{ lc("admin_data_value", [item]) }}
+                    </div>
+                </div>
+            </div>
+        </el-drawer>
+    </div>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                loading: false,
+                pagerCount: 5,
+                emptytext: window.lc('wap_js_00113'),
+                search: {
+                    username: '',
+                    keyword: '',
+                    table: '',
+                    time: '',
+                    ident: ''
+                },
+                pickerOptions: {
+                    shortcuts: [{
+                        text: window.lc('common_02000'),
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24);
+                            end.setTime(end.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: window.lc('common_01940'),
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: window.lc('admin_user_00146'),
+                        onClick(picker) {
+                            const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
+                            const end = new Date();
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: window.lc('admin_user_00142'),
+                        onClick(picker) {
+                            const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
+                            const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: window.lc('admin_user_00147'),
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: window.lc('admin_user_00143'),
+                        onClick(picker) {
+                            const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
+                            const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+
+                tableData: [],
+
+                total: 0,
+                currentPage: 1,
+				prevPage:0,
+                pageSize: 0,
+                pageSizes: [],
+
+                // 批量选择
+                checkAll: false,
+                isIndeterminate: false,
+                selectedItem: [],
+
+                identShow: false,
+
+                info: [],
+                recycleDetail: false
+            }
+        },
+        created: function () {
+            this.getRecycleList();
+        },
+        methods: {
+            detail(row) {
+                this.info = row.body_n;
+                this.recycleDetail = true;
+            },
+            getRecycleList() {
+                var that = this;
+                var params = JSON.parse(JSON.stringify(this.search));
+                params.pageSize = that.pageSize;
+                params.page = that.currentPage;
+                that.loading = true;
+                that.emptytext = window.lc('admin_user_weipin_00026');
+                httpPost('m=tool&c=dataRecycle', params, {hideloading: true}).then(function (res) {
+                    let data = res.data.data;
+                    that.tableData = data.list;
+                    that.total = data.total;
+                    that.pageSize = parseInt(data.pageSize);
+                    that.pageSizes = data.pageSizes;
+                    that.loading = false;
+
+					if(that.prevPage != that.currentPage){
+						that.prevPage = that.currentPage;
+						that.$refs.recycleTable.bodyWrapper.scrollTop = 0;
+					}
+                    if (that.tableData.length === 0) {
+                        that.emptytext = window.lc('wap_js_00113');
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+
+            handelSearch: function () {
+                this.currentPage = 1
+                this.getRecycleList();
+            },
+            handelIdentList(scope) {
+                let that = this;
+                that.currentPage = 1
+                that.search.ident = scope.row.ident;
+                that.identShow = true;
+                that.getRecycleList();
+            },
+            handelBack: function () {
+                let that = this;
+                that.search.ident = '';
+                that.identShow = false;
+                that.getRecycleList();
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checkAll = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checkAll = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checkAll = false;
+                    }
+                }
+            },
+            handleCheckAllChange(val) {
+                val ? this.$refs.recycleTable.toggleAllSelection() : this.$refs.recycleTable.clearSelection();
+            },
+
+            recoverRecycle(scope, isMore) {
+                let _this = this;
+                let idArr = [];
+                let params = {};
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+                        idArr.push(item.id);
+                    });
+                    params.id = idArr;
+                } else {
+                    params.id = scope.row.id;
+                }
+                _this.$confirm(window.lc('admin_tool_00346'), window.lc('wap_user_00205'), {
+                    confirmButtonText: window.lc('common_02016'),
+                    cancelButtonText: window.lc('wap_js_00080'),
+                    type: 'info'
+                }).then(() => {
+                    httpPost('m=tool&c=dataRecycle&a=recover', params).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                _this.getRecycleList();
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+
+            recoverRecycleSel() {
+                let that = this;
+                if (!that.selectedItem.length) {
+
+                    message.error(window.lc('admin_tool_00347'));
+                    return;
+                }
+                this.recoverRecycle(null, true);
+            },
+            recoverAll() {
+                let _this = this;
+                _this.$confirm(window.lc('admin_tool_00348'), window.lc('wap_user_00205'), {
+                    confirmButtonText: window.lc('common_02016'),
+                    cancelButtonText: window.lc('wap_js_00080'),
+                    type: 'info'
+                }).then(() => {
+                    httpPost('m=tool&c=dataRecycle&a=recoverAll', {ident: _this.search.ident}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                _this.getRecycleList();
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+
+            delRecycle(scope, isMore) {
+                var that = this;
+                let idArr = [];
+                let params = {};
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+                        idArr.push(item.id);
+                    });
+                    params.id = idArr;
+                } else {
+                    params.id = scope.row.id;
+                }
+                delConfirm(this, params, this.delete, window.lc('admin_tool_00349'));
+            },
+            delRecycleSel() {
+                var that = this;
+                if (!that.selectedItem.length) {
+                    message.error(window.lc('admin_user_weipin_00005'));
+                    return;
+                }
+                this.delRecycle(null, true);
+            },
+            delete(params) {
+                var self = this;
+                httpPost('m=tool&c=dataRecycle&a=delRecycle', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            self.getRecycleList();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+
+            truncateRecycle() {
+                let _this = this;
+                _this.$confirm(window.lc('admin_tool_00350'), window.lc('wap_user_00205'), {
+                    confirmButtonText: window.lc('common_02016'),
+                    cancelButtonText: window.lc('wap_js_00080'),
+                    type: 'warning'
+                }).then(() => {
+                    httpPost('m=tool&c=dataRecycle&a=tuncateRecycle', {recycle: 'tuncate'}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                self.getRecycleList();
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+            handleSizeChange(val) {
+
+                console.log(`Page size: ${val}`);
+                this.pageSize = val;
+                this.getRecycleList();
+            },
+            handleCurrentChange(val) {
+
+                console.log(`Current page: ${val}`);
+                this.currentPage = val;
+                this.getRecycleList();
+            },
+        }
+    }
+</script>

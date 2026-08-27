@@ -1,0 +1,875 @@
+<template>
+    <div style="margin:10px;" v-if="islook">
+        <div class="moduleTable">
+            <table class="tableVue">
+                <thead>
+                <tr align="left">
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="3">{{ lc('admin_00603') }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('admin_user_00140') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-input :placeholder="lc('wap_00208')" v-model="username" @blur="checkuname">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_00356') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableSelect" style="display: flex;align-items: center; ">
+                            <el-input type="password" @mousedown="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" :readonly="pwdreadonly" :placeholder="lc('wap_01380')" v-model="password">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ lc('wap_com_00095') }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_com_00061') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-autocomplete style="width: 400px;" class="inline-input" v-model="name"
+                                             :fetch-suggestions="querySearch"
+                                             :placeholder="lc('wap_00838')"
+                                             :trigger-on-focus="false"
+                            ></el-autocomplete>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span style="color:red;">{{ lc('admin_00604') }}</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('admin_user_company_00035') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-input :placeholder="lc('wap_com_00137')" v-model="shortname">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_user_00010') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-select v-model="hy" :placeholder="lc('wap_user_00100')">
+                                <el-option v-for="(item, index) in cache.industry_index" :key="index"
+                                           :label="cache.industry_name[item]"
+                                           :value="item">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_com_00159') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-select v-model="pr" :placeholder="lc('wap_user_00100')">
+                                <el-option v-for="(item,index) in cache.comdata.job_pr" :key="index"
+                                           :label="cache.comclass_name[item]"
+                                           :value="item">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_com_00163') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-select v-model="mun" :placeholder="lc('wap_user_00100')">
+                                <el-option v-for="(item,index) in cache.comdata.job_mun" :key="index"
+                                           :label="cache.comclass_name[item]"
+                                           :value="item">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('admin_00605') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-cascader v-model="sel_city" :options="cache.cities" :props="{checkStrictly: true }" @change="citychange" filterable
+                                         collapse-tags clearable></el-cascader>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_00040') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-autocomplete style="width: 100%;"
+                                             popper-class="my-autocomplete"
+                                             :debounce="1000"
+                                             v-model="address"
+                                             :fetch-suggestions="addressKeyup"
+                                             :placeholder="lc('admin_user_company_00033')"
+                                             @select="poiSearchClick">
+                                <template #suffix><i class="el-icon-location-outline el-input__icon" @click="localsearch(lc('member_com_00206'))"></i></template>
+                                <template #default="{ item }">
+                                    <div class="autocompLtite">
+                                        <div class="name">{{ item.name }}</div>
+                                        <span class="addr">{{ item.address }}</span>
+                                    </div>
+
+                                </template>
+                            </el-autocomplete>
+                        </div>
+                        <div class="yunyinDiaList" v-if="mapurl">
+                            <div class="yunyinDiaInpt" style="width: 100%;">
+                                <div class="TableInpt TableInptCoor" style="position:relative; width: 100%;">
+                                    <div id="comadd_conrtainer" style="width:100%;height:300px; position:relative; z-index:1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_01431') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-input :placeholder="lc('wap_com_00013')" v-model="linkman">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_00109') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-input :placeholder="lc('wap_com_00142')" v-model="moblie">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_com_00014') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-input style="width:100px;" :placeholder="lc('admin_00609')" v-model="areacode" maxlength="7">
+                            </el-input>
+                            <el-input style="width:230px;margin-left: 12px;" :placeholder="lc('wap_com_00014')" v-model="telphone" maxlength="8">
+                            </el-input>
+                            <el-input style="width:100px;margin-left: 12px;" :placeholder="lc('admin_00610')" v-model="exten" maxlength="4">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('member_user_00282') }}</div>
+                    </td>
+                    <td>
+                        <div class="TableInpt">
+                            <el-input :placeholder="lc('wap_00697')" v-model="email">
+                            </el-input>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('wap_com_00160') }}</div>
+                    </td>
+                    <td colspan="2">
+                        <div style="border: 1px solid #ccc;">
+                            <div id="toolbar-container-comdesc"><!-- Toolbar --></div>
+                            <div id="editor-container-comdesc" style="height: 300px;"><!-- Editor --></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('admin_00606') }}</div>
+                    </td>
+                    <td>
+                        <el-checkbox v-model="sendmsg">{{ lc('admin_user_00166') }}</el-checkbox>
+                        <el-checkbox v-model="sendemail">{{ lc('admin_user_00167') }}</el-checkbox>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ lc('admin_00607') }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('admin_00608') }}</div>
+                    </td>
+                    <td>
+                        <el-input :placeholder="lc('admin_00611')" v-model="integral">
+                        </el-input>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="TableTite">{{ lc('admin_user_company_00034') }}</div>
+                    </td>
+                    <td>
+                        <el-select v-model="rating_name" :placeholder="lc('wap_user_00100')">
+                            <el-option v-for="(item, index) in ratingarr" :key="index" :label="item"
+                                       :value="index">
+                            </el-option>
+                        </el-select>
+                    </td>
+                    <td>
+                        <div class="TableShuom">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="save">{{ lc('common.submit') }}</el-button>
+        </div>
+    </div>
+</template>
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+    let editor_desc = null,toolbar_desc = null,editorInterval = null;
+    const {createEditor, createToolbar} = window.wangEditor;
+    export default {
+        props: {
+            pricename: {
+                type: String,
+                default: function(){
+                    return ''
+                }
+            },
+            rates: {
+                type: Object,
+                default: function(){
+                    return {}
+                }
+            },
+        },
+        data: function () {
+            return {
+                username: '',
+                password: '',
+                name: '',
+                shortname: '',
+                hy: '',
+                pr: '',
+                mun:'',
+                address:'',
+                linkman:'',
+                moblie:'',
+                areacode: '',
+                telphone:'',
+                exten:'',
+                email:'',
+                sendmsg:false,
+                sendemail: false,
+                integral: '',
+                rating_name: '',
+                sel_city: [],
+                ratingarr: [],
+                cache: null,
+                integral_pricename: '',
+                cionly: 0,
+                pwdreadonly: true,
+                islook: false,
+
+                x:'',
+                y:'',
+                address_v:'',
+                mapurl: '',
+                mapsecret: '',
+            }
+        },
+        watch: {
+            pricename: {
+                handler(val) {
+                    this.integral_pricename = val;
+                },
+                immediate: true,
+                deep: true,
+            },
+            rates: {
+                handler(val) {
+                    this.ratingarr = val;
+                },
+                immediate: true,
+                deep: true,
+            },
+        },
+        beforeDestroy() {
+            editor_desc = null; 
+            toolbar_desc = null;
+            editorInterval = null;
+        },
+        methods: {
+            // Prevent password dropdown flicker after repeated password-field clicks
+            pwdMousedown(){
+                var that = this
+                this.pwdreadonly = true
+                setTimeout(function(){ that.pwdreadonly = false, 100})
+            },
+            // {{ lc('common_00444') }}
+            pwdchange: function(val){
+                var that = this
+                if (val == "") {
+                    this.pwdreadonly = true
+                    setTimeout(function(){ that.pwdreadonly = false, 100})
+                }
+            },
+            // Temporarily change password readonly state to prevent browser password history suggestions
+            readonlyCtl: function(res){
+                var that = this
+                setTimeout(function(){
+                    that.pwdreadonly = res
+                }, 200)
+            },
+            citychange: function (data) {
+                this.sel_city = data
+            },
+            getinfo: function(){
+                var that = this
+                httpPost('m=user&c=company&a=add', {}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        that.cache = res.data.cache
+                        that.rating_name = res.data.com_rating
+                        if (res.data.cionly == 1) {
+                            that.cionly = 1
+                        } else {
+                            that.cionly = 0
+                        }
+                        that.mapurl = res.data.mapurl;
+                        that.mapsecret = res.data.mapsecret;
+
+
+                        that.islook = true;
+                        that.$nextTick(_ => {
+                            var map_url = that.mapurl+"&callback=onAMapCallback";
+                            that.writeJs(map_url, that.mapsecret).then(value => {
+                                that.openMap();
+                            });
+                        });
+                        clearInterval(editorInterval);
+                        editorInterval = setInterval(()=>{
+                            if (editor_desc !== null){
+                                clearInterval(editorInterval);
+                            }else{
+                                that.initEditor();
+                            }
+                        },300);
+                    }
+                });
+            },
+            writeJs: function(url, secret) {
+                return new Promise((resolve, reject) => {
+                    // Return directly if already loaded
+                    if (typeof window.AMap !== 'undefined') {
+                        resolve(window.AMap);
+                        return true;
+                    }
+                    // Handle async map loading callback
+                    window.onAMapCallback = function () {
+                        resolve(AMap);
+                    };
+                    // Set security key
+                    window._AMapSecurityConfig = {
+                        securityJsCode: secret,
+                    }
+                    // Insert script tag
+                    let scriptNode = document.createElement('script');
+                    scriptNode.setAttribute('type', 'text/javascript');
+                    scriptNode.setAttribute('src', url);
+                    document.body.appendChild(scriptNode);
+                });
+            },
+            getMap:function (){
+
+                var map = new AMap.Map('comadd_conrtainer', {
+                    zoom: 15,
+                    center: [this.x, this.y]
+                });
+
+                var marker = new AMap.Marker({
+                    position: new AMap.LngLat(this.x, this.y)
+                });
+                map.add(marker);
+                return map;
+            },
+            openMap:function (){
+                var that = this;
+                var data=get_map_config();
+                if(data && data.indexOf('map_x')>-1){
+                    var config=eval('('+data+')');
+                    var rating,map_control_type,map_control_anchor;
+                    if (!that.x && !that.y) {
+                        that.x = config.map_x;
+                        that.y = config.map_y;
+                    }
+
+                    var map = that.getMap();
+                    map.on("click",function(e){
+                        var lngLat = e.lnglat;
+                        that.x = lngLat.lng
+                        that.y = lngLat.lat
+                        map.clearMap();
+                        var marker = new AMap.Marker({
+                            position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                        });
+                        map.add(marker);
+                    });
+                }
+            },
+            addressKeyup:function(queryString, cb){
+
+                this.localsearch(queryString, cb)
+            },
+            localsearch:function(city='',cb){
+                var that = this;
+                var address = city;
+
+                if (this.mapurl && address.length > 3) {
+                    var map = this.getMap();
+                    map.clearMap();
+
+                    var params = {address: address};
+                    httpPost('m=common&c=cache&a=poi', params).then(function (result) {
+                        var res = result.data
+                        if (res.error == 0) {
+                            var e = res.data;
+                            if(e.status == '1' && e.tips.length > 0){
+                                that.poiSearchArr = e.tips;
+                                setTimeout(function(){
+                                    map.clearMap();
+
+                                },200);
+                            }
+                            cb(that.poiSearchArr);
+                            that.address_v = that.address;
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    });
+
+                }
+
+            },
+            poiSearchClick:function(item){
+
+                var that = this;
+                that.address = that.address_v;
+                var location = item.location;
+                var c = location.split(',');
+
+                this.x = c[0];
+                this.y = c[1];
+                var map = that.getMap();
+                // Set marker
+                var lngLat = new AMap.LngLat(c[0],c[1]);
+                map.setZoomAndCenter(17,lngLat);
+                var marker = new AMap.Marker({
+                    position: lngLat
+                });
+                map.add(marker);
+                // Listen for map click events
+                map.on("click",function(e){
+                    var lngLat = e.lnglat;
+                    this.x = lngLat.lng;
+                    this.y = lngLat.lat;
+                    map.clearMap();
+                    var marker = new AMap.Marker({
+                        position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                    });
+                    map.add(marker);
+                });
+                this.poiSearchArr = [];
+            },
+            // Check whether username is duplicated
+            checkuname: function(e){
+                httpPost('m=user&c=company&a=checkUsername', {username: e.target.value}).then(function (response) {
+                    let res = response.data;
+                    if (res.error != 0) {
+                        message.error(res.msg);
+                        return false
+                    }
+                });
+            },
+
+            querySearch(queryString, cb) {
+                httpPost('m=user&c=company&a=checkComName', {companyName: queryString}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        cb(res.data);
+                    }
+                });
+            },
+            initEditor() {
+                let editorConfig = {
+                    MENU_CONF: {
+                        uploadImage: {
+                            server: baseUrl + 'm=index&c=uploadfile',
+                            fieldName: 'file'
+                        }
+                    }
+                };
+                // {{ lc('wap_com_00160') }}
+                if (!editor_desc) {
+                    editor_desc = createEditor({
+                        selector: '#editor-container-comdesc',
+                        html: '',
+                        config: editorConfig,
+                        mode: 'simple'
+                    });
+                }
+                if (!toolbar_desc) {
+                    toolbar_desc = createToolbar({
+                        editor: editor_desc,
+                        selector: '#toolbar-container-comdesc',
+                        config: {
+                            excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
+                        },
+                        mode: 'simple'
+                    });
+                }
+                editor_desc.setHtml('');
+            },
+            async save() {
+                let that = this;
+                if(that.username == '') {
+                    message.error(lc('wap_00208'));
+                    return false;
+                }
+                if(that.password == '') {
+                    message.error(lc('wap_01380'));
+                    return false;
+                }
+                if(that.name == '') {
+                    message.error(lc('wap_00838'));
+                    return false;
+                }
+                if(that.hy == '') {
+                    message.error(lc('wap_user_00009'));
+                    return false;
+                }
+                if(that.pr == '') {
+                    message.error(lc('wap_com_00143'));
+                    return false;
+                }
+                if(that.mun == '') {
+                    message.error(lc('wap_com_00144'));
+                    return false;
+                }
+                if(that.cionly == '1' && (that.sel_city.length == 0 || that.sel_city[0] == '')) {
+                    message.error(lc('member_com_00194'));
+                    return false;
+                }
+                if(that.cionly == '0' && (that.sel_city.length <= 1 || that.sel_city[1] == '')) {
+                    message.error(lc('member_com_00194'));
+                    return false;
+                }
+                if(that.address == '') {
+                    message.error(lc('common_06414'));
+                    return false;
+                }
+                if(that.linkman == '') {
+                    message.error(lc('wap_com_00013'));
+                    return false;
+                } else{
+                    var link_name = that.linkman;
+                    var link_man = link_name.replace(/[-_ ]/g,'');// {{ lc('common_01715') }}
+                    if(!link_man){
+                        return ;
+                    }
+                    var test = link_man.replace(/[0-9]/g,'');
+                    if (!test){
+                        message.error(lc('wap_com_00005'));
+                        return false;
+                    }else{
+                        if(/\d/.test(link_man)){
+                            if(link_man.length>8){
+                                // obj.value = obj.value.substring(0,8);
+                                message.error(lc('wap_com_00002'));
+                                return false;
+                            }
+                        }
+                    }
+                }
+                if(that.moblie == '') {
+                    message.error(lc('wap_01460'));
+                    return false;
+                } else {
+                    var obj = that.moblie;
+                    if(isjsMobile(obj) == false) {
+                        message.error(lc('wap_com_00006'));
+                        return false;
+                    }
+                }
+                var obj = that.email;
+                var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+                if(obj != "" && !myreg.test(obj)) {
+                    message.error(lc('wap_com_00131'));
+                    return false;
+                }
+                // Check whether content is empty after removing HTML tags
+                var regex = /(<([^>]+)>)/ig
+                var content = editor_desc.getHtml().replace(regex, "")
+                if (content == "") {
+                    message.error(lc('member_com_00445'))
+                    return false;
+                }
+                if(that.rating_name == '') {
+                    message.error(lc('common_00924'))
+                    return false;
+                }
+                if(that.sendmsg == true && that.moblie == '') {
+                    message.error(lc('wap_js_00132'))
+                    return false;
+                }
+                if(that.sendemail==true&&that.email == '') {
+                    message.error(lc('admin_user_company_00032'))
+                    return false;
+                }
+                var params = {
+                    username: that.username,
+                    password: that.password,
+                    name: that.name,
+                    shortname: that.shortname,
+                    hy: that.hy,
+                    pr: that.pr,
+                    mun: that.mun,
+                    address: that.address,
+                    x: that.x,
+                    y: that.y,
+                    linkman: that.linkman,
+                    moblie: that.moblie,
+                    areacode: that.areacode,
+                    telphone: that.telphone,
+                    exten: that.exten,
+                    email: that.email,
+                    sendmsg:that.sendmsg,
+                    sendemail: that.sendemail,
+                    status:'1',
+                    integral: that.integral,
+                    rating_name: that.rating_name,
+                    content:editor_desc.getHtml(),
+                    submit: 1
+                };
+                if (that.sel_city[0]) {
+                    params.provinceid = that.sel_city[0]
+                }
+                if (that.sel_city[1]) {
+                    params.cityid = that.sel_city[1]
+                }
+                if (that.sel_city[2]) {
+                    params.three_cityid = that.sel_city[2]
+                }
+                httpPost('m=user&c=company&a=add', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.$parent.$parent.comadddrawer = false
+                            that.resetData();
+                            that.$parent.$parent.getList();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                });
+            },
+            resetData() {
+                this.username =  '';
+                this.password =  '';
+                this.name =  '';
+                this.shortname =  '';
+                this.hy =  '';
+                this.pr =  '';
+                this.mun = '';
+                this.address = '';
+                this.linkman = '';
+                this.moblie = '';
+                this.areacode =  '';
+                this.telphone = '';
+                this.exten = '';
+                this.email = '';
+                this.sendmsg = false;
+                this.sendemail =  false;
+                this.integral =  '';
+                this.rating_name =  '';
+                this.sel_city =  [];
+                this.cache =  null;
+                this.integral_pricename =  '';
+                this.cionly =  0;
+                this.pwdreadonly =  true;
+                this.x = '';
+                this.y = '';
+                this.address_v = '';
+                this.mapurl =  '';
+                this.mapsecret =  '';
+            }
+        },
+    };
+    function get_map_config(){
+        var config="";
+        var weburl = localStorage.getItem("sy_weburl");
+        $.ajax( {
+            async : false,
+            type : "post",
+            url : weburl + '/index.php?m=ajax&c=mapconfig',
+            data : {id:""},
+            success : function(set) {
+                config=set;
+            }
+        });
+        return config;
+    }
+</script>
+<style scoped>
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 148px;
+        height: 148px;
+        line-height: 148px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 148px;
+        height: 148px;
+        display: block;
+    }
+</style>

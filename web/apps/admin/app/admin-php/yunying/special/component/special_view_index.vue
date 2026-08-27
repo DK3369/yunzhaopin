@@ -1,0 +1,445 @@
+<template>
+    <div class="jobspecial_box">
+        <div class="moduleSeachbig">
+            <div class="tableSeachInpt">
+                <el-input v-model="searchForm.keyword" :placeholder="lc('wap_com_00157')" size="small" prefix-icon="el-icon-search" clearable>
+                </el-input>
+            </div>
+            <div class="tableSeachInpt">
+                <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+            <div v-if="showAdd" class="tableSeachInpt">
+                <el-button type="primary" plain icon="el-icon-plus" size="small" @click="companyVisible = true">{{ lc('admin_00850') }}</el-button>
+            </div>
+        </div>
+
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_joined_companies_jobs", [applyNum, jobsNum]) }}</div>
+
+        <div class="moduleElenAlRight">
+            <div class="moduleElTable" style="margin-top: 0; padding: 0; height: calc(100% - 55px); width: 100%;">
+                <el-table :data="tableData" border style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
+                    height="100%" ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading">
+                    <template #empty>
+                        <p>{{dataText}}</p>
+                    </template>
+                    <el-table-column type="selection" width="55">
+                    </el-table-column>
+                    <el-table-column prop="uid" :label="lc('member_com_00345')" sortable="custom" width="100">
+                    </el-table-column>
+                    <el-table-column prop="name" :label="lc('wap_com_00157')" min-width="220">
+                        <template #default="scope">
+                            <el-link :href="scope.row.comUrl" target="_blank" type="primary">{{ scope.row.name }}</el-link>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="sort" :label="lc('member_com_00022')" sortable="custom" width="120">
+                        <template #default="scope">
+                            <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index"
+                                :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 'int')"
+                                onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <span v-else>
+                {{ scope.row.sort }}<img @click="editData(scope)" class="editIcon" src="/admin/php-admin/images/bine.png" alt=""
+                                style="margin-left: 4px;" width="14" height="14">
+              </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="tpl" :label="lc('member_user_00181')" width="140">
+                        <template #default="scope">
+                            <template v-if="scope.row.status == 1"><span style="color:#61687C;">{{ lc('admin_yunying_00133') }}</span></template>
+                            <template v-else-if="scope.row.status == 2"><span style="color:red;">{{ lc('wap_user_00167') }}</span></template>
+                            <template v-else>{{ lc('admin_01232') }}</template>
+                        </template>
+                    </el-table-column>
+                    <el-table-column v-if="special.tpl == 'gl.htm'" prop="limit" :label="lc('admin_01233')" width="150">
+                        <template #default="scope">
+                            <div class="cz_button">
+                                <el-button v-if="scope.row.famous == 1" size="small" @click="handleSpecialFamous(scope)">{{ lc('common.cancel') }}</el-button>
+                                <el-button v-else size="small" @click="handleSpecialFamous(scope)">{{ lc('admin_user_company_00147') }}</el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column :label="lc('member_user_00048')" width="140" header-align="center" align="right">
+                        <template #default="scope">
+                            <div class="cz_button">
+                                <el-button size="small" @click="handleAudit(scope)">{{ lc('admin_yunying_00138') }}</el-button>
+                                <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('common.cancel') }}</el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <div class="modulePaging">
+                <div>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="small">{{ lc('member_com_00055') }}</el-button>
+                    <el-button @click="handleStatuscom" size="small">{{ lc('admin_user_weipin_00037') }}</el-button>
+                    <el-button plain icon="el-icon-download" @click.prevent="handleExport" size="small">{{ lc('admin_00851') }}</el-button>
+                </div>
+                <div class="modulePagNum">
+                    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                        v-model:current-page="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes"
+                        layout="total, sizes, prev, pager, next, jumper" :total="total" :pager-count="pagerCount">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
+
+        <!-- 批量审核 弹窗 -->
+        <div class="modluDrawer">
+            <el-dialog v-model="statuscomVisible" :title="lc('admin_01234')" width="400px" :modal-append-to-body="false"
+                :append-to-body="true" :show-close="true" :destroy-on-close="true">
+                <special_view_status :pid="statuscomPids" @child-event="statuscomVisible = false; getList();"
+                    @child-event-close="statuscomVisible = false"></special_view_status>
+            </el-dialog>
+        </div>
+
+        <!--企业详情审核 -->
+        <el-drawer v-model="auditVisible" :title="lc('wap_00188')" :append-to-body="true" :destroy-on-close="true"
+            :modal-append-to-body="false" size="80%">
+            <special_view_audit :id="info.id" :uid="info.uid" @child-event="auditVisible = false; getList();"></special_view_audit>
+        </el-drawer>
+
+        <!--添加参会企业-->
+        <el-drawer v-model="companyVisible" :title="lc('admin_00850')" :append-to-body="true" :destroy-on-close="true"
+            :modal-append-to-body="false" size="90%">
+            <special_view_company :id="id" @child-event="companyVisible = false; getList();"></special_view_company>
+        </el-drawer>
+    </div>
+</template>
+
+<script>
+import SpecialViewAudit from './special_view_audit.vue'
+import SpecialViewCompany from './special_view_company.vue'
+import SpecialViewStatus from './special_view_status.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+
+export default {
+    props: {
+        //special_com.sid
+        id: {type: [String, Number], default: 0},
+    },
+    data: function () {
+        return {
+            loading: false,
+			pagerCount: 5,
+            dataText: lc('admin_user_weipin_00026'),
+            pytoken: localStorage.getItem("pytoken"),
+            searchForm: {
+                page: 1,
+                limit: null,
+                keyword: null,//关键字
+            },
+            total: 0,
+            tableData: [],
+            pageSizes: [],
+            checked: false,//全选
+            isIndeterminate: false,// checkbox 的不确定状态
+            selectedItem: [],
+            showAdd: true,//是否显示 添加参会企业
+            applyNum: 0,//参会企业的数量
+            jobsNum: 0,//参会企业的职位数量
+            special: {},//专题的部分信息
+            statuscomVisible: false,//批量审核
+            statuscomPids: '',
+            auditVisible: false,//{{ lc('admin_yunying_00138') }}
+            info: {},
+            companyVisible: false,//{{ lc('admin_00850') }}
+            prevPage:0
+        }
+    },
+    created: function () {
+    },
+    mounted() {
+    },
+    methods: {
+        handleSelectionChange(val) {
+            this.selectedItem = val;
+
+            if (this.selectedItem.length == 0) {
+                this.isIndeterminate = false;
+                this.checked = false;
+            } else {
+                if (this.selectedItem.length == this.tableData.length) {
+                    this.isIndeterminate = false;
+                    this.checked = true;
+                } else {
+                    this.isIndeterminate = true;
+                    this.checked = false;
+                }
+            }
+        },
+        selectAllBottom(value) {
+            value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+        },
+        shortChange(e) {
+            let orderMap = {ascending: 'asc', descending: 'desc'}
+            this.searchForm.t = e.order ? e.prop : null;
+            this.searchForm.order = orderMap[e.order];
+            this.searchForm.page = 1;
+            this.getList();
+        },
+        handleSizeChange(val) {
+            this.searchForm.limit = val;
+            this.getList();
+        },
+        handleCurrentChange(val) {
+            this.searchForm.page = val;
+            this.getList();
+        },
+        handleSearch() {
+            this.searchForm.page = 1
+            this.getList()
+        },
+        getList() {
+            let _this = this;
+            let params = JSON.parse(JSON.stringify(this.searchForm));
+            params.id = this.id;
+            for (let index in params) {
+                (params[index] === '') && (params[index] = null);
+            }
+            _this.loading = true;
+            httpPost('m=yunying&c=special_special&a=com', params).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    _this.tableData = res.data.list;
+                    _this.total = res.data.total;
+                    _this.searchForm.limit = res.data.perPage;
+                    _this.pageSizes = res.data.pageSizes;
+                    _this.showAdd = res.data.showAdd;
+                    _this.applyNum = res.data.applyNum;
+                    _this.jobsNum = res.data.jobsNum;
+                    _this.special = res.data.special;
+                    if(_this.prevPage != _this.searchForm.page){
+                        _this.prevPage = _this.searchForm.page;
+                        _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
+                    _this.loading = false;
+                    if (_this.tableData.length === 0) {
+                        _this.dataText = lc('wap_js_00113');
+                    }
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        deleteRow(scope, isMore) {
+            let params = {};
+            if (isMore) {
+                if (!this.selectedItem.length) {
+                    message.error(lc('admin_user_weipin_00005'));
+                    return false;
+                }
+                let list = [];
+                for (let item of this.selectedItem) {
+                    list.push(item.id);
+                }
+                params.del = list;
+            } else {
+                // let index = scope.$index;
+                // this.tableData.splice(index, 1);
+                params.id = scope.row.id;
+            }
+
+            delConfirm(this, params, this.delete);
+        },
+        delete(params) {
+            let _this = this;
+            httpPost('m=yunying&c=special_special&a=delcom', params).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success(res.msg);
+                    _this.getList();
+                } else {
+                    message.error(res.msg);
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        editData(scope) {
+            let index = scope.$index;
+            let row = scope.row;
+            let column = scope.column;
+            this.oldData = JSON.parse(JSON.stringify(row));
+            let copyRow = JSON.parse(JSON.stringify(row));
+            copyRow[column.property + "isShow"] = true;
+            this.$set(this.tableData, index, copyRow);
+            this.$nextTick(() => {
+                let ref = column.property + index;
+                $("#" + ref).focus();
+            });
+        },
+        alterData(scope, type) {
+            if (this.oldData == null) {
+                return false;
+            }
+            let index = scope.$index;
+            let row = scope.row;
+            let column = scope.column;
+            if (type === 'int') {
+                row[column.property] = row[column.property].replace(/[^0-9]/g, '');
+            }
+            let copyRow = JSON.parse(JSON.stringify(row));
+            copyRow[column.property + "isShow"] = false;
+            this.$set(this.tableData, index, copyRow);
+            if (row[column.property] === this.oldData[column.property]) {
+                return false;
+            }
+            let _this = this;
+            let params = {id: row.id};
+            params[column.property] = row[column.property];
+            httpPost('m=yunying&c=special_special&a=ajaxsort', params, {hideloading: true}).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success(lc('admin_user_company_00208'));
+                } else {
+                    message.error(lc('admin_00187'));
+                }
+                _this.oldData = null;
+                _this.getList();
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        handleAudit(scope) {
+            this.info = scope.row;
+            this.auditVisible = true;
+        },
+        handleStatuscom() {
+            // BatchAudit
+            if (!this.selectedItem.length) {
+                message.error(lc('admin_00572'));
+                return false;
+            }
+
+            let list = [];
+            for (let item of this.selectedItem) {
+                list.push(item.id);
+            }
+            this.statuscomPids = list.join(',');
+            this.statuscomVisible = true;
+        },
+        handleSpecialFamous(scope) {
+            if (this.special.tpl != 'gl.htm') {
+                return false;
+            }
+            let params = {};
+            params.sid = scope.row.sid;
+            params.uid = scope.row.uid;
+            params.famous = scope.row.famous;
+            let msg = '';
+            if (scope.row.famous == 1) {
+                msg = lc('admin_vue_00078');
+            } else {
+                msg = lc('admin_vue_00079')
+            }
+            delConfirm(this, params, this.doSpecialFamous, msg);
+        },
+        doSpecialFamous(params) {
+            let _this = this;
+            httpPost('m=yunying&c=special_special&a=setFamous', params).then(function (response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success(res.msg);
+                    _this.getList();
+                } else {
+                    message.error(res.msg);
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        handleExport() {
+            let params = {};
+            if (!this.selectedItem.length) {
+                delConfirm(this, params, this.export, lc('admin_vue_00080'));
+                return false;
+            } else {
+                let list = [];
+                for (let item of this.selectedItem) {
+                    list.push(item.id);
+                }
+                params.cid = list.join(',');
+                delConfirm(this, params, this.export, lc('admin_vue_00081'));
+                return false;
+            }
+        },
+        export(params) {
+            let _this = this;
+
+            let formElement = document.createElement('form');
+            document.body.appendChild(formElement);
+            formElement.id = 'comxls';
+            formElement.method = 'post';
+            formElement.action = baseUrl + 'm=yunying&c=special_special&a=comxls';
+            formElement._target = '_blank';
+
+            let pytokenElement = document.createElement('input');
+            pytokenElement.setAttribute('name', 'pytoken');
+            pytokenElement.setAttribute('type', 'hidden');
+            pytokenElement.setAttribute('value', this.pytoken);
+            formElement.appendChild(pytokenElement);
+
+            let zidElement = document.createElement('input');
+            zidElement.setAttribute('name', 'zid');
+            zidElement.setAttribute('type', 'hidden');
+            zidElement.setAttribute('value', this.id);
+            formElement.appendChild(zidElement);
+            if (params.cid) {
+                let cidElement = document.createElement('input');
+                cidElement.setAttribute('name', 'cid');
+                cidElement.setAttribute('type', 'hidden');
+                cidElement.setAttribute('value', params.cid);
+                formElement.appendChild(cidElement);
+            }
+            formElement.submit();
+            formElement.remove();
+            message.success(lc('wap_01063'));
+        }
+    },
+    components: {
+        'special_view_audit': SpecialViewAudit,
+        'special_view_company': SpecialViewCompany,
+        'special_view_status': SpecialViewStatus,
+    },
+    watch: {
+        id: {
+            handler: function (newValue, oldValue) {
+                if (newValue) {
+                    this.getList();
+                }
+            },
+            deep: true,
+            immediate: true
+        },
+    }
+};
+</script>
+<style scoped>
+.drawerModInfo::-webkit-scrollbar {
+    display: none;
+}
+
+.moduleElenAlRight {
+    overflow: hidden;
+    position: absolute;
+    width: calc(100% - 40px);
+    height: calc(100% - 86px);
+    top: 82px;
+    left: 0;
+    z-index: 2;
+    padding: 0 20px;
+}</style>

@@ -6,6 +6,13 @@ export default defineNuxtConfig({
     server: {
       allowedHosts: true,
     },
+    vue: {
+      template: {
+        transformAssetUrls: {
+          includeAbsolute: false,
+        },
+      },
+    },
   },
   modules: ['@pinia/nuxt', '@element-plus/nuxt', '@nuxtjs/i18n'],
   i18n: {
@@ -29,6 +36,17 @@ export default defineNuxtConfig({
   },
   app: {
     baseURL: '/admin/',
+    head: {
+      link: [
+        { rel: 'stylesheet', href: '/admin/php-admin/js/element-icons.css' },
+        { rel: 'stylesheet', href: '/admin/php-admin/adstyle/phpyun.css' },
+        { rel: 'stylesheet', href: '/admin/php-admin/images/admin.css' },
+      ],
+      script: [
+        { src: '/admin/php-admin/js/jquery.min.js' },
+        { src: '/admin/php-admin/js/echarts.min.js' },
+      ],
+    },
   },
   elementPlus: { importStyle: 'css' },
 })

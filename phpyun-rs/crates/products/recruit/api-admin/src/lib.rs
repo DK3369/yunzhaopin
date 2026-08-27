@@ -40,3 +40,24 @@ pub fn openapi() -> utoipa::openapi::OpenApi {
 pub fn get_allowed_paths() -> Vec<&'static str> {
     Vec::new()
 }
+
+#[cfg(test)]
+mod snapshot_tests {
+    use std::path::PathBuf;
+
+    #[test]
+    fn admin_paths_match_repo_snapshot() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../../../doc/snapshots/admin_paths.txt");
+        let expected: Vec<String> = std::fs::read_to_string(&path)
+            .unwrap_or_else(|e| panic!("read {}: {e}", path.display()))
+            .lines()
+            .filter(|l| !l.is_empty())
+            .map(str::to_string)
+            .collect();
+        let mut actual: Vec<_> = crate::openapi().paths.paths.keys().cloned().collect();
+        actual.sort();
+        assert_eq!(actual, expected);
+        assert_eq!(actual.len(), 147);
+    }
+}

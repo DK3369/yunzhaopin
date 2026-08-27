@@ -1,0 +1,373 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt moduleSeachwapsju">
+                <el-input :placeholder="lc('admin_user_00158')" v-model="keyword" class="input-with-select" size="small" clearable>
+                    <template #prepend><el-select v-model="nid" :clearable="true" :placeholder="lc('wap_user_00100')">
+                        <el-option v-for="(citem, ckey) in nclass" :label="citem" :value="ckey" :key="ckey"></el-option>
+                    </el-select></template>
+                </el-input>
+                <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="small" @click="openAdd('')">{{ lc('admin_system_00248') }}</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="small" @click="drawerType=true">{{ lc('admin_00197') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="list" border style="width: 100%" ref="multipleTable"
+                @selection-change="handleSelectionChange" :header-cell-style="{background:'#f5f7fa',color:'#606266'}"
+                height="100%" @sort-change="sortChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" :label="lc('admin_system_00470')" width="80">
+                </el-table-column>
+                <el-table-column prop="name" :label="lc('admin_00191')" width="100">
+                </el-table-column>
+                <el-table-column prop="typename" :label="lc('admin_00192')" width="120">
+                </el-table-column>
+                <el-table-column prop="url" :label="lc('admin_system_00354')">
+                </el-table-column>
+                <el-table-column prop="type_n" :label="lc('admin_00193')" width="120">
+                </el-table-column>
+                <el-table-column prop="sort" sortable="custom" :label="lc('admin_vue_00044')" width="80">
+                    <template #default="scope">
+                        <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
+                            <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                                      v-model="scope.row.sort" type="number" @blur="editSort(scope)"></el-input>
+                        </div>
+                        <div class="moduleProps moduleTrButn" v-else>
+                            <span>{{ scope.row.sort }}</span>
+                            <el-button type="text" icon="el-icon-edit" @click="showSort(scope)"></el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_com_00020')" width="170">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.eject" active-color="#1890FF" inactive-color="#B8BDC9"
+                            @change="ejectChange($event, scope.$index)" :active-text="lc('admin_00205')" active-value="1"
+                            :inactive-text="lc('admin_00203')" inactive-value="0">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('member_com_00023')" width="70">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.display" active-color="#1890FF" inactive-color="#B8BDC9"
+                            @change="displayChange($event, scope.$index)" active-value="1" inactive-value="0">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="small" @click="del(scope.$index)" type="danger">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulePagButn">
+				<el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="small" @click="batch('del')">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+
+        <div class="modluDrawer">
+            <el-drawer :title="id ? lc('admin_00188') : lc('admin_system_00248')" v-model="drawerAdd" :modal-append-to-body="false"
+                :show-close="true" :with-header="true" size="45%">
+                <navigationadd :id="id" @child-event="closeAdd" v-if="drawerAdd"></navigationadd>
+            </el-drawer>
+            <el-drawer :title="lc('admin_00192')" v-model="drawerType" :append-to-body="true" :show-close="true"
+                :with-header="true" size="45%">
+                <navigationtype @child-event="closeType" v-if="drawerType"></navigationtype>
+            </el-drawer>
+        </div>
+    </div>
+</template>
+
+<script>
+import Navigationadd from './component/navigationadd.vue'
+import Navigationtype from './component/navigationtype.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    emptytext: lc('wap_js_00113'),
+                    loading: false,
+                    // 列表
+                    page: 1,
+                    prevPage: 0,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+                    multipleSelection: [], // 多选值存储
+                    idArr: [],
+					
+					allchecked: false,
+
+                    // 列表排序
+                    t: '',
+                    order: '',
+
+                    // 搜索条件
+                    nclass: {},
+                    nid: '',
+                    keyword: '',
+
+                    // 添加/编辑弹出框
+                    drawerAdd: false,
+                    id: 0,
+
+                    // 分类列表
+                    drawerType: false,
+                    
+                }
+            },
+            components: {
+                'navigationadd': Navigationadd,
+                'navigationtype': Navigationtype,
+            },
+            created: function () {
+                this.getList();
+
+
+            },
+            methods: {
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+                sortChange(event) {
+                    this.t = event.order ? event.prop : '';
+                    this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+                    this.search();
+                },
+                getList() {
+                    let that = this,
+                        params = {
+                            page: that.page,
+                            limit: that.limit,
+                            nid: that.nid,
+                            keyword: that.keyword,
+                            t: that.t,
+                            order: that.order,
+                        };
+                    that.loading = true;
+                    that.emptytext = lc('admin_user_weipin_00026');
+                    httpPost('m=system&c=set_navigation', params).then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.nclass = data.nclass;
+
+                        let list = data.nav;
+
+                        list.forEach(function (item, index) {
+                            list[index].sortEdit = false; // 提前赋值，方便后边排序修改
+                        })
+
+                        that.list = list;
+                        that.total = parseInt(data.total);
+                        that.pageSizes = data.page_sizes;
+                        if (that.limit === 0) {
+                            that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        }
+                        if (that.page > data.page) {
+                            that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        }
+                        if (that.prevPage != that.page) {
+                            that.prevPage = that.page;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.list.length === 0){
+                            that.emptytext = lc('wap_js_00113');
+                        }
+                    })
+                },
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+
+                // 排序
+                showSort(scope) {
+                    let index = scope.$index;
+                    let row = scope.row;
+                    let column = scope.column;
+                    this.oldData = JSON.parse(JSON.stringify(row));
+                    let copyRow = JSON.parse(JSON.stringify(row));
+                    copyRow[column.property + "isShow"] = true;
+                    this.$set(this.list, index, copyRow);
+                    this.$nextTick(() => {
+                        let ref = column.property + index;
+                        $("#" + ref).focus();
+                    });
+                },
+                editSort(scope) {
+                    if (this.oldData == null) {
+                        return false;
+                    }
+                    let index = scope.$index;
+                    let row = scope.row;
+                    let column = scope.column;
+                    let copyRow = JSON.parse(JSON.stringify(row));
+                    copyRow[column.property + "isShow"] = false;
+                    this.$set(this.list, index, copyRow);
+                    if (row[column.property] === this.oldData[column.property]) {
+                        return false;
+                    }
+                    let _this = this;
+                    let sendData = {id: row.id};
+                    sendData[column.property] = row[column.property];
+                    httpPost('m=system&c=set_navigation&a=navsort', sendData).then(function (response) {
+                        let res = response.data;
+                        _this.oldData = null;
+                        if (res.error > 0) {
+                            message.error(res.msg);
+                        }else{
+                            message.success(res.msg,function(){
+                                _this.getList();
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+
+                ejectChange(val, idx) {
+                    let params = {
+                        type: 'eject',
+                        rec: val,
+                        id: this.list[idx].id
+                    };
+
+                    httpPost('m=system&c=set_navigation&a=navset', params).then(function (res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        }else{
+                            message.success(res.data.msg);
+                        }
+                    })
+                },
+                displayChange(val, idx) {
+                    let params = {
+                        type: 'display',
+                        rec: val,
+                        id: this.list[idx].id
+                    };
+
+                    httpPost('m=system&c=set_navigation&a=navset', params).then(function (res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        }else{
+                            message.success(res.data.msg);
+                        }
+                    })
+                },
+                del(idx) {
+                    let that = this,
+                        params = {},
+                        msg = '';
+
+                    if (typeof idx == 'undefined') { // 批量删除
+                        params.del = this.idArr;
+                        msg = lc('common_00853');
+                    } else {// 单个删除
+                        params.id = that.list[idx].id;
+                        msg = lc('admin_00333');
+                    }
+
+                    delConfirm(this, params, function (params) {
+                        httpPost('m=system&c=set_navigation&a=del', params).then(function (res) {
+                            if (res.data.error > 0) {
+                                message.error(res.data.msg);
+                            } else {
+                                message.success(res.data.msg, function () {
+                                    // if (typeof idx == 'undefined') {
+                                    //     that.getList();
+                                    // } else {
+                                    //     that.list.splice(idx, 1);
+                                    // }
+                                    that.$refs.multipleTable.clearSelection();
+                                    that.getList();
+                                });
+                            }
+                        })
+                    }, msg)
+                },
+                handleSelectionChange(val) {
+					
+					if (this.list.length != val.length) {
+					    this.allchecked = false;
+					} else {
+					    this.allchecked = true;
+					}
+					this.multipleSelection = val;
+                },
+				allcheckChange: function () {
+				
+				    this.$refs.multipleTable.toggleAllSelection();
+				
+				},
+                batch(type) {
+                    if (this.multipleSelection.length == 0) {
+                        message.warning(lc('admin_user_weipin_00001'));
+                        return false;
+                    }
+
+                    let idArr = [];
+                    this.multipleSelection.forEach(function (item) {
+                        idArr.push(item.id);
+                    })
+                    this.idArr = idArr;
+
+                    if (type == 'del') {
+                        this.del();
+                    }
+                },
+
+                openAdd(data) {
+                    this.id = data ? data.id : 0;
+                    this.drawerAdd = true;
+                },
+                closeAdd() {
+                    this.drawerAdd = false;
+                    this.getList();
+                },
+
+                closeType() {
+                    this.nid = '';
+                    this.getList();
+                },
+            }
+        }
+</script>

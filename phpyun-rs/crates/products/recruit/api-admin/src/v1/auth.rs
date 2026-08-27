@@ -23,6 +23,7 @@ pub fn guarded_routes() -> Router<AppState> {
     Router::new()
         .route("/me", post(admin_me))
         .route("/menu", post(admin_menu))
+        .route("/logout", post(admin_logout))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -165,4 +166,10 @@ pub async fn admin_menu(
 ) -> AppResult<ApiResponse<Vec<AdminMenuView>>> {
     let list = admin_auth_service::menu(&state, &user).await?;
     Ok(ApiResponse::data(list.into_iter().map(AdminMenuView::from).collect()))
+}
+
+#[utoipa::path(post, path = "/v1/admin/logout", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn admin_logout(user: AuthenticatedUser) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    Ok(ApiResponse::message("ok"))
 }

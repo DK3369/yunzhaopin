@@ -1,0 +1,656 @@
+<template>
+<div id="cityfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachleft">
+                <div class="  newsinput">
+                    <el-input :placeholder="lc('admin_00340')" v-model="keyword" size="small" clearable
+                              prefix-icon="el-icon-search">
+                    </el-input>
+                </div>
+                <div class="  tableSeachInptsmall newsinput">
+                    <el-select v-model="end" size="small" :placeholder="lc('admin_user_weipin_00030')" clearable @change="search">
+                        <el-option :label="lc('common_01940')" value="1"></el-option>
+                        <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                        <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                        <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                        <el-option :label="lc('admin_user_00175')" value="30"></el-option>
+                    </el-select>
+                </div>
+                <div class="newsbtnbox">
+                    <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+                </div>
+            </div>
+            <div class="nrtopbtn">
+                <el-button type="primary" icon="el-icon-document-add" size="small"
+                       @click="add({id: ''})">{{ lc('admin_00148') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" stripe border
+                style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                @selection-change="handleSelectionChange" ref="multipleTable" :empty-text="emptytext"
+                :default-sort="{ prop: 'id', order: 'descending' }" @sort-change="sortChange" v-loading="loading">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="90" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="title" :label="lc('admin_00144')" min-width="240">
+                </el-table-column>
+                <el-table-column prop="datetime_n" :label="lc('admin_user_weipin_00030')" width="110">
+                </el-table-column>
+                <el-table-column prop="startime_n" :label="lc('admin_company_00005')" width="110">
+                </el-table-column>
+                <el-table-column prop="endtime_n" :label="lc('admin_company_00006')" width="110">
+                </el-table-column>
+                <el-table-column prop="fz" :label="lc('admin_00151')" width="110">
+                    <template #default="scope">
+                        <div class="moduleProps">
+                            <div>{{ dnamearr[scope.row.did] }}</div>
+                            <el-button type="text" @click="openDomain(scope.row)" style="padding: 0;">{{ lc('admin_user_weipin_00048') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="tj" :label="lc('wap_01465')" width="110">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.isRec" @change="setRec(scope.row)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column prop=" " :label="lc('admin_00146')" width="110">
+                    <template #default="scope">
+                        <el-link type="primary" @click="drawershowhb(scope.row)"><i
+                                class="el-icon-view el-icon--left"></i>{{ lc('wap_com_00427') }}</el-link>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="160">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="add(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="small" @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom" size="small">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="openDomain('')" size="small">{{ lc('admin_user_00279') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- Public poster drawer -->
+        <div class="modluDrawer">
+            <el-drawer :title="lc('admin_00146')" v-model="drawerhb" :modal-append-to-body="false" append-to-body
+                :show-close="true" :with-header="true" size="45%">
+                <div class="waixunHaib">
+                    <ul>
+                        <li class="" v-for="(item,index) in hbarr" :key="index">
+                            <div class="hb_listbox">
+                                <div class="poster_pic"><img :src="item.pic_n"></div>
+                                <div class="hb_listbox_name" style="background:#fff;">
+                                    <div class="hb_cz">
+                                        <a href="javascript:;" @click="showHb(item.id)">{{ lc('wap_00071') }}</a>
+                                        <a href="javascript:;" @click="downHb(item.id)">{{ lc('wap_00070') }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </el-drawer>
+        </div>
+        <!-- Poster preview dialog -->
+        <div class="tck_setbox">
+            <el-dialog :title="lc('admin_user_company_00142')" v-model="showhb" :with-header="true" append-to-body
+                :modal-append-to-body="false" :show-close="true" width="300px" @closed="drawerhb = true">
+                <div id="qyQrCode" class="code_img" style="display:flex;justify-content: center;margin-bottom: 15px;">
+                    <img :src="hburl" width="260">
+                </div>
+            </el-dialog>
+        </div>
+        <div class="modluDrawer">
+            <!-- Add/edit drawer -->
+            <el-drawer :title="info.id ? lc('admin_00142') : lc('admin_00145')" v-model="draweradd" :modal-append-to-body="false"
+                :show-close="true" :wrapper-closable="false" :with-header="true" size="900px">
+                <div class="drawerModlue">
+                    <div class="tableDome_tip tableDoAlert">
+                        <div class="shiTopAllTips">
+                            <span>{{ lc('admin_00133') }}</span>
+                        </div>
+                    </div>
+                    <div class="drawerModInfo">
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_00144') }}</span>
+                            </div>
+                            <div class="drawerModInpt w_400">
+                                <el-input v-model="info.title" :placeholder="lc('admin_00137')"></el-input>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_user_00126') }}</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-select v-model="info.did" :placeholder="lc('wap_user_00100')" filterable>
+                                    <el-option v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="drawerModLis" v-if="info.chat_type == '1'">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_00149') }}</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-input :placeholder="lc('wap_00510')" v-model="info.keyword"></el-input>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert :title="lc('admin_00135')" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_company_00005') }}</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-date-picker v-model="info.startime_n" value-format="YYYY-MM-dd" type="date" style="width: 100%;"
+                                    :placeholder="lc('admin_00139')">
+                                </el-date-picker>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert :title="lc('admin_00140')" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_company_00006') }}</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-date-picker v-model="info.endtime_n" value-format="YYYY-MM-dd" type="date" style="width: 100%;"
+                                    :placeholder="lc('wap_com_00324')">
+                                </el-date-picker>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert :title="lc('admin_00138')" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_user_00231') }}</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-input type="textarea" :placeholder="lc('wap_00936')" v-model="info.description"></el-input>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_00150') }}</span>
+                            </div>
+                            <div class="drawerModInpt" style="flex-wrap: wrap;">
+                                <el-upload class="avatar-uploader" :action="''" :auto-upload="false" :show-file-list="false" :on-change="picChange" :accept="pic_accept">
+                                    <img style="width:200px;" v-if="info.pic_n" :src="info.pic_n" class="avatar">
+                                    <el-button v-else type="primary" icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
+                                </el-upload>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert :title="lc('admin_00134')" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>{{ lc('admin_00143') }}</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <div class="TableInpt">
+                                    <textarea type="textarea" id="projectBasis" class="editor" name="projectBasis" cols="150" rows="30" style="width: 80%">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setBasicButn" style="border: none;">
+                        <el-button v-if="info.send == '1'" type="primary" size="medium" @click="draweradd = false">{{ lc('common_02039') }}</el-button>
+                        <el-button v-if="info.send != '1'" type="primary" size="medium" @click="save">{{ lc('wap_user_00176') }}</el-button>
+                    </div>
+                </div>
+            </el-drawer>
+
+            <!-- Domain switch -->
+            <el-dialog :title="lc('admin_user_weipin_00029')" v-model="dialogDomain" :modal-append-to-body="false"
+                       :show-close="true" width="500px">
+                <div class="toolClasDia fenpeizhand">
+                    <div class="toolClasList" v-if="detail.id">
+                        <div class="toolClasTite">
+                            <span>{{ lc('admin_00141') }}</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <span>{{ detail.title }}</span>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>{{ lc('admin_user_weipin_00020') }}</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-select v-model="ruleFormDomain.did" filterable :placeholder="lc('wap_user_00100')">
+                                <el-option v-for="(item, key) in dnamearr" :key="key" :label="item" :value="key">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <template #footer><span class="dialog-footer">
+					<el-button @click="dialogDomain = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="saveDomain">{{ lc('wap_com_00019') }}</el-button>
+				</span></template>
+            </el-dialog>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: lc('wap_js_00113'),
+                loading: false,
+                checkedAll: false,
+                selectedItem: [],
+                tableData: [],
+                currentPage: 1,
+                perPage: 0,
+                pageSizes: [],
+                total: 0,
+                keyword: '',
+                end: '',
+                draweradd: false,
+                info: {},
+                dnamearr: {},
+                piclist: [],
+                today: '',
+                sort_type: '',
+                sort_col: '',
+                hbarr: [],
+                gzid: '',
+                drawerhb: false,
+                showhb: false,
+                hburl: '',
+                hbkey: '',
+                pic_accept: localStorage.getItem("pic_accept"),
+                islook: false,
+
+                saveLoading: false,
+
+                detail: {},
+
+                // Domain switch
+                dialogDomain: false,
+                ruleFormDomain: {},
+                prevPage:0
+            }
+        },
+        created: function () {
+            this.getGroup()
+            this.getList();
+        },
+        methods: {
+            downHb(hb) {
+                var that = this
+                let image = new Image()
+                image.setAttribute('crossOrigin', 'anonymous')
+                that.hburl = baseUrl + 'm=neirong&c=gongzhao&a=getgongzhaoHb&&id=' + this.gzid + '&hb=' + hb + '&pytoken=' + localStorage.getItem('pytoken')
+                image.src = that.hburl
+                image.onload = () => {
+                    let canvas = document.createElement('canvas')
+                    canvas.width = image.width
+                    canvas.height = image.height
+                    let ctx = canvas.getContext('2d')
+                    ctx.drawImage(image, 0, 0, image.width, image.height)
+                    canvas.toBlob((blob) => {
+                        let url = URL.createObjectURL(blob)
+                        download(url, 'gzhb_' + that.gzid)
+                        // Revoke the URL object after use
+                        URL.revokeObjectURL(url)
+                    })
+                }
+                function download(href, name) {
+                    let eleLink = document.createElement('a')
+                    eleLink.download = name
+                    eleLink.href = href
+                    eleLink.click()
+                    eleLink.remove()
+                }
+            },
+            drawershowhb(row) {
+                var that = this
+                if (that.hbarr.length == 0) {
+                    httpPost('m=neirong&c=gongzhao&a=whb', {}).then(function (response) {
+                        if (response.data.error == 0) {
+                            that.hbarr = response.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+                this.drawerhb = true
+                this.gzid = row.id
+            },
+            showHb(hb) {
+                this.hburl = baseUrl + 'm=neirong&c=gongzhao&a=getgongzhaoHb&&id=' + this.gzid + '&hb=' + hb + '&pytoken=' + localStorage.getItem('pytoken')
+                this.hbkey = Math.random()
+                this.showhb = true
+            },
+            setRec(e) {
+                let params = {
+                    del: e.id,
+                    rec: e.isRec ? 1 : 0
+                };
+                httpPost('m=neirong&c=gongzhao&a=setRec', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg);
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            picChange(file) {
+                var tmp = deepClone(this.info)
+                // Preview file handling
+                tmp.pic_n = URL.createObjectURL(file.raw);
+                // Copy file info
+                this.piclist[0] = file.raw;
+                this.info = tmp
+            },
+            initEditor() {
+                var that = this
+                ue = UE.getEditor('projectBasis', {
+                    // Auto-clear initial content on focus
+                    // Disable word count
+                    wordCount:false,
+                    /* maximumWords:8000, */       // Maximum allowed characters
+                    // Disable the element path
+                    elementPathEnabled:false,
+                    // Default editor height
+                    initialFrameHeight:300,
+                    initialFrameWidth:600  // Initial editor width, default 1000
+                });
+                ue.ready(function () {
+                    if (that.info.content) {
+                        ue.setContent(that.info.content);
+                    } else {
+                        ue.setContent('');
+                    }
+                });
+            },
+            add(row) {
+                var that = this
+
+                httpPost('m=neirong&c=gongzhao&a=add', {add:1}, {hideloading: true}).then(function (result) {
+                    that.draweradd = true
+                    if (row.id) {
+                        that.info = deepClone(row);
+                        if (that.info.startime_n == lc('admin_00147')) {
+                            that.info.startime_n = '';
+                        }
+                        if (that.info.endtime_n == lc('admin_00147')) {
+                            that.info.endtime_n = '';
+                        }
+                        delete that.info.rec
+                    } else {
+                        that.info = { id: '', content: '', startime_n: that.today, did: '0' }
+                    }
+                    setTimeout(function () {
+                        that.initEditor();
+                    }, 100)
+
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.selectedItem.push(item.id);
+                    });
+                }
+                if (_this.selectedItem.length == 0) {
+                    _this.checkedAll = false;
+                } else {
+                    if (_this.selectedItem.length == _this.tableData.length) {
+                        _this.checkedAll = true;
+                    } else {
+                        _this.checkedAll = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            handleSizeChange(val) {
+                this.perPage = val;
+                this.getList()
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList()
+            },
+            sortChange: function (column) {
+                if (column.order == 'descending') {
+                    this.sort_type = 'desc';
+                } else if (column.order == 'ascending') {
+                    this.sort_type = 'asc';
+                } else {
+                    this.sort_type = '';
+                }
+                this.sort_col = column.prop
+                this.search();
+            },
+            search() {
+                this.currentPage = 1;
+                this.getList();
+            },
+            async getGroup(){
+                let that = this;
+
+                that.loading = true;
+                that.emptytext = lc('admin_user_weipin_00026');
+                httpPost('m=neirong&c=gongzhao&a=getGroup', {}, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.dnamearr = res.data.Dname
+                        that.today = res.data.today
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    pageSize: that.perPage
+                }
+                if (that.keyword) {
+                    params.keyword = that.keyword
+                }
+                if (that.end) {
+                    params.end = that.end
+                }
+                if (that.sort_type && that.sort_col) {
+                    params.order = that.sort_type
+                    params.t = that.sort_col
+                }
+                that.loading = true;
+                that.emptytext = lc('admin_user_weipin_00026');
+                httpPost('m=neirong&c=gongzhao&a=index', params, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.perPage = parseInt(res.data.perPage)
+                        that.pageSizes = res.data.pageSizes
+                        that.total = parseInt(res.data.total)
+                        if(that.prevPage != that.currentPage){
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = lc('wap_js_00113');
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            save() {
+                var that = this
+                if (!that.info.title) {
+                    message.error(lc('admin_00137'));
+                    return false;
+                }
+
+                if (that.saveLoading) {
+                    return false;
+                }
+                that.saveLoading = true;
+
+                that.info.content = UE.getEditor('projectBasis').getContent();
+
+                let params = that.info;
+                var formData = new FormData();
+                Object.keys(params).forEach((key) => {
+                    if (Array.isArray(params[key])) {
+                        params[key].forEach((v) => {
+                            formData.append(key + '[]', v);
+                        });
+                    } else {
+                        formData.append(key, params[key]);
+                    }
+                });
+                if (that.piclist.length) {
+                    formData.append('pic[]', this.piclist[0])
+                }
+                httpPost('m=neirong&c=gongzhao&a=add', formData).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.draweradd = false
+                            that.saveLoading = false;
+                            that.keyword = ''
+                            that.end = ''
+                            that.getList()
+                        })
+                    } else {
+                        that.saveLoading = false;
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            delAllBottom() {
+                if (!this.selectedItem.length) {
+                    message.error(lc('admin_00136'));
+                    return false;
+                }
+                delConfirm(this, this.selectedItem, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=gongzhao&a=del', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(lc('wap_user_00264'));
+                        that.getList();
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+
+            // Domain settings
+            openDomain(row) {
+                if (row === '') { // Batch operation
+                    if (!this.selectedItem.length) {
+                        message.error(lc('admin_user_weipin_00001'));
+                        return false;
+                    }
+
+                    this.detail = {};
+                    this.$set(this.ruleFormDomain, 'id', this.selectedItem);
+                    this.$set(this.ruleFormDomain, 'did', '');
+                } else { // Single operation
+                    this.detail = row;
+                    this.$set(this.ruleFormDomain, 'id', row.id);
+                    this.$set(this.ruleFormDomain, 'did', '' + row.did + '');
+                }
+
+                this.dialogDomain = true;
+            },
+
+            saveDomain() {
+                let that = this,
+                    ruleForm = that.ruleFormDomain;
+
+                if (!ruleForm.did) {
+                    message.error(lc('admin_user_weipin_00002'));
+                    return false;
+                }
+
+                if (that.saveLoading) {
+                    return false;
+                }
+                that.saveLoading = true;
+
+                httpPost('m=neirong&c=gongzhao&a=checksitedid', ruleForm).then(function (response) {
+                    let res = response.data;
+
+                    that.saveLoading = false;
+                    if (res.error > 0) {
+                        message.error(res.msg);
+                    } else {
+                        that.dialogDomain = false;
+                        that.getList();
+                        that.$refs.multipleTable.clearSelection();
+                        message.success(res.msg)
+                    }
+                })
+            },
+        }
+    }
+</script>

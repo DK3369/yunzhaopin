@@ -1,0 +1,1327 @@
+.yunyinDialog {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.yunyinDiaList {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 9px 0;
+}
+
+.yunyinDiaTite {
+    overflow: hidden;
+    position: relative;
+    width: 80px;
+    padding-right: 10px;
+    font-size: 14px;
+    text-align: right;
+}
+
+.yunyinDiaInpt {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 90px);
+}
+
+.moduleMores {
+    overflow: hidden;
+    position: relative;
+}
+
+.moduleMores .el-button {
+    width: 100%;
+    margin: 3px 0;
+}
+
+.moduleShouz {
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.moduleShouz::-webkit-scrollbar {
+    display: none;
+}
+
+.moduleShInfo {
+    overflow: hidden;
+    position: relative;
+    height: 150px;
+}
+
+.moduleShInfo ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.moduleShInfo ul li {
+    overflow: hidden;
+    position: relative;
+    width: calc(25% - (9px + 30px));
+    padding: 15px;
+    height: calc(100% - 30px);
+    background: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.moduleShInfo ul li .szinfoImg {
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.moduleShInfo ul li .szinfoImg img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.moduleShInfo ul li .szinfoText {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 68px);
+}
+
+.moduleShInfo ul li .szinfoMoney {
+    overflow: hidden;
+    position: relative;
+}
+
+.moduleShInfo ul li .szinfoMoney span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 16px;
+    color: #333;
+}
+
+.moduleShInfo ul li .szinfoMoney b {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 22px;
+    color: #333;
+    padding: 15px 0;
+}
+
+.moduleShInfo ul li .szinfotops {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.moduleShInfo ul li .szinfotops span {
+    overflow: hidden;
+    display: block;
+    font-size: 15px;
+    color: #555;
+}
+
+.moduleShInfo ul li .szinfotops img {
+    overflow: hidden;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin: 0 6px;
+}
+
+.moduleShInfo ul li .szinfotops img.imgOne {
+    display: block;
+}
+
+.moduleShInfo ul li .szinfotops img.imgTwo {
+    display: none;
+}
+
+.moduleShInfo ul li:hover {
+    background: linear-gradient(135deg, #74BAFB 0%, #1890FF 100%);
+}
+
+.moduleShInfo ul li:hover .szinfoMoney span {
+    color: #fff;
+}
+
+.moduleShInfo ul li:hover .szinfoMoney b {
+    color: #fff;
+}
+
+.moduleShInfo ul li:hover .szinfotops span {
+    color: #fff;
+}
+
+.moduleShInfo ul li:hover .szinfotops img.imgOne {
+    display: none;
+}
+
+.moduleShInfo ul li:hover .szinfotops img.imgTwo {
+    display: block;
+}
+
+
+.moduleShInfo ul li.szinfoCurs {
+    background: linear-gradient(135deg, #74BAFB 0%, #1890FF 100%);
+}
+
+.moduleShInfo ul li.szinfoCurs .szinfoMoney span {
+    color: #fff;
+}
+
+.moduleShInfo ul li.szinfoCurs .szinfoMoney b {
+    color: #fff;
+}
+
+.moduleShInfo ul li.szinfoCurs .szinfotops span {
+    color: #fff;
+}
+
+.moduleShInfo ul li.szinfoCurs .szinfotops img.imgOne {
+    display: none;
+}
+
+.moduleShInfo ul li.szinfoCurs .szinfotops img.imgTwo {
+    display: block;
+}
+
+.cwszInfoAll {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.cwszInfoLeft {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 380px);
+    height: 100%;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.cwszInfoTite {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 30px);
+    height: 55px;
+    border-bottom: 1px solid #EBEFF5;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    font-size: 16px;
+    color: #333;
+}
+
+.cwszInfoLeft #main1 {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 350px);
+    height: 100%;
+    margin-top: 9px;
+}
+
+
+.cwszInfoPaish{
+    overflow: hidden;
+    position: relative;
+    width: 350px;
+    height: calc(100% - 10px);
+    /* background: #f90; */
+    margin-top: 8px;
+}
+.cwszInfoPaish ul{
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    /*align-items: center;
+    justify-content: space-between;*/
+}
+.cwszInfoPaish ul li{
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #606060;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    padding: 0 3px;
+}
+
+.cwszInfoFlecy{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 65px);
+    display: flex;
+    align-items: center;
+}
+
+.cwszInfoRight {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px);
+    height: 100%;
+    margin-left: 12px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.cwszInRigEchat {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px);
+    height: 100%;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.cwszInRigEchat #main2 {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 56px);
+}
+
+.cwszInfoRight #mainxaio {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 56px);
+}
+
+.xiaofeiBintAll{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    margin-top: 15px;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.xiafeBintListd{
+    overflow: hidden;
+    position: relative;
+    width: calc(33.33% - 8px);
+    height: 100%;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.chatsBinDome{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 56px);
+}
+
+.cwszInRigPaih {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px);
+    height: 100%;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.cwszInfoFlex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cwszInfoFlex .cwszInfoName {
+    overflow: hidden;
+    position: relative;
+}
+
+.cwszInfoFlex .cwszInfoPtab {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #EEEFF2;
+}
+
+.cwszInfoFlex .cwszInfoPtab span {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    width: 48px;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+}
+
+.cwszInfoFlex .cwszInfoPtab span.tabnavCur {
+    background: #E7F4FF;
+    color: #1890FF;
+}
+
+.cwszInRigNeir {
+    overflow: hidden;
+    position: relative;
+}
+
+.cwszInRigCont {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    padding: 0 12px;
+}
+
+.cwszInRiCtList {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 33px;
+    width: 100%;
+}
+
+.cwszInRiCtLiMap {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cwszInRiCtLiMap p {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    background: #E7F4FF;
+    border-radius: 4px;
+    color: #1890FF;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.cwszInRiCtLiMap p b {
+    display: block;
+    padding-top: 1px;
+}
+
+.cwszInRiCtLiMap span {
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+    display: block;
+    color: #666;
+}
+
+.cwszInRiCtLiMony {
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+    color: #666;
+}
+
+.cwszInRiCtList:nth-child(1) .cwszInRiCtLiMap p {
+    background: #FF6B30;
+    color: #fff;
+}
+
+.cwszInRiCtList:nth-child(2) .cwszInRiCtLiMap p {
+    background: #FFAA30;
+    color: #fff;
+}
+
+.cwszInRiCtList:nth-child(3) .cwszInRiCtLiMap p {
+    background: #FFCD30;
+    color: #fff;
+}
+
+.shizTables {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 30px);
+    min-height: 400px;
+    background: #fff;
+    margin-top: 15px;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.shzTableConte {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.shzTableFrom {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-bottom: 12px;
+}
+
+.shzTableFrom .moduleSeachInpt {
+    overflow: hidden;
+    position: relative;
+    padding-right: 8px;
+}
+
+.shzTableNeir {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+.dd_xqbox {
+    padding: 10px;
+}
+
+.dd_list {
+    padding: 5px 10px;
+}
+
+.dd_name {
+    display: inline-block;
+    width: 100px;
+    color: #666;
+}
+
+.dd_listbth {
+    padding-top: 20px;
+}
+
+.dd_listbth .el-button {
+    margin-left: 15px;
+}
+
+.fp_list {
+    padding: 5px 10px;
+}
+
+.fp_list_name {
+    display: inline-block;
+    width: 100px;
+    color: #666;
+}
+
+.scImgbox {
+    overflow: hidden;
+    position: relative;
+    width: calc(400px - 40px);
+    min-height: 200px;
+    border-radius: 6px;
+    background: #f8f9fc;
+    border: 1px solid #eef0f5;
+    padding: 20px;
+}
+
+.scImgbimg {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.scImgbimg .el-image {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.scImgbimg .el-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.scImgboxInfo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.scImgboxTxt {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.scImgboxTxt span {
+    overflow: hidden;
+    display: block;
+    font-size: 12px;
+    color: #999;
+    padding: 4px 0;
+}
+
+.scImgboxburn {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 12px;
+}
+
+.scImgboxAnNiu {
+    overflow: hidden;
+    position: relative;
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+/* 海报设置 */
+.playbillHeader {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.playbillHeaText {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.playbillHeaText span {
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #888;
+}
+
+.playbillHeaText span.span1 {
+    color: #1890FF;
+}
+
+.playbilCont {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.playbilName {
+    overflow: hidden;
+    position: relative;
+    width: 140px;
+    height: 38px;
+    line-height: 38px;
+    text-align: right;
+    font-size: 15px;
+    color: #515a6e;
+}
+
+.playbilFlex {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 140px);
+    min-height: 200px;
+}
+
+.playbilFlex ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.playbilFlex ul li {
+    overflow: hidden;
+    position: relative;
+    width: 130px;
+    padding: 0 6px 15px 6px;
+}
+
+.playbilFlex ul li .playbilXuanz {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.playbilFlex ul li .playbilImge {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 12px;
+}
+
+.playbilFlex ul li .playbilImge img {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.playbilFlex ul li .playbilAnNiu {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.jobspecial_box {
+    padding: 0px 20px;
+}
+
+.qunliaToubu {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    /* align-items: center; */
+    justify-content: space-between;
+}
+
+.qunliaToubu .ql_top {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 8px);
+}
+
+.qunliaQunm {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.qunliaQunm .ql_q {
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: #1890FF;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qunliaInfo {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 70px);
+    padding-left: 10px;
+}
+
+.qunliaInfo .qunmiangc {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #333;
+}
+
+.qunliaInfo .ql_qz {
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+    color: #647386;
+    padding-top: 8px;
+}
+
+.qunliaTips {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+}
+
+.qunliaTipLis {
+    overflow: hidden;
+    position: relative;
+    width: calc(20% - 5px - 20px);
+    padding: 10px;
+    background: #EBEFF5;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.qunliaTipLis div {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+}
+
+.qunliaTipLis div span {
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #666;
+}
+
+.qunliaTipLis div b {
+    overflow: hidden;
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 6px;
+    color: #333;
+}
+
+.qunliaGong {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 16px);
+}
+
+.qunliaGohead {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.qunliaGoTite {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #333;
+}
+
+.qunliaGong .ql_gg {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 12px;
+    font-size: 14px;
+    color: #707070;
+    line-height: 22px;
+}
+
+.moduleDatashum {
+    overflow: hidden;
+    position: relative;
+    padding: 15px;
+    margin: 0 20px;
+    background: #EBEFF5;
+}
+
+.moduleDatashum .shiTopAllTips {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.moduleDatashum .shiTopAllTips span {
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.moduleDataXinx {
+    overflow: hidden;
+    position: relative;
+    padding: 0 20px;
+    font-size: 15px;
+    color: #1890FF;
+    padding-top: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.moduleDataXinx span {
+    overflow: hidden;
+    display: block;
+    padding-right: 20px;
+}
+
+.drawerModTishi {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.drawerModTishi p {
+    overflow: hidden;
+    position: relative;
+    padding: 0 0 12px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.modluDrawerContents {
+    padding-left: 10px;
+    padding-right: 10px
+}
+
+.modluDrawerTi9te {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.modluDrawerTi9te .shuytans {
+    overflow: hidden;
+    position: relative;
+    width: 250px;
+    margin-left: 50px;
+}
+
+.oduleEldujegh .el-table {
+    height: calc(100% - 36px);
+}
+
+/*.dialog-footer {*/
+/*    overflow: hidden;*/
+/*    position: relative;*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: space-between;*/
+/*    margin-top: 10px;*/
+/*}*/
+
+.dialog-footer .footText {
+    overflow: hidden;
+    position: relative;
+    width: auto;
+    max-width: calc(100% - 80px);
+    display: flex;
+    align-items: center;
+}
+
+.dialog-footer .footText .mingdsc {
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+    color: #999;
+    padding-right: 2px;
+}
+
+.xuanzleibie {
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    max-height: 500px;
+    margin-top: 10px;
+}
+
+.xuanzleibie ul {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 2px);
+    border: 1px solid #eee;
+}
+
+.xuanzleibie ul li {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    background: #f8f8f8;
+}
+
+.xuanzleibie ul li:nth-child(2n+2) {
+    background: #fff;
+}
+
+.xuanzleibie ul li:last-child {
+    border-bottom: 0px solid #eee;
+}
+
+.xuanzleibie ul li .xuanzlOne {
+    overflow: hidden;
+    position: relative;
+    width: calc(185px - 24px);
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #707070;
+}
+
+.xuanzleibie ul li .xuanzlOne.pointer:hover {
+    color: #1890FF;
+}
+
+.xuanzleibie ul li .xuanzlTwo {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 185px - 25px);
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    border-right: 1px solid #eee;
+}
+
+.xuanzlTwoList {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 3px 8px;
+    width: calc(33.33% - 28px);
+}
+
+.xuanzlTwoList i {
+    color: #1890FF;
+}
+
+.xuanzlTwoList span {
+    font-size: 13px;
+    color: #333;
+    display: block;
+    padding-left: 6px;
+}
+
+.xuanzlTwoList .xuanzNamte {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+div.xuanzNamte.blue {
+    padding-left: 12px;
+}
+
+.xuanzNamte.blue span:hover {
+    color: #1890FF
+}
+
+.xuanzNamte.blue i.el-icon-remove {
+    font-size: 13px;
+}
+
+.xuanzlTwoCont {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.xuanzlTwoBit {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.xuanzlTwoBit i {
+    color: #1890FF;
+}
+
+.xuanzlTwoBit span {
+    font-size: 14px;
+    color: #333;
+    display: block;
+    padding-left: 6px;
+    cursor: pointer;
+}
+
+.xuanzlTwoBit span:hover {
+    color: #1890FF;
+}
+
+.xuanzlTwoTips {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.xuanzlTwoTips span {
+    display: block;
+    overflow: hidden;
+    font-size: 13px;
+    color: #666;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.xuanzlTwoTips span:hover {
+    color: #1890FF;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.newsinput .el-input-group__prepend {
+    width: 110px;
+    padding: 0 8px 0 20px;
+}
+
+.dialoFoofetee {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.footTextburn {
+    overflow: hidden;
+    position: relative;
+    padding-left: 12px;
+}
+
+
+.cwszInfoRiqus {
+    overflow: hidden;
+    position: relative;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.sousuoGuancis {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 2px - 20px);
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+.sousuoGuanTips {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.sousuoGuanTips .el-tag+.el-tag {
+    margin-left: 10px;
+}
+
+.sousuoGuanTips .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.sousuoGuanTips .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+}
+
+.sousuoGuanSuomd{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 12px;
+}
+.sousuoGuanSuomd span{
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #707070;
+    padding: 3px 0;
+}
+
+.tableSeakusydsg{
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 8px;
+    margin-right: 8px;
+}
+.tableSeakusydsg .el-select>.el-input{
+    width: 150px;
+}
+
+.gongnengsuomin{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.gongnenTite{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+.gongnenTexts{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 6px;
+    font-size: 14px;
+    padding-bottom: 16px;
+}
+
+.moduleSeaflskjdu{
+    overflow: hidden;
+    position: relative;
+    justify-content: initial;
+}
+
+.moduleSeadyta{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    height: 30px;
+    border: 1px solid #eee;
+    border-radius: 3px;
+}
+.moduleSeadyta span{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-size: 13px;
+    color: #606060;
+    padding: 0 16px;
+    cursor: pointer;
+    border-left: 1px solid #eee;
+}
+.moduleSeadyta span:nth-child(1){
+    border-left: 0px solid #eee;
+}
+
+.moduleSeadyta span.spanCur{
+    background: #1890FF;
+    color: #fff;
+}
+
+
+/* 图表日期 */
+
+.echartTimes{
+    overflow: hidden;
+    position: relative;
+    margin-left: auto;
+}
+.echartTimes .el-range-editor.el-input__inner{
+    overflow: hidden;
+    position: relative;
+    width: 250px;
+}
+.cwszInfoNames{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 255px);
+}
+
+.ddanQboxcont{
+    overflow: hidden;
+    position: relative;
+    padding: 2px 20px 12px 20px;
+}
+.ddanQboxBorder{
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #EBEEF5;
+}
+.ddanQboxBorder .dd_list{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-size: 14px;
+    color: #606266;
+    border-bottom: 1px solid #EBEEF5;
+}
+.ddanQboxBorder .dd_list:last-child{
+    border-bottom: 0px solid #EBEEF5;
+}
+
+.ddanQboxBorder .dd_list .dd_name{
+    overflow: hidden;
+    position: relative;
+    width: calc(150px - 36px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    margin-right: 15px;
+    background: #F5F7FA;
+    border-right: 1px solid #EBEEF5;
+}
+
+.ddanQboxcont .dd_listbth{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ddanQboxcont .dd_listbth .el-button{
+    margin: 0;
+}

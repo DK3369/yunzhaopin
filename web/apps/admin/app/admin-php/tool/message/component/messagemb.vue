@@ -1,0 +1,155 @@
+<template>
+    <div class="moduleElHight">
+        <div class="tableDome_tip">
+            <el-alert :title="lc('admin_tool_00472')" type="success" :closable="false">
+            </el-alert>
+        </div>
+        <div class=" moduleTable">
+            <div style="overflow-y: auto;position: relative; height: calc(100% - 80px);">
+                <div v-for="con in allconfig" :key="con.name">
+                    <el-divider content-position="left">{{con.name}}</el-divider>
+                    <table class="tableVue">
+                        <thead>
+                            <tr align="left">
+                                <th width="200">{{ lc('member_com_00021') }}</th>
+                                <th>{{ lc('member_user_00181') }}</th>
+                                <th width="100">{{ lc('member_user_00048') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in con.configarr" :key="item.tpl">
+                                <td>
+                                    <div class="TableTite">{{item.name}}</div>
+                                </td>
+                                <td>
+                                    <div class="TableButn">
+                                        <el-switch v-model="item.config_val" :active-text="lc('admin_tool_00468')" :inactive-text="lc('admin_tool_00469')" active-value="1"></el-switch>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableLink">
+                                        <el-link type="primary" @click="settpl(item.tpl)">{{ lc('admin_tool_00470') }}</el-link>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="setBasicButn" style="border: none;">
+                <el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{{ lc('common.submit') }}</el-button>
+            </div>
+        </div>
+        <!-- 弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer :title="lc('admin_tool_00471')" v-model="addshow" :modal-append-to-body="false" :show-close="true" :with-header="true" size="50%">
+                <addtpl :tpl="tpl" :key="timer" @close-update="addshow=false"></addtpl>
+            </el-drawer>
+        </div>
+    </div>
+</template>
+<script>
+import Addtpl from './addtpl.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+
+var timer = null;
+
+export default {
+    data: function() {
+        return {
+            islook: false,
+            allconfig: [],
+
+            post_loading: false,
+
+            addshow: false,
+            tpl: '',
+            timer: ''
+        }
+    },
+    components: {
+        'addtpl': Addtpl,
+    },
+    mounted() {
+        this.getInfo();
+    },
+    methods: {
+        async getInfo() {
+            let that = this;
+
+            httpPost('m=tool&c=messageset&a=tplswitch', {}).then((result) => {
+
+                var res = result.data;
+                if (res.error == 0) {
+                    that.allconfig = res.data;
+
+                }
+                that.islook = true;
+            }).catch(function(e) {
+                console.log(e)
+            })
+        },
+        async postSet() {
+
+            let that = this;
+
+            var param = {};
+
+            var allconfig = that.allconfig;
+            var configarr = [];
+            var config_name = '';
+
+            for (let i in allconfig) {
+                configarr = allconfig[i]['configarr'];
+                for (let j in configarr) {
+                    config_name = configarr[j]['config_name'];
+                    param[config_name] = configarr[j]['config_val'] == 1 ? 1 : 2;
+                }
+            }
+
+            that.post_loading = true;
+
+            httpPost('m=tool&c=messageset&a=save', param).then((result) => {
+
+                that.post_loading = false;
+
+                var res = result.data;
+
+                message.success(res.msg, that.getInfo);
+
+            }).catch(function(e) {
+                console.log(e)
+            })
+        },
+        async settpl(tpl) {
+
+            this.tpl = tpl;
+
+            this.timer = new Date().getTime();
+
+            this.addshow = true;
+
+        }
+    },
+};
+</script>
+<style scoped>
+.moduleTable {
+    max-height: calc(100% - 45px);
+    height: 100%;
+}
+</style>

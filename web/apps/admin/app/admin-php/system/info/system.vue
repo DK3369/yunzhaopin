@@ -1,0 +1,293 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt">
+				<el-input :placeholder="lc('wap_user_00076')" v-model="searchOption.keyword" clearable size="small" style="margin-right: 8px;" prefix-icon="el-icon-search">
+                    <template #prepend><el-select v-model="searchOption.type" size="small" @clear="search" :placeholder="lc('admin_user_00140')">
+                        <el-option :label="lc('admin_user_00140')" value="1"></el-option>
+                        <el-option :label="lc('wap_user_00102')" value="2"></el-option>
+                        <el-option :label="lc('admin_user_00130')" value="3"></el-option>
+                    </el-select></template>
+				</el-input>
+                <el-select v-model="searchOption.ectime" size="small" style="margin-right: 8px;" clearable @change="search" :placeholder="lc('admin_user_weipin_00030')">
+                    <el-option :label="lc('common_01940')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                    <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                    <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                    <el-option :label="lc('admin_user_00175')" value="30"></el-option>
+                </el-select>
+                <el-button type="primary" size="small" icon="el-icon-search" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+            </div>
+            <div class="tableSeachInpt tableSeachbutton">
+                <el-button type="primary" icon="el-icon-document-add" size="small" plain @click="dialogFaSong = true">{{ lc('admin_system_00205') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" border style="width: 100%"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @sort-change="shortChange"
+                @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" :label="lc('common_02108')" width="80" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="fa_uid" :label="lc('admin_user_00130')" width="100">
+                </el-table-column>
+
+                <el-table-column prop="username" :label="lc('admin_user_00140')" width="130">
+                </el-table-column>
+                <el-table-column :label="lc('wap_user_00102')">
+                    <template #default="scope">
+                        <span class="content_all" v-html="scope.row.content_all"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="ctime_n" :label="lc('wap_js_00088')" width="180">
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="delrow(scope.row)" type="danger">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="small" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                   :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                   layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <div class="modluDrawer">
+            <el-dialog :title="lc('admin_system_00205')" v-model="dialogFaSong" width="500px" :modal-append-to-body="false">
+                <el-form :model="ruleFormFaSong" ref="ruleFormFaSong" label-width="130px">
+                    <el-form-item :label="lc('admin_system_00208')">
+                        <el-radio-group v-model="ruleFormFaSong.utype" @input="selectRadio">
+                            <el-radio :label="1">{{ lc('admin_user_00122') }}</el-radio>
+                            <el-radio :label="2">{{ lc('admin_user_00124') }}</el-radio>
+                            <el-radio :label="5">{{ lc('admin_system_00206') }}</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item :label="lc('admin_user_00140')" v-if="user">
+                        <el-input type="text" v-model="ruleFormFaSong.userarr" :placeholder="lc('admin_system_00204')">
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item :label="lc('admin_system_00207')" prop="content">
+                        <el-input type="textarea" v-model="ruleFormFaSong.content"></el-input>
+                    </el-form-item>
+
+                </el-form>
+                <template #footer><span class="dialog-footer">
+                    <el-button type="primary" :loading="save_load" @click="checkForm('ruleFormFaSong')">{{ lc('admin_system_00209') }}</el-button>
+                </span></template>
+            </el-dialog>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    emptytext: window.lc('wap_js_00113'),
+                    loading: false,
+                    checkedAll: false,
+                    tableData: [],
+                    selectedItem: [],
+                    dialogFaSong: false,
+                    ruleFormFaSong: {
+                        content: '',
+                        utype: '',
+                        userarr: ''
+                    },
+                    user: false,
+                    searchOption: {
+                        type: '1',
+                        ectime: '',
+                        keyword: '',
+                    },
+                    page: 1,
+                    prevPage: 0,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+
+					save_load:false,
+                }
+            },
+            created() {
+                this.getList();
+            },
+            methods: {
+                shortChange(e) {
+                    let orderMap = {ascending: 'asc', descending: 'desc'}
+                    this.searchOption.t = e.order ? e.prop : null;
+                    this.searchOption.order = orderMap[e.order];
+                    this.search();
+                },
+                selectRadio(e) {
+                    if (e == 5) {
+                        this.user = true;
+                    } else {
+                        this.user = false;
+                    }
+                },
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+                async getList() {
+                    let that = this;
+                    let searchOption = that.searchOption;
+                    let params = {
+                            page: that.page,
+                            pageSize: that.limit,
+                            end: that.searchOption.ectime
+                        };
+                    that.loading = true;
+                    that.emptytext = window.lc('admin_user_weipin_00026');
+                    httpPost('m=system&c=info_systeminfo&a=index', {...params, ...searchOption}, {hideloading: true}).then(function (data) {
+                        let res = data.data;
+                        if (res.error == 0) {
+                            that.tableData = res.data.list;
+                            if (that.prevPage != that.page) {
+                                that.prevPage = that.page;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+                            that.total = parseInt(res.data.total);
+                            that.pageSizes = res.data.pageSizes;
+                            that.limit = parseInt(res.data.pageSize);
+                            if (that.page > res.data.page) {
+                                that.page = parseInt(res.data.page); // 最后一页被删除后，取最新的页数
+                            }
+                            if (that.tableData.length === 0){
+                                that.emptytext = window.lc('wap_js_00113');
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error)
+                    })
+                },
+                selectAllBottom(value) {
+                    value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+                },
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+                delrow(row) {
+                    delConfirm(this, row.id, this.delete);
+                },
+                delAllBottom() {
+                    if (!this.selectedItem.length) {
+                        this.$message({ showClose: true, message: lc('admin_user_weipin_00005'), type: 'warning' });
+                        return false;
+                    }
+                    delConfirm(this, this.selectedItem, this.delete);
+                },
+                async delete(Ids) {
+                    let _this = this;
+                    let params = {
+                        del: Ids
+                    };
+                    httpPost('m=system&c=info_systeminfo&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success(window.lc('wap_user_00264'));
+                            _this.getList();
+                        } else {
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+                handleSelectionChange(val) {
+                    this.selectedItem = [];
+                    let _this = this;
+                    if (val.length) {
+                        val.forEach(item => {
+                            _this.selectedItem.push(item.id);
+                        });
+                    }
+                    if (_this.selectedItem.length == 0) {
+                        _this.checkedAll = false;
+                    } else {
+                        if (_this.selectedItem.length == _this.tableData.length) {
+                            _this.checkedAll = true;
+                        } else {
+                            _this.checkedAll = false;
+                        }
+                    }
+                },
+                checkForm(formName) {
+                    let that = this,
+                        params = this.$data[formName];
+                    if (params.utype == '') {
+                        message.error(window.lc('admin_system_00210'));
+                        return false;
+                    } else if (params.utype == 5 && params.userarr == '') {
+                        message.error(window.lc('wap_js_00056'));
+                        return false;
+                    }
+                    if (params.content == '') {
+                        message.error(window.lc('admin_system_00211'));
+                        return false;
+                    }
+                    that.submitForm(1, lc('admin_00872'), 3, params)
+                },
+                async submitForm(page, msg, status, params) {
+                    let that = this;
+                    if (status == 3) {
+                        params.page = page;
+						that.save_load = true;
+                        httpPost('m=system&c=info_systeminfo&a=sendSys', params).then(function (response) {
+							that.save_load = false;
+                            let data = response.data
+                            if (typeof data.page === 'undefinded') {
+                                var newpage = 1;
+                            } else {
+                                var newpage = data.page;
+                            }
+                            that.submitForm(newpage, data.msg, data.error, params);
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                    } else if (status == 1) {
+                        that.dialogFaSong = false;
+                        message.error(msg);
+						that.search();
+                    } else {
+                        that.dialogFaSong = false;
+                        message.success(msg);
+						that.search();
+                    }
+
+                }
+            }
+        }
+</script>

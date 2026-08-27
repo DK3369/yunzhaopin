@@ -1,0 +1,183 @@
+<template>
+<div id="adminnav" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt">
+            </div>
+            <div class="moduleSeachButn">
+                <a href="admin_nav_add.html">
+                    <el-button type="primary" icon="el-icon-document-add" size="small">{{ lc('admin_system_00248') }}</el-button>
+                </a>
+
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <!--<el-table-->
+            <!--        :data="list"-->
+            <!--        style="width: 100%;margin-bottom: 20px;"-->
+            <!--        height="100%"-->
+            <!--        row-key="id"-->
+            <!--        border-->
+            <!--        default-expand-all-->
+            <!--        :header-cell-style="{background:'#f5f7fa',color:'#606266'}"-->
+            <!--        :tree-props="{children: 'children', hasChildren: 'hasChildren'}">-->
+            <el-table :data="list" border style="width: 100%" row-key="id" :default-expand-all="false" lazy :load="load"
+                ref="tableref" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%"
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}" v-loading="loading" :empty-text="emptytext">
+                <el-table-column prop="name" :label="lc('admin_00191')" width="200">
+                </el-table-column>
+                <el-table-column :label="lc('admin_system_00246')" width="150">
+                    <template #default="scope">
+                        {{ scope.row.classname != '0' && scope.row.classname != '' ? scope.row.classname : '' }}
+                    </template>
+                </el-table-column>
+                <!--<el-table-column prop="menu" label="导航类型" width="120">-->
+                <!--</el-table-column>-->
+                <el-table-column prop="url" :label="lc('admin_system_00245')">
+                </el-table-column>
+                <el-table-column prop="path" :label="lc('admin_system_00244')">
+                </el-table-column>
+                <el-table-column prop="sort" :label="lc('admin_vue_00044')" width="80">
+                </el-table-column>
+                <!--<el-table-column label="是否快捷" width="80">-->
+                <!--    <template #default="scope">-->
+                <!--        <el-switch-->
+                <!--                v-model="scope.row.menu"-->
+                <!--                @change="changeDisplay(scope.$index,scope.row)"-->
+                <!--                active-color="#1890FF"-->
+                <!--                inactive-color="#B8BDC9"-->
+                <!--                active-value="2"-->
+                <!--                inactive-value="1">-->
+                <!--        </el-switch>-->
+                <!--    </template>-->
+                <!--</el-table-column>-->
+                <el-table-column :label="lc('member_com_00023')" width="100">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.display"
+                            @change="changeDisplay(scope.$index,scope.row, 'display')" active-color="#1890FF"
+                            inactive-color="#B8BDC9" active-value="0" inactive-value="1">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_system_00243')" width="100">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.dids" @change="changeDisplay(scope.$index,scope.row, 'dids')"
+                            active-color="#1890FF" inactive-color="#B8BDC9" active-value="1" inactive-value="0">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
+                    <template #default="scope">
+                        <div class="moduleElTaCaoz">
+                            <el-button size="small" @click.prevent="edit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="small"
+                                @click.prevent="deleteRow(scope.row)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    keyid: 0,
+                    list: [],
+                    maps: new Map(),
+
+                    emptytext: lc('admin_user_weipin_00026'),
+                    loading: true,
+                }
+            },
+            created: function () {
+                this.getList();
+            },
+            methods: {
+                async load(tree, treeNode, resolve) {
+                    this.keyid = tree.id;
+                    let list = await this.getList();
+
+                    resolve(list);
+                    this.maps.set(tree.id, { tree, treeNode, resolve });
+                },
+                async getList() {
+                    let that = this;
+                    let res = await httpPost('m=system&c=admin_nav&a=index', { keyid: that.keyid });
+                    if (res.data.error == 0) {
+                        if (that.keyid == 0) {
+                            that.list = res.data.data.list;
+                        } else {
+                            return res.data.data.list;
+                        }
+                        that.loading = false;
+                        if (that.list.length === 0){
+                            that.emptytext = lc('wap_js_00113');
+                        }
+                    }
+
+                },
+                async changeDisplay(idx, data, field) {
+                    let res = await httpPost('m=system&c=admin_nav&a=changeDisplay', {
+                        id: data.id,
+                        field: field,
+                        status: data[field]
+                    });
+                    if (res.data.error == 0) {
+                    } else {
+                        this.list[idx].display = data.display == 1 ? 0 : 1;
+                        this.$message.error(lc('admin_system_00241'));
+                    }
+                },
+                edit(data) {
+                    window.location.href = './admin_nav_add.html?id=' + data.id;
+                },
+                // 局部刷新列表
+                refreshRow(keyid) {
+                    const { tree, treeNode, resolve } = this.maps.get(keyid);//根据父级id取出对应的节点数据
+                    //将对应父节点下的数据清空，需要在el-table中增加参数 `ref="tableref"`
+                    this.$set(this.$refs.tableref.store.states.lazyTreeNodeMap, tree.id, []);
+                    //实现数据的重新加载
+                    if (tree) {
+                        this.load(tree, treeNode, resolve);
+                    }
+                },
+                deleteRow(data) {
+                    let that = this;
+
+                    if (data.hasChildren) {
+                        that.$message.warning(lc('admin_system_00242'));
+                        return false;
+                    }
+
+                    httpPost('m=system&c=admin_nav&a=del', { id: data.id }).then(function (res) {
+                        if (res.data.error == 0) {
+                            that.$message.success(res.data.msg);
+                            if (data.keyid == 0) {
+                                that.getList();
+                            } else {
+                                that.refreshRow(data.keyid)
+                            }
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    })
+                },
+            }
+        }
+</script>

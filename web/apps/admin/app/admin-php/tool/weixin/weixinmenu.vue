@@ -1,0 +1,129 @@
+<template>
+<div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane :label="lc('admin_tool_00681')" name="first" :lazy='true'>
+                    <wxgzh :config="config" @post-set="postset"></wxgzh>
+                </el-tab-pane>
+                <el-tab-pane :label="lc('admin_tool_00682')" name="forud" :lazy='true'>
+                    <wxkfz :config="config" @post-set="postset"></wxkfz>
+                </el-tab-pane>
+                <el-tab-pane :label="lc('admin_tool_00683')" name="fived" :lazy='true'>
+                   <wxtyset :config="config" @post-set="postset"></wxtyset>
+                </el-tab-pane>
+                <el-tab-pane :label="lc('admin_tool_00684')" name="second" :lazy='true'>
+                    <wxmenu ref="second"></wxmenu>
+                </el-tab-pane>
+                <el-tab-pane :label="lc('admin_tool_00685')" name="third" :lazy='true'>
+                    <reply ref="third"></reply>
+                </el-tab-pane> 
+            </el-tabs>
+        </div>
+    </div>
+</template>
+
+<script>
+import Wxgzh from './component/wxgzh.vue'
+import Wxkfz from './component/wxkfz.vue'
+import Wxtyset from './component/wxtyset.vue'
+import Wxmenu from './component/wxmenu.vue'
+import Reply from './component/reply.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    activeName: 'first',
+                    config:{},
+                }
+            },
+            components: {
+				'wxgzh': Wxgzh,
+				'wxkfz': Wxkfz,
+				'wxtyset': Wxtyset,
+                'wxmenu': Wxmenu,
+                'reply': Reply,
+            },
+            created:function(){
+                this.getInfo();
+
+
+            },
+            methods: {
+                async getInfo() {
+                    let that = this;
+                    
+                    httpPost('m=tool&c=weixinmenu&a=index',{}).then((result)=>{
+                        
+                        var res = result.data;
+                        if (res.error == 0) {
+                            
+                            that.config =res.data;
+                            
+                        }
+                        
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                async postset(e){
+                    
+                    let that = this;
+                    if(e.type=='wxgzh'){
+                        var param = {
+                            wx_name    : e.config.wx_name,
+                            wx_token   : e.config.wx_token,
+                        };
+                    }else if(e.type=='wxkfz'){
+                        var param = {
+                            
+                            wx_appid  : e.config.wx_appid,
+                            wx_appsecret : e.config.wx_appsecret,
+                        };
+                    }else if(e.type=='wxtyset'){
+                        var param = {
+                            
+                            wx_rz  : e.config.wx_rz,
+                            wx_author : e.config.wx_author,
+                            wx_author_htlogin : e.config.wx_author_htlogin,
+                            wx_popWin : e.config.wx_popWin,
+                            wx_welcom_type : e.config.wx_welcom_type,
+                            wx_welcom : e.config.wx_welcom,
+                            wx_search : e.config.wx_search,
+                            wx_search_no : e.config.wx_search_no,
+                        };
+                    }
+                    startLoading();
+                    httpPost('m=tool&c=weixinmenu&a=save',param).then((result)=>{
+                        endLoading();
+                        var res = result.data;
+
+                        message.success(res.msg,this.getInfo);
+
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                handleClick(tab, event){
+                    this.$nextTick(() => {
+                        if (tab.name == 'second' || tab.name == 'third'){
+                            this.$refs[tab.name].doLayout();
+                        }
+                    });
+                },
+            }
+        }
+</script>

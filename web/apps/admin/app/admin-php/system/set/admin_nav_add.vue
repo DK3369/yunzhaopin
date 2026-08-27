@@ -1,0 +1,267 @@
+<template>
+<div id="adminnav" class="moduleDome">
+        <div class="moduleHeadr">
+            <el-page-header @back="goBack" :content="id ? lc('wap_js_00073') : lc('wap_js_00091')">
+            </el-page-header>
+        </div>
+        <el-form :model="ruleForm" ref="ruleForm" label-width="130px" class="create-ruleForm">
+            <div class="moduleTable">
+                <table class="tableVue">
+                    <thead>
+                        <tr align="left">
+                            <th width="200">{{ lc('member_com_00021') }}</th>
+                            <th width="400">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_00192') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableSelect" style="display: flex;align-items: center;">
+                                    <el-cascader v-model="ruleForm.keyid" :placeholder="lc('wap_user_00100')" :options="navList"
+                                        :props="navProps" filterable>
+                                    </el-cascader>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00253') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_00191') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.name"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_00191') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_system_00245') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.url"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00250') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_system_00244') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.path"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00249') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_system_00246') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.classname"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00251') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_system_00105') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.sort"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00252') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--<tr>-->
+                        <!--    <td>-->
+                        <!--        <div class="TableTite">是否快捷</div>-->
+                        <!--    </td>-->
+                        <!--    <td>-->
+                        <!--        <div class="TableButn">-->
+                        <!--            <el-switch-->
+                        <!--                    v-model="ruleForm.menu"-->
+                        <!--                    active-color="#1890FF"-->
+                        <!--                    inactive-color="#B8BDC9"-->
+                        <!--                    active-value="2"-->
+                        <!--                    inactive-value="1">-->
+                        <!--            </el-switch>-->
+                        <!--        </div>-->
+                        <!--    </td>-->
+                        <!--    <td>-->
+                        <!--        <div class="TableShuom">-->
+                        <!--            <span>是否显示</span>-->
+                        <!--        </div>-->
+                        <!--    </td>-->
+                        <!--</tr>-->
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_system_00356') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableButn">
+                                    <el-switch v-model="ruleForm.display" active-color="#1890FF"
+                                        inactive-color="#B8BDC9" active-value="0" inactive-value="1">
+                                    </el-switch>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00355') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">{{ lc('admin_system_00243') }}</div>
+                            </td>
+                            <td>
+                                <div class="TableButn">
+                                    <el-switch v-model="ruleForm.dids" active-color="#1890FF" inactive-color="#B8BDC9"
+                                        active-value="1" inactive-value="0">
+                                    </el-switch>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>{{ lc('admin_system_00355') }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="setBasicButn" style="border: none;">
+                <el-button type="primary" size="medium" @click="submitForm('ruleForm')">{{ lc('wap_user_00176') }}</el-button>
+            </div>
+        </el-form>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+            data: function () {
+                return {
+                    navList: [],
+                    navProps: {
+                        label: 'name',
+                        value: 'id',
+                        checkStrictly: true,
+                        emitPath: false
+                    },
+                    id: '',
+                    ruleForm: {
+                        keyid: '0',
+                        name: '',
+                        url: '',
+                        classname: '',
+                        sort: '',
+                        // menu: '1',
+                        display: '0',
+                        dids: '0'
+                    },
+                }
+            },
+            created: function () {
+                this.getList();
+                let query = getUrlParams();
+
+                if (query && query.id) {
+                    this.id = query.id;
+                    this.getInfo();
+                }
+            },
+            methods: {
+                async getList() {
+                    let that = this;
+
+                    let res = await httpPost('m=system&c=admin_nav&a=index', { type: 'add' });
+                    if (res.data.error == 0) {
+                        that.navList = res.data.data.list;
+                    }
+                },
+                async getInfo() {
+                    let res = await httpPost('m=system&c=admin_nav&a=info', { id: this.id });
+                    if (res.data.error == 0) {
+                        let info = res.data.data.info;
+                        info.menu = parseInt(info.menu);
+
+                        this.ruleForm = info;
+                    }
+                },
+                submitForm(formName) {
+                    let that = this;
+
+                    let params = that.ruleForm;
+                    if (this.id) {
+                        params.id = this.id;
+                    }
+
+                    httpPost('m=system&c=admin_nav&a=add', params).then(function (res) {
+                        if (res.data.error == 0) {
+                            that.$message.success({
+                                message: res.data.msg,
+                                onClose: function () {
+                                    window.location.href = './admin_nav.html';
+                                }
+                            });
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    });
+                },
+                goBack() {
+                    history.go(-1);
+                }
+            }
+        }
+</script>

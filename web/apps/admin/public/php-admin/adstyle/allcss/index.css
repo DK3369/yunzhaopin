@@ -1,0 +1,1160 @@
+.homeModule {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.homeModuleTop {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    /*height: 225px;*/
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeTopSubcty {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 225px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeTopSubqunim {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeTopSubCoy {
+    overflow: hidden;
+    position: relative;
+    width: calc(20% - 7px);
+    height: 100%;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.homeTopSubFlwex {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    align-content: space-between;
+    background: none;
+}
+
+.homeTopSubBuue {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(50% - 6px - 24px);
+    background: #fff;
+    border-radius: 5px;
+    padding: 12px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+.homeTopLeft {
+    overflow: hidden;
+    position: relative;
+    /* width: calc(100% - (560px + 12px)); */
+    width: calc(68% - 12px);
+    /* max-width: calc(100% - (560px + 12px)); */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeTopLeftsy {
+    overflow: hidden;
+    position: relative;
+    width: 44%;
+    max-width: 490px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeTopLeList {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    padding: 12px;
+    background: url(../../images/adminbg1.png) center no-repeat;
+    background-size: cover;
+    height: calc(100% - 24px);
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    cursor: pointer;
+}
+
+.homeTopLeLisTwo {
+    background: url(../../images/adminbg2.png) center no-repeat;
+    background-size: cover;
+}
+
+.homeTopLeLTite {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.homeTopLeLName {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #333;
+}
+
+.homeTopLeLButn {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.homeTopLeLButn span {
+    overflow: hidden;
+    width: 38px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    border-radius: 12px;
+    color: #666;
+}
+
+.homeTopLeLButn span.spanxz {
+    background: #f30;
+    color: #fff;
+}
+
+.homeTopLeLisTwo .homeTopLeLButn span.spanxz {
+    background: #2778f8;
+    color: #fff;
+}
+
+.homeTopLeMoney {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.homeTopMonNum {
+    overflow: hidden;
+    position: relative;
+    font-size: 28px;
+    color: #ff2827;
+}
+
+.homeTopLeLisTwo .homeTopMonNum {
+    color: #333;
+}
+
+.homeTopMonNum span {
+    font-size: 18px;
+}
+
+.homeTopMonTxt {
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #666;
+}
+
+.homeTopLeTaoc {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.homeTopLeTaoc div {
+    overflow: hidden;
+    position: relative;
+    align-items: center;
+}
+
+.homeTopLeTaoc div span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 15px;
+    color: #050505;
+    text-align: center;
+}
+
+.homeTopLeTaoc div b {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.homeTopLeftxz {
+    overflow: hidden;
+    position: relative;
+    width: calc(56% - 12px);
+    height: 100%;
+}
+
+.homeTopLeftxz ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    align-content: space-between;
+    height: 100%;
+}
+
+.homeTopLeftxz ul li {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - (24px + 6px));
+    padding: 13px 12px;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.homeTopLeNum {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.homeTopLshu {
+    overflow: hidden;
+    position: relative;
+    padding-left: 8px;
+}
+
+.homeTopLshu span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 14px;
+    color: #666;
+    padding-bottom: 6px;
+}
+
+.homeTopLshu b {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.homeTopLeDay {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.homeTopLeDay div {
+    overflow: hidden;
+    position: relative;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.homeTopLeDay div span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 13px;
+    color: #666;
+}
+
+.homeTopRight {
+    overflow: hidden;
+    position: relative;
+    width: 32%;
+    max-width: 560px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeTopRiChuli {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - (24px + 6px));
+    height: calc(100% - 24px);
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.homeTopRiTite {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    padding-bottom: 10px;
+}
+
+.homeTopRiCaro {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - (21px + 10px));
+}
+
+.homeTopRiCaro .el-carousel__container {
+    height: 170px;
+}
+
+.homeTopRiCaro .el-carousel__indicators {
+    display: none;
+}
+
+.homeTopRiCaro .el-carousel__arrow {
+    width: 28px;
+    height: 28px;
+}
+
+.homeTopRiCaro .el-carousel__arrow--left {
+    left: 0;
+}
+
+.homeTopRiCaro .el-carousel__arrow--right {
+    right: 0;
+}
+
+.homeTopRiCaro .dataItem {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+.dataItemList {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: calc(50% - 5px);
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.dataItemList span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 28px;
+    color: #090909;
+}
+
+.dataItemList b {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    padding-top: 4px;
+}
+
+.daichukufgCaro {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 31px);
+}
+
+.daichukufgCaro .el-carousel--horizontal {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.daichukufgCaro .el-carousel__container {
+    position: relative;
+    height: 100%;
+}
+
+.daichukufgCaro .el-carousel__indicators {
+    display: none;
+}
+
+.daichukufgCaro .el-carousel__arrow {
+    width: 28px;
+    height: 28px;
+}
+
+.daichukufgCaro .el-carousel__arrow--left {
+    left: 0;
+}
+
+.daichukufgCaro .el-carousel__arrow--right {
+    right: 0;
+}
+
+.daichukuItem {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.daichukuemList {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 12px);
+}
+
+.daichukuemList .spannaen {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 14px;
+    color: #666;
+}
+
+.daichukuemList .nubsuz {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 22px;
+    color: #333;
+    font-weight: 600;
+    padding: 8px 0;
+}
+
+
+
+
+.homeTopRigDuax {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(160px - 24px);
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 12px;
+}
+
+.homeTopRigDumao {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - (21px + 10px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.homeTopumaod {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+}
+
+.homeTopumaod span.spannum {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 28px;
+    color: #070404;
+    padding-bottom: 5px;
+}
+
+.homeTopumaod b {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    padding: 0px 0 6px 0;
+}
+
+.homeCenterAll {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    height: 475px;
+    align-items: center;
+    margin-top: 12px;
+    justify-content: space-between;
+}
+
+.homeCentLeft {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
+    background: #fff;
+    border-radius: 5px;
+    padding: 12px;
+}
+
+.homeCentLeTite {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeCentLeName {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #333;
+}
+
+.homeCentLeTime {
+    overflow: hidden;
+    position: relative;
+}
+
+.homeCentLeTime .el-input {
+    width: 150px;
+}
+
+.homeCentLeEchat {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - (35px + 10px));
+    margin-top: 10px;
+    background: #fff;
+    /*display: flex;
+    align-items: center;
+    justify-content: space-between;*/
+}
+
+.homeLeEchatInfo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.homeLeEchatInfo ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    align-content: space-around;
+    height: 100%;
+}
+
+.homeLeEchatInfo ul li {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    /*width: calc(50% - 3px);*/
+    padding: 15px 0;
+}
+
+.homeLeEchatInfo ul li span {
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #666;
+}
+
+.homeLeEchatInfo ul li b {
+    overflow: hidden;
+    display: block;
+    font-size: 18px;
+    color: #333;
+    padding-top: 5px;
+}
+
+.homeLeEchatInfo ul li.spanCurs {
+    /*background: #F3F8FF;*/
+    color: #409eff;
+}
+
+.homeLeEchatInfo ul li.spanCurs:after {
+    overflow: hidden;
+    position: absolute;
+    display: block;
+    content: "";
+    width: 30px;
+    height: 2px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 2;
+    background: #409eff;
+}
+
+
+.homeLeEchatInfo ul li.spanCurs span {
+    color: #2778F8;
+}
+
+.homeLeEchatInfo ul li.spanCurs b {
+    color: #2778F8;
+}
+
+.homeEchatMain1 {
+    overflow: hidden;
+    height: calc(100% - 90px);
+    margin-top: 10px;
+    position: relative;
+    width: 100%;
+}
+
+.daichukushixs {
+    overflow: hidden;
+    position: relative;
+    width: 290px;
+    height: 100%;
+    /*background: #fff;*/
+    /*border-radius: 5px;*/
+    /*padding: 12px;*/
+}
+
+.daichuLiFlexs {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #f90;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+}
+
+.daichuLiSang {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    padding: 12px;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.daichuLiDwon {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    padding: 12px;
+    background: #fff;
+    border-radius: 5px;
+    height: calc(50% - 6px);
+}
+
+
+
+
+
+.homeCentRigh .el-tabs {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.homeCentRigh .el-tabs__header {
+    margin: 0;
+    height: 35px;
+    overflow: hidden;
+    position: relative;
+}
+
+.homeCentRigh .el-tabs__item {
+    height: 35px;
+    line-height: 40px;
+    font-size: 16px;
+}
+
+.homeCentRigh .el-tabs__nav-wrap::after {
+    display: none;
+}
+
+.homeCentRigh .el-tabs__active-bar {
+    display: none;
+}
+
+.homeCentRiTwon {
+    overflow: hidden;
+    position: relative;
+}
+
+.homeCentRiTwon .el-tabs__nav-wrap::after {
+    display: block;
+}
+
+.homeCentRiTwon .el-tabs__active-bar {
+    display: block;
+}
+
+.homeCentRiTwon .el-tabs__item {
+    height: 35px;
+    line-height: 35px;
+    font-size: 14px;
+    color: #666;
+    padding: 0 19px;
+}
+
+.homeCentRiTwon .el-tabs__item:hover {
+    color: #222;
+}
+
+.homeCentRiTwon .el-tabs__item.is-active {
+    color: #222;
+}
+
+.homeCentRigh .el-tabs__content {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 20px);
+    height: calc(100% - (35px + 10px + 20px));
+    margin-top: 10px;
+    background: #fff;
+    padding: 10px;
+}
+
+.homeCentRiTwon .el-tabs__content {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - (35px + 20px));
+    background: #fff;
+    padding: 10px 0;
+    margin-top: 0;
+}
+
+.homeCentRList {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.homeCentRList ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.homeCentRList ul li {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #808695;
+}
+
+.homeCentRList ul li a {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 14px;
+    color: #808695;
+}
+
+.homeCentRList ul li::before {
+    overflow: hidden;
+    position: relative;
+    content: "●";
+    display: block;
+    padding-right: 6px;
+}
+
+.homeCentRList ul li a span {
+    color: #f30;
+}
+
+
+.homeBottomAll {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    min-height: 100px;
+    margin-top: 12px;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.homeBotomInfo {
+    overflow: hidden;
+    position: relative;
+    padding: 12px;
+    background: #fff;
+    width: calc(100% - 24px);
+    /*margin-top: 10px;*/
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeBotomInfo .homeBotText {
+    overflow: hidden;
+    position: relative;
+}
+
+.homeBotomInfo .homeBotText span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 14px;
+    color: #666;
+    height: 30px;
+    line-height: 30px;
+}
+
+
+.indexSubFlex {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.indexSubLets {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 290px - 12px);
+    height: 100%;
+}
+
+
+.indexSubRigt {
+    overflow: hidden;
+    position: relative;
+    width: 290px;
+    height: 100%;
+}
+
+.indexLetChats{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(174px - 24px);
+    background: #fff;
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.indexLetChatCont{
+    overflow: hidden;
+    position: relative;
+    width: 50%;
+    height: 100%;
+}
+.indexLetChatTite{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+    padding-top: 10px;
+}
+
+.indexLetChatBabi{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.indexLetChatBabi .el-progress--circle .el-progress__text{
+    top: 60%;
+}
+.indexLetChatNum{
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    top: 0;
+    left: 0;
+    z-index: 22;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.indexLetChatNum span{
+    overflow: hidden;
+    display: block;
+    padding-bottom: 18px;
+    font-weight: 600;
+}
+.indexLetDatas{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(200px - 24px);
+    background: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.indexLetDataCont{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 31px);
+}
+.indexLetDataCont ul{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: space-around;
+    justify-content: space-between;
+}
+.indexLetDataCont ul li{
+    overflow: hidden;
+    position: relative;
+    width: 45%;
+}
+.indexLetDataCont ul li div{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.indexLetDataCont ul li div span{
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #333;
+}
+.indexLetDataCont ul li div b{
+    overflow: hidden;
+    display: block;
+    font-size: 24px;
+    color: #333;
+    padding-top: 5px;
+}
+
+.indexLetSixan{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(302px - 24px);
+    background: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.indexLetshicConts{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 31px);
+}
+.indexLetshicConts .el-carousel--horizontal{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.indexLetshicConts .el-carousel__container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.indexLetshicConts .el-carousel__indicators {
+    display: none;
+}
+
+.indexLetshicConts .el-carousel__arrow {
+    width: 28px;
+    height: 28px;
+}
+
+.indexLetshicConts .el-carousel__arrow--left {
+    left: 0;
+}
+
+.indexLetshicConts .el-carousel__arrow--right {
+    right: 0;
+}
+
+.indexLetshItem{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    /*align-items: center;*/
+    justify-content: space-between;
+    /*align-content: space-around;*/
+}
+.indexLetshList{
+    overflow: hidden;
+    position: relative;
+    width: 50%;
+    padding-top: 12px;
+    cursor: pointer;
+}
+.indexLetshList span.spannaen{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 13px;
+    color: #666;
+}
+.indexLetshList b.nubsuz{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 22px;
+    color: #333;
+    padding-top: 6px;
+}
+
+.indexLetEmpty{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.indexLetEmpty .el-empty{
+    overflow: hidden;
+    position: relative;
+    padding: 20px 0;
+}
+.indexLetEmpty .el-empty__image{
+    width: 128px;
+}
+
+
+.homeEchatSubject{
+    overflow: hidden;
+    height: calc(100% - 80px);
+    margin-top: 10px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.echatSubBine{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.homeEchatWebChat{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 200px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.homeEchatWebText{
+    overflow: hidden;
+    position: relative;
+    width: 200px;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+}
+.homeEchatWebInfo{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.homeEchatWebInfo h3{
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+}
+.homeEchatWebInfo b{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 24px;
+    color: #333;
+    padding: 10px;
+}
+.homeEchatWebInfo span{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 13px;
+    color: #888;
+}

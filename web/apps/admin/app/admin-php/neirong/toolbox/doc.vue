@@ -1,0 +1,384 @@
+<template>
+<div id="cityfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachleft">
+                <div class="moduleSeachInpt">
+                    <el-input :placeholder="lc('admin_00340')" size="small" style="margin-right: 8px; width: 340px;" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <template #prepend><el-select v-model="searchForm.type" :placeholder="lc('wap_user_00100')">
+                            <el-option :label="lc('admin_00273')" value="1"></el-option>
+                            <el-option :label="lc('admin_00274')" value="2"></el-option>
+                        </el-select></template>
+                    </el-input>
+                    <!-- <div class="tableSeachInpt tableSeachInptsmall newsinput" style="margin-bottom: 0px;;">
+                    <el-select v-model="searchForm.type" size="small" placeholder="请选择" @change="search">
+                        <el-option label="文档名" value="1"></el-option>
+                        <el-option label="类别名" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt newsinput" style="margin-bottom: 0px;;">
+                    <el-input v-model="searchForm.keyword" placeholder="输入你要搜索的关键字" size="small"
+                              clearable prefix-icon="el-icon-search">
+                    </el-input>
+                </div> -->
+                    <div class="tableSeachInpt tableSeachInptsmall newsinput" style="margin-bottom: 0px;;" v-for="(searchItem, searchIndex) in searchList">
+                        <el-select v-model="searchForm[searchItem.param]" size="small" :clearable="true" :placeholder="searchItem.name" @change="search">
+                            <el-option v-for="(searchLabel, searchValue) in searchItem.value" :label="searchLabel" :value="searchValue"></el-option>
+                        </el-select>
+                    </div>
+                    <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+                </div>
+            </div>
+            <div class="nrtopbtn">
+                <el-button type="primary" icon="el-icon-document-add" size="small" @click="openAdd('')">{{ lc('admin_00272') }}</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="list" :default-sort="{prop: 'date', order: 'descending'}" stripe border ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange" style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="90" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="name" :label="lc('admin_00273')">
+                </el-table-column>
+                <el-table-column prop="cname" :label="lc('admin_00274')">
+                </el-table-column>
+                <el-table-column :label="lc('admin_00271')">
+                    <template #default="scope">
+                        <el-switch v-model="scope.row.is_show" active-value="1" inactive-value="0" @change="bindShow($event, scope.row)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="add_time" :label="lc('admin_00269')" sortable="custom" :formatter="formatterAddTime">
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small " plain @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="small" @click="del(scope.$index)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')" size="small">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="page" :page-sizes="pageSizes" :page-size="limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <div class="modluDrawer">
+            <el-dialog :title="detail.id ? lc('admin_00270') : lc('admin_00272')" width="500px" v-model="dialogAdd" :modal-append-to-body="false">
+                <div class="hydialog_item">
+                    <span class="spantext">{{ lc('admin_00265') }}</span>
+                    <div class="hydialoFgter">
+                        <el-input v-model="ruleForm.name" :placeholder="lc('admin_00263')"></el-input>
+                    </div>
+                </div>
+                <div class="hydialog_item">
+                    <span class="spantext">{{ lc('admin_00266') }}</span>
+                    <div class="hydialoFgter">
+                        <el-select v-model="ruleForm.cid" :placeholder="lc('wap_user_00100')">
+                            <el-option v-for="classItem in classList" :key="classItem.id" :label="classItem.name" :value="classItem.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="hydialog_item">
+                    <span class="spantext">{{ lc('admin_00267') }}</span>
+                    <el-switch v-model="ruleForm.is_show" active-value="1" inactive-value="0">
+                    </el-switch>
+                </div>
+                <div class="hydialog_item">
+                    <span class="spantext">{{ lc('admin_00264') }}</span>
+                    <el-upload class="upload-demo" action="" accept="application/*" :auto-upload="false" :on-change="handleChangeFile" :show-file-list="false">
+                        <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
+                    </el-upload>
+                    <div v-if="ruleForm.file">{{ruleForm.file.name}}</div>
+                    <div v-else-if="ruleForm.file_name">{{ruleForm.file_name}}</div>
+                </div>
+                <template #footer><div class="dialog-footer">
+                    <el-button type="primary" @click="save" :disabled="saveLoading">{{detail.id ? lc('wap_js_00073') : lc('wap_js_00091')}}</el-button>
+                </div></template>
+            </el-dialog>
+        </div>
+    </div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+    data: function() {
+        return {
+            emptytext: lc('wap_js_00113'),
+            loading: false,
+            // 搜索筛选项
+            searchList: [],
+            searchForm: {
+                type: '1'
+            },
+
+            // 列表
+            page: 1,
+            limit: 0,
+            list: [],
+            total: 0,
+            pageSizes: [],
+
+            // 列表排序
+            t: '',
+            order: '',
+
+            checkedAll: false, // 全选
+            checkedAllIndeterminate: false,
+            multipleSelection: [], // 多选值存储
+            idArr: [],
+
+            detail: {},
+
+            saveLoading: false,
+
+            // 添加
+            dialogAdd: false,
+            ruleForm: {},
+            classList: [],
+            prevPage: 0
+        }
+    },
+    created() {
+        this.getGroup();
+        this.getList();
+    },
+    methods: {
+        handleSizeChange(val) {
+            this.limit = val;
+            this.getList();
+        },
+        handleCurrentChange(val) {
+            this.page = val;
+            this.getList();
+        },
+        sortChange(event) {
+            this.t = event.order ? event.prop : '';
+            this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+            this.search();
+        },
+        search() {
+            this.page = 1;
+            this.getList();
+        },
+        getGroup(){
+            let that = this;
+            httpPost('m=neirong&c=toolbox_doc&a=getGroup', {}, {hideloading: true}).then(function(response) {
+                let res = response.data,
+                    data = res.data;
+                that.searchList = data.search_list;
+            })
+        },
+        getList() {
+            let that = this,
+                searchForm = that.searchForm,
+                params = {
+                    page: that.page,
+                    limit: that.limit,
+                    t: that.t,
+                    order: that.order,
+                };
+            that.loading = true;
+            that.emptytext = lc('admin_user_weipin_00026');
+            httpPost('m=neirong&c=toolbox_doc', { ...params, ...searchForm }, {hideloading: true}).then(function(response) {
+                let res = response.data,
+                    data = res.data;
+                that.list = data.list;
+                that.total = parseInt(data.total);
+                that.pageSizes = data.page_sizes;
+                if (that.limit === 0) {
+                    that.limit = parseInt(data.limit); // 取系统配置默认数量
+                }
+                if (that.page > data.page) {
+                    that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                }
+
+                if(that.prevPage != that.page){
+                    that.prevPage = that.page;
+                    that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                }
+                that.loading = false;
+                if (that.list.length === 0) {
+                    that.emptytext = lc('wap_js_00113');
+                }
+            })
+        },
+
+        // 批量操作
+        handleSelectionChange(val) {
+            if (val.length == 0) {
+                this.checkedAll = false;
+                this.checkedAllIndeterminate = false;
+            } else {
+                if (val.length === this.list.length) {
+                    this.checkedAll = true;
+                    this.checkedAllIndeterminate = false;
+                } else {
+                    this.checkedAll = false;
+                    this.checkedAllIndeterminate = true;
+                }
+            }
+            this.multipleSelection = val;
+        },
+        batch(type) {
+            if (this.multipleSelection.length == 0) {
+                message.error(lc('admin_00136'));
+                return false;
+            }
+
+            let idArr = [];
+            this.multipleSelection.forEach(function(item) {
+                idArr.push(item.id);
+            })
+            this.idArr = idArr;
+
+            if (type == 'del') {
+                this.del();
+            }
+        },
+        checkAll(val) {
+            val ? this.checkedAllIndeterminate = false : '';
+            this.$refs.multipleTable.toggleAllSelection();
+        },
+
+        del(idx) {
+            let that = this,
+                params = {},
+                msg = '';
+
+            if (typeof idx == 'undefined') { // 批量删除
+                params.del = this.idArr;
+                msg = lc('common_00853');
+            } else { // 单个删除
+                params.id = that.list[idx].id;
+                msg = lc('admin_00333');
+            }
+
+            delConfirm(this, params, function(params) {
+                httpPost('m=neirong&c=toolbox_doc&a=del', params).then(function(res) {
+                    if (res.data.error > 0) {
+                        message.error(res.data.msg);
+                    } else {
+                        that.getList();
+                        message.success(res.data.msg, function() {
+                            that.$refs.multipleTable.clearSelection();
+                        });
+                    }
+                })
+            }, msg)
+        },
+
+        formatterAddTime(row, column) {
+            return row.add_time_n;
+        },
+
+        openAdd(row) {
+            let that = this;
+
+            httpPost('m=neirong&c=toolbox_doc&a=add', { id: row.id ? row.id : '' }).then(function(response) {
+                let res = response.data,
+                    data = res.data,
+                    info = data.info ? data.info : {};
+
+                that.detail = info;
+                that.classList = data.classList;
+
+                that.ruleForm = {
+                    id: info.id,
+                    name: info.name,
+                    cid: info.cid,
+                    is_show: info.is_show ? info.is_show : 0,
+                    file_name: info.file_name
+                };
+
+                that.dialogAdd = true;
+            })
+        },
+
+        // 上传时触发 - 文件
+        handleChangeFile(file, fileList) {
+            this.$set(this.ruleForm, 'file', file.raw);
+        },
+
+        save() {
+            let that = this,
+                ruleForm = that.ruleForm,
+                formData = new FormData();
+
+            if (!ruleForm.name) {
+                message.warning(lc('admin_00263'));
+                return false;
+            }
+
+            if (!ruleForm.cid) {
+                message.warning(lc('admin_00820'));
+                return false;
+            }
+
+            if (!ruleForm.id && !ruleForm.file) {
+                message.warning(lc('admin_00268'));
+                return false;
+            }
+
+            if (that.saveLoading) {
+                return false;
+            }
+
+            that.saveLoading = true;
+
+            $.each(ruleForm, function(key, value) {
+                formData.append(key, value);
+            });
+
+            httpPost('m=neirong&c=toolbox_doc&a=save', formData).then(function(response) {
+                let res = response.data;
+
+                if (res.error > 0) {
+                    message.error(res.msg, function() {
+                        that.saveLoading = false;
+                    });
+                } else {
+                    that.dialogAdd = false;
+                    that.getList();
+                    message.success(res.msg, function() {
+                        that.saveLoading = false;
+                    })
+                }
+            })
+        },
+
+        bindShow(val, data) {
+            let that = this;
+
+            httpPost('m=neirong&c=toolbox_doc&a=show', { id: data.id, show: val }).then(function(response) {
+                let res = response.data;
+
+                if (res.error > 0) {
+                    message.error(res.msg);
+                }
+            })
+        },
+    }
+}
+</script>

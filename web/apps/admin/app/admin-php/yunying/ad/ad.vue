@@ -1,0 +1,429 @@
+<template>
+<div id="daohaapp" class="moduleElenAl">
+		<div class="moduleSeachs">
+			<div class="moduleSeachleft">
+				<div class="tableSeachcascader  ">
+					<el-cascader v-model="searchForm.class_id" :options="classData" :props="{ emitPath: false }" :show-all-levels="false" size="small" :placeholder="lc('admin_01167')" clearable @change="handleSearch"></el-cascader>
+				</div>
+				<div class="tableSeachInptsmall newsinput">
+					<el-select v-model="searchForm.is_check" size="small" :placeholder="lc('wap_com_00406')" clearable @change="handleSearch">
+						<el-option :label="lc('wap_user_00166')" value="-1"></el-option>
+						<el-option :label="lc('wap_user_00165')" value="1"></el-option>
+						<el-option :label="lc('member_com_00304')" value="2"></el-option>
+					</el-select>
+				</div>
+				<div class="tableSeachInptsmall newsinput">
+					<el-select v-model="searchForm.ad" size="small" :placeholder="lc('admin_01168')" clearable @change="handleSearch">
+						<el-option :label="lc('admin_01140')" value="1"></el-option>
+						<el-option :label="lc('admin_01141')" value="2"></el-option>
+						<el-option :label="lc('admin_01169')" value="3"></el-option>
+					</el-select>
+				</div>
+				<div class="newsinput">
+					<el-input v-model="searchForm.name" :placeholder="lc('admin_user_weipin_00003')" size="small" prefix-icon="el-icon-search" clearable></el-input>
+				</div>
+				<div class="newsbtnbox">
+					<el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
+				</div>
+			</div>
+			<div class="moduleSeachButn">
+				<el-button type="primary" icon="el-icon-document-add" size="small" @click="handleAdd">{{ lc('admin_01166') }}</el-button>
+				<el-button type=" " icon="el-icon-folder-checked" size="small" @click="handleCache">{{ lc('admin_00196') }}</el-button>
+			</div>
+		</div>
+
+
+		<div class="moduleElTable">
+			<el-table :data="tableData" border style="width: 100%"
+				:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" ref="multipleTable"
+				@selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading">
+				<template #empty>
+					<p>{{dataText}}</p>
+				</template>
+				<el-table-column type="selection" width="55"></el-table-column>
+				<el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom" width="80"></el-table-column>
+				<el-table-column prop="ad_name" :label="lc('admin_01170')"></el-table-column>
+				<el-table-column prop="class_name" :label="lc('admin_yunying_00047')" width="220"></el-table-column>
+				<el-table-column prop="hits" align="right" header-align="center" :label="lc('admin_yunying_00049')" width="80"></el-table-column>
+				<el-table-column :label="lc('wap_js_00081')" width="100">
+					<template #default="scope">
+						<template v-if="scope.row.ad_type == 'pic'">
+							<div v-if="scope.row.pic_url_list" class="moduleElImage">
+								<el-image :src="scope.row.pic_url_list ? scope.row.pic_url_list[0] : ''" :preview-src-list="scope.row.pic_url_list ? scope.row.pic_url_list : []"></el-image>
+							</div>
+							<span v-else>{{ lc('common_02082') }}</span>
+						</template>
+						<template v-else>
+							{{scope.row.ad_typename}}
+						</template>
+					</template>
+				</el-table-column>
+				<el-table-column prop="time_end" :label="lc('admin_company_00006')" width="100"></el-table-column>
+				<el-table-column prop="d_title" :label="lc('admin_yunying_00050')" width="100"></el-table-column>
+				<el-table-column prop="sort" :label="lc('admin_vue_00044')" sortable="custom" width="110">
+					<template #default="scope">
+						<el-input type="number" v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope)"></el-input>
+						<div v-else>{{ scope.row.sort }}  <el-button type="text" icon="el-icon-edit" @click="editData(scope)"></el-button></div>
+					</template>
+				</el-table-column>
+				<el-table-column :label="lc('member_user_00181')" width="100">
+					<template #default="scope">
+						<el-tag type="warning" size="small" v-if="scope.row.is_open=='0'">{{ lc('admin_yunying_00048') }}</el-tag>
+						<el-tag type="danger" size="small" v-else-if="scope.row.is_end == '1'">{{ lc('member_com_00304') }}</el-tag>
+						<el-tag type="success" size="small" v-else-if="scope.row.is_check == '1'">{{ lc('wap_user_00165') }}</el-tag>
+						<el-button type="text" size="small" v-else @click="handleCheck(scope)">{{ lc('wap_user_00166') }}<icon class="el-icon-edit el-icon--right"></icon></el-button>
+					</template>
+				</el-table-column>
+				<el-table-column fixed="right" :label="lc('member_user_00048')" width="210" align="center">
+					<template #default="scope">
+						<div class="cz_button">
+							<el-button size="small" @click="handlePreview(scope)">{{ lc('admin_system_00275') }}</el-button>
+							<el-button size="small" @click="editRow(scope)">{{ lc('wap_js_00073') }}</el-button>
+							<el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
+						</div>
+					</template>
+				</el-table-column>
+			</el-table>
+		</div>
+		<div class="modulePaging">
+			<div class="modulecz modulePagButn">
+				<el-checkbox :indeterminate="isIndeterminate" v-model="checked"
+					@change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button @click="deleteRow(null, true)" size="small">{{ lc('member_com_00055') }}</el-button>
+				<el-button @click="handleCtime(null, true)" size="small">{{ lc('admin_user_company_00391') }}</el-button>
+			</div>
+			<div class="modulePagNum">
+				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+					v-model:current-page="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes"
+					layout="total, sizes, prev, pager, next, jumper" :total="total">
+				</el-pagination>
+			</div>
+		</div>
+		<!--添加 修改-->
+		<div class="modluDrawer">
+			<el-drawer :title="titleAddEdit" v-model="addVisible" :modal-append-to-body="false" :show-close="true"
+				:destroy-on-close="true" size="70%">
+				<ad_edit :id="id" :class-data="classData" :domain-data="domainData" @child-event="handleAddClose">
+				</ad_edit>
+			</el-drawer>
+		</div>
+		<!--预览弹出框-->
+		<el-dialog :title="lc('admin_00308')" v-model="previewVisible" :with-header="true" :modal-append-to-body="false"
+			:destroy-on-close="true" :show-close="true" width="400px">
+			<ad_preview :id="id" @child-event="handlePreviewClose"></ad_preview>
+		</el-dialog>
+		<!--批量延期-->
+		<el-dialog :title="lc('admin_user_weipin_00038')" width="30%" v-model="ctimeVisible" :modal-append-to-body="false"
+			:destroy-on-close="true">
+			<ad_ctime :jobid="jobid" @child-event="handleCtimeClose"></ad_ctime>
+		</el-dialog>
+	</div>
+</template>
+
+<script>
+import AdCtime from './component/ad_ctime.vue'
+import AdEdit from './component/ad_edit.vue'
+import AdPreview from './component/ad_preview.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+			data: function () {
+				return {
+					loading: false,
+					dataText: lc('admin_user_weipin_00026'),
+					searchForm: {
+						page: 1,
+						limit: null,
+						class_id: null, //广告类别
+						is_check: null, //审核状态
+						ad: null, //广告类型
+						name: null, //关键字
+					},
+					total: 0,
+					classData: [], //广告分类
+					domainData: [], //站点
+					tableData: [],
+					pageSizes: [],
+					checked: false, //全选
+					isIndeterminate: false, // checkbox 的不确定状态
+					selectedItem: [],
+					addVisible: false,
+					titleAddEdit: lc('admin_01166'),
+					id: 0,
+					oldData: null,
+					//批量延期
+					ctimeVisible: false,
+					jobid: '',
+					//调用
+					previewVisible: false,
+					prevPage:0
+				}
+			},
+			components: {
+				'ad_ctime': AdCtime,
+				'ad_edit': AdEdit,
+				'ad_preview': AdPreview,
+			},
+			created: function () {
+				this.getBaseData();
+
+
+				this.getList();
+			},
+			methods: {
+				handleSelectionChange(val) {
+					this.selectedItem = val;
+					if (this.selectedItem.length == 0) {
+						this.isIndeterminate = false;
+						this.checked = false;
+					} else {
+						if (this.selectedItem.length == this.tableData.length) {
+							this.isIndeterminate = false;
+							this.checked = true;
+						} else {
+							this.isIndeterminate = true;
+							this.checked = false;
+						}
+					}
+				},
+				selectAllBottom(value) {
+					value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable
+						.clearSelection();
+				},
+				shortChange(e) {
+					let orderMap = {
+						ascending: 'asc',
+						descending: 'desc'
+					}
+					this.searchForm.t = e.order ? e.prop : null;
+					this.searchForm.order = orderMap[e.order];
+					this.searchForm.page = 1;
+					this.getList();
+				},
+				handleSizeChange(val) {
+					this.searchForm.limit = val;
+					this.getList();
+				},
+				handleCurrentChange(val) {
+					this.searchForm.page = val;
+					this.getList();
+				},
+				handleSearch() {
+					this.searchForm.page = 1
+					this.getList()
+				},
+				getList() {
+					let _this = this;
+					let params = JSON.parse(JSON.stringify(this.searchForm));
+					for (let index in params) {
+						(params[index] === '') && (params[index] = null);
+					}
+					_this.loading = true;
+					httpPost('m=yunying&c=ad&a=index', params, {hideloading: true}).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							_this.tableData = res.data.list;
+							_this.total = res.data.total;
+							_this.searchForm.limit = res.data.perPage;
+							_this.pageSizes = res.data.pageSizes;
+							if(_this.prevPage != _this.searchForm.page){
+								_this.prevPage = _this.searchForm.page;
+								_this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+							}
+							_this.loading = false;
+							if (_this.tableData.length === 0) {
+								_this.dataText = lc('wap_js_00113');
+							}
+						}
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				getBaseData() {
+					let _this = this;
+					httpPost('m=yunying&c=ad&a=get_base_data', {}, {
+						hideloading: true
+					}).then(function (response) {
+						let res = response.data;
+						_this.classData = Object.freeze(res.data.classData);
+						_this.domainData = Object.freeze(res.data.domainData);
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleAdd() {
+					this.titleAddEdit = lc('admin_01166');
+					this.id = 0;
+					this.addVisible = true;
+				},
+				handleAddClose() {
+					this.addVisible = false;
+					this.getList();
+				},
+				editRow(scope) {
+					this.titleAddEdit = lc('admin_01171');
+					this.id = parseInt(scope.row.id);
+					this.addVisible = true;
+				},
+				deleteRow(scope, isMore) {
+					let params = {};
+					if (isMore) {
+						if (!this.selectedItem.length) {
+							message.error(lc('admin_user_weipin_00005'));
+							return false;
+						}
+						let list = [];
+						for (let item of this.selectedItem) {
+							list.push(item.id);
+						}
+						params.delType = 'more';
+						params.del = list;
+					} else {
+						// let index = scope.$index;
+						// this.tableData.splice(index, 1);
+						params.delType = 'single';
+						params.id = scope.row.id;
+					}
+
+					delConfirm(this, params, this.delete);
+				},
+				delete(params) {
+					let _this = this;
+					httpPost('m=yunying&c=ad&a=del', params).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success(lc('admin_user_00187'));
+							_this.getList();
+						} else {
+							message.error(lc('admin_user_00186'));
+						}
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleCtime(scope, isMore) {
+					let params = {};
+					if (isMore) {
+						if (!this.selectedItem.length) {
+							message.error(lc('admin_00572'));
+							return false;
+						}
+						let list = [];
+						for (let item of this.selectedItem) {
+							list.push(item.id);
+						}
+						params.type = 'all';
+						params.jobid = list.join(',');
+					} else {
+						// let index = scope.$index;
+						// this.tableData.splice(index, 1);
+						params.type = 'one';
+						params.jobid = scope.row.id;
+					}
+					this.jobid = params.jobid;
+					this.ctimeVisible = true;
+				},
+				handleCtimeClose() {
+					this.ctimeVisible = false;
+					this.getList();
+				},
+				editData(scope) {
+					let index = scope.$index;
+					let row = scope.row;
+					let column = scope.column;
+					this.oldData = JSON.parse(JSON.stringify(row));
+					let copyRow = JSON.parse(JSON.stringify(row));
+					copyRow[column.property + "isShow"] = true;
+					this.$set(this.tableData, index, copyRow);
+					this.$nextTick(() => {
+						let ref = column.property + index;
+						$("#" + ref).focus();
+					});
+				},
+				alterData(scope) {
+					if (this.oldData == null) {
+						return false;
+					}
+					let index = scope.$index;
+					let row = scope.row;
+					let column = scope.column;
+					let copyRow = JSON.parse(JSON.stringify(row));
+					copyRow[column.property + "isShow"] = false;
+					this.$set(this.tableData, index, copyRow);
+					if (row[column.property] === this.oldData[column.property]) {
+						return false;
+					}
+					let _this = this;
+					let sendData = {
+						id: row.id
+					};
+					sendData[column.property] = row[column.property];
+					httpPost('m=yunying&c=ad&a=upsort', sendData).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success(lc('admin_user_company_00208'));
+						} else {
+							message.error(lc('admin_00187'));
+						}
+						_this.oldData = null;
+						_this.getList();
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleCheck(scope) {
+					let _this = this;
+					let row = scope.row
+					let value = scope.row.is_check
+					let val = (value == '1' ? '0' : '1');
+					let params = {
+						id: row.id,
+						val: val
+					};
+					httpPost('m=yunying&c=ad&a=check', params).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success(lc('admin_user_company_00208'));
+						} else {
+							message.error(lc('admin_00187'));
+						}
+						_this.getList();
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleCache() {
+					httpPost('m=yunying&c=ad&a=cache_ad', {}).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success(lc('admin_01172'));
+						} else {
+							message.error(lc('admin_01173'));
+						}
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handlePreview(scope) {
+					this.id = parseInt(scope.row.id);
+					this.previewVisible = true;
+				},
+				handlePreviewClose() {
+					this.previewVisible = false;
+				}
+			}
+		}
+</script>

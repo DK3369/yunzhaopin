@@ -1,0 +1,268 @@
+<template>
+<div id="cityfl" class="moduleElenAl">
+        <div class="modulemoreSeachs">
+            <div class="moduleSeachleft">
+				<div class="moduleInptList" style="margin-bottom: 8px;">
+					<el-input :placeholder="lc('admin_00340')" v-model="keyword" class="input-with-select" clearable>
+						<template #prepend><el-select v-model="keyid" :placeholder="lc('admin_00126')">
+							<el-option :label="lc('wap_js_00075')" value=""></el-option>
+							<el-option v-for="(item,index) in grouparr" :key="index" :label="item.label"
+							    :value="item.value"></el-option>
+						</el-select></template>
+					</el-input>
+				</div>
+                <!--关键字搜索和查询在一起-->
+                <div class="tableSeachInpt">
+                    <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
+                </div>
+            </div>
+            <div class="moduleSeachButn">
+                <div class="tableSeachInpt">
+                    <el-button type="primary" icon="el-icon-document-add" size="small"
+                        @click="edit('')">{{ lc('admin_00122') }}</el-button>
+                </div>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" stripe border
+                style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                @selection-change="handleSelectionChange" ref="multipleTable" :empty-text="emptytext"
+                :default-sort="{ prop: 'id', order: 'descending' }" @sort-change="sortChange" v-loading="loading">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" :label="lc('admin_00123')" sortable="custom" width="90">
+                </el-table-column>
+                <el-table-column :label="lc('admin_00121')">
+                    <template #default="scope">
+                        {{showgroup[scope.row.keyid]}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="sjtitle" :label="lc('admin_00125')">
+                    <template #default="scope">
+                        <el-link type="primary" target="_blank"
+                            :href="scope.row.url"> {{
+                            scope.row.name }}</el-link>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="ctime_n" :label="lc('admin_user_weipin_00030')" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="sort" :label="lc('admin_vue_00044')" sortable="custom">
+                </el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
+                    <template #default="scope">
+                        <div class="cz_button">
+                            <el-button size="small" plain @click="edit(scope.row.id)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="small" @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom" size="small">{{ lc('member_com_00055') }}</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <div class="modluDrawer">
+            <el-drawer :title="lc('admin_00124')" v-model="draweradd" :append-to-body="true" :show-close="true"
+                :with-header="true" size="60%">
+                <addcepin ref="addcp" :currid="currid"></addcepin>
+            </el-drawer>
+        </div>
+    </div>
+</template>
+
+<script>
+import Addcepin from './component/addcepin.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: lc('wap_js_00113'),
+                loading: false,
+                tableData: [], //表格数据
+                checkedAll: false,
+                selectedItem: [],
+                currentPage: 1,
+                perPage: 0,
+                pageSizes: [],
+                total: 0,
+                sort_type: '',
+                sort_col: '',
+                grouparr: [],
+                showgroup: [],
+                keyid: '',
+                keyword: '',
+                preview_url: '',
+                draweradd: false,
+                currid: '',
+
+                islook: false,
+                prevPage:0
+            }
+        },
+        components: {
+            'addcepin': Addcepin,
+        },
+        created: function () {
+            this.getGroup();
+
+
+            this.getList();
+        },
+        methods: {
+            edit(id) {
+                var that = this;
+                that.currid = id
+                that.draweradd = true
+                that.$nextTick(() => {
+                    that.$refs.addcp.getInfo()
+                });
+            },
+            getGroup:function () {
+                let that = this;
+                httpPost('m=neirong&c=evaluate&a=getGroup', {}, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.grouparr = res.data.grouparr
+                        that.showgroup = res.data.show_group
+                        that.preview_url = res.data.preview_url
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            sortChange: function (column) {
+                if (column.order == 'descending') {
+                    this.sort_type = 'desc';
+                } else if (column.order == 'ascending') {
+                    this.sort_type = 'asc';
+                } else {
+                    this.sort_type = '';
+                }
+                this.sort_col = column.prop
+                if (this.sort_col == 'ctime_n') {
+                    this.sort_col = 'ctime'
+                }
+                this.search();
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.selectedItem.push(item.id);
+                    });
+                }
+                if (_this.selectedItem.length == 0) {
+                    _this.checkedAll = false;
+                } else {
+                    if (_this.selectedItem.length == _this.tableData.length) {
+                        _this.checkedAll = true;
+                    } else {
+                        _this.checkedAll = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            handleSizeChange(val) {
+                this.perPage = val;
+                this.getList()
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList()
+            },
+            search() {
+                this.currentPage = 1;
+                this.getList();
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    pageSize: that.perPage
+                }
+                if (that.keyid) {
+                    params.keyid = that.keyid
+                }
+                if (that.keyword) {
+                    params.keyword = that.keyword
+                }
+                if (that.sort_type && that.sort_col) {
+                    params.order = that.sort_type
+                    params.t = that.sort_col
+                }
+                that.loading  = true;
+                that.emptytext = lc('admin_user_weipin_00026');
+                httpPost('m=neirong&c=evaluate&a=index', params, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.perPage = parseInt(res.data.perPage)
+                        that.pageSizes = res.data.pageSizes
+                        that.total = parseInt(res.data.total)
+                        if(that.prevPage != that.currentPage){
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = lc('wap_js_00113');
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            delAllBottom() {
+                if (!this.selectedItem.length) {
+                    message.error(lc('admin_00136'));
+                    return false;
+                }
+                delConfirm(this, this.selectedItem, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=evaluate&a=delevaluate', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(lc('wap_user_00264'));
+                        that.getList();
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+        }
+    }
+</script>

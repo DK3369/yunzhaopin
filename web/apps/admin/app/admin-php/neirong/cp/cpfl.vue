@@ -1,0 +1,200 @@
+<template>
+<div id="hyfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="">{{ lc('admin_00121') }}</div>
+        <div class="nrtopbtn">
+            <el-button type="primary" icon="el-icon-document-add" @click="dialogVisible = true"
+                       size="small">{{ lc('admin_00222') }}</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable" style="padding: 12px; height: calc(100% - (60px + 6px + 12px + 12px));">
+        <el-table :data="tableData" stripe border style="width: 100%;height: 100%;" :empty-text="emptytext"
+                  :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="180">
+            </el-table-column>
+            <el-table-column :label="lc('admin_00219')" property="name">
+                <template #default="scope">
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                              :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                              v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
+                    <span v-else>{{ scope.row.name }}
+                        <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
+                             height="14" @click="editData(scope, 1)">
+					</span>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_00206')" property="number">
+                <template #default="scope">
+                    {{ lc("admin_paper_count", [scope.row.count ? scope.row.count : 0]) }}
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_vue_00044')" property="sort">
+                <template #default="scope">
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                              :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                              v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
+                    <span v-else>
+                        {{ scope.row.sort }}
+                        <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
+                             height="14" @click="editData(scope, 1)">
+                    </span>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('member_user_00048')" width="80" fixed="right">
+                <template #default="scope">
+                    <div class="cz_button">
+                        <el-button type="danger" size="small" @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <el-dialog :title="lc('admin_00222')" width="500px" v-model="dialogVisible" :modal-append-to-body="false">
+        <div class="hydialog_item">
+            <span>{{ lc('admin_00260') }}</span>
+            <el-input v-model="lbname" style="flex: 1;"></el-input>
+        </div>
+        <template #footer><div class="dialog-footer">
+            <el-button type="primary" @click="saveClass" :disabled="submitLoading">{{ lc('wap_js_00091') }}</el-button>
+        </div></template>
+    </el-dialog>
+</div>
+</template>
+
+<script>
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: lc('wap_js_00113'),
+                loading: false,
+                tableData: [], //表格数据
+                dialogVisible: false,
+                lbname: '',
+                islook: false,
+				submitLoading: false
+            }
+        },
+        created: function () {
+            this.getList();
+        },
+        methods: {
+            editData(scope) {
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                this.oldData = JSON.parse(JSON.stringify(row));
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.tableData, index, copyRow);
+                this.$nextTick(() => {
+                    let ref = column.property + index;
+                    $("#" + ref).focus();
+                });
+            },
+            alterData(scope) {
+                if (this.oldData == null) {
+                    return false;
+                }
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.tableData, index, copyRow);
+                if (row[column.property] === this.oldData[column.property]) {
+                    return false;
+                }
+                let _this = this;
+                let sendData = {id: row.id};
+                sendData[column.property] = row[column.property];
+                httpPost('m=neirong&c=evaluate&a=ajax', sendData, {hideloading: true}).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(lc('admin_user_company_00208'));
+                    } else {
+                        message.error(lc('admin_00187'));
+                    }
+                    _this.oldData = null;
+                    _this.getList();
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            async getList() {
+                let that = this;
+                that.loading = true;
+                that.emptytext = lc('admin_user_weipin_00026');
+                httpPost('m=neirong&c=evaluate&a=group', {}, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = lc('wap_js_00113');
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=evaluate&a=delgroup', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg, function () {
+                            that.draweredit = false
+                            that.getList();
+                        });
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            // 添加分类保存
+            saveClass(){
+                var that = this
+                if(that.lbname == ''){
+                    message.error(lc('admin_00208'));
+                    return false;
+                }
+				that.submitLoading = true;
+                httpPost('m=neirong&c=evaluate&a=addgroup', {classname: that.lbname}).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg, function(){
+                            that.getList();
+                            that.dialogVisible = false
+                        });
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+					that.submitLoading = false;
+				});
+            },
+        }
+    }
+</script>

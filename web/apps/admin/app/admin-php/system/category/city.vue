@@ -1,0 +1,478 @@
+<template>
+<div id="cityfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="">{{ lc('admin_system_00067') }}</div>
+        <div class="nrtopbtn">
+            <el-button size="small" icon="el-icon-plus" @click="handleAdd('0','top')">{{ lc('admin_00197') }}</el-button>
+            <el-button size="small" icon="el-icon-refresh" @click="pinyin">{{ lc('admin_system_00073') }}</el-button>
+            <el-button size="small" icon="el-icon-refresh-right" @click="chachongVisible = true">{{ lc('admin_system_00065') }}</el-button>
+            <el-button size="small" type="primary" icon="el-icon-delete" @click="clearPinYin">{{ lc('admin_system_00072') }}</el-button>
+        </div>
+    </div>
+
+    <div class="moduleElTable">
+        <el-table :data="tableData" border style="width: 100%;" height="100%" row-key="id"
+            :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" lazy :load="load"
+            :tree-props="{children: 'children', hasChildren: 'hasChildren'}" ref="multipleTable"
+            v-loading="loading"
+                  @selection-change="handleSelectionChange"
+                  @select-all="selectAll" :empty-text="emptytext">
+            <el-table-column type="selection" prop="id" width="55"></el-table-column>
+			<el-table-column label="ID" property="id" width="150"></el-table-column>
+            <el-table-column :label="lc('admin_system_00069')" width="100" property="sort" style="display: flex; align-items: center;">
+                <template #default="scope">
+                    <el-input v-model="scope.row.sort"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_system_00068')" property="name">
+                <template #default="scope">
+                    <el-input v-model="scope.row.name"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_system_00104')" property="e_name">
+                <template #default="scope">
+                    <el-input v-model="scope.row.e_name"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('common_01973')" property="letter" width="110">
+                <template #default="scope">
+                    <el-select v-model="scope.row.letter" :placeholder="lc('wap_user_00100')">
+                        <el-option v-for="item in letterOptions" :key="item" :label="item"
+                            :value="item">
+                        </el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('member_com_00023')" property="show" width="110">
+                <template #default="scope">
+                    <el-select v-model="scope.row.display" :placeholder="lc('wap_user_00100')">
+                        <el-option v-for="item in displayOptions" :key="item.value" :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column :label="lc('admin_system_00066')" property="code">
+                <template #default="scope">
+                    <el-input v-model="scope.row.code"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" header-align="center" align="right" :label="lc('member_user_00048')" width="210">
+                <template #default="scope">
+                    <div v-if="scope.row.id > 0" class="cz_button">
+                        <el-button v-if="scope.row.level < 3" size="small" @click="handleAddChild(scope)">{{ lc('admin_system_00071') }}</el-button>
+                        <el-button size="small" @click="handleSingle(scope)" :disabled="submitLoading">{{ lc('wap_00225') }}</el-button>
+                        <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="">
+            <div class="modulecz modulePagButn">
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="small">{{ lc('member_com_00055') }}</el-button>
+				<el-button @click="upRow()" size="small">{{ lc('admin_system_00070') }}</el-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add child category -->
+    <div class="modluDrawer">
+        <el-drawer :title="addTitle" v-model="addVisible" :modal-append-to-body="false" :show-close="true"
+            :with-header="true" size="35%">
+            <city_add :keyid="keyid" :keyid_name="keyid_name" :level="level" :letter-options="letterOptions"
+                :display-options="displayOptions" @child-event-getlist="addcityFun"></city_add>
+        </el-drawer>
+    </div>
+
+    <el-drawer :title="lc('admin_system_00062')" v-model="chachongVisible" :modal-append-to-body="false" size="50%"
+        :destroy-on-close="true" :wrapper-closable="false" :close-on-press-escape="false">
+        <city_chachong></city_chachong>
+    </el-drawer>
+</div>
+</template>
+
+<script>
+import CityAdd from './component/city_add.vue'
+import CityChachong from './component/city_chachong.vue'
+
+const httpPost = (...a) => window.httpPost(...a)
+const lc = (...a) => window.lc(...a)
+const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
+const delConfirm = (...a) => window.delConfirm(...a)
+const formatDate = (...a) => window.formatDate(...a)
+const formatMonth = (...a) => window.formatMonth(...a)
+const formatDatetime = (...a) => window.formatDatetime(...a)
+const deepClone = (...a) => window.deepClone(...a)
+const scrollToTop = (...a) => window.scrollToTop(...a)
+const isEmpty = (...a) => window.isEmpty(...a)
+const isArray = (...a) => window.isArray(...a)
+const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
+const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+export default {
+        data: function () {
+            return {
+                emptytext: window.lc('wap_js_00113'),
+                loading: false,
+                submitLoading: false,
+                letterOption: [],
+                tableData: [],
+                randomKey: Math.random(),
+                checked: false,
+                isIndeterminate: false,// Checkbox indeterminate state
+                selectedItem: [],
+                addVisible: false,
+                addParams: {},
+                addTitle: '',
+                keyid: 0,
+                keyid_name: '',
+                level: 1,
+                chachongVisible: false,
+                letterOptions: Object.freeze(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",]),
+                displayOptions: Object.freeze([{"label": window.lc('common_02085'), "value": "1"}, {"label": window.lc('common_02063'), "value": "0"}]),
+                maps: new Map(),
+            }
+        },
+        mounted() {
+            this.getList();
+
+
+        },
+        methods: {
+            rowSelect(selection, row) {
+                // if (row.children) {
+                //     if (!row.isChecked) {
+                //         // Determine selection state from the row isChecked flag
+                //         row.children.map(item => {
+                //             // Iterate all child nodes
+                //             this.$refs.multipleTable.toggleRowSelection(item, true); // Toggle this child node selection state
+                //             item.isChecked = true;
+                //             // Add selected data
+                //             this.selectedItem.push({ id: item.id });
+                //         });
+                //         this.selectedItem.push({ id: row.id });
+                //         row.isChecked = true; // Toggle the current row isChecked flag to false
+                //     } else {
+                //         row.children.map(item => {
+                //             this.$refs.multipleTable.toggleRowSelection(item, false);
+                //             item.isChecked = false;
+                //             this.selectedItem.splice(this.selectedItem.indexOf(item), 1);
+                //         });
+                //         row.isChecked = false;
+                //         this.selectedItem.splice(this.selectedItem.indexOf(row), 1);
+                //     }
+                // }
+            },
+            selectAll() {
+                // selection is the selected data collection
+                this.$refs.multipleTable.tableData.map(items => {
+                    // Use $ref to access the child component data and iterate all rows
+                    if (items.children) {
+                        if (!items.isChecked) {
+                            // If the iterated row is not selected
+                            this.$refs.multipleTable.toggleRowSelection(items, true); // Mark row as selected
+                            items.isChecked = true; // Update the flag parameter
+                            this.selectedItem.push({ id: items.id });
+                            items.children.map(item => {
+                                if (item.children){
+                                    if (!item.isChecked) {
+                                        item.children.map(it=>{
+                                            this.$refs.multipleTable.toggleRowSelection(it, true);
+                                            it.isChecked = true;
+                                            this.selectedItem.push({ id: it.id });
+                                        })
+                                    }
+                                }
+                                // Iterate child nodes and update state plus flags
+                                this.$refs.multipleTable.toggleRowSelection(item, true);
+                                item.isChecked = true;
+                                this.selectedItem.push({ id: item.id });
+                            });
+                        } else {
+                            // Selection state follows the same rule
+                            this.$refs.multipleTable.toggleRowSelection(items, false);
+                            items.isChecked = false;
+                            this.selectedItem.splice(this.selectedItem.indexOf(items), 1);
+                            items.children.map(item => {
+                                if (item.children){
+                                    if (item.isChecked) {
+                                        item.children.map(it=>{
+                                            this.$refs.multipleTable.toggleRowSelection(it, false);
+                                            it.isChecked = false;
+                                            this.selectedItem.splice(this.selectedItem.indexOf(it),1);
+                                        })
+                                    }
+                                }
+                                this.$refs.multipleTable.toggleRowSelection(item, false);
+                                item.isChecked = false;
+                                this.selectedItem.splice(this.selectedItem.indexOf(item), 1);
+                            });
+                        }
+                    } else {
+                        if (!items.isChecked) {
+                            items.isChecked = true;
+                            this.selectedItem.push({ id: items.id });
+                        }
+                        else {
+                            items.isChecked = false;
+                            this.selectedItem.splice(this.selectedItem.indexOf(items), 1);
+                        }
+                    }
+                });
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checked = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checked = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checked = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            load(tree, treeNode, resolve) {
+                let _this = this;
+                let levelNew = isNaN(parseInt(tree.level)) ? 0 + 1 : parseInt(tree.level) + 1;
+                let sendData = {
+                    keyid: tree.id,
+                    level: levelNew,
+                }
+                httpPost('m=system&c=category_city&a=get_city_children', sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        resolve(res.data.list);
+                        tree.children = res.data.list;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.maps.set(tree.id, {tree, treeNode, resolve});
+                })
+            },
+            // Refresh part of the list
+            refreshRow(keyid) {
+                if (this.maps.get(keyid) == undefined) {
+                    return false;
+                }
+                const {tree, treeNode, resolve} = this.maps.get(keyid);// Get node data by parent id
+                // Clear child data under the parent node; el-table must define `ref="multipleTable"`
+                this.$set(this.$refs.multipleTable.store.states.lazyTreeNodeMap, tree.id, []);
+                // Reload data
+                if (tree) {
+                    this.load(tree, treeNode, resolve);
+                }
+            },
+            getList() {
+                this.addVisible = false;
+                let _this = this;
+                _this.loading = true;
+                _this.emptytext = window.lc('admin_user_weipin_00026');
+                httpPost('m=system&c=category_city&a=index').then(function (response) {
+                    let res = response.data;
+                    _this.tableData = res.data;
+                    _this.loading = false;
+                    if (_this.tableData.length === 0){
+                        _this.emptytext = window.lc('wap_js_00113');
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            addcityFun(keyid) {
+                this.addVisible = false;
+                if (keyid == 0) {
+                    this.getList();
+                } else {
+                    this.refreshRow(keyid);
+                }
+            },
+            /**
+             * Add category
+             */
+            handleAdd(id, level) {
+                this.keyid = 0;
+                this.keyid_name = '';
+                this.level = 1;
+                this.addTitle = window.lc('admin_system_00076');
+                this.addVisible = true;
+            },
+            /**
+             * Add child category
+             */
+            handleAddChild(scope) {
+                let levelNew = isNaN(parseInt(scope.row.level)) ? 0 + 1 : parseInt(scope.row.level) + 1;
+                this.keyid = scope.row.id;
+                this.keyid_name = scope.row.name;
+                this.level = levelNew;
+                if (levelNew == 2) {
+                    this.addTitle = window.lc('admin_system_00077');
+                } else if (levelNew == 3) {
+                    this.addTitle = window.lc('admin_system_00078');
+                } else {
+                    this.addTitle = '';
+                }
+                this.addVisible = true;
+            },
+            /**
+             * Update
+             */
+            handleSingle(scope) {
+                let _this = this;
+                let row = scope.row;
+                let index = scope.$index;
+                if (row.name == "") {
+                    message.error(window.lc('admin_system_00089'));
+                    return false;
+                }
+
+                let params = row;
+                _this.submitLoading = true;
+                httpPost('m=system&c=category_city&a=up_single', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(window.lc('admin_system_00064'));
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            deleteRow(scope, isMore) {
+                let params = {};
+                let msg = window.lc('member_com_00083');
+                if (isMore) {
+                    if (!this.selectedItem.length) {
+                        message.error(window.lc('admin_user_weipin_00005'));
+                        return false;
+                    }
+                    let list = [];
+                    for (let item of this.selectedItem) {
+                        list.push(item.id);
+                    }
+                    params.delType = 'more';
+                    params.delid = list.join(',');
+                } else {
+                    // let index = scope.$index;
+                    // this.tableData.splice(index, 1);
+                    params.delType = 'single';
+                    params.keyid = scope.row.keyid;
+                    params.delid = scope.row.id;
+                    msg = window.lc('admin_system_00079');
+                }
+
+                delConfirm(this, params, this.delete, msg);
+            },
+            delete(params) {
+                let _this = this;
+                httpPost('m=system&c=category_city&a=del', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(window.lc('admin_user_00187'));
+                        if (params.delType == 'single') {
+                            if (params.keyid == 0) {
+                                _this.getList();
+                            } else {
+                                _this.refreshRow(params.keyid);
+                            }
+                        } else {
+                            // Batch delete, then refresh all
+                            _this.getList();
+                        }
+                    } else {
+                        message.error(window.lc('admin_user_00186'));
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+			upRow(){
+				
+				var params = {};
+				var id_arr = [];
+				var cityarr = deepClone(this.selectedItem);
+				if (!cityarr.length) {
+				    message.error(window.lc('admin_system_00082'));
+				    return false;
+				}
+				for(let i in cityarr){
+					id_arr.push(cityarr[i].id);
+					params[`cityname_${cityarr[i].id}`] = cityarr[i].name;
+					params[`citye_name_${cityarr[i].id}`] = cityarr[i].e_name;
+					params[`citysort_${cityarr[i].id}`] = cityarr[i].sort;
+					params[`letter_${cityarr[i].id}`] = cityarr[i].letter;
+					params[`display_${cityarr[i].id}`] = cityarr[i].display;
+					params[`sitetype_${cityarr[i].id}`] = cityarr[i].sitetype;
+					params[`citycode_${cityarr[i].id}`] = cityarr[i].code;
+				}
+				params.id_arr = id_arr.join(',');
+				
+				httpPost('m=system&c=category_city&a=upp', params).then((response)=>{
+				    let res = response.data;
+				    if (res.error === 0) {
+				        message.success(res.msg);
+				        this.getList();
+				    } else {
+				        message.error(res.msg);
+				    }
+				}).catch(function (error) {
+				    console.log(error);
+				});
+			},
+            pinyin() {
+                delConfirm(this, {
+                    page: 0,
+                    pagesize: 100
+                }, this.doPinyin, window.lc('admin_system_00074'));
+            },
+            /**
+             * Generate pinyin
+             * @param params {page:0, pagesize:100}
+             */
+            doPinyin(params) {
+                let _this = this;
+                httpPost('m=system&c=category_city&a=ajaxpinyin', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(window.lc('admin_system_00081'));
+                        _this.getList();
+                    } else if (res.error === 1) {
+                        message.warning(res.msg);
+                        params.page = res.data.page;
+                        _this.doPinyin(params);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            clearPinYin() {
+                let _this = this;
+                delConfirm(this, {}, function () {
+                    httpPost('m=system&c=category_city&a=clearpinyin').then(function (response) {
+                        message.success(window.lc('admin_system_00080'));
+                        _this.getList();
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }, window.lc('admin_system_00075'));
+            }
+        },
+        components: {
+            'city_add': CityAdd,
+            'city_chachong': CityChachong,
+        }
+    }
+</script>
