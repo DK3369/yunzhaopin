@@ -1,5 +1,6 @@
 import { bffUrl } from '~/utils/bff'
 import type { ApiEnvelope } from '~/utils/envelope'
+import { readStoredLocale, rustLangFor } from '~/utils/phpLc'
 import { resolvePhpAction } from '~/utils/phpMap'
 
 type PhpEnvelope = { error: number; msg?: string; data?: unknown }
@@ -23,12 +24,13 @@ async function postAdmin(path: string, body: Record<string, unknown>): Promise<A
   const query: Record<string, unknown> = {}
   if (page) query.page = page
   if (page_size) query.page_size = page_size
-  const loc = (localStorage.getItem('lang') || 'zh_cn').startsWith('en') ? 'en' : 'zh'
+  const loc = readStoredLocale()
+  const rustLang = rustLangFor(loc)
   return await $fetch<ApiEnvelope<unknown>>(bffUrl(`/api/proxy${path}`), {
     method: 'POST',
     credentials: 'include',
-    query: { ...query, lang: loc },
-    headers: { 'accept-language': loc === 'en' ? 'en' : 'zh-CN' },
+    query: { ...query, lang: rustLang },
+    headers: { 'accept-language': rustLang },
     body,
   })
 }

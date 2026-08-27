@@ -28,7 +28,21 @@ export function useApi() {
   const route = useRoute()
 
   function currentLoc(): Loc {
-    return locFromRaw(route.query.lang) || (i18n.locale.value === 'en' ? 'en' : 'zh')
+    const fromQuery = locFromRaw(route.query.lang)
+    if (fromQuery) return fromQuery
+    if (import.meta.client) {
+      const stored =
+        localStorage.getItem('admin_lang') ||
+        localStorage.getItem('lang') ||
+        document.cookie
+          .split(';')
+          .map((x) => x.trim())
+          .find((x) => x.startsWith('admin_lang='))
+          ?.slice('admin_lang='.length)
+      const fromStore = locFromRaw(stored)
+      if (fromStore) return fromStore
+    }
+    return i18n.locale.value === 'en' ? 'en' : 'zh'
   }
 
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {

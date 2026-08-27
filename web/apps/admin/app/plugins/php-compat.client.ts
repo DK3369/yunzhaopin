@@ -1,6 +1,6 @@
 import { ElMessage, ElMessageBox, ElLoading, ElNotification } from 'element-plus'
 import { httpPost } from '~/utils/httpPost'
-import { lc, loadLangPack } from '~/utils/phpLc'
+import { lc, loadAliases, loadLangPack, persistLocale, readStoredLocale } from '~/utils/phpLc'
 
 function formatMonth(date: Date) {
   const year = date.getFullYear()
@@ -98,10 +98,16 @@ function delConfirm(
 }
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const lang =
-    (import.meta.client && (localStorage.getItem('lang') || '')) ||
-    (useCookie('admin_lang').value === 'en' ? 'en_us' : 'zh_cn')
-  await loadLangPack(String(lang))
+  const loc = readStoredLocale()
+  persistLocale(loc)
+  await loadAliases()
+  await loadLangPack(loc)
+  const i18n = nuxtApp.$i18n as { setLocale?: (c: string) => Promise<void> } | undefined
+  try {
+    if (i18n?.setLocale) await i18n.setLocale(loc)
+  } catch {
+    /* pack is already loaded; Element Plus locale follows on next paint */
+  }
 
   if (import.meta.client) {
     window.lc = lc

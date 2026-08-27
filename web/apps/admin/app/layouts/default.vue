@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { lc } from '~/utils/phpLc'
+import { lc, readStoredLocale, setAdminLocale } from '~/utils/phpLc'
 import { httpPost } from '~/utils/httpPost'
 
 type MenuItem = {
@@ -16,7 +16,7 @@ type MenuItem = {
 
 const route = useRoute()
 const router = useRouter()
-const { locale, setLocale } = useI18n()
+const { setLocale } = useI18n()
 
 const { data: menu } = await useAsyncData('admin-php-menu', () =>
   useApi().post<MenuItem[]>('/v1/admin/menu', {}),
@@ -51,7 +51,7 @@ const msgNumData = ref<Array<{ name: string; num: number; menudata: Record<strin
 const dialogLanguage = ref(false)
 const dialogMap = ref(false)
 const dialogShortcutMenu = ref(false)
-const languageForm = reactive({ lang: 'zh_cn' })
+const languageForm = reactive({ lang: readStoredLocale() === 'en' ? 'en_us' : 'zh_cn' })
 const searchFormMap = reactive({ keyword: '' })
 const tabList = ref<
   Array<{ nav_id: number; one_menu_id: number; two_menu_id: number; name: string; path: string; isdel: boolean; query?: Record<string, unknown> }>
@@ -86,16 +86,20 @@ function checkMenu(val: number) {
   if (val === 0) navigateTo('/index')
 }
 function tabLabel(tab: { name: string }) {
+  if (tab.name === 'index') return lc('wap_00191')
   return lc(tab.name, null, tab.name)
 }
 function menuLabel(m: MenuItem) {
-  return m.name
+  return lc(m.name, null, m.name)
 }
 function filteredMapItems(parent: MenuItem) {
   const kw = searchFormMap.keyword.trim()
   const kids = children(parent.id)
   if (!kw) return kids
-  return kids.filter((k) => (k.name || '').includes(kw) || hrefOf(k).includes(kw))
+  return kids.filter((k) => {
+    const label = menuLabel(k)
+    return (k.name || '').includes(kw) || label.includes(kw) || hrefOf(k).includes(kw)
+  })
 }
 
 function checkMenuTwo(
@@ -178,11 +182,9 @@ async function clearCache() {
   if (body.error) ElMessage.error(lc('admin_index_00051'))
   else ElMessage.success(lc('admin_index_00052'))
 }
-function saveLanguage() {
-  const lang = languageForm.lang || 'zh_cn'
-  localStorage.setItem('lang', lang)
-  document.cookie = `admin_lang=${lang.startsWith('en') ? 'en' : 'zh'}; path=/; max-age=31536000`
-  setLocale(lang.startsWith('en') ? 'en' : 'zh')
+async function saveLanguage() {
+  const loc = await setAdminLocale(languageForm.lang)
+  await setLocale(loc)
   dialogLanguage.value = false
   location.reload()
 }
@@ -272,7 +274,7 @@ onMounted(() => {
                   href="javascript:void(0);"
                   @click="checkMenuTwo(0, 0, m.id, m.name, hrefOf(m))"
                 >
-                  <span :class="{ curspan: curMenuTwo == m.id }">{{ m.name }}</span>
+                  <span :class="{ curspan: curMenuTwo == m.id }">{{ menuLabel(m) }}</span>
                 </a>
               </div>
             </li>
@@ -281,7 +283,7 @@ onMounted(() => {
             <li v-for="sec in children(root.id)" :key="sec.id" :class="{ subContLinkCur: curMenuOne == sec.id }">
               <div class="subNavLinkTite" @click="MenuOpenChange(sec.id)">
                 <div class="subNavLinkImg" :class="sec.classname">
-                  <span>{{ sec.name }}</span>
+                  <span>{{ menuLabel(sec) }}</span>
                 </div>
                 <div class="subNavLinkIcon" :class="{ subNavLinkIconCur: checkMenuOpen(sec.id) }">
                   <i class="el-icon-arrow-up iconup" /><i class="el-icon-arrow-down icondwon" />
@@ -294,7 +296,7 @@ onMounted(() => {
                   href="javascript:void(0);"
                   @click="checkMenuTwo(root.id, sec.id, leaf.id, leaf.name, hrefOf(leaf))"
                 >
-                  <span :class="{ curspan: curMenuTwo == leaf.id }">{{ leaf.name }}</span>
+                  <span :class="{ curspan: curMenuTwo == leaf.id }">{{ menuLabel(leaf) }}</span>
                 </a>
               </div>
             </li>
@@ -310,7 +312,7 @@ onMounted(() => {
                   <a href="javascript:void(0)" @click="checkMenu(0)">{{ lc('wap_00191') }}</a>
                 </li>
                 <li v-for="root in roots" :key="root.id" :class="{ subHeadNavCue: curMenu == root.id }">
-                  <a href="javascript:void(0)" @click="checkMenu(root.id)">{{ root.name }}</a>
+                  <a href="javascript:void(0)" @click="checkMenu(root.id)">{{ menuLabel(root) }}</a>
                 </li>
               </ul>
             </div>

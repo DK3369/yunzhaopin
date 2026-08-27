@@ -17,7 +17,7 @@ export function toRustLang(raw?: string | null): string {
 
 export function rustLangHeaders(event: Parameters<typeof getCookie>[0]): Record<string, string> {
   const q = getQuery(event).lang
-  const cookie = getCookie(event, 'lang') || getCookie(event, 'admin_lang')
+  const cookie = getCookie(event, 'admin_lang') || getCookie(event, 'lang')
   const header = getHeader(event, 'accept-language')
   // Web always sends an explicit tag (default zh-CN). Rust default En is unchanged for App.
   const tag = toRustLang(String(q || cookie || header || 'zh-CN'))
