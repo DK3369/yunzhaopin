@@ -78,8 +78,8 @@ async function homeLogin() {
     })
     await navigateTo(profile.usertype === 2 ? '/com' : '/user')
   } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    loginErr.value = ex.data?.statusMessage || ex.statusMessage || t('ui.login_failed')
+    const ex = e as { data?: { msg?: string; statusMessage?: string }; statusMessage?: string }
+    loginErr.value = ex.data?.msg || ex.data?.statusMessage || ex.statusMessage || t('ui.login_failed')
   }
 }
 

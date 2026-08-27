@@ -56,8 +56,8 @@ async function submitPass() {
     })
     await afterLogin(me)
   } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common.no')
+    const ex = e as { data?: { msg?: string; statusMessage?: string }; statusMessage?: string }
+    err.value = ex.data?.msg || ex.data?.statusMessage || ex.statusMessage || t('common.no')
     loadCaptcha()
   }
 }
@@ -84,8 +84,8 @@ async function submitSms() {
     })
     await afterLogin(me)
   } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common.no')
+    const ex = e as { data?: { msg?: string; statusMessage?: string }; statusMessage?: string }
+    err.value = ex.data?.msg || ex.data?.statusMessage || ex.statusMessage || t('common.no')
   }
 }
 useSeoMeta({ title: t('common.login') })

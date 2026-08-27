@@ -1,5 +1,9 @@
-import { rustFetch } from '../../../utils/rust'
+import { rustEnvelope, sendEnvelope } from '../../../utils/rust'
 
 export default defineEventHandler(async (event) => {
-  return rustFetch(event, '/v1/admin/me', { body: {} })
+  const res = await rustEnvelope(event, '/v1/admin/me', { body: {} })
+  if (res.code !== 200) {
+    return sendEnvelope(event, res)
+  }
+  return res.data
 })

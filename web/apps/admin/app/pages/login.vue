@@ -1,27 +1,30 @@
 <script setup lang="ts">
+import type { ApiEnvelope } from '~/utils/envelope'
+
 definePageMeta({ layout: 'blank' })
 const { t } = useI18n()
 const username = ref('')
 const password = ref('')
 const err = ref('')
+type LoginData = { uid: number; usertype: number; path?: string }
 async function submit() {
   err.value = ''
-  try {
-    const me = await $fetch<{ uid: number; usertype: number; path?: string }>(bffUrl('/api/auth/admin-login'), {
-      method: 'POST',
-      credentials: 'include',
-      body: { username: username.value, password: password.value },
-    })
-    if (me.usertype !== 3) {
-      err.value = t('ui.need_admin')
-      await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' })
-      return
-    }
-    await navigateTo(me.path || '/')
-  } catch (e: unknown) {
-    const anyErr = e as { data?: { msg?: string; statusMessage?: string }; statusMessage?: string }
-    err.value = anyErr?.data?.msg || anyErr?.statusMessage || (e instanceof Error ? e.message : t('ui.login_failed'))
+  const body = await $fetch<ApiEnvelope<LoginData>>(bffUrl('/api/auth/admin-login'), {
+    method: 'POST',
+    credentials: 'include',
+    body: { username: username.value, password: password.value },
+  })
+  if (body.code !== 200 || !body.data || typeof body.data !== 'object') {
+    err.value = body.msg || t('ui.login_failed')
+    return
   }
+  const me = body.data
+  if (me.usertype !== 3) {
+    err.value = t('ui.need_admin')
+    await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' })
+    return
+  }
+  await navigateTo(me.path || '/')
 }
 </script>
 

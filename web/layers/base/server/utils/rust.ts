@@ -1,13 +1,17 @@
 import { ACCESS_COOKIE } from './auth-cookie'
 import { rustLangHeaders } from './lang'
 
-type Envelope = { code: number; key: string; msg: string; data: unknown }
+export type Envelope<T = unknown> = { code: number; key: string; msg: string; data: T | '' }
 
-export async function rustFetch<T>(
+function fallbackEnvelope(msg = 'upstream error'): Envelope {
+  return { code: 502, key: 'upstream_error', msg, data: '' }
+}
+
+export async function rustEnvelope<T = unknown>(
   event: Parameters<typeof getCookie>[0],
   path: string,
   opts: { method?: string; body?: unknown; token?: string } = {},
-): Promise<T> {
+): Promise<Envelope<T>> {
   const rustApi = useRuntimeConfig(event).rustApi
   const token = opts.token ?? getCookie(event, ACCESS_COOKIE)
   const method = (opts.method || 'POST') as 'GET' | 'POST'
@@ -21,19 +25,38 @@ export async function rustFetch<T>(
   if (token) {
     headers.authorization = `Bearer ${token}`
   }
-  const res = await $fetch<Envelope>(`${rustApi}${path}`, {
-    method,
-    headers,
-    body: method === 'POST' ? (opts.body as Record<string, unknown> | undefined) : undefined,
-    query: method === 'GET' ? (opts.body as Record<string, unknown>) : undefined,
-    ignoreResponseError: true,
-  })
-  if (!res || res.code !== 200) {
-    throw createError({
-      statusCode: res?.code || 502,
-      statusMessage: res?.msg || 'upstream error',
-      data: { key: res?.key, msg: res?.msg },
+  try {
+    const res = await $fetch<Envelope<T>>(`${rustApi}${path}`, {
+      method,
+      headers,
+      body: method === 'POST' ? (opts.body as Record<string, unknown> | undefined) : undefined,
+      query: method === 'GET' ? (opts.body as Record<string, unknown>) : undefined,
+      ignoreResponseError: true,
     })
+    if (!res || typeof res !== 'object' || typeof res.code !== 'number') {
+      return fallbackEnvelope() as Envelope<T>
+    }
+    return res
+  } catch {
+    return fallbackEnvelope() as Envelope<T>
   }
-  return res.data as T
+}
+
+/** Same as `/api/proxy`: HTTP status follows `code`, body stays `{code,key,msg,data}`. */
+export function sendEnvelope<T>(event: Parameters<typeof setResponseStatus>[0], res: Envelope<T>): Envelope<T> {
+  const code = Number(res.code)
+  setResponseStatus(event, Number.isFinite(code) && code > 0 ? code : 502)
+  return res
+}
+
+export async function rustFetch<T>(
+  event: Parameters<typeof getCookie>[0],
+  path: string,
+  opts: { method?: string; body?: unknown; token?: string } = {},
+): Promise<T> {
+  const res = await rustEnvelope<T>(event, path, opts)
+  if (res.code !== 200) {
+    throw Object.assign(new Error(res.msg), { envelope: res })
+  }
+  return (res.data === '' ? undefined : res.data) as T
 }

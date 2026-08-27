@@ -1,12 +1,8 @@
-import { rustFetch } from '../../../utils/rust'
+import { rustEnvelope } from '../../../utils/rust'
 import { clearAccessCookie } from '../../../utils/auth-cookie'
 
 export default defineEventHandler(async (event) => {
-  try {
-    await rustFetch(event, '/v1/wap/logout', { body: {} })
-  } catch {
-    // still clear the cookie
-  }
+  await rustEnvelope(event, '/v1/wap/logout', { body: {} })
   clearAccessCookie(event)
   return { ok: true }
 })
