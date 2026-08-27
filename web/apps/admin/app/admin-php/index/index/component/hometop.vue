@@ -15,7 +15,7 @@
                         <div class="homeTopLeMoney" @click="toOrder({order_state:'2'})">
                             <div class="homeTopMonNum"><span>￥</span>{{ordertype=='day'?numdata.moneyTotal:numdata.monthMoneyTotal}}</div>
                             <div class="homeTopMonTxt">
-                                <span>{{ lc('admin_01054') }}</span>
+                                <span>{{ ordertype=='day' ? lc('admin_00085') : lc('admin_00088') }}</span>
                             </div>
                         </div>
                         <div class="homeTopLeTaoc">
@@ -46,7 +46,7 @@
                         <div class="homeTopLeMoney" @click="toMem()">
                             <div class="homeTopMonNum">{{memtype=='day'?numdata.memberNum:numdata.monthMemberNum}}</div>
                             <div class="homeTopMonTxt">
-                                <span>{{ lc('admin_01055') }}</span>
+                                <span>{{ memtype=='day' ? lc('admin_00077') : lc('admin_00082') }}</span>
                             </div>
                         </div>
                         <div class="homeTopLeTaoc">
