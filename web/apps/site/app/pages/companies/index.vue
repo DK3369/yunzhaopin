@@ -108,7 +108,7 @@ const list = computed(() => data.value?.list || [])
         <div class="firm_list_content_box">
           <CompanyCard v-for="c in list" :key="c.uid" :company="c" variant="firm" />
         </div>
-        <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
+        <EmptyState v-if="!list.length" />
       </div>
       <Pager
         :page="page"
@@ -149,7 +149,7 @@ const list = computed(() => data.value?.list || [])
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>
         <CompanyCard v-for="c in list" :key="c.uid" :company="c" variant="firm" />
-        <p v-if="!list.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_data') }}</p>
+        <EmptyState v-if="!list.length" />
       </template>
     </div>
     <Pager

@@ -2,7 +2,7 @@
   <section>
     <h1>{{ title }}</h1>
     <p v-if="error" class="muted">{{ errorText }}</p>
-    <p v-else-if="!count" class="muted">{{ emptyText || $t('ui.no_data') }}</p>
+    <EmptyState v-else-if="!count" :title="emptyText || $t('ui.no_data')" />
     <div v-else class="yun_content news_list_box">
       <div class="index_news_box">
         <ul class="index_news_list_list">

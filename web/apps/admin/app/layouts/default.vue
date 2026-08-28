@@ -457,3 +457,29 @@ onMounted(() => {
     </el-dialog>
   </section>
 </template>
+
+<style>
+.el-table__empty-block {
+  min-height: 260px;
+}
+.el-table__empty-text {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: url(/admin/php-admin/images/notip.png) no-repeat center 20px;
+  background-size: 180px auto;
+  padding: 168px 16px 24px !important;
+  color: #9fa3af !important;
+  line-height: 22px;
+}
+.el-empty__image svg {
+  display: none;
+}
+.el-empty__image {
+  width: 180px;
+  height: 140px;
+  background: url(/admin/php-admin/images/notip.png) no-repeat center;
+  background-size: contain;
+}
+</style>

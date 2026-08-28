@@ -162,7 +162,7 @@ const cityLabel = computed(() => {
         <p v-if="error" class="muted">{{ failMsg }}</p>
         <template v-else>
           <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
-          <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
+          <EmptyState v-if="!list.length" />
         </template>
         <Pager
           :page="page"
@@ -205,7 +205,7 @@ const cityLabel = computed(() => {
     <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
     <template v-else>
       <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
-      <p v-if="!list.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_data') }}</p>
+      <EmptyState v-if="!list.length" />
     </template>
     <Pager
       :page="page"

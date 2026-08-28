@@ -373,9 +373,11 @@ function goPage(p: number) {
             <p v-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
             <template v-else>
               <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-              <div v-if="!list.length" class="new_notip">
-                <div class="new_notip_tit">{{ $t('home.no_job_data') }}</div>
-              </div>
+              <EmptyState
+                v-if="!list.length"
+                :title="$t('default_00362')"
+                :hint="$t('common_02399')"
+              />
             </template>
             <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
           </div>
@@ -446,7 +448,7 @@ function goPage(p: number) {
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>
         <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-        <p v-if="!list.length" class="muted" style="padding: 0.4rem">{{ $t('home.no_job_data') }}</p>
+        <EmptyState v-if="!list.length" :title="$t('home.no_job_data')" />
       </template>
       <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
     </div>
