@@ -177,6 +177,7 @@ async function getMsgNum() {
 async function logout() {
   await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' }).catch(() => undefined)
   if (import.meta.client) localStorage.removeItem('indexPath')
+  useState('admin-me').value = null
   await navigateTo('/login')
 }
 async function clearCache() {
