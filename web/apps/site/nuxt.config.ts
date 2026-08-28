@@ -58,6 +58,7 @@ export default defineNuxtConfig({
         },
       ],
       link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'stylesheet', href: '/legacy/pc/style/index.css', media: 'screen and (min-width: 1200px)' },
         { rel: 'stylesheet', href: '/legacy/pc/style/style.css', media: 'screen and (min-width: 1200px)' },
         { rel: 'stylesheet', href: '/legacy/pc/style/css.css', media: 'screen and (min-width: 1200px)' },

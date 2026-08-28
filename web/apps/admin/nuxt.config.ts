@@ -39,6 +39,7 @@ export default defineNuxtConfig({
     baseURL: '/admin/',
     head: {
       link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.ico' },
         { rel: 'stylesheet', href: '/admin/php-admin/js/element-icons.css' },
         { rel: 'stylesheet', href: '/admin/php-admin/adstyle/phpyun.css' },
         { rel: 'stylesheet', href: '/admin/php-admin/images/admin.css' },
