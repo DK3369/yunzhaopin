@@ -48,6 +48,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/user/**': { ssr: false },
     '/com/**': { ssr: false },
+    '/favicon.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
   app: {
     head: {

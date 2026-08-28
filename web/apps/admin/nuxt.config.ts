@@ -15,6 +15,9 @@ export default defineNuxtConfig({
     },
   },
   modules: ['@pinia/nuxt', '@element-plus/nuxt', '@nuxtjs/i18n'],
+  routeRules: {
+    '/favicon.v1.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+  },
   i18n: {
     locales: [
       { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },
@@ -39,7 +42,7 @@ export default defineNuxtConfig({
     baseURL: '/admin/',
     head: {
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.ico' },
+        { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.v1.ico' },
         { rel: 'stylesheet', href: '/admin/php-admin/js/element-icons.css' },
         { rel: 'stylesheet', href: '/admin/php-admin/adstyle/phpyun.css' },
         { rel: 'stylesheet', href: '/admin/php-admin/images/admin.css' },
