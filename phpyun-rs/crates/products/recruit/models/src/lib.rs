@@ -1,6 +1,7 @@
 //! Data Access Layer. One module per PHPYun table group.
 
 pub mod ad;
+pub mod admin_gap;
 pub mod admin_msg;
 pub mod admin_rbac;
 pub mod announcement;

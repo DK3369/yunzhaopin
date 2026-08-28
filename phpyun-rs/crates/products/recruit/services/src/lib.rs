@@ -43,9 +43,13 @@
 
 pub mod ad_service;
 pub mod admin_auth_service;
+pub mod admin_archive_service;
 pub mod admin_cms_service;
 pub mod admin_dashboard_service;
+pub mod admin_eval_service;
 pub mod admin_longtail_service;
+pub mod admin_ops_gap_service;
+pub mod admin_system_gap_service;
 pub mod admin_service;
 pub mod admin_tool_service;
 pub mod announcement_service;

@@ -22,7 +22,7 @@
 //! `toggle_support` therefore degrades to **idempotent +1** (no undo).
 
 use super::entity::{Answer, Question};
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 const Q_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -737,6 +737,131 @@ const QC_FIELDS: &str = "\
 pub async fn list_qclasses(pool: &MySqlPool) -> Result<Vec<QClass>, sqlx::Error> {
     let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class ORDER BY pid ASC, sort DESC, id ASC");
     sqlx::query_as::<_, QClass>(&sql).fetch_all(pool).await
+}
+
+pub async fn list_qclasses_admin(
+    pool: &MySqlPool,
+    pid: Option<i32>,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<QClass>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(QC_FIELDS);
+    qb.push(" FROM phpyun_q_class WHERE pid = ");
+    qb.push_bind(pid.unwrap_or(0));
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(" ORDER BY sort DESC, id ASC LIMIT ");
+    qb.push_bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?);
+    qb.push(" OFFSET ");
+    qb.push_bind(phpyun_core::numeric::checked_db_i64(
+        offset,
+        "pagination.offset",
+    )?);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_qclasses_admin(
+    pool: &MySqlPool,
+    pid: Option<i32>,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_q_class WHERE pid = ");
+    qb.push_bind(pid.unwrap_or(0));
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn find_qclass(pool: &MySqlPool, id: u64) -> Result<Option<QClass>, sqlx::Error> {
+    let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class WHERE id = ?");
+    sqlx::query_as::<_, QClass>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn upsert_qclass(
+    pool: &MySqlPool,
+    id: Option<u64>,
+    name: &str,
+    pid: i32,
+    intro: &str,
+    sort: i32,
+    pic: Option<&str>,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if let Some(id) = id.filter(|v| *v > 0) {
+        if let Some(p) = pic {
+            sqlx::query(
+                "UPDATE phpyun_q_class SET name=?, pid=?, intro=?, sort=?, pic=? WHERE id=?",
+            )
+            .bind(name)
+            .bind(pid)
+            .bind(intro)
+            .bind(sort)
+            .bind(p)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        } else {
+            sqlx::query("UPDATE phpyun_q_class SET name=?, pid=?, intro=?, sort=? WHERE id=?")
+                .bind(name)
+                .bind(pid)
+                .bind(intro)
+                .bind(sort)
+                .bind(id)
+                .execute(pool)
+                .await?;
+        }
+        return Ok(id);
+    }
+    let res = sqlx::query(
+        "INSERT INTO phpyun_q_class (name, pid, pic, sort, intro, add_time) VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(name)
+    .bind(pid)
+    .bind(pic.unwrap_or(""))
+    .bind(sort)
+    .bind(intro)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn delete_qclasses(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_question WHERE cid IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    qb.build().execute(pool).await?;
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_q_class WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(") OR pid IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
 // ---------- Hotweek (this week's hot questions) ----------

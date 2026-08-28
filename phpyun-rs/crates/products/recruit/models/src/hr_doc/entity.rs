@@ -2,6 +2,14 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct ToolboxClass {
+    pub id: u64,
+    pub name: String,
+    pub content: String,
+    pub pic: String,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct HrDoc {
     pub id: u64,
     pub cid: u64,

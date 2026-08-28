@@ -158,6 +158,60 @@ pub async fn group_name(pool: &MySqlPool, m_id: i32) -> Result<String, sqlx::Err
     Ok(row.map(|(n,)| n).unwrap_or_default())
 }
 
+pub async fn update_password(pool: &MySqlPool, uid: u64, password: &str) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_admin_user SET password = ? WHERE uid = ?")
+            .bind(password)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn update_profile(
+    pool: &MySqlPool,
+    uid: u64,
+    name: Option<&str>,
+    mobile: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::<sqlx::MySql>::new("UPDATE phpyun_admin_user SET ");
+    let mut any = false;
+    if let Some(n) = name.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push("name = ");
+        qb.push_bind(n);
+        any = true;
+    }
+    if let Some(m) = mobile.map(str::trim).filter(|s| !s.is_empty()) {
+        if any {
+            qb.push(", ");
+        }
+        qb.push("moblie = ");
+        qb.push_bind(m);
+        any = true;
+    }
+    if !any {
+        return Ok(0);
+    }
+    qb.push(" WHERE uid = ");
+    qb.push_bind(uid);
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn find_profile(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<(String, String, String, String, i64, i32)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT COALESCE(username,''), COALESCE(name,''), COALESCE(moblie,''), COALESCE(wxid,''), \
+         CAST(COALESCE(lasttime,0) AS SIGNED), CAST(COALESCE(m_id,0) AS SIGNED) \
+         FROM phpyun_admin_user WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
 #[derive(Debug, Clone, FromRow, Serialize)]
 pub struct AdminNavRow {
     pub id: i64,
