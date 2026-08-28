@@ -32,7 +32,7 @@
                   <li><NuxtLink to="/jobs">{{ $t('default_00246') }}</NuxtLink></li>
                   <li><NuxtLink to="/resumes">{{ $t('common.resume') }}</NuxtLink></li>
                   <li><NuxtLink to="/companies">{{ $t('common.company') }}</NuxtLink></li>
-                  <li><NuxtLink to="/fairs">{{ $t('wap_00223') }}</NuxtLink></li>
+                  <li><NuxtLink to="/fairs">{{ $t('member_com_00293') }}</NuxtLink></li>
                   <li><NuxtLink to="/articles">{{ $t('common.article') }}</NuxtLink></li>
                 </ul>
               </dd>

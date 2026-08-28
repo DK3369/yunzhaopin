@@ -93,23 +93,23 @@ const MODULE_PATH: Record<string, string> = {
 }
 
 export const DEFAULT_NAV: NavItem[] = [
-  { label: '首页', to: '/' },
-  { label: '找工作', to: '/jobs' },
-  { label: '找人才', to: '/resumes' },
-  { label: '找企业', to: '/companies' },
-  { label: '招聘会', to: '/fairs' },
-  { label: '资讯', to: '/articles' },
+  { label: '', to: '/' },
+  { label: '', to: '/jobs' },
+  { label: '', to: '/resumes' },
+  { label: '', to: '/companies' },
+  { label: '', to: '/fairs' },
+  { label: '', to: '/articles' },
 ]
 
 export const DEFAULT_H5_NAV: NavItem[] = [
-  { label: '找工作', to: '/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
-  { label: '找企业', to: '/companies', icon: '/legacy/h5/images/company.png' },
-  { label: '找人才', to: '/resumes', icon: '/legacy/h5/images/Please_resume.png' },
-  { label: '招聘会', to: '/fairs', icon: '/legacy/h5/images/diy_tit4_zph.png' },
-  { label: '兼职', to: '/parts', icon: '/legacy/h5/images/Part-time_management.png' },
-  { label: '资讯', to: '/articles', icon: '/legacy/h5/images/news.png' },
-  { label: '地图', to: '/map', icon: '/legacy/h5/images/map_nav.png' },
-  { label: '测评', to: '/eval', icon: '/legacy/h5/images/icon_question.png' },
+  { label: '', to: '/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
+  { label: '', to: '/companies', icon: '/legacy/h5/images/company.png' },
+  { label: '', to: '/resumes', icon: '/legacy/h5/images/Please_resume.png' },
+  { label: '', to: '/fairs', icon: '/legacy/h5/images/diy_tit4_zph.png' },
+  { label: '', to: '/parts', icon: '/legacy/h5/images/Part-time_management.png' },
+  { label: '', to: '/articles', icon: '/legacy/h5/images/news.png' },
+  { label: '', to: '/map', icon: '/legacy/h5/images/map_nav.png' },
+  { label: '', to: '/eval', icon: '/legacy/h5/images/icon_question.png' },
 ]
 
 export function mediaUrl(path?: string | null, fallback = ''): string {
@@ -153,13 +153,12 @@ export function listFailMsg(err: unknown, rateLimit: string, fallback: string): 
   return e.data?.msg || e.message || fallback
 }
 
-export function formatSalary(job: JobLike, negotiable = '面议'): string {
+export function formatSalary(job: JobLike, negotiable = '', unit = ''): string {
   const min = Number(job.min_salary ?? job.minsalary ?? 0)
   const max = Number(job.max_salary ?? job.maxsalary ?? 0)
   if (!min && !max) return negotiable
-  // PHP `salaryUnit`（resume_salarytype=1）：min-max + 元
-  if (min && max) return `${min}-${max}元`
-  return `${min || max}元`
+  if (min && max) return `${min}-${max}${unit}`
+  return `${min || max}${unit}`
 }
 
 export function formatUnixDate(ts?: number | string | null): string {

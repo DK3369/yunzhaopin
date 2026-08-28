@@ -82,9 +82,10 @@
   <!-- H5：首页 yunTop；内页蓝条返回 -->
   <div class="site-h5">
     <div v-if="isHome" class="yunTop">
-      <div class="yunlogobox">
+      <div class="yunlogobox" style="display: flex; align-items: center; justify-content: space-between; gap: 0.16rem">
         <img v-if="logoH5" :src="logoH5" alt="" class="yunlogo" />
         <span v-else class="header_p_z">{{ siteName }}</span>
+        <LangSwitch />
       </div>
       <div class="index_newedition_search_box">
         <div class="index_newedition_searchbg">
@@ -105,6 +106,9 @@
         <div class="header_bg">
           <a class="header_back" href="javascript:;" @click.prevent="goBack" />
           <div class="header_h1">{{ h5Title }}</div>
+          <div class="header_lang" style="position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%); z-index: 2">
+            <LangSwitch />
+          </div>
         </div>
       </div>
       <div class="header_h" />

@@ -42,6 +42,7 @@ useSeoMeta({ title: t('common.register') })
             </NuxtLink>
           </div>
           <NuxtLink to="/" class="logo_fh fr">{{ $t('member_user_00119') }} ></NuxtLink>
+          <span class="fr" style="margin-right: 16px; line-height: 60px"><LangSwitch /></span>
         </div>
       </div>
       <div class="logoin_cont_box">
@@ -82,6 +83,7 @@ useSeoMeta({ title: t('common.register') })
       </NuxtLink>
     </div>
     <div class="login_cont">
+      <div style="text-align: right; padding: 0.24rem 0.32rem 0"><LangSwitch /></div>
       <div class="login_welcome">
         <div>{{ $t('common.register') }}</div>
         <div>{{ siteName }}</div>

@@ -130,7 +130,7 @@ const salary = computed(() =>
     name: String(job.value.name || ''),
     min_salary: Number(job.value.minsalary || job.value.min_salary || 0),
     max_salary: Number(job.value.maxsalary || job.value.max_salary || 0),
-  }, t('common.negotiable')),
+  }, t('common.negotiable'), t('ui.yuan')),
 )
 const welfare = computed(() => {
   const w = dict.value.welfare_names || job.value.welfare || job.value.job_welfare
@@ -440,7 +440,7 @@ useHead({
               <NuxtLink :to="`/jobs/${row.id}`" :title="row.name">
                 <div class="recommend_post_card_top">
                   <div class="recommend_post_card_name">{{ row.name }}</div>
-                  <div class="recommend_post_card_money">{{ formatSalary(row, $t('common.negotiable')) }}</div>
+                  <div class="recommend_post_card_money">{{ formatSalary(row, $t('common.negotiable'), $t('ui.yuan')) }}</div>
                 </div>
                 <div class="newjob_info">
                   <span>{{ row.job_city_one }}{{ row.job_city_two ? `-${row.job_city_two}` : '' }}</span>

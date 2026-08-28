@@ -1,8 +1,8 @@
 <template>
   <span class="lang-switch">
-    <a href="javascript:;" :class="{ on: locale === 'zh' }" @click.prevent="go('zh')">中文</a>
+    <a href="javascript:;" :class="{ on: locale === 'zh' }" @click.prevent="go('zh')">{{ $t('ui.lang_zh') }}</a>
     <span>|</span>
-    <a href="javascript:;" :class="{ on: locale === 'en' }" @click.prevent="go('en')">English</a>
+    <a href="javascript:;" :class="{ on: locale === 'en' }" @click.prevent="go('en')">{{ $t('ui.lang_en') }}</a>
   </span>
 </template>
 

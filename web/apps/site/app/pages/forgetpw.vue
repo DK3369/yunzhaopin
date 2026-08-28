@@ -48,6 +48,7 @@ useSeoMeta({ title: t('wap_js_00123') })
 
 <template>
   <section class="site-inner">
+    <div style="text-align: right; margin-bottom: 12px"><LangSwitch /></div>
     <h1>{{ $t('wap_js_00123') }}</h1>
     <form class="form" @submit.prevent="resetPw">
       <input v-model="form.moblie" :placeholder="$t('wap_01619')" autocomplete="tel" />

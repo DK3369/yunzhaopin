@@ -197,7 +197,7 @@ const props = withDefaults(
   { variant: 'home' },
 )
 const { t } = useI18n()
-const salary = computed(() => formatSalary(props.job, t('common.negotiable')))
+const salary = computed(() => formatSalary(props.job, t('common.negotiable'), t('ui.yuan')))
 const city = computed(() => {
   const one = props.job.job_city_one || ''
   const two = props.job.job_city_two || props.job.city_two || ''

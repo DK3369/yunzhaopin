@@ -4,6 +4,7 @@ import {
   mediaUrl,
   type NavItem,
 } from '../utils/site'
+import { useMemberNav } from './useMemberNav'
 
 type SettingRow = { key: string; value: string }
 type Me = { uid: number; username: string; usertype: number }
@@ -56,13 +57,21 @@ export function useSiteChrome() {
   const NAV_LABEL_KEY: Record<string, string> = {
     '/': 'common.home',
     '/jobs': 'default_00246',
-    '/resumes': 'common.resume',
-    '/companies': 'common.company',
-    '/fairs': 'wap_00223',
+    '/resumes': 'default_00312',
+    '/companies': 'default_00114',
+    '/fairs': 'member_com_00293',
     '/articles': 'common.article',
     '/parts': 'ui.part',
-    '/map': 'ui.map',
+    '/map': 'wap_00317',
     '/eval': 'ui.eval',
+    '/questions': 'ui.qa',
+    '/announcements': 'ui.announcements',
+    '/tiny': 'ui.tiny',
+    '/once': 'ui.once',
+    '/hr': 'ui.hr',
+    '/redeem': 'ui.redeem',
+    '/specials': 'ui.specials',
+    '/gongzhao': 'ui.gongzhao',
   }
 
   function labelForNav(item: { to: string; label: string }) {
@@ -87,9 +96,9 @@ export function useSiteChrome() {
       : [
           { label: t('common.home'), to: '/' },
           { label: t('default_00246'), to: '/jobs' },
-          { label: t('common.resume'), to: '/resumes' },
-          { label: t('common.company'), to: '/companies' },
-          { label: t('wap_00223'), to: '/fairs' },
+          { label: t('default_00312'), to: '/resumes' },
+          { label: t('default_00114'), to: '/companies' },
+          { label: t('member_com_00293'), to: '/fairs' },
           { label: t('common.article'), to: '/articles' },
         ]
     return rows.map((n) => ({ ...n, label: labelForNav(n) }))
@@ -115,6 +124,8 @@ export function useSiteChrome() {
     () => route.path.startsWith('/user') || route.path.startsWith('/com'),
   )
 
+  const { userItems, comItems } = useMemberNav()
+
   const h5Title = computed(() => {
     const titles: Record<string, string> = {
       '/': t('common.home'),
@@ -122,21 +133,32 @@ export function useSiteChrome() {
       '/companies': t('common.company'),
       '/resumes': t('common.resume'),
       '/articles': t('common.article'),
-      '/fairs': t('wap_00223'),
-      '/parts': t('wap_00223'),
-      '/questions': t('common.more'),
-      '/announcements': t('common.site_notice'),
+      '/fairs': t('member_com_00293'),
+      '/parts': t('ui.part'),
+      '/questions': t('ui.qa'),
+      '/announcements': t('ui.announcements'),
       '/login': t('common.login'),
       '/register': t('common.register'),
-      '/forgetpw': t('common.search'),
+      '/forgetpw': t('wap_js_00123'),
       '/search': t('common.search'),
-      '/eval': t('common.more'),
-      '/map': t('wap_00223'),
-      '/advice': t('common.site_notice'),
+      '/eval': t('ui.eval'),
+      '/map': t('wap_00317'),
+      '/advice': t('wap_user_00203'),
+      '/tiny': t('ui.tiny'),
+      '/once': t('ui.once'),
+      '/hr': t('ui.hr'),
+      '/redeem': t('ui.redeem'),
+      '/specials': t('ui.specials'),
+      '/gongzhao': t('ui.gongzhao'),
       '/user': t('common.user_center'),
       '/com': t('common.user_center'),
     }
     if (titles[route.path]) return titles[route.path]
+    const member = [...userItems.value, ...comItems.value]
+    const memberHit = member
+      .filter((i) => i.to !== '/user' && i.to !== '/com' && (route.path === i.to || route.path.startsWith(`${i.to}/`)))
+      .sort((a, b) => b.to.length - a.to.length)[0]
+    if (memberHit) return memberHit.label
     const hit = Object.keys(titles)
       .filter((k) => k !== '/' && route.path.startsWith(k))
       .sort((a, b) => b.length - a.length)[0]
