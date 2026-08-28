@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { lc, readStoredLocale, setAdminLocale } from '~/utils/phpLc'
+import { lc } from '~/utils/phpLc'
 import { httpPost } from '~/utils/httpPost'
 
 type MenuItem = {
@@ -16,7 +16,7 @@ type MenuItem = {
 
 const route = useRoute()
 const router = useRouter()
-const { setLocale } = useI18n()
+const { t, te } = useI18n()
 
 const { data: menu } = await useAsyncData('admin-php-menu', () =>
   useApi().post<MenuItem[]>('/v1/admin/menu', {}),
@@ -51,7 +51,6 @@ const msgNumData = ref<Array<{ name: string; num: number; menudata: Record<strin
 const dialogLanguage = ref(false)
 const dialogMap = ref(false)
 const dialogShortcutMenu = ref(false)
-const languageForm = reactive({ lang: readStoredLocale() === 'en' ? 'en_us' : 'zh_cn' })
 const searchFormMap = reactive({ keyword: '' })
 const tabList = ref<
   Array<{ nav_id: number; one_menu_id: number; two_menu_id: number; name: string; path: string; isdel: boolean; query?: Record<string, unknown> }>
@@ -85,12 +84,16 @@ function checkMenu(val: number) {
   curMenu.value = val
   if (val === 0) navigateTo('/index')
 }
-function tabLabel(tab: { name: string }) {
-  if (tab.name === 'index') return lc('wap_00191')
-  return lc(tab.name, null, tab.name)
+function tabLabel(tab: { name: string; two_menu_id: number; path: string }) {
+  if (tab.name === 'index' || tab.path === '/index') return String(t('wap_00191'))
+  const navKey = `nav.${tab.two_menu_id}`
+  if (tab.two_menu_id && te(navKey)) return String(t(navKey))
+  if (tab.name && te(tab.name)) return String(t(tab.name))
+  return tab.name
 }
 function menuLabel(m: MenuItem) {
-  return lc(m.name, null, m.name)
+  const key = `nav.${m.id}`
+  return te(key) ? String(t(key)) : m.name
 }
 function filteredMapItems(parent: MenuItem) {
   const kw = searchFormMap.keyword.trim()
@@ -181,12 +184,6 @@ async function clearCache() {
   const body = res.data as { error?: number }
   if (body.error) ElMessage.error(lc('admin_index_00051'))
   else ElMessage.success(lc('admin_index_00052'))
-}
-async function saveLanguage() {
-  const loc = await setAdminLocale(languageForm.lang)
-  await setLocale(loc)
-  dialogLanguage.value = false
-  location.reload()
 }
 function openPage(url: string) {
   window.open(url || '/', '_blank')
@@ -455,14 +452,7 @@ onMounted(() => {
       </div>
     </el-dialog>
     <el-dialog v-model="dialogLanguage" :title="lc('admin_index_00075')" width="360px">
-      <el-radio-group v-model="languageForm.lang">
-        <el-radio value="en_us">English</el-radio>
-        <el-radio value="zh_cn">{{ lc('admin_index_00071') }}</el-radio>
-      </el-radio-group>
-      <template #footer>
-        <el-button @click="dialogLanguage = false">{{ lc('admin_user_weipin_00043') }}</el-button>
-        <el-button type="primary" @click="saveLanguage">{{ lc('wap_com_00019') }}</el-button>
-      </template>
+      <LangSwitch reload />
     </el-dialog>
   </section>
 </template>

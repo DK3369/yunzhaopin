@@ -27,6 +27,7 @@ export default defineNuxtConfig({
       useCookie: true,
       cookieKey: 'lang',
       fallbackLocale: 'zh',
+      alwaysRedirect: false,
       redirectOn: 'no prefix',
     },
     compilation: {

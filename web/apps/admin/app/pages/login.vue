@@ -1,24 +1,14 @@
 <script setup lang="ts">
 import type { ApiEnvelope } from '~/utils/envelope'
-import { lc, readStoredLocale, setAdminLocale } from '~/utils/phpLc'
+import { lc } from '~/utils/phpLc'
 
 definePageMeta({ layout: 'blank' })
-const { setLocale } = useI18n()
 const username = ref('')
 const password = ref('')
 const err = ref('')
 const showDiv1 = ref(true)
 const islook = ref(true)
-const uiLang = ref(readStoredLocale())
 type LoginData = { uid: number; usertype: number; path?: string; name?: string }
-
-async function switchLang(next: 'zh' | 'en') {
-  if (next === uiLang.value) return
-  await setAdminLocale(next)
-  await setLocale(next)
-  uiLang.value = next
-  location.reload()
-}
 
 async function login() {
   err.value = ''
@@ -91,9 +81,7 @@ function toggleDiv() {
                 </ul>
                 <p v-if="err" style="color: #e34848; text-align: center">{{ err }}</p>
                 <p style="text-align: center; margin-top: 12px; font-size: 13px">
-                  <a href="javascript:;" :style="{ fontWeight: uiLang === 'zh' ? '700' : '400' }" @click="switchLang('zh')">中文</a>
-                  <span> | </span>
-                  <a href="javascript:;" :style="{ fontWeight: uiLang === 'en' ? '700' : '400' }" @click="switchLang('en')">English</a>
+                  <LangSwitch reload />
                 </p>
                 <div class="weixnLogins">
                   <div @click="toggleDiv">

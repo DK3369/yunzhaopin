@@ -24,7 +24,13 @@ export default defineNuxtConfig({
     lazy: true,
     langDir: 'locales',
     strategy: 'no_prefix',
-    detectBrowserLanguage: false,
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'lang',
+      fallbackLocale: 'zh',
+      alwaysRedirect: false,
+      redirectOn: 'no prefix',
+    },
     compilation: {
       strictMessage: false,
     },

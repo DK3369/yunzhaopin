@@ -25,12 +25,11 @@ async function postAdmin(path: string, body: Record<string, unknown>): Promise<A
   if (page) query.page = page
   if (page_size) query.page_size = page_size
   const loc = readStoredLocale()
-  const rustLang = rustLangFor(loc)
   return await $fetch<ApiEnvelope<unknown>>(bffUrl(`/api/proxy${path}`), {
     method: 'POST',
     credentials: 'include',
-    query: { ...query, lang: rustLang },
-    headers: { 'accept-language': rustLang },
+    query: { ...query, lang: loc },
+    headers: { 'accept-language': rustLangFor(loc) },
     body,
   })
 }

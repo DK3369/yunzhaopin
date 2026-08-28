@@ -1,6 +1,5 @@
 import {
   DEFAULT_H5_NAV,
-  DEFAULT_NAV,
   mapNavUrl,
   mediaUrl,
   type NavItem,
@@ -13,7 +12,7 @@ export function useSiteChrome() {
   const api = useApi()
   const route = useRoute()
   const runtime = useRuntimeConfig()
-  const { t } = useI18n()
+  const { t, te } = useI18n()
 
   const { data: settingRows } = useAsyncData(
     'site-settings',
@@ -31,7 +30,7 @@ export function useSiteChrome() {
   })
 
   const siteName = computed(
-    () => settings.value.sy_webname || String(runtime.public.siteName || '招聘'),
+    () => settings.value.sy_webname || String(runtime.public.siteName || t('common.job')),
   )
   const phone = computed(() => settings.value.sy_freewebtel || '')
   const worktime = computed(() => settings.value.sy_worktime || '')
@@ -54,6 +53,25 @@ export function useSiteChrome() {
     { default: () => [] },
   )
 
+  const NAV_LABEL_KEY: Record<string, string> = {
+    '/': 'common.home',
+    '/jobs': 'default_00246',
+    '/resumes': 'common.resume',
+    '/companies': 'common.company',
+    '/fairs': 'wap_00223',
+    '/articles': 'common.article',
+    '/parts': 'ui.part',
+    '/map': 'ui.map',
+    '/eval': 'ui.eval',
+  }
+
+  function labelForNav(item: { to: string; label: string }) {
+    const key = NAV_LABEL_KEY[item.to]
+    if (key) return t(key)
+    if (item.label && te(item.label)) return t(item.label)
+    return item.label
+  }
+
   const nav = computed<NavItem[]>(() => {
     const list = (navRaw.value || [])
       .map((n) => ({
@@ -64,7 +82,7 @@ export function useSiteChrome() {
         icon: n.icon_n || n.icon,
       }))
       .filter((n) => n.label)
-    return list.length
+    const rows = list.length
       ? list
       : [
           { label: t('common.home'), to: '/' },
@@ -74,11 +92,13 @@ export function useSiteChrome() {
           { label: t('wap_00223'), to: '/fairs' },
           { label: t('common.article'), to: '/articles' },
         ]
+    return rows.map((n) => ({ ...n, label: labelForNav(n) }))
   })
 
   const h5Nav = computed<NavItem[]>(() => {
     const withIcon = nav.value.filter((n) => n.icon && n.to !== '/')
-    return withIcon.length >= 4 ? withIcon.slice(0, 8) : DEFAULT_H5_NAV
+    const rows = withIcon.length >= 4 ? withIcon.slice(0, 8) : DEFAULT_H5_NAV
+    return rows.map((n) => ({ ...n, label: labelForNav(n) }))
   })
 
   const { data: me } = useAsyncData(

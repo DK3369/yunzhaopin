@@ -7,11 +7,14 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ cookieKey?: string }>(), { cookieKey: 'lang' })
+import { persistWebLocale } from '../../../base/app/utils/locale'
+
+const props = withDefaults(defineProps<{ reload?: boolean }>(), { reload: false })
 const { locale, setLocale } = useI18n()
 async function go(code: 'zh' | 'en') {
+  if (locale.value === code) return
+  persistWebLocale(code)
   await setLocale(code)
-  if (!import.meta.client) return
-  document.cookie = `${props.cookieKey}=${code}; path=/; max-age=31536000`
+  if (props.reload && import.meta.client) location.reload()
 }
 </script>

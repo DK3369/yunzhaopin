@@ -83,7 +83,7 @@ impl Lang {
     /// `zh / zh-cn / cn` → `ZhCN`, `zh-tw / zh-hk / tw` → `ZhTW`,
     /// `en / en-us / en-gb` → `En`. Unrecognized inputs return `None`.
     pub fn parse_tag(s: &str) -> Option<Self> {
-        let lower = s.trim().to_ascii_lowercase();
+        let lower = s.trim().to_ascii_lowercase().replace('_', "-");
         match lower.as_str() {
             "zh" | "zh-cn" | "zh-hans" | "cn" | "zh-hans-cn" => Some(Self::ZhCN),
             "zh-tw" | "zh-hk" | "zh-mo" | "zh-hant" | "tw" | "zh-hant-tw" => Some(Self::ZhTW),
@@ -291,6 +291,8 @@ mod tests {
         assert_eq!(Lang::parse_tag("zh-CN"), Some(Lang::ZhCN));
         assert_eq!(Lang::parse_tag("ZH-cn"), Some(Lang::ZhCN));
         assert_eq!(Lang::parse_tag("zh"), Some(Lang::ZhCN));
+        assert_eq!(Lang::parse_tag("zh_cn"), Some(Lang::ZhCN));
+        assert_eq!(Lang::parse_tag("en_us"), Some(Lang::En));
         assert_eq!(Lang::parse_tag("zh-TW"), Some(Lang::ZhTW));
         assert_eq!(Lang::parse_tag("zh-Hant"), Some(Lang::ZhTW));
         assert_eq!(Lang::parse_tag("en"), Some(Lang::En));

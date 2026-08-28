@@ -1,5 +1,6 @@
 import { unwrapEnvelope, ApiError, type ApiEnvelope } from '~/utils/envelope'
 import { bffUrl } from '~/utils/bff'
+import { readStoredLocale, rustLangFor } from '../utils/locale'
 
 type Verb = 'GET' | 'POST'
 type Loc = 'zh' | 'en'
@@ -30,19 +31,9 @@ export function useApi() {
   function currentLoc(): Loc {
     const fromQuery = locFromRaw(route.query.lang)
     if (fromQuery) return fromQuery
-    if (import.meta.client) {
-      const stored =
-        localStorage.getItem('admin_lang') ||
-        localStorage.getItem('lang') ||
-        document.cookie
-          .split(';')
-          .map((x) => x.trim())
-          .find((x) => x.startsWith('admin_lang='))
-          ?.slice('admin_lang='.length)
-      const fromStore = locFromRaw(stored)
-      if (fromStore) return fromStore
-    }
-    return i18n.locale.value === 'en' ? 'en' : 'zh'
+    const fromI18n = locFromRaw(i18n.locale.value)
+    if (fromI18n) return fromI18n
+    return readStoredLocale()
   }
 
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
@@ -52,7 +43,7 @@ export function useApi() {
       ...(method === 'GET' ? payload : pagingQuery(payload)),
       lang: loc,
     }
-    const headers = { 'accept-language': loc === 'en' ? 'en' : 'zh-CN' }
+    const headers = { 'accept-language': rustLangFor(loc) }
     try {
       const body = await $fetch<ApiEnvelope<T>>(url, {
         method,

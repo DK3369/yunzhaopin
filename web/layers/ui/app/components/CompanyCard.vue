@@ -92,7 +92,8 @@ import { companyName, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../ut
 const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' | 'firm' }>(), {
   variant: 'home',
 })
-const title = computed(() => companyName(props.company))
+const { t } = useI18n()
+const title = computed(() => companyName(props.company, t('common.company')))
 const logo = computed(() => mediaUrl(props.company.logo_n || props.company.logo, PLACEHOLDER_LOGO))
 const hotLabel = computed(() => {
   if (typeof props.company.job_num === 'number' && props.company.job_num > 0) {

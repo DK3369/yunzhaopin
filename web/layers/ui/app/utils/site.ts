@@ -173,8 +173,8 @@ export function formatUnixDate(ts?: number | string | null): string {
   return `${y}-${m}-${day}`
 }
 
-export function companyName(c: CompanyLike): string {
-  return String(c.name || c.shortname || '企业')
+export function companyName(c: CompanyLike, fallback = ''): string {
+  return String(c.name || c.shortname || fallback)
 }
 
 export function catTree(list: CatNode[], limit = 11): CatNode[] {
