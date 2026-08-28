@@ -1,3 +1,9 @@
+/**
+ * Runtime is Nuxt vue-i18n (`i18n/locales/{zh,en}.json`), which already contains
+ * the 16518 numbered keys from the PHP packs. `public/php-admin/lang/*.json` is
+ * that same corpus kept on disk — do not fetch it at runtime (that dual-track
+ * is why language switch used to do nothing).
+ */
 import { persistWebLocale, parseWebLocale, readStoredLocale, rustLangFor, type WebLocale } from '../../../../layers/base/app/utils/locale'
 
 export type AdminLocale = WebLocale
