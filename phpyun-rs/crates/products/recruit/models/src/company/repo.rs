@@ -164,6 +164,16 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Company>, 
         .await
 }
 
+pub async fn touch_jobtime(pool: &MySqlPool, uid: u64, now: i64) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_company SET jobtime = ?, lastupdate = ? WHERE uid = ?")
+        .bind(now)
+        .bind(now.to_string())
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
 pub async fn find_uid_by_name(pool: &MySqlPool, name: &str) -> Result<Option<u64>, sqlx::Error> {
     let row: Option<(u64,)> = sqlx::query_as(
         "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name = ? LIMIT 1",

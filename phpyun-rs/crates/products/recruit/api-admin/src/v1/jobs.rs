@@ -277,12 +277,20 @@ pub async fn delete_jobs(
     Ok(ApiResponse::message("ok"))
 }
 
-/// PHP `company_job::add_action` GET (form cache + company + mapurl).
+/// PHP `company_job::add_action` GET 表单 / POST `save` 写职位。
 pub async fn php_add_form(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     Json(body): Json<serde_json::Value>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    if body.get("save").is_some() {
+        let (msg_key, id) =
+            admin_php_page_service::save_admin_job(&state, &user, &body).await?;
+        return Ok(ApiResponse::message_data(
+            msg_key,
+            serde_json::json!({ "id": id }),
+        ));
+    }
     Ok(ApiResponse::data(
         admin_php_page_service::job_php_add_form(&state, &user, &body).await?,
     ))

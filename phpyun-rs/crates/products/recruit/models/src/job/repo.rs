@@ -423,6 +423,220 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     Ok(res.last_insert_id())
 }
 
+pub struct AdminJobWrite<'a> {
+    pub uid: u64,
+    pub name: &'a str,
+    pub com_name: &'a str,
+    pub hy: i32,
+    pub job1: i32,
+    pub job1_son: i32,
+    pub job_post: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub link_id: i32,
+    pub is_link: i32,
+    pub is_message: i32,
+    pub is_email: i32,
+    pub minsalary: i32,
+    pub maxsalary: i32,
+    pub description: &'a str,
+    pub r_status: i32,
+    pub number: i32,
+    pub exp: i32,
+    pub report: i32,
+    pub age: i32,
+    pub sex: i32,
+    pub edu: i32,
+    pub is_graduate: i32,
+    pub marriage: i32,
+    pub lang: &'a str,
+    pub welfare: &'a str,
+    pub state: i32,
+    pub jobhits: i32,
+    pub jobexpoure: i32,
+    pub exp_req: &'a str,
+    pub edu_req: &'a str,
+    pub zp_num: i32,
+    pub zp_minage: i32,
+    pub zp_maxage: i32,
+    pub minage_req: i32,
+    pub maxage_req: i32,
+    pub sex_req: i32,
+    pub status: i32,
+    pub com_logo: &'a str,
+    pub com_provinceid: i32,
+    pub pr: i32,
+    pub mun: i32,
+    pub did: i64,
+    pub yyzz_status: i32,
+    pub rating: i32,
+}
+
+/// PHP `job::addJobInfo` 后台 insert（`utype=admin`）。
+pub async fn insert_admin(pool: &MySqlPool, w: AdminJobWrite<'_>, now: i64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_job (\
+            uid, name, com_name, hy, job1, job1_son, job_post, \
+            provinceid, cityid, three_cityid, x, y, link_id, is_link, is_message, is_email, \
+            minsalary, maxsalary, description, r_status, number, exp, report, age, sex, edu, \
+            is_graduate, marriage, lang, welfare, state, jobhits, jobexpoure, exp_req, edu_req, \
+            zp_num, zp_minage, zp_maxage, minage_req, maxage_req, sex_req, status, \
+            com_logo, com_provinceid, pr, mun, did, yyzz_status, rating, \
+            sdate, lastupdate, `type`, edate\
+         ) VALUES (\
+            ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0\
+         )",
+    )
+    .bind(w.uid)
+    .bind(w.name)
+    .bind(w.com_name)
+    .bind(w.hy)
+    .bind(w.job1)
+    .bind(w.job1_son)
+    .bind(w.job_post)
+    .bind(w.provinceid)
+    .bind(w.cityid)
+    .bind(w.three_cityid)
+    .bind(w.x)
+    .bind(w.y)
+    .bind(w.link_id)
+    .bind(w.is_link)
+    .bind(w.is_message)
+    .bind(w.is_email)
+    .bind(w.minsalary)
+    .bind(w.maxsalary)
+    .bind(w.description)
+    .bind(w.r_status)
+    .bind(w.number)
+    .bind(w.exp)
+    .bind(w.report)
+    .bind(w.age)
+    .bind(w.sex)
+    .bind(w.edu)
+    .bind(w.is_graduate)
+    .bind(w.marriage)
+    .bind(w.lang)
+    .bind(w.welfare)
+    .bind(w.state)
+    .bind(w.jobhits)
+    .bind(w.jobexpoure)
+    .bind(w.exp_req)
+    .bind(w.edu_req)
+    .bind(w.zp_num)
+    .bind(w.zp_minage)
+    .bind(w.zp_maxage)
+    .bind(w.minage_req)
+    .bind(w.maxage_req)
+    .bind(w.sex_req)
+    .bind(w.status)
+    .bind(w.com_logo)
+    .bind(w.com_provinceid)
+    .bind(w.pr)
+    .bind(w.mun)
+    .bind(w.did)
+    .bind(w.yyzz_status)
+    .bind(w.rating)
+    .bind(now)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+/// PHP `job::addJobInfo` 后台 update（不改 lastupdate/sdate）。
+pub async fn update_admin(pool: &MySqlPool, id: u64, w: AdminJobWrite<'_>) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_job SET \
+            name=?, com_name=?, hy=?, job1=?, job1_son=?, job_post=?, \
+            provinceid=?, cityid=?, three_cityid=?, x=?, y=?, link_id=?, is_link=?, is_message=?, is_email=?, \
+            minsalary=?, maxsalary=?, description=?, r_status=?, number=?, exp=?, report=?, age=?, sex=?, edu=?, \
+            is_graduate=?, marriage=?, lang=?, welfare=?, state=?, jobhits=?, jobexpoure=?, exp_req=?, edu_req=?, \
+            zp_num=?, zp_minage=?, zp_maxage=?, minage_req=?, maxage_req=?, sex_req=?, status=?, \
+            com_logo=?, com_provinceid=?, pr=?, mun=?, did=?, yyzz_status=?, rating=? \
+         WHERE id=? AND uid=?",
+    )
+    .bind(w.name)
+    .bind(w.com_name)
+    .bind(w.hy)
+    .bind(w.job1)
+    .bind(w.job1_son)
+    .bind(w.job_post)
+    .bind(w.provinceid)
+    .bind(w.cityid)
+    .bind(w.three_cityid)
+    .bind(w.x)
+    .bind(w.y)
+    .bind(w.link_id)
+    .bind(w.is_link)
+    .bind(w.is_message)
+    .bind(w.is_email)
+    .bind(w.minsalary)
+    .bind(w.maxsalary)
+    .bind(w.description)
+    .bind(w.r_status)
+    .bind(w.number)
+    .bind(w.exp)
+    .bind(w.report)
+    .bind(w.age)
+    .bind(w.sex)
+    .bind(w.edu)
+    .bind(w.is_graduate)
+    .bind(w.marriage)
+    .bind(w.lang)
+    .bind(w.welfare)
+    .bind(w.state)
+    .bind(w.jobhits)
+    .bind(w.jobexpoure)
+    .bind(w.exp_req)
+    .bind(w.edu_req)
+    .bind(w.zp_num)
+    .bind(w.zp_minage)
+    .bind(w.zp_maxage)
+    .bind(w.minage_req)
+    .bind(w.maxage_req)
+    .bind(w.sex_req)
+    .bind(w.status)
+    .bind(w.com_logo)
+    .bind(w.com_provinceid)
+    .bind(w.pr)
+    .bind(w.mun)
+    .bind(w.did)
+    .bind(w.yyzz_status)
+    .bind(w.rating)
+    .bind(id)
+    .bind(w.uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn find_id_by_uid_name_listed(
+    pool: &MySqlPool,
+    uid: u64,
+    name: &str,
+) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job \
+         WHERE uid = ? AND name = ? AND status = 0 LIMIT 1",
+    )
+    .bind(uid)
+    .bind(name)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
+pub async fn delete_by_id(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
+    sqlx::query("DELETE FROM phpyun_company_job WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
 pub struct JobUpdate<'a> {
     pub name: Option<&'a str>,
     pub job1: Option<i32>,

@@ -3,13 +3,14 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_rbac::repo as rbac_repo;
 use phpyun_models::article::repo as article_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::company_address::repo as addr_repo;
+use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::domain::repo as domain_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::site_setting::repo as setting_repo;
@@ -826,16 +827,227 @@ fn datacall_static() -> Value {
     })
 }
 
-/// PHP `company_job::add_action` GET (form). POST save is a later batch.
+fn json_str(v: &Value, key: &str) -> String {
+    match v.get(key) {
+        Some(Value::String(s)) => s.trim().to_string(),
+        Some(Value::Number(n)) => n.to_string(),
+        _ => String::new(),
+    }
+}
+
+fn json_i32(v: &Value, key: &str) -> i32 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n.as_i64().unwrap_or(0) as i32,
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
+        Some(Value::Bool(true)) => 1,
+        _ => 0,
+    }
+}
+
+fn json_u64(v: &Value, key: &str) -> u64 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n.as_u64().unwrap_or(0),
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn json_csv(v: &Value, key: &str) -> String {
+    match v.get(key) {
+        Some(Value::Array(a)) => a
+            .iter()
+            .filter_map(|x| match x {
+                Value::String(s) if !s.is_empty() => Some(s.clone()),
+                Value::Number(n) => Some(n.to_string()),
+                _ => None,
+            })
+            .collect::<Vec<_>>()
+            .join(","),
+        Some(Value::String(s)) => s.trim().to_string(),
+        _ => String::new(),
+    }
+}
+
+fn json_bool01(v: &Value, key: &str) -> i32 {
+    match v.get(key) {
+        Some(Value::Bool(true)) => 1,
+        Some(Value::String(s)) if s == "true" || s == "1" => 1,
+        Some(Value::Number(n)) if n.as_i64() == Some(1) => 1,
+        _ => 0,
+    }
+}
+
+fn php_job_description(raw: &str) -> String {
+    raw.replace("&amp;", "&")
+        .replace("background-color:#ffffff", "background-color:")
+        .replace("background-color:#fff", "background-color:")
+        .replace("white-space:nowrap;", "white-space:")
+}
+
+/// PHP `job::addJobInfo` (`utype=admin`)：新增或修改职位。
+pub async fn save_admin_job(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<(&'static str, u64)> {
+    user.require_admin()?;
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("uid"));
+    }
+    let id = json_u64(body, "id");
+    let mut name = json_str(body, "name");
+    if name.is_empty() {
+        if id == 0 {
+            return Err(ApiError::business("member_com_00585"));
+        }
+        if let Some(old) = job_repo::find_by_id(state.db.reader(), id).await? {
+            name = old.name;
+        }
+    }
+    if let Some(exist) = job_repo::find_id_by_uid_name_listed(state.db.reader(), uid, &name).await?
+    {
+        if id == 0 || exist != id {
+            return Err(ApiError::business("common_00293"));
+        }
+    }
+    let com = company_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("common_06272"))?;
+    if com.name.as_deref().unwrap_or("").is_empty() {
+        return Err(ApiError::business("common_06272"));
+    }
+
+    let link_id_raw = json_i32(body, "link_id");
+    let mut provinceid = 0;
+    let mut cityid = 0;
+    let mut three_cityid = 0;
+    let mut x = String::new();
+    let mut y = String::new();
+    if link_id_raw == -1 {
+        provinceid = com.provinceid;
+        cityid = com.cityid;
+        three_cityid = com.three_cityid;
+        x = com.x.clone().unwrap_or_default();
+        y = com.y.clone().unwrap_or_default();
+    } else if link_id_raw > 0 {
+        if let Some(addr) =
+            addr_repo::find_by_id(state.db.reader(), link_id_raw as u64, uid).await?
+        {
+            provinceid = addr.provinceid;
+            cityid = addr.cityid;
+            three_cityid = addr.three_cityid;
+            x = addr.x.unwrap_or_default();
+            y = addr.y.unwrap_or_default();
+        }
+    }
+    let mut is_link = json_i32(body, "is_link");
+    if is_link == 0 {
+        is_link = 1;
+    }
+    if link_id_raw > 0 && is_link == 1 {
+        is_link = 2;
+    }
+    let is_message = {
+        let n = json_i32(body, "is_message");
+        if n == 0 { 1 } else { n }
+    };
+    let is_email = {
+        let n = json_i32(body, "is_email");
+        if n == 0 { 1 } else { n }
+    };
+    let salary_type = json_i32(body, "salary_type");
+    let (minsalary, maxsalary) = if salary_type == 1 {
+        (0, 0)
+    } else {
+        (json_i32(body, "minsalary"), json_i32(body, "maxsalary"))
+    };
+    let r_status = com.r_status;
+    let job_state = if r_status == 1 { 1 } else { 0 };
+    let rating = statis_repo::read_rating(state.db.reader(), uid).await?;
+    let description = php_job_description(&json_str(body, "content"));
+    let lang = json_csv(body, "checked_lang");
+    let welfare = json_csv(body, "checked_welfare");
+    let com_name = com.name.clone().unwrap_or_default();
+    let com_logo = com.logo.clone().unwrap_or_default();
+    let now = clock::now_ts();
+    let exp_req = json_str(body, "exp_req");
+    let edu_req = json_str(body, "edu_req");
+    let write = job_repo::AdminJobWrite {
+        uid,
+        name: &name,
+        com_name: &com_name,
+        hy: json_i32(body, "hy"),
+        job1: json_i32(body, "job1"),
+        job1_son: json_i32(body, "job1_son"),
+        job_post: json_i32(body, "job_post"),
+        provinceid,
+        cityid,
+        three_cityid,
+        x: &x,
+        y: &y,
+        link_id: if link_id_raw > 0 { link_id_raw } else { 0 },
+        is_link,
+        is_message,
+        is_email,
+        minsalary,
+        maxsalary,
+        description: &description,
+        r_status,
+        number: json_i32(body, "number"),
+        exp: json_i32(body, "exp"),
+        report: json_i32(body, "report"),
+        age: json_i32(body, "age"),
+        sex: json_i32(body, "sex"),
+        edu: json_i32(body, "edu"),
+        is_graduate: json_bool01(body, "is_graduate"),
+        marriage: json_i32(body, "marriage"),
+        lang: &lang,
+        welfare: &welfare,
+        state: job_state,
+        jobhits: json_i32(body, "jobhits"),
+        jobexpoure: json_i32(body, "jobexpoure"),
+        exp_req: &exp_req,
+        edu_req: &edu_req,
+        zp_num: json_i32(body, "zp_num"),
+        zp_minage: json_i32(body, "zp_minage"),
+        zp_maxage: json_i32(body, "zp_maxage"),
+        minage_req: json_i32(body, "minage_req"),
+        maxage_req: json_i32(body, "maxage_req"),
+        sex_req: json_i32(body, "sex_req"),
+        status: json_i32(body, "status"),
+        com_logo: &com_logo,
+        com_provinceid: com.provinceid,
+        pr: com.pr,
+        mun: com.mun,
+        did: com.did as i64,
+        yyzz_status: com.yyzz_status,
+        rating,
+    };
+    let (msg_key, job_id) = if id == 0 {
+        let nid = job_repo::insert_admin(state.db.pool(), write, now).await?;
+        if nid == 0 {
+            return Err(ApiError::business("admin_01304"));
+        }
+        ("common_06273", nid)
+    } else {
+        let n = job_repo::update_admin(state.db.pool(), id, write).await?;
+        if n == 0 {
+            return Err(ApiError::business("member_user_00603"));
+        }
+        ("common_06274", id)
+    };
+    company_repo::touch_jobtime(state.db.pool(), uid, now).await?;
+    Ok((msg_key, job_id))
+}
+
+/// PHP `company_job::add_action` GET (form). POST `save` 走 [`save_admin_job`]。
 pub async fn job_php_add_form(
     state: &AppState,
     user: &AuthenticatedUser,
     body: &Value,
 ) -> AppResult<Value> {
     user.require_admin()?;
-    if body.get("save").is_some() {
-        return Err(ApiError::business("job_create_unmapped"));
-    }
     let dicts = dict_service::get(state).await?;
     let jobs = cat_nodes(state, "job").await?;
     let cities = cat_nodes(state, "city").await?;
