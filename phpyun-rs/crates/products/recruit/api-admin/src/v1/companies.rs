@@ -23,6 +23,10 @@ pub fn routes() -> Router<AppState> {
         .route("/companies/php-add-form", post(php_add_form))
         .route("/companies/check-username", post(check_username))
         .route("/companies/check-com-name", post(check_com_name))
+        .route("/companies/php-edit", post(php_edit))
+        .route("/companies/php-comeditsave", post(php_comeditsave))
+        .route("/companies/php-getinfo", post(php_getinfo))
+        .route("/companies/php-save-user", post(php_save_user))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
@@ -229,4 +233,54 @@ pub async fn check_com_name(
     Ok(ApiResponse::data(
         admin_longtail_service::check_com_name(&state, &user, name).await?,
     ))
+}
+
+/// PHP `company::edit_action`.
+pub async fn php_edit(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let uid = body
+        .get("id")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        admin_longtail_service::company_php_edit(&state, &user, uid).await?,
+    ))
+}
+
+/// PHP `company::comeditsave_action`.
+pub async fn php_comeditsave(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    admin_longtail_service::company_comeditsave(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_user_00083"))
+}
+
+/// PHP `company::getinfo_action`.
+pub async fn php_getinfo(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let comid = body
+        .get("comid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        admin_longtail_service::company_php_getinfo(&state, &user, comid).await?,
+    ))
+}
+
+/// PHP `company::saveUser_action`.
+pub async fn php_save_user(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    admin_longtail_service::company_save_user(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_user_00083"))
 }

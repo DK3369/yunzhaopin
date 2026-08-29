@@ -154,12 +154,31 @@ pub async fn find_by_oauth_id(
 // ==================== Uniqueness checks (used during registration) ====================
 
 pub async fn exists_username(pool: &MySqlPool, username: &str) -> Result<bool, sqlx::Error> {
-    let row: Option<(u64,)> = sqlx::query_as(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE username = ? LIMIT 1",
-    )
-    .bind(username)
-    .fetch_optional(pool)
-    .await?;
+    exists_username_except(pool, username, None).await
+}
+
+pub async fn exists_username_except(
+    pool: &MySqlPool,
+    username: &str,
+    except_uid: Option<u64>,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = if let Some(uid) = except_uid {
+        sqlx::query_as(
+            "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
+             WHERE username = ? AND uid <> ? LIMIT 1",
+        )
+        .bind(username)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?
+    } else {
+        sqlx::query_as(
+            "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE username = ? LIMIT 1",
+        )
+        .bind(username)
+        .fetch_optional(pool)
+        .await?
+    };
     Ok(row.is_some())
 }
 
@@ -495,6 +514,89 @@ pub async fn admin_set_status(pool: &MySqlPool, uid: u64, status: i32) -> Result
         .bind(uid)
         .execute(pool)
         .await?;
+    Ok(res.rows_affected())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct AdminMemberExtras {
+    pub username: String,
+    pub status: i32,
+    pub lock_info: String,
+    pub reg_ip: String,
+    pub reg_date: i64,
+    pub source: i32,
+    pub wxid: String,
+    pub wxopenid: String,
+    pub login_date: i64,
+}
+
+pub async fn find_admin_extras(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<AdminMemberExtras>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT COALESCE(username,'') AS username, CAST(COALESCE(status,0) AS SIGNED) AS status, \
+         COALESCE(lock_info,'') AS lock_info, COALESCE(reg_ip,'') AS reg_ip, \
+         CAST(COALESCE(reg_date,0) AS SIGNED) AS reg_date, \
+         CAST(COALESCE(source,0) AS SIGNED) AS source, \
+         COALESCE(wxid,'') AS wxid, COALESCE(wxopenid,'') AS wxopenid, \
+         CAST(COALESCE(login_date,0) AS SIGNED) AS login_date \
+         FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn update_contact(
+    pool: &MySqlPool,
+    uid: u64,
+    email: &str,
+    mobile: &str,
+    address: &str,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_member SET email = ?, moblie = ?, address = ? WHERE uid = ?")
+        .bind(email)
+        .bind(mobile)
+        .bind(address)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn update_admin_account(
+    pool: &MySqlPool,
+    uid: u64,
+    username: &str,
+    status: i32,
+    lock_info: &str,
+    password_hash: Option<(&str, &str)>,
+) -> Result<u64, sqlx::Error> {
+    let res = if let Some((hash, salt)) = password_hash {
+        sqlx::query(
+            "UPDATE phpyun_member SET username = ?, status = ?, lock_info = ?, password = ?, salt = ? \
+             WHERE uid = ?",
+        )
+        .bind(username)
+        .bind(status)
+        .bind(lock_info)
+        .bind(hash)
+        .bind(salt)
+        .bind(uid)
+        .execute(pool)
+        .await?
+    } else {
+        sqlx::query(
+            "UPDATE phpyun_member SET username = ?, status = ?, lock_info = ? WHERE uid = ?",
+        )
+        .bind(username)
+        .bind(status)
+        .bind(lock_info)
+        .bind(uid)
+        .execute(pool)
+        .await?
+    };
     Ok(res.rows_affected())
 }
 

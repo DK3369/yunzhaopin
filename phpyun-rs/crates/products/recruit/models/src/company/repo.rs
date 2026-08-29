@@ -339,6 +339,83 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<
     Ok(())
 }
 
+pub struct AdminCompanyProfile<'a> {
+    pub name: &'a str,
+    pub shortname: &'a str,
+    pub hy: i32,
+    pub pr: i32,
+    pub mun: i32,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub linkphone: &'a str,
+    pub linkmail: &'a str,
+    pub address: &'a str,
+    pub moneytype: i32,
+    pub money: i32,
+    pub linkqq: &'a str,
+    pub website: &'a str,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub content: &'a str,
+    pub busstops: &'a str,
+    pub welfare: &'a str,
+    pub lastupdate: &'a str,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub r_status: Option<i32>,
+    pub infostatus: Option<i32>,
+    pub sdate: Option<&'a str>,
+    pub linkjob: Option<&'a str>,
+}
+
+pub async fn update_admin_profile(
+    pool: &MySqlPool,
+    uid: u64,
+    p: AdminCompanyProfile<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company SET \
+            name=?, shortname=?, hy=?, pr=?, mun=?, linkman=?, linktel=?, linkphone=?, linkmail=?, \
+            address=?, moneytype=?, money=?, linkqq=?, website=?, provinceid=?, cityid=?, three_cityid=?, \
+            content=?, busstops=?, welfare=?, lastupdate=?, x=?, y=?, \
+            r_status=COALESCE(?, r_status), infostatus=COALESCE(?, infostatus), \
+            sdate=COALESCE(?, sdate), linkjob=COALESCE(?, linkjob) \
+         WHERE uid=?",
+    )
+    .bind(p.name)
+    .bind(p.shortname)
+    .bind(p.hy)
+    .bind(p.pr)
+    .bind(p.mun)
+    .bind(p.linkman)
+    .bind(p.linktel)
+    .bind(p.linkphone)
+    .bind(p.linkmail)
+    .bind(p.address)
+    .bind(p.moneytype)
+    .bind(p.money)
+    .bind(p.linkqq)
+    .bind(p.website)
+    .bind(p.provinceid)
+    .bind(p.cityid)
+    .bind(p.three_cityid)
+    .bind(p.content)
+    .bind(p.busstops)
+    .bind(p.welfare)
+    .bind(p.lastupdate)
+    .bind(p.x)
+    .bind(p.y)
+    .bind(p.r_status)
+    .bind(p.infostatus)
+    .bind(p.sdate)
+    .bind(p.linkjob)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 /// Increment hit count by 1 (one detail-page view). Uses the writer pool
 /// (UPDATE). Not wrapped in a transaction; failures do not block.
 pub async fn incr_hits(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {

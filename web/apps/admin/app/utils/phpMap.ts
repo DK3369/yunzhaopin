@@ -229,6 +229,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company/add': { path: '/v1/admin/companies/php-add-form' },
   'user/company/checkUsername': { path: '/v1/admin/companies/check-username' },
   'user/company/checkComName': { path: '/v1/admin/companies/check-com-name' },
+  'user/company/edit': { path: '/v1/admin/companies/php-edit' },
+  'user/company/comeditsave': { path: '/v1/admin/companies/php-comeditsave' },
+  'user/company/getinfo': { path: '/v1/admin/companies/php-getinfo' },
+  'user/company/saveUser': { path: '/v1/admin/companies/php-save-user' },
   'user/users_resume/checkUsername': { path: '/v1/admin/companies/check-username' },
   'user/partjob/getCacheData': {
     path: '/v1/admin/cache/php-dicts',

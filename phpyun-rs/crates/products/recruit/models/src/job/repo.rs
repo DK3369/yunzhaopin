@@ -1011,6 +1011,14 @@ pub async fn count_by_company_public(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_job WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// Scheduled: for active jobs with `edate <= now`, set state = 2 (expired).
 /// Returns the number of rows affected.
 pub async fn expire_overdue(pool: &MySqlPool, now: i64) -> Result<u64, sqlx::Error> {

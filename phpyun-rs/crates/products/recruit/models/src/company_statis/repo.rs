@@ -159,6 +159,40 @@ pub async fn read_rating(pool: &MySqlPool, uid: u64) -> Result<i32, sqlx::Error>
     Ok(row.map(|(r,)| r).unwrap_or(0))
 }
 
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct AdminStatisRow {
+    pub rating: i32,
+    pub rating_name: String,
+    pub job_num: i32,
+    pub down_resume: i32,
+    pub breakjob_num: i32,
+    pub invite_resume: i32,
+    pub zph_num: i32,
+    pub top_num: i32,
+    pub urgent_num: i32,
+    pub rec_num: i32,
+    pub vip_stime: i64,
+    pub vip_etime: i64,
+    pub integral: String,
+}
+
+pub async fn find_admin(pool: &MySqlPool, uid: u64) -> Result<Option<AdminStatisRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(COALESCE(rating,0) AS SIGNED) AS rating, COALESCE(rating_name,'') AS rating_name, \
+         CAST(COALESCE(job_num,0) AS SIGNED) AS job_num, CAST(COALESCE(down_resume,0) AS SIGNED) AS down_resume, \
+         CAST(COALESCE(breakjob_num,0) AS SIGNED) AS breakjob_num, \
+         CAST(COALESCE(invite_resume,0) AS SIGNED) AS invite_resume, \
+         CAST(COALESCE(zph_num,0) AS SIGNED) AS zph_num, CAST(COALESCE(top_num,0) AS SIGNED) AS top_num, \
+         CAST(COALESCE(urgent_num,0) AS SIGNED) AS urgent_num, CAST(COALESCE(rec_num,0) AS SIGNED) AS rec_num, \
+         CAST(COALESCE(vip_stime,0) AS SIGNED) AS vip_stime, CAST(COALESCE(vip_etime,0) AS SIGNED) AS vip_etime, \
+         COALESCE(integral,'') AS integral \
+         FROM phpyun_company_statis WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
 /// PHP `finance_recharge` jifen：在现有 VARCHAR 积分上加正数。
 pub async fn add_integral(pool: &MySqlPool, uid: u64, points: i64) -> Result<i64, sqlx::Error> {
     if points <= 0 {

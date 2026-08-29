@@ -5,9 +5,11 @@ use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::admin_gap::repo as gap_repo;
 use phpyun_models::admin_rbac::repo as rbac_repo;
+use phpyun_models::apply::repo as apply_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::company::repo::AdminCompanyRow;
 use phpyun_models::company_statis::repo as statis_repo;
+use phpyun_models::job::repo as job_repo;
 use phpyun_models::resume::edu::Edu;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume::repo::AdminResumeRow;
@@ -374,7 +376,7 @@ pub async fn check_member_username(
     username: &str,
 ) -> AppResult<()> {
     user.require_admin()?;
-    add_member_check(state, username, "", "", "").await
+    add_member_check(state, username, "", "", "", None).await
 }
 
 /// PHP `CheckMobile`.
@@ -414,6 +416,7 @@ async fn add_member_check(
     company_name: &str,
     mobile: &str,
     email: &str,
+    except_uid: Option<u64>,
 ) -> AppResult<()> {
     let db = state.db.reader();
     if !username.is_empty() {
@@ -423,7 +426,7 @@ async fn add_member_check(
         if username.eq_ignore_ascii_case("admin") {
             return Err(ApiError::business("common_01147"));
         }
-        if user_repo::exists_username(db, username).await? {
+        if user_repo::exists_username_except(db, username, except_uid).await? {
             return Err(ApiError::business("common_01388"));
         }
     }
@@ -468,7 +471,7 @@ pub async fn create_admin_company(
     if password.chars().count() < 6 || password.chars().count() > 20 {
         return Err(ApiError::business("admin_user_00085"));
     }
-    add_member_check(state, &username, &name, &mobile, &email).await?;
+    add_member_check(state, &username, &name, &mobile, &email, None).await?;
 
     let mut phone = String::new();
     let areacode = json_str(body, "areacode");
@@ -665,4 +668,364 @@ pub async fn check_com_name(
         out.push(json!({ "value": format!("{} ({})", r.name, crm) }));
     }
     Ok(Value::Array(out))
+}
+
+async fn company_editor_cache(state: &AppState) -> AppResult<Value> {
+    let dicts = crate::dict_service::get(state).await?;
+    let cities = crate::category_service::list(state, "city").await?;
+    let city_nodes: Vec<(u64, u64, String)> = cities
+        .iter()
+        .map(|c| (c.id, c.parent_id, c.name.clone()))
+        .collect();
+    let jobs = crate::category_service::list(state, "job").await?;
+    let job_nodes: Vec<(u64, u64, String)> = jobs
+        .iter()
+        .map(|c| (c.id, c.parent_id, c.name.clone()))
+        .collect();
+    let mut payload = crate::admin_dashboard_service::php_cache_payload(
+        &job_nodes,
+        &city_nodes,
+        &dicts.comclass_by_variable("job_edu"),
+        &dicts.comclass_by_variable("job_exp"),
+    );
+    let pr = dicts.comclass_by_variable("job_pr");
+    let mun = dicts.comclass_by_variable("job_mun");
+    let mut comclass_name = serde_json::Map::new();
+    let mut job_pr = Vec::new();
+    for (id, name) in &pr {
+        job_pr.push(*id);
+        comclass_name.insert(id.to_string(), Value::String(name.clone()));
+    }
+    let mut job_mun = Vec::new();
+    for (id, name) in &mun {
+        job_mun.push(*id);
+        comclass_name.insert(id.to_string(), Value::String(name.clone()));
+    }
+    let mut job_welfare = Vec::new();
+    for (id, name) in dicts.comclass_by_variable("job_welfare") {
+        job_welfare.push(id);
+        comclass_name.insert(id.to_string(), Value::String(name));
+    }
+    let hy = dicts.industry_all();
+    let industry_index: Vec<i32> = hy.iter().map(|(id, _)| *id).collect();
+    let mut industry_name = serde_json::Map::new();
+    for (id, name) in hy {
+        industry_name.insert(id.to_string(), Value::String(name));
+    }
+    let cities_v = payload.get("city_types").cloned().unwrap_or(json!([]));
+    payload["cache"] = json!({
+        "cities": cities_v,
+        "industry_index": industry_index,
+        "industry_name": industry_name,
+        "comdata": { "job_pr": job_pr, "job_mun": job_mun, "job_welfare": job_welfare },
+        "comclass_name": comclass_name,
+    });
+    Ok(payload)
+}
+
+/// PHP `company::edit_action`.
+pub async fn company_php_edit(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    if uid == 0 {
+        return Ok(json!({}));
+    }
+    let mut payload = company_editor_cache(state).await?;
+    let dicts = crate::dict_service::get(state).await?;
+    let Some(c) = company_repo::find_by_uid(state.db.reader(), uid).await? else {
+        return Err(ApiError::business("admin_user_company_00104"));
+    };
+    let mut row = serde_json::to_value(&c).unwrap_or(json!({}));
+    let welfare: Vec<String> = c
+        .welfare
+        .clone()
+        .unwrap_or_default()
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+    let mut all_welfare = welfare.clone();
+    for (_, name) in dicts.comclass_by_variable("job_welfare") {
+        if !all_welfare.contains(&name) {
+            all_welfare.push(name);
+        }
+    }
+    row["arraywelfare"] = json!(welfare);
+    row["all_welfare"] = json!(all_welfare);
+    payload["row"] = row;
+    payload["statis"] = serde_json::to_value(
+        statis_repo::find_admin(state.db.reader(), uid)
+            .await?
+            .unwrap_or(statis_repo::AdminStatisRow {
+                rating: 0,
+                rating_name: String::new(),
+                job_num: 0,
+                down_resume: 0,
+                breakjob_num: 0,
+                invite_resume: 0,
+                zph_num: 0,
+                top_num: 0,
+                urgent_num: 0,
+                rec_num: 0,
+                vip_stime: 0,
+                vip_etime: 0,
+                integral: String::new(),
+            }),
+    )
+    .unwrap_or(json!({}));
+    if let Some(m) = user_repo::find_by_uid(state.db.reader(), uid).await? {
+        payload["com_info"] = json!({
+            "uid": m.uid,
+            "username": m.username,
+            "email": m.email,
+            "moblie": m.moblie,
+            "status": m.status,
+            "usertype": m.usertype,
+            "reg_date": m.reg_date,
+            "login_date": m.login_date,
+        });
+    } else {
+        payload["com_info"] = json!({});
+    }
+    let ratings = company_repo::list_rating_options(state.db.reader()).await?;
+    payload["rating_list"] = serde_json::to_value(ratings).unwrap_or(json!([]));
+    payload["city_name"] = payload
+        .get("cache")
+        .and_then(|c| c.get("city_name"))
+        .cloned()
+        .unwrap_or(json!({}));
+    Ok(payload)
+}
+
+/// PHP `company::comeditsave_action`.
+pub async fn company_comeditsave(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("uid"));
+    }
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_user_00021"));
+    }
+    let content = json_str(body, "content")
+        .replace("&amp;", "&")
+        .replace("background-color:#ffffff", "background-color:")
+        .replace("background-color:#fff", "background-color:")
+        .replace("white-space:nowrap;", "white-space:");
+    let lastupdate = clock::now_ts().to_string();
+    let r_status = if body.get("r_status").is_some() {
+        Some(json_i32(body, "r_status"))
+    } else {
+        None
+    };
+    let infostatus = if body.get("infostatus").is_some() {
+        Some(json_i32(body, "infostatus"))
+    } else {
+        None
+    };
+    let sdate_s = json_str(body, "sdate");
+    let sdate = if body.get("sdate").is_some() {
+        Some(sdate_s.as_str())
+    } else {
+        None
+    };
+    let linkjob_s = json_str(body, "linkjob");
+    let linkjob = if body.get("linkjob").is_some() {
+        Some(linkjob_s.as_str())
+    } else {
+        None
+    };
+    let n = company_repo::update_admin_profile(
+        state.db.pool(),
+        uid,
+        company_repo::AdminCompanyProfile {
+            name: &name,
+            shortname: &json_str(body, "shortname"),
+            hy: json_i32(body, "hy"),
+            pr: json_i32(body, "pr"),
+            mun: json_i32(body, "mun"),
+            linkman: &json_str(body, "linkman"),
+            linktel: &json_str(body, "linktel"),
+            linkphone: &json_str(body, "linkphone"),
+            linkmail: &json_str(body, "linkmail"),
+            address: &json_str(body, "address"),
+            moneytype: json_i32(body, "moneytype"),
+            money: json_i32(body, "money"),
+            linkqq: &json_str(body, "linkqq"),
+            website: &json_str(body, "website"),
+            provinceid: json_i32(body, "provinceid"),
+            cityid: json_i32(body, "cityid"),
+            three_cityid: json_i32(body, "three_cityid"),
+            content: &content,
+            busstops: &json_str(body, "busstops"),
+            welfare: &json_str(body, "checked_welfare"),
+            lastupdate: &lastupdate,
+            x: &json_str(body, "x"),
+            y: &json_str(body, "y"),
+            r_status,
+            infostatus,
+            sdate,
+            linkjob,
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01304"));
+    }
+    user_repo::update_contact(
+        state.db.pool(),
+        uid,
+        &json_str(body, "linkmail"),
+        &json_str(body, "linktel"),
+        &json_str(body, "address"),
+    )
+    .await?;
+    audit_write(state, user, "admin.company.edit", format!("uid:{uid}")).await;
+    Ok(())
+}
+
+/// PHP `company::getinfo_action`.
+pub async fn company_php_getinfo(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    comid: u64,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    if comid == 0 {
+        return Err(ApiError::param_invalid("comid"));
+    }
+    let Some(c) = company_repo::find_by_uid(state.db.reader(), comid).await? else {
+        return Err(ApiError::business("admin_user_company_00104"));
+    };
+    let mut info = serde_json::to_value(&c).unwrap_or(json!({}));
+    let mem = user_repo::find_admin_extras(state.db.reader(), comid).await?;
+    if let Some(m) = &mem {
+        info["username"] = json!(m.username);
+        info["reg_ip"] = json!(m.reg_ip);
+        info["status"] = json!(m.status);
+        info["lock_info"] = json!(m.lock_info);
+        info["wxid"] = json!(m.wxid);
+        info["wxopenid"] = json!(m.wxopenid);
+        info["reg_date_n"] = if m.reg_date > 0 {
+            json!(fmt_ts(m.reg_date))
+        } else {
+            json!("")
+        };
+        info["source_n"] = json!("");
+    }
+    let login_date = c.login_date;
+    info["login_date_n"] = if login_date > 0 {
+        json!(fmt_ts(login_date))
+    } else {
+        json!("")
+    };
+    info["adviser"] = Value::Null;
+    info["rating"] = json!(statis_repo::read_rating(state.db.reader(), comid).await?);
+    info["phone"] = if c.linktel.as_deref().unwrap_or("").is_empty() {
+        json!(c.linkphone)
+    } else {
+        json!(c.linktel)
+    };
+    info["vipetime_n"] = json!(phpyun_core::utils::fmt_date(c.vipetime));
+    info["package"] = json!(c
+        .welfare
+        .as_deref()
+        .filter(|s| !s.is_empty())
+        .map(|_| Vec::<String>::new())
+        .unwrap_or_default());
+    // PHP `package` is a CSV of purchased extras; leave empty when column missing on entity.
+    info["did"] = json!(c.did.to_string());
+    info["did_name"] = json!("");
+    info["yyzzurl"] = json!("");
+    info["logo_n"] = json!(c.logo.clone().unwrap_or_default());
+    info["zt_days"] = json!(0);
+    let db = state.db.reader();
+    info["jobNum"] = json!(job_repo::count_by_uid(db, comid).await?);
+    info["applyNum"] = json!(
+        apply_repo::count_by_com(
+            db,
+            comid,
+            apply_repo::ApplyFilter {
+                unread_only: None,
+                invited_only: None,
+            },
+        )
+        .await?
+    );
+    info["integralNum"] = json!(0);
+    info["orderNum"] = json!(0);
+    info["downNum"] = json!(0);
+    info["inviteNum"] = json!(0);
+    info["showNum"] = json!(0);
+    Ok(info)
+}
+
+/// PHP `company::saveUser_action`.
+pub async fn company_save_user(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let uid = json_u64(body, "uid");
+    let username = json_str(body, "username");
+    if uid == 0 || username.is_empty() || body.get("status").is_none() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    add_member_check(state, &username, "", "", "", Some(uid)).await?;
+    let password = json_str(body, "password");
+    let hash = if password.is_empty() {
+        None
+    } else {
+        let salt = gen_salt();
+        let h = argon2_hash_async(format!("{password}{salt}")).await?;
+        Some((h, salt))
+    };
+    let n = if let Some((ref h, ref salt)) = hash {
+        user_repo::update_admin_account(
+            state.db.pool(),
+            uid,
+            &username,
+            status,
+            &json_str(body, "lock_info"),
+            Some((h.as_str(), salt.as_str())),
+        )
+        .await?
+    } else {
+        user_repo::update_admin_account(
+            state.db.pool(),
+            uid,
+            &username,
+            status,
+            &json_str(body, "lock_info"),
+            None,
+        )
+        .await?
+    };
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00082"));
+    }
+    audit_write(state, user, "admin.company.save_user", format!("uid:{uid}")).await;
+    Ok(())
+}
+
+fn json_u64(v: &Value, key: &str) -> u64 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n.as_u64().unwrap_or(0),
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn fmt_ts(ts: i64) -> String {
+    phpyun_core::utils::fmt_dt(ts)
 }
