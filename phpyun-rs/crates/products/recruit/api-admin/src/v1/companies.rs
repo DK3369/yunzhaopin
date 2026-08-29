@@ -2,7 +2,7 @@
 
 use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::{
-    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 
 use crate::dto::AdminPaged;
@@ -118,7 +118,7 @@ pub async fn php_cache(
     ))
 }
 
-/// PHP `company::add_action` GET (form cache + mapurl). Create POST is a later batch.
+/// PHP `company::add_action`：GET 表单 / POST `submit` 写 member+company。
 #[utoipa::path(post, path = "/v1/admin/companies/php-add-form", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn php_add_form(
     State(state): State<AppState>,
@@ -126,13 +126,12 @@ pub async fn php_add_form(
     Json(body): Json<serde_json::Value>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
     user.require_admin()?;
-    let username = body
-        .get("username")
-        .and_then(|v| v.as_str())
-        .unwrap_or("")
-        .trim();
-    if !username.is_empty() || body.get("submit").is_some() {
-        return Err(ApiError::business("company_create_unmapped"));
+    if body.get("submit").is_some() {
+        let uid = admin_longtail_service::create_admin_company(&state, &user, &body).await?;
+        return Ok(ApiResponse::message_data(
+            "admin_model_00115",
+            serde_json::json!({ "uid": uid }),
+        ));
     }
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let cities = phpyun_services::category_service::list(&state, "city").await?;

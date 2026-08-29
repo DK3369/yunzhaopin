@@ -1,7 +1,9 @@
 //! Admin company archive / resume review / finance recharge / PHP RBAC tables.
 
+use phpyun_auth::argon2_hash_async;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_models::admin_gap::repo as gap_repo;
 use phpyun_models::admin_rbac::repo as rbac_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::company::repo::AdminCompanyRow;
@@ -14,6 +16,7 @@ use phpyun_models::resume::work::Work;
 use phpyun_models::user::repo as user_repo;
 use serde::Serialize;
 use serde_json::{json, Value};
+use uuid::Uuid;
 
 async fn audit_write(
     state: &AppState,
@@ -371,20 +374,270 @@ pub async fn check_member_username(
     username: &str,
 ) -> AppResult<()> {
     user.require_admin()?;
-    let username = username.trim();
-    if username.is_empty() {
-        return Ok(());
+    add_member_check(state, username, "", "", "").await
+}
+
+/// PHP `CheckMobile`.
+fn check_mobile(s: &str) -> bool {
+    let s = s.trim();
+    let b = s.as_bytes();
+    b.len() == 11
+        && b[0] == b'1'
+        && (b'3'..=b'9').contains(&b[1])
+        && b.iter().all(|c| c.is_ascii_digit())
+}
+
+fn json_str(v: &Value, key: &str) -> String {
+    match v.get(key) {
+        Some(Value::String(s)) => s.trim().to_string(),
+        Some(Value::Number(n)) => n.to_string(),
+        _ => String::new(),
     }
-    if !check_reg_user(username) && !check_reg_email(username) {
-        return Err(ApiError::business("wap_00205"));
+}
+
+fn json_i32(v: &Value, key: &str) -> i32 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n.as_i64().unwrap_or(0) as i32,
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
     }
-    if username.eq_ignore_ascii_case("admin") {
-        return Err(ApiError::business("common_01147"));
+}
+
+fn gen_salt() -> String {
+    Uuid::now_v7().simple().to_string().chars().take(16).collect()
+}
+
+/// PHP `userinfo::addMemberCheck` (username / companyName / mobile / email).
+async fn add_member_check(
+    state: &AppState,
+    username: &str,
+    company_name: &str,
+    mobile: &str,
+    email: &str,
+) -> AppResult<()> {
+    let db = state.db.reader();
+    if !username.is_empty() {
+        if !check_reg_user(username) && !check_reg_email(username) {
+            return Err(ApiError::business("wap_00205"));
+        }
+        if username.eq_ignore_ascii_case("admin") {
+            return Err(ApiError::business("common_01147"));
+        }
+        if user_repo::exists_username(db, username).await? {
+            return Err(ApiError::business("common_01388"));
+        }
     }
-    if user_repo::exists_username(state.db.reader(), username).await? {
-        return Err(ApiError::business("common_01388"));
+    if !company_name.is_empty() && company_repo::find_uid_by_name(db, company_name).await?.is_some()
+    {
+        return Err(ApiError::business("admin_user_00021"));
+    }
+    if !mobile.is_empty() {
+        if !check_mobile(mobile) {
+            return Err(ApiError::business("wap_js_00117"));
+        }
+        if user_repo::exists_mobile_or_username(db, mobile).await? {
+            return Err(ApiError::business("api_wxapp_00008"));
+        }
+    }
+    if !email.is_empty() {
+        if !check_reg_email(email) {
+            return Err(ApiError::business("wap_js_00120"));
+        }
+        if user_repo::exists_email_or_username(db, email).await? {
+            return Err(ApiError::business("default_00012"));
+        }
     }
     Ok(())
+}
+
+/// PHP `company::add_action` POST (`submit`).
+pub async fn create_admin_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<u64> {
+    user.require_admin()?;
+    let username = json_str(body, "username");
+    let password = json_str(body, "password");
+    let name = json_str(body, "name");
+    let mobile = json_str(body, "moblie");
+    let email = json_str(body, "email");
+    if username.chars().count() < 2 || username.chars().count() > 16 {
+        return Err(ApiError::business("admin_user_00084"));
+    }
+    if password.chars().count() < 6 || password.chars().count() > 20 {
+        return Err(ApiError::business("admin_user_00085"));
+    }
+    add_member_check(state, &username, &name, &mobile, &email).await?;
+
+    let mut phone = String::new();
+    let areacode = json_str(body, "areacode");
+    let telphone = json_str(body, "telphone");
+    if !areacode.is_empty() && !telphone.is_empty() {
+        phone = format!("{areacode}-{telphone}");
+        let exten = json_str(body, "exten");
+        if !exten.is_empty() {
+            phone.push('-');
+            phone.push_str(&exten);
+        }
+    }
+
+    let now = clock::now_ts();
+    let salt = gen_salt();
+    let password_hash = argon2_hash_async(format!("{password}{salt}")).await?;
+    let shortname = json_str(body, "shortname");
+    let address = json_str(body, "address");
+    let x = json_str(body, "x");
+    let y = json_str(body, "y");
+    let linkman = json_str(body, "linkman");
+    let content = json_str(body, "content");
+    let hy = json_i32(body, "hy");
+    let pr = json_i32(body, "pr");
+    let mun = json_i32(body, "mun");
+    let provinceid = json_i32(body, "provinceid");
+    let cityid = json_i32(body, "cityid");
+    let three_cityid = json_i32(body, "three_cityid");
+    let extra_integral = i64::from(json_i32(body, "integral").max(0));
+    let mut rating_id = json_i32(body, "rating_name");
+    if rating_id <= 0 {
+        rating_id = cfg(state, "com_rating")
+            .await?
+            .parse::<i32>()
+            .unwrap_or(0);
+    }
+    let pkg = if rating_id > 0 {
+        gap_repo::find_rating_package(state.db.reader(), rating_id as u64).await?
+    } else {
+        None
+    };
+    let rating_name = pkg.as_ref().map(|p| p.name.clone()).unwrap_or_default();
+    let rating_type = pkg.as_ref().map(|p| p.r#type).unwrap_or(0);
+    let job_num = pkg.as_ref().map(|p| p.job_num).unwrap_or(0);
+    let down_resume = pkg.as_ref().map(|p| p.resume).unwrap_or(0);
+    let breakjob_num = pkg.as_ref().map(|p| p.breakjob_num).unwrap_or(0);
+    let invite_resume = pkg.as_ref().map(|p| p.interview).unwrap_or(0);
+    let zph_num = pkg.as_ref().map(|p| p.zph_num).unwrap_or(0);
+    let top_num = pkg.as_ref().map(|p| p.top_num).unwrap_or(0);
+    let urgent_num = pkg.as_ref().map(|p| p.urgent_num).unwrap_or(0);
+    let rec_num = pkg.as_ref().map(|p| p.rec_num).unwrap_or(0);
+    let service_time = pkg.as_ref().map(|p| p.service_time).unwrap_or(0);
+    let integral_buy: i64 = pkg
+        .as_ref()
+        .and_then(|p| p.integral_buy.trim().parse().ok())
+        .unwrap_or(0);
+    let integral = integral_buy + extra_integral;
+    let vip_etime = if service_time > 0 {
+        now.saturating_add(i64::from(service_time).saturating_mul(86400))
+    } else {
+        0
+    };
+    let lastupdate = now.to_string();
+    let username_c = username.clone();
+    let hash_c = password_hash.clone();
+    let salt_c = salt.clone();
+    let mobile_c = mobile.clone();
+    let email_c = email.clone();
+    let address_c = address.clone();
+    let name_c = name.clone();
+    let short_c = shortname.clone();
+    let x_c = x.clone();
+    let y_c = y.clone();
+    let linkman_c = linkman.clone();
+    let phone_c = phone.clone();
+    let content_c = content.clone();
+    let last_c = lastupdate.clone();
+    let rname_c = rating_name.clone();
+
+    let uid = state
+        .db
+        .with_tx(|tx| {
+            Box::pin(async move {
+                let uid = user_repo::create_member(
+                    &mut **tx,
+                    &username_c,
+                    &hash_c,
+                    &salt_c,
+                    Some(&mobile_c),
+                    if email_c.is_empty() {
+                        None
+                    } else {
+                        Some(email_c.as_str())
+                    },
+                    2,
+                    0,
+                    "0.0.0.0",
+                    now,
+                )
+                .await?;
+                // MyISAM 不支持事务回滚，后续失败要手工清 member/company。
+                if let Err(e) = user_repo::set_address(&mut **tx, uid, &address_c).await {
+                    let _ = user_repo::delete_member(&mut **tx, uid).await;
+                    return Err(e.into());
+                }
+                if let Err(e) = company_repo::insert_admin_created(
+                    &mut **tx,
+                    company_repo::AdminCompanyInsert {
+                        uid,
+                        name: &name_c,
+                        shortname: &short_c,
+                        hy,
+                        pr,
+                        mun,
+                        provinceid,
+                        cityid,
+                        three_cityid,
+                        address: &address_c,
+                        x: &x_c,
+                        y: &y_c,
+                        linkman: &linkman_c,
+                        linktel: &mobile_c,
+                        linkphone: &phone_c,
+                        linkmail: &email_c,
+                        content: &content_c,
+                        lastupdate: &last_c,
+                        rating: rating_id,
+                        rating_name: &rname_c,
+                        vipstime: now,
+                        vipetime: vip_etime,
+                    },
+                )
+                .await
+                {
+                    let _ = user_repo::delete_member(&mut **tx, uid).await;
+                    return Err(e.into());
+                }
+                if let Err(e) = statis_repo::insert_admin_created(
+                    &mut **tx,
+                    uid,
+                    rating_id,
+                    &rname_c,
+                    rating_type,
+                    job_num,
+                    down_resume,
+                    breakjob_num,
+                    invite_resume,
+                    zph_num,
+                    top_num,
+                    urgent_num,
+                    rec_num,
+                    integral,
+                    now,
+                    vip_etime,
+                )
+                .await
+                {
+                    let _ = statis_repo::delete_by_uid(&mut **tx, uid).await;
+                    let _ = company_repo::delete_by_uid(&mut **tx, uid).await;
+                    let _ = user_repo::delete_member(&mut **tx, uid).await;
+                    return Err(e.into());
+                }
+                Ok(uid)
+            })
+        })
+        .await?;
+
+    audit_write(state, user, "admin.company.create", format!("uid:{uid}")).await;
+    Ok(uid)
 }
 
 /// PHP `company::checkComName_action`.

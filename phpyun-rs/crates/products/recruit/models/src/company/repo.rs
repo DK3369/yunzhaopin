@@ -190,6 +190,84 @@ where
     Ok(())
 }
 
+pub struct AdminCompanyInsert<'a> {
+    pub uid: u64,
+    pub name: &'a str,
+    pub shortname: &'a str,
+    pub hy: i32,
+    pub pr: i32,
+    pub mun: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: &'a str,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub linkphone: &'a str,
+    pub linkmail: &'a str,
+    pub content: &'a str,
+    pub lastupdate: &'a str,
+    pub rating: i32,
+    pub rating_name: &'a str,
+    pub vipstime: i64,
+    pub vipetime: i64,
+}
+
+/// PHP `userinfo::addInfo` company insert (`r_status=1`).
+pub async fn insert_admin_created<'e, E>(
+    exec: E,
+    row: AdminCompanyInsert<'_>,
+) -> Result<(), sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    sqlx::query(
+        "INSERT INTO phpyun_company (\
+            uid, name, shortname, hy, pr, mun, provinceid, cityid, three_cityid, \
+            address, x, y, linkman, linktel, linkphone, linkmail, content, lastupdate, \
+            r_status, rating, rating_name, vipstime, vipetime, busstops, welfare\
+         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?,?,?,?, '', '')",
+    )
+    .bind(row.uid)
+    .bind(row.name)
+    .bind(row.shortname)
+    .bind(row.hy)
+    .bind(row.pr)
+    .bind(row.mun)
+    .bind(row.provinceid)
+    .bind(row.cityid)
+    .bind(row.three_cityid)
+    .bind(row.address)
+    .bind(row.x)
+    .bind(row.y)
+    .bind(row.linkman)
+    .bind(row.linktel)
+    .bind(row.linkphone)
+    .bind(row.linkmail)
+    .bind(row.content)
+    .bind(row.lastupdate)
+    .bind(row.rating)
+    .bind(row.rating_name)
+    .bind(row.vipstime)
+    .bind(row.vipetime)
+    .execute(exec)
+    .await?;
+    Ok(())
+}
+
+pub async fn delete_by_uid<'e, E>(exec: E, uid: u64) -> Result<(), sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    sqlx::query("DELETE FROM phpyun_company WHERE uid = ?")
+        .bind(uid)
+        .execute(exec)
+        .await?;
+    Ok(())
+}
+
 /// Bare INSERT IGNORE — only sets `uid`. Counterpart of
 /// [`crate::resume::repo::ensure_uid_only`] for the company side; called by
 /// `seed_role_rows` when an employer's usertype is set after registration.

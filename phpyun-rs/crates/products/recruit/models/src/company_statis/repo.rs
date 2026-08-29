@@ -18,6 +18,65 @@ pub async fn ensure_row(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+pub async fn insert_admin_created<'e, E>(
+    exec: E,
+    uid: u64,
+    rating: i32,
+    rating_name: &str,
+    rating_type: i32,
+    job_num: i32,
+    down_resume: i32,
+    breakjob_num: i32,
+    invite_resume: i32,
+    zph_num: i32,
+    top_num: i32,
+    urgent_num: i32,
+    rec_num: i32,
+    integral: i64,
+    vip_stime: i64,
+    vip_etime: i64,
+) -> Result<(), sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    sqlx::query(
+        "INSERT INTO phpyun_company_statis (\
+            uid, rating, rating_name, rating_type, job_num, down_resume, breakjob_num, \
+            invite_resume, zph_num, top_num, urgent_num, rec_num, integral, vip_stime, vip_etime, \
+            sq_job, fav_job, all_pay, consum_pay\
+         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0,0,0)",
+    )
+    .bind(uid)
+    .bind(rating)
+    .bind(rating_name)
+    .bind(rating_type)
+    .bind(job_num)
+    .bind(down_resume)
+    .bind(breakjob_num)
+    .bind(invite_resume)
+    .bind(zph_num)
+    .bind(top_num)
+    .bind(urgent_num)
+    .bind(rec_num)
+    .bind(integral.to_string())
+    .bind(vip_stime)
+    .bind(vip_etime)
+    .execute(exec)
+    .await?;
+    Ok(())
+}
+
+pub async fn delete_by_uid<'e, E>(exec: E, uid: u64) -> Result<(), sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    sqlx::query("DELETE FROM phpyun_company_statis WHERE uid = ?")
+        .bind(uid)
+        .execute(exec)
+        .await?;
+    Ok(())
+}
+
 /// Read the integral balance. Stored as VARCHAR in PHP and validated in Rust.
 /// Returns 0 when the row doesn't exist.
 pub async fn read_integral(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {

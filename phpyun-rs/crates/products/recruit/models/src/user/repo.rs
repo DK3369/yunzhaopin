@@ -163,6 +163,42 @@ pub async fn exists_username(pool: &MySqlPool, username: &str) -> Result<bool, s
     Ok(row.is_some())
 }
 
+pub async fn exists_mobile_or_username(pool: &MySqlPool, value: &str) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
+         WHERE moblie = ? OR username = ? LIMIT 1",
+    )
+    .bind(value)
+    .bind(value)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub async fn exists_email_or_username(pool: &MySqlPool, value: &str) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
+         WHERE email = ? OR username = ? LIMIT 1",
+    )
+    .bind(value)
+    .bind(value)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub async fn set_address<'e, E>(exec: E, uid: u64, address: &str) -> Result<(), sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    sqlx::query("UPDATE phpyun_member SET address = ? WHERE uid = ?")
+        .bind(address)
+        .bind(uid)
+        .execute(exec)
+        .await?;
+    Ok(())
+}
+
 pub async fn exists_mobile(pool: &MySqlPool, mobile: &str) -> Result<bool, sqlx::Error> {
     let row: Option<(u64,)> =
         sqlx::query_as("SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE moblie = ? LIMIT 1")
