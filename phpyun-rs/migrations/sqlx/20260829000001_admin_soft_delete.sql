@@ -1,0 +1,42 @@
+-- Admin delete is a marker (`deleted=1`), not a physical DELETE.
+-- Convention: 0=active, 1=deleted. List/detail queries filter COALESCE(deleted,0)=0.
+
+ALTER TABLE `phpyun_evaluate` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_evaluate_group` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_evaluate_leave_message` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_evaluate_log` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_toolbox_doc` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_toolbox_class` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_q_class` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_question` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_hot_key` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_cron` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_navmap` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_domain` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_wxpub_temps` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_outside` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_company_rating` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_company_service` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_company_service_detail` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_special_com` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_banner` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_resume_show` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_company_show` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_news_base` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_admin_announcement` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_admin_link` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_hotjob` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_gongzhao` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_wxnav` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_desc_class` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_description` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_redeem_class` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_reward` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_app_version` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_zhaopinhui_space` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_job_class` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_comclass` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_city_class` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_partclass` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_userclass` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';
+ALTER TABLE `phpyun_reason` ADD COLUMN `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=active,1=deleted';

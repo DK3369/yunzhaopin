@@ -15,7 +15,7 @@ pub async fn list_by_uid(
 ) -> Result<Vec<GalleryItem>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM {} \
-         WHERE uid = ? AND status != 2 \
+         WHERE uid = ? AND status != 2 AND COALESCE(deleted,0)=0 \
          ORDER BY sort DESC, id DESC LIMIT ? OFFSET ?",
         kind.table()
     );
@@ -39,7 +39,7 @@ pub async fn count_by_uid(
     uid: u64,
 ) -> Result<u64, sqlx::Error> {
     let sql = format!(
-        "SELECT COUNT(*) FROM {} WHERE uid = ? AND status != 2",
+        "SELECT COUNT(*) FROM {} WHERE uid = ? AND status != 2 AND COALESCE(deleted,0)=0",
         kind.table()
     );
     let (n,): (i64,) = sqlx::query_as(&sql).bind(uid).fetch_one(pool).await?;
@@ -53,7 +53,7 @@ pub async fn find_by_id(
     uid: u64,
 ) -> Result<Option<GalleryItem>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM {} WHERE id = ? AND uid = ? AND status != 2 LIMIT 1",
+        "SELECT {FIELDS} FROM {} WHERE id = ? AND uid = ? AND status != 2 AND COALESCE(deleted,0)=0 LIMIT 1",
         kind.table()
     );
     sqlx::query_as::<_, GalleryItem>(&sql)
@@ -127,7 +127,7 @@ pub async fn update(
     qb.push_bind(id);
     qb.push(" AND uid = ");
     qb.push_bind(uid);
-    qb.push(" AND status != 2");
+    qb.push(" AND status != 2 AND COALESCE(deleted,0)=0");
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }

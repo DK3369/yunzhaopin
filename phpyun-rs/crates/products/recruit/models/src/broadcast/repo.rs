@@ -17,6 +17,7 @@
 //! for site-wide announcements).
 
 use super::entity::Broadcast;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
@@ -53,11 +54,7 @@ pub async fn create(
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_admin_announcement WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_admin_announcement", id).await
 }
 
 pub async fn admin_list(
@@ -67,7 +64,7 @@ pub async fn admin_list(
 ) -> Result<Vec<Broadcast>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
-         ORDER BY id DESC LIMIT ? OFFSET ?"
+         WHERE {PREDICATE} ORDER BY id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Broadcast>(&sql)
         .bind(limit)
@@ -77,7 +74,7 @@ pub async fn admin_list(
 }
 
 pub async fn admin_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_announcement")
+    let (n,): (i64,) = sqlx::query_as(&format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PREDICATE}"))
         .fetch_one(pool)
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -94,7 +91,8 @@ pub async fn list_for_user(
     let now = phpyun_core::clock::now_ts();
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
-         WHERE (startime = 0 OR startime <= ?) \
+         WHERE {PREDICATE} \
+           AND (startime = 0 OR startime <= ?) \
            AND (endtime = 0 OR endtime > ?) \
          ORDER BY id DESC LIMIT ? OFFSET ?"
     );
@@ -111,7 +109,8 @@ pub async fn count_for_user(pool: &MySqlPool, _usertype: i32) -> Result<u64, sql
     let now = phpyun_core::clock::now_ts();
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_admin_announcement \
-         WHERE (startime = 0 OR startime <= ?) \
+         WHERE COALESCE(deleted,0)=0 \
+           AND (startime = 0 OR startime <= ?) \
            AND (endtime = 0 OR endtime > ?)",
     )
     .bind(now)
@@ -130,7 +129,8 @@ pub async fn count_unread(pool: &MySqlPool, uid: u64, _usertype: i32) -> Result<
     let now = phpyun_core::clock::now_ts();
     let res: Result<(i64,), _> = sqlx::query_as(
         r#"SELECT COUNT(*) FROM phpyun_admin_announcement b
-           WHERE (b.startime = 0 OR b.startime <= ?)
+           WHERE COALESCE(b.deleted,0)=0
+             AND (b.startime = 0 OR b.startime <= ?)
              AND (b.endtime = 0 OR b.endtime > ?)
              AND NOT EXISTS (
                SELECT 1 FROM phpyun_rs_broadcast_reads r

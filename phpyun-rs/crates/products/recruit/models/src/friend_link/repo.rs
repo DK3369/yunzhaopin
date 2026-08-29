@@ -10,6 +10,7 @@
 //!   - created_at = 0 (PHP `link_time` is varchar, not a timestamp)
 
 use super::entity::FriendLink;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const FIELDS: &str = "\
@@ -29,12 +30,12 @@ pub async fn list_active(
     let sql = match category {
         Some(_) => format!(
             "SELECT {FIELDS} FROM phpyun_admin_link \
-             WHERE link_state = 1 AND link_type = ? \
+             WHERE link_state = 1 AND link_type = ? AND {PREDICATE} \
              ORDER BY link_sorting DESC, id ASC"
         ),
         None => format!(
             "SELECT {FIELDS} FROM phpyun_admin_link \
-             WHERE link_state = 1 \
+             WHERE link_state = 1 AND {PREDICATE} \
              ORDER BY link_sorting DESC, id ASC"
         ),
     };
@@ -52,7 +53,7 @@ pub async fn list_all(
 ) -> Result<Vec<FriendLink>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_admin_link \
-         ORDER BY link_sorting DESC, id ASC LIMIT ? OFFSET ?"
+         WHERE {PREDICATE} ORDER BY link_sorting DESC, id ASC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, FriendLink>(&sql)
         .bind(limit)
@@ -62,7 +63,7 @@ pub async fn list_all(
 }
 
 pub async fn count_all(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_link")
+    let (n,): (i64,) = sqlx::query_as(&format!("SELECT COUNT(*) FROM phpyun_admin_link WHERE {PREDICATE}"))
         .fetch_one(pool)
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -114,9 +115,5 @@ pub async fn upsert(pool: &MySqlPool, a: FriendLinkUpsert<'_>) -> Result<u64, sq
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_admin_link WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_admin_link", id).await
 }

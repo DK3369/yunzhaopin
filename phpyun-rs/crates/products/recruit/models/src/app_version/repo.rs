@@ -8,6 +8,7 @@
 //! `created_at`).
 
 use super::entity::AppVersion;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const FIELDS: &str = "\
@@ -28,7 +29,7 @@ pub async fn latest_for_platform(
 ) -> Result<Option<AppVersion>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_app_version \
-         WHERE platform = ? AND status = 1 \
+         WHERE platform = ? AND status = 1 AND {PREDICATE} \
          ORDER BY version_code DESC, id DESC LIMIT 1"
     );
     sqlx::query_as::<_, AppVersion>(&sql)
@@ -46,11 +47,11 @@ pub async fn admin_list(
     let sql = match platform {
         Some(_) => format!(
             "SELECT {FIELDS} FROM phpyun_app_version \
-             WHERE platform = ? ORDER BY id DESC LIMIT ? OFFSET ?"
+             WHERE platform = ? AND {PREDICATE} ORDER BY id DESC LIMIT ? OFFSET ?"
         ),
         None => format!(
             "SELECT {FIELDS} FROM phpyun_app_version \
-             ORDER BY id DESC LIMIT ? OFFSET ?"
+             WHERE {PREDICATE} ORDER BY id DESC LIMIT ? OFFSET ?"
         ),
     };
     let q = sqlx::query_as::<_, AppVersion>(&sql);
@@ -90,9 +91,5 @@ pub async fn create(pool: &MySqlPool, c: VersionCreate<'_>, now: i64) -> Result<
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_app_version WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_app_version", id).await
 }

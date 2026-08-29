@@ -22,6 +22,7 @@
 //! `toggle_support` therefore degrades to **idempotent +1** (no undo).
 
 use super::entity::{Answer, Question};
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::{MySqlPool, QueryBuilder};
 
 const Q_FIELDS: &str = "\
@@ -74,7 +75,7 @@ pub async fn list_questions(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Question>, sqlx::Error> {
-    let mut sql = format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE state = 1");
+    let mut sql = format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE state = 1 AND {PREDICATE}");
     if f.keyword.is_some() {
         sql.push_str(" AND title LIKE ?");
     }
@@ -97,7 +98,7 @@ pub async fn list_questions(
 }
 
 pub async fn count_questions(pool: &MySqlPool, f: &QuestionFilter<'_>) -> Result<u64, sqlx::Error> {
-    let mut sql = String::from("SELECT COUNT(*) FROM phpyun_question WHERE state = 1");
+    let mut sql = format!("SELECT COUNT(*) FROM phpyun_question WHERE state = 1 AND {PREDICATE}");
     if f.keyword.is_some() {
         sql.push_str(" AND title LIKE ?");
     }
@@ -116,7 +117,7 @@ pub async fn count_questions(pool: &MySqlPool, f: &QuestionFilter<'_>) -> Result
 }
 
 pub async fn find_question(pool: &MySqlPool, id: u64) -> Result<Option<Question>, sqlx::Error> {
-    let sql = format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE id = ?");
+    let sql = format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Question>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -152,20 +153,16 @@ pub async fn create_question(
 }
 
 pub async fn delete_question(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_question WHERE id = ? AND uid = ?")
+    Ok(sqlx::query("UPDATE phpyun_question SET deleted=1 WHERE id = ? AND uid = ? AND COALESCE(deleted,0)=0")
         .bind(id)
         .bind(uid)
         .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+        .await?
+        .rows_affected())
 }
 
 pub async fn admin_delete_question(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_question WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_question", id).await
 }
 
 pub async fn set_question_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u64, sqlx::Error> {
@@ -191,7 +188,7 @@ pub async fn admin_list_questions(
     limit: u64,
 ) -> Result<Vec<Question>, sqlx::Error> {
     let mut qb: sqlx::QueryBuilder<sqlx::MySql> =
-        sqlx::QueryBuilder::new(format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE 1=1"));
+        sqlx::QueryBuilder::new(format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE {PREDICATE}"));
     if let Some(s) = f.status {
         qb.push(" AND state = ");
         qb.push_bind(s);
@@ -218,7 +215,7 @@ pub async fn admin_count_questions(
     f: &AdminQuestionFilter<'_>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: sqlx::QueryBuilder<sqlx::MySql> =
-        sqlx::QueryBuilder::new("SELECT COUNT(*) FROM phpyun_question WHERE 1=1");
+        sqlx::QueryBuilder::new(format!("SELECT COUNT(*) FROM phpyun_question WHERE {PREDICATE}"));
     if let Some(s) = f.status {
         qb.push(" AND state = ");
         qb.push_bind(s);
@@ -253,7 +250,7 @@ pub async fn list_questions_by_user(
 ) -> Result<Vec<Question>, sqlx::Error> {
     let sql = format!(
         "SELECT {Q_FIELDS} FROM phpyun_question \
-         WHERE uid = ? ORDER BY add_time DESC LIMIT ? OFFSET ?"
+         WHERE uid = ? AND {PREDICATE} ORDER BY add_time DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Question>(&sql)
         .bind(uid)
@@ -264,10 +261,12 @@ pub async fn list_questions_by_user(
 }
 
 pub async fn count_questions_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_question WHERE uid = ?")
-        .bind(uid)
-        .fetch_one(pool)
-        .await?;
+    let (n,): (i64,) = sqlx::query_as(&format!(
+        "SELECT COUNT(*) FROM phpyun_question WHERE uid = ? AND {PREDICATE}"
+    ))
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
@@ -505,7 +504,7 @@ pub async fn list_attended_questions(
         .join(",");
     let sql = format!(
         "SELECT {Q_FIELDS} FROM phpyun_question \
-         WHERE state = 1 AND id IN ({placeholders}) \
+         WHERE state = 1 AND {PREDICATE} AND id IN ({placeholders}) \
          ORDER BY FIELD(id, {placeholders}) DESC"
     );
     let mut q = sqlx::query_as::<_, Question>(&sql);
@@ -735,7 +734,7 @@ const QC_FIELDS: &str = "\
     CAST(COALESCE(add_time, 0) AS SIGNED) AS add_time";
 
 pub async fn list_qclasses(pool: &MySqlPool) -> Result<Vec<QClass>, sqlx::Error> {
-    let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class ORDER BY pid ASC, sort DESC, id ASC");
+    let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class WHERE {PREDICATE} ORDER BY pid ASC, sort DESC, id ASC");
     sqlx::query_as::<_, QClass>(&sql).fetch_all(pool).await
 }
 
@@ -748,7 +747,9 @@ pub async fn list_qclasses_admin(
 ) -> Result<Vec<QClass>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(QC_FIELDS);
-    qb.push(" FROM phpyun_q_class WHERE pid = ");
+    qb.push(" FROM phpyun_q_class WHERE ");
+    qb.push(PREDICATE);
+    qb.push(" AND pid = ");
     qb.push_bind(pid.unwrap_or(0));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
@@ -770,7 +771,9 @@ pub async fn count_qclasses_admin(
     keyword: Option<&str>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_q_class WHERE pid = ");
+        QueryBuilder::new(format!(
+            "SELECT COUNT(*) FROM phpyun_q_class WHERE {PREDICATE} AND pid = "
+        ));
     qb.push_bind(pid.unwrap_or(0));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
@@ -781,7 +784,7 @@ pub async fn count_qclasses_admin(
 }
 
 pub async fn find_qclass(pool: &MySqlPool, id: u64) -> Result<Option<QClass>, sqlx::Error> {
-    let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class WHERE id = ?");
+    let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, QClass>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -838,30 +841,9 @@ pub async fn upsert_qclass(
 }
 
 pub async fn delete_qclasses(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    if ids.is_empty() {
-        return Ok(0);
-    }
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_question WHERE cid IN (");
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(")");
-    qb.build().execute(pool).await?;
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_q_class WHERE id IN (");
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(") OR pid IN (");
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(")");
-    Ok(qb.build().execute(pool).await?.rows_affected())
+    soft_delete::mark_col_in(pool, "phpyun_question", "cid", ids).await?;
+    soft_delete::mark_col_in(pool, "phpyun_q_class", "pid", ids).await?;
+    soft_delete::mark_ids(pool, "phpyun_q_class", ids).await
 }
 
 // ---------- Hotweek (this week's hot questions) ----------
@@ -876,7 +858,7 @@ pub async fn hotweek_questions(
 ) -> Result<Vec<Question>, sqlx::Error> {
     let sql = format!(
         "SELECT {Q_FIELDS} FROM phpyun_question \
-         WHERE state IN (0,1) AND add_time >= ? \
+         WHERE state IN (0,1) AND add_time >= ? AND {PREDICATE} \
          ORDER BY (COALESCE(atnnum,0) + COALESCE(answer_num,0) + COALESCE(visit,0)/3) DESC, id DESC \
          LIMIT ?"
     );

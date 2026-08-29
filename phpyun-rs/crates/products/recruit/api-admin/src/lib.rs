@@ -11,6 +11,7 @@
 //! The admin JWT role check is applied inside [`router`] — callers cannot
 //! obtain an unguarded admin tree.
 
+pub mod delete_guard;
 pub mod dto;
 pub mod openapi;
 pub mod v1;
@@ -25,10 +26,17 @@ pub fn router(state: AppState) -> Router<AppState> {
         "/v1/admin",
         Router::new()
             .merge(v1::auth::public_routes())
-            .merge(v1::router().layer(axum::middleware::from_fn_with_state(
-                state,
-                phpyun_core::admin_guard::layer,
-            ))),
+            .merge(
+                v1::router()
+                    .layer(axum::middleware::from_fn_with_state(
+                        state.clone(),
+                        crate::delete_guard::layer,
+                    ))
+                    .layer(axum::middleware::from_fn_with_state(
+                        state,
+                        phpyun_core::admin_guard::layer,
+                    )),
+            ),
     )
 }
 

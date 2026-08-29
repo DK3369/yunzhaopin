@@ -1,6 +1,7 @@
 //! `phpyun_domain` repository.
 
 use super::entity::DomainSite;
+use crate::soft_delete::PREDICATE;
 use sqlx::MySqlPool;
 
 const FIELDS: &str = "\
@@ -21,7 +22,7 @@ const FIELDS: &str = "\
     indexdir";
 
 pub async fn list_all(pool: &MySqlPool) -> Result<Vec<DomainSite>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS} FROM phpyun_domain ORDER BY id ASC");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_domain WHERE {PREDICATE} ORDER BY id ASC");
     sqlx::query_as::<_, DomainSite>(&sql).fetch_all(pool).await
 }
 
@@ -29,7 +30,9 @@ pub async fn list_by_fz_type(
     pool: &MySqlPool,
     fz_type: i32,
 ) -> Result<Vec<DomainSite>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS} FROM phpyun_domain WHERE fz_type = ? ORDER BY id ASC");
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_domain WHERE fz_type = ? AND {PREDICATE} ORDER BY id ASC"
+    );
     sqlx::query_as::<_, DomainSite>(&sql)
         .bind(fz_type)
         .fetch_all(pool)
@@ -49,7 +52,7 @@ pub async fn find_for_city(
     if three_city_id > 0 {
         let sql = format!(
             "SELECT {FIELDS} FROM phpyun_domain \
-             WHERE fz_type = 1 AND three_cityid = ? LIMIT 1"
+             WHERE fz_type = 1 AND three_cityid = ? AND {PREDICATE} LIMIT 1"
         );
         if let Some(r) = sqlx::query_as::<_, DomainSite>(&sql)
             .bind(three_city_id)
@@ -65,6 +68,7 @@ pub async fn find_for_city(
             "SELECT {FIELDS} FROM phpyun_domain \
              WHERE fz_type = 1 AND cityid = ? \
                AND (three_cityid IS NULL OR three_cityid = 0) \
+               AND {PREDICATE} \
              LIMIT 1"
         );
         if let Some(r) = sqlx::query_as::<_, DomainSite>(&sql)
@@ -81,6 +85,7 @@ pub async fn find_for_city(
             "SELECT {FIELDS} FROM phpyun_domain \
              WHERE fz_type = 1 AND province = ? \
                AND (cityid IS NULL OR cityid = 0) \
+               AND {PREDICATE} \
              LIMIT 1"
         );
         if let Some(r) = sqlx::query_as::<_, DomainSite>(&sql)

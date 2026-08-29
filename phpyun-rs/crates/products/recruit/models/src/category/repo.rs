@@ -40,7 +40,7 @@ fn select_sql(table: &str, parent_col: &str, kind: &str) -> String {
                CAST(0 AS SIGNED) AS sort, \
                CAST(1 AS SIGNED) AS status, \
                CAST(0 AS SIGNED) AS updated_at \
-             FROM {table}"
+             FROM {table} WHERE COALESCE(deleted,0)=0"
         );
     }
     // CAST coerces PHPYun INT columns into the BIGINT UNSIGNED / SIGNED
@@ -54,7 +54,7 @@ fn select_sql(table: &str, parent_col: &str, kind: &str) -> String {
            COALESCE(sort, 0) AS sort, \
            CAST(1 AS SIGNED) AS status, \
            CAST(0 AS SIGNED) AS updated_at \
-         FROM {table}"
+         FROM {table} WHERE COALESCE(deleted,0)=0"
     )
 }
 
@@ -78,7 +78,7 @@ pub async fn list_children(
         return Ok(vec![]);
     };
     let sql = format!(
-        "{} WHERE {pc} = ? ORDER BY sort DESC, id ASC",
+        "{} AND {pc} = ? ORDER BY sort DESC, id ASC",
         select_sql(table, pc, kind)
     );
     sqlx::query_as::<_, Category>(&sql)
@@ -104,7 +104,7 @@ pub async fn list_recommended(
     let has_rec = table == "phpyun_job_class";
     let sql = if has_rec {
         format!(
-            "{} WHERE COALESCE(rec, 0) = 1 ORDER BY sort DESC, id ASC LIMIT ?",
+            "{} AND COALESCE(rec, 0) = 1 ORDER BY sort DESC, id ASC LIMIT ?",
             select_sql(table, pc, kind)
         )
     } else {
@@ -215,7 +215,9 @@ pub async fn delete_kind(pool: &MySqlPool, id: u64, kind: &str) -> Result<u64, s
             "unknown category kind: {kind}"
         )));
     };
-    let sql = format!("DELETE FROM {table} WHERE id = ? OR {pc} = ?");
+    let sql = format!(
+        "UPDATE {table} SET deleted=1 WHERE COALESCE(deleted,0)=0 AND (id = ? OR `{pc}` = ?)"
+    );
     let res = sqlx::query(&sql).bind(id).bind(id).execute(pool).await?;
     Ok(res.rows_affected())
 }

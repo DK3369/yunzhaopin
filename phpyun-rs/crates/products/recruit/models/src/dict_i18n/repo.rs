@@ -7,6 +7,18 @@
 
 use sqlx::MySqlPool;
 
+fn soft_delete_where(table: &str) -> &'static str {
+    match table {
+        "phpyun_job_class"
+        | "phpyun_city_class"
+        | "phpyun_partclass"
+        | "phpyun_q_class"
+        | "phpyun_comclass"
+        | "phpyun_userclass" => " WHERE COALESCE(deleted,0)=0",
+        _ => "",
+    }
+}
+
 /// Load primary-language `(id, name)` rows from a single dict table. The
 /// table name MUST come from a static whitelist in the caller — the loader
 /// passes it through `format!`.
@@ -14,7 +26,7 @@ pub async fn list_default(
     pool: &MySqlPool,
     table: &str,
 ) -> Result<Vec<(i32, Option<String>)>, sqlx::Error> {
-    let sql = format!("SELECT id, name FROM {table}");
+    let sql = format!("SELECT id, name FROM {table}{}", soft_delete_where(table));
     sqlx::query_as(&sql).fetch_all(pool).await
 }
 
@@ -29,7 +41,7 @@ pub async fn list_class_rows(
         _ => return Ok(Vec::new()),
     }
     let sql = format!(
-        "SELECT id, name, COALESCE(keyid, 0) AS keyid, variable FROM {table}"
+        "SELECT id, name, COALESCE(keyid, 0) AS keyid, variable FROM {table} WHERE COALESCE(deleted,0)=0"
     );
     sqlx::query_as(&sql).fetch_all(pool).await
 }

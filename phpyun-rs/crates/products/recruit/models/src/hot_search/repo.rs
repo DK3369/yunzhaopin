@@ -11,6 +11,7 @@
 //!     repurposed here as an approximate "last hit time")
 
 use super::entity::HotSearch;
+use crate::soft_delete::PREDICATE;
 use sqlx::MySqlPool;
 
 const SELECT_FIELDS: &str = "\
@@ -35,7 +36,7 @@ pub async fn bump(
     let scope_int: i32 = scope.parse().unwrap_or(0);
     let updated = sqlx::query(
         "UPDATE phpyun_hot_key SET num = num + 1, wxtime = ? \
-         WHERE key_name = ? AND `type` = ?",
+         WHERE key_name = ? AND `type` = ? AND COALESCE(deleted,0)=0",
     )
     .bind(now)
     .bind(keyword)
@@ -60,7 +61,7 @@ pub async fn top(pool: &MySqlPool, scope: &str, limit: u64) -> Result<Vec<HotSea
     let scope_int: i32 = scope.parse().unwrap_or(0);
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_hot_key \
-         WHERE `type` = ? ORDER BY num DESC LIMIT ?"
+         WHERE `type` = ? AND {PREDICATE} ORDER BY num DESC LIMIT ?"
     );
     sqlx::query_as::<_, HotSearch>(&sql)
         .bind(scope_int)

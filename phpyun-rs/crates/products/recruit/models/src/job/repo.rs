@@ -851,7 +851,7 @@ pub async fn admin_delete(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Er
         return Ok(0);
     }
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_company_job WHERE id IN (");
+        QueryBuilder::new("UPDATE phpyun_company_job SET state = 2 WHERE id IN (");
     let mut sep = qb.separated(", ");
     for id in ids {
         sep.push_bind(*id);

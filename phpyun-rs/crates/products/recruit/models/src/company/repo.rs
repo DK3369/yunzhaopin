@@ -349,7 +349,7 @@ pub async fn list_show_items(
                 CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
                 CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime \
          FROM phpyun_company_show \
-         WHERE uid = ? AND status = 0 \
+         WHERE uid = ? AND status = 0 AND COALESCE(deleted,0)=0 \
          ORDER BY sort ASC, id ASC",
     )
     .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
@@ -496,6 +496,7 @@ pub async fn list_hot(
            AND c.r_status = 1 \
            AND h.time_start < ? \
            AND h.time_end > ? \
+           AND COALESCE(h.deleted,0)=0 \
          ORDER BY {order_clause} \
          LIMIT ?"
     );
@@ -538,6 +539,7 @@ pub async fn hotjob_list(
                   COALESCE(beizhu, '') AS beizhu,
                   CAST(COALESCE(rating_id, 0) AS SIGNED) AS rating_id
            FROM phpyun_hotjob
+           WHERE COALESCE(deleted,0)=0
            ORDER BY sort DESC, id DESC
            LIMIT ? OFFSET ?"#,
     )
@@ -548,7 +550,7 @@ pub async fn hotjob_list(
 }
 
 pub async fn hotjob_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_hotjob")
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_hotjob WHERE COALESCE(deleted,0)=0")
         .fetch_one(pool)
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -609,7 +611,7 @@ pub async fn hotjob_upsert(pool: &MySqlPool, a: HotJobUpsert<'_>) -> Result<u64,
 }
 
 pub async fn hotjob_delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_hotjob WHERE id = ?")
+    let res = sqlx::query("UPDATE phpyun_hotjob SET deleted=1 WHERE id = ? AND COALESCE(deleted,0)=0")
         .bind(id)
         .execute(pool)
         .await?;
@@ -771,7 +773,7 @@ pub async fn list_rating_options(pool: &MySqlPool) -> Result<Vec<CompanyRatingOp
     sqlx::query_as::<_, CompanyRatingOpt>(
         r#"SELECT CAST(id AS SIGNED) AS id, COALESCE(name, '') AS name
            FROM phpyun_company_rating
-           WHERE category = 1
+           WHERE category = 1 AND COALESCE(deleted,0)=0
            ORDER BY sort DESC, id ASC"#,
     )
     .fetch_all(pool)

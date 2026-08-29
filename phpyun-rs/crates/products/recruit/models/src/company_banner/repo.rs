@@ -17,7 +17,7 @@ const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<CompanyBanner>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_banner \
-         WHERE uid = ? AND status != 2 \
+         WHERE uid = ? AND status != 2 AND COALESCE(deleted,0)=0 \
          ORDER BY id DESC"
     );
     sqlx::query_as::<_, CompanyBanner>(&sql)
@@ -28,7 +28,9 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<CompanyBanner
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_banner WHERE uid = ? AND status != 2")
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_banner WHERE uid = ? AND status != 2 AND COALESCE(deleted,0)=0",
+        )
             .bind(uid)
             .fetch_one(pool)
             .await?;
@@ -71,7 +73,7 @@ pub async fn update(
     qb.push_bind(id);
     qb.push(" AND uid = ");
     qb.push_bind(uid);
-    qb.push(" AND status != 2");
+    qb.push(" AND status != 2 AND COALESCE(deleted,0)=0");
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }

@@ -9,6 +9,7 @@
 //!   - DescClass.created_at = 0 (PHP `phpyun_desc_class` has no ctime column)
 
 use super::entity::{DescClass, Description};
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const CLASS_FIELDS: &str = "\
@@ -32,7 +33,7 @@ const DESC_FIELDS: &str = "\
 // ---------- classes ----------
 
 pub async fn list_classes(pool: &MySqlPool) -> Result<Vec<DescClass>, sqlx::Error> {
-    let sql = format!("SELECT {CLASS_FIELDS} FROM phpyun_desc_class ORDER BY sort ASC, id ASC");
+    let sql = format!("SELECT {CLASS_FIELDS} FROM phpyun_desc_class WHERE {PREDICATE} ORDER BY sort ASC, id ASC");
     sqlx::query_as::<_, DescClass>(&sql).fetch_all(pool).await
 }
 
@@ -60,11 +61,7 @@ pub async fn update_class_sort(pool: &MySqlPool, id: u64, sort: i32) -> Result<u
 }
 
 pub async fn delete_class(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_desc_class WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_desc_class", id).await
 }
 
 // ---------- descriptions ----------
@@ -77,7 +74,7 @@ pub async fn list(
     limit: u64,
 ) -> Result<Vec<Description>, sqlx::Error> {
     // PHPYun has no status column; only_visible has no effect (PHP itself doesn't filter).
-    let mut sql = format!("SELECT {DESC_FIELDS} FROM phpyun_description WHERE 1=1");
+    let mut sql = format!("SELECT {DESC_FIELDS} FROM phpyun_description WHERE {PREDICATE}");
     if class_id.is_some() {
         sql.push_str(" AND nid = ?");
     }
@@ -94,7 +91,7 @@ pub async fn count(
     class_id: Option<u64>,
     _only_visible: bool,
 ) -> Result<u64, sqlx::Error> {
-    let mut sql = String::from("SELECT COUNT(*) FROM phpyun_description WHERE 1=1");
+    let mut sql = format!("SELECT COUNT(*) FROM phpyun_description WHERE {PREDICATE}");
     if class_id.is_some() {
         sql.push_str(" AND nid = ?");
     }
@@ -107,7 +104,7 @@ pub async fn count(
 }
 
 pub async fn get(pool: &MySqlPool, id: u64) -> Result<Option<Description>, sqlx::Error> {
-    let sql = format!("SELECT {DESC_FIELDS} FROM phpyun_description WHERE id = ?");
+    let sql = format!("SELECT {DESC_FIELDS} FROM phpyun_description WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Description>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -124,7 +121,7 @@ pub async fn find_by_name(
 ) -> Result<Option<Description>, sqlx::Error> {
     let sql = format!(
         "SELECT {DESC_FIELDS} FROM phpyun_description \
-         WHERE name = ? \
+         WHERE name = ? AND {PREDICATE} \
          ORDER BY sort ASC, id DESC LIMIT 1"
     );
     sqlx::query_as::<_, Description>(&sql)
@@ -185,9 +182,5 @@ pub async fn upsert(pool: &MySqlPool, d: &UpsertDesc<'_>, now: i64) -> Result<u6
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_description WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_description", id).await
 }

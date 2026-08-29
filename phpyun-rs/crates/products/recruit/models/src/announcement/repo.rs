@@ -4,6 +4,7 @@
 //! startime/endtime, and `created_at` falls back to `datetime`.
 
 use super::entity::Announcement;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 /// Map PHPYun columns to Rust Announcement struct fields via aliases.
@@ -32,7 +33,7 @@ pub async fn list_published(
 ) -> Result<Vec<Announcement>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
-         WHERE {PUBLISHED_WHERE} ORDER BY datetime DESC, id DESC LIMIT ? OFFSET ?"
+         WHERE {PUBLISHED_WHERE} AND {PREDICATE} ORDER BY datetime DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Announcement>(&sql)
         .bind(limit)
@@ -42,13 +43,13 @@ pub async fn list_published(
 }
 
 pub async fn count_published(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let sql = format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PUBLISHED_WHERE}");
+    let sql = format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PUBLISHED_WHERE} AND {PREDICATE}");
     let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Announcement>, sqlx::Error> {
-    let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement WHERE id = ?");
+    let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Announcement>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -72,7 +73,7 @@ pub async fn list_admin(
 ) -> Result<Vec<Announcement>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
-         ORDER BY datetime DESC, id DESC LIMIT ? OFFSET ?"
+         WHERE {PREDICATE} ORDER BY datetime DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Announcement>(&sql)
         .bind(limit)
@@ -82,7 +83,7 @@ pub async fn list_admin(
 }
 
 pub async fn count_admin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_announcement")
+    let (n,): (i64,) = sqlx::query_as(&format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PREDICATE}"))
         .fetch_one(pool)
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -139,9 +140,5 @@ pub async fn upsert(pool: &MySqlPool, a: AnnouncementUpsert<'_>) -> Result<u64, 
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_admin_announcement WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_admin_announcement", id).await
 }

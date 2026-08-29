@@ -75,6 +75,7 @@ pub mod search_history;
 pub mod sign_in;
 pub mod site_page;
 pub mod site_setting;
+pub mod soft_delete;
 pub mod special;
 pub mod stats;
 pub mod talent_pool;

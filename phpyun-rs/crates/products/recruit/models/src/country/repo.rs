@@ -50,7 +50,7 @@ const FROM_JOIN: &str = "\
 pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> {
     let sql = format!(
         "SELECT {PROJECTION} {FROM_JOIN} \
-         WHERE cc.keyid = 0 AND cc.display = 1 \
+         WHERE cc.keyid = 0 AND cc.display = 1 AND COALESCE(cc.deleted,0)=0 \
          ORDER BY cc.sort ASC, cc.id ASC"
     );
     phpyun_core::db::ok_default_if_object_missing(
@@ -61,7 +61,7 @@ pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Country>, sqlx::Error> {
     let sql = format!(
         "SELECT {PROJECTION} {FROM_JOIN} \
-         WHERE cc.id = ? AND cc.keyid = 0 AND cc.display = 1 LIMIT 1"
+         WHERE cc.id = ? AND cc.keyid = 0 AND cc.display = 1 AND COALESCE(cc.deleted,0)=0 LIMIT 1"
     );
     let r = sqlx::query_as::<_, Country>(&sql)
         .bind(id)
@@ -79,7 +79,7 @@ pub async fn find_by_code(pool: &MySqlPool, code: &str) -> Result<Option<Country
     // missing we can't resolve by code, return None.
     let sql = format!(
         "SELECT {PROJECTION} {FROM_JOIN} \
-         WHERE r.country_code = ? AND cc.keyid = 0 AND cc.display = 1 LIMIT 1"
+         WHERE r.country_code = ? AND cc.keyid = 0 AND cc.display = 1 AND COALESCE(cc.deleted,0)=0 LIMIT 1"
     );
     let r = sqlx::query_as::<_, Country>(&sql)
         .bind(code)

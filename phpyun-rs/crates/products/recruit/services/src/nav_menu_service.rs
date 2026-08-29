@@ -92,7 +92,7 @@ pub async fn admin_update(
 }
 
 pub async fn admin_delete(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
-    admin.require_admin()?;
+    crate::admin_auth_service::require_active_admin(state, admin).await?;
     nav_repo::delete(state.db.pool(), id).await?;
     Ok(())
 }

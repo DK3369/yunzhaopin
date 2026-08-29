@@ -3,6 +3,7 @@
 use sqlx::{MySqlPool, QueryBuilder};
 
 use super::php_ser;
+use crate::soft_delete::{self, PREDICATE};
 
 const PAPER_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -131,7 +132,8 @@ pub async fn list_papers(
     let (lim, off) = bind_limit(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(PAPER_FIELDS);
-    qb.push(" FROM phpyun_evaluate_group WHERE keyid <> 0");
+    qb.push(" FROM phpyun_evaluate_group WHERE keyid <> 0 AND ");
+    qb.push(PREDICATE);
     if let Some(k) = keyid.filter(|v| *v > 0) {
         qb.push(" AND keyid = ");
         qb.push_bind(k);
@@ -153,7 +155,9 @@ pub async fn count_papers(
     keyword: Option<&str>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_evaluate_group WHERE keyid <> 0");
+        QueryBuilder::new(format!(
+            "SELECT COUNT(*) FROM phpyun_evaluate_group WHERE keyid <> 0 AND {PREDICATE}"
+        ));
     if let Some(k) = keyid.filter(|v| *v > 0) {
         qb.push(" AND keyid = ");
         qb.push_bind(k);
@@ -167,7 +171,7 @@ pub async fn count_papers(
 }
 
 pub async fn find_paper(pool: &MySqlPool, id: u64) -> Result<Option<AdminEvalPaper>, sqlx::Error> {
-    let sql = format!("SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE id = ?");
+    let sql = format!("SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, AdminEvalPaper>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -176,7 +180,7 @@ pub async fn find_paper(pool: &MySqlPool, id: u64) -> Result<Option<AdminEvalPap
 
 pub async fn list_groups(pool: &MySqlPool) -> Result<Vec<AdminEvalPaper>, sqlx::Error> {
     let sql = format!(
-        "SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE keyid = 0 ORDER BY sort DESC, id ASC"
+        "SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE keyid = 0 AND {PREDICATE} ORDER BY sort DESC, id ASC"
     );
     sqlx::query_as::<_, AdminEvalPaper>(&sql)
         .fetch_all(pool)
@@ -185,7 +189,9 @@ pub async fn list_groups(pool: &MySqlPool) -> Result<Vec<AdminEvalPaper>, sqlx::
 
 pub async fn count_papers_in_group(pool: &MySqlPool, keyid: i32) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_group WHERE keyid = ?")
+        sqlx::query_as(&format!(
+            "SELECT COUNT(*) FROM phpyun_evaluate_group WHERE keyid = ? AND {PREDICATE}"
+        ))
             .bind(keyid)
             .fetch_one(pool)
             .await?;
@@ -268,7 +274,7 @@ pub async fn update_paper(pool: &MySqlPool, id: u64, w: PaperWrite<'_>) -> Resul
 
 pub async fn insert_group(pool: &MySqlPool, name: &str) -> Result<u64, sqlx::Error> {
     let exists: Option<(i64,)> =
-        sqlx::query_as("SELECT id FROM phpyun_evaluate_group WHERE name = ? AND keyid = 0 LIMIT 1")
+        sqlx::query_as("SELECT id FROM phpyun_evaluate_group WHERE name = ? AND keyid = 0 AND COALESCE(deleted,0)=0 LIMIT 1")
             .bind(name)
             .fetch_optional(pool)
             .await?;
@@ -314,7 +320,9 @@ pub async fn patch_group(
 
 pub async fn paper_ids_in_group(pool: &MySqlPool, keyid: u64) -> Result<Vec<u64>, sqlx::Error> {
     let rows: Vec<(u64,)> =
-        sqlx::query_as("SELECT CAST(id AS UNSIGNED) FROM phpyun_evaluate_group WHERE keyid = ?")
+        sqlx::query_as(&format!(
+            "SELECT CAST(id AS UNSIGNED) FROM phpyun_evaluate_group WHERE keyid = ? AND {PREDICATE}"
+        ))
             .bind(keyid)
             .fetch_all(pool)
             .await?;
@@ -325,25 +333,10 @@ pub async fn delete_papers(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::E
     if ids.is_empty() {
         return Ok(0);
     }
-    delete_in(pool, "DELETE FROM phpyun_evaluate WHERE gid IN (", ids).await?;
-    delete_in(
-        pool,
-        "DELETE FROM phpyun_evaluate_leave_message WHERE examid IN (",
-        ids,
-    )
-    .await?;
-    delete_in(pool, "DELETE FROM phpyun_evaluate_log WHERE examid IN (", ids).await?;
-    delete_in(pool, "DELETE FROM phpyun_evaluate_group WHERE id IN (", ids).await
-}
-
-async fn delete_in(pool: &MySqlPool, prefix: &str, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(prefix);
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(")");
-    Ok(qb.build().execute(pool).await?.rows_affected())
+    soft_delete::mark_col_in(pool, "phpyun_evaluate", "gid", ids).await?;
+    soft_delete::mark_col_in(pool, "phpyun_evaluate_leave_message", "examid", ids).await?;
+    soft_delete::mark_col_in(pool, "phpyun_evaluate_log", "examid", ids).await?;
+    soft_delete::mark_ids(pool, "phpyun_evaluate_group", ids).await
 }
 
 pub async fn list_questions(
@@ -357,7 +350,7 @@ pub async fn list_questions(
                 COALESCE(`option`, '') AS `option`, \
                 COALESCE(score, '') AS score, \
                 CAST(COALESCE(sort, 0) AS SIGNED) AS sort \
-         FROM phpyun_evaluate WHERE gid = ? ORDER BY id ASC",
+         FROM phpyun_evaluate WHERE gid = ? AND COALESCE(deleted,0)=0 ORDER BY id ASC",
     )
     .bind(paper_id)
     .fetch_all(pool)
@@ -400,16 +393,19 @@ pub async fn delete_questions_notin(
     keep: &[u64],
 ) -> Result<u64, sqlx::Error> {
     if keep.is_empty() {
-        let res = sqlx::query("DELETE FROM phpyun_evaluate WHERE gid = ?")
-            .bind(paper_id)
-            .execute(pool)
-            .await?;
+        let res = sqlx::query(
+            "UPDATE phpyun_evaluate SET deleted=1 WHERE gid = ? AND COALESCE(deleted,0)=0",
+        )
+        .bind(paper_id)
+        .execute(pool)
+        .await?;
         return Ok(res.rows_affected());
     }
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_evaluate WHERE gid = ");
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "UPDATE phpyun_evaluate SET deleted=1 WHERE gid = ",
+    );
     qb.push_bind(paper_id);
-    qb.push(" AND id NOT IN (");
+    qb.push(" AND COALESCE(deleted,0)=0 AND id NOT IN (");
     let mut sep = qb.separated(", ");
     for id in keep {
         sep.push_bind(*id);
@@ -419,11 +415,7 @@ pub async fn delete_questions_notin(
 }
 
 pub async fn delete_question(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_evaluate WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_evaluate", id).await
 }
 
 pub async fn list_messages(
@@ -444,7 +436,7 @@ pub async fn list_messages(
                 COALESCE(mem.username, '') AS name \
          FROM phpyun_evaluate_leave_message m \
          LEFT JOIN phpyun_member mem ON mem.uid = CAST(m.uid AS UNSIGNED) \
-         WHERE 1=1",
+         WHERE COALESCE(m.deleted,0)=0",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_uid {
@@ -467,7 +459,9 @@ pub async fn count_messages(
     by_uid: bool,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_evaluate_leave_message m WHERE 1=1");
+        QueryBuilder::new(format!(
+            "SELECT COUNT(*) FROM phpyun_evaluate_leave_message m WHERE {PREDICATE}"
+        ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_uid {
             qb.push(" AND m.uid LIKE ");
@@ -481,12 +475,7 @@ pub async fn count_messages(
 }
 
 pub async fn delete_messages(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(
-        pool,
-        "DELETE FROM phpyun_evaluate_leave_message WHERE id IN (",
-        ids,
-    )
-    .await
+    soft_delete::mark_ids(pool, "phpyun_evaluate_leave_message", ids).await
 }
 
 pub async fn list_logs(
@@ -508,13 +497,13 @@ pub async fn list_logs(
                 COALESCE(g.name, '') AS title \
          FROM phpyun_evaluate_log l \
          LEFT JOIN phpyun_member mem ON mem.uid = l.uid \
-         LEFT JOIN phpyun_evaluate_group g ON g.id = l.examid \
-         WHERE 1=1",
+         LEFT JOIN phpyun_evaluate_group g ON g.id = l.examid AND COALESCE(g.deleted,0)=0 \
+         WHERE COALESCE(l.deleted,0)=0",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_paper {
             qb.push(
-                " AND l.examid IN (SELECT id FROM phpyun_evaluate_group WHERE name LIKE ",
+                " AND l.examid IN (SELECT id FROM phpyun_evaluate_group WHERE COALESCE(deleted,0)=0 AND name LIKE ",
             );
             qb.push_bind(format!("%{kw}%"));
             qb.push(")");
@@ -536,11 +525,13 @@ pub async fn count_logs(
     by_paper: bool,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_evaluate_log l WHERE 1=1");
+        QueryBuilder::new(format!(
+            "SELECT COUNT(*) FROM phpyun_evaluate_log l WHERE {PREDICATE}"
+        ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_paper {
             qb.push(
-                " AND l.examid IN (SELECT id FROM phpyun_evaluate_group WHERE name LIKE ",
+                " AND l.examid IN (SELECT id FROM phpyun_evaluate_group WHERE COALESCE(deleted,0)=0 AND name LIKE ",
             );
             qb.push_bind(format!("%{kw}%"));
             qb.push(")");
@@ -554,5 +545,5 @@ pub async fn count_logs(
 }
 
 pub async fn delete_logs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(pool, "DELETE FROM phpyun_evaluate_log WHERE id IN (", ids).await
+    soft_delete::mark_ids(pool, "phpyun_evaluate_log", ids).await
 }

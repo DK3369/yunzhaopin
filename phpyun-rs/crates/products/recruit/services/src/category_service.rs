@@ -137,7 +137,7 @@ pub async fn admin_update(
 }
 
 pub async fn admin_delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
-    user.require_admin()?;
+    crate::admin_auth_service::require_active_admin(state, user).await?;
     cat_repo::delete(state.db.pool(), id).await?;
     invalidate_all();
     Ok(())

@@ -12,6 +12,7 @@
 //!   - `status`         always 1 (PHPYun news_base has no status column)
 
 use super::entity::Article;
+use crate::soft_delete;
 use sqlx::{MySqlPool, QueryBuilder};
 
 /// Full-field SELECT -- 18 columns of phpyun_news_base + JOIN
@@ -53,7 +54,7 @@ const FROM_DETAIL: &str = "\
     LEFT JOIN phpyun_news_content c ON c.nbid = n.id";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Article>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS}, c.content AS content {FROM_DETAIL} WHERE n.id = ? LIMIT 1");
+    let sql = format!("SELECT {FIELDS}, c.content AS content {FROM_DETAIL} WHERE n.id = ? AND COALESCE(n.deleted,0)=0 LIMIT 1");
     sqlx::query_as::<_, Article>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -109,6 +110,7 @@ fn push_did_scope<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, did: u32) {
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a>) {
+    qb.push(" AND COALESCE(n.deleted,0)=0");
     if let Some(c) = f.category {
         if !c.is_empty() {
             qb.push(" AND n.nid = ");
@@ -127,7 +129,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a
 }
 
 pub async fn incr_hits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
-    sqlx::query("UPDATE phpyun_news_base SET hits = hits + 1 WHERE id = ?")
+    sqlx::query("UPDATE phpyun_news_base SET hits = hits + 1 WHERE id = ? AND COALESCE(deleted,0)=0")
         .bind(id)
         .execute(pool)
         .await?;
@@ -138,7 +140,7 @@ pub async fn incr_hits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
 /// equivalents that need to render "今日浏览 X 次" widgets.
 pub async fn get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     let row: Option<(i64,)> = sqlx::query_as(
-        "SELECT CAST(COALESCE(hits, 0) AS SIGNED) FROM phpyun_news_base WHERE id = ? LIMIT 1",
+        "SELECT CAST(COALESCE(hits, 0) AS SIGNED) FROM phpyun_news_base WHERE id = ? AND COALESCE(deleted,0)=0 LIMIT 1",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -173,7 +175,7 @@ pub struct ArticleIngest<'a> {
 /// Locoy news ingest. Returns `Ok(None)` when the same title+nid already exists.
 pub async fn ingest(pool: &MySqlPool, a: ArticleIngest<'_>) -> Result<Option<u64>, sqlx::Error> {
     let exists: Option<(i64,)> = sqlx::query_as(
-        "SELECT 1 FROM phpyun_news_base WHERE title = ? AND nid = ? LIMIT 1",
+        "SELECT 1 FROM phpyun_news_base WHERE title = ? AND nid = ? AND COALESCE(deleted,0)=0 LIMIT 1",
     )
     .bind(a.title)
     .bind(a.nid)
@@ -323,13 +325,5 @@ pub async fn upsert(pool: &MySqlPool, a: ArticleUpsert<'_>) -> Result<u64, sqlx:
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    sqlx::query("DELETE FROM phpyun_news_content WHERE nbid = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    let res = sqlx::query("DELETE FROM phpyun_news_base WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_news_base", id).await
 }

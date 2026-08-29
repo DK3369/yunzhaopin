@@ -2,6 +2,7 @@
 
 use super::entity::*;
 use super::repo::{delete_in, lim};
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::{MySqlPool, QueryBuilder};
 
 pub fn parse_id_csv(raw: &str) -> Vec<u64> {
@@ -139,14 +140,16 @@ pub async fn gallery_statusbody(pool: &MySqlPool, kind: &str, id: u64) -> Result
     } else {
         "phpyun_company_show"
     };
-    let sql = format!("SELECT COALESCE(statusbody,'') FROM {table} WHERE id=? LIMIT 1");
+    let sql = format!(
+        "SELECT COALESCE(statusbody,'') FROM {table} WHERE id=? AND COALESCE(deleted,0)=0 LIMIT 1"
+    );
     scalar_str(pool, &sql, id).await
 }
 
 pub async fn banner_statusbody(pool: &MySqlPool, id: u64) -> Result<String, sqlx::Error> {
     scalar_str(
         pool,
-        "SELECT COALESCE(statusbody,'') FROM phpyun_banner WHERE id=? LIMIT 1",
+        "SELECT COALESCE(statusbody,'') FROM phpyun_banner WHERE id=? AND COALESCE(deleted,0)=0 LIMIT 1",
         id,
     )
     .await
@@ -251,7 +254,7 @@ pub async fn save_gallery_pic(
     } else {
         "phpyun_company_show"
     };
-    let sql = format!("UPDATE {table} SET picurl=?, title=? WHERE id=?");
+    let sql = format!("UPDATE {table} SET picurl=?, title=? WHERE id=? AND COALESCE(deleted,0)=0");
     Ok(sqlx::query(&sql)
         .bind(picurl)
         .bind(title)
@@ -267,7 +270,7 @@ pub async fn delete_gallery(pool: &MySqlPool, kind: &str, ids: &[u64]) -> Result
     } else {
         "phpyun_company_show"
     };
-    delete_in(pool, &format!("DELETE FROM {table} WHERE id IN ("), ids).await
+    soft_delete::mark_ids(pool, table, ids).await
 }
 
 pub async fn set_gallery_review(
@@ -313,7 +316,7 @@ pub async fn list_banners(
     let (l, o) = lim(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
         "SELECT {BANNER_FIELDS} FROM phpyun_banner b \
-         LEFT JOIN phpyun_company c ON c.uid=b.uid WHERE 1=1"
+         LEFT JOIN phpyun_company c ON c.uid=b.uid WHERE COALESCE(b.deleted,0)=0"
     ));
     if let Some(s) = status {
         qb.push(" AND b.status=");
@@ -339,7 +342,7 @@ pub async fn count_banners(
     keyword: Option<&str>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_banner b LEFT JOIN phpyun_company c ON c.uid=b.uid WHERE 1=1",
+        "SELECT COUNT(*) FROM phpyun_banner b LEFT JOIN phpyun_company c ON c.uid=b.uid WHERE COALESCE(b.deleted,0)=0",
     );
     if let Some(s) = status {
         qb.push(" AND b.status=");
@@ -403,7 +406,7 @@ pub async fn save_banner(
 }
 
 pub async fn delete_banners(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(pool, "DELETE FROM phpyun_banner WHERE id IN (", ids).await
+    soft_delete::mark_ids(pool, "phpyun_banner", ids).await
 }
 
 const BIZ_SELECT: &str = "CAST(t.id AS UNSIGNED) AS id, CAST(COALESCE(t.uid,0) AS UNSIGNED) AS uid, \
@@ -616,7 +619,7 @@ const SVC_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name,
     CAST(COALESCE(display,1) AS SIGNED) AS display, CAST(COALESCE(sort,0) AS SIGNED) AS sort";
 
 pub async fn list_rating_services(pool: &MySqlPool) -> Result<Vec<RatingServiceRow>, sqlx::Error> {
-    let sql = format!("SELECT {SVC_FIELDS} FROM phpyun_company_service ORDER BY sort DESC, id DESC");
+    let sql = format!("SELECT {SVC_FIELDS} FROM phpyun_company_service WHERE {PREDICATE} ORDER BY sort DESC, id DESC");
     sqlx::query_as::<_, RatingServiceRow>(&sql).fetch_all(pool).await
 }
 
@@ -664,15 +667,15 @@ pub async fn set_rating_service_display(
 }
 
 pub async fn delete_rating_services(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(pool, "DELETE FROM phpyun_company_service_detail WHERE `type` IN (", ids).await?;
-    delete_in(pool, "DELETE FROM phpyun_company_service WHERE id IN (", ids).await
+    soft_delete::mark_col_in(pool, "phpyun_company_service_detail", "type", ids).await?;
+    soft_delete::mark_ids(pool, "phpyun_company_service", ids).await
 }
 
 pub async fn find_rating_service(
     pool: &MySqlPool,
     id: u64,
 ) -> Result<Option<RatingServiceRow>, sqlx::Error> {
-    let sql = format!("SELECT {SVC_FIELDS} FROM phpyun_company_service WHERE id=? LIMIT 1");
+    let sql = format!("SELECT {SVC_FIELDS} FROM phpyun_company_service WHERE id=? AND {PREDICATE} LIMIT 1");
     sqlx::query_as::<_, RatingServiceRow>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -694,7 +697,7 @@ pub async fn list_rating_details(
     type_id: u64,
 ) -> Result<Vec<RatingServiceDetailRow>, sqlx::Error> {
     let sql = format!(
-        "SELECT {DETAIL_FIELDS} FROM phpyun_company_service_detail WHERE `type`=? ORDER BY sort DESC, id DESC"
+        "SELECT {DETAIL_FIELDS} FROM phpyun_company_service_detail WHERE `type`=? AND COALESCE(deleted,0)=0 ORDER BY sort DESC, id DESC"
     );
     sqlx::query_as::<_, RatingServiceDetailRow>(&sql)
         .bind(type_id)
@@ -784,7 +787,7 @@ const DOMAIN_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS t
     COALESCE(tpl,'') AS tpl";
 
 pub async fn find_domain(pool: &MySqlPool, id: u64) -> Result<Option<DomainAdminRow>, sqlx::Error> {
-    let sql = format!("SELECT {DOMAIN_FIELDS} FROM phpyun_domain WHERE id=? LIMIT 1");
+    let sql = format!("SELECT {DOMAIN_FIELDS} FROM phpyun_domain WHERE id=? AND {PREDICATE} LIMIT 1");
     sqlx::query_as::<_, DomainAdminRow>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -898,7 +901,12 @@ pub async fn upsert_domain_admin(
 }
 
 pub async fn delete_domain_admins(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(pool, "DELETE FROM phpyun_admin_user WHERE did>0 AND uid IN (", uids).await
+    delete_in(
+        pool,
+        "UPDATE phpyun_admin_user SET status=0 WHERE did>0 AND uid IN (",
+        uids,
+    )
+    .await
 }
 
 pub async fn recup_hot_key(pool: &MySqlPool, id: u64, col: &str, rec: i32) -> Result<u64, sqlx::Error> {
@@ -960,7 +968,7 @@ pub async fn find_cron(pool: &MySqlPool, id: u64) -> Result<Option<CronRow>, sql
          CAST(COALESCE(month,0) AS SIGNED) AS month, CAST(COALESCE(hour,0) AS SIGNED) AS hour, \
          CAST(COALESCE(minute,0) AS SIGNED) AS minute, CAST(COALESCE(display,0) AS SIGNED) AS display, \
          CAST(COALESCE(nowtime,0) AS SIGNED) AS nowtime, CAST(COALESCE(nexttime,0) AS SIGNED) AS nexttime \
-         FROM phpyun_cron WHERE id=? LIMIT 1",
+         FROM phpyun_cron WHERE id=? AND COALESCE(deleted,0)=0 LIMIT 1",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -999,7 +1007,7 @@ pub async fn list_cron_logs(
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
         "SELECT CAST(l.id AS UNSIGNED) AS id, COALESCE(l.cid,'') AS cid, \
          CAST(COALESCE(l.ctime,0) AS SIGNED) AS ctime, COALESCE(c.name,'') AS name \
-         FROM phpyun_cron_log l LEFT JOIN phpyun_cron c ON CAST(c.id AS CHAR)=l.cid WHERE 1=1",
+         FROM phpyun_cron_log l LEFT JOIN phpyun_cron c ON CAST(c.id AS CHAR)=l.cid AND COALESCE(c.deleted,0)=0 WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND c.name LIKE ");
@@ -1014,7 +1022,7 @@ pub async fn list_cron_logs(
 
 pub async fn count_cron_logs(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_cron_log l LEFT JOIN phpyun_cron c ON CAST(c.id AS CHAR)=l.cid WHERE 1=1",
+        "SELECT COUNT(*) FROM phpyun_cron_log l LEFT JOIN phpyun_cron c ON CAST(c.id AS CHAR)=l.cid AND COALESCE(c.deleted,0)=0 WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND c.name LIKE ");
@@ -1048,7 +1056,7 @@ pub async fn set_special_com_status_ids(
 }
 
 pub async fn delete_special_coms(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(pool, "DELETE FROM phpyun_special_com WHERE id IN (", ids).await
+    soft_delete::mark_ids(pool, "phpyun_special_com", ids).await
 }
 
 pub async fn list_marketing_export(

@@ -9,6 +9,7 @@
 //!     falls back to publish time)
 
 use super::entity::{AdminHrDoc, HrDoc, ToolboxClass};
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::{MySqlPool, QueryBuilder};
 
 const FIELDS: &str = "id, \
@@ -30,12 +31,12 @@ pub async fn list_public(
     let sql = match cid {
         Some(_) => format!(
             "SELECT {FIELDS} FROM phpyun_toolbox_doc \
-             WHERE is_show = 1 AND cid = ? \
+             WHERE is_show = 1 AND cid = ? AND {PREDICATE} \
              ORDER BY id DESC LIMIT ? OFFSET ?"
         ),
         None => format!(
             "SELECT {FIELDS} FROM phpyun_toolbox_doc \
-             WHERE is_show = 1 \
+             WHERE is_show = 1 AND {PREDICATE} \
              ORDER BY id DESC LIMIT ? OFFSET ?"
         ),
     };
@@ -49,13 +50,17 @@ pub async fn list_public(
 pub async fn count_public(pool: &MySqlPool, cid: Option<u64>) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = match cid {
         Some(c) => {
-            sqlx::query_as("SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND cid = ?")
+            sqlx::query_as(&format!(
+                "SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND cid = ? AND {PREDICATE}"
+            ))
                 .bind(c)
                 .fetch_one(pool)
                 .await?
         }
         None => {
-            sqlx::query_as("SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1")
+            sqlx::query_as(&format!(
+                "SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND {PREDICATE}"
+            ))
                 .fetch_one(pool)
                 .await?
         }
@@ -64,7 +69,7 @@ pub async fn count_public(pool: &MySqlPool, cid: Option<u64>) -> Result<u64, sql
 }
 
 pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<HrDoc>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS} FROM phpyun_toolbox_doc WHERE id = ? AND is_show = 1");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_toolbox_doc WHERE id = ? AND is_show = 1 AND {PREDICATE}");
     sqlx::query_as::<_, HrDoc>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -110,8 +115,8 @@ pub async fn list_admin(
          COALESCE(c.name, '') AS cname, \
          COALESCE(d.add_time, 0) AS add_time \
          FROM phpyun_toolbox_doc d \
-         LEFT JOIN phpyun_toolbox_class c ON c.id = d.cid \
-         WHERE 1=1",
+         LEFT JOIN phpyun_toolbox_class c ON c.id = d.cid AND COALESCE(c.deleted,0)=0 \
+         WHERE 1=1 AND COALESCE(d.deleted,0)=0",
     );
     if let Some(c) = cid.filter(|v| *v > 0) {
         qb.push(" AND d.cid = ");
@@ -142,7 +147,9 @@ pub async fn count_admin(
     is_show: Option<i32>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE 1=1");
+        QueryBuilder::new(format!(
+            "SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE {PREDICATE}"
+        ));
     if let Some(c) = cid.filter(|v| *v > 0) {
         qb.push(" AND cid = ");
         qb.push_bind(c);
@@ -160,7 +167,7 @@ pub async fn count_admin(
 }
 
 pub async fn find_admin(pool: &MySqlPool, id: u64) -> Result<Option<HrDoc>, sqlx::Error> {
-    let sql = format!("SELECT {ADMIN_DOC_FIELDS} FROM phpyun_toolbox_doc WHERE id = ?");
+    let sql = format!("SELECT {ADMIN_DOC_FIELDS} FROM phpyun_toolbox_doc WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, HrDoc>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -223,17 +230,7 @@ pub async fn set_doc_show(pool: &MySqlPool, id: u64, is_show: i32) -> Result<u64
 }
 
 pub async fn delete_docs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    if ids.is_empty() {
-        return Ok(0);
-    }
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_toolbox_doc WHERE id IN (");
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(")");
-    Ok(qb.build().execute(pool).await?.rows_affected())
+    soft_delete::mark_ids(pool, "phpyun_toolbox_doc", ids).await
 }
 
 pub async fn list_classes(pool: &MySqlPool) -> Result<Vec<ToolboxClass>, sqlx::Error> {
@@ -242,7 +239,7 @@ pub async fn list_classes(pool: &MySqlPool) -> Result<Vec<ToolboxClass>, sqlx::E
                 COALESCE(name, '') AS name, \
                 COALESCE(content, '') AS content, \
                 COALESCE(pic, '') AS pic \
-         FROM phpyun_toolbox_class ORDER BY id ASC",
+         FROM phpyun_toolbox_class WHERE {PREDICATE} ORDER BY id ASC",
     )
     .fetch_all(pool)
     .await
@@ -284,23 +281,6 @@ pub async fn upsert_class(
 }
 
 pub async fn delete_classes(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    if ids.is_empty() {
-        return Ok(0);
-    }
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_toolbox_doc WHERE cid IN (");
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(")");
-    qb.build().execute(pool).await?;
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("DELETE FROM phpyun_toolbox_class WHERE id IN (");
-    let mut sep = qb.separated(", ");
-    for id in ids {
-        sep.push_bind(*id);
-    }
-    qb.push(")");
-    Ok(qb.build().execute(pool).await?.rows_affected())
+    soft_delete::mark_col_in(pool, "phpyun_toolbox_doc", "cid", ids).await?;
+    soft_delete::mark_ids(pool, "phpyun_toolbox_class", ids).await
 }

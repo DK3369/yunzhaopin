@@ -1,4 +1,5 @@
 use super::entity::{Special, SpecialCompany};
+use crate::soft_delete::PREDICATE;
 use sqlx::MySqlPool;
 
 /// Aligned with PHPYun `phpyun_special` (special recruitment topics).
@@ -112,7 +113,7 @@ pub async fn list_company_uids(
              CAST(COALESCE(status, 0) AS SIGNED) AS status,
              CAST(COALESCE(`time`, 0) AS SIGNED) AS created_at
            FROM phpyun_special_com
-           WHERE sid = ? AND status = 1
+           WHERE sid = ? AND status = 1 AND COALESCE(deleted,0)=0
            ORDER BY sort DESC, `time` ASC
            LIMIT ? OFFSET ?"#,
     )
@@ -125,7 +126,9 @@ pub async fn list_company_uids(
 
 pub async fn count_companies(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 1")
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 1 AND COALESCE(deleted,0)=0",
+        )
             .bind(sid)
             .fetch_one(pool)
             .await?;
@@ -140,7 +143,7 @@ pub async fn list_company_uid_ids(
 ) -> Result<Vec<u64>, sqlx::Error> {
     let rows: Vec<(u64,)> = sqlx::query_as(
         r#"SELECT uid FROM phpyun_special_com
-           WHERE sid = ? AND status = 1
+           WHERE sid = ? AND status = 1 AND COALESCE(deleted,0)=0
            ORDER BY sort DESC LIMIT ?"#,
     )
     .bind(sid)
@@ -154,7 +157,9 @@ pub async fn list_company_uid_ids(
 
 pub async fn already_applied(pool: &MySqlPool, sid: u64, uid: u64) -> Result<bool, sqlx::Error> {
     let row: Option<(i64,)> =
-        sqlx::query_as("SELECT 1 FROM phpyun_special_com WHERE sid = ? AND uid = ? LIMIT 1")
+        sqlx::query_as(
+            "SELECT 1 FROM phpyun_special_com WHERE sid = ? AND uid = ? AND COALESCE(deleted,0)=0 LIMIT 1",
+        )
             .bind(sid)
             .bind(uid)
             .fetch_optional(pool)
@@ -163,10 +168,12 @@ pub async fn already_applied(pool: &MySqlPool, sid: u64, uid: u64) -> Result<boo
 }
 
 pub async fn count_signups(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ?")
-        .bind(sid)
-        .fetch_one(pool)
-        .await?;
+    let (n,): (i64,) = sqlx::query_as(&format!(
+        "SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND {PREDICATE}"
+    ))
+    .bind(sid)
+    .fetch_one(pool)
+    .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

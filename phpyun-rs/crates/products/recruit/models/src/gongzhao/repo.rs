@@ -12,6 +12,7 @@
 //!   - created_at <-> datetime
 
 use super::entity::Gongzhao;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const FIELDS: &str = "\
@@ -35,11 +36,11 @@ pub async fn list(
 ) -> Result<Vec<Gongzhao>, sqlx::Error> {
     let sql = match tag {
         Some(_) => format!(
-            "SELECT {FIELDS} FROM phpyun_gongzhao WHERE keyword = ? \
+            "SELECT {FIELDS} FROM phpyun_gongzhao WHERE keyword = ? AND {PREDICATE} \
              ORDER BY id DESC LIMIT ? OFFSET ?"
         ),
         None => format!(
-            "SELECT {FIELDS} FROM phpyun_gongzhao \
+            "SELECT {FIELDS} FROM phpyun_gongzhao WHERE {PREDICATE} \
              ORDER BY id DESC LIMIT ? OFFSET ?"
         ),
     };
@@ -53,13 +54,15 @@ pub async fn list(
 pub async fn count(pool: &MySqlPool, tag: Option<&str>) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = match tag {
         Some(t) => {
-            sqlx::query_as("SELECT COUNT(*) FROM phpyun_gongzhao WHERE keyword = ?")
+            sqlx::query_as(&format!(
+                "SELECT COUNT(*) FROM phpyun_gongzhao WHERE keyword = ? AND {PREDICATE}"
+            ))
                 .bind(t)
                 .fetch_one(pool)
                 .await?
         }
         None => {
-            sqlx::query_as("SELECT COUNT(*) FROM phpyun_gongzhao")
+            sqlx::query_as(&format!("SELECT COUNT(*) FROM phpyun_gongzhao WHERE {PREDICATE}"))
                 .fetch_one(pool)
                 .await?
         }
@@ -68,7 +71,7 @@ pub async fn count(pool: &MySqlPool, tag: Option<&str>) -> Result<u64, sqlx::Err
 }
 
 pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<Gongzhao>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS} FROM phpyun_gongzhao WHERE id = ?");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_gongzhao WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Gongzhao>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -133,9 +136,5 @@ pub async fn upsert(pool: &MySqlPool, a: GongzhaoUpsert<'_>) -> Result<u64, sqlx
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_gongzhao WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_gongzhao", id).await
 }

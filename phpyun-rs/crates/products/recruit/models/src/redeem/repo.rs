@@ -1,4 +1,5 @@
 use super::entity::{RedeemClass, RedeemOrder, Reward};
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::{MySql, MySqlPool, Transaction};
 
 // Strictly aligned with PHPYun:
@@ -54,11 +55,11 @@ pub async fn list_classes(
     let sql = match parent_id {
         Some(_) => format!(
             "SELECT {CLASS_FIELDS} FROM phpyun_redeem_class \
-             WHERE keyid = ? ORDER BY sort ASC, id ASC"
+             WHERE keyid = ? AND {PREDICATE} ORDER BY sort ASC, id ASC"
         ),
         None => format!(
             "SELECT {CLASS_FIELDS} FROM phpyun_redeem_class \
-             ORDER BY keyid ASC, sort ASC, id ASC"
+             WHERE {PREDICATE} ORDER BY keyid ASC, sort ASC, id ASC"
         ),
     };
     let q = sqlx::query_as::<_, RedeemClass>(&sql);
@@ -86,12 +87,8 @@ pub async fn insert_class(
 }
 
 pub async fn delete_class(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_redeem_class WHERE id = ? OR keyid = ?")
-        .bind(id)
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_col_in(pool, "phpyun_redeem_class", "keyid", &[id]).await?;
+    soft_delete::mark_id(pool, "phpyun_redeem_class", id).await
 }
 
 // ---------- rewards ----------
@@ -104,7 +101,7 @@ pub async fn list_rewards(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Reward>, sqlx::Error> {
-    let mut sql = format!("SELECT {REWARD_FIELDS} FROM phpyun_reward WHERE 1=1");
+    let mut sql = format!("SELECT {REWARD_FIELDS} FROM phpyun_reward WHERE {PREDICATE}");
     if only_active {
         sql.push_str(" AND status = 1");
     }
@@ -132,7 +129,7 @@ pub async fn count_rewards(
     nid: Option<u64>,
     tnid: Option<u64>,
 ) -> Result<u64, sqlx::Error> {
-    let mut sql = String::from("SELECT COUNT(*) FROM phpyun_reward WHERE 1=1");
+    let mut sql = format!("SELECT COUNT(*) FROM phpyun_reward WHERE {PREDICATE}");
     if only_active {
         sql.push_str(" AND status = 1");
     }
@@ -154,7 +151,7 @@ pub async fn count_rewards(
 }
 
 pub async fn get_reward(pool: &MySqlPool, id: u64) -> Result<Option<Reward>, sqlx::Error> {
-    let sql = format!("SELECT {REWARD_FIELDS} FROM phpyun_reward WHERE id = ?");
+    let sql = format!("SELECT {REWARD_FIELDS} FROM phpyun_reward WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Reward>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -237,11 +234,7 @@ pub async fn set_reward_flags(
 }
 
 pub async fn delete_reward(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_reward WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_reward", id).await
 }
 
 /// Deduct stock and increment the sold counter inside a transaction.

@@ -1,6 +1,7 @@
 //! PHPYun `phpyun_wxnav` (custom WeChat menu). Read-only list for admin.
 
 use super::entity::WxNav;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const FIELDS: &str = "\
@@ -55,16 +56,12 @@ pub async fn upsert(
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_wxnav WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_wxnav", id).await
 }
 
 pub async fn list_all(pool: &MySqlPool) -> Result<Vec<WxNav>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_wxnav ORDER BY keyid ASC, sort ASC, id ASC"
+        "SELECT {FIELDS} FROM phpyun_wxnav WHERE {PREDICATE} ORDER BY keyid ASC, sort ASC, id ASC"
     );
     sqlx::query_as::<_, WxNav>(&sql).fetch_all(pool).await
 }

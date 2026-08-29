@@ -145,14 +145,24 @@ pub async fn login(
     })
 }
 
-pub async fn me(state: &AppState, user: &AuthenticatedUser) -> AppResult<AdminMe> {
-    user.require_admin()?;
-    let row = rbac_repo::find_by_uid(state.db.reader(), user.uid)
+/// JWT `usertype=3` plus a live `phpyun_admin_user.status=1` row.
+/// Use on destructive admin writes (delete / purge / update-as-delete).
+pub async fn require_active_admin(state: &AppState, actor: &AuthenticatedUser) -> AppResult<()> {
+    actor.require_admin()?;
+    let row = rbac_repo::find_by_uid(state.db.reader(), actor.uid)
         .await?
         .ok_or_else(ApiError::unauth)?;
     if row.status != 1 {
         return Err(ApiError::locked());
     }
+    Ok(())
+}
+
+pub async fn me(state: &AppState, user: &AuthenticatedUser) -> AppResult<AdminMe> {
+    require_active_admin(state, user).await?;
+    let row = rbac_repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(ApiError::unauth)?;
     let group_name = rbac_repo::group_name(state.db.reader(), row.m_id)
         .await
         .unwrap_or_default();

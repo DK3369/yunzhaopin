@@ -6,6 +6,7 @@
 //!   - `phpyun_evaluate_log`   = answer record (Rust `EvalLog`)
 
 use super::entity::{EvalLog, EvalPaper, EvalQuestion};
+use crate::soft_delete::PREDICATE;
 use sqlx::MySqlPool;
 
 const PAPER_FIELDS: &str = "\
@@ -39,7 +40,7 @@ pub async fn list_papers(
 ) -> Result<Vec<EvalPaper>, sqlx::Error> {
     let sql = format!(
         "SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group \
-         ORDER BY sort DESC, id DESC LIMIT ? OFFSET ?"
+         WHERE {PREDICATE} ORDER BY sort DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, EvalPaper>(&sql)
         .bind(limit)
@@ -49,14 +50,16 @@ pub async fn list_papers(
 }
 
 pub async fn count_papers(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_group")
+    let (n,): (i64,) = sqlx::query_as(&format!(
+        "SELECT COUNT(*) FROM phpyun_evaluate_group WHERE {PREDICATE}"
+    ))
         .fetch_one(pool)
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_paper(pool: &MySqlPool, id: u64) -> Result<Option<EvalPaper>, sqlx::Error> {
-    let sql = format!("SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE id = ?");
+    let sql = format!("SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, EvalPaper>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -64,7 +67,7 @@ pub async fn find_paper(pool: &MySqlPool, id: u64) -> Result<Option<EvalPaper>, 
 }
 
 pub async fn incr_paper_visits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
-    sqlx::query("UPDATE phpyun_evaluate_group SET visits = visits + 1 WHERE id = ?")
+    sqlx::query("UPDATE phpyun_evaluate_group SET visits = visits + 1 WHERE id = ? AND COALESCE(deleted,0)=0")
         .bind(id)
         .execute(pool)
         .await?;
@@ -76,7 +79,7 @@ pub async fn list_questions(
     paper_id: u64,
 ) -> Result<Vec<EvalQuestion>, sqlx::Error> {
     let sql =
-        format!("SELECT {Q_FIELDS} FROM phpyun_evaluate WHERE gid = ? ORDER BY sort ASC, id ASC");
+        format!("SELECT {Q_FIELDS} FROM phpyun_evaluate WHERE gid = ? AND {PREDICATE} ORDER BY sort ASC, id ASC");
     sqlx::query_as::<_, EvalQuestion>(&sql)
         .bind(paper_id)
         .fetch_all(pool)
@@ -115,7 +118,7 @@ pub async fn find_log_for_owner(
 ) -> Result<Option<EvalLog>, sqlx::Error> {
     let sql = format!(
         "SELECT {LOG_FIELDS} FROM phpyun_evaluate_log \
-         WHERE id = ? AND uid = ? LIMIT 1"
+         WHERE id = ? AND uid = ? AND {PREDICATE} LIMIT 1"
     );
     sqlx::query_as::<_, EvalLog>(&sql)
         .bind(log_id)
@@ -146,7 +149,7 @@ pub async fn list_recent_examinees(
             CAST(MAX(ctime) AS SIGNED) AS last_taken_at, \
             CAST(COUNT(DISTINCT examid) AS UNSIGNED) AS papers_taken \
          FROM phpyun_evaluate_log \
-         WHERE uid > 0 AND examid = ? \
+         WHERE uid > 0 AND examid = ? AND COALESCE(deleted,0)=0 \
          GROUP BY uid \
          ORDER BY last_taken_at DESC \
          LIMIT ?",
@@ -165,7 +168,7 @@ pub async fn list_logs_by_user(
 ) -> Result<Vec<EvalLog>, sqlx::Error> {
     let sql = format!(
         "SELECT {LOG_FIELDS} FROM phpyun_evaluate_log \
-         WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"
+         WHERE uid = ? AND {PREDICATE} ORDER BY ctime DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, EvalLog>(&sql)
         .bind(uid)
@@ -176,7 +179,9 @@ pub async fn list_logs_by_user(
 }
 
 pub async fn count_logs_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_log WHERE uid = ?")
+    let (n,): (i64,) = sqlx::query_as(&format!(
+        "SELECT COUNT(*) FROM phpyun_evaluate_log WHERE uid = ? AND {PREDICATE}"
+    ))
         .bind(uid)
         .fetch_one(pool)
         .await?;
@@ -237,7 +242,7 @@ pub async fn list_paper_messages(
 ) -> Result<Vec<PaperMessage>, sqlx::Error> {
     let sql = format!(
         "SELECT {PMSG_FIELDS} FROM phpyun_evaluate_leave_message \
-         WHERE examid = ? \
+         WHERE examid = ? AND {PREDICATE} \
          ORDER BY ctime DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, PaperMessage>(&sql)
@@ -250,7 +255,9 @@ pub async fn list_paper_messages(
 
 pub async fn count_paper_messages(pool: &MySqlPool, examid: u32) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_leave_message WHERE examid = ?")
+        sqlx::query_as(&format!(
+            "SELECT COUNT(*) FROM phpyun_evaluate_leave_message WHERE examid = ? AND {PREDICATE}"
+        ))
             .bind(examid)
             .fetch_one(pool)
             .await?;

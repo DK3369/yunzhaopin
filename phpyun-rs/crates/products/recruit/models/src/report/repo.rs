@@ -28,7 +28,7 @@ const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
 pub async fn list_reasons(pool: &MySqlPool) -> Result<Vec<ReportReason>, sqlx::Error> {
     sqlx::query_as::<_, ReportReason>(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
-         FROM phpyun_reason ORDER BY id ASC",
+         FROM phpyun_reason WHERE COALESCE(deleted,0)=0 ORDER BY id ASC",
     )
     .fetch_all(pool)
     .await
@@ -43,7 +43,7 @@ pub async fn resolve_reason(
     let id = code_or_name.parse::<u64>().ok().unwrap_or_default();
     sqlx::query_as::<_, ReportReason>(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
-         FROM phpyun_reason WHERE id = ? OR name = ? ORDER BY id ASC LIMIT 1",
+         FROM phpyun_reason WHERE (id = ? OR name = ?) AND COALESCE(deleted,0)=0 ORDER BY id ASC LIMIT 1",
     )
     .bind(id)
     .bind(code_or_name)

@@ -66,12 +66,12 @@ pub async fn load(pool: &MySqlPool, now: i64) -> AdminMsgNum {
         .await,
         comshow: count(
             pool,
-            "SELECT COUNT(*) FROM phpyun_company_show WHERE picurl <> '' AND status = 1",
+            "SELECT COUNT(*) FROM phpyun_company_show WHERE picurl <> '' AND status = 1 AND COALESCE(deleted,0)=0",
         )
         .await,
         combanner: count(
             pool,
-            "SELECT COUNT(*) FROM phpyun_banner WHERE pic <> '' AND status = 1",
+            "SELECT COUNT(*) FROM phpyun_banner WHERE pic <> '' AND status = 1 AND COALESCE(deleted,0)=0",
         )
         .await,
         company_product: count(
@@ -101,7 +101,7 @@ pub async fn load(pool: &MySqlPool, now: i64) -> AdminMsgNum {
         .await,
         tiny: count(pool, "SELECT COUNT(*) FROM phpyun_resume_tiny WHERE status = 0").await,
         zphcom: count(pool, "SELECT COUNT(*) FROM phpyun_zhaopinhui_com WHERE status = 0").await,
-        ask: count(pool, "SELECT COUNT(*) FROM phpyun_question WHERE state = 0").await,
+        ask: count(pool, "SELECT COUNT(*) FROM phpyun_question WHERE state = 0 AND COALESCE(deleted,0)=0").await,
         order: count(
             pool,
             "SELECT COUNT(*) FROM phpyun_company_order WHERE order_state = 1",
@@ -127,10 +127,10 @@ pub async fn load(pool: &MySqlPool, now: i64) -> AdminMsgNum {
             "SELECT COUNT(*) FROM phpyun_resume WHERE photo <> '' AND defphoto = 1 AND photo_status = 1",
         )
         .await,
-        link_num: count(pool, "SELECT COUNT(*) FROM phpyun_admin_link WHERE link_state = 0")
+        link_num: count(pool, "SELECT COUNT(*) FROM phpyun_admin_link WHERE link_state = 0 AND COALESCE(deleted,0)=0")
             .await,
         redeem: count(pool, "SELECT COUNT(*) FROM phpyun_change WHERE status = 0").await,
-        specialcom: count(pool, "SELECT COUNT(*) FROM phpyun_special_com WHERE status = 0").await,
+        specialcom: count(pool, "SELECT COUNT(*) FROM phpyun_special_com WHERE status = 0 AND COALESCE(deleted,0)=0").await,
         userchangenum: count(pool, "SELECT COUNT(*) FROM phpyun_user_change WHERE status = 0")
             .await,
         handlenum: count(pool, "SELECT COUNT(*) FROM phpyun_advice_question WHERE status = 1")

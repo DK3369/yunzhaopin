@@ -56,6 +56,7 @@ pub async fn list_active_packages(
               COALESCE(time_start, 0) AS created_at
            FROM phpyun_company_rating
            WHERE COALESCE(display, 1) = 1
+             AND COALESCE(deleted,0)=0
              AND (`type` = 0 OR `type` = ?)
              AND (COALESCE(time_end, 0) = 0 OR time_end > ?)
            ORDER BY sort ASC, service_price ASC"#,
@@ -96,7 +97,7 @@ pub async fn find_package_pricing(
             COALESCE(yh_price, '0'), \
             CAST(COALESCE(time_start, 0) AS SIGNED), \
             CAST(COALESCE(time_end, 0) AS SIGNED) \
-         FROM phpyun_company_rating WHERE id = ? LIMIT 1",
+         FROM phpyun_company_rating WHERE id = ? AND COALESCE(deleted,0)=0 LIMIT 1",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -137,7 +138,7 @@ pub async fn read_company_rating_discount(pool: &MySqlPool, uid: u64) -> Result<
     let row: Option<(i32,)> = sqlx::query_as(
         "SELECT CAST(COALESCE(r.service_discount, 100) AS SIGNED) \
          FROM phpyun_company_statis cs \
-         LEFT JOIN phpyun_company_rating r ON r.id = cs.rating \
+         LEFT JOIN phpyun_company_rating r ON r.id = cs.rating AND COALESCE(r.deleted,0)=0 \
          WHERE cs.uid = ? LIMIT 1",
     )
     .bind(uid)
@@ -167,7 +168,7 @@ pub async fn find_package_by_code(
               COALESCE(display, 1) AS is_active,
               COALESCE(sort, 0) AS sort_order,
               COALESCE(time_start, 0) AS created_at
-           FROM phpyun_company_rating WHERE id = ? LIMIT 1"#,
+           FROM phpyun_company_rating WHERE id = ? AND COALESCE(deleted,0)=0 LIMIT 1"#,
     )
     .bind(id)
     .fetch_optional(pool)

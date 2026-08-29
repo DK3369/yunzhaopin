@@ -16,6 +16,7 @@
 //!   - created_at ↔ ctime
 
 use super::entity::{Zph, ZphCompany, ZphReservation, ZphSpace};
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 const ZPH_FIELDS: &str = "\
@@ -246,7 +247,7 @@ pub async fn list_spaces(
     keyword: Option<&str>,
 ) -> Result<Vec<ZphSpace>, sqlx::Error> {
     let sql = format!(
-        "SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE 1=1 \
+        "SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE {PREDICATE} \
          {key} {kw} ORDER BY sort ASC, id ASC",
         key = if keyid.is_some() { "AND keyid = ?" } else { "AND keyid = 0" },
         kw = if keyword.map(|s| !s.is_empty()).unwrap_or(false) {
@@ -309,11 +310,7 @@ pub async fn upsert_space(pool: &MySqlPool, s: SpaceUpsert<'_>) -> Result<u64, s
 }
 
 pub async fn delete_space(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_zhaopinhui_space WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
-    Ok(res.rows_affected())
+    soft_delete::mark_id(pool, "phpyun_zhaopinhui_space", id).await
 }
 
 pub async fn find_my_reservation(
