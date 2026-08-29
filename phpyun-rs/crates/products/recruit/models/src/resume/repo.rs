@@ -277,6 +277,132 @@ pub async fn update(
     Ok(())
 }
 
+pub async fn update_tag_desc(
+    pool: &MySqlPool,
+    uid: u64,
+    tag: &str,
+    description: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume SET tag = ?, description = ?, lastupdate = ? WHERE uid = ?",
+    )
+    .bind(tag)
+    .bind(description)
+    .bind(now)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn update_admin_basic(
+    pool: &MySqlPool,
+    uid: u64,
+    name: &str,
+    sex: i32,
+    birthday: &str,
+    living: &str,
+    edu: i32,
+    exp: i32,
+    telphone: &str,
+    email: &str,
+    description: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume SET name=?, sex=?, birthday=?, living=?, edu=?, exp=?, \
+         telphone=?, email=?, description=?, lastupdate=? WHERE uid=?",
+    )
+    .bind(name)
+    .bind(sex)
+    .bind(birthday)
+    .bind(living)
+    .bind(edu)
+    .bind(exp)
+    .bind(telphone)
+    .bind(email)
+    .bind(description)
+    .bind(now)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn update_admin_profile(
+    pool: &MySqlPool,
+    uid: u64,
+    name: &str,
+    sex: i32,
+    birthday: &str,
+    exp: i32,
+    edu: i32,
+    telphone: &str,
+    email: &str,
+    domicile: &str,
+    living: &str,
+    marriage: i32,
+    height: &str,
+    nationality: &str,
+    weight: &str,
+    idcard: &str,
+    address: &str,
+    homepage: &str,
+    qq: &str,
+    description: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume SET name=?, sex=?, birthday=?, exp=?, edu=?, telphone=?, email=?, \
+         domicile=?, living=?, marriage=?, height=?, nationality=?, weight=?, idcard=?, address=?, \
+         homepage=?, qq=?, description=?, lastupdate=? WHERE uid=?",
+    )
+    .bind(name)
+    .bind(sex)
+    .bind(birthday)
+    .bind(exp)
+    .bind(edu)
+    .bind(telphone)
+    .bind(email)
+    .bind(domicile)
+    .bind(living)
+    .bind(marriage)
+    .bind(height)
+    .bind(nationality)
+    .bind(weight)
+    .bind(idcard)
+    .bind(address)
+    .bind(homepage)
+    .bind(qq)
+    .bind(description)
+    .bind(now)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_def_job(pool: &MySqlPool, uid: u64, eid: u64) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_resume SET def_job = ? WHERE uid = ?")
+        .bind(eid)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn delete_by_uid<'e, E>(exec: E, uid: u64) -> Result<(), sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    sqlx::query("DELETE FROM phpyun_resume WHERE uid = ?")
+        .bind(uid)
+        .execute(exec)
+        .await?;
+    Ok(())
+}
+
 /// Refresh the resume — bump `lastupdate` to the current time. The public list is sorted by `lastupdate` DESC,
 /// so after refreshing the resume will move to the front of search results.
 pub async fn touch_lastupdate(pool: &MySqlPool, uid: u64, now: i64) -> Result<u64, sqlx::Error> {

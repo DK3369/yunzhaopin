@@ -1,6 +1,6 @@
 //! PHP `users_resume` 审核树：列表 / `r_status` / CSV。
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
@@ -23,6 +23,10 @@ pub fn routes() -> Router<AppState> {
         .route("/resumes/works", post(list_works))
         .route("/resumes/edus", post(list_edus))
         .route("/resumes/trainings", post(list_trainings))
+        .route("/resumes/php-add", post(php_add))
+        .route("/resumes/php-edit", post(php_edit))
+        .route("/resumes/php-save-expect", post(php_save_expect))
+        .route("/resumes/php-save-tag", post(php_save_tag))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
@@ -119,4 +123,74 @@ pub async fn export_csv(
         admin_longtail_service::export_resumes_csv(&state, q.r_status, q.keyword.as_deref())
             .await?,
     ))
+}
+
+/// PHP `users_resume::add_action`。
+#[utoipa::path(post, path = "/v1/admin/resumes/php-add", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_add(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let add = match body.get("add") {
+        Some(serde_json::Value::Number(n)) => n.as_i64().unwrap_or(0),
+        Some(serde_json::Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    };
+    let data = admin_longtail_service::resume_php_add(&state, &user, &body).await?;
+    if add == 1 || add == 2 {
+        return Ok(ApiResponse::data(data));
+    }
+    Ok(ApiResponse::message_data("admin_01318", data))
+}
+
+/// PHP `users_resume::editResume_action`.
+#[utoipa::path(post, path = "/v1/admin/resumes/php-edit", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_edit(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    let eid = body
+        .get("id")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        admin_longtail_service::resume_php_edit(&state, &user, uid, eid).await?,
+    ))
+}
+
+/// PHP `users_resume::saveExpect_action`.
+#[utoipa::path(post, path = "/v1/admin/resumes/php-save-expect", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_save_expect(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let eid = body
+        .get("eid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    let data = admin_longtail_service::resume_save_expect(&state, &user, &body).await?;
+    let key = if eid == 0 {
+        "admin_model_00133"
+    } else {
+        "admin_model_00135"
+    };
+    Ok(ApiResponse::message_data(key, data))
+}
+
+/// PHP `users_resume::saveTag_action`.
+#[utoipa::path(post, path = "/v1/admin/resumes/php-save-tag", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_save_tag(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    admin_longtail_service::resume_save_tag(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_model_00137"))
 }

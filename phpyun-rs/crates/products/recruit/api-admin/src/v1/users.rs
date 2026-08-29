@@ -1,6 +1,6 @@
 //! User management (admin only).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Pagination, ValidatedJson,
@@ -17,6 +17,10 @@ pub fn routes() -> Router<AppState> {
         .route("/users", post(list))
         .route("/users/status", post(set_status))
         .route("/users/impersonate", post(impersonate))
+        .route("/users/php-add", post(php_add))
+        .route("/users/php-edit", post(php_edit))
+        .route("/users/php-editsave", post(php_editsave))
+        .route("/users/php-save-user", post(php_save_user))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -188,4 +192,68 @@ pub async fn impersonate(
         usertype: r.usertype,
         access_token: r.access,
     }))
+}
+
+/// PHP `users_member::add_action`。
+#[utoipa::path(post, path = "/v1/admin/users/php-add", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_add(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let username = body.get("username").and_then(|v| v.as_str()).unwrap_or("");
+    let add_on = match body.get("add") {
+        None | Some(serde_json::Value::Null) => false,
+        Some(serde_json::Value::Bool(b)) => *b,
+        Some(serde_json::Value::Number(n)) => n.as_i64().unwrap_or(0) != 0,
+        Some(serde_json::Value::String(s)) => {
+            let t = s.trim();
+            !t.is_empty() && t != "0"
+        }
+        _ => true,
+    };
+    let is_form = add_on || username.trim().is_empty();
+    let data = phpyun_services::admin_longtail_service::member_php_add(&state, &user, &body).await?;
+    if is_form {
+        return Ok(ApiResponse::data(data));
+    }
+    Ok(ApiResponse::message_data("admin_model_00106", data))
+}
+
+/// PHP `users_member::edit_action`.
+#[utoipa::path(post, path = "/v1/admin/users/php-edit", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_edit(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        phpyun_services::admin_longtail_service::member_php_edit(&state, &user, uid).await?,
+    ))
+}
+
+/// PHP `users_member::editSave_action`.
+#[utoipa::path(post, path = "/v1/admin/users/php-editsave", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_editsave(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    phpyun_services::admin_longtail_service::member_edit_save(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_user_00083"))
+}
+
+/// PHP `users_member::saveUser_action`.
+#[utoipa::path(post, path = "/v1/admin/users/php-save-user", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_save_user(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    phpyun_services::admin_longtail_service::company_save_user(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_user_00083"))
 }

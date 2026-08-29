@@ -184,6 +184,98 @@ pub async fn create(
     Ok(res.last_insert_id())
 }
 
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct AdminExpectRow {
+    #[sqlx(try_from = "i32")]
+    pub id: u64,
+    #[sqlx(try_from = "i32")]
+    pub uid: u64,
+    pub name: String,
+    pub hy: i32,
+    pub job_classid: String,
+    pub city_classid: String,
+    pub minsalary: i32,
+    pub maxsalary: i32,
+    pub r#type: i32,
+    pub report: i32,
+    pub jobstatus: i32,
+    pub state: i32,
+    pub lastupdate: i64,
+}
+
+const ADMIN_FIELDS: &str = "\
+    id, uid, COALESCE(name, '') AS name, COALESCE(hy, 0) AS hy, \
+    COALESCE(job_classid, '') AS job_classid, COALESCE(city_classid, '') AS city_classid, \
+    COALESCE(minsalary, 0) AS minsalary, COALESCE(maxsalary, 0) AS maxsalary, \
+    COALESCE(`type`, 0) AS `type`, COALESCE(report, 0) AS report, \
+    COALESCE(jobstatus, 0) AS jobstatus, COALESCE(state, 0) AS state, \
+    COALESCE(lastupdate, 0) AS lastupdate";
+
+pub async fn find_admin_by_id(pool: &MySqlPool, id: u64) -> Result<Option<AdminExpectRow>, sqlx::Error> {
+    let sql = format!("SELECT {ADMIN_FIELDS} FROM phpyun_resume_expect WHERE id = ? LIMIT 1");
+    sqlx::query_as::<_, AdminExpectRow>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn find_admin_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<AdminExpectRow>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ADMIN_FIELDS} FROM phpyun_resume_expect \
+         WHERE uid = ? ORDER BY defaults DESC, lastupdate DESC, id DESC LIMIT 1"
+    );
+    sqlx::query_as::<_, AdminExpectRow>(&sql)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await
+}
+
+/// PHP admin `saveExpect` 新建：`state=1`，职位/城市类别保留 CSV。
+pub async fn create_admin(
+    pool: &MySqlPool,
+    uid: u64,
+    input: &ExpectInput<'_>,
+    job_classid: &str,
+    city_classid: &str,
+    r_status: i32,
+    uname: &str,
+    edu: i32,
+    exp: i32,
+    sex: i32,
+    birthday: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_resume_expect
+           (uid, name, hy, job_classid, city_classid, salary, minsalary, maxsalary,
+            `type`, report, jobstatus, status, r_status, state, defaults, lastupdate,
+            uname, edu, exp, sex, birthday, photo, integrity, ctime)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1, 1, ?, ?, ?, ?, ?, ?, '', 55, ?)"#,
+    )
+    .bind(uid)
+    .bind(input.name.unwrap_or(""))
+    .bind(input.hy)
+    .bind(job_classid)
+    .bind(city_classid)
+    .bind(input.salary)
+    .bind(input.minsalary)
+    .bind(input.maxsalary)
+    .bind(input.r#type)
+    .bind(input.report)
+    .bind(input.jobstatus)
+    .bind(r_status)
+    .bind(now)
+    .bind(uname)
+    .bind(edu)
+    .bind(exp)
+    .bind(sex)
+    .bind(birthday)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 pub async fn update(
     pool: &MySqlPool,
     id: u64,
@@ -223,6 +315,58 @@ pub async fn update(
     .execute(pool)
     .await?;
     Ok(res.rows_affected())
+}
+
+pub async fn update_admin(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    input: &ExpectInput<'_>,
+    job_classid: &str,
+    city_classid: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"UPDATE phpyun_resume_expect SET
+            name         = COALESCE(?, name),
+            hy           = ?,
+            job_classid  = ?,
+            city_classid = ?,
+            salary       = ?,
+            minsalary    = ?,
+            maxsalary    = ?,
+            `type`       = ?,
+            report       = ?,
+            jobstatus    = ?,
+            lastupdate   = ?
+           WHERE id = ? AND uid = ?"#,
+    )
+    .bind(input.name)
+    .bind(input.hy)
+    .bind(job_classid)
+    .bind(city_classid)
+    .bind(input.salary)
+    .bind(input.minsalary)
+    .bind(input.maxsalary)
+    .bind(input.r#type)
+    .bind(input.report)
+    .bind(input.jobstatus)
+    .bind(now)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_admin_state(pool: &MySqlPool, id: u64, state: i32, r_status: i32) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_resume_expect SET state = ?, r_status = ? WHERE id = ?")
+        .bind(state)
+        .bind(r_status)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {

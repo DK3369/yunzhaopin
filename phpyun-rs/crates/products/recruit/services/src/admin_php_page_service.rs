@@ -363,6 +363,25 @@ async fn resume_get_cache(state: &AppState) -> AppResult<Value> {
     Ok(json!({ "userdata": userdata, "userclass_name": userclass_name }))
 }
 
+/// PHP `users_member::edit` / `users_resume::editResume` 字典块。
+pub async fn resume_member_cache(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let (userdata, userclass_name) = userdata_from(&dicts);
+    let hy = dicts.industry_all();
+    let industry_index: Vec<i32> = hy.iter().map(|(id, _)| *id).collect();
+    let mut industry_name = Map::new();
+    for (id, name) in hy {
+        industry_name.insert(id.to_string(), Value::String(name));
+    }
+    Ok(json!({
+        "user_sex": { "1": "男", "2": "女" },
+        "userdata": userdata,
+        "userclass_name": userclass_name,
+        "industry_index": industry_index,
+        "industry_name": industry_name,
+    }))
+}
+
 async fn tiny_get_cache(state: &AppState) -> AppResult<Value> {
     let dicts = dict_service::get(state).await?;
     let (userdata, userclass_name) = userdata_from(&dicts);

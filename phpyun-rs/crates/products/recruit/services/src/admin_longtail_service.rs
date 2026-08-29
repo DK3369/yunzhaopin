@@ -11,11 +11,18 @@ use phpyun_models::company::repo::AdminCompanyRow;
 use phpyun_models::company_cert::repo as cert_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::repo as job_repo;
-use phpyun_models::resume::edu::Edu;
+use phpyun_models::member_statis::repo as member_statis_repo;
+use phpyun_models::resume::edu::{self as edu_repo, Edu};
+use phpyun_models::resume::entity::Resume;
+use phpyun_models::resume::expect::{self as expect_repo, ExpectInput};
+use phpyun_models::resume::other::{self as other_repo, Other};
+use phpyun_models::resume::project::{self as project_repo, Project};
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume::repo::AdminResumeRow;
-use phpyun_models::resume::training::Training;
-use phpyun_models::resume::work::Work;
+use phpyun_models::resume::skill::{self as skill_repo, Skill};
+use phpyun_models::resume::training::{self as training_repo, Training};
+use phpyun_models::resume::work::{self as work_repo, Work};
+use phpyun_models::user::entity::Member;
 use phpyun_models::user::repo as user_repo;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -1396,6 +1403,448 @@ pub async fn company_comcert(
     Ok(json!({}))
 }
 
+async fn create_jobseeker(
+    state: &AppState,
+    username: &str,
+    password: &str,
+    mobile: &str,
+    email: &str,
+    resume_name: &str,
+    sex: i32,
+    birthday: &str,
+    living: &str,
+    edu: i32,
+    exp: i32,
+    description: &str,
+) -> AppResult<u64> {
+    add_member_check(state, username, "", mobile, email, None).await?;
+    let now = clock::now_ts();
+    let salt = gen_salt();
+    let password_hash = argon2_hash_async(format!("{password}{salt}")).await?;
+    let username_c = username.to_string();
+    let hash_c = password_hash.clone();
+    let salt_c = salt.clone();
+    let mobile_c = mobile.to_string();
+    let email_c = email.to_string();
+    let uid = state
+        .db
+        .with_tx(|tx| {
+            Box::pin(async move {
+                let uid = user_repo::create_member(
+                    &mut **tx,
+                    &username_c,
+                    &hash_c,
+                    &salt_c,
+                    Some(&mobile_c),
+                    if email_c.is_empty() {
+                        None
+                    } else {
+                        Some(email_c.as_str())
+                    },
+                    1,
+                    0,
+                    "0.0.0.0",
+                    now,
+                )
+                .await?;
+                if let Err(e) = resume_repo::ensure_row_in_tx(&mut **tx, uid, 0, now).await {
+                    let _ = user_repo::delete_member(&mut **tx, uid).await;
+                    return Err(e.into());
+                }
+                Ok(uid)
+            })
+        })
+        .await?;
+    if let Err(e) = member_statis_repo::ensure_row(state.db.pool(), uid).await {
+        let _ = resume_repo::delete_by_uid(state.db.pool(), uid).await;
+        let _ = user_repo::delete_member(state.db.pool(), uid).await;
+        return Err(e.into());
+    }
+    let n = resume_repo::update_admin_basic(
+        state.db.pool(),
+        uid,
+        resume_name,
+        sex,
+        birthday,
+        living,
+        edu,
+        exp,
+        mobile,
+        email,
+        description,
+        now,
+    )
+    .await?;
+    if n == 0 {
+        let _ = member_statis_repo::ensure_row(state.db.pool(), uid).await;
+        return Err(ApiError::business("common_00978"));
+    }
+    Ok(uid)
+}
+
+/// PHP `users_resume::add_action`：`add=1` 空成功；`add=2` 表单；否则有 uid 更新 / 无 uid 注册。
+pub async fn resume_php_add(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    let add = json_i32(body, "add");
+    if add == 1 {
+        return Ok(json!({}));
+    }
+    if add == 2 {
+        let uid = json_u64(body, "uid");
+        let mut cache = crate::admin_php_page_service::resume_member_cache(state).await?;
+        let resume = if uid > 0 {
+            match resume_repo::find_by_uid(state.db.reader(), uid).await? {
+                Some(r) => resume_php(&r),
+                None => json!(""),
+            }
+        } else {
+            json!("")
+        };
+        cache
+            .as_object_mut()
+            .map(|m| m.insert("resume".into(), resume));
+        return Ok(cache);
+    }
+    let uid = json_u64(body, "uid");
+    let email = json_str(body, "email");
+    let mobile = json_str(body, "moblie");
+    let name = json_str(body, "resume_name");
+    let sex = json_i32(body, "sex");
+    let birthday = birthday_norm(&json_str(body, "birthday"));
+    let living = json_str(body, "living");
+    let edu = json_i32(body, "edu");
+    let exp = json_i32(body, "exp");
+    let description = json_str(body, "description");
+    let now = clock::now_ts();
+    if uid > 0 {
+        resume_repo::ensure_row(state.db.pool(), uid, 0, now).await?;
+        let n = resume_repo::update_admin_basic(
+            state.db.pool(),
+            uid,
+            &name,
+            sex,
+            &birthday,
+            &living,
+            edu,
+            exp,
+            &mobile,
+            &email,
+            &description,
+            now,
+        )
+        .await?;
+        if n == 0 {
+            return Err(ApiError::business("admin_user_00096"));
+        }
+        user_repo::update_contact(state.db.pool(), uid, &email, &mobile, "").await?;
+        audit_write(state, user, "admin.resume.add_update", format!("uid:{uid}")).await;
+        return Ok(json!({ "uid": uid }));
+    }
+    let username = json_str(body, "username");
+    let password = json_str(body, "password");
+    let nid = create_jobseeker(
+        state,
+        &username,
+        &password,
+        &mobile,
+        &email,
+        &name,
+        sex,
+        &birthday,
+        &living,
+        edu,
+        exp,
+        &description,
+    )
+    .await?;
+    audit_write(state, user, "admin.resume.create", format!("uid:{nid}")).await;
+    Ok(json!({ "uid": nid }))
+}
+
+/// PHP `users_member::add_action`：`add` 或空用户名为打开表单；否则注册求职者。
+pub async fn member_php_add(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    let username = json_str(body, "username");
+    if json_truthy(body, "add") || username.is_empty() {
+        return Ok(json!({}));
+    }
+    if username.chars().count() < 2 || username.chars().count() > 16 {
+        return Err(ApiError::business("admin_user_00084"));
+    }
+    let password = json_str(body, "password");
+    if password.chars().count() < 6 || password.chars().count() > 20 {
+        return Err(ApiError::business("admin_user_00085"));
+    }
+    let mobile = json_str(body, "moblie");
+    if mobile.is_empty() {
+        return Err(ApiError::business("admin_01285"));
+    }
+    let email = json_str(body, "email");
+    let nid = create_jobseeker(
+        state, &username, &password, &mobile, &email, "", 0, "", "", 0, 0, "",
+    )
+    .await?;
+    audit_write(state, user, "admin.member.create", format!("uid:{nid}")).await;
+    Ok(json!({ "id": nid, "uid": nid }))
+}
+
+async fn expect_bundle(state: &AppState, uid: u64, eid: u64) -> AppResult<Value> {
+    let db = state.db.reader();
+    let row = if eid > 0 {
+        expect_repo::find_admin_by_id(db, eid).await?
+    } else {
+        expect_repo::find_admin_by_uid(db, uid).await?
+    };
+    let (job_name, city_name) = name_maps(state).await?;
+    Ok(json!({
+        "uid": uid,
+        "expect": decorate_expect(row.as_ref(), &job_name, &city_name),
+        "edu": edus_php(edu_repo::list_by_uid(db, uid).await?),
+        "work": works_php(work_repo::list_by_uid(db, uid).await?),
+        "training": trainings_php(training_repo::list_by_uid(db, uid).await?),
+        "skill": skills_php(skill_repo::list_by_uid(db, uid).await?),
+        "project": projects_php(project_repo::list_by_uid(db, uid).await?),
+        "other": others_php(other_repo::list_by_uid(db, uid).await?),
+        "salary": salary_list(),
+    }))
+}
+
+/// PHP `users_member::edit_action`.
+pub async fn member_php_edit(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let member = user_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("wap_com_00228"))?;
+    let resume = resume_repo::find_by_uid(state.db.reader(), uid).await?;
+    let eid = resume.as_ref().map(|r| r.def_job as u64).unwrap_or(0);
+    let mut out = crate::admin_php_page_service::resume_member_cache(state).await?;
+    if let Some(obj) = out.as_object_mut() {
+        obj.insert("member".into(), member_php(&member));
+        obj.insert(
+            "resume".into(),
+            resume.as_ref().map(resume_php).unwrap_or(json!("")),
+        );
+        obj.insert("expectData".into(), expect_bundle(state, uid, eid).await?);
+    }
+    Ok(out)
+}
+
+/// PHP `users_resume::editResume_action`.
+pub async fn resume_php_edit(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+    eid: u64,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let resume = resume_repo::find_by_uid(state.db.reader(), uid).await?;
+    let use_eid = if eid > 0 {
+        eid
+    } else {
+        resume.as_ref().map(|r| r.def_job as u64).unwrap_or(0)
+    };
+    let mut out = crate::admin_php_page_service::resume_member_cache(state).await?;
+    if let Some(obj) = out.as_object_mut() {
+        obj.insert(
+            "resume".into(),
+            resume.as_ref().map(resume_php).unwrap_or(json!("")),
+        );
+        obj.insert(
+            "expectData".into(),
+            expect_bundle(state, uid, use_eid).await?,
+        );
+        obj.insert("snum".into(), json!(0));
+    }
+    Ok(out)
+}
+
+/// PHP `users_member::editSave_action`（跳过微信二维码上传）。
+pub async fn member_edit_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let now = clock::now_ts();
+    let email = json_str(body, "email");
+    let telphone = json_str(body, "telphone");
+    let mobile = if telphone.is_empty() {
+        json_str(body, "moblie")
+    } else {
+        telphone.clone()
+    };
+    resume_repo::ensure_row(state.db.pool(), uid, 0, now).await?;
+    let n = resume_repo::update_admin_profile(
+        state.db.pool(),
+        uid,
+        &json_str(body, "name"),
+        json_i32(body, "sex"),
+        &birthday_norm(&json_str(body, "birthday")),
+        json_i32(body, "exp"),
+        json_i32(body, "edu"),
+        &if telphone.is_empty() {
+            mobile.clone()
+        } else {
+            telphone
+        },
+        &email,
+        &json_str(body, "domicile"),
+        &json_str(body, "living"),
+        json_i32(body, "marriage"),
+        &json_str(body, "height"),
+        &json_str(body, "nationality"),
+        &json_str(body, "weight"),
+        &json_str(body, "idcard"),
+        &json_str(body, "address"),
+        &json_str(body, "homepage"),
+        &json_str(body, "qq"),
+        &json_str(body, "description"),
+        now,
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00096"));
+    }
+    user_repo::update_contact(state.db.pool(), uid, &email, &mobile, "").await?;
+    audit_write(state, user, "admin.member.edit_save", format!("uid:{uid}")).await;
+    Ok(())
+}
+
+/// PHP `users_resume::saveExpect_action`：新建 `state=1`，更新不打回 `state=0`。
+pub async fn resume_save_expect(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    let uid = json_u64(body, "uid");
+    let eid = json_u64(body, "eid");
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let now = clock::now_ts();
+    let name = json_str(body, "name");
+    let job_classid = json_str(body, "job_classid");
+    let city_classid = json_str(body, "city_classid");
+    let minsalary = json_i32(body, "minsalary");
+    let maxsalary = json_i32(body, "maxsalary");
+    let input = ExpectInput {
+        name: if name.is_empty() { None } else { Some(name.as_str()) },
+        job_classid: 0,
+        city_classid: 0,
+        salary: 0,
+        minsalary,
+        maxsalary: if maxsalary > 0 { Some(maxsalary) } else { None },
+        r#type: json_i32(body, "type"),
+        report: json_i32(body, "report"),
+        jobstatus: json_i32(body, "jobstatus"),
+        hy: json_i32(body, "hy"),
+    };
+    if eid == 0 {
+        let resume = resume_repo::find_by_uid(state.db.reader(), uid)
+            .await?
+            .ok_or_else(|| ApiError::business("admin_model_00134"))?;
+        let nid = expect_repo::create_admin(
+            state.db.pool(),
+            uid,
+            &input,
+            &job_classid,
+            &city_classid,
+            resume.r_status,
+            resume.name.as_deref().unwrap_or(""),
+            resume.education,
+            resume.exp,
+            resume.sex,
+            resume.birthday.as_deref().unwrap_or(""),
+            now,
+        )
+        .await?;
+        if nid == 0 {
+            return Err(ApiError::business("admin_model_00134"));
+        }
+        resume_repo::set_def_job(state.db.pool(), uid, nid).await?;
+        audit_write(state, user, "admin.resume.save_expect", format!("eid:{nid}")).await;
+        return Ok(json!({ "eid": nid }));
+    }
+    let n = expect_repo::update_admin(
+        state.db.pool(),
+        eid,
+        uid,
+        &input,
+        &job_classid,
+        &city_classid,
+        now,
+    )
+    .await?;
+    if n == 0 && expect_repo::find_admin_by_id(state.db.reader(), eid).await?.is_none() {
+        return Err(ApiError::business("admin_model_00136"));
+    }
+    audit_write(state, user, "admin.resume.save_expect", format!("eid:{eid}")).await;
+    Ok(json!({ "eid": eid }))
+}
+
+/// PHP `users_resume::saveTag_action`。
+pub async fn resume_save_tag(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let tags = json_tag_list(body);
+    if tags.len() > 5 {
+        return Err(ApiError::business("admin_user_00206"));
+    }
+    let description = json_str(body, "description");
+    if description.is_empty() {
+        return Err(ApiError::business("admin_01319"));
+    }
+    let mut kept = Vec::new();
+    for t in tags {
+        let n = t.chars().count();
+        if n >= 2 && n <= 8 && !kept.iter().any(|x: &String| x == &t) {
+            kept.push(t);
+        }
+        if kept.len() >= 5 {
+            break;
+        }
+    }
+    let now = clock::now_ts();
+    resume_repo::ensure_row(state.db.pool(), uid, 0, now).await?;
+    let n = resume_repo::update_tag_desc(state.db.pool(), uid, &kept.join(","), &description, now)
+        .await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01320"));
+    }
+    audit_write(state, user, "admin.resume.save_tag", format!("uid:{uid}")).await;
+    Ok(())
+}
+
 fn json_u64(v: &Value, key: &str) -> u64 {
     match v.get(key) {
         Some(Value::Number(n)) => n.as_u64().unwrap_or(0),
@@ -1406,4 +1855,296 @@ fn json_u64(v: &Value, key: &str) -> u64 {
 
 fn fmt_ts(ts: i64) -> String {
     phpyun_core::utils::fmt_dt(ts)
+}
+
+fn json_truthy(v: &Value, key: &str) -> bool {
+    match v.get(key) {
+        Some(Value::Bool(b)) => *b,
+        Some(Value::Number(n)) => n.as_i64().unwrap_or(0) != 0,
+        Some(Value::String(s)) => {
+            let t = s.trim();
+            !t.is_empty() && t != "0" && !t.eq_ignore_ascii_case("false")
+        }
+        _ => false,
+    }
+}
+
+fn json_tag_list(v: &Value) -> Vec<String> {
+    match v.get("tag") {
+        Some(Value::Array(a)) => a
+            .iter()
+            .filter_map(|x| match x {
+                Value::String(s) => Some(s.trim().to_string()),
+                Value::Number(n) => Some(n.to_string()),
+                _ => None,
+            })
+            .filter(|s| !s.is_empty())
+            .collect(),
+        Some(Value::String(s)) => s
+            .split(',')
+            .map(|t| t.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+fn birthday_norm(s: &str) -> String {
+    let t = s.trim();
+    if t.is_empty() {
+        return String::new();
+    }
+    if let Some(i) = t.find('T') {
+        return t[..i].to_string();
+    }
+    t.chars().take(10).collect()
+}
+
+fn salary_list() -> Vec<i32> {
+    let mut v = Vec::new();
+    let mut i = 1000;
+    while i <= 50000 {
+        v.push(i);
+        i += if i >= 20000 { 5000 } else { 1000 };
+    }
+    v
+}
+
+fn member_php(m: &Member) -> Value {
+    json!({
+        "uid": m.uid,
+        "username": m.username,
+        "email": m.email,
+        "moblie": m.moblie,
+        "usertype": m.usertype,
+        "status": m.status,
+        "did": m.did,
+        "reg_date": m.reg_date,
+        "login_date": m.login_date,
+    })
+}
+
+fn resume_php(r: &Resume) -> Value {
+    let tags: Vec<String> = r
+        .tag
+        .as_deref()
+        .unwrap_or("")
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+    let mut v = serde_json::to_value(r).unwrap_or(json!({}));
+    if let Some(obj) = v.as_object_mut() {
+        obj.insert("edu".into(), json!(r.education));
+        obj.insert("arrayTag".into(), json!(tags));
+        obj.insert(
+            "wxewm_n".into(),
+            json!(r.wxewm.clone().unwrap_or_default()),
+        );
+    }
+    v
+}
+
+fn date_n(ts: i64) -> String {
+    if ts > 0 {
+        phpyun_core::utils::fmt_date(ts)
+    } else {
+        String::new()
+    }
+}
+
+fn decorate_expect(
+    row: Option<&expect_repo::AdminExpectRow>,
+    job_name: &serde_json::Map<String, Value>,
+    city_name: &serde_json::Map<String, Value>,
+) -> Value {
+    let Some(e) = row else {
+        return json!({
+            "id": 0,
+            "name": "",
+            "job_classid": "",
+            "city_classid": "",
+            "minsalary": 0,
+            "maxsalary": 0,
+            "hy": 0,
+            "report": 0,
+            "type": 0,
+            "jobstatus": 0,
+            "jobnameArr": {},
+            "citynameArr": {},
+            "jobArr": [],
+            "cityArr": [],
+        });
+    };
+    let mut jobname_arr = serde_json::Map::new();
+    let mut job_arr = Vec::new();
+    for id in e.job_classid.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+        if let Some(n) = job_name.get(id) {
+            jobname_arr.insert(id.to_string(), n.clone());
+            job_arr.push(json!(id));
+        }
+    }
+    let mut cityname_arr = serde_json::Map::new();
+    let mut city_arr = Vec::new();
+    for id in e.city_classid.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+        if let Some(n) = city_name.get(id) {
+            cityname_arr.insert(id.to_string(), n.clone());
+            city_arr.push(json!(id));
+        }
+    }
+    let job_classname = jobname_arr
+        .values()
+        .filter_map(|v| v.as_str())
+        .collect::<Vec<_>>()
+        .join(",");
+    let city_classname = cityname_arr
+        .values()
+        .filter_map(|v| v.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    json!({
+        "id": e.id,
+        "uid": e.uid,
+        "name": e.name,
+        "hy": e.hy,
+        "job_classid": e.job_classid,
+        "city_classid": e.city_classid,
+        "minsalary": e.minsalary,
+        "maxsalary": e.maxsalary,
+        "type": e.r#type,
+        "report": e.report,
+        "jobstatus": e.jobstatus,
+        "state": e.state,
+        "lastupdate": e.lastupdate,
+        "jobnameArr": jobname_arr,
+        "citynameArr": cityname_arr,
+        "jobArr": job_arr,
+        "cityArr": city_arr,
+        "job_classname": job_classname,
+        "city_classname": city_classname,
+    })
+}
+
+fn works_php(rows: Vec<Work>) -> Vec<Value> {
+    rows.into_iter()
+        .map(|w| {
+            json!({
+                "id": w.id,
+                "uid": w.uid,
+                "eid": w.eid,
+                "name": w.name,
+                "sdate": w.sdate,
+                "edate": w.edate,
+                "sdate_n": date_n(w.sdate),
+                "edate_n": if w.edate > 0 { date_n(w.edate) } else { "wap_js_00170".into() },
+                "department": w.department,
+                "title": w.title,
+                "content": w.content,
+            })
+        })
+        .collect()
+}
+
+fn edus_php(rows: Vec<Edu>) -> Vec<Value> {
+    rows.into_iter()
+        .map(|e| {
+            json!({
+                "id": e.id,
+                "uid": e.uid,
+                "eid": e.eid,
+                "name": e.name,
+                "sdate": e.sdate,
+                "edate": e.edate,
+                "sdate_n": date_n(e.sdate),
+                "edate_n": date_n(e.edate),
+                "specialty": e.specialty,
+                "education": e.education,
+            })
+        })
+        .collect()
+}
+
+fn trainings_php(rows: Vec<Training>) -> Vec<Value> {
+    rows.into_iter()
+        .map(|t| {
+            json!({
+                "id": t.id,
+                "uid": t.uid,
+                "eid": t.eid,
+                "name": t.name,
+                "sdate": t.sdate,
+                "edate": t.edate,
+                "sdate_n": date_n(t.sdate),
+                "edate_n": if t.edate > 0 { date_n(t.edate) } else { "wap_js_00170".into() },
+                "title": t.title,
+                "content": t.content,
+            })
+        })
+        .collect()
+}
+
+fn skills_php(rows: Vec<Skill>) -> Vec<Value> {
+    rows.into_iter()
+        .map(|s| {
+            json!({
+                "id": s.id,
+                "uid": s.uid,
+                "eid": s.eid,
+                "name": s.name,
+                "longtime": s.years,
+                "ing": 0,
+                "pic": "",
+                "skill": s.level,
+            })
+        })
+        .collect()
+}
+
+fn projects_php(rows: Vec<Project>) -> Vec<Value> {
+    rows.into_iter()
+        .map(|p| {
+            json!({
+                "id": p.id,
+                "uid": p.uid,
+                "eid": p.eid,
+                "name": p.name,
+                "sdate": p.sdate,
+                "edate": p.edate,
+                "sdate_n": date_n(p.sdate),
+                "edate_n": if p.edate > 0 { date_n(p.edate) } else { "wap_js_00170".into() },
+                "title": p.role,
+                "content": p.content,
+            })
+        })
+        .collect()
+}
+
+fn others_php(rows: Vec<Other>) -> Vec<Value> {
+    rows.into_iter()
+        .map(|o| {
+            json!({
+                "id": o.id,
+                "uid": o.uid,
+                "eid": o.eid,
+                "name": o.name,
+                "content": o.content,
+            })
+        })
+        .collect()
+}
+
+async fn name_maps(
+    state: &AppState,
+) -> AppResult<(serde_json::Map<String, Value>, serde_json::Map<String, Value>)> {
+    let jobs = crate::category_service::list(state, "job").await?;
+    let cities = crate::category_service::list(state, "city").await?;
+    let mut job_name = serde_json::Map::new();
+    for c in jobs.iter() {
+        job_name.insert(c.id.to_string(), json!(c.name));
+    }
+    let mut city_name = serde_json::Map::new();
+    for c in cities.iter() {
+        city_name.insert(c.id.to_string(), json!(c.name));
+    }
+    Ok((job_name, city_name))
 }
