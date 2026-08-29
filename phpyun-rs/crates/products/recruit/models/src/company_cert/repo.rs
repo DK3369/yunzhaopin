@@ -123,6 +123,33 @@ pub async fn list_pending(
         .await
 }
 
+pub async fn find_type3_note(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(statusbody,'') FROM phpyun_company_cert WHERE uid = ? AND type = 3 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).unwrap_or_default())
+}
+
+pub async fn update_admin_type3(
+    pool: &MySqlPool,
+    uid: u64,
+    status: i32,
+    note: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_cert SET status = ?, statusbody = ? WHERE uid = ? AND type = 3",
+    )
+    .bind(status)
+    .bind(note)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn count_pending(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_cert WHERE status = 1")
         .fetch_one(pool)

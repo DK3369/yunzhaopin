@@ -999,3 +999,90 @@ pub async fn set_r_status(pool: &MySqlPool, uid: u64, r_status: i32) -> Result<u
         .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn count_r_status_except(
+    pool: &MySqlPool,
+    r_status: i32,
+    except_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company WHERE r_status = ? AND uid <> ?",
+    )
+    .bind(r_status)
+    .bind(except_uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn set_yyzz(
+    pool: &MySqlPool,
+    uid: u64,
+    yyzz_status: i32,
+    name: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let res = if let Some(n) = name.filter(|s| !s.is_empty()) {
+        sqlx::query("UPDATE phpyun_company SET yyzz_status = ?, name = ? WHERE uid = ?")
+            .bind(yyzz_status)
+            .bind(n)
+            .bind(uid)
+            .execute(pool)
+            .await?
+    } else {
+        sqlx::query("UPDATE phpyun_company SET yyzz_status = ? WHERE uid = ?")
+            .bind(yyzz_status)
+            .bind(uid)
+            .execute(pool)
+            .await?
+    };
+    Ok(res.rows_affected())
+}
+
+pub async fn set_email_lock(
+    pool: &MySqlPool,
+    uid: u64,
+    email: &str,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company SET linkmail = ?, email_status = ? WHERE uid = ?",
+    )
+    .bind(email)
+    .bind(status)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_mobile_lock(
+    pool: &MySqlPool,
+    uid: u64,
+    mobile: &str,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company SET linktel = ?, moblie_status = ? WHERE uid = ?",
+    )
+    .bind(mobile)
+    .bind(status)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_vip_times(
+    pool: &MySqlPool,
+    uid: u64,
+    stime: i64,
+    etime: i64,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_company SET vipstime = ?, vipetime = ? WHERE uid = ?")
+        .bind(stime)
+        .bind(etime)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}

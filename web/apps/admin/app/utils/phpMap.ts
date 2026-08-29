@@ -233,6 +233,13 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company/comeditsave': { path: '/v1/admin/companies/php-comeditsave' },
   'user/company/getinfo': { path: '/v1/admin/companies/php-getinfo' },
   'user/company/saveUser': { path: '/v1/admin/companies/php-save-user' },
+  'user/company/Imitate': { path: '/v1/admin/companies/php-imitate' },
+  'user/company/getrating': { path: '/v1/admin/companies/php-getrating' },
+  'user/company/getstatis': { path: '/v1/admin/companies/php-getstatis' },
+  'user/company/uprating': { path: '/v1/admin/companies/php-uprating' },
+  'user/company/companyAudit': { path: '/v1/admin/companies/php-audit' },
+  'user/company/suspend': { path: '/v1/admin/companies/php-suspend' },
+  'user/company/comcert': { path: '/v1/admin/companies/php-comcert' },
   'user/users_resume/checkUsername': { path: '/v1/admin/companies/check-username' },
   'user/partjob/getCacheData': {
     path: '/v1/admin/cache/php-dicts',

@@ -8,6 +8,7 @@ use phpyun_models::admin_rbac::repo as rbac_repo;
 use phpyun_models::apply::repo as apply_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::company::repo::AdminCompanyRow;
+use phpyun_models::company_cert::repo as cert_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::resume::edu::Edu;
@@ -773,6 +774,9 @@ pub async fn company_php_edit(
                 vip_stime: 0,
                 vip_etime: 0,
                 integral: String::new(),
+                rating_type: 0,
+                suspend_num: 0,
+                max_time: 0,
             }),
     )
     .unwrap_or(json!({}));
@@ -1016,6 +1020,380 @@ pub async fn company_save_user(
     }
     audit_write(state, user, "admin.company.save_user", format!("uid:{uid}")).await;
     Ok(())
+}
+
+fn is_vip(etime: i64, now: i64) -> bool {
+    etime == 0 || etime > now
+}
+
+fn parse_end_date(s: &str) -> i64 {
+    let t = s.trim();
+    if t.is_empty() || t == "common_01936" {
+        return 0;
+    }
+    if let Ok(n) = t.parse::<i64>() {
+        return if n > 1_000_000_000 { n } else { 0 };
+    }
+    chrono::NaiveDate::parse_from_str(t, "%Y-%m-%d")
+        .ok()
+        .and_then(|d| d.and_hms_opt(23, 59, 59))
+        .map(|dt| dt.and_utc().timestamp())
+        .unwrap_or(0)
+}
+
+fn rating_dates(etime: i64, max_time: i64) -> (Value, Value, Value, Value) {
+    let vipetime = if etime > 0 {
+        json!(phpyun_core::utils::fmt_date(etime))
+    } else {
+        json!("common_01936")
+    };
+    let max_n = if max_time > 0 {
+        json!(phpyun_core::utils::fmt_date(max_time))
+    } else {
+        json!("common_01936")
+    };
+    (json!(etime), vipetime, json!(max_time), max_n)
+}
+
+/// PHP `company::getrating_action` / `changeRatingInfo`.
+pub async fn company_getrating(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    rating_id: i32,
+    uid: u64,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    let mut id = rating_id;
+    if id <= 0 {
+        id = cfg(state, "com_rating").await?.parse().unwrap_or(0);
+    }
+    let pkg = gap_repo::find_rating_package(state.db.reader(), id as u64)
+        .await?
+        .ok_or_else(|| ApiError::business("admin_01305"))?;
+    let st = statis_repo::find_admin(state.db.reader(), uid)
+        .await?
+        .unwrap_or(statis_repo::AdminStatisRow {
+            rating: 0,
+            rating_name: String::new(),
+            job_num: 0,
+            down_resume: 0,
+            breakjob_num: 0,
+            invite_resume: 0,
+            zph_num: 0,
+            top_num: 0,
+            urgent_num: 0,
+            rec_num: 0,
+            vip_stime: 0,
+            vip_etime: 0,
+            integral: String::new(),
+            rating_type: 0,
+            suspend_num: 0,
+            max_time: 0,
+        });
+    let now = clock::now_ts();
+    let add_on = st.rating_type == pkg.r#type && pkg.r#type == 1 && is_vip(st.vip_etime, now);
+    let vip_etime = if pkg.service_time > 0 {
+        if add_on && is_vip(st.vip_etime, now) {
+            st.vip_etime.saturating_add(i64::from(pkg.service_time) * 86400)
+        } else {
+            now.saturating_add(i64::from(pkg.service_time) * 86400)
+        }
+    } else {
+        0
+    };
+    let integral_buy: i64 = pkg.integral_buy.trim().parse().unwrap_or(0);
+    let cur_int: i64 = st.integral.trim().parse().unwrap_or(0);
+    let (job_num, breakjob_num, down_resume, invite_resume, zph_num, urgent_num, rec_num, top_num, integral) =
+        if add_on {
+            (
+                pkg.job_num,
+                st.breakjob_num + pkg.breakjob_num,
+                st.down_resume + pkg.resume,
+                st.invite_resume + pkg.interview,
+                st.zph_num + pkg.zph_num,
+                st.urgent_num + pkg.urgent_num,
+                st.rec_num + pkg.rec_num,
+                st.top_num + pkg.top_num,
+                cur_int + integral_buy,
+            )
+        } else {
+            (
+                pkg.job_num,
+                pkg.breakjob_num,
+                pkg.resume,
+                pkg.interview,
+                pkg.zph_num,
+                pkg.urgent_num,
+                pkg.rec_num,
+                pkg.top_num,
+                integral_buy,
+            )
+        };
+    let max_time = if pkg.max_time > 0 {
+        now.saturating_add(i64::from(pkg.max_time) * 86400)
+    } else {
+        0
+    };
+    let (oldetime, vipetime, max_time_v, max_time_n) = rating_dates(vip_etime, max_time);
+    Ok(json!({
+        "rating": id,
+        "rating_name": pkg.name,
+        "rating_type": pkg.r#type,
+        "suspend_num": pkg.suspend_num,
+        "max_time": max_time_v,
+        "max_time_n": max_time_n,
+        "job_num": job_num,
+        "breakjob_num": breakjob_num,
+        "down_resume": down_resume,
+        "invite_resume": invite_resume,
+        "zph_num": zph_num,
+        "urgent_num": urgent_num,
+        "rec_num": rec_num,
+        "top_num": top_num,
+        "integral": integral,
+        "vip_etime": vip_etime,
+        "vip_stime": now,
+        "oldetime": oldetime,
+        "vipetime": vipetime,
+        "hotjob": 0,
+    }))
+}
+
+/// PHP `company::getstatis_action`.
+pub async fn company_getstatis(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    let st = statis_repo::find_admin(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("admin_user_company_00097"))?;
+    let (oldetime, vipetime, max_time_v, max_time_n) = rating_dates(st.vip_etime, st.max_time);
+    Ok(json!({
+        "rating": st.rating,
+        "rating_name": st.rating_name,
+        "rating_type": st.rating_type,
+        "suspend_num": st.suspend_num,
+        "max_time": max_time_v,
+        "max_time_n": max_time_n,
+        "job_num": st.job_num,
+        "breakjob_num": st.breakjob_num,
+        "down_resume": st.down_resume,
+        "invite_resume": st.invite_resume,
+        "zph_num": st.zph_num,
+        "urgent_num": st.urgent_num,
+        "rec_num": st.rec_num,
+        "top_num": st.top_num,
+        "integral": st.integral,
+        "vip_etime": st.vip_etime,
+        "vip_stime": st.vip_stime,
+        "oldetime": oldetime,
+        "vipetime": vipetime,
+        "hotjob": 0,
+    }))
+}
+
+/// PHP `company::uprating_action`.
+pub async fn company_uprating(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let rid = json_i32(body, "rating");
+    let uid = json_u64(body, "ratuid");
+    if rid <= 0 {
+        return Err(ApiError::business("admin_01305"));
+    }
+    if uid == 0 {
+        return Err(ApiError::param_invalid("ratuid"));
+    }
+    let com = company_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("admin_user_00086"))?;
+    if com.r_status == 4 {
+        return Err(ApiError::business("admin_user_00024"));
+    }
+    let pkg = gap_repo::find_rating_package(state.db.reader(), rid as u64)
+        .await?
+        .ok_or_else(|| ApiError::business("admin_01305"))?;
+    let vip_etime = if pkg.service_time == 0 {
+        0
+    } else {
+        parse_end_date(&json_str(body, "vipetime"))
+    };
+    let max_time = if json_str(body, "max_time").is_empty() || vip_etime == 0 {
+        0
+    } else {
+        parse_end_date(&json_str(body, "max_time"))
+    };
+    if vip_etime > 0 && max_time > 0 && max_time < vip_etime {
+        return Err(ApiError::business("admin_user_company_00081"));
+    }
+    let now = clock::now_ts();
+    let row = statis_repo::AdminStatisRow {
+        rating: rid,
+        rating_name: pkg.name.clone(),
+        job_num: json_i32(body, "job_num"),
+        down_resume: json_i32(body, "down_resume"),
+        breakjob_num: json_i32(body, "breakjob_num"),
+        invite_resume: json_i32(body, "invite_resume"),
+        zph_num: json_i32(body, "zph_num"),
+        top_num: json_i32(body, "top_num"),
+        urgent_num: json_i32(body, "urgent_num"),
+        rec_num: json_i32(body, "rec_num"),
+        vip_stime: now,
+        vip_etime,
+        integral: json_str(body, "integral"),
+        rating_type: pkg.r#type,
+        suspend_num: json_i32(body, "suspend_num"),
+        max_time,
+    };
+    statis_repo::update_admin_quotas(state.db.pool(), uid, &row).await?;
+    company_repo::set_rating(state.db.pool(), uid, rid, &pkg.name).await?;
+    company_repo::set_vip_times(state.db.pool(), uid, now, vip_etime).await?;
+    audit_write(state, user, "admin.company.uprating", format!("uid:{uid}")).await;
+    Ok(())
+}
+
+/// PHP `company::Imitate_action`：返回会员中心 URL 字符串。
+pub async fn company_imitate(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+    typ: &str,
+) -> AppResult<String> {
+    user.require_admin()?;
+    if uid == 0 {
+        return Err(ApiError::param_invalid("uid"));
+    }
+    let _ = user_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("admin_user_00086"))?;
+    let web = cfg(state, "sy_weburl").await?;
+    let mut url = format!("{}/member/", web.trim_end_matches('/'));
+    if !typ.is_empty() {
+        url.push_str(&format!("index.php?c={typ}"));
+    }
+    audit_write(state, user, "admin.company.imitate", format!("uid:{uid}")).await;
+    Ok(url)
+}
+
+/// PHP `company::companyAudit_action`.
+pub async fn company_php_audit(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+) -> AppResult<Value> {
+    let edit = company_php_edit(state, user, uid).await?;
+    let mut info = edit.get("row").cloned().unwrap_or(json!({}));
+    if let Some(m) = user_repo::find_admin_extras(state.db.reader(), uid).await? {
+        info["statusbody"] = json!(m.lock_info);
+        info["member_status"] = json!(m.status);
+        info["login_ip"] = json!(m.reg_ip);
+        info["login_address"] = json!("");
+        info["moblie_address"] = json!("");
+        info["reg_date_n"] = json!(fmt_ts(m.reg_date));
+        info["login_date_n"] = json!(fmt_ts(m.login_date));
+    }
+    let snum = company_repo::count_r_status_except(state.db.reader(), 0, uid).await?;
+    Ok(json!({
+        "Info": info,
+        "snum": snum,
+        "cache": edit.get("cache").cloned().unwrap_or(json!({})),
+        "statis": edit.get("statis").cloned().unwrap_or(json!({})),
+        "rating_list": edit.get("rating_list").cloned().unwrap_or(json!([])),
+    }))
+}
+
+/// PHP `company::suspend_action`.
+pub async fn company_suspend(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+) -> AppResult<()> {
+    user.require_admin()?;
+    if uid == 0 {
+        return Err(ApiError::param_invalid("uid"));
+    }
+    company_repo::set_r_status(state.db.pool(), uid, 4).await?;
+    user_repo::admin_set_status(state.db.pool(), uid, 4).await?;
+    audit_write(state, user, "admin.company.suspend", format!("uid:{uid}")).await;
+    Ok(())
+}
+
+/// PHP `company::comcert_action` 分发。
+pub async fn company_comcert(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    if body.get("sbody").is_some() {
+        let uid = json_u64(body, "uid");
+        let sbody = cert_repo::find_type3_note(state.db.reader(), uid).await?;
+        return Ok(json!({ "sbody": sbody }));
+    }
+    if body.get("acwxbind").is_some() {
+        return Err(ApiError::business("common_01335"));
+    }
+    if body.get("comemail").is_some() {
+        let email = json_str(body, "comemail");
+        if email.is_empty() {
+            return Err(ApiError::business("wap_01119"));
+        }
+        if !check_reg_email(&email) {
+            return Err(ApiError::business("wap_js_00120"));
+        }
+        let uid = json_u64(body, "uid");
+        company_repo::set_email_lock(state.db.pool(), uid, &email, json_i32(body, "estatus")).await?;
+        return Ok(json!({}));
+    }
+    if body.get("comlinktel").is_some() {
+        let mobile = json_str(body, "comlinktel");
+        if mobile.is_empty() {
+            return Err(ApiError::business("wap_user_00274"));
+        }
+        if !check_mobile(&mobile) {
+            return Err(ApiError::business("wap_user_00039"));
+        }
+        let uid = json_u64(body, "uid");
+        company_repo::set_mobile_lock(state.db.pool(), uid, &mobile, json_i32(body, "mstatus"))
+            .await?;
+        return Ok(json!({}));
+    }
+    if body.get("batchfirm").is_some() {
+        let uids = json_str(body, "uid");
+        for part in uids.split(',') {
+            let uid: u64 = part.trim().parse().unwrap_or(0);
+            if uid == 0 {
+                continue;
+            }
+            if body.get("comname_yyzz").is_some() {
+                company_repo::set_yyzz(state.db.pool(), uid, 1, None).await?;
+                let _ = cert_repo::update_admin_type3(state.db.pool(), uid, 1, "").await;
+            }
+        }
+        return Ok(json!({}));
+    }
+    let r_status = json_i32(body, "r_status");
+    if r_status == 0 {
+        return Err(ApiError::business("admin_user_00037"));
+    }
+    let uid = json_u64(body, "uid");
+    let yyzz = if r_status == 1 { 1 } else { 2 };
+    let name = json_str(body, "name");
+    company_repo::set_yyzz(
+        state.db.pool(),
+        uid,
+        yyzz,
+        if name.is_empty() { None } else { Some(&name) },
+    )
+    .await?;
+    cert_repo::update_admin_type3(state.db.pool(), uid, r_status, &json_str(body, "statusbody"))
+        .await?;
+    Ok(json!({}))
 }
 
 fn json_u64(v: &Value, key: &str) -> u64 {

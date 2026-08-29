@@ -174,6 +174,9 @@ pub struct AdminStatisRow {
     pub vip_stime: i64,
     pub vip_etime: i64,
     pub integral: String,
+    pub rating_type: i32,
+    pub suspend_num: i32,
+    pub max_time: i64,
 }
 
 pub async fn find_admin(pool: &MySqlPool, uid: u64) -> Result<Option<AdminStatisRow>, sqlx::Error> {
@@ -185,12 +188,48 @@ pub async fn find_admin(pool: &MySqlPool, uid: u64) -> Result<Option<AdminStatis
          CAST(COALESCE(zph_num,0) AS SIGNED) AS zph_num, CAST(COALESCE(top_num,0) AS SIGNED) AS top_num, \
          CAST(COALESCE(urgent_num,0) AS SIGNED) AS urgent_num, CAST(COALESCE(rec_num,0) AS SIGNED) AS rec_num, \
          CAST(COALESCE(vip_stime,0) AS SIGNED) AS vip_stime, CAST(COALESCE(vip_etime,0) AS SIGNED) AS vip_etime, \
-         COALESCE(integral,'') AS integral \
+         COALESCE(integral,'') AS integral, CAST(COALESCE(rating_type,0) AS SIGNED) AS rating_type, \
+         CAST(COALESCE(suspend_num,0) AS SIGNED) AS suspend_num, CAST(COALESCE(max_time,0) AS SIGNED) AS max_time \
          FROM phpyun_company_statis WHERE uid = ? LIMIT 1",
     )
     .bind(uid)
     .fetch_optional(pool)
     .await
+}
+
+pub async fn update_admin_quotas(
+    pool: &MySqlPool,
+    uid: u64,
+    s: &AdminStatisRow,
+) -> Result<u64, sqlx::Error> {
+    ensure_row(pool, uid).await?;
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET \
+            rating=?, rating_name=?, rating_type=?, integral=?, vip_stime=?, vip_etime=?, \
+            job_num=?, breakjob_num=?, down_resume=?, invite_resume=?, zph_num=?, \
+            top_num=?, urgent_num=?, rec_num=?, suspend_num=?, max_time=? \
+         WHERE uid=?",
+    )
+    .bind(s.rating)
+    .bind(&s.rating_name)
+    .bind(s.rating_type)
+    .bind(&s.integral)
+    .bind(s.vip_stime)
+    .bind(s.vip_etime)
+    .bind(s.job_num)
+    .bind(s.breakjob_num)
+    .bind(s.down_resume)
+    .bind(s.invite_resume)
+    .bind(s.zph_num)
+    .bind(s.top_num)
+    .bind(s.urgent_num)
+    .bind(s.rec_num)
+    .bind(s.suspend_num)
+    .bind(s.max_time)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }
 
 /// PHP `finance_recharge` jifen：在现有 VARCHAR 积分上加正数。

@@ -27,6 +27,13 @@ pub fn routes() -> Router<AppState> {
         .route("/companies/php-comeditsave", post(php_comeditsave))
         .route("/companies/php-getinfo", post(php_getinfo))
         .route("/companies/php-save-user", post(php_save_user))
+        .route("/companies/php-imitate", post(php_imitate))
+        .route("/companies/php-getrating", post(php_getrating))
+        .route("/companies/php-getstatis", post(php_getstatis))
+        .route("/companies/php-uprating", post(php_uprating))
+        .route("/companies/php-audit", post(php_audit))
+        .route("/companies/php-suspend", post(php_suspend))
+        .route("/companies/php-comcert", post(php_comcert))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
@@ -283,4 +290,97 @@ pub async fn php_save_user(
 ) -> AppResult<ApiResponse> {
     admin_longtail_service::company_save_user(&state, &user, &body).await?;
     Ok(ApiResponse::message("admin_user_00083"))
+}
+
+pub async fn php_imitate(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<String>> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    let typ = body.get("type").and_then(|v| v.as_str()).unwrap_or("");
+    Ok(ApiResponse::data(
+        admin_longtail_service::company_imitate(&state, &user, uid, typ).await?,
+    ))
+}
+
+pub async fn php_getrating(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let id = body.get("id").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        admin_longtail_service::company_getrating(&state, &user, id, uid).await?,
+    ))
+}
+
+pub async fn php_getstatis(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        admin_longtail_service::company_getstatis(&state, &user, uid).await?,
+    ))
+}
+
+pub async fn php_uprating(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    admin_longtail_service::company_uprating(&state, &user, &body).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+pub async fn php_audit(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    Ok(ApiResponse::data(
+        admin_longtail_service::company_php_audit(&state, &user, uid).await?,
+    ))
+}
+
+pub async fn php_suspend(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    admin_longtail_service::company_suspend(&state, &user, uid).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+pub async fn php_comcert(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let data = admin_longtail_service::company_comcert(&state, &user, &body).await?;
+    if data.get("sbody").is_some() {
+        Ok(ApiResponse::data(data))
+    } else {
+        Ok(ApiResponse::message_data("ok", data))
+    }
 }
