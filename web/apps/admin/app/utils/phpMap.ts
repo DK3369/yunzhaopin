@@ -24,6 +24,27 @@ function settingsToMap(data: unknown): Record<string, unknown> {
   return out
 }
 
+function isOn(v: unknown): boolean {
+  return v === true || v === 1 || v === '1'
+}
+
+/** PHP `set_config::index_action` computed fields on top of KV config. */
+function configIndexShape(data: unknown): Record<string, unknown> {
+  const m = settingsToMap(data)
+  const mapKey = String(m.map_key || '')
+  const weburl = String(m.sy_weburl || '')
+  return {
+    ...m,
+    sy_ossurl: String(m.sy_ossurl || weburl),
+    sy_web_online_status: isOn(m.sy_web_online),
+    sy_iscsrf_status: isOn(m.sy_iscsrf),
+    sy_istemplate_status: isOn(m.sy_istemplate),
+    mapurl: mapKey ? `https://webapi.amap.com/maps?v=2.0&key=${mapKey}` : String(m.mapurl || ''),
+    map_key: mapKey,
+    map_secret: String(m.map_secret || ''),
+  }
+}
+
 function jobStatsToPhp(data: unknown): Record<string, unknown> {
   const d = asRecord(data)
   return {
@@ -208,8 +229,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_resume/cstatus': { path: '/v1/admin/resumes/status' },
   'user/users_resume/xls': { path: '/v1/admin/resumes/export' },
 
-  'system/set_config': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
-  'system/set_config/index': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
+  'system/set_config': { path: '/v1/admin/site-settings/list', transformRes: configIndexShape },
+  'system/set_config/index': { path: '/v1/admin/site-settings/list', transformRes: configIndexShape },
   'system/set_config/save': { path: '/v1/admin/site-settings/batch' },
   'system/set_payset': { path: '/v1/admin/site-settings/payset' },
   'system/set_payset/index': { path: '/v1/admin/site-settings/payset' },
