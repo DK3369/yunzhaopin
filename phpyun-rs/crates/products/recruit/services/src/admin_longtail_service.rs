@@ -243,3 +243,92 @@ pub async fn set_rbac_user_status(
     audit_write(state, actor, "admin.rbac.status", format!("uid:{uid}")).await;
     Ok(())
 }
+
+fn shanghai_today_bounds(now_utc: i64) -> (i64, i64) {
+    const OFFSET: i64 = 8 * 3600;
+    let local = now_utc + OFFSET;
+    let day_start_local = local - local.rem_euclid(86_400);
+    let today = day_start_local - OFFSET;
+    (today, today + 86_400 - 1)
+}
+
+async fn cfg(state: &AppState, key: &str) -> AppResult<String> {
+    Ok(phpyun_models::site_setting::repo::find(state.db.reader(), key)
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default())
+}
+
+/// PHP `company::getCache_action`.
+pub async fn company_php_cache(
+    state: &AppState,
+    user: &AuthenticatedUser,
+) -> AppResult<serde_json::Value> {
+    user.require_admin()?;
+    let db = state.db.reader();
+    let ratings = company_repo::list_rating_options(db).await?;
+    let mut ratingarr = serde_json::Map::new();
+    for r in &ratings {
+        ratingarr.insert(r.id.to_string(), serde_json::Value::String(r.name.clone()));
+    }
+    let advisors = rbac_repo::list_crm_advisors(db).await?;
+    let mut isgw = serde_json::Map::new();
+    isgw.insert("-1".into(), serde_json::Value::String("admin_01303".into()));
+    isgw.insert("-2".into(), serde_json::Value::String("admin_user_company_00153".into()));
+    for a in &advisors {
+        let label = if a.name.is_empty() {
+            a.username.clone()
+        } else {
+            a.name.clone()
+        };
+        isgw.insert(a.uid.to_string(), serde_json::Value::String(label));
+    }
+    let domains = phpyun_models::domain::repo::list_all(db).await?;
+    let mut dname = serde_json::Map::new();
+    for d in domains {
+        dname.insert(d.id.to_string(), serde_json::Value::String(d.title));
+    }
+    let weburl = cfg(state, "sy_weburl").await?;
+    let map_key = cfg(state, "map_key").await?;
+    let map_secret = cfg(state, "map_secret").await?;
+    let hb_bg: Vec<String> = (1..=10)
+        .map(|i| format!("{weburl}/data/upload/whb/logo/{i}.png"))
+        .collect();
+    let (today, today_etime) = shanghai_today_bounds(clock::now_ts());
+    let mut payload = serde_json::json!({
+        "gwinfo": advisors,
+        "source": {},
+        "ratingarr": ratingarr.clone(),
+        "search_list": {
+            "rating": { "name": "admin_user_company_00018", "value": ratingarr },
+            "time": { "name": "admin_user_company_00052", "value": {
+                "1": "admin_tool_00622", "2": "common_01659", "3": "common_01897",
+                "4": "common_01875", "5": "wap_com_00319", "6": "common_01985"
+            }},
+            "status": { "name": "wap_com_00406", "value": {
+                "1": "wap_user_00165", "2": "admin_user_00138", "3": "wap_user_00167",
+                "4": "wap_user_00166", "5": "admin_user_00184"
+            }},
+            "source": { "name": "admin_yunying_00139", "value": {} },
+            "rec": { "name": "admin_user_company_00145", "value": { "1": "是", "2": "否", "3": "wap_com_00319" } },
+            "gw": { "name": "admin_01231", "value": isgw },
+            "has_job": { "name": "admin_user_00045", "value": { "1": "是", "2": "否" } },
+            "fact_status": { "name": "wap_00274", "value": { "1": "是", "2": "否" } },
+            "map_status": { "name": "member_com_00204", "value": { "1": "是", "2": "否" } }
+        },
+        "hbBgA": hb_bg,
+        "config": {
+            "com_social_credit": cfg(state, "com_social_credit").await?,
+            "com_cert_owner": cfg(state, "com_cert_owner").await?,
+            "com_cert_wt": cfg(state, "com_cert_wt").await?,
+            "com_cert_other": cfg(state, "com_cert_other").await?,
+            "com_free_status": cfg(state, "com_free_status").await?,
+            "pricename": cfg(state, "integral_pricename").await?,
+            "today_etime": today_etime,
+            "today": today
+        },
+        "dname": dname,
+    });
+    crate::admin_dashboard_service::attach_amap(&mut payload, &map_key, &map_secret);
+    Ok(payload)
+}

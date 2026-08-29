@@ -136,6 +136,26 @@ pub async fn touch_lasttime(pool: &MySqlPool, uid: u64, ts: i64) -> Result<u64, 
     Ok(res.rows_affected())
 }
 
+#[derive(Debug, Clone, FromRow, Serialize)]
+pub struct CrmAdvisor {
+    pub uid: u64,
+    pub username: String,
+    pub name: String,
+}
+
+pub async fn list_crm_advisors(pool: &MySqlPool) -> Result<Vec<CrmAdvisor>, sqlx::Error> {
+    sqlx::query_as::<_, CrmAdvisor>(
+        r#"SELECT CAST(uid AS UNSIGNED) AS uid,
+                  COALESCE(username, '') AS username,
+                  COALESCE(name, '') AS name
+           FROM phpyun_admin_user
+           WHERE is_crm = 1 AND status = 1
+           ORDER BY uid ASC"#,
+    )
+    .fetch_all(pool)
+    .await
+}
+
 pub async fn group_power_ids(pool: &MySqlPool, m_id: i32) -> Result<Vec<i64>, sqlx::Error> {
     let row: Option<(Option<String>, Option<String>)> = sqlx::query_as(
         "SELECT group_name, group_power FROM phpyun_admin_user_group WHERE id = ? LIMIT 1",

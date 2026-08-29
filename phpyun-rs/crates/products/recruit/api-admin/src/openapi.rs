@@ -150,6 +150,8 @@ use crate::v1;
         v1::companies::export_csv,
         v1::companies::list_ratings,
         v1::companies::set_rating,
+        v1::companies::php_cache,
+        v1::companies::php_add_form,
         v1::resumes::list,
         v1::resumes::set_status,
         v1::resumes::export_csv,

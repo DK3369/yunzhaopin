@@ -498,6 +498,19 @@ pub fn php_cache_payload(
     })
 }
 
+/// PHP `$this->config['mapurl']` = AMap JS API + `map_key`.
+pub fn attach_amap(payload: &mut serde_json::Value, map_key: &str, map_secret: &str) {
+    let mapurl = if map_key.is_empty() {
+        String::new()
+    } else {
+        format!("https://webapi.amap.com/maps?v=2.0&key={map_key}")
+    };
+    payload["mapurl"] = serde_json::Value::String(mapurl);
+    payload["mapsecret"] = serde_json::Value::String(map_secret.to_string());
+    payload["map_key"] = serde_json::Value::String(map_key.to_string());
+    payload["mapkey"] = serde_json::Value::String(map_key.to_string());
+}
+
 fn cascader_nodes(nodes: &[(u64, u64, String)]) -> Vec<serde_json::Value> {
     use std::collections::HashMap;
     let mut by_parent: HashMap<u64, Vec<&(u64, u64, String)>> = HashMap::new();

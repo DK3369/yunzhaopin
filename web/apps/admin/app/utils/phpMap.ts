@@ -126,6 +126,10 @@ function cacheDataShape(data: unknown): Record<string, unknown> {
     },
     hbNum: d.hbNum ?? 0,
     hb_isopen: d.hb_isopen ?? '0',
+    mapurl: String(d.mapurl || ''),
+    mapsecret: String(d.mapsecret || ''),
+    map_key: String(d.map_key || d.mapkey || ''),
+    mapkey: String(d.mapkey || d.map_key || ''),
   }
 }
 
@@ -192,6 +196,12 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company': { path: '/v1/admin/companies', transformReq: pageQuery },
   'user/company/index': { path: '/v1/admin/companies', transformReq: pageQuery },
   'user/company/xls': { path: '/v1/admin/companies/export' },
+  'user/company/getCache': { path: '/v1/admin/companies/php-cache' },
+  'user/company/add': { path: '/v1/admin/companies/php-add-form' },
+  'user/partjob/getCacheData': {
+    path: '/v1/admin/cache/php-dicts',
+    transformRes: cacheDataShape,
+  },
 
   'user/users_resume': { path: '/v1/admin/resumes', transformReq: pageQuery },
   'user/users_resume/index': { path: '/v1/admin/resumes', transformReq: pageQuery },

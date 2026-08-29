@@ -3,7 +3,7 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
-use phpyun_services::{admin_dashboard_service, category_service, dict_service};
+use phpyun_services::{admin_dashboard_service, category_service, dict_service, site_setting_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -284,10 +284,20 @@ pub async fn php_dicts(
         .iter()
         .map(|c| (c.id, c.parent_id, c.name.clone()))
         .collect();
-    Ok(ApiResponse::data(admin_dashboard_service::php_cache_payload(
+    let mut data = admin_dashboard_service::php_cache_payload(
         &job_nodes,
         &city_nodes,
         &dicts.comclass_by_variable("job_edu"),
         &dicts.comclass_by_variable("job_exp"),
-    )))
+    );
+    let map_key = site_setting_service::get(&state, "map_key")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let map_secret = site_setting_service::get(&state, "map_secret")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    admin_dashboard_service::attach_amap(&mut data, &map_key, &map_secret);
+    Ok(ApiResponse::data(data))
 }
