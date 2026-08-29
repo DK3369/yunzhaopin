@@ -9,6 +9,7 @@ pub mod app_version;
 pub mod apply;
 pub mod article;
 pub mod atn;
+pub mod bank;
 pub mod audit_log;
 pub mod blacklist;
 pub mod broadcast;

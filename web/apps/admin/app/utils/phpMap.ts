@@ -201,9 +201,16 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_config': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
   'system/set_config/index': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
   'system/set_config/save': { path: '/v1/admin/site-settings/batch' },
-  'system/set_payset': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
-  'system/set_payset/index': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
+  'system/set_payset': { path: '/v1/admin/site-settings/payset' },
+  'system/set_payset/index': { path: '/v1/admin/site-settings/payset' },
   'system/set_payset/save': { path: '/v1/admin/site-settings/batch' },
+  'system/set_payset/alipay': { path: '/v1/admin/site-settings/payset/alipay' },
+  'system/set_payset/tenpay': { path: '/v1/admin/site-settings/payset/tenpay' },
+  'system/set_payset/bank': { path: '/v1/admin/site-settings/payset/bank' },
+  'system/set_payset/del': {
+    path: '/v1/admin/site-settings/payset/bank-delete',
+    transformReq: idFromDel,
+  },
   'system/set_seo': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
   'system/seoset': { path: '/v1/admin/site-settings/list', transformRes: settingsToMap },
 

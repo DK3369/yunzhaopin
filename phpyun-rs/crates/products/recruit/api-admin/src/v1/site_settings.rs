@@ -14,6 +14,11 @@ pub fn routes() -> Router<AppState> {
         .route("/site-settings/list", post(list))
         .route("/site-settings/delete", post(remove))
         .route("/site-settings/batch", post(batch))
+        .route("/site-settings/payset", post(payset))
+        .route("/site-settings/payset/alipay", post(payset_alipay))
+        .route("/site-settings/payset/tenpay", post(payset_tenpay))
+        .route("/site-settings/payset/bank", post(payset_bank))
+        .route("/site-settings/payset/bank-delete", post(payset_bank_delete))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -146,7 +151,14 @@ pub async fn batch(
     user.require_admin()?;
     let obj = body.as_object().cloned().unwrap_or_default();
     for (k, v) in obj {
-        if k.is_empty() || k.len() > 64 || k == "pytoken" || k == "m" || k == "c" || k == "a" {
+        if k.is_empty()
+            || k.len() > 64
+            || k == "pytoken"
+            || k == "m"
+            || k == "c"
+            || k == "a"
+            || k == "config"
+        {
             continue;
         }
         if phpyun_core::validators::path_token(&k).is_err() {
@@ -155,7 +167,13 @@ pub async fn batch(
         let value = match v {
             serde_json::Value::String(s) => s,
             serde_json::Value::Number(n) => n.to_string(),
-            serde_json::Value::Bool(b) => if b { "1".into() } else { "0".into() },
+            serde_json::Value::Bool(b) => {
+                if b {
+                    "1".into()
+                } else {
+                    "0".into()
+                }
+            }
             serde_json::Value::Null => continue,
             other => other.to_string(),
         };
@@ -174,5 +192,137 @@ pub async fn batch(
         )
         .await?;
     }
+    Ok(ApiResponse::message("ok"))
+}
+
+/// PHP `set_payset::index`.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/payset",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn payset(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::payset_index(&state, &user).await?,
+    ))
+}
+
+/// PHP `set_payset::alipay`.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/payset/alipay",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn payset_alipay(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::payset_alipay(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_01397"))
+}
+
+/// PHP `set_payset::tenpay`.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/payset/tenpay",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn payset_tenpay(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::payset_tenpay(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_01398"))
+}
+
+/// PHP `set_payset::bank`.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/payset/bank",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn payset_bank(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    let name = body
+        .get("name")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim();
+    let bank_name = body
+        .get("bank_name")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim();
+    let bank_number = body
+        .get("bank_number")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim();
+    let bank_address = body
+        .get("bank_address")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim();
+    if name.is_empty() || bank_name.is_empty() || bank_number.is_empty() || bank_address.is_empty()
+    {
+        return Err(phpyun_core::ApiError::param_invalid("bank_fields"));
+    }
+    let id = match body.get("id") {
+        Some(serde_json::Value::Number(n)) => n.as_u64(),
+        Some(serde_json::Value::String(s)) if !s.is_empty() => s.parse().ok(),
+        _ => None,
+    };
+    site_setting_service::payset_bank_upsert(
+        &state,
+        &user,
+        site_setting_service::BankIn {
+            id,
+            name,
+            bank_name,
+            bank_number,
+            bank_address,
+        },
+    )
+    .await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct BankDelBody {
+    #[serde(default, alias = "del")]
+    pub id: u64,
+}
+
+/// PHP `set_payset::del`.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/payset/bank-delete",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = BankDelBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn payset_bank_delete(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<BankDelBody>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::payset_bank_delete(&state, &user, b.id).await?;
     Ok(ApiResponse::message("ok"))
 }
