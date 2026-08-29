@@ -655,7 +655,12 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'index/wxbind': { list: '/v1/admin/cache/php-dicts' },
 }
 
-function moduleAction(mod: ModuleRoutes, a: string): PhpAction {
+function isIndexAction(a: string): boolean {
+  const act = (a || '').toLowerCase()
+  return !act || act === 'index'
+}
+
+function moduleAction(mod: ModuleRoutes, a: string): PhpAction | undefined {
   const act = (a || 'index').toLowerCase()
   if ((act === 'del' || act.startsWith('del') || act === 'delete') && mod.del) {
     return { path: mod.del, transformReq: idsFromDel }
@@ -663,10 +668,16 @@ function moduleAction(mod: ModuleRoutes, a: string): PhpAction {
   if ((act === 'status' || act === 'audit' || act === 'checkstate') && mod.status) {
     return { path: mod.status }
   }
-  if ((act === 'save' || act === 'add' || act.endsWith('save')) && mod.save) {
+  if ((act === 'save' || act.endsWith('save')) && mod.save) {
     return { path: mod.save }
   }
-  return { path: mod.list, transformReq: pageQuery }
+  if (act === 'add' && mod.save) {
+    return { path: mod.save }
+  }
+  if (isIndexAction(act)) {
+    return { path: mod.list, transformReq: pageQuery }
+  }
+  return undefined
 }
 
 export function parsePhpUrl(url: string): { m: string; c: string; a: string } {
@@ -685,11 +696,20 @@ export function parsePhpUrl(url: string): { m: string; c: string; a: string } {
 export function resolvePhpAction(url: string): PhpAction | undefined {
   const { m, c, a } = parsePhpUrl(url)
   if (!m && !c) return undefined
-  const keys = a ? [`${m}/${c}/${a}`, `${m}/${c}`] : [`${m}/${c}`]
+  // Named PHP actions must match exactly (`m/c/a`). Do not fall back to `m/c`
+  // list, which previously sent getCache/add onto companies/parts lists.
+  if (!isIndexAction(a)) {
+    const exact = PHP_ADMIN_MAP[`${m}/${c}/${a}`]
+    if (exact) return exact
+    const mod = MODULE_ROUTES[`${m}/${c}`]
+    if (mod) return moduleAction(mod, a)
+    return undefined
+  }
+  const keys = [`${m}/${c}/index`, `${m}/${c}`]
   for (const k of keys) {
     if (PHP_ADMIN_MAP[k]) return PHP_ADMIN_MAP[k]
   }
   const mod = MODULE_ROUTES[`${m}/${c}`]
-  if (mod) return moduleAction(mod, a)
+  if (mod) return moduleAction(mod, a || 'index')
   return undefined
 }
