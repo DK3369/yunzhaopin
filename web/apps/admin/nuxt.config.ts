@@ -3,6 +3,11 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2026-08-25',
   vite: {
+    define: {
+      endLoading: '(globalThis.endLoading||function(){})',
+      startLoading: '(globalThis.startLoading||function(){})',
+      baseUrl: '(globalThis.baseUrl||"/admin/api/php-admin?")',
+    },
     server: {
       allowedHosts: true,
     },
@@ -48,6 +53,10 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: '/admin/php-admin/images/admin.css' },
       ],
       script: [
+        {
+          innerHTML:
+            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";',
+        },
         { src: '/admin/php-admin/js/jquery.min.js' },
         { src: '/admin/php-admin/js/echarts.min.js' },
       ],

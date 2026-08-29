@@ -122,6 +122,19 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     w.scrollToTop = scrollToTop
     w.showFullScreenLoading = () => undefined
     w.tryHideFullScreenLoading = () => undefined
+    let loadingInst: { close: () => void } | null = null
+    w.startLoading = () => {
+      loadingInst = ElLoading.service({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(57, 61, 73, 0.5)',
+      })
+    }
+    w.endLoading = () => {
+      loadingInst?.close()
+      loadingInst = null
+    }
+    w.baseUrl = '/admin/api/php-admin?'
     if (typeof w.$ !== 'function') {
       const jq = w.jQuery as ((sel?: unknown) => unknown) | undefined
       if (typeof jq === 'function') {

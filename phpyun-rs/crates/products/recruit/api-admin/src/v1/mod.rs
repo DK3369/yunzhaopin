@@ -42,6 +42,7 @@ pub mod site_settings;
 pub mod system_gap;
 pub mod tiny;
 pub mod toolbox;
+pub mod upload;
 pub mod users;
 pub mod usertype_change;
 pub mod warnings;
@@ -94,6 +95,7 @@ pub fn router() -> Router<AppState> {
         .merge(msg_logs::routes())
         .merge(evaluate::routes())
         .merge(toolbox::routes())
+        .merge(upload::routes())
         .merge(question_classes::routes())
         .merge(archive::routes())
         .merge(system_gap::routes())

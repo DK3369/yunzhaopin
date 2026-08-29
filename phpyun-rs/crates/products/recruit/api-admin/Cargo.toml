@@ -16,6 +16,7 @@ phpyun_core.workspace = true
 phpyun_services.workspace = true
 phpyun_handlers.workspace = true
 phpyun_models.workspace = true
+uuid.workspace = true
 chrono.workspace = true
 
 [lints]
