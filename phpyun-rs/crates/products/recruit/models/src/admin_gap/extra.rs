@@ -1080,3 +1080,26 @@ pub async fn list_marketing_export(
         .fetch_all(pool)
         .await
 }
+
+pub async fn list_admin_email(pool: &MySqlPool) -> Result<Vec<AdminEmailRow>, sqlx::Error> {
+    sqlx::query_as::<_, AdminEmailRow>(
+        "SELECT CAST(id AS UNSIGNED) AS id, \
+                COALESCE(smtpserver,'') AS smtpserver, \
+                COALESCE(smtpuser,'') AS smtpuser, \
+                COALESCE(smtppass,'') AS smtppass, \
+                COALESCE(smtpport,'') AS smtpport, \
+                COALESCE(smtpnick,'') AS smtpnick, \
+                CAST(COALESCE(`default`,0) AS SIGNED) AS default_flag \
+         FROM phpyun_admin_email ORDER BY id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn list_news_property(pool: &MySqlPool) -> Result<Vec<NewsPropertyRow>, sqlx::Error> {
+    sqlx::query_as::<_, NewsPropertyRow>(
+        "SELECT COALESCE(name,'') AS name, COALESCE(value,'') AS value FROM phpyun_property ORDER BY id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}

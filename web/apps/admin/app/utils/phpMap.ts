@@ -154,6 +154,13 @@ function cacheDataShape(data: unknown): Record<string, unknown> {
   }
 }
 
+function phpPage(kind: string): PhpAction {
+  return {
+    path: '/v1/admin/cache/php-page',
+    transformReq: (b) => ({ ...b, kind, pid: Number(b.pid || 0) }),
+  }
+}
+
 export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'index/homeData': { path: '/v1/admin/dashboard/home-data' },
   'index/ajax_statis': { path: '/v1/admin/dashboard/ajax-statis' },
@@ -203,6 +210,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_job/xuanshang': { path: '/v1/admin/jobs/promote', transformReq: (b) => ({ ids: idsFromDel(b).ids, kind: 'top', on: true, days: Number(b.days || 0) }) },
   'user/company_job/recommend': { path: '/v1/admin/jobs/promote', transformReq: (b) => ({ ids: idsFromDel(b).ids, kind: 'rec', on: true, days: Number(b.days || 0) }) },
   'user/company_job/urgent': { path: '/v1/admin/jobs/promote', transformReq: (b) => ({ ids: idsFromDel(b).ids, kind: 'urgent', on: true, days: Number(b.days || 0) }) },
+  'user/company_job/add': { path: '/v1/admin/jobs/php-add-form' },
   'common/cache': { path: '/v1/admin/cache/php-dicts' },
   'common/cache/getCityClass': { path: '/v1/admin/cache/php-dicts' },
   'common/cache/getJobClass': { path: '/v1/admin/cache/php-dicts' },
@@ -211,8 +219,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'common/cache/getlthy': { path: '/v1/admin/cache/php-dicts' },
   'common/cache/getltjob': { path: '/v1/admin/cache/php-dicts' },
   'common/cache/poi': { path: '/v1/admin/cache/php-dicts' },
-
-
+  'common/cache/getJobChildIds': phpPage('job_child_ids'),
+  'common/cache/getCityChildIds': phpPage('city_child_ids'),
 
   'user/company': { path: '/v1/admin/companies', transformReq: pageQuery },
   'user/company/index': { path: '/v1/admin/companies', transformReq: pageQuery },
@@ -223,6 +231,31 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
     path: '/v1/admin/cache/php-dicts',
     transformRes: cacheDataShape,
   },
+  'user/users_resume/getCache': phpPage('resume_getCache'),
+  'user/weipin_tiny/getCache': phpPage('tiny_getCache'),
+  'user/weipin_once/getCache': phpPage('once_getCache'),
+  'user/admin_member/getCache': phpPage('admin_member_getCache'),
+  'system/set_friendlink/getCache': phpPage('friendlink_getCache'),
+  'neirong/news/getCache': phpPage('news_getCache'),
+  'tool/dataCollection/getCache': phpPage('dataCollection_getCache'),
+  'system/domain_group/getAdminCache': phpPage('getAdminCache'),
+  'user/users_userset/indexBaseData': phpPage('userset_indexBaseData'),
+  'user/users_userset/index': phpPage('userset_index'),
+  'user/users_userset': phpPage('userset_index'),
+  'user/company_comset/index': phpPage('comset_index'),
+  'user/company_comset': phpPage('comset_index'),
+  'tool/emailset/index': phpPage('emailset_index'),
+  'tool/emailset': phpPage('emailset_index'),
+  'yunying/special_special/get_base_data': phpPage('special_base'),
+  'yunying/ad/get_base_data': phpPage('ad_base'),
+  'yunying/shop_reward/index_base_data': phpPage('shop_reward_base'),
+  'yunying/shop_list/index_base_data': phpPage('shop_list_base'),
+  'yunying/report_resume/index_base_data': phpPage('report_resume_base'),
+  'tool/messagelog/index_base_data': phpPage('messagelog_base'),
+  'tool/dataCall/index_base_data': phpPage('dataCall_base'),
+  'user/users_member/getSearchData': phpPage('member_search'),
+  'user/hotjob/getSearchData': phpPage('hotjob_search'),
+  'user/users_trust/getSearchData': phpPage('trust_search'),
 
   'user/users_resume': { path: '/v1/admin/resumes', transformReq: pageQuery },
   'user/users_resume/index': { path: '/v1/admin/resumes', transformReq: pageQuery },

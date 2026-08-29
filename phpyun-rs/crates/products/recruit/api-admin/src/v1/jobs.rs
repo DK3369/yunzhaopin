@@ -1,13 +1,13 @@
 //! Job review (admin) — PHP `user/company_job`.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::{
     dto::BatchResult, utils::fmt_dt, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination,
     ValidatedJson,
 };
 use phpyun_models::job::entity::Job;
 use phpyun_models::job::repo::AdminJobFilter;
-use phpyun_services::{admin_service, dict_service};
+use phpyun_services::{admin_php_page_service, admin_service, dict_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -24,6 +24,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/promote", post(promote))
         .route("/jobs/refresh", post(refresh))
         .route("/jobs/delete", post(delete_jobs))
+        .route("/jobs/php-add-form", post(php_add_form))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
@@ -274,4 +275,15 @@ pub async fn delete_jobs(
     user.require_admin()?;
     admin_service::delete_jobs(&state, &user, &f.ids).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+/// PHP `company_job::add_action` GET (form cache + company + mapurl).
+pub async fn php_add_form(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        admin_php_page_service::job_php_add_form(&state, &user, &body).await?,
+    ))
 }

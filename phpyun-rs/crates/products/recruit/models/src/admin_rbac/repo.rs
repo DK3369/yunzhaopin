@@ -62,6 +62,23 @@ pub async fn list_groups(pool: &MySqlPool) -> Result<Vec<AdminRbacGroup>, sqlx::
     .await
 }
 
+/// PHP `getAdminGroupList(array('group_type' => '2'))`.
+pub async fn list_groups_by_type(
+    pool: &MySqlPool,
+    group_type: i32,
+) -> Result<Vec<AdminRbacGroup>, sqlx::Error> {
+    sqlx::query_as::<_, AdminRbacGroup>(
+        r#"SELECT CAST(id AS UNSIGNED) AS id,
+                  COALESCE(group_name, '') AS group_name
+           FROM phpyun_admin_user_group
+           WHERE group_type = ?
+           ORDER BY id ASC"#,
+    )
+    .bind(group_type)
+    .fetch_all(pool)
+    .await
+}
+
 pub async fn set_user_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_admin_user SET status = ? WHERE uid = ?")
         .bind(status)

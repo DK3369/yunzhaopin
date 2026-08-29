@@ -1,9 +1,9 @@
 //! Admin dashboard aggregate.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
-use phpyun_services::{admin_dashboard_service, category_service, dict_service, site_setting_service};
+use phpyun_services::{admin_dashboard_service, admin_php_page_service, category_service, dict_service, site_setting_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -20,6 +20,7 @@ pub fn routes() -> Router<AppState> {
         .route("/dashboard/chart", post(chart))
         .route("/cache/clear", post(cache_clear))
         .route("/cache/php-dicts", post(php_dicts))
+        .route("/cache/php-page", post(php_page))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -300,4 +301,23 @@ pub async fn php_dicts(
         .unwrap_or_default();
     admin_dashboard_service::attach_amap(&mut data, &map_key, &map_secret);
     Ok(ApiResponse::data(data))
+}
+
+#[derive(Debug, Deserialize, Default)]
+pub struct PhpPageBody {
+    #[serde(default)]
+    pub kind: String,
+    #[serde(default)]
+    pub pid: i32,
+}
+
+/// PHP getCache / index_base_data / nested settings.
+pub async fn php_page(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<PhpPageBody>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        admin_php_page_service::php_page(&state, &user, &body.kind, body.pid).await?,
+    ))
 }

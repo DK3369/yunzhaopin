@@ -67,6 +67,17 @@ impl DictTable {
         None
     }
 
+    fn all_names(&self, lang: Lang) -> Vec<(i32, String)> {
+        let mut ids: Vec<i32> = self.default_zh.keys().copied().collect();
+        ids.sort();
+        ids.into_iter()
+            .filter_map(|id| {
+                let n = self.resolve(id, lang);
+                (!n.is_empty()).then(|| (id, n.to_string()))
+            })
+            .collect()
+    }
+
     /// Look up following the fallback chain.
     ///
     /// - For the `ZhCN` node on the chain: first check `by_id_lang[(id, ZhCN)]` (an explicit zh-CN
@@ -308,6 +319,39 @@ impl LocalizedDicts {
         rows.sort_by_key(|(id, _)| *id);
         rows
     }
+
+    pub fn userclass_var_names(&self) -> Vec<String> {
+        var_names(&self.inner.userclass_var)
+    }
+    pub fn comclass_var_names(&self) -> Vec<String> {
+        var_names(&self.inner.comclass_var)
+    }
+    pub fn userclass_all(&self) -> Vec<(i32, String)> {
+        self.inner.userclass.all_names(self.lang)
+    }
+    pub fn comclass_all(&self) -> Vec<(i32, String)> {
+        self.inner.comclass.all_names(self.lang)
+    }
+    /// PHP `$city_type[$pid]` plus grandchildren (getCityChildIds).
+    pub fn city_descendant_ids(&self, pid: i32) -> Vec<i32> {
+        let mut out = Vec::new();
+        let Some(two) = self.inner.city_children.get(&pid) else {
+            return out;
+        };
+        for &two_id in two {
+            out.push(two_id);
+            if let Some(three) = self.inner.city_children.get(&two_id) {
+                out.extend(three.iter().copied());
+            }
+        }
+        out
+    }
+}
+
+fn var_names(vars: &HashMap<String, i32>) -> Vec<String> {
+    let mut keys: Vec<String> = vars.keys().cloned().collect();
+    keys.sort();
+    keys
 }
 
 fn group_named(

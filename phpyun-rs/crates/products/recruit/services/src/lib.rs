@@ -49,6 +49,7 @@ pub mod admin_dashboard_service;
 pub mod admin_eval_service;
 pub mod admin_longtail_service;
 pub mod admin_ops_gap_service;
+pub mod admin_php_page_service;
 pub mod admin_system_gap_service;
 pub mod admin_service;
 pub mod admin_tool_service;

@@ -241,6 +241,24 @@ pub async fn insert_click(
     Ok(res.last_insert_id())
 }
 
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct AdClassRow {
+    pub id: u64,
+    pub class_name: String,
+    pub place: i32,
+}
+
+pub async fn list_classes(pool: &MySqlPool) -> Result<Vec<AdClassRow>, sqlx::Error> {
+    sqlx::query_as::<_, AdClassRow>(
+        "SELECT CAST(id AS UNSIGNED) AS id, \
+                COALESCE(class_name, '') AS class_name, \
+                CAST(COALESCE(place, 0) AS SIGNED) AS place \
+         FROM phpyun_ad_class ORDER BY id DESC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
 pub async fn find_target(pool: &MySqlPool, id: u64) -> Result<Option<String>, sqlx::Error> {
     let row: Option<(String,)> =
         sqlx::query_as("SELECT COALESCE(pic_src, '') FROM phpyun_ad WHERE id = ? LIMIT 1")

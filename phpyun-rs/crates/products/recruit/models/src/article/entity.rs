@@ -73,4 +73,6 @@ pub struct Article {
 pub struct NewsGroup {
     pub id: u64,
     pub name: String,
+    #[sqlx(default)]
+    pub keyid: i32,
 }

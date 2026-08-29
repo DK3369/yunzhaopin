@@ -428,3 +428,20 @@ pub struct MarketingExportRow {
     pub email: String,
     pub moblie: String,
 }
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct AdminEmailRow {
+    pub id: u64,
+    pub smtpserver: String,
+    pub smtpuser: String,
+    pub smtppass: String,
+    pub smtpport: String,
+    pub smtpnick: String,
+    pub default_flag: i32,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct NewsPropertyRow {
+    pub name: String,
+    pub value: String,
+}

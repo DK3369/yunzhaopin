@@ -217,7 +217,8 @@ pub async fn ingest(pool: &MySqlPool, a: ArticleIngest<'_>) -> Result<Option<u64
 
 pub async fn list_groups(pool: &MySqlPool) -> Result<Vec<super::entity::NewsGroup>, sqlx::Error> {
     sqlx::query_as::<_, super::entity::NewsGroup>(
-        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name, \
+                CAST(COALESCE(keyid, 0) AS SIGNED) AS keyid \
          FROM phpyun_news_group ORDER BY id ASC",
     )
     .fetch_all(pool)
