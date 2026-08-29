@@ -3,7 +3,7 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::{CreatedId, IdBody, IdsBody};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::eval::admin::{AdminEvalLog, AdminEvalMessage, AdminEvalPaper};
 use phpyun_models::eval::php_ser;
@@ -11,6 +11,8 @@ use phpyun_services::admin_eval_service::{self, AskUpsert, EvalGroupView, EvalPa
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -43,11 +45,11 @@ pub async fn list_papers(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<PaperListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminEvalPaper>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminEvalPaper>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_eval_service::list_papers(&state, q.keyid, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -291,12 +293,12 @@ pub async fn list_messages(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MsgListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminEvalMessage>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminEvalMessage>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_eval_service::list_messages(&state, q.keyword.as_deref(), q.r#type == Some(1), page)
             .await?,
-    ))
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/evaluate/messages/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
@@ -316,12 +318,12 @@ pub async fn list_logs(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MsgListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminEvalLog>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminEvalLog>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_eval_service::list_logs(&state, q.keyword.as_deref(), q.r#type == Some(2), page)
             .await?,
-    ))
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/evaluate/logs/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]

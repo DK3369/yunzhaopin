@@ -3,14 +3,14 @@
 use super::entity::*;
 use sqlx::{MySqlPool, QueryBuilder};
 
-fn lim(limit: u64, offset: u64) -> Result<(i64, i64), sqlx::Error> {
+pub(super) fn lim(limit: u64, offset: u64) -> Result<(i64, i64), sqlx::Error> {
     Ok((
         phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?,
         phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?,
     ))
 }
 
-async fn delete_in(pool: &MySqlPool, prefix: &str, ids: &[u64]) -> Result<u64, sqlx::Error> {
+pub(super) async fn delete_in(pool: &MySqlPool, prefix: &str, ids: &[u64]) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);
     }
@@ -35,6 +35,7 @@ pub async fn list_user_photos(
     let (l, o) = lim(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
         "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(name,'') AS name, \
+         COALESCE(name,'') AS username, \
          CAST(COALESCE(sex,0) AS SIGNED) AS sex, COALESCE(photo,'') AS photo, \
          CAST(COALESCE(photo_status,0) AS SIGNED) AS photo_status \
          FROM phpyun_resume WHERE photo <> '' AND COALESCE(defphoto,1) = 1",
@@ -1047,7 +1048,10 @@ pub async fn list_domains(
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, COALESCE(domain,'') AS domain, \
          CAST(COALESCE(fz_type,0) AS SIGNED) AS fz_type, CAST(COALESCE(mode,0) AS SIGNED) AS mode, \
-         COALESCE(webtitle,'') AS web_title, COALESCE(indexdir,'') AS indexdir \
+         COALESCE(webtitle,'') AS web_title, COALESCE(indexdir,'') AS indexdir, \
+         COALESCE(style,'') AS style, CAST(COALESCE(hy,0) AS SIGNED) AS hy, \
+         CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, CAST(COALESCE(province,0) AS SIGNED) AS province, \
+         COALESCE(tpl,'') AS tpl \
          FROM phpyun_domain WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
@@ -1172,18 +1176,21 @@ pub async fn list_special_coms(
 ) -> Result<Vec<SpecialComAdminRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(sid,0) AS UNSIGNED) AS sid, \
-         CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, CAST(COALESCE(integral,0) AS SIGNED) AS integral, \
-         CAST(COALESCE(status,0) AS SIGNED) AS status, COALESCE(statusbody,'') AS statusbody, \
-         CAST(COALESCE(sort,0) AS SIGNED) AS sort, CAST(COALESCE(famous,0) AS SIGNED) AS famous, \
-         CAST(COALESCE(`time`,0) AS SIGNED) AS created_at \
-         FROM phpyun_special_com WHERE 1=1",
+        "SELECT CAST(sc.id AS UNSIGNED) AS id, CAST(COALESCE(sc.sid,0) AS UNSIGNED) AS sid, \
+         CAST(COALESCE(sc.uid,0) AS UNSIGNED) AS uid, CAST(COALESCE(sc.integral,0) AS SIGNED) AS integral, \
+         CAST(COALESCE(sc.status,0) AS SIGNED) AS status, COALESCE(sc.statusbody,'') AS statusbody, \
+         CAST(COALESCE(sc.sort,0) AS SIGNED) AS sort, CAST(COALESCE(sc.famous,0) AS SIGNED) AS famous, \
+         CAST(COALESCE(sc.`time`,0) AS SIGNED) AS created_at, \
+         COALESCE(c.name,'') AS name \
+         FROM phpyun_special_com sc \
+         LEFT JOIN phpyun_company c ON c.uid = sc.uid \
+         WHERE 1=1",
     );
     if let Some(s) = sid.filter(|v| *v > 0) {
-        qb.push(" AND sid = ");
+        qb.push(" AND sc.sid = ");
         qb.push_bind(s);
     }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push(" ORDER BY sc.id DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);

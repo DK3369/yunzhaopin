@@ -40,6 +40,15 @@ pub struct AdminEvalPaper {
     pub hot: i32,
     pub num: i32,
     pub score: i32,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub ctime_n: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub url: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub keyid_n: String,
 }
 
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
@@ -60,6 +69,11 @@ pub struct AdminEvalMessage {
     pub usertype: Option<i32>,
     pub message: Option<String>,
     pub ctime: i64,
+    #[serde(default)]
+    pub name: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub ctime_n: String,
 }
 
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
@@ -70,6 +84,13 @@ pub struct AdminEvalLog {
     pub grade: i32,
     pub ctime: i64,
     pub usedsecond: i32,
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub title: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub ctime_n: String,
 }
 
 pub struct PaperWrite<'a> {
@@ -414,23 +435,26 @@ pub async fn list_messages(
 ) -> Result<Vec<AdminEvalMessage>, sqlx::Error> {
     let (lim, off) = bind_limit(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT CAST(id AS UNSIGNED) AS id, \
-                CAST(COALESCE(examid, 0) AS UNSIGNED) AS examid, \
-                COALESCE(uid, '') AS uid, \
-                CAST(usertype AS SIGNED) AS usertype, \
-                message, \
-                CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime \
-         FROM phpyun_evaluate_leave_message WHERE 1=1",
+        "SELECT CAST(m.id AS UNSIGNED) AS id, \
+                CAST(COALESCE(m.examid, 0) AS UNSIGNED) AS examid, \
+                COALESCE(m.uid, '') AS uid, \
+                CAST(m.usertype AS SIGNED) AS usertype, \
+                m.message, \
+                CAST(COALESCE(m.ctime, 0) AS SIGNED) AS ctime, \
+                COALESCE(mem.username, '') AS name \
+         FROM phpyun_evaluate_leave_message m \
+         LEFT JOIN phpyun_member mem ON mem.uid = CAST(m.uid AS UNSIGNED) \
+         WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_uid {
-            qb.push(" AND uid LIKE ");
+            qb.push(" AND m.uid LIKE ");
         } else {
-            qb.push(" AND message LIKE ");
+            qb.push(" AND m.message LIKE ");
         }
         qb.push_bind(format!("%{kw}%"));
     }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push(" ORDER BY m.id DESC LIMIT ");
     qb.push_bind(lim);
     qb.push(" OFFSET ");
     qb.push_bind(off);
@@ -443,12 +467,12 @@ pub async fn count_messages(
     by_uid: bool,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_evaluate_leave_message WHERE 1=1");
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_evaluate_leave_message m WHERE 1=1");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_uid {
-            qb.push(" AND uid LIKE ");
+            qb.push(" AND m.uid LIKE ");
         } else {
-            qb.push(" AND message LIKE ");
+            qb.push(" AND m.message LIKE ");
         }
         qb.push_bind(format!("%{kw}%"));
     }
@@ -479,8 +503,13 @@ pub async fn list_logs(
                 CAST(COALESCE(l.examid, 0) AS UNSIGNED) AS examid, \
                 CAST(COALESCE(l.grade, 0) AS SIGNED) AS grade, \
                 CAST(COALESCE(l.ctime, 0) AS SIGNED) AS ctime, \
-                CAST(COALESCE(l.usedsecond, 0) AS SIGNED) AS usedsecond \
-         FROM phpyun_evaluate_log l WHERE 1=1",
+                CAST(COALESCE(l.usedsecond, 0) AS SIGNED) AS usedsecond, \
+                COALESCE(mem.username, '') AS name, \
+                COALESCE(g.name, '') AS title \
+         FROM phpyun_evaluate_log l \
+         LEFT JOIN phpyun_member mem ON mem.uid = l.uid \
+         LEFT JOIN phpyun_evaluate_group g ON g.id = l.examid \
+         WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         if by_paper {

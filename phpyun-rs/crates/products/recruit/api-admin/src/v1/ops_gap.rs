@@ -3,14 +3,17 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::{CreatedId, IdsBody};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::admin_gap::entity::*;
 use phpyun_services::admin_ops_gap_service;
 use serde::Deserialize;
+use serde_json::Value;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -20,6 +23,12 @@ pub fn routes() -> Router<AppState> {
         .route("/marketing/sms-send", post(sms_send))
         .route("/specials/companies", post(list_special_coms))
         .route("/specials/companies/status", post(set_special_com))
+        .route("/specials/companies/delete", post(delete_special_coms))
+        .route("/marketing/promote", post(marketing_promote))
+        .route("/marketing/export", post(marketing_export))
+        .route("/marketing/finish", post(marketing_finish))
+        .route("/marketing/job", post(marketing_job))
+        .route("/marketing/resume", post(marketing_resume))
         .route("/weixin-records", post(list_wx_records))
         .route("/wxpub-temps", post(upsert_wxpub))
         .route("/wxpub-temps/list", post(list_wxpub))
@@ -40,7 +49,7 @@ pub fn routes() -> Router<AppState> {
 pub async fn email_status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<LastMsgAt>>> {
+) -> AppResult<ApiResponse<Value>> {
     user.require_admin()?;
     Ok(ApiResponse::data(
         admin_ops_gap_service::marketing_email_status(&state).await?,
@@ -51,7 +60,7 @@ pub async fn email_status(
 pub async fn sms_status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<LastMsgAt>>> {
+) -> AppResult<ApiResponse<Value>> {
     user.require_admin()?;
     Ok(ApiResponse::data(
         admin_ops_gap_service::marketing_sms_status(&state).await?,
@@ -120,6 +129,7 @@ pub async fn sms_send(
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct SidQuery {
     pub sid: Option<u64>,
+    pub id: Option<u64>,
     pub status: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
@@ -133,17 +143,18 @@ pub async fn list_special_coms(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<SidQuery>,
-) -> AppResult<ApiResponse<Paged<SpecialComAdminRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<SpecialComAdminRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
-        admin_ops_gap_service::list_special_coms(&state, q.sid, page).await?,
-    ))
+    Ok(ApiResponse::data(AdminPaged::from(
+        admin_ops_gap_service::list_special_coms(&state, q.sid.or(q.id), page).await?,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SpecialComStatusForm {
-    #[validate(range(min = 1))]
-    pub id: u64,
+    pub id: Option<u64>,
+    #[serde(default)]
+    pub pid: String,
     pub status: i32,
     #[serde(default)]
     pub statusbody: String,
@@ -156,8 +167,25 @@ pub async fn set_special_com(
     ValidatedJson(f): ValidatedJson<SpecialComStatusForm>,
 ) -> AppResult<ApiResponse> {
     user.require_admin()?;
-    admin_ops_gap_service::set_special_com_status(&state, &user, f.id, f.status, &f.statusbody)
+    let mut ids = phpyun_models::admin_gap::extra::parse_id_csv(&f.pid);
+    if ids.is_empty() {
+        if let Some(id) = f.id.filter(|v| *v > 0) {
+            ids.push(id);
+        }
+    }
+    admin_ops_gap_service::set_special_com_status(&state, &user, &ids, f.status, &f.statusbody)
         .await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/specials/companies/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+pub async fn delete_special_coms(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdsBody>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_ops_gap_service::delete_special_coms(&state, &user, &f.ids).await?;
     Ok(ApiResponse::message("ok"))
 }
 
@@ -167,11 +195,11 @@ pub async fn list_wx_records(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<SidQuery>,
-) -> AppResult<ApiResponse<Paged<WxQrcodeRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<WxQrcodeRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_ops_gap_service::list_wx_records(&state, q.status, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/wxpub-temps/list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
@@ -180,12 +208,12 @@ pub async fn list_wxpub(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<SidQuery>,
-) -> AppResult<ApiResponse<Paged<WxpubTempRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<WxpubTempRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_ops_gap_service::list_wxpub_temps(&state, q.keyword.as_deref(), q.temptype, page)
             .await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -317,11 +345,11 @@ pub async fn list_data_call(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiResponse<Paged<OutsideRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<OutsideRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_ops_gap_service::list_data_call(&state, page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -380,9 +408,91 @@ pub async fn list_hr_logs(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<SidQuery>,
-) -> AppResult<ApiResponse<Paged<HrLogRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<HrLogRow>>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(AdminPaged::from(
+        admin_ops_gap_service::list_hr_logs(&state, q.uid, page).await?,
+    )))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PromoteForm {
+    #[serde(default)]
+    pub emails: Vec<String>,
+    #[serde(default)]
+    pub mobiles: Vec<String>,
+    #[serde(default)]
+    pub title: String,
+    #[serde(default)]
+    pub content: String,
+    #[serde(default)]
+    pub utype: i32,
+}
+
+#[utoipa::path(post, path = "/v1/admin/marketing/promote", tag = "admin", security(("bearer" = [])), request_body = PromoteForm, responses((status = 200, description = "ok")))]
+pub async fn marketing_promote(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<PromoteForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
+    user.require_admin()?;
+    let n = admin_ops_gap_service::marketing_promote(
+        &state,
+        &user,
+        &f.emails,
+        &f.mobiles,
+        &f.title,
+        &f.content,
+        f.utype,
+    )
+    .await?;
+    Ok(ApiResponse::data(CreatedId { id: n }))
+}
+
+#[derive(Debug, Default, Deserialize, Validate, ToSchema)]
+pub struct ExportForm {
+    #[serde(default)]
+    pub xls_type: String,
+    #[serde(default)]
+    pub utype: i32,
+}
+
+#[utoipa::path(post, path = "/v1/admin/marketing/export", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn marketing_export(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ExportForm>,
+) -> AppResult<ApiResponse<Vec<MarketingExportRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(
-        admin_ops_gap_service::list_hr_logs(&state, q.uid, page).await?,
+        admin_ops_gap_service::marketing_export(&state, &f.xls_type, f.utype).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/marketing/finish", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn marketing_finish(user: AuthenticatedUser) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(serde_json::json!({ "ok": 1 })))
+}
+
+#[utoipa::path(post, path = "/v1/admin/marketing/job", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn marketing_job(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_ops_gap_service::marketing_site_name(&state).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/marketing/resume", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn marketing_resume(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_ops_gap_service::marketing_site_name(&state).await?,
     ))
 }

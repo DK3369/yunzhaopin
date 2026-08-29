@@ -3,13 +3,15 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::{CreatedId, IdsBody};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
-use phpyun_models::hr_doc::entity::{HrDoc, ToolboxClass};
+use phpyun_models::hr_doc::entity::{AdminHrDoc, ToolboxClass};
 use phpyun_services::admin_eval_service;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -17,6 +19,8 @@ pub fn routes() -> Router<AppState> {
         .route("/toolbox/docs/list", post(list_docs))
         .route("/toolbox/docs/delete", post(delete_docs))
         .route("/toolbox/docs/show", post(set_show))
+        .route("/toolbox/docs/meta", post(doc_meta))
+        .route("/toolbox/docs/detail", post(doc_detail))
         .route("/toolbox/classes", post(upsert_class))
         .route("/toolbox/classes/list", post(list_classes))
         .route("/toolbox/classes/delete", post(delete_classes))
@@ -36,11 +40,11 @@ pub async fn list_docs(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<DocListQuery>,
-) -> AppResult<ApiResponse<Paged<HrDoc>>> {
+) -> AppResult<ApiResponse<AdminPaged<AdminHrDoc>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_eval_service::list_docs(&state, q.cid, q.keyword.as_deref(), q.status, page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -105,14 +109,47 @@ pub async fn delete_docs(
     Ok(ApiResponse::message("ok"))
 }
 
+#[derive(Debug, Serialize)]
+pub struct ToolboxClassList {
+    pub list: Vec<ToolboxClass>,
+}
+
 #[utoipa::path(post, path = "/v1/admin/toolbox/classes/list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn list_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<ToolboxClass>>> {
+) -> AppResult<ApiResponse<ToolboxClassList>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(ToolboxClassList {
+        list: admin_eval_service::list_classes(&state).await?,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct DocIdForm {
+    pub id: Option<u64>,
+}
+
+#[utoipa::path(post, path = "/v1/admin/toolbox/docs/meta", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn doc_meta(user: AuthenticatedUser) -> AppResult<ApiResponse<serde_json::Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(serde_json::json!({
+        "search_list": [
+            {"param": "status", "name": "admin_00271", "value": {"1": "member_com_00023", "0": "admin_user_00340"}},
+            {"param": "end", "name": "admin_00269", "value": {"1": "common_01940", "3": "admin_user_00179", "7": "admin_user_00178", "15": "admin_user_00180", "30": "admin_user_00175"}}
+        ]
+    })))
+}
+
+#[utoipa::path(post, path = "/v1/admin/toolbox/docs/detail", tag = "admin", security(("bearer" = [])), request_body = DocIdForm, responses((status = 200, description = "ok")))]
+pub async fn doc_detail(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<DocIdForm>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
     user.require_admin()?;
     Ok(ApiResponse::data(
-        admin_eval_service::list_classes(&state).await?,
+        admin_eval_service::doc_editor(&state, f.id).await?,
     ))
 }
 

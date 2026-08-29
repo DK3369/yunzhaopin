@@ -64,6 +64,48 @@ function pageQuery(body: Record<string, unknown>): Record<string, unknown> {
   return { ...body, page, page_size }
 }
 
+function idFromDel(body: Record<string, unknown>): Record<string, unknown> {
+  const ids = idsFromDel(body).ids as number[]
+  return { id: ids[0] || Number(body.id || 0) }
+}
+
+function wrapList(data: unknown): Record<string, unknown> {
+  if (Array.isArray(data)) return { list: data }
+  return asRecord(data)
+}
+
+function evalGroupsToGetGroup(data: unknown): Record<string, unknown> {
+  const list = Array.isArray(data) ? data : []
+  const grouparr: { label: unknown; value: unknown }[] = []
+  const show_group: Record<string, unknown> = {}
+  for (const row of list) {
+    const x = asRecord(row)
+    grouparr.push({ label: x.name, value: x.id })
+    show_group[String(x.id)] = x.name
+  }
+  return { grouparr, show_group, preview_url: '/index.php?m=evaluate&c=exampaper' }
+}
+
+function evalGroupsToRecordGroup(data: unknown): Record<string, unknown> {
+  const list = Array.isArray(data) ? data : []
+  const arr: Record<string, unknown> = {}
+  for (const row of list) {
+    const x = asRecord(row)
+    arr[String(x.id)] = x.name
+  }
+  return { arr }
+}
+
+function wrapItems(body: Record<string, unknown>): Record<string, unknown> {
+  if (body.items && typeof body.items === 'object' && !Array.isArray(body.items)) return body
+  const skip = new Set(['page', 'page_size', 'm', 'c', 'a'])
+  const items: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(body)) {
+    if (!skip.has(k)) items[k] = String(v ?? '')
+  }
+  return { items }
+}
+
 function cacheDataShape(data: unknown): Record<string, unknown> {
   const d = asRecord(data)
   const search = asRecord(d.search_list)
@@ -190,7 +232,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
 
   'neirong/evaluate': { path: '/v1/admin/evaluate/papers/list', transformReq: pageQuery },
   'neirong/evaluate/index': { path: '/v1/admin/evaluate/papers/list', transformReq: pageQuery },
-  'neirong/evaluate/getGroup': { path: '/v1/admin/evaluate/groups/list' },
+  'neirong/evaluate/getGroup': { path: '/v1/admin/evaluate/groups/list', transformRes: evalGroupsToGetGroup },
   'neirong/evaluate/add': {
     path: '/v1/admin/evaluate/papers',
     transformReq: (b) => {
@@ -217,11 +259,11 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'neirong/evaluate/group': { path: '/v1/admin/evaluate/groups/list' },
   'neirong/evaluate/addgroup': { path: '/v1/admin/evaluate/groups' },
   'neirong/evaluate/ajax': { path: '/v1/admin/evaluate/groups/patch' },
-  'neirong/evaluate/delgroup': { path: '/v1/admin/evaluate/groups/delete', transformReq: idsFromDel },
+  'neirong/evaluate/delgroup': { path: '/v1/admin/evaluate/groups/delete', transformReq: idFromDel },
   'neirong/evaluate/message': { path: '/v1/admin/evaluate/messages', transformReq: pageQuery },
   'neirong/evaluate/delmsg': { path: '/v1/admin/evaluate/messages/delete', transformReq: idsFromDel },
   'neirong/evaluate/record': { path: '/v1/admin/evaluate/logs', transformReq: pageQuery },
-  'neirong/evaluate/recordGroup': { path: '/v1/admin/evaluate/groups/list' },
+  'neirong/evaluate/recordGroup': { path: '/v1/admin/evaluate/groups/list', transformRes: evalGroupsToRecordGroup },
   'neirong/evaluate/delevaluatelog': { path: '/v1/admin/evaluate/logs/delete', transformReq: idsFromDel },
 
   'neirong/toolbox_doc': { path: '/v1/admin/toolbox/docs/list', transformReq: pageQuery },
@@ -229,8 +271,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'neirong/toolbox_doc/save': { path: '/v1/admin/toolbox/docs' },
   'neirong/toolbox_doc/del': { path: '/v1/admin/toolbox/docs/delete', transformReq: idsFromDel },
   'neirong/toolbox_doc/show': { path: '/v1/admin/toolbox/docs/show' },
-  'neirong/toolbox_class': { path: '/v1/admin/toolbox/classes/list' },
-  'neirong/toolbox_class/index': { path: '/v1/admin/toolbox/classes/list' },
+  'neirong/toolbox_doc/getGroup': { path: '/v1/admin/toolbox/docs/meta' },
+  'neirong/toolbox_doc/add': { path: '/v1/admin/toolbox/docs/detail' },
+  'neirong/toolbox_class': { path: '/v1/admin/toolbox/classes/list', transformRes: wrapList },
+  'neirong/toolbox_class/index': { path: '/v1/admin/toolbox/classes/list', transformRes: wrapList },
   'neirong/toolbox_class/save': { path: '/v1/admin/toolbox/classes' },
   'neirong/toolbox_class/del': { path: '/v1/admin/toolbox/classes/delete', transformReq: idsFromDel },
 
@@ -243,22 +287,77 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_pic': { path: '/v1/admin/user-photos', transformReq: pageQuery },
   'user/users_pic/index': { path: '/v1/admin/user-photos', transformReq: pageQuery },
   'user/users_pic/status': { path: '/v1/admin/user-photos/status' },
+  'user/users_pic/getStatist': { path: '/v1/admin/user-photos/statist' },
+  'user/users_pic/getStatusBody': { path: '/v1/admin/user-photos/status-body' },
+  'user/users_pic/savePhoto': {
+    path: '/v1/admin/user-photos/save',
+    transformReq: (b) => ({
+      uid: Number(b.id || b.uid || 0),
+      photo: String(b.photo || b.url || b.pic || ''),
+    }),
+  },
+  'user/users_pic/delPhoto': { path: '/v1/admin/user-photos/delete', transformReq: idsFromDel },
   'user/users_pic/show': { path: '/v1/admin/resume-shows', transformReq: pageQuery },
   'user/users_pic/showStatus': { path: '/v1/admin/resume-shows/status' },
-  'user/users_pic/delShow': { path: '/v1/admin/resume-shows/status', transformReq: idsFromDel },
+  'user/users_pic/getShowStatusBody': { path: '/v1/admin/resume-shows/status-body' },
+  'user/users_pic/saveShow': { path: '/v1/admin/resume-shows/save' },
+  'user/users_pic/delShow': { path: '/v1/admin/resume-shows/delete', transformReq: idsFromDel },
   'user/users_usercert': { path: '/v1/admin/user-certs', transformReq: pageQuery },
   'user/users_usercert/index': { path: '/v1/admin/user-certs', transformReq: pageQuery },
   'user/users_usercert/status': { path: '/v1/admin/user-certs/status' },
+  'user/users_usercert/getStatist': { path: '/v1/admin/user-certs/statist' },
+  'user/users_usercert/getStatusBody': { path: '/v1/admin/user-certs/status-body' },
+  'user/users_msg/getStatist': { path: '/v1/admin/user-msgs/statist' },
   'user/users_msg': { path: '/v1/admin/user-msgs', transformReq: pageQuery },
   'user/users_msg/index': { path: '/v1/admin/user-msgs', transformReq: pageQuery },
   'user/users_msg/del': { path: '/v1/admin/user-msgs/delete', transformReq: idsFromDel },
-  'user/users_userlog': { path: '/v1/admin/user-logs', transformReq: pageQuery },
-  'user/users_userlog/index': { path: '/v1/admin/user-logs', transformReq: pageQuery },
+  'user/users_userlog': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
+  'user/users_userlog/index': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
+  'user/users_userlog/down': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
+  'user/users_userlog/freedown': { path: '/v1/admin/user-logs/freedown', transformReq: pageQuery },
+  'user/users_userlog/lookresume': { path: '/v1/admin/user-logs/look-resume', transformReq: pageQuery },
+  'user/users_userlog/talentpool': { path: '/v1/admin/user-logs/talent-pool', transformReq: pageQuery },
+  'user/users_userlog/trust': { path: '/v1/admin/user-logs/trust', transformReq: pageQuery },
+  'user/users_userlog/sxLog': { path: '/v1/admin/user-logs/refresh', transformReq: pageQuery },
   'user/company_pic': { path: '/v1/admin/company-photos', transformReq: pageQuery },
   'user/company_pic/index': { path: '/v1/admin/company-photos', transformReq: pageQuery },
   'user/company_pic/status': { path: '/v1/admin/company-photos/status' },
+  'user/company_pic/getStatist': { path: '/v1/admin/company-photos/statist' },
+  'user/company_pic/getStatusBody': { path: '/v1/admin/company-photos/status-body' },
+  'user/company_pic/savePhoto': {
+    path: '/v1/admin/company-photos/save',
+    transformReq: (b) => ({
+      uid: Number(b.id || b.uid || 0),
+      photo: String(b.photo || b.url || b.pic || ''),
+    }),
+  },
+  'user/company_pic/del': {
+    path: '/v1/admin/company-photos/delete',
+    transformReq: (b) => ({ ...idsFromDel(b), type: String(b.type || 'logo') }),
+  },
   'user/company_pic/show': { path: '/v1/admin/company-shows', transformReq: pageQuery },
   'user/company_pic/showStatus': { path: '/v1/admin/company-shows/status' },
+  'user/company_pic/getShowStatusBody': { path: '/v1/admin/company-shows/status-body' },
+  'user/company_pic/banner': { path: '/v1/admin/company-banners', transformReq: pageQuery },
+  'user/company_pic/bannerStatus': {
+    path: '/v1/admin/company-banners/status',
+    transformReq: (b) => ({
+      ...b,
+      ids: idsFromDel({ ...b, id: b.sid ?? b.id ?? b.del }).ids,
+      status: Number(b.status || 0),
+      statusbody: String(b.statusbody || ''),
+    }),
+  },
+  'user/company_pic/uploadsave': {
+    path: '/v1/admin/company-banners/save',
+    transformReq: (b) => ({
+      id: Number(b.id || 0) || undefined,
+      uid: Number(b.uid || b.id || 0),
+      type: String(b.type || 'banner'),
+      pic: String(b.pic || b.photo || b.url || ''),
+      title: String(b.title || ''),
+    }),
+  },
   'user/company_product': { path: '/v1/admin/company-products', transformReq: pageQuery },
   'user/company_product/index': { path: '/v1/admin/company-products', transformReq: pageQuery },
   'user/company_product/status': { path: '/v1/admin/company-products/status' },
@@ -267,8 +366,13 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_news/status': { path: '/v1/admin/company-news/status' },
   'user/company_interview': { path: '/v1/admin/company-interviews', transformReq: pageQuery },
   'user/company_interview/index': { path: '/v1/admin/company-interviews', transformReq: pageQuery },
-  'user/company_comlog': { path: '/v1/admin/company-logs', transformReq: pageQuery },
-  'user/company_comlog/index': { path: '/v1/admin/company-logs', transformReq: pageQuery },
+  'user/company_comlog': { path: '/v1/admin/company-logs/userid-job', transformReq: pageQuery },
+  'user/company_comlog/index': { path: '/v1/admin/company-logs/userid-job', transformReq: pageQuery },
+  'user/company_comlog/useridmsg': { path: '/v1/admin/company-logs/userid-msg', transformReq: pageQuery },
+  'user/company_comlog/lookjob': { path: '/v1/admin/company-logs/look-job', transformReq: pageQuery },
+  'user/company_comlog/partapply': { path: '/v1/admin/company-logs/part-apply', transformReq: pageQuery },
+  'user/company_comlog/favjob': { path: '/v1/admin/company-logs/fav-job', transformReq: pageQuery },
+  'user/company_comlog/jobtellog': { path: '/v1/admin/company-logs/job-tellog', transformReq: pageQuery },
   'user/company_job_refresh_log': { path: '/v1/admin/job-refresh-logs', transformReq: pageQuery },
   'user/company_job_refresh_log/index': { path: '/v1/admin/job-refresh-logs', transformReq: pageQuery },
   'user/company_comrating': { path: '/v1/admin/rating-packages/list', transformReq: pageQuery },
@@ -284,22 +388,47 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
     }),
   },
   'user/company_comrating/delrating': { path: '/v1/admin/rating-packages/delete', transformReq: idsFromDel },
-  'user/company_comrating/delpic': { path: '/v1/admin/rating-packages/delpic' },
+  'user/company_comrating/baseData': { path: '/v1/admin/rating-packages/base-data' },
+  'user/company_comrating/server': { path: '/v1/admin/rating-services/list' },
+  'user/company_comrating/save': { path: '/v1/admin/rating-services' },
+  'user/company_comrating/opera': { path: '/v1/admin/rating-services/opera' },
+  'user/company_comrating/delserver': { path: '/v1/admin/rating-services/delete', transformReq: idsFromDel },
+  'user/company_comrating/list': { path: '/v1/admin/rating-services/details', transformReq: pageQuery },
+  'user/company_comrating/saves': { path: '/v1/admin/rating-services/details/save' },
 
   'system/set_guanjianci': { path: '/v1/admin/keywords/list', transformReq: pageQuery },
   'system/set_guanjianci/index': { path: '/v1/admin/keywords/list', transformReq: pageQuery },
   'system/set_guanjianci/save': { path: '/v1/admin/keywords' },
   'system/set_guanjianci/del': { path: '/v1/admin/keywords/delete', transformReq: idsFromDel },
+  'system/set_guanjianci/recup': { path: '/v1/admin/keywords/recup' },
+  'system/set_guanjianci/status': { path: '/v1/admin/keywords/status' },
   'system/domain_list': { path: '/v1/admin/domains', transformReq: pageQuery },
   'system/domain_list/index': { path: '/v1/admin/domains', transformReq: pageQuery },
   'system/domain_list/save': { path: '/v1/admin/domains/upsert' },
+  'system/domain_list/saveDomain': { path: '/v1/admin/domains/upsert' },
   'system/domain_list/del': { path: '/v1/admin/domains/delete', transformReq: idsFromDel },
+  'system/domain_list/delDomain': { path: '/v1/admin/domains/delete', transformReq: idsFromDel },
+  'system/domain_list/domainInfo': { path: '/v1/admin/domains/detail' },
+  'system/domain_list/config': { path: '/v1/admin/domains/config' },
   'system/domain_group': { path: '/v1/admin/domain-admins', transformReq: pageQuery },
   'system/domain_group/adminList': { path: '/v1/admin/domain-admins', transformReq: pageQuery },
+  'system/domain_group/save': { path: '/v1/admin/domain-admins/save' },
+  'system/domain_group/saveAdmin': { path: '/v1/admin/domain-admins/save' },
+  'system/domain_group/del': {
+    path: '/v1/admin/domain-admins/delete',
+    transformReq: (b) => idsFromDel({ ...b, id: b.uid ?? b.id ?? b.del }),
+  },
+  'system/domain_group/delAdmin': {
+    path: '/v1/admin/domain-admins/delete',
+    transformReq: (b) => idsFromDel({ ...b, id: b.uid ?? b.id ?? b.del }),
+  },
   'system/set_cron': { path: '/v1/admin/cron/table', transformReq: pageQuery },
   'system/set_cron/index': { path: '/v1/admin/cron/table', transformReq: pageQuery },
   'system/set_cron/save': { path: '/v1/admin/cron/save' },
   'system/set_cron/del': { path: '/v1/admin/cron/delete', transformReq: idsFromDel },
+  'system/set_cron/info': { path: '/v1/admin/cron/info' },
+  'system/set_cron/run': { path: '/v1/admin/cron/run' },
+  'system/set_cron/cronLog': { path: '/v1/admin/cron/logs', transformReq: pageQuery },
   'system/info_errorlog': { path: '/v1/admin/error-logs', transformReq: pageQuery },
   'system/info_errorlog/index': { path: '/v1/admin/error-logs', transformReq: pageQuery },
   'system/info_errorlog/del': { path: '/v1/admin/error-logs/delete', transformReq: idsFromDel },
@@ -344,10 +473,37 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
       utype: Number(b.utype || 0),
     }),
   },
+  'yunying/yingxiao_tuiguang/sendPromotion': {
+    path: '/v1/admin/marketing/promote',
+    transformReq: (b) => ({
+      ...b,
+      emails: csvList(b.email_user || b.emails),
+      mobiles: csvList(b.userarr || b.mobiles),
+      title: String(b.email_title || b.title || ''),
+      content: String(b.content || ''),
+      utype: Number(b.utype || 0),
+    }),
+  },
+  'yunying/yingxiao_tuiguang/xls': { path: '/v1/admin/marketing/export' },
+  'yunying/yingxiao_tuiguang/finish': { path: '/v1/admin/marketing/finish' },
+  'yunying/yingxiao_tuiguang/job': { path: '/v1/admin/marketing/job' },
+  'yunying/yingxiao_tuiguang/resume': { path: '/v1/admin/marketing/resume' },
   'yunying/yingxiao_hrlog': { path: '/v1/admin/hr-logs', transformReq: pageQuery },
   'yunying/yingxiao_hrlog/index': { path: '/v1/admin/hr-logs', transformReq: pageQuery },
-  'yunying/special_special/comlist': { path: '/v1/admin/specials/companies', transformReq: pageQuery },
-  'yunying/special_special/status': { path: '/v1/admin/specials/companies/status' },
+  'yunying/special_special/com': {
+    path: '/v1/admin/specials/companies',
+    transformReq: (b) => ({ ...pageQuery(b), sid: Number(b.id || b.sid || 0) }),
+  },
+  'yunying/special_special/statuscom': {
+    path: '/v1/admin/specials/companies/status',
+    transformReq: (b) => ({
+      ...b,
+      pid: String(b.pid || b.id || ''),
+      status: Number(b.status || 0),
+      statusbody: String(b.statusbody || ''),
+    }),
+  },
+  'yunying/special_special/delcom': { path: '/v1/admin/specials/companies/delete', transformReq: idsFromDel },
 
   'tool/weixinrecord': { path: '/v1/admin/weixin-records', transformReq: pageQuery },
   'tool/weixinrecord/index': { path: '/v1/admin/weixin-records', transformReq: pageQuery },
@@ -357,13 +513,13 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'tool/fabutool/wxPubTempSave': { path: '/v1/admin/wxpub-temps' },
   'tool/gsdConfig': { path: '/v1/admin/gsd-config' },
   'tool/gsdConfig/index': { path: '/v1/admin/gsd-config' },
-  'tool/gsdConfig/setIpAddressConfig': { path: '/v1/admin/gsd-config/save' },
+  'tool/gsdConfig/setIpAddressConfig': { path: '/v1/admin/gsd-config/save', transformReq: wrapItems },
   'tool/dataOss': { path: '/v1/admin/oss-config' },
   'tool/dataOss/index': { path: '/v1/admin/oss-config' },
-  'tool/dataOss/setOssConfig': { path: '/v1/admin/oss-config/save' },
+  'tool/dataOss/setOssConfig': { path: '/v1/admin/oss-config/save', transformReq: wrapItems },
   'tool/fastlogin': { path: '/v1/admin/fastlogin-config' },
   'tool/fastlogin/index': { path: '/v1/admin/fastlogin-config' },
-  'tool/fastlogin/save': { path: '/v1/admin/fastlogin-config/save' },
+  'tool/fastlogin/save': { path: '/v1/admin/fastlogin-config/save', transformReq: wrapItems },
   'tool/dataCall': { path: '/v1/admin/data-call/list', transformReq: pageQuery },
   'tool/dataCall/index': { path: '/v1/admin/data-call/list', transformReq: pageQuery },
   'tool/dataCall/save': { path: '/v1/admin/data-call' },
@@ -450,8 +606,6 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/company_comrating': { list: '/v1/admin/rating-packages/list', save: '/v1/admin/rating-packages', del: '/v1/admin/rating-packages/delete' },
   'user/company_pic': { list: '/v1/admin/company-photos', status: '/v1/admin/company-photos/status' },
   'user/users_pic': { list: '/v1/admin/user-photos', status: '/v1/admin/user-photos/status' },
-  'user/users_userlog': { list: '/v1/admin/user-logs' },
-  'user/company_comlog': { list: '/v1/admin/company-logs' },
   'user/users_msg': { list: '/v1/admin/user-msgs', del: '/v1/admin/user-msgs/delete' },
   'user/users_trust': { list: '/v1/admin/resumes' },
   'user/users_userset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
@@ -506,7 +660,7 @@ function moduleAction(mod: ModuleRoutes, a: string): PhpAction {
   if ((act === 'del' || act.startsWith('del') || act === 'delete') && mod.del) {
     return { path: mod.del, transformReq: idsFromDel }
   }
-  if ((act === 'status' || act.includes('status') || act === 'audit' || act === 'checkstate') && mod.status) {
+  if ((act === 'status' || act === 'audit' || act === 'checkstate') && mod.status) {
     return { path: mod.status }
   }
   if ((act === 'save' || act === 'add' || act.endsWith('save')) && mod.save) {

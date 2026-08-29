@@ -21,3 +21,22 @@ pub struct HrDoc {
     pub created_at: i64,
     pub updated_at: i64,
 }
+
+/// Admin toolbox list row with PHP display aliases.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct AdminHrDoc {
+    pub id: u64,
+    pub cid: u64,
+    pub name: String,
+    pub url: String,
+    pub body: String,
+    pub hits: u32,
+    pub is_show: i32,
+    pub created_at: i64,
+    pub updated_at: i64,
+    pub cname: String,
+    pub add_time: i64,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub add_time_n: String,
+}

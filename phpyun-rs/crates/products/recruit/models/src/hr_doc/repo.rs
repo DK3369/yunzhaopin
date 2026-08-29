@@ -8,7 +8,7 @@
 //!   - `updated_at` <- `add_time` (PHPYun doesn't maintain updated time;
 //!     falls back to publish time)
 
-use super::entity::{HrDoc, ToolboxClass};
+use super::entity::{AdminHrDoc, HrDoc, ToolboxClass};
 use sqlx::{MySqlPool, QueryBuilder};
 
 const FIELDS: &str = "id, \
@@ -96,23 +96,36 @@ pub async fn list_admin(
     is_show: Option<i32>,
     offset: u64,
     limit: u64,
-) -> Result<Vec<HrDoc>, sqlx::Error> {
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(ADMIN_DOC_FIELDS);
-    qb.push(" FROM phpyun_toolbox_doc WHERE 1=1");
+) -> Result<Vec<AdminHrDoc>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT d.id, \
+         COALESCE(d.cid, 0) AS cid, \
+         COALESCE(d.name, '') AS name, \
+         COALESCE(d.url, '') AS url, \
+         '' AS body, \
+         COALESCE(d.downnum, 0) AS hits, \
+         COALESCE(d.is_show, 0) AS is_show, \
+         COALESCE(d.add_time, 0) AS created_at, \
+         COALESCE(d.add_time, 0) AS updated_at, \
+         COALESCE(c.name, '') AS cname, \
+         COALESCE(d.add_time, 0) AS add_time \
+         FROM phpyun_toolbox_doc d \
+         LEFT JOIN phpyun_toolbox_class c ON c.id = d.cid \
+         WHERE 1=1",
+    );
     if let Some(c) = cid.filter(|v| *v > 0) {
-        qb.push(" AND cid = ");
+        qb.push(" AND d.cid = ");
         qb.push_bind(c);
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND name LIKE ");
+        qb.push(" AND d.name LIKE ");
         qb.push_bind(format!("%{kw}%"));
     }
     if let Some(show) = is_show {
-        qb.push(" AND is_show = ");
+        qb.push(" AND d.is_show = ");
         qb.push_bind(show);
     }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push(" ORDER BY d.id DESC LIMIT ");
     qb.push_bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?);
     qb.push(" OFFSET ");
     qb.push_bind(phpyun_core::numeric::checked_db_i64(

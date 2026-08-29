@@ -1,10 +1,11 @@
 //! Admin evaluate / toolbox / question_class (PHP `neirong`).
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::eval::admin::{self as eval_admin, PaperWrite, QuestionWrite};
 use phpyun_models::eval::php_ser;
-use phpyun_models::hr_doc::entity::{HrDoc, ToolboxClass};
+use phpyun_models::hr_doc::entity::{AdminHrDoc, ToolboxClass};
 use phpyun_models::hr_doc::repo as hr_repo;
 use phpyun_models::qna::entity::QClass;
 use phpyun_models::qna::repo as qna_repo;
@@ -103,7 +104,18 @@ pub async fn list_papers(
     page: Pagination,
 ) -> AppResult<Paged<eval_admin::AdminEvalPaper>> {
     let db = state.db.reader();
-    let list = eval_admin::list_papers(db, keyid, keyword, page.offset, page.limit).await?;
+    let mut list = eval_admin::list_papers(db, keyid, keyword, page.offset, page.limit).await?;
+    let groups = eval_admin::list_groups(db).await?;
+    let names: std::collections::HashMap<i32, String> =
+        groups.into_iter().map(|g| (g.id as i32, g.name)).collect();
+    for p in &mut list {
+        p.ctime_n = fmt_date(p.ctime);
+        p.url = format!(
+            "/index.php?m=evaluate&c=exampaper&titleid={}&gid={}",
+            p.id, p.keyid
+        );
+        p.keyid_n = names.get(&p.keyid).cloned().unwrap_or_default();
+    }
     let total = eval_admin::count_papers(db, keyid, keyword).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -331,7 +343,10 @@ pub async fn list_messages(
     page: Pagination,
 ) -> AppResult<Paged<eval_admin::AdminEvalMessage>> {
     let db = state.db.reader();
-    let list = eval_admin::list_messages(db, keyword, by_uid, page.offset, page.limit).await?;
+    let mut list = eval_admin::list_messages(db, keyword, by_uid, page.offset, page.limit).await?;
+    for m in &mut list {
+        m.ctime_n = fmt_date(m.ctime);
+    }
     let total = eval_admin::count_messages(db, keyword, by_uid).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -353,7 +368,10 @@ pub async fn list_logs(
     page: Pagination,
 ) -> AppResult<Paged<eval_admin::AdminEvalLog>> {
     let db = state.db.reader();
-    let list = eval_admin::list_logs(db, keyword, by_paper, page.offset, page.limit).await?;
+    let mut list = eval_admin::list_logs(db, keyword, by_paper, page.offset, page.limit).await?;
+    for r in &mut list {
+        r.ctime_n = fmt_date(r.ctime);
+    }
     let total = eval_admin::count_logs(db, keyword, by_paper).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -372,9 +390,12 @@ pub async fn list_docs(
     keyword: Option<&str>,
     is_show: Option<i32>,
     page: Pagination,
-) -> AppResult<Paged<HrDoc>> {
+) -> AppResult<Paged<AdminHrDoc>> {
     let db = state.db.reader();
-    let list = hr_repo::list_admin(db, cid, keyword, is_show, page.offset, page.limit).await?;
+    let mut list = hr_repo::list_admin(db, cid, keyword, is_show, page.offset, page.limit).await?;
+    for d in &mut list {
+        d.add_time_n = fmt_dt(d.add_time);
+    }
     let total = hr_repo::count_admin(db, cid, keyword, is_show).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -432,6 +453,29 @@ pub async fn list_classes(state: &AppState) -> AppResult<Vec<ToolboxClass>> {
     Ok(hr_repo::list_classes(state.db.reader()).await?)
 }
 
+pub async fn doc_editor(state: &AppState, id: Option<u64>) -> AppResult<serde_json::Value> {
+    let class_list = hr_repo::list_classes(state.db.reader()).await?;
+    let info = if let Some(id) = id.filter(|v| *v > 0) {
+        match hr_repo::find_admin(state.db.reader(), id).await? {
+            Some(d) => {
+                let file_name = d.url.rsplit('/').next().unwrap_or("").to_string();
+                serde_json::json!({
+                    "id": d.id,
+                    "cid": d.cid,
+                    "name": d.name,
+                    "url": d.url,
+                    "is_show": d.is_show,
+                    "file_name": file_name,
+                })
+            }
+            None => serde_json::Value::Null,
+        }
+    } else {
+        serde_json::Value::Null
+    };
+    Ok(serde_json::json!({ "info": info, "classList": class_list }))
+}
+
 pub async fn upsert_class(
     state: &AppState,
     actor: &AuthenticatedUser,
@@ -460,15 +504,29 @@ pub async fn delete_classes(
 
 // ---------- question class ----------
 
+#[derive(Debug, Serialize)]
+pub struct QClassAdminRow {
+    #[serde(flatten)]
+    pub row: QClass,
+    pub add_time_n: String,
+}
+
 pub async fn list_qclasses(
     state: &AppState,
     pid: Option<i32>,
     keyword: Option<&str>,
     page: Pagination,
-) -> AppResult<Paged<QClass>> {
+) -> AppResult<Paged<QClassAdminRow>> {
     let db = state.db.reader();
     let list = qna_repo::list_qclasses_admin(db, pid, keyword, page.offset, page.limit).await?;
     let total = qna_repo::count_qclasses_admin(db, pid, keyword).await?;
+    let list = list
+        .into_iter()
+        .map(|row| QClassAdminRow {
+            add_time_n: fmt_dt(row.add_time),
+            row,
+        })
+        .collect();
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 

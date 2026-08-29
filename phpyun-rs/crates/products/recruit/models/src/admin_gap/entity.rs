@@ -7,9 +7,13 @@ use sqlx::FromRow;
 pub struct UserPhotoRow {
     pub uid: u64,
     pub name: String,
+    pub username: String,
     pub sex: i32,
     pub photo: String,
     pub photo_status: i32,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub username_n: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -137,6 +141,12 @@ pub struct CronRow {
     pub display: i32,
     pub nowtime: i64,
     pub nexttime: i64,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub nowtime_n: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub nexttime_n: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -183,6 +193,8 @@ pub struct SpecialComAdminRow {
     pub sort: i32,
     pub famous: i32,
     pub created_at: i64,
+    #[serde(default)]
+    pub name: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -243,6 +255,20 @@ pub struct DomainAdminRow {
     pub mode: i32,
     pub web_title: String,
     pub indexdir: String,
+    pub style: String,
+    pub hy: i32,
+    pub cityid: i32,
+    pub province: i32,
+    pub tpl: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub name: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub city: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub hy_n: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -295,4 +321,110 @@ pub struct RatingPackageRow {
     pub freerefresh_num: i32,
     pub suspend_num: i32,
     pub max_time: i32,
+    #[sqlx(skip)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub time: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PhotoStat {
+    #[serde(rename = "numAll")]
+    pub num_all: u64,
+    #[serde(rename = "numAudited")]
+    pub num_audited: u64,
+    #[serde(rename = "numUnaudited")]
+    pub num_unaudited: u64,
+    #[serde(rename = "numFailed", skip_serializing_if = "Option::is_none")]
+    pub num_failed: Option<u64>,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct BannerAdminRow {
+    pub id: u64,
+    pub uid: u64,
+    pub pic: String,
+    pub status: i32,
+    pub statusbody: String,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct BizLogRow {
+    pub id: u64,
+    pub uid: u64,
+    pub comid: u64,
+    pub eid: u64,
+    pub jobid: u64,
+    pub username: String,
+    pub com_name: String,
+    pub com_username: String,
+    pub job_name: String,
+    pub telphone: String,
+    pub datetime: i64,
+    pub is_browse: i32,
+    pub isdel_n: String,
+    pub status: i32,
+    pub title: String,
+    pub ip: String,
+    pub remark: String,
+    pub pic: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub username_n: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub datetime_n: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub datetime_n_n: String,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct RatingServiceRow {
+    pub id: u64,
+    pub name: String,
+    pub display: i32,
+    pub sort: i32,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct RatingServiceDetailRow {
+    pub id: u64,
+    pub service_price: String,
+    pub resume: i32,
+    pub interview: i32,
+    pub job_num: i32,
+    pub breakjob_num: i32,
+    pub part_num: i32,
+    pub breakpart_num: i32,
+    pub lt_job_num: i32,
+    pub lt_breakjob_num: i32,
+    pub lt_resume: i32,
+    #[sqlx(rename = "type")]
+    #[serde(rename = "type")]
+    pub r#type: i32,
+    pub sort: i32,
+    pub zph_num: i32,
+    pub top_num: i32,
+    pub rec_num: i32,
+    pub urgent_num: i32,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct CronLogRow {
+    pub id: u64,
+    pub cid: String,
+    pub ctime: i64,
+    pub name: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub ctime_n: String,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct MarketingExportRow {
+    pub uid: u64,
+    pub username: String,
+    pub email: String,
+    pub moblie: String,
 }

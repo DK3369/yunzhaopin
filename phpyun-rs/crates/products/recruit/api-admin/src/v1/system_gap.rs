@@ -1,29 +1,41 @@
 //! PHP system gap: keywords / domains / cron table / errorlog / sysmsg / navmap / myuser / tpl / modules.
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::{CreatedId, IdsBody};
+use phpyun_core::dto::{CreatedId, IdBody, IdsBody};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::admin_gap::entity::*;
 use phpyun_services::admin_system_gap_service::{self, ComTplRow, ModuleRow, MyUserView};
 use serde::Deserialize;
+use serde_json::Value;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/keywords", post(upsert_keyword))
         .route("/keywords/list", post(list_keywords))
         .route("/keywords/delete", post(delete_keywords))
+        .route("/keywords/recup", post(recup_keyword))
+        .route("/keywords/status", post(keyword_status))
         .route("/domains", post(list_domains))
         .route("/domains/upsert", post(upsert_domain))
         .route("/domains/delete", post(delete_domains))
+        .route("/domains/detail", post(domain_detail))
+        .route("/domains/config", post(domain_config))
         .route("/domain-admins", post(list_domain_admins))
+        .route("/domain-admins/save", post(save_domain_admin))
+        .route("/domain-admins/delete", post(delete_domain_admins))
         .route("/cron/table", post(list_cron_table))
         .route("/cron/save", post(save_cron))
         .route("/cron/delete", post(delete_cron))
+        .route("/cron/info", post(cron_info))
+        .route("/cron/run", post(cron_run))
+        .route("/cron/logs", post(list_cron_logs))
         .route("/error-logs", post(list_error_logs))
         .route("/error-logs/delete", post(delete_error_logs))
         .route("/sysmsgs", post(list_sysmsgs))
@@ -54,12 +66,12 @@ pub async fn list_keywords(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<Paged<HotKeyAdminRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<HotKeyAdminRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_keywords(&state, q.r#type, q.keyword.as_deref(), page)
             .await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -121,17 +133,18 @@ pub async fn list_domains(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<Paged<DomainAdminRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<DomainAdminRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_domains(&state, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct DomainForm {
     pub id: Option<u64>,
     #[validate(length(min = 1, max = 120))]
+    #[serde(alias = "name")]
     pub title: String,
     #[validate(length(min = 1, max = 200))]
     pub domain: String,
@@ -143,6 +156,16 @@ pub struct DomainForm {
     pub web_title: String,
     #[serde(default)]
     pub indexdir: String,
+    #[serde(default)]
+    pub style: String,
+    #[serde(default)]
+    pub hy: i32,
+    #[serde(default)]
+    pub cityid: i32,
+    #[serde(default)]
+    pub province: i32,
+    #[serde(default)]
+    pub tpl: String,
 }
 
 #[utoipa::path(post, path = "/v1/admin/domains/upsert", tag = "admin", security(("bearer" = [])), request_body = DomainForm, responses((status = 200, description = "ok", body = CreatedId)))]
@@ -162,6 +185,11 @@ pub async fn upsert_domain(
         f.mode,
         &f.web_title,
         &f.indexdir,
+        &f.style,
+        f.hy,
+        f.cityid,
+        f.province,
+        &f.tpl,
     )
     .await?;
     Ok(ApiResponse::data(CreatedId { id }))
@@ -184,11 +212,11 @@ pub async fn list_domain_admins(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<Paged<DomainAdminUserRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<DomainAdminUserRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_domain_admins(&state, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/cron/table", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
@@ -196,11 +224,11 @@ pub async fn list_cron_table(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiResponse<Paged<CronRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<CronRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_cron_table(&state, page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -269,12 +297,12 @@ pub async fn list_error_logs(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<Paged<ErrorLogRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<ErrorLogRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_error_logs(&state, q.keyword.as_deref(), q.logtype, page)
             .await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -302,11 +330,11 @@ pub async fn list_sysmsgs(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<Paged<SysmsgAdminRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<SysmsgAdminRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_sysmsgs(&state, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -336,11 +364,11 @@ pub async fn list_navmap(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<Paged<NavmapRow>>> {
+) -> AppResult<ApiResponse<AdminPaged<NavmapRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_navmap(&state, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -527,4 +555,181 @@ pub async fn save_modules(
         .collect();
     admin_system_gap_service::save_modules(&state, &user, &items).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct RecupForm {
+    #[validate(range(min = 1))]
+    pub id: u64,
+    #[serde(default)]
+    pub r#type: String,
+    #[serde(default)]
+    pub rec: String,
+}
+
+#[utoipa::path(post, path = "/v1/admin/keywords/recup", tag = "admin", security(("bearer" = [])), request_body = RecupForm, responses((status = 200, description = "ok")))]
+pub async fn recup_keyword(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<RecupForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    let rec = if f.rec == "true" || f.rec == "1" { 1 } else { f.rec.parse().unwrap_or(0) };
+    admin_system_gap_service::recup_keyword(&state, &user, f.id, &f.r#type, rec).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct KeywordStatusForm {
+    #[serde(default)]
+    pub pid: String,
+    #[serde(default)]
+    pub check: String,
+    #[serde(default)]
+    pub tuijian: String,
+    #[serde(default)]
+    pub bold: String,
+    #[serde(default)]
+    pub color: String,
+    #[serde(default)]
+    pub size: String,
+    pub r#type: Option<i32>,
+}
+
+#[utoipa::path(post, path = "/v1/admin/keywords/status", tag = "admin", security(("bearer" = [])), request_body = KeywordStatusForm, responses((status = 200, description = "ok")))]
+pub async fn keyword_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<KeywordStatusForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_system_gap_service::batch_keyword_status(
+        &state,
+        &user,
+        &f.pid,
+        &f.check,
+        &f.tuijian,
+        &f.bold,
+        &f.color,
+        &f.size,
+        f.r#type,
+    )
+    .await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/domains/detail", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
+pub async fn domain_detail(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<DomainAdminRow>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_system_gap_service::domain_detail(&state, f.id).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/domains/config", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn domain_config(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_system_gap_service::domain_config(&state).await?,
+    ))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct DomainAdminForm {
+    pub uid: Option<u64>,
+    #[validate(length(min = 1, max = 80))]
+    pub username: String,
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub password: String,
+    #[serde(default)]
+    pub m_id: i32,
+    #[serde(default)]
+    pub did: u64,
+}
+
+#[utoipa::path(post, path = "/v1/admin/domain-admins/save", tag = "admin", security(("bearer" = [])), request_body = DomainAdminForm, responses((status = 200, description = "ok", body = CreatedId)))]
+pub async fn save_domain_admin(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<DomainAdminForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
+    user.require_admin()?;
+    let pw = if f.password.trim().is_empty() {
+        None
+    } else {
+        Some(f.password.as_str())
+    };
+    let id = admin_system_gap_service::upsert_domain_admin(
+        &state,
+        &user,
+        f.uid,
+        &f.username,
+        &f.name,
+        pw,
+        f.m_id,
+        f.did,
+    )
+    .await?;
+    Ok(ApiResponse::data(CreatedId { id }))
+}
+
+#[utoipa::path(post, path = "/v1/admin/domain-admins/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+pub async fn delete_domain_admins(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdsBody>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_system_gap_service::delete_domain_admins(&state, &user, &f.ids).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Default, Deserialize, Validate, ToSchema)]
+pub struct CronIdForm {
+    pub id: Option<u64>,
+}
+
+#[utoipa::path(post, path = "/v1/admin/cron/info", tag = "admin", security(("bearer" = [])), request_body = CronIdForm, responses((status = 200, description = "ok")))]
+pub async fn cron_info(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<CronIdForm>,
+) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_system_gap_service::cron_info(&state, f.id).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/cron/run", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
+pub async fn cron_run(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_system_gap_service::run_cron(&state, &user, f.id).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/cron/logs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn list_cron_logs(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<KwQuery>,
+) -> AppResult<ApiResponse<AdminPaged<CronLogRow>>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(AdminPaged::from(
+        admin_system_gap_service::list_cron_logs(&state, q.keyword.as_deref(), page).await?,
+    )))
 }

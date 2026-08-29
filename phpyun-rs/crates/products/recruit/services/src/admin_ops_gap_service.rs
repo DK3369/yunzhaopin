@@ -1,11 +1,14 @@
 //! Marketing / special signup / weixin records / OSS / gsd / fastlogin / dataCall.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::utils::fmt_dt;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::admin_gap::entity::*;
+use phpyun_models::admin_gap::extra as gap2;
 use phpyun_models::admin_gap::repo as gap;
 use phpyun_models::site_setting::repo as setting_repo;
 use serde::Serialize;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 
 use crate::mail_service;
@@ -18,12 +21,45 @@ async fn audit_write(state: &AppState, actor: &AuthenticatedUser, action: &'stat
     .await;
 }
 
-pub async fn marketing_email_status(state: &AppState) -> AppResult<Vec<LastMsgAt>> {
-    Ok(gap::last_email_msgs(state.db.reader(), 12).await?)
+fn keyed_last_msgs(rows: Vec<LastMsgAt>) -> Value {
+    let keys = [
+        "anniversary",
+        "todaydue",
+        "sevendue",
+        "useradd",
+        "userup",
+        "addjob",
+        "upjob",
+    ];
+    let mut out = serde_json::Map::new();
+    for k in keys {
+        out.insert(k.to_string(), json!({}));
+    }
+    for row in rows {
+        let title = row.title.to_lowercase();
+        let slot = keys.iter().find(|k| title.contains(*k));
+        if let Some(k) = slot {
+            if out.get(*k).and_then(|v| v.get("ctime")).is_none() {
+                out.insert(
+                    (*k).to_string(),
+                    json!({ "ctime": row.ctime, "ctime_n": fmt_dt(row.ctime), "title": row.title }),
+                );
+            }
+        }
+    }
+    Value::Object(out)
 }
 
-pub async fn marketing_sms_status(state: &AppState) -> AppResult<Vec<LastMsgAt>> {
-    Ok(gap::last_sms_msgs(state.db.reader(), 12).await?)
+pub async fn marketing_email_status(state: &AppState) -> AppResult<Value> {
+    Ok(keyed_last_msgs(
+        gap::last_email_msgs(state.db.reader(), 40).await?,
+    ))
+}
+
+pub async fn marketing_sms_status(state: &AppState) -> AppResult<Value> {
+    Ok(keyed_last_msgs(
+        gap::last_sms_msgs(state.db.reader(), 40).await?,
+    ))
 }
 
 pub async fn marketing_email_send(
@@ -139,15 +175,25 @@ pub async fn list_special_coms(
 pub async fn set_special_com_status(
     state: &AppState,
     actor: &AuthenticatedUser,
-    id: u64,
+    ids: &[u64],
     status: i32,
     statusbody: &str,
 ) -> AppResult<()> {
-    let n = gap::set_special_com_status(state.db.pool(), id, status, statusbody).await?;
-    if n == 0 {
-        return Err(ApiError::param_invalid("special_com_not_found"));
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("pid"));
     }
-    audit_write(state, actor, "admin.special.com", format!("id:{id}")).await;
+    gap2::set_special_com_status_ids(state.db.pool(), ids, status, statusbody).await?;
+    audit_write(state, actor, "admin.special.com", format!("{ids:?}")).await;
+    Ok(())
+}
+
+pub async fn delete_special_coms(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<()> {
+    gap2::delete_special_coms(state.db.pool(), ids).await?;
+    audit_write(state, actor, "admin.special.com.delete", format!("{ids:?}")).await;
     Ok(())
 }
 
@@ -366,6 +412,39 @@ pub async fn save_fastlogin(
     items: &[(String, String)],
 ) -> AppResult<()> {
     kv_save(state, actor, "admin.fastlogin", items, FASTLOGIN_KEYS).await
+}
+
+pub async fn marketing_promote(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    emails: &[String],
+    mobiles: &[String],
+    title: &str,
+    content: &str,
+    utype: i32,
+) -> AppResult<u64> {
+    if emails.iter().any(|s| !s.trim().is_empty()) {
+        marketing_email_send_typed(state, actor, emails, title, content, utype).await
+    } else {
+        marketing_sms_send_typed(state, actor, mobiles, content, utype).await
+    }
+}
+
+pub async fn marketing_export(
+    state: &AppState,
+    xls_type: &str,
+    utype: i32,
+) -> AppResult<Vec<MarketingExportRow>> {
+    let usertype = if utype > 0 { utype } else { 1 };
+    Ok(gap2::list_marketing_export(state.db.reader(), xls_type, usertype, 500).await?)
+}
+
+pub async fn marketing_site_name(state: &AppState) -> AppResult<Value> {
+    let name = setting_repo::find(state.db.reader(), "sy_webname")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    Ok(json!({ "sy_webname": name }))
 }
 
 #[derive(Debug, Serialize)]

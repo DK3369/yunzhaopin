@@ -3,13 +3,15 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::{CreatedId, IdBody, IdsBody};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::qna::entity::QClass;
-use phpyun_services::admin_eval_service;
+use phpyun_services::admin_eval_service::{self, QClassAdminRow};
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -32,11 +34,11 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiResponse<Paged<QClass>>> {
+) -> AppResult<ApiResponse<AdminPaged<QClassAdminRow>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_eval_service::list_qclasses(&state, q.pid, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/question-classes/detail", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
