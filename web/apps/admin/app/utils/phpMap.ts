@@ -227,6 +227,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company/xls': { path: '/v1/admin/companies/export' },
   'user/company/getCache': { path: '/v1/admin/companies/php-cache' },
   'user/company/add': { path: '/v1/admin/companies/php-add-form' },
+  'user/company/checkUsername': { path: '/v1/admin/companies/check-username' },
+  'user/company/checkComName': { path: '/v1/admin/companies/check-com-name' },
+  'user/users_resume/checkUsername': { path: '/v1/admin/companies/check-username' },
   'user/partjob/getCacheData': {
     path: '/v1/admin/cache/php-dicts',
     transformRes: cacheDataShape,

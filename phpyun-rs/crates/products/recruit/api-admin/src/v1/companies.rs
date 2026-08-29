@@ -21,6 +21,8 @@ pub fn routes() -> Router<AppState> {
         .route("/companies/rating", post(set_rating))
         .route("/companies/php-cache", post(php_cache))
         .route("/companies/php-add-form", post(php_add_form))
+        .route("/companies/check-username", post(check_username))
+        .route("/companies/check-com-name", post(check_com_name))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
@@ -197,4 +199,35 @@ pub async fn php_add_form(
     payload["com_rating"] = serde_json::Value::String(com_rating);
     payload["cionly"] = serde_json::json!(cionly);
     Ok(ApiResponse::data(payload))
+}
+
+/// PHP `company::checkUsername_action` / `users_resume::checkUsername`.
+#[utoipa::path(post, path = "/v1/admin/companies/check-username", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn check_username(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    let username = body
+        .get("username")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    admin_longtail_service::check_member_username(&state, &user, username).await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+/// PHP `company::checkComName_action`.
+#[utoipa::path(post, path = "/v1/admin/companies/check-com-name", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn check_com_name(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let name = body
+        .get("companyName")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    Ok(ApiResponse::data(
+        admin_longtail_service::check_com_name(&state, &user, name).await?,
+    ))
 }

@@ -434,6 +434,37 @@ pub async fn list_cards_by_uids(
     q.fetch_all(pool).await
 }
 
+/// PHP `company::getKhList` — name LIKE, with CRM admin display name.
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct KhCompany {
+    pub name: String,
+    pub crm_uid: i32,
+    pub crm_name: String,
+}
+
+pub async fn list_kh_by_name(
+    pool: &MySqlPool,
+    keyword: &str,
+    limit: u64,
+) -> Result<Vec<KhCompany>, sqlx::Error> {
+    let pattern = format!("%{keyword}%");
+    sqlx::query_as::<_, KhCompany>(
+        "SELECT \
+            COALESCE(c.name, '') AS name, \
+            CAST(COALESCE(c.crm_uid, 0) AS SIGNED) AS crm_uid, \
+            COALESCE(NULLIF(a.name, ''), a.username, '') AS crm_name \
+         FROM phpyun_company c \
+         LEFT JOIN phpyun_admin_user a ON a.uid = c.crm_uid \
+         WHERE c.name LIKE ? \
+         ORDER BY c.uid DESC \
+         LIMIT ?",
+    )
+    .bind(pattern)
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}
+
 /// Quick autocomplete for company name search — counterpart of PHP
 /// `ajax::getComBySearch_action`. Returns up to `limit` rows whose `name`
 /// matches `LIKE %keyword%` and have been approved (`r_status = 1`).

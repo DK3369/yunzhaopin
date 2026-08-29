@@ -11,7 +11,9 @@ use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume::repo::AdminResumeRow;
 use phpyun_models::resume::training::Training;
 use phpyun_models::resume::work::Work;
+use phpyun_models::user::repo as user_repo;
 use serde::Serialize;
+use serde_json::{json, Value};
 
 async fn audit_write(
     state: &AppState,
@@ -331,4 +333,83 @@ pub async fn company_php_cache(
     });
     crate::admin_dashboard_service::attach_amap(&mut payload, &map_key, &map_secret);
     Ok(payload)
+}
+
+/// PHP `CheckRegUser`.
+fn check_reg_user(s: &str) -> bool {
+    !s.is_empty()
+        && s.chars().all(|c| {
+            matches!(
+                c,
+                'A'..='Z'
+                    | 'a'..='z'
+                    | '0'..='9'
+                    | '-'
+                    | '@'
+                    | '#'
+                    | '.'
+                    | '$'
+                    | '_'
+                    | '!'
+            ) || ('\u{4e00}'..='\u{9fa5}').contains(&c)
+        })
+}
+
+/// PHP `CheckRegEmail` (simplified; admin checkUsername accepts email-shaped names).
+fn check_reg_email(s: &str) -> bool {
+    let s = s.trim();
+    let Some((local, domain)) = s.split_once('@') else {
+        return false;
+    };
+    !local.is_empty() && domain.contains('.') && !domain.starts_with('.') && !domain.ends_with('.')
+}
+
+/// PHP `userinfo::addMemberCheck` for username only (`checkUsername_action`).
+pub async fn check_member_username(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    username: &str,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let username = username.trim();
+    if username.is_empty() {
+        return Ok(());
+    }
+    if !check_reg_user(username) && !check_reg_email(username) {
+        return Err(ApiError::business("wap_00205"));
+    }
+    if username.eq_ignore_ascii_case("admin") {
+        return Err(ApiError::business("common_01147"));
+    }
+    if user_repo::exists_username(state.db.reader(), username).await? {
+        return Err(ApiError::business("common_01388"));
+    }
+    Ok(())
+}
+
+/// PHP `company::checkComName_action`.
+pub async fn check_com_name(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    company_name: &str,
+) -> AppResult<Value> {
+    user.require_admin()?;
+    let name = company_name.trim();
+    if name.is_empty() {
+        return Ok(json!([]));
+    }
+    let rows = company_repo::list_kh_by_name(state.db.reader(), name, 50).await?;
+    if rows.is_empty() {
+        return Ok(json!([]));
+    }
+    let mut out = vec![json!({ "value": "admin_user_00028" })];
+    for r in rows {
+        let crm = if r.crm_uid > 0 && !r.crm_name.is_empty() {
+            r.crm_name
+        } else {
+            "admin_user_company_00153".into()
+        };
+        out.push(json!({ "value": format!("{} ({})", r.name, crm) }));
+    }
+    Ok(Value::Array(out))
 }
