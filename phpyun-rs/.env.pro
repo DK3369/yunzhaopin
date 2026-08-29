@@ -7,7 +7,8 @@ THREAD_STACK_MB=2
 MAX_BLOCKING_THREADS=512
 
 # MySQL / Redis
-DATABASE_URL=mysql://phpyun:RYrkAMHkSkYR6ND3@127.0.0.1:3306/phpyun
+# Rust 独立库 jobs（从 phpyun 克隆）。原库 phpyun 不要再改。
+DATABASE_URL=mysql://phpyun:RYrkAMHkSkYR6ND3@127.0.0.1:3306/jobs
 DATABASE_READER_URL=
 DB_MAX_CONNECTIONS=32
 DB_MIN_CONNECTIONS=4
