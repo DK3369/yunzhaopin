@@ -8,6 +8,7 @@ use phpyun_models::article::entity::{Article, NewsGroup};
 use phpyun_models::article::repo as article_repo;
 use phpyun_models::article::repo::ArticleFilter;
 use phpyun_models::company::repo as company_repo;
+use phpyun_models::domain::repo as domain_repo;
 use phpyun_models::friend_link::entity::FriendLink;
 use phpyun_models::friend_link::repo as friend_link_repo;
 use phpyun_models::gongzhao::entity::Gongzhao;
@@ -189,6 +190,116 @@ pub async fn delete_announcement(
     )
     .await;
     Ok(())
+}
+
+fn json_s(v: &serde_json::Value, key: &str) -> String {
+    match v.get(key) {
+        Some(serde_json::Value::String(s)) => s.trim().to_string(),
+        Some(serde_json::Value::Number(n)) => n.to_string(),
+        _ => String::new(),
+    }
+}
+
+fn json_n(v: &serde_json::Value, key: &str) -> u64 {
+    match v.get(key) {
+        Some(serde_json::Value::Number(n)) => n.as_u64().unwrap_or(0),
+        Some(serde_json::Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn parse_when(s: &str) -> i64 {
+    let t = s.trim();
+    if t.is_empty() {
+        return 0;
+    }
+    if let Ok(n) = t.parse::<i64>() {
+        return n;
+    }
+    let t = t.replace('T', " ").replace('Z', "");
+    let head = t.get(..19).unwrap_or(t.as_str());
+    if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(head, "%Y-%m-%d %H:%M:%S") {
+        return dt.and_utc().timestamp();
+    }
+    let with_sec = format!("{head}:00");
+    if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(&with_sec, "%Y-%m-%d %H:%M:%S") {
+        return dt.and_utc().timestamp();
+    }
+    if let Ok(d) = chrono::NaiveDate::parse_from_str(t.get(..10).unwrap_or(t.as_str()), "%Y-%m-%d") {
+        if let Some(dt) = d.and_hms_opt(0, 0, 0) {
+            return dt.and_utc().timestamp();
+        }
+    }
+    0
+}
+
+/// PHP `announcement::add_action`：无 `submit` 返回表单；有则写入。
+pub async fn announcement_php_add(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &serde_json::Value,
+) -> AppResult<serde_json::Value> {
+    user.require_admin()?;
+    let submit = body.get("submit").is_some()
+        && body.get("submit") != Some(&serde_json::Value::Bool(false))
+        && body.get("submit") != Some(&serde_json::json!(0))
+        && body.get("submit") != Some(&serde_json::Value::String("0".into()));
+    if !submit {
+        let id = json_n(body, "id");
+        let domains = domain_repo::list_all(state.db.reader()).await?;
+        let mut domain_list = serde_json::Map::new();
+        for d in domains {
+            domain_list.insert(d.id.to_string(), serde_json::json!(d.title));
+        }
+        let info = if id > 0 {
+            match ann_repo::find_by_id(state.db.reader(), id).await? {
+                Some(a) => serde_json::json!({
+                    "id": a.id,
+                    "title": a.title,
+                    "keyword": a.keyword,
+                    "did": a.did,
+                    "description": a.description,
+                    "content": a.content,
+                    "startime": a.startime,
+                    "endtime": a.endtime,
+                    "startime_n": if a.startime > 0 { phpyun_core::utils::fmt_dt(a.startime) } else { String::new() },
+                    "endtime_n": if a.endtime > 0 { phpyun_core::utils::fmt_dt(a.endtime) } else { String::new() },
+                }),
+                None => serde_json::json!(""),
+            }
+        } else {
+            serde_json::json!("")
+        };
+        return Ok(serde_json::json!({ "info": info, "domainList": domain_list }));
+    }
+    let title = json_s(body, "title");
+    let keyword = json_s(body, "keyword");
+    let description = json_s(body, "description");
+    if title.is_empty() || keyword.is_empty() || description.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let start_s = json_s(body, "startime");
+    let mut startime = parse_when(&start_s);
+    if startime == 0 {
+        startime = clock::now_ts();
+    }
+    let id = json_n(body, "id");
+    let nid = upsert_announcement(
+        state,
+        user,
+        AnnouncementUpsertIn {
+            id: if id > 0 { Some(id) } else { None },
+            title: &title,
+            keyword: &keyword,
+            description: &description,
+            content: &json_s(body, "content"),
+            startime,
+            endtime: parse_when(&json_s(body, "endtime")),
+            did: json_n(body, "did"),
+        },
+    )
+    .await?;
+    Ok(serde_json::json!({ "id": nid }))
 }
 
 // ---------- questions ----------

@@ -5,6 +5,8 @@ use sqlx::FromRow;
 pub struct Announcement {
     pub id: u64,
     pub title: String,
+    #[serde(default)]
+    pub keyword: String,
     pub description: String,
     pub content: String,
     pub view_num: u32,

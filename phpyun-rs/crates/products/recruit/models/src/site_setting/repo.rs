@@ -60,3 +60,33 @@ pub async fn delete(pool: &MySqlPool, key: &str) -> Result<u64, sqlx::Error> {
         .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn list_reg_config(pool: &MySqlPool) -> Result<Vec<(String, String)>, sqlx::Error> {
+    sqlx::query_as::<_, (String, String)>(
+        "SELECT COALESCE(name,''), COALESCE(config,'') FROM phpyun_admin_reg_config",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn upsert_reg_config(pool: &MySqlPool, name: &str, config: &str) -> Result<(), sqlx::Error> {
+    let exists: Option<(i64,)> =
+        sqlx::query_as::<_, (i64,)>("SELECT 1 FROM phpyun_admin_reg_config WHERE name = ? LIMIT 1")
+            .bind(name)
+            .fetch_optional(pool)
+            .await?;
+    if exists.is_some() {
+        sqlx::query("UPDATE phpyun_admin_reg_config SET config = ? WHERE name = ?")
+            .bind(config)
+            .bind(name)
+            .execute(pool)
+            .await?;
+    } else {
+        sqlx::query("INSERT INTO phpyun_admin_reg_config (name, config) VALUES (?, ?)")
+            .bind(name)
+            .bind(config)
+            .execute(pool)
+            .await?;
+    }
+    Ok(())
+}

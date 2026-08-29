@@ -19,6 +19,17 @@ pub fn routes() -> Router<AppState> {
         .route("/site-settings/payset/tenpay", post(payset_tenpay))
         .route("/site-settings/payset/bank", post(payset_bank))
         .route("/site-settings/payset/bank-delete", post(payset_bank_delete))
+        .route("/site-settings/php-seo", post(php_seo))
+        .route("/site-settings/php-seo-add", post(php_seo_add))
+        .route("/site-settings/php-seo-save", post(php_seo_save))
+        .route("/site-settings/php-seo-del", post(php_seo_del))
+        .route("/site-settings/php-regset", post(php_regset))
+        .route("/site-settings/php-regset-save", post(php_regset_save))
+        .route("/site-settings/php-messageset", post(php_messageset))
+        .route("/site-settings/php-hbconfig", post(php_hbconfig))
+        .route("/site-settings/php-hb-saveset", post(php_hb_saveset))
+        .route("/site-settings/php-hb-list", post(php_hb_list))
+        .route("/site-settings/php-hb-save-open", post(php_hb_save_open))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -325,4 +336,134 @@ pub async fn payset_bank_delete(
 ) -> AppResult<ApiResponse> {
     site_setting_service::payset_bank_delete(&state, &user, b.id).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+fn body_u64(body: &serde_json::Value, key: &str) -> u64 {
+    match body.get(key) {
+        Some(serde_json::Value::Number(n)) => n.as_u64().unwrap_or(0),
+        Some(serde_json::Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn body_str<'a>(body: &'a serde_json::Value, key: &str) -> &'a str {
+    body.get(key).and_then(|v| v.as_str()).unwrap_or("")
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-seo", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_seo(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::seo_index(&state, &user, body_str(&body, "action")).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-seo-add", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_seo_add(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::seo_add_form(&state, &user, body_u64(&body, "id")).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-seo-save", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_seo_save(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let id = site_setting_service::seo_save(&state, &user, &body).await?;
+    let key = if body_u64(&body, "id") > 0 {
+        "admin_model_00100"
+    } else {
+        "admin_model_00101"
+    };
+    Ok(ApiResponse::message_data(key, serde_json::json!({ "id": id })))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-seo-del", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_seo_del(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::seo_del(&state, &user, body_u64(&body, "id")).await?;
+    Ok(ApiResponse::message("admin_model_00104"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-regset", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_regset(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::regset_index(&state, &user).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-regset-save", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_regset_save(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::regset_save(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_model_00072"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-messageset", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_messageset(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::messageset_index(&state, &user).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-hbconfig", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_hbconfig(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::hbconfig_index(&state, &user).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-hb-saveset", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_hb_saveset(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::hbconfig_save_set(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_01450"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-hb-list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_hb_list(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::hbconfig_list(&state, &user, body_u64(&body, "type") as i32).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-hb-save-open", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_hb_save_open(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::hbconfig_save_open(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_01451"))
 }

@@ -1,6 +1,6 @@
 //! Announcements. PHP fields include `startime` (not starttime).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::dto::{CreatedId, IdBody};
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
@@ -16,6 +16,7 @@ pub fn routes() -> Router<AppState> {
         .route("/announcements", post(upsert))
         .route("/announcements/list", post(list))
         .route("/announcements/delete", post(delete))
+        .route("/announcements/php-add", post(php_add))
 }
 
 #[utoipa::path(post, path = "/v1/admin/announcements/list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
@@ -83,4 +84,22 @@ pub async fn delete(
     user.require_admin()?;
     admin_cms_service::delete_announcement(&state, &user, f.id).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+/// PHP `announcement::add_action`：GET 表单 / POST `submit` 写入。
+#[utoipa::path(post, path = "/v1/admin/announcements/php-add", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_add(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let submit = body.get("submit").is_some()
+        && body.get("submit") != Some(&serde_json::Value::Bool(false))
+        && body.get("submit") != Some(&serde_json::json!(0))
+        && body.get("submit") != Some(&serde_json::Value::String("0".into()));
+    let data = admin_cms_service::announcement_php_add(&state, &user, &body).await?;
+    if submit {
+        return Ok(ApiResponse::message_data("admin_model_00189", data));
+    }
+    Ok(ApiResponse::data(data))
 }

@@ -11,6 +11,7 @@ use sqlx::MySqlPool;
 const SELECT_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
     COALESCE(title, '') AS title, \
+    COALESCE(keyword, '') AS keyword, \
     COALESCE(description, '') AS description, \
     COALESCE(content, '') AS content, \
     CAST(COALESCE(view_num, 0) AS UNSIGNED) AS view_num, \
