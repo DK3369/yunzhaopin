@@ -145,7 +145,7 @@ flowchart LR
 - jobs 库公告测试行 `id=2` 已 `deleted=1`（列表不可见）
 - jobs 招聘会/专题测试行 `id=1` 已 `deleted=1`（本波伪删除抽测）
 - 新闻分组树拼法较糙；Alipay 缺密钥时下单会 422（不再留下无 URL 的待支付单）
-- 已修：分站列表 SQL `{PREDICATE}` 未插值导致 500；系统消息 `type` 字符串 400；分类 list 缺 `kind` 时默认 `job`（旧 JS 不再 400）。
+- 已修：分站列表 SQL `{PREDICATE}` 未插值导致 500；系统消息 `type` 字符串 400；分类 list 缺 `kind` 时默认 `job`（旧 JS 不再 400）；关键词开关 `keywords/recup` 接受布尔 `rec`（不再 400）。
 - Admin BFF `runtimeConfig.rustApi` 默认 `:3003`（禁止落到 systemd `:3000`）；HTML `no-store`。
 - `php-compat` 给 `el-table` 补 `bodyWrapper`；构建期把 `:underline="false"` / 旧分页绑定编成 EP 2.10 API，不批量改模板。
 - Admin 静态资源按构建号分目录 (`/_n/<tag>/`)；HTML `no-store`。不要对文档发 `Clear-Site-Data` 或强制 `?b=` 跳转（Chrome 会打不开 `/admin/`）。

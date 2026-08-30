@@ -559,14 +559,29 @@ pub async fn save_modules(
     Ok(ApiResponse::message("ok"))
 }
 
+/// `el-switch` posts JSON booleans; PHP posted the strings `"true"` / `"false"`.
+fn de_switch_flag<'de, D: serde::Deserializer<'de>>(d: D) -> Result<i32, D::Error> {
+    Ok(match Value::deserialize(d)? {
+        Value::Null => 0,
+        Value::Bool(b) => i32::from(b),
+        Value::Number(n) => i32::from(n.as_i64().unwrap_or(0) != 0),
+        Value::String(s) => match s.trim() {
+            "true" | "1" | "on" | "yes" => 1,
+            _ => 0,
+        },
+        _ => 0,
+    })
+}
+
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct RecupForm {
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
     #[validate(range(min = 1))]
     pub id: u64,
     #[serde(default)]
     pub r#type: String,
-    #[serde(default)]
-    pub rec: String,
+    #[serde(default, deserialize_with = "de_switch_flag")]
+    pub rec: i32,
 }
 
 #[utoipa::path(post, path = "/v1/admin/keywords/recup", tag = "admin", security(("bearer" = [])), request_body = RecupForm, responses((status = 200, description = "ok")))]
@@ -576,8 +591,7 @@ pub async fn recup_keyword(
     ValidatedJson(f): ValidatedJson<RecupForm>,
 ) -> AppResult<ApiResponse> {
     user.require_admin()?;
-    let rec = if f.rec == "true" || f.rec == "1" { 1 } else { f.rec.parse().unwrap_or(0) };
-    admin_system_gap_service::recup_keyword(&state, &user, f.id, &f.r#type, rec).await?;
+    admin_system_gap_service::recup_keyword(&state, &user, f.id, &f.r#type, f.rec).await?;
     Ok(ApiResponse::message("ok"))
 }
 
@@ -734,4 +748,21 @@ pub async fn list_cron_logs(
     Ok(ApiResponse::data(AdminPaged::from(
         admin_system_gap_service::list_cron_logs(&state, q.keyword.as_deref(), page).await?,
     )))
+}
+
+#[cfg(test)]
+mod recup_form_tests {
+    use super::*;
+
+    #[test]
+    fn recup_accepts_bool_rec_and_string_id() {
+        let f: RecupForm = serde_json::from_str(r#"{"id":"12","type":"bold","rec":true}"#).unwrap();
+        assert_eq!(f.id, 12);
+        assert_eq!(f.r#type, "bold");
+        assert_eq!(f.rec, 1);
+        let f: RecupForm = serde_json::from_str(r#"{"id":12,"type":"check","rec":false}"#).unwrap();
+        assert_eq!(f.rec, 0);
+        let f: RecupForm = serde_json::from_str(r#"{"id":12,"type":"tuijian","rec":"true"}"#).unwrap();
+        assert_eq!(f.rec, 1);
+    }
 }
