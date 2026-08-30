@@ -77,17 +77,17 @@ flowchart LR
 | `finance-pay` | index, delete |
 | `finance-recharge` | index, jifenSave, comvip, comservice, getservice, searchname, searchcom |
 
-专题企业 `com`/`statuscom`/`delcom` 仍走原 `/v1/admin/specials/companies*`。招聘会/专题**主表**本波末段改伪删除；新闻/问答走 `deleted=1`。财务订单/消费 del 按 PHP 仍是物理 DELETE。xls 出 CSV（base64）。
+专题企业 `com`/`statuscom`/`delcom` 仍走原 `/v1/admin/specials/companies*`。招聘会/专题主表 del 走 `deleted=1`；新闻/问答同样。财务订单/消费 del 按 PHP 仍是物理 DELETE。xls 出 CSV（base64）。
 
 ## 伪删除
 
 提交 `9e129225`：
 
 1. 二次校验：路径以 `/delete`、`/purge` 结尾时，再查 `phpyun_admin_user` 是否有效（`php-content/*/delete` 也会打到）。
-2. 白名单约 39 张表 `deleted=1`；列表 `COALESCE(deleted,0)=0`。
-3. 迁移 `phpyun-rs/migrations/sqlx/20260829000001_admin_soft_delete.sql`。
+2. 白名单约 41 张表 `deleted=1`；列表 `COALESCE(deleted,0)=0`。
+3. 迁移 `phpyun-rs/migrations/sqlx/20260829000001_admin_soft_delete.sql`、`20260830000001_zph_special_soft_delete.sql`（招聘会/专题主表）。
 
-仍用物理 DELETE 或业务状态位：职位 `state=2`、会员/企业注销、KV/银行卡/海报模板、日志/回收站 purge、**招聘会主表 `phpyun_zhaopinhui`、专题主表 `phpyun_special`（未进白名单）**。广告 del 走 `is_open=2`。
+仍用物理 DELETE 或业务状态位：职位 `state=2`、会员/企业注销、KV/银行卡/海报模板、日志/回收站 purge。广告 del 走 `is_open=2`。财务订单/消费按 PHP 物理 DELETE。
 
 回收站 `/v1/admin/recycle-bin` 仍是 PHP recycle 表，不是 `deleted` 列还原器。
 
@@ -102,7 +102,7 @@ flowchart LR
 | 公招 / 公告剩余 | **完成**（`php-content`） |
 | 广告位 / 广告分类 | **完成**（修 del→create、ad_class 错表；`is_open=2` 伪删广告） |
 | 财务订单/充值 | **完成**（php-content + phpMap；凭证上传降级为业务错误） |
-| 招聘会/专题主表伪删除 | **进行中**（本波） |
+| 招聘会/专题主表伪删除 | **完成**（`deleted` 列 + 白名单；del 改 `mark_ids`） |
 
 ### 前台 OAuth / 支付（本轮）
 
@@ -121,4 +121,5 @@ flowchart LR
 - 支付：**支付宝页跳已接，沙箱真单未验收**；微信收款未接
 - php-fpm 未卸，`uploads/` 未删
 - jobs 库公告测试行 `id=2` 已 `deleted=1`（列表不可见）
+- jobs 招聘会/专题测试行 `id=1` 已 `deleted=1`（本波伪删除抽测）
 - 新闻分组树拼法较糙；Alipay 缺密钥时下单会 422（不再留下无 URL 的待支付单）

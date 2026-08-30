@@ -39,12 +39,14 @@ const TABLES: &[&str] = &[
     "phpyun_redeem_class",
     "phpyun_resume_show",
     "phpyun_reward",
+    "phpyun_special",
     "phpyun_special_com",
     "phpyun_toolbox_class",
     "phpyun_toolbox_doc",
     "phpyun_userclass",
     "phpyun_wxnav",
     "phpyun_wxpub_temps",
+    "phpyun_zhaopinhui",
     "phpyun_zhaopinhui_space",
 ];
 

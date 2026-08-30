@@ -52,7 +52,7 @@ const ZPH_FIELDS: &str = "\
 pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Zph>, sqlx::Error> {
     let sql = format!(
         "SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui \
-         WHERE is_open = 1 ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC \
+         WHERE is_open = 1 AND {PREDICATE} ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC \
          LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Zph>(&sql)
@@ -63,14 +63,13 @@ pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Zph>,
 }
 
 pub async fn count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_zhaopinhui WHERE is_open = 1")
-        .fetch_one(pool)
-        .await?;
+    let sql = format!("SELECT COUNT(*) FROM phpyun_zhaopinhui WHERE is_open = 1 AND {PREDICATE}");
+    let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Zph>, sqlx::Error> {
-    let sql = format!("SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui WHERE id = ?");
+    let sql = format!("SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Zph>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -84,7 +83,7 @@ pub async fn list_admin(
 ) -> Result<Vec<Zph>, sqlx::Error> {
     let sql = format!(
         "SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui \
-         ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC LIMIT ? OFFSET ?"
+         WHERE {PREDICATE} ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Zph>(&sql)
         .bind(limit)
@@ -94,9 +93,8 @@ pub async fn list_admin(
 }
 
 pub async fn count_admin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_zhaopinhui")
-        .fetch_one(pool)
-        .await?;
+    let sql = format!("SELECT COUNT(*) FROM phpyun_zhaopinhui WHERE {PREDICATE}");
+    let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
@@ -449,7 +447,9 @@ pub async fn admin_list_filtered(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<AdminZphListRow>, sqlx::Error> {
-    let mut qb = sqlx::QueryBuilder::new(format!("SELECT {ADMIN_ZPH_LIST} FROM phpyun_zhaopinhui z WHERE 1=1"));
+    let mut qb = sqlx::QueryBuilder::new(format!(
+        "SELECT {ADMIN_ZPH_LIST} FROM phpyun_zhaopinhui z WHERE COALESCE(z.deleted,0)=0"
+    ));
     push_zph_admin_filters(&mut qb, f, now);
     qb.push(" ORDER BY z.id DESC LIMIT ");
     qb.push_bind(limit);
@@ -463,7 +463,9 @@ pub async fn admin_count_filtered(
     f: &AdminZphListFilter<'_>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    let mut qb = sqlx::QueryBuilder::new("SELECT COUNT(*) FROM phpyun_zhaopinhui z WHERE 1=1");
+    let mut qb = sqlx::QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_zhaopinhui z WHERE COALESCE(z.deleted,0)=0",
+    );
     push_zph_admin_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -481,7 +483,7 @@ pub async fn find_admin_form(pool: &MySqlPool, id: u64) -> Result<Option<AdminZp
          CAST(COALESCE(is_open,0) AS SIGNED) AS is_open, COALESCE(is_themb,'') AS is_themb, \
          COALESCE(banner,'') AS banner, COALESCE(is_themb_wap,'') AS is_themb_wap, \
          COALESCE(banner_wap,'') AS banner_wap, COALESCE(pic,'') AS pic, COALESCE(weburl,'') AS weburl \
-         FROM phpyun_zhaopinhui WHERE id = ? LIMIT 1",
+         FROM phpyun_zhaopinhui WHERE id = ? AND COALESCE(deleted,0)=0 LIMIT 1",
     )
     .bind(id)
     .fetch_optional(pool)
@@ -582,32 +584,7 @@ pub async fn upsert_info(pool: &MySqlPool, a: ZphInfoWrite<'_>) -> Result<u64, s
 }
 
 pub async fn delete_zph_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    if ids.is_empty() {
-        return Ok(0);
-    }
-    let mut qb = sqlx::QueryBuilder::new("DELETE FROM phpyun_zhaopinhui WHERE id IN (");
-    let mut first = true;
-    for id in ids {
-        if !first {
-            qb.push(",");
-        }
-        qb.push_bind(*id);
-        first = false;
-    }
-    qb.push(")");
-    let n = qb.build().execute(pool).await?.rows_affected();
-    let mut qb2 = sqlx::QueryBuilder::new("DELETE FROM phpyun_zhaopinhui_com WHERE zid IN (");
-    first = true;
-    for id in ids {
-        if !first {
-            qb2.push(",");
-        }
-        qb2.push_bind(*id);
-        first = false;
-    }
-    qb2.push(")");
-    let _ = qb2.build().execute(pool).await?;
-    Ok(n)
+    soft_delete::mark_ids(pool, "phpyun_zhaopinhui", ids).await
 }
 
 pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
@@ -679,7 +656,7 @@ pub async fn admin_list_coms(
         if f.keyword_type == 1 {
             qb.push(" AND c.zid IN (SELECT id FROM phpyun_zhaopinhui WHERE title LIKE ");
             qb.push_bind(like);
-            qb.push(")");
+            qb.push(" AND COALESCE(deleted,0)=0)");
         } else if f.keyword_type == 2 {
             qb.push(" AND (co.name LIKE ");
             qb.push_bind(like.clone());
@@ -712,7 +689,7 @@ pub async fn admin_count_coms(pool: &MySqlPool, f: &AdminZphComFilter<'_>) -> Re
         if f.keyword_type == 1 {
             qb.push(" AND c.zid IN (SELECT id FROM phpyun_zhaopinhui WHERE title LIKE ");
             qb.push_bind(like);
-            qb.push(")");
+            qb.push(" AND COALESCE(deleted,0)=0)");
         } else if f.keyword_type == 2 {
             qb.push(" AND (co.name LIKE ");
             qb.push_bind(like.clone());

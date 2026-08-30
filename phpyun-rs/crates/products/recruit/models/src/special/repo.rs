@@ -1,5 +1,5 @@
 use super::entity::{Special, SpecialCompany};
-use crate::soft_delete::PREDICATE;
+use crate::soft_delete::{self, PREDICATE};
 use sqlx::MySqlPool;
 
 /// Aligned with PHPYun `phpyun_special` (special recruitment topics).
@@ -30,7 +30,7 @@ const FIELDS: &str = "\
 pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Special>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_special \
-         WHERE display = 1 ORDER BY sort DESC, ctime DESC, id DESC LIMIT ? OFFSET ?"
+         WHERE display = 1 AND {PREDICATE} ORDER BY sort DESC, ctime DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Special>(&sql)
         .bind(limit)
@@ -40,14 +40,13 @@ pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Speci
 }
 
 pub async fn count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special WHERE display = 1")
-        .fetch_one(pool)
-        .await?;
+    let sql = format!("SELECT COUNT(*) FROM phpyun_special WHERE display = 1 AND {PREDICATE}");
+    let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<Special>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS} FROM phpyun_special WHERE id = ?");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_special WHERE id = ? AND {PREDICATE}");
     sqlx::query_as::<_, Special>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -69,7 +68,7 @@ pub async fn list_admin(
     limit: u64,
 ) -> Result<Vec<Special>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_special ORDER BY sort DESC, ctime DESC, id DESC LIMIT ? OFFSET ?"
+        "SELECT {FIELDS} FROM phpyun_special WHERE {PREDICATE} ORDER BY sort DESC, ctime DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Special>(&sql)
         .bind(limit)
@@ -79,9 +78,8 @@ pub async fn list_admin(
 }
 
 pub async fn count_admin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special")
-        .fetch_one(pool)
-        .await?;
+    let sql = format!("SELECT COUNT(*) FROM phpyun_special WHERE {PREDICATE}");
+    let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
@@ -274,7 +272,9 @@ pub async fn list_admin_kw(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Special>, sqlx::Error> {
-    let mut qb = sqlx::QueryBuilder::new(format!("SELECT {FIELDS} FROM phpyun_special WHERE 1=1"));
+    let mut qb = sqlx::QueryBuilder::new(format!(
+        "SELECT {FIELDS} FROM phpyun_special WHERE {PREDICATE}"
+    ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
         qb.push_bind(format!("%{kw}%"));
@@ -287,7 +287,9 @@ pub async fn list_admin_kw(
 }
 
 pub async fn count_admin_kw(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
-    let mut qb = sqlx::QueryBuilder::new("SELECT COUNT(*) FROM phpyun_special WHERE 1=1");
+    let mut qb = sqlx::QueryBuilder::new(format!(
+        "SELECT COUNT(*) FROM phpyun_special WHERE {PREDICATE}"
+    ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
         qb.push_bind(format!("%{kw}%"));
@@ -370,31 +372,8 @@ pub async fn upsert_special(pool: &MySqlPool, a: SpecialWrite<'_>) -> Result<u64
 }
 
 pub async fn delete_specials(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    if ids.is_empty() {
-        return Ok(0);
-    }
-    let mut qb = sqlx::QueryBuilder::new("DELETE FROM phpyun_special WHERE id IN (");
-    let mut first = true;
-    for id in ids {
-        if !first {
-            qb.push(",");
-        }
-        qb.push_bind(*id);
-        first = false;
-    }
-    qb.push(")");
-    let n = qb.build().execute(pool).await?.rows_affected();
-    let mut qb2 = sqlx::QueryBuilder::new("DELETE FROM phpyun_special_com WHERE sid IN (");
-    first = true;
-    for id in ids {
-        if !first {
-            qb2.push(",");
-        }
-        qb2.push_bind(*id);
-        first = false;
-    }
-    qb2.push(")");
-    let _ = qb2.build().execute(pool).await?;
+    let n = soft_delete::mark_ids(pool, "phpyun_special", ids).await?;
+    let _ = soft_delete::mark_col_in(pool, "phpyun_special_com", "sid", ids).await?;
     Ok(n)
 }
 
