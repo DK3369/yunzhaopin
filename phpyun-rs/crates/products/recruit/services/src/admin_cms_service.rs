@@ -55,6 +55,8 @@ pub async fn list_articles(
         keyword,
         rec_only: false,
         did: 0,
+        datetime_min: None,
+        author_kw: None,
     };
     let db = state.db.reader();
     let list = article_repo::list_admin(db, &f, page.offset, page.limit).await?;

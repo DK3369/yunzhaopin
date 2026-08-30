@@ -267,3 +267,300 @@ pub async fn list_jobs_for_uids(
     qb.push_bind(limit.min(200));
     qb.build_query_as().fetch_all(pool).await
 }
+
+pub async fn list_admin_kw(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Special>, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new(format!("SELECT {FIELDS} FROM phpyun_special WHERE 1=1"));
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(" ORDER BY sort DESC, ctime DESC, id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_admin_kw(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new("SELECT COUNT(*) FROM phpyun_special WHERE 1=1");
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_coms_by_sid(pool: &MySqlPool, sid: u64) -> Result<(i64, i64), sqlx::Error> {
+    let (okn,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 1 AND COALESCE(deleted,0)=0",
+    )
+    .bind(sid)
+    .fetch_one(pool)
+    .await?;
+    let (pend,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 0 AND COALESCE(deleted,0)=0",
+    )
+    .bind(sid)
+    .fetch_one(pool)
+    .await?;
+    Ok((okn, pend))
+}
+
+pub struct SpecialWrite<'a> {
+    pub id: Option<u64>,
+    pub title: &'a str,
+    pub tpl: &'a str,
+    pub display: i32,
+    pub integral: i32,
+    pub com_bm: i32,
+    pub sort: i32,
+    pub limit: i32,
+    pub etime: i64,
+    pub intro: &'a str,
+    pub rating: &'a str,
+    pub now: i64,
+}
+
+pub async fn upsert_special(pool: &MySqlPool, a: SpecialWrite<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = a.id.filter(|i| *i > 0) {
+        sqlx::query(
+            "UPDATE phpyun_special SET title=?, tpl=?, display=?, integral=?, com_bm=?, sort=?, \
+             `limit`=?, etime=?, intro=?, rating=? WHERE id=?",
+        )
+        .bind(a.title)
+        .bind(a.tpl)
+        .bind(a.display)
+        .bind(a.integral)
+        .bind(a.com_bm)
+        .bind(a.sort)
+        .bind(a.limit)
+        .bind(a.etime)
+        .bind(a.intro)
+        .bind(a.rating)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_special (title, tpl, display, integral, com_bm, sort, `limit`, etime, intro, rating, ctime) \
+             VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        )
+        .bind(a.title)
+        .bind(a.tpl)
+        .bind(a.display)
+        .bind(a.integral)
+        .bind(a.com_bm)
+        .bind(a.sort)
+        .bind(a.limit)
+        .bind(a.etime)
+        .bind(a.intro)
+        .bind(a.rating)
+        .bind(a.now)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn delete_specials(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = sqlx::QueryBuilder::new("DELETE FROM phpyun_special WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    let n = qb.build().execute(pool).await?.rows_affected();
+    let mut qb2 = sqlx::QueryBuilder::new("DELETE FROM phpyun_special_com WHERE sid IN (");
+    first = true;
+    for id in ids {
+        if !first {
+            qb2.push(",");
+        }
+        qb2.push_bind(*id);
+        first = false;
+    }
+    qb2.push(")");
+    let _ = qb2.build().execute(pool).await?;
+    Ok(n)
+}
+
+pub async fn set_sort(pool: &MySqlPool, id: u64, sort: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_special SET sort = ? WHERE id = ?")
+            .bind(sort)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn set_com_sort(pool: &MySqlPool, id: u64, sort: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_special_com SET sort = ? WHERE id = ?")
+            .bind(sort)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn set_famous(pool: &MySqlPool, sid: u64, uid: u64, famous: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_special_com SET famous = ? WHERE sid = ? AND uid = ?")
+            .bind(famous)
+            .bind(sid)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn find_com_one(pool: &MySqlPool, id: u64) -> Result<Option<SpecialCompany>, sqlx::Error> {
+    sqlx::query_as::<_, SpecialCompany>(
+        r#"SELECT
+             CAST(id AS UNSIGNED) AS id,
+             CAST(COALESCE(sid, 0) AS UNSIGNED) AS sid,
+             CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid,
+             CAST(COALESCE(sort, 0) AS SIGNED) AS sort,
+             CAST(COALESCE(status, 0) AS SIGNED) AS status,
+             CAST(COALESCE(`time`, 0) AS SIGNED) AS created_at
+           FROM phpyun_special_com WHERE id = ? LIMIT 1"#,
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct SpecialAddCompany {
+    pub uid: u64,
+    pub name: String,
+    pub linkman: String,
+    pub linktel: String,
+}
+
+pub async fn list_add_companies(
+    pool: &MySqlPool,
+    sid: u64,
+    keyword: Option<&str>,
+    kw_type: i32,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<SpecialAddCompany>, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new(
+        "SELECT CAST(c.uid AS UNSIGNED) AS uid, COALESCE(c.name,'') AS name, \
+         COALESCE(c.linkman,'') AS linkman, COALESCE(c.linktel,'') AS linktel \
+         FROM phpyun_company c WHERE c.r_status = 1 \
+         AND c.uid NOT IN (SELECT uid FROM phpyun_special_com WHERE sid = ",
+    );
+    qb.push_bind(sid);
+    qb.push(" AND COALESCE(deleted,0)=0)");
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        match kw_type {
+            2 => {
+                qb.push(" AND c.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
+                qb.push_bind(like);
+                qb.push(")");
+            }
+            3 => {
+                qb.push(" AND c.linkman LIKE ");
+                qb.push_bind(like);
+            }
+            4 => {
+                qb.push(" AND c.linktel LIKE ");
+                qb.push_bind(like);
+            }
+            5 => {
+                qb.push(" AND c.linkmail LIKE ");
+                qb.push_bind(like);
+            }
+            6 => {
+                if let Ok(uid) = kw.parse::<u64>() {
+                    qb.push(" AND c.uid = ");
+                    qb.push_bind(uid);
+                }
+            }
+            _ => {
+                qb.push(" AND (c.name LIKE ");
+                qb.push_bind(like.clone());
+                qb.push(" OR c.shortname LIKE ");
+                qb.push_bind(like);
+                qb.push(")");
+            }
+        }
+    }
+    qb.push(" ORDER BY c.uid DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_add_companies(
+    pool: &MySqlPool,
+    sid: u64,
+    keyword: Option<&str>,
+    kw_type: i32,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_company c WHERE c.r_status = 1 \
+         AND c.uid NOT IN (SELECT uid FROM phpyun_special_com WHERE sid = ",
+    );
+    qb.push_bind(sid);
+    qb.push(" AND COALESCE(deleted,0)=0)");
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        match kw_type {
+            2 => {
+                qb.push(" AND c.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
+                qb.push_bind(like);
+                qb.push(")");
+            }
+            3 => {
+                qb.push(" AND c.linkman LIKE ");
+                qb.push_bind(like);
+            }
+            4 => {
+                qb.push(" AND c.linktel LIKE ");
+                qb.push_bind(like);
+            }
+            5 => {
+                qb.push(" AND c.linkmail LIKE ");
+                qb.push_bind(like);
+            }
+            6 => {
+                if let Ok(uid) = kw.parse::<u64>() {
+                    qb.push(" AND c.uid = ");
+                    qb.push_bind(uid);
+                }
+            }
+            _ => {
+                qb.push(" AND (c.name LIKE ");
+                qb.push_bind(like.clone());
+                qb.push(" OR c.shortname LIKE ");
+                qb.push_bind(like);
+                qb.push(")");
+            }
+        }
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

@@ -68,6 +68,33 @@ pub async fn create_order(
     Ok(order_no)
 }
 
+pub struct CreatedVipOrder {
+    pub order_no: String,
+    pub amount_cents: i32,
+    pub subject: String,
+}
+
+/// Create an order and return fields needed to jump to a payment gateway.
+pub async fn create_order_ex(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    package_code: &str,
+    channel: &str,
+    client_ip: &str,
+) -> AppResult<CreatedVipOrder> {
+    let pkg = vip_repo::find_package_by_code(state.db.reader(), package_code)
+        .await?
+        .ok_or_else(|| -> ApiError {
+            ApiError::param_invalid(format!("unknown package: {package_code}"))
+        })?;
+    let order_no = create_order(state, user, package_code, channel, client_ip).await?;
+    Ok(CreatedVipOrder {
+        order_no,
+        amount_cents: pkg.price_cents,
+        subject: pkg.name,
+    })
+}
+
 /// Mark order as paid + activate VIP.
 ///
 /// **Security contract**: this function does **not** verify caller identity

@@ -8,7 +8,7 @@ use phpyun_core::ApiError;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::vip_service;
+use phpyun_services::{payment_notify_service, vip_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -134,6 +134,9 @@ pub struct CreateOrderForm {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OrderCreated {
     pub order_no: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pay_url: Option<String>,
+    pub channel: String,
 }
 
 /// Create an order (returns order_no, hand it to the frontend to call the payment gateway)
@@ -151,9 +154,28 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
 ) -> AppResult<ApiResponse<OrderCreated>> {
-    let order_no =
-        vip_service::create_order(&state, &user, &f.package_code, &f.channel, &ip).await?;
-    Ok(ApiResponse::data(OrderCreated { order_no }))
+    if f.channel == "alipay" {
+        payment_notify_service::ensure_alipay_page(&state).await?;
+    }
+    let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
+    let pay_url = if f.channel == "alipay" {
+        Some(
+            payment_notify_service::build_alipay_page_url(
+                &state,
+                &created.order_no,
+                &created.subject,
+                created.amount_cents,
+            )
+            .await?,
+        )
+    } else {
+        None
+    };
+    Ok(ApiResponse::data(OrderCreated {
+        order_no: created.order_no,
+        pay_url,
+        channel: f.channel,
+    }))
 }
 
 /// Pay order item — all 10 columns of phpyun_pay_order + yuan-unit amount + time formatting.

@@ -234,6 +234,8 @@ pub async fn list_articles(
         keyword: q.keyword.as_deref(),
         rec_only: q.rec_only.unwrap_or(false),
         did: q.did,
+        datetime_min: None,
+        author_kw: None,
     };
     let r = article_service::list_public(&state, &filter, page).await?;
     Ok(ApiResponse::data(Paged::new(

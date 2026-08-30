@@ -76,3 +76,28 @@ pub struct NewsGroup {
     #[sqlx(default)]
     pub keyid: i32,
 }
+
+/// Admin news category row including rec / sort (PHP `group_action`).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct NewsGroupAdmin {
+    pub id: u64,
+    pub name: String,
+    #[sqlx(default)]
+    pub keyid: i32,
+    #[sqlx(default)]
+    pub sort: i32,
+    #[sqlx(default)]
+    pub rec: i32,
+    #[sqlx(default)]
+    pub rec_news: i32,
+    #[sqlx(default)]
+    pub is_menu: i32,
+}
+
+/// `phpyun_property` — news attribute dictionary.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct NewsProperty {
+    pub id: u64,
+    pub name: String,
+    pub value: String,
+}

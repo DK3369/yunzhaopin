@@ -142,6 +142,88 @@ async fn alipay_key(state: &AppState) -> Option<String> {
     None
 }
 
+async fn cfg_val(state: &AppState, key: &str) -> String {
+    site_setting_service::get(state, key)
+        .await
+        .ok()
+        .flatten()
+        .map(|r| r.value)
+        .unwrap_or_default()
+}
+
+fn pct(s: &str) -> String {
+    let mut out = String::new();
+    for b in s.bytes() {
+        match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
+                out.push(b as char);
+            }
+            _ => out.push_str(&format!("%{b:02X}")),
+        }
+    }
+    out
+}
+
+/// Legacy Alipay `create_direct_pay_by_user` page URL. Notify hits `/callback/alipay`.
+pub async fn build_alipay_page_url(
+    state: &AppState,
+    order_no: &str,
+    subject: &str,
+    amount_cents: i32,
+) -> AppResult<String> {
+    let key = alipay_key(state)
+        .await
+        .ok_or_else(|| ApiError::param_invalid("pay_not_configured"))?;
+    let partner = cfg_val(state, "sy_alipayid").await;
+    let seller = cfg_val(state, "sy_alipayemail").await;
+    if partner.is_empty() || seller.is_empty() {
+        return Err(ApiError::param_invalid("pay_not_configured"));
+    }
+    let base = state
+        .config
+        .web_base_url
+        .clone()
+        .filter(|s| !s.is_empty())
+        .or(Some(cfg_val(state, "sy_weburl").await))
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| "https://zzzz.com".into())
+        .trim_end_matches('/')
+        .to_string();
+    let fee = format!("{:.2}", f64::from(amount_cents.max(0)) / 100.0);
+    let mut params = BTreeMap::new();
+    params.insert("service".into(), "create_direct_pay_by_user".into());
+    params.insert("partner".into(), partner);
+    params.insert("_input_charset".into(), "utf-8".into());
+    params.insert("payment_type".into(), "1".into());
+    params.insert("notify_url".into(), format!("{base}/callback/alipay"));
+    params.insert("return_url".into(), format!("{base}/user/pay"));
+    params.insert("seller_email".into(), seller);
+    params.insert("out_trade_no".into(), order_no.to_string());
+    params.insert("subject".into(), if subject.is_empty() { order_no.to_string() } else { subject.to_string() });
+    params.insert("total_fee".into(), fee);
+    let sign = alipay_md5_sign(&params, &key);
+    params.insert("sign".into(), sign);
+    params.insert("sign_type".into(), "MD5".into());
+    let qs: Vec<String> = params
+        .iter()
+        .map(|(k, v)| format!("{}={}", pct(k), pct(v)))
+        .collect();
+    Ok(format!("https://mapi.alipay.com/gateway.do?{}", qs.join("&")))
+}
+
+/// Fail before inserting a pending order when Alipay page pay is not configured.
+pub async fn ensure_alipay_page(state: &AppState) -> AppResult<()> {
+    let _ = alipay_key(state)
+        .await
+        .ok_or_else(|| ApiError::param_invalid("pay_not_configured"))?;
+    let partner = cfg_val(state, "sy_alipayid").await;
+    let seller = cfg_val(state, "sy_alipayemail").await;
+    if partner.is_empty() || seller.is_empty() {
+        return Err(ApiError::param_invalid("pay_not_configured"));
+    }
+    Ok(())
+}
+
 pub async fn handle_alipay(
     state: &AppState,
     params: &BTreeMap<String, String>,

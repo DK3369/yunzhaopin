@@ -12,11 +12,17 @@ const packages = computed(() => (Array.isArray(packs.value) ? packs.value : pack
 async function buy(code: string) {
   msg.value = ''
   try {
-    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: 'stub' })
+    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: 'alipay' })
     const orderNo = created?.order_no
-    if (orderNo) {
+    if (created?.pay_url) {
+      window.location.href = created.pay_url
+      return
+    }
+    if (orderNo && created?.channel === 'stub') {
       await api.post('/v1/mcenter/vip/orders/mock-paid', { order_no: orderNo })
       msg.value = `${orderNo} ${t('ui.mock_paid')}`
+    } else if (orderNo) {
+      msg.value = orderNo
     }
     await refresh()
   } catch (e: unknown) {

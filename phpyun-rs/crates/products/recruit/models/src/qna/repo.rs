@@ -21,7 +21,7 @@
 //! likes only maintain counters and don't record "who liked what".
 //! `toggle_support` therefore degrades to **idempotent +1** (no undo).
 
-use super::entity::{Answer, Question};
+use super::entity::{Answer, AnswerReview, QClass, Question};
 use crate::soft_delete::{self, PREDICATE};
 use sqlx::{MySqlPool, QueryBuilder};
 
@@ -565,8 +565,6 @@ pub async fn toggle_support(
 
 // ---------- Reviews (answer comments: phpyun_answer_review) ----------
 
-use super::entity::{AnswerReview, QClass};
-
 // `phpyun_answer_review` itself doesn't store nickname/avatar (PHP JOINs
 // at render time).
 //
@@ -905,6 +903,216 @@ pub async fn list_top_answerers(
     .bind(limit)
     .fetch_all(pool)
     .await
+}
+
+pub async fn set_question_recom(pool: &MySqlPool, id: u64, rec: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_question SET is_recom = ? WHERE id = ?")
+            .bind(rec)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn upsert_question_admin(
+    pool: &MySqlPool,
+    id: u64,
+    title: &str,
+    cid: i32,
+    content: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        sqlx::query(
+            "UPDATE phpyun_question SET title = ?, cid = ?, content = ?, lastupdate = ? WHERE id = ?",
+        )
+        .bind(title)
+        .bind(cid)
+        .bind(content)
+        .bind(now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_question (title, cid, content, uid, nickname, add_time, lastupdate, state) \
+             VALUES (?, ?, ?, 0, 'admin', ?, ?, 1)",
+        )
+        .bind(title)
+        .bind(cid)
+        .bind(content)
+        .bind(now)
+        .bind(now)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn admin_delete_questions(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    soft_delete::mark_ids(pool, "phpyun_question", ids).await
+}
+
+pub async fn list_answers_admin(
+    pool: &MySqlPool,
+    qid: Option<u64>,
+    aid: Option<u64>,
+    status: Option<i32>,
+) -> Result<Vec<Answer>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!("SELECT {A_FIELDS} FROM phpyun_answer WHERE 1=1"));
+    if let Some(id) = aid.filter(|i| *i > 0) {
+        qb.push(" AND id = ");
+        qb.push_bind(id);
+    }
+    if let Some(id) = qid.filter(|i| *i > 0) {
+        qb.push(" AND qid = ");
+        qb.push_bind(id);
+    }
+    if let Some(s) = status {
+        qb.push(" AND status = ");
+        qb.push_bind(s);
+    }
+    qb.push(" ORDER BY add_time DESC LIMIT 500");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn set_answer_status(
+    pool: &MySqlPool,
+    id: u64,
+    status: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_answer SET status = ?, statusbody = ? WHERE id = ?")
+            .bind(status)
+            .bind(statusbody)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn update_answer_admin(
+    pool: &MySqlPool,
+    id: u64,
+    content: &str,
+    support: i32,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_answer SET content = ?, support = ? WHERE id = ?")
+            .bind(content)
+            .bind(support)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn delete_answers(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_answer WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn decr_answer_num(pool: &MySqlPool, qid: u64, n: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_question SET answer_num = GREATEST(CAST(answer_num AS SIGNED) - ?, 0) WHERE id = ?")
+            .bind(n)
+            .bind(qid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn list_reviews_admin(
+    pool: &MySqlPool,
+    aid: Option<u64>,
+    id: Option<u64>,
+    status: Option<i32>,
+) -> Result<Vec<AnswerReview>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!(
+        "SELECT {AR_FIELDS} FROM phpyun_answer_review r \
+         LEFT JOIN phpyun_member  m  ON m.uid  = r.uid AND r.usertype = 1 \
+         LEFT JOIN phpyun_resume  rs ON rs.uid = r.uid AND r.usertype = 1 \
+         LEFT JOIN phpyun_company c  ON c.uid  = r.uid AND r.usertype = 2 \
+         WHERE 1=1"
+    ));
+    if let Some(v) = aid.filter(|i| *i > 0) {
+        qb.push(" AND r.aid = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = id.filter(|i| *i > 0) {
+        qb.push(" AND r.id = ");
+        qb.push_bind(v);
+    }
+    if let Some(s) = status {
+        qb.push(" AND r.status = ");
+        qb.push_bind(s);
+    }
+    qb.push(" ORDER BY r.id DESC LIMIT 500");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn set_review_status(
+    pool: &MySqlPool,
+    id: u64,
+    status: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_answer_review SET status = ?, statusbody = ? WHERE id = ?")
+            .bind(status)
+            .bind(statusbody)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn update_review_content(pool: &MySqlPool, id: u64, content: &str) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_answer_review SET content = ? WHERE id = ?")
+            .bind(content)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn delete_reviews(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_answer_review WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
 #[cfg(test)]

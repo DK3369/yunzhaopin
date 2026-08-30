@@ -68,6 +68,8 @@ pub struct ArticleFilter<'a> {
     pub keyword: Option<&'a str>,
     pub rec_only: bool,
     pub did: u32,
+    pub datetime_min: Option<i64>,
+    pub author_kw: Option<&'a str>,
 }
 
 pub async fn list_public(
@@ -125,6 +127,16 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a
     }
     if f.rec_only {
         qb.push(" AND FIND_IN_SET('1', COALESCE(n.`describe`, '')) > 0");
+    }
+    if let Some(ts) = f.datetime_min {
+        qb.push(" AND n.datetime >= ");
+        qb.push_bind(ts);
+    }
+    if let Some(kw) = f.author_kw {
+        if !kw.is_empty() {
+            qb.push(" AND n.author LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
     }
 }
 
@@ -327,4 +339,274 @@ pub async fn upsert(pool: &MySqlPool, a: ArticleUpsert<'_>) -> Result<u64, sqlx:
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     soft_delete::mark_id(pool, "phpyun_news_base", id).await
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    soft_delete::mark_ids(pool, "phpyun_news_base", ids).await
+}
+
+pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_news_base SET did = ");
+    qb.push_bind(did);
+    qb.push(" WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn set_nid_ids(pool: &MySqlPool, ids: &[u64], nid: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_news_base SET nid = ");
+    qb.push_bind(nid);
+    qb.push(" WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn set_describe(pool: &MySqlPool, id: u64, describe: &str) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_news_base SET `describe` = ? WHERE id = ?")
+            .bind(describe)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn list_describe(pool: &MySqlPool, ids: &[u64]) -> Result<Vec<(u64, String)>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
+    let mut qb = QueryBuilder::new("SELECT CAST(id AS UNSIGNED), COALESCE(`describe`,'') FROM phpyun_news_base WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn find_content(pool: &MySqlPool, id: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> =
+        sqlx::query_as("SELECT COALESCE(content,'') FROM phpyun_news_content WHERE nbid = ? LIMIT 1")
+            .bind(id)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.map(|(s,)| s))
+}
+
+pub async fn list_groups_admin(
+    pool: &MySqlPool,
+) -> Result<Vec<super::entity::NewsGroupAdmin>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, \
+         CAST(COALESCE(keyid,0) AS SIGNED) AS keyid, CAST(COALESCE(sort,0) AS SIGNED) AS sort, \
+         CAST(COALESCE(rec,0) AS SIGNED) AS rec, CAST(COALESCE(rec_news,0) AS SIGNED) AS rec_news, \
+         CAST(COALESCE(is_menu,0) AS SIGNED) AS is_menu \
+         FROM phpyun_news_group ORDER BY sort ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn news_count_by_nid(pool: &MySqlPool) -> Result<Vec<(i32, i64)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(COALESCE(nid,0) AS SIGNED), CAST(COUNT(*) AS SIGNED) \
+         FROM phpyun_news_base WHERE COALESCE(deleted,0)=0 GROUP BY nid",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn insert_group(
+    pool: &MySqlPool,
+    name: &str,
+    keyid: i32,
+    rec: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = if keyid == 0 {
+        sqlx::query("INSERT INTO phpyun_news_group (name, keyid, rec) VALUES (?, ?, ?)")
+            .bind(name)
+            .bind(keyid)
+            .bind(rec)
+            .execute(pool)
+            .await?
+    } else {
+        sqlx::query("INSERT INTO phpyun_news_group (name, keyid) VALUES (?, ?)")
+            .bind(name)
+            .bind(keyid)
+            .execute(pool)
+            .await?
+    };
+    Ok(res.last_insert_id())
+}
+
+pub async fn patch_group(
+    pool: &MySqlPool,
+    id: u64,
+    name: Option<&str>,
+    sort: Option<i32>,
+    rec: Option<i32>,
+    rec_news: Option<i32>,
+) -> Result<u64, sqlx::Error> {
+    if let Some(v) = name {
+        return Ok(
+            sqlx::query("UPDATE phpyun_news_group SET name = ? WHERE id = ?")
+                .bind(v)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected(),
+        );
+    }
+    if let Some(v) = sort {
+        return Ok(
+            sqlx::query("UPDATE phpyun_news_group SET sort = ? WHERE id = ?")
+                .bind(v)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected(),
+        );
+    }
+    if let Some(v) = rec {
+        return Ok(
+            sqlx::query("UPDATE phpyun_news_group SET rec = ? WHERE id = ? AND keyid = 0")
+                .bind(v)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected(),
+        );
+    }
+    if let Some(v) = rec_news {
+        return Ok(
+            sqlx::query("UPDATE phpyun_news_group SET rec_news = ? WHERE id = ? AND keyid = 0")
+                .bind(v)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected(),
+        );
+    }
+    Ok(0)
+}
+
+pub async fn delete_groups(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_news_group WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn list_properties(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    kw_type: i32,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<super::entity::NewsProperty>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, COALESCE(value,'') AS value FROM phpyun_property WHERE 1=1",
+    );
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        if kw_type == 2 {
+            qb.push(" AND value LIKE ");
+        } else {
+            qb.push(" AND name LIKE ");
+        }
+        qb.push_bind(like);
+    }
+    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_properties(pool: &MySqlPool, keyword: Option<&str>, kw_type: i32) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_property WHERE 1=1");
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        if kw_type == 2 {
+            qb.push(" AND value LIKE ");
+        } else {
+            qb.push(" AND name LIKE ");
+        }
+        qb.push_bind(like);
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn upsert_property(pool: &MySqlPool, id: Option<u64>, name: &str, value: &str) -> Result<u64, sqlx::Error> {
+    if let Some(id) = id.filter(|i| *i > 0) {
+        sqlx::query("UPDATE phpyun_property SET name = ?, value = ? WHERE id = ?")
+            .bind(name)
+            .bind(value)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query("INSERT INTO phpyun_property (name, value) VALUES (?, ?)")
+            .bind(name)
+            .bind(value)
+            .execute(pool)
+            .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn delete_properties(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_property WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }

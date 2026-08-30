@@ -30,6 +30,7 @@ pub mod ops;
 pub mod ops_gap;
 pub mod orders;
 pub mod parts;
+pub mod php_content;
 pub mod questions;
 pub mod question_classes;
 pub mod rbac;
@@ -86,6 +87,7 @@ pub fn router() -> Router<AppState> {
         .merge(tiny::routes())
         .merge(friend_links::routes())
         .merge(ops::routes())
+        .merge(php_content::routes())
         .merge(companies::routes())
         .merge(resumes::routes())
         .merge(finance::routes())

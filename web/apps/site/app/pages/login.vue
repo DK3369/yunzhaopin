@@ -12,7 +12,7 @@ const { data: captcha } = await useAsyncData('login-captcha', () =>
 )
 const authcode = ref('')
 const err = ref('')
-const oauth = ref<Array<{ name: string; path: string }>>([])
+const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
 
 async function loadCaptcha() {
@@ -23,16 +23,35 @@ async function loadCaptcha() {
   }
 }
 onMounted(async () => {
+  const q = useRoute().query
+  const code = typeof q.code === 'string' ? q.code : ''
+  const state = typeof q.state === 'string' ? q.state : ''
+  if (code && state) {
+    const stored = sessionStorage.getItem('oauth_provider') || ''
+    const provider = stored || (typeof q.provider === 'string' ? q.provider : 'wechat')
+    try {
+      const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/oauth-login', {
+        method: 'POST',
+        body: { provider, code, state },
+      })
+      sessionStorage.removeItem('oauth_provider')
+      await afterLogin(me)
+      return
+    } catch (e: unknown) {
+      const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
+      err.value = ex.data?.statusMessage || ex.statusMessage || t('common.no')
+    }
+  }
   if (!captcha.value) await loadCaptcha()
   const redirect_uri = `${siteUrl}/login`
-  for (const [name, path] of [
-    ['WeChat', '/v1/wap/oauth/wechat/authorize-url'],
-    ['QQ', '/v1/wap/oauth/qq/authorize-url'],
-    ['Weibo', '/v1/wap/oauth/weibo/authorize-url'],
+  for (const [name, path, key] of [
+    ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
+    ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
+    ['Weibo', '/v1/wap/oauth/weibo/authorize-url', 'weibo'],
   ] as const) {
     try {
       const r = await api.post<{ authorize_url?: string }>(path, { redirect_uri })
-      if (r.authorize_url) oauth.value.push({ name, path: r.authorize_url })
+      if (r.authorize_url) oauth.value.push({ name, path: r.authorize_url, provider: key })
     } catch {
       /* not configured */
     }
@@ -145,7 +164,7 @@ useSeoMeta({ title: t('common.login') })
                   <NuxtLink to="/forgetpw" class="fr">{{ $t('ui.forget_pw') }}</NuxtLink>
                 </div>
                 <p v-if="oauth.length" style="padding: 12px 0">
-                  <a v-for="o in oauth" :key="o.name" :href="o.path" style="margin-right: 12px">{{ o.name }}</a>
+                  <a v-for="o in oauth" :key="o.name" :href="o.path" style="margin-right: 12px" @click="sessionStorage.setItem('oauth_provider', o.provider)">{{ o.name }}</a>
                 </p>
               </div>
             </form>
@@ -221,7 +240,7 @@ useSeoMeta({ title: t('common.login') })
         </button>
       </form>
       <p v-if="oauth.length" style="padding: 0.32rem">
-        <a v-for="o in oauth" :key="o.name" :href="o.path">{{ o.name }}</a>
+        <a v-for="o in oauth" :key="o.name" :href="o.path" @click="sessionStorage.setItem('oauth_provider', o.provider)">{{ o.name }}</a>
       </p>
     </div>
   </div>
