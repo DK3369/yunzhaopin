@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::announcement::repo as announcement_repo;
 use phpyun_models::article::repo::{self as article_repo, ArticleFilter};
 use phpyun_models::company::repo as company_repo;
@@ -77,6 +78,22 @@ pub async fn dispatch(
         ("gongzhao", "whb") => Ok(PhpOut::Data(gongzhao_whb(state).await?)),
         ("announce", "getGroup") => Ok(PhpOut::Data(announce_get_group(state).await?)),
         ("announce", "checksitedid") => announce_checksitedid(state, body).await,
+        ("ads", "index") => Ok(PhpOut::Data(ads_index(state, body).await?)),
+        ("ads", "get_base_data") => Ok(PhpOut::Data(ads_get_base(state).await?)),
+        ("ads", "info") => Ok(PhpOut::Data(ads_info(state, body).await?)),
+        ("ads", "ad_saveadd") => ads_saveadd(state, body).await,
+        ("ads", "delete") => ads_del(state, body).await,
+        ("ads", "preview") => Ok(PhpOut::Data(ads_preview(state, body).await?)),
+        ("ads", "check") => ads_check(state, body).await,
+        ("ads", "cache_ad") => Ok(PhpOut::Message("admin_01172")),
+        ("ads", "ctime") => ads_ctime(state, body).await,
+        ("ads", "upsort") => ads_upsort(state, body).await,
+        ("ad-class", "index") => Ok(PhpOut::Data(ad_class_index(state, body).await?)),
+        ("ad-class", "info") => Ok(PhpOut::Data(ad_class_info(state, body).await?)),
+        ("ad-class", "addclass") => ad_class_add(state, body).await,
+        ("ad-class", "delete") => ad_class_del(state, body).await,
+        ("ad-class", "delbuy") => ad_class_delbuy(state, body).await,
+        ("ad-class", "upsort") => ad_class_upsort(state, body).await,
         ("question", "getGroup") => Ok(PhpOut::Data(question_get_group())),
         ("question", "index") => Ok(PhpOut::Data(question_index(state, body).await?)),
         ("question", "add") => Ok(PhpOut::Data(question_add(state, body).await?)),
@@ -1742,4 +1759,510 @@ async fn special_comjob(state: &AppState, body: &Value) -> AppResult<Value> {
     Ok(json!({
         "list": jobs.into_iter().map(|(id, name)| json!({ "id": id, "name": name })).collect::<Vec<_>>(),
     }))
+}
+
+fn json_date_pair(v: &Value, key: &str) -> (String, String) {
+    let alt = format!("{key}[]");
+    let arr = v.get(key).or_else(|| v.get(&alt));
+    match arr {
+        Some(Value::Array(a)) if a.len() >= 2 => {
+            let s0 = match &a[0] {
+                Value::String(s) => s.trim().to_string(),
+                Value::Number(n) => n.to_string(),
+                _ => String::new(),
+            };
+            let s1 = match &a[1] {
+                Value::String(s) => s.trim().to_string(),
+                Value::Number(n) => n.to_string(),
+                _ => String::new(),
+            };
+            (s0, s1)
+        }
+        _ => (
+            json_str(v, "ad_time_start"),
+            json_str(v, "ad_time_end"),
+        ),
+    }
+}
+
+fn ad_ended(time_end: &str, now: i64) -> bool {
+    let ts = parse_date_ts(time_end);
+    ts > 0 && ts + 86_399 < now
+}
+
+fn ad_row_json(r: &ad_repo::AdAdminRow, base: &str, now: i64, dname: &HashMap<i32, String>) -> Value {
+    let ended = ad_ended(&r.time_end, now);
+    let pic_n = pic_url(base, &r.pic_url);
+    let pic_url_list: Vec<String> = if r.ad_type == "pic" && !pic_n.is_empty() {
+        pic_n
+            .split(',')
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .map(|s| pic_url(base, s))
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let ad_typename = match r.ad_type.as_str() {
+        "word" => "admin_01140",
+        "pic" => "admin_01141",
+        "flash" => "admin_01169",
+        "lianmeng" => "admin_yunying_00072",
+        _ => "",
+    };
+    let d_title = if r.did > 0 {
+        dname
+            .get(&r.did)
+            .cloned()
+            .unwrap_or_default()
+    } else if r.did == -1 {
+        "api_wxapp_00018".into()
+    } else {
+        "ajax_00021".into()
+    };
+    json!({
+        "id": r.id,
+        "ad_name": r.ad_name,
+        "class_id": r.class_id.to_string(),
+        "class_name": r.class_name,
+        "hits": r.hits,
+        "ad_type": r.ad_type,
+        "ad_typename": ad_typename,
+        "pic_url": r.pic_url,
+        "pic_url_n": pic_n,
+        "pic_url_list": pic_url_list,
+        "pic_src": r.pic_src,
+        "word_url": r.word_url,
+        "word_info": r.word_info,
+        "time_start": r.time_start,
+        "time_end": r.time_end,
+        "did": r.did.to_string(),
+        "d_title": d_title,
+        "sort": r.sort,
+        "is_open": r.is_open.to_string(),
+        "is_check": r.is_check.to_string(),
+        "is_end": if ended { "1" } else { "0" },
+        "target": r.target.to_string(),
+        "pic_width": r.pic_width,
+        "pic_height": r.pic_height,
+        "pic_content": r.pic_content,
+        "remark": r.remark,
+        "flash_url": r.flash_url,
+        "flash_src": r.flash_src,
+        "flash_width": r.flash_width,
+        "flash_height": r.flash_height,
+        "lianmeng_url": r.lianmeng_url,
+    })
+}
+
+async fn ads_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let is_check_raw = json_str(body, "is_check");
+    let expired = is_check_raw == "2";
+    let is_check = match is_check_raw.as_str() {
+        "1" => Some(1),
+        "-1" => Some(0),
+        _ => None,
+    };
+    let ad_code = json_str(body, "ad");
+    let ad_type = match ad_code.as_str() {
+        "1" => Some("word"),
+        "2" => Some("pic"),
+        "3" => Some("flash"),
+        _ => None,
+    };
+    let name = json_str(body, "name");
+    let f = ad_repo::AdAdminFilter {
+        class_id: Some(json_i32(body, "class_id")).filter(|n| *n > 0),
+        is_check: if expired { None } else { is_check },
+        expired,
+        name: if name.is_empty() { None } else { Some(name.as_str()) },
+        ad_type,
+    };
+    let now_date = fmt_date(clock::now_ts());
+    let now = clock::now_ts();
+    let db = state.db.reader();
+    let rows = ad_repo::list_admin_php(db, &f, &now_date, offset, limit).await?;
+    let total = ad_repo::count_admin_php(db, &f, &now_date).await?;
+    let domains = domain_repo::list_all(db).await?;
+    let dname: HashMap<i32, String> = domains
+        .into_iter()
+        .map(|d| (d.id as i32, d.title))
+        .collect();
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .iter()
+        .map(|r| ad_row_json(r, &base, now, &dname))
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn ads_get_base(state: &AppState) -> AppResult<Value> {
+    let classes = ad_repo::list_classes(state.db.reader()).await?;
+    let mut class_two: HashMap<i32, Vec<Value>> = HashMap::new();
+    let max_len = classes
+        .iter()
+        .map(|c| c.id.to_string().len())
+        .max()
+        .unwrap_or(1);
+    for c in &classes {
+        let place = if c.place == 1 || c.place == 2 { c.place } else { 3 };
+        let pad = format!("{:0>width$}", c.id, width = max_len);
+        class_two.entry(place).or_default().push(json!({
+            "label": format!("{pad}   {}", c.class_name),
+            "value": c.id.to_string(),
+        }));
+    }
+    let class_data = [1, 2, 3]
+        .into_iter()
+        .map(|id| {
+            let label = match id {
+                1 => "PC",
+                2 => "WAP",
+                _ => "common_01924",
+            };
+            let children = class_two.get(&id).cloned().unwrap_or_default();
+            let mut row = json!({ "label": label, "value": id.to_string() });
+            if !children.is_empty() {
+                row["children"] = Value::Array(children);
+            }
+            row
+        })
+        .collect::<Vec<_>>();
+    let domains = domain_repo::list_all(state.db.reader()).await?;
+    let domain_data: Vec<Value> = domains
+        .iter()
+        .map(|d| json!({ "label": d.title, "value": d.id.to_string() }))
+        .collect();
+    Ok(json!({ "classData": class_data, "domainData": domain_data }))
+}
+
+async fn ads_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let now = clock::now_ts();
+    let base = preview_base(state);
+    let info = if id > 0 {
+        if let Some(r) = ad_repo::find_admin(state.db.reader(), id).await? {
+            let dname = HashMap::new();
+            ad_row_json(&r, &base, now, &dname)
+        } else {
+            json!({})
+        }
+    } else {
+        json!({})
+    };
+    Ok(json!({ "info": info, "appad": 0 }))
+}
+
+async fn ads_saveadd(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ad_name = json_str(body, "ad_name");
+    if ad_name.is_empty() {
+        return Err(ApiError::business("admin_01413"));
+    }
+    let (start, end) = json_date_pair(body, "ad_time");
+    if start.is_empty() || end.is_empty() {
+        return Err(ApiError::business("admin_01414"));
+    }
+    let ad_type = json_str(body, "ad_type");
+    let mut pic_url = json_str(body, "pic_url_n");
+    if pic_url.is_empty() {
+        pic_url = json_str(body, "pic_url");
+    }
+    let flash_url = json_str(body, "flash_url");
+    let pictures = if ad_type == "flash" && !flash_url.is_empty() {
+        flash_url.clone()
+    } else {
+        pic_url
+    };
+    let target = if json_i32(body, "target") == 2 { 2 } else { 1 };
+    ad_repo::upsert_php(
+        state.db.pool(),
+        ad_repo::AdPhpWrite {
+            id: Some(json_u64(body, "id")).filter(|n| *n > 0),
+            ad_name: &ad_name,
+            target,
+            time_start: &start,
+            time_end: &end,
+            ad_type: &ad_type,
+            class_id: json_i32(body, "class_id"),
+            is_check: 1,
+            did: json_i32(body, "did"),
+            is_open: json_i32(body, "is_open"),
+            sort: json_i32(body, "sort"),
+            remark: &json_str(body, "remark"),
+            pic_url: if ad_type == "pic" { &pictures } else { "" },
+            pic_src: &json_str(body, "pic_src"),
+            pic_content: &json_str(body, "pic_content"),
+            word_info: &json_str(body, "word_info"),
+            word_url: &json_str(body, "word_url"),
+            pic_width: &json_str(body, "pic_width"),
+            pic_height: &json_str(body, "pic_height"),
+            flash_url: if ad_type == "flash" { &pictures } else { "" },
+            lianmeng_url: &json_str(body, "lianmeng_url"),
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ads_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01066"));
+    }
+    let n = ad_repo::delete_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ads_preview(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let r = ad_repo::find_admin(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("wap_js_00113"))?;
+    let now = clock::now_ts();
+    let base = preview_base(state);
+    let dname = HashMap::new();
+    let mut row = ad_row_json(&r, &base, now, &dname);
+    let html = match r.ad_type.as_str() {
+        "word" => format!(
+            "<a href=\"{}\">{}</a>",
+            r.word_url,
+            r.word_info
+        ),
+        "pic" => {
+            let h = if r.pic_height.is_empty() {
+                String::new()
+            } else {
+                format!("height=\"{}\"", r.pic_height)
+            };
+            let w = if r.pic_width.is_empty() {
+                String::new()
+            } else {
+                format!("width=\"{}\"", r.pic_width)
+            };
+            format!(
+                "<a href=\"{}\" target=\"_blank\" rel=\"nofollow\"><img src=\"{}\"  {} {} ></a>",
+                r.pic_src,
+                pic_url(&base, &r.pic_url),
+                h,
+                w
+            )
+        }
+        "flash" => {
+            let url = pic_url(&base, &r.flash_url);
+            format!(
+                "<object type=\"application/x-shockwave-flash\" data=\"{url}\" width=\"{}\" height=\"{}\"><param name=\"movie\" value=\"{url}\" /><param value=\"transparent\" name=\"wmode\"></object>",
+                r.flash_width, r.flash_height
+            )
+        }
+        "lianmeng" => r.lianmeng_url.clone(),
+        _ => String::new(),
+    };
+    row["html"] = json!(html);
+    row["src"] = json!(format!(
+        "{}/data/plus/yunimg.php?classid={}&ad_id={}",
+        base.trim_end_matches('/'),
+        r.class_id,
+        r.id
+    ));
+    Ok(row)
+}
+
+async fn ads_check(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    ad_repo::set_check(state.db.pool(), id, json_i32(body, "val")).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ads_ctime(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let days = json_i32(body, "endtime");
+    let ids = match body.get("jobid") {
+        Some(Value::Array(a)) => a.iter().map(json_u64_val).filter(|n| *n > 0).collect(),
+        Some(Value::String(s)) => s
+            .split([',', ';'])
+            .filter_map(|x| x.trim().parse().ok())
+            .filter(|n: &u64| *n > 0)
+            .collect(),
+        Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
+        _ => Vec::new(),
+    };
+    if days < 1 || ids.is_empty() {
+        return Err(ApiError::business("common_01716"));
+    }
+    let n = ad_repo::extend_end_days(state.db.pool(), &ids, days).await?;
+    if n == 0 {
+        return Err(ApiError::business("wap_01715"));
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ads_upsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("common_01716"));
+    }
+    ad_repo::set_sort(state.db.pool(), id, json_i32(body, "sort")).await?;
+    Ok(PhpOut::Data(json!({})))
+}
+
+fn place_n(place: i32) -> &'static str {
+    match place {
+        1 => "PC",
+        2 => "WAP",
+        _ => "common_01924",
+    }
+}
+
+async fn ad_class_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let kw_type = json_i32(body, "type");
+    let db = state.db.reader();
+    let rows = ad_repo::list_classes_admin(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        kw_type,
+        offset,
+        limit,
+    )
+    .await?;
+    let total = ad_repo::count_classes_admin(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        kw_type,
+    )
+    .await?;
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "class_name": r.class_name,
+                "place": r.place,
+                "place_n": place_n(r.place),
+                "orders": r.orders,
+                "type": r.r#type,
+                "href": r.href,
+                "hrefn": pic_url(&base, &r.href),
+                "integral_buy": r.integral_buy,
+                "btype": r.btype,
+                "x": r.x,
+                "y": r.y,
+                "remark": r.remark,
+            })
+        })
+        .collect();
+    let pricename = setting_repo::find(db, "integral_pricename")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let pic_max = setting_repo::find(db, "pic_maxsize")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_else(|| "5".into());
+    let pic_type = setting_repo::find(db, "pic_type")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_else(|| "jpg,png,jpeg,bmp,gif".into());
+    let mut out = paged(Value::Array(list), total, page, per);
+    out["integral_pricename"] = json!(pricename);
+    out["pic_maxsize"] = json!(pic_max);
+    out["pic_type"] = json!(pic_type);
+    Ok(out)
+}
+
+async fn ad_class_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let r = ad_repo::find_class(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("admin_00351"))?;
+    let base = preview_base(state);
+    Ok(json!({
+        "id": r.id,
+        "class_name": r.class_name,
+        "place": r.place,
+        "place_n": place_n(r.place),
+        "orders": r.orders,
+        "type": r.r#type,
+        "href": r.href,
+        "hrefn": pic_url(&base, &r.href),
+        "integral_buy": r.integral_buy,
+        "btype": r.btype,
+        "x": r.x,
+        "y": r.y,
+        "remark": r.remark,
+    }))
+}
+
+async fn ad_class_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let class_name = json_str(body, "class_name");
+    if class_name.is_empty() {
+        return Err(ApiError::param_invalid("class_name"));
+    }
+    let id = json_u64(body, "id");
+    let ty = json_i32(body, "type");
+    if id == 0 && ty == 0 {
+        return Err(ApiError::business("api_wxapp_00012"));
+    }
+    let href = json_str(body, "href");
+    ad_repo::upsert_class(
+        state.db.pool(),
+        ad_repo::AdClassWrite {
+            id: Some(id).filter(|n| *n > 0),
+            class_name: &class_name,
+            orders: json_i32(body, "orders"),
+            place: json_i32(body, "place"),
+            r#type: ty,
+            btype: &json_str(body, "btype"),
+            integral_buy: &json_str(body, "integral_buy"),
+            href: &href,
+            x: &json_str(body, "x"),
+            y: &json_str(body, "y"),
+            remark: &json_str(body, "remark"),
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ad_class_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("admin_01415"));
+    }
+    for id in &ids {
+        if ad_repo::count_ads_in_class(state.db.reader(), *id).await? > 0 {
+            return Err(ApiError::business("admin_yunying_00002"));
+        }
+    }
+    ad_repo::delete_classes(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ad_class_delbuy(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    let n = ad_repo::clear_class_buy(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00004"));
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn ad_class_upsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("common_01716"));
+    }
+    ad_repo::set_class_orders(state.db.pool(), id, json_i32(body, "orders")).await?;
+    Ok(PhpOut::Data(json!({})))
 }

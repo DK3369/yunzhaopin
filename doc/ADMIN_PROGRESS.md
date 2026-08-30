@@ -52,7 +52,7 @@ flowchart LR
 
 - `web/apps/admin/app/pages/`：**121** 个 path 页，对齐 PHP `router.js`。
 - UI：`web/apps/admin/app/admin-php/`（PHP Vue 语法迁入）。
-- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
+- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题/公招/广告走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
 - 刻意不做：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`。
 
 ## Rust 后台 API
@@ -66,7 +66,11 @@ flowchart LR
 | module | 已接 action |
 |---|---|
 | `fairs` | index, get-group, add, delete, com, status, audit, getjoblist, upjob, comadd, getcomlist, getzhanwei, upzhanwei, comaddsave, delcom, ajaxsort, upisopen, checksitedid |
-| `news` | index, addnews, delete, group, addgroup, delgroup, ajax, recommend, changeClass, checksitedid, savepro, type, property, delpro |
+| `news` | index, addnews, delete, group, addgroup, delgroup, ajax, recommend, changeClass, checksitedid, savepro, type, property, delpro, delmenu, changeSon |
+| `gongzhao` | index, getGroup, add, delete, checksitedid, setRec, whb |
+| `announce` | getGroup, checksitedid |
+| `ads` | index, get_base_data, info, ad_saveadd, delete, preview, check, cache_ad, ctime, upsort |
+| `ad-class` | index, info, addclass, delete, delbuy, upsort |
 | `question` | getGroup, index, add, save, delete, recommend, getanswer, statusAnswer, save_answer, delanswer, getcomment, statusAnswerReview, save_review, delreview, config, configSave |
 | `special` | index, add, delete, setOrder, recommend, ajaxsort, setFamous, addlist, set_comaddsearch, audit, comjob |
 
@@ -80,7 +84,7 @@ flowchart LR
 2. 白名单约 39 张表 `deleted=1`；列表 `COALESCE(deleted,0)=0`。
 3. 迁移 `phpyun-rs/migrations/sqlx/20260829000001_admin_soft_delete.sql`。
 
-仍用物理 DELETE 或业务状态位：职位 `state=2`、会员/企业注销、KV/银行卡/海报模板、日志/回收站 purge、**招聘会主表 `phpyun_zhaopinhui`、专题主表 `phpyun_special`（未进白名单）**。
+仍用物理 DELETE 或业务状态位：职位 `state=2`、会员/企业注销、KV/银行卡/海报模板、日志/回收站 purge、**招聘会主表 `phpyun_zhaopinhui`、专题主表 `phpyun_special`（未进白名单）**。广告 del 走 `is_open=2`。
 
 回收站 `/v1/admin/recycle-bin` 仍是 PHP recycle 表，不是 `deleted` 列还原器。
 
@@ -92,7 +96,9 @@ flowchart LR
 | SEO / 注册设置 / 短信 / 海报 / 公告 add GET | 完成（`bc694820`） |
 | 招聘会 / 新闻 / 问答 / 专题具名 action | **完成**（`php-content`，不进 AdminDoc） |
 | 前台 OAuth 回调 + 支付真单 | **回调已接、支付宝跳转已接、沙箱真单未验收** |
-| 公招 / 公告剩余 / 广告 / 财务 | **进行中**（本波） |
+| 公招 / 公告剩余 | **完成**（`php-content`） |
+| 广告位 / 广告分类 | **完成**（修 del→create、ad_class 错表；`is_open=2` 伪删广告） |
+| 财务订单/充值 | **进行中**（本波） |
 | 招聘会/专题主表伪删除 | **进行中**（本波） |
 
 ### 前台 OAuth / 支付（本轮）

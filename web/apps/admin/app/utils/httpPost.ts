@@ -10,7 +10,16 @@ function formToObject(params: unknown): Record<string, unknown> {
   if (typeof FormData !== 'undefined' && params instanceof FormData) {
     const o: Record<string, unknown> = {}
     params.forEach((v, k) => {
-      o[k] = v
+      const key = k.endsWith('[]') ? k.slice(0, -2) : k
+      if (typeof File !== 'undefined' && v instanceof File) {
+        return
+      }
+      if (Object.prototype.hasOwnProperty.call(o, key)) {
+        const prev = o[key]
+        o[key] = Array.isArray(prev) ? [...prev, v] : [prev, v]
+      } else {
+        o[key] = v
+      }
     })
     return o
   }
