@@ -132,7 +132,7 @@ flowchart LR
 
 - 兼职/once **图片上传栈**（现无 storage 则 `upload_not_supported`）
 - 微信 **creatnav** 调微信 API（savenav 本地菜单已接，同步服务器未接）
-- 其余 system 分类（城市/行业等）多数仍是 list 启发式，只有职位分类 ajax 收口
+- 其余 system 分类（城市/行业等）多数仍是 list 启发式；职位分类 `index` 已补 `kind=job`，行业 `kind=industry`。ajax 仍只有职位分类收口
 
 刻意不做、不要排进下一批：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`、卸 php-fpm、删 `uploads/`、沙箱真单。
 
@@ -145,3 +145,4 @@ flowchart LR
 - jobs 库公告测试行 `id=2` 已 `deleted=1`（列表不可见）
 - jobs 招聘会/专题测试行 `id=1` 已 `deleted=1`（本波伪删除抽测）
 - 新闻分组树拼法较糙；Alipay 缺密钥时下单会 422（不再留下无 URL 的待支付单）
+- 已修：分站列表 SQL `{PREDICATE}` 未插值导致 500；系统消息 `type` 字符串 400；分类 list 缺 kind 400。Element Plus `bodyWrapper` 全站未清。

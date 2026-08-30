@@ -130,20 +130,28 @@ export default {
 				that.loading = true;
                 that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=system&c=domain_list&a=index', params, {hideloading: true}).then(function (res) {
-                    let data = res.data.data;
-                    that.tableData = data.list;
+                    let body = res.data || {};
+                    that.loading = false;
+                    if (body.error != 0) {
+                        that.tableData = [];
+                        that.emptytext = body.msg || lc('wap_js_00113');
+                        return;
+                    }
+                    let data = body.data || {};
+                    that.tableData = Array.isArray(data.list) ? data.list : [];
                     that.total = data.total;
                     that.pageSize = parseInt(data.pageSize);
                     that.pageSizes = data.pageSizes;
                     if (that.prevPage != that.currentPage) {
                         that.prevPage = that.currentPage;
-                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        const wrap = that.$refs.multipleTable && that.$refs.multipleTable.bodyWrapper;
+                        if (wrap) wrap.scrollTop = 0;
                     }
-					that.loading = false;
                     if (that.tableData.length === 0){
                         that.emptytext = lc('wap_js_00113');
                     }
                 }).catch(function (error) {
+                    that.loading = false;
                     console.log(error);
                 })
             },

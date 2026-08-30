@@ -189,15 +189,21 @@ export default {
                 _this.emptytext = window.lc('admin_user_weipin_00026');
                 httpPost('m=system&c=category_job_class&a=index').then(function (response) {
                     let res = response.data;
+                    _this.loading = false;
+                    if (res.error != 0 || !Array.isArray(res.data)) {
+                        _this.tableData = [];
+                        _this.emptytext = res.msg || window.lc('wap_js_00113');
+                        return;
+                    }
                     res.data.forEach((item) => {
                         item.rec_n = item.rec > 0 ? true : false;
                     });
                     _this.tableData = res.data;
-                    _this.loading = false;
                     if (_this.tableData.length === 0){
                         _this.emptytext = window.lc('wap_js_00113');
                     }
                 }).catch(function (error) {
+                    _this.loading = false;
                     console.log(error);
                 });
             },

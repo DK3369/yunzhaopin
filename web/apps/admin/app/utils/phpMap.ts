@@ -169,6 +169,21 @@ function phpContentRaw(mod: string, act: string): PhpAction {
   return { path: `/v1/admin/php-content/${mod}/${act}`, rawBody: true }
 }
 
+function catKind(kind: string): PhpAction {
+  return { path: '/v1/admin/categories/list', transformReq: (b) => ({ ...b, kind }) }
+}
+
+function sysmsgQuery(body: Record<string, unknown>): Record<string, unknown> {
+  const q = pageQuery(body)
+  const typeNum = Number(q.type)
+  return {
+    page: q.page,
+    page_size: q.page_size,
+    keyword: q.keyword || undefined,
+    ...(Number.isFinite(typeNum) && typeNum > 0 ? { type: typeNum } : {}),
+  }
+}
+
 export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'index/homeData': { path: '/v1/admin/dashboard/home-data' },
   'index/ajax_statis': { path: '/v1/admin/dashboard/ajax-statis' },
@@ -657,8 +672,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/info_errorlog': { path: '/v1/admin/error-logs', transformReq: pageQuery },
   'system/info_errorlog/index': { path: '/v1/admin/error-logs', transformReq: pageQuery },
   'system/info_errorlog/del': { path: '/v1/admin/error-logs/delete', transformReq: idsFromDel },
-  'system/info_systeminfo': { path: '/v1/admin/sysmsgs', transformReq: pageQuery },
-  'system/info_systeminfo/index': { path: '/v1/admin/sysmsgs', transformReq: pageQuery },
+  'system/info_systeminfo': { path: '/v1/admin/sysmsgs', transformReq: sysmsgQuery },
+  'system/info_systeminfo/index': { path: '/v1/admin/sysmsgs', transformReq: sysmsgQuery },
   'system/info_systeminfo/sendSys': { path: '/v1/admin/sysmsgs/send' },
   'system/set_navmap': { path: '/v1/admin/navmap', transformReq: pageQuery },
   'system/set_navmap/index': { path: '/v1/admin/navmap', transformReq: pageQuery },
@@ -673,10 +688,16 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_module': { path: '/v1/admin/modules' },
   'system/set_module/index': { path: '/v1/admin/modules' },
   'system/set_module/save': { path: '/v1/admin/modules/save' },
-  'system/category_userclass': { path: '/v1/admin/categories/list', transformReq: (b) => ({ ...b, kind: 'userclass' }) },
-  'system/category_comclass': { path: '/v1/admin/categories/list', transformReq: (b) => ({ ...b, kind: 'comclass' }) },
-  'system/category_partclass': { path: '/v1/admin/categories/list', transformReq: (b) => ({ ...b, kind: 'partclass' }) },
-  'system/category_reason': { path: '/v1/admin/categories/list', transformReq: (b) => ({ ...b, kind: 'reason' }) },
+  'system/category_userclass': catKind('userclass'),
+  'system/category_userclass/index': catKind('userclass'),
+  'system/category_comclass': catKind('comclass'),
+  'system/category_comclass/index': catKind('comclass'),
+  'system/category_partclass': catKind('partclass'),
+  'system/category_partclass/index': catKind('partclass'),
+  'system/category_reason': catKind('reason'),
+  'system/category_reason/index': catKind('reason'),
+  'system/category_industry': catKind('industry'),
+  'system/category_industry/index': catKind('industry'),
 
   'yunying/yingxiao_tuiguang': { path: '/v1/admin/marketing/email-status' },
   'yunying/yingxiao_tuiguang/index': { path: '/v1/admin/marketing/email-status' },
@@ -810,8 +831,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'yunying/report': { path: '/v1/admin/reports' },
   'yunying/report/index': { path: '/v1/admin/reports' },
 
-  'system/category_job_class': { path: '/v1/admin/categories/list' },
-  'system/category_job_class/index': { path: '/v1/admin/categories/list' },
+  'system/category_job_class': catKind('job'),
+  'system/category_job_class/index': catKind('job'),
   'system/category_job_class/ajax': phpContent('job-class', 'ajax'),
   'system/category_job_class/setrec': phpContent('job-class', 'setrec'),
   'system/category_job_class/get_class': phpContent('job-class', 'get_class'),

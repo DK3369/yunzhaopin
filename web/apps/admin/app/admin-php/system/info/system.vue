@@ -168,13 +168,14 @@ export default {
                     that.emptytext = window.lc('admin_user_weipin_00026');
                     httpPost('m=system&c=info_systeminfo&a=index', {...params, ...searchOption}, {hideloading: true}).then(function (data) {
                         let res = data.data;
+                        that.loading = false;
                         if (res.error == 0) {
-                            that.tableData = res.data.list;
+                            that.tableData = Array.isArray(res.data && res.data.list) ? res.data.list : [];
                             if (that.prevPage != that.page) {
                                 that.prevPage = that.page;
-                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                                const wrap = that.$refs.multipleTable && that.$refs.multipleTable.bodyWrapper;
+                                if (wrap) wrap.scrollTop = 0;
                             }
-                            that.loading = false;
                             that.total = parseInt(res.data.total);
                             that.pageSizes = res.data.pageSizes;
                             that.limit = parseInt(res.data.pageSize);
@@ -184,8 +185,12 @@ export default {
                             if (that.tableData.length === 0){
                                 that.emptytext = window.lc('wap_js_00113');
                             }
+                        } else {
+                            that.tableData = [];
+                            that.emptytext = res.msg || window.lc('wap_js_00113');
                         }
                     }).catch(function (error) {
+                        that.loading = false;
                         console.log(error)
                     })
                 },

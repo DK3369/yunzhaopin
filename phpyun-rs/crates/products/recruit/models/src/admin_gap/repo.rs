@@ -1048,15 +1048,15 @@ pub async fn list_domains(
     limit: u64,
 ) -> Result<Vec<DomainAdminRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, COALESCE(domain,'') AS domain, \
          CAST(COALESCE(fz_type,0) AS SIGNED) AS fz_type, CAST(COALESCE(mode,0) AS SIGNED) AS mode, \
          COALESCE(webtitle,'') AS web_title, COALESCE(indexdir,'') AS indexdir, \
          COALESCE(style,'') AS style, CAST(COALESCE(hy,0) AS SIGNED) AS hy, \
          CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, CAST(COALESCE(province,0) AS SIGNED) AS province, \
          COALESCE(tpl,'') AS tpl \
-         FROM phpyun_domain WHERE {PREDICATE}",
-    );
+         FROM phpyun_domain WHERE {PREDICATE}"
+    ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (title LIKE ");
         qb.push_bind(format!("%{kw}%"));
@@ -1291,12 +1291,12 @@ pub async fn list_wxpub_temps(
     limit: u64,
 ) -> Result<Vec<WxpubTempRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, COALESCE(header,'') AS header, \
          COALESCE(body,'') AS body, COALESCE(footer,'') AS footer, COALESCE(`type`,'') AS `type`, \
          CAST(COALESCE(temptype,0) AS SIGNED) AS temptype, CAST(COALESCE(time,0) AS SIGNED) AS time \
-         FROM phpyun_wxpub_temps WHERE {PREDICATE}",
-    );
+         FROM phpyun_wxpub_temps WHERE {PREDICATE}"
+    ));
     if let Some(t) = temptype {
         qb.push(" AND temptype = ");
         qb.push_bind(t);
