@@ -38,6 +38,27 @@ function scrollToTop(container = '.moduleDome') {
   window.scrollTo(0, 0)
 }
 
+/** Element Plus table has no Vue2 `bodyWrapper`; PHP pages still assign scrollTop. */
+function patchTableBodyWrapper(inst: Record<string, unknown>) {
+  const refs = inst.$refs as Record<string, unknown> | undefined
+  const t = refs?.multipleTable as { bodyWrapper?: unknown; $el?: HTMLElement } | undefined
+  if (!t || typeof t !== 'object') return
+  if (t.bodyWrapper) return
+  const dummy = { scrollTop: 0 }
+  try {
+    Object.defineProperty(t, 'bodyWrapper', {
+      configurable: true,
+      enumerable: false,
+      get() {
+        return t.$el?.querySelector?.('.el-table__body-wrapper') || dummy
+      },
+      set() {},
+    })
+  } catch {
+    t.bodyWrapper = dummy
+  }
+}
+
 const message = {
   success(msg: string, closeFun?: () => void) {
     ElMessage.success({ message: lc(msg, null, msg), onClose: closeFun })
@@ -193,6 +214,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       inst.$alert = ElMessageBox.alert
       inst.$notify = ElNotification
       inst.$loading = ElLoading.service
+    },
+    mounted() {
+      patchTableBodyWrapper(this as unknown as Record<string, unknown>)
+    },
+    updated() {
+      patchTableBodyWrapper(this as unknown as Record<string, unknown>)
     },
   })
 })

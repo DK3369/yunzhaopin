@@ -18,8 +18,15 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
-    #[validate(length(min = 1, max = 200))]
+    /// PHP Vue index often omits this; default matches 职位分类.
+    #[serde(default)]
+    #[validate(length(max = 200))]
     pub kind: String,
+}
+
+fn list_kind(kind: &str) -> &str {
+    let k = kind.trim();
+    if k.is_empty() { "job" } else { k }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -86,7 +93,7 @@ pub async fn list(
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiResponse<Vec<CatItem>>> {
     user.require_admin()?;
-    let list = category_service::admin_list(&state, &user, &q.kind).await?;
+    let list = category_service::admin_list(&state, &user, list_kind(&q.kind)).await?;
     Ok(ApiResponse::data(
         list.into_iter().map(CatItem::from).collect(),
     ))

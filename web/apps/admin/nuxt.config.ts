@@ -1,3 +1,21 @@
+/** Compile-time EP 2.10 compat: do not batch-edit dozens of PHP Vue templates. */
+function phpAdminEpCompat() {
+  return {
+    name: 'php-admin-ep-compat',
+    enforce: 'pre' as const,
+    transform(code: string, id: string) {
+      if (!id.includes('admin-php') || !id.includes('.vue')) return
+      let out = code
+      out = out.replaceAll(':underline="false"', 'underline="never"')
+      out = out.replaceAll(":underline='false'", 'underline="never"')
+      out = out.replaceAll(/(?<!v-model):current-page=/g, 'v-model:current-page=')
+      out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
+      if (out === code) return
+      return { code: out, map: null }
+    },
+  }
+}
+
 export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   ssr: false,
@@ -8,6 +26,7 @@ export default defineNuxtConfig({
       startLoading: '(globalThis.startLoading||function(){})',
       baseUrl: '(globalThis.baseUrl||"/admin/api/php-admin?")',
     },
+    plugins: [phpAdminEpCompat()],
     server: {
       allowedHosts: true,
     },
@@ -22,6 +41,8 @@ export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@element-plus/nuxt', '@nuxtjs/i18n'],
   routeRules: {
     '/favicon.v1.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/**': { headers: { 'cache-control': 'no-store' } },
   },
   i18n: {
     locales: [
