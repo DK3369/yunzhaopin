@@ -265,6 +265,76 @@ pub async fn add_integral(pool: &MySqlPool, uid: u64, points: i64) -> Result<i64
     Ok(next)
 }
 
+pub async fn adjust_integral(pool: &MySqlPool, uid: u64, points: i64) -> Result<i64, sqlx::Error> {
+    if points == 0 {
+        return Ok(0);
+    }
+    if points > 0 {
+        return add_integral(pool, uid, points).await;
+    }
+    let deduct = (-points) as u32;
+    ensure_row(pool, uid).await?;
+    let mut tx = pool.begin().await?;
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(integral, '') FROM phpyun_company_statis WHERE uid = ? FOR UPDATE",
+    )
+    .bind(uid)
+    .fetch_optional(&mut *tx)
+    .await?;
+    let raw = row.map(|(s,)| s).unwrap_or_default();
+    let balance =
+        crate::member_statis::repo::parse_stored_balance(&raw, "phpyun_company_statis.integral")?;
+    let Some(next) = crate::member_statis::repo::balance_after_deduction(balance, deduct) else {
+        tx.rollback().await?;
+        return Err(sqlx::Error::Protocol(
+            "phpyun_company_statis.integral: insufficient".into(),
+        ));
+    };
+    sqlx::query("UPDATE phpyun_company_statis SET integral = ? WHERE uid = ?")
+        .bind(next.to_string())
+        .bind(uid)
+        .execute(&mut *tx)
+        .await?;
+    tx.commit().await?;
+    Ok(next)
+}
+
+pub async fn add_service_nums(
+    pool: &MySqlPool,
+    uid: u64,
+    job_num: i32,
+    breakjob_num: i32,
+    down_resume: i32,
+    invite_resume: i32,
+    zph_num: i32,
+    top_num: i32,
+    rec_num: i32,
+    urgent_num: i32,
+) -> Result<u64, sqlx::Error> {
+    ensure_row(pool, uid).await?;
+    Ok(
+        sqlx::query(
+            "UPDATE phpyun_company_statis SET \
+             job_num = job_num + ?, breakjob_num = breakjob_num + ?, \
+             down_resume = down_resume + ?, invite_resume = invite_resume + ?, \
+             zph_num = zph_num + ?, top_num = top_num + ?, rec_num = rec_num + ?, \
+             urgent_num = urgent_num + ? WHERE uid = ?",
+        )
+        .bind(job_num)
+        .bind(breakjob_num)
+        .bind(down_resume)
+        .bind(invite_resume)
+        .bind(zph_num)
+        .bind(top_num)
+        .bind(rec_num)
+        .bind(urgent_num)
+        .bind(uid)
+        .execute(pool)
+        .await?
+        .rows_affected(),
+    )
+}
+
 /// PHP 开通套餐天数：从 max(now, vip_etime) 起加 `days` 天。
 pub async fn extend_vip_days(
     pool: &MySqlPool,

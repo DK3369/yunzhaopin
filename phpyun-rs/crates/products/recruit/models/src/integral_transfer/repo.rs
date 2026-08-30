@@ -16,7 +16,7 @@
 //! All three in a single transaction. Failure mid-flight rolls back.
 
 use super::entity::IntegralTransfer;
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
                       COALESCE(order_id, '') AS order_id, \
@@ -258,6 +258,148 @@ pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Erro
             .fetch_one(pool)
             .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpPayRow {
+    pub id: u64,
+    pub order_id: String,
+    pub order_price: String,
+    pub pay_time: i64,
+    pub pay_state: i32,
+    pub com_id: u64,
+    pub pay_remark: String,
+    pub r#type: i32,
+    pub username: String,
+    pub comname: String,
+}
+
+pub struct PhpPayFilter<'a> {
+    pub com_id: Option<u64>,
+    pub usertype: Option<i32>,
+    pub order_id_kw: Option<&'a str>,
+    pub remark_kw: Option<&'a str>,
+    pub uid_in: Option<&'a [u64]>,
+    pub pay_state: Option<i32>,
+    pub time_min: Option<i64>,
+}
+
+fn push_php_pay_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpPayFilter<'_>) {
+    qb.push(
+        " FROM phpyun_company_pay p \
+         LEFT JOIN phpyun_member m ON m.uid = p.com_id \
+         LEFT JOIN phpyun_company c ON c.uid = p.com_id WHERE 1=1",
+    );
+    if let Some(id) = f.com_id.filter(|n| *n > 0) {
+        qb.push(" AND p.com_id = ");
+        qb.push_bind(id);
+    }
+    if let Some(ut) = f.usertype.filter(|n| *n > 0) {
+        qb.push(" AND p.usertype = ");
+        qb.push_bind(ut);
+    }
+    if let Some(kw) = f.order_id_kw.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND p.order_id LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(kw) = f.remark_kw.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND p.pay_remark LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(ids) = f.uid_in.filter(|s| !s.is_empty()) {
+        qb.push(" AND p.com_id IN (");
+        let mut first = true;
+        for id in ids {
+            if !first {
+                qb.push(",");
+            }
+            qb.push_bind(*id);
+            first = false;
+        }
+        qb.push(")");
+    }
+    if let Some(st) = f.pay_state {
+        qb.push(" AND p.pay_state = ");
+        qb.push_bind(st);
+    }
+    if let Some(t) = f.time_min.filter(|n| *n > 0) {
+        qb.push(" AND p.pay_time >= ");
+        qb.push_bind(t);
+    }
+}
+
+pub async fn php_list_pay(
+    pool: &MySqlPool,
+    f: &PhpPayFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpPayRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(p.id AS UNSIGNED) AS id, COALESCE(p.order_id,'') AS order_id, \
+         CAST(COALESCE(p.order_price,0) AS CHAR) AS order_price, \
+         CAST(COALESCE(p.pay_time,0) AS SIGNED) AS pay_time, \
+         CAST(COALESCE(p.pay_state,0) AS SIGNED) AS pay_state, \
+         CAST(COALESCE(p.com_id,0) AS UNSIGNED) AS com_id, \
+         COALESCE(p.pay_remark,'') AS pay_remark, CAST(COALESCE(p.`type`,0) AS SIGNED) AS `type`, \
+         COALESCE(m.username,'') AS username, COALESCE(c.name,'') AS comname",
+    );
+    push_php_pay_where(&mut qb, f);
+    qb.push(" ORDER BY p.id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_pay(pool: &MySqlPool, f: &PhpPayFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_php_pay_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_delete_pay(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_company_pay WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_insert_pay(
+    pool: &MySqlPool,
+    order_id: &str,
+    price: &str,
+    now: i64,
+    uid: u64,
+    remark: &str,
+    kind: i32,
+    usertype: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_pay \
+         (order_id, order_price, pay_time, pay_state, com_id, pay_remark, `type`, pay_type, did, eid, usertype, coupon_id) \
+         VALUES (?, ?, ?, 2, ?, ?, ?, 0, 0, 0, ?, 0)",
+    )
+    .bind(order_id)
+    .bind(price)
+    .bind(now)
+    .bind(uid)
+    .bind(remark)
+    .bind(kind)
+    .bind(usertype)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
 }
 
 #[cfg(test)]

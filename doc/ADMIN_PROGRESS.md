@@ -52,7 +52,7 @@ flowchart LR
 
 - `web/apps/admin/app/pages/`：**121** 个 path 页，对齐 PHP `router.js`。
 - UI：`web/apps/admin/app/admin-php/`（PHP Vue 语法迁入）。
-- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题/公招/广告走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
+- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题/公招/广告/财务走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
 - 刻意不做：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`。
 
 ## Rust 后台 API
@@ -73,8 +73,11 @@ flowchart LR
 | `ad-class` | index, info, addclass, delete, delbuy, upsort |
 | `question` | getGroup, index, add, save, delete, recommend, getanswer, statusAnswer, save_answer, delanswer, getcomment, statusAnswerReview, save_review, delreview, config, configSave |
 | `special` | index, add, delete, setOrder, recommend, ajaxsort, setFamous, addlist, set_comaddsearch, audit, comjob |
+| `finance-order` | index, searchType, edit, save, setpay, delete, xls；凭证 `multiupload`/`uploadsave`/`htpic_del` 明确 `upload_not_supported` |
+| `finance-pay` | index, delete |
+| `finance-recharge` | index, jifenSave, comvip, comservice, getservice, searchname, searchcom |
 
-专题企业 `com`/`statuscom`/`delcom` 仍走原 `/v1/admin/specials/companies*`。招聘会/专题**主表**不在伪删除白名单，del 是物理 DELETE；新闻/问答走 `deleted=1`。
+专题企业 `com`/`statuscom`/`delcom` 仍走原 `/v1/admin/specials/companies*`。招聘会/专题**主表**本波末段改伪删除；新闻/问答走 `deleted=1`。财务订单/消费 del 按 PHP 仍是物理 DELETE。xls 出 CSV（base64）。
 
 ## 伪删除
 
@@ -98,7 +101,7 @@ flowchart LR
 | 前台 OAuth 回调 + 支付真单 | **回调已接、支付宝跳转已接、沙箱真单未验收** |
 | 公招 / 公告剩余 | **完成**（`php-content`） |
 | 广告位 / 广告分类 | **完成**（修 del→create、ad_class 错表；`is_open=2` 伪删广告） |
-| 财务订单/充值 | **进行中**（本波） |
+| 财务订单/充值 | **完成**（php-content + phpMap；凭证上传降级为业务错误） |
 | 招聘会/专题主表伪删除 | **进行中**（本波） |
 
 ### 前台 OAuth / 支付（本轮）

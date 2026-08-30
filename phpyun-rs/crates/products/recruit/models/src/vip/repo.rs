@@ -30,7 +30,7 @@
 //! correctly targets the VIP-package config.
 
 use super::entity::{PayOrder, UserVip, VipPackage};
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 // ==================== Packages (phpyun_company_rating = VIP tier config) ====================
 
@@ -419,6 +419,327 @@ pub async fn admin_set_order_status(
         .execute(pool)
         .await?;
     Ok(res.rows_affected())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpOrderRow {
+    pub id: u64,
+    pub uid: u64,
+    pub order_id: String,
+    pub order_price: String,
+    pub r#type: i32,
+    pub rating: i32,
+    pub order_state: i32,
+    pub order_type: String,
+    pub order_time: i64,
+    pub once_id: i32,
+    pub crm_uid: i32,
+    pub usertype: i32,
+    pub integral: i32,
+    pub order_remark: String,
+    pub username: String,
+    pub comname: String,
+    pub rating_name: String,
+    pub crm_name: String,
+    pub bank_name: String,
+    pub bank_id: String,
+}
+
+pub struct PhpOrderFilter<'a> {
+    pub uid: Option<u64>,
+    pub usertype: Option<i32>,
+    pub order_type: Option<&'a str>,
+    pub order_kind: Option<i32>,
+    pub rating: Option<i32>,
+    pub order_state: Option<i32>,
+    pub order_id_kw: Option<&'a str>,
+    pub uid_in: Option<&'a [u64]>,
+    pub time_min: Option<i64>,
+    pub time_max: Option<i64>,
+    pub ids: Option<&'a [u64]>,
+}
+
+const PHP_ORDER_FIELDS: &str = "\
+    CAST(o.id AS UNSIGNED) AS id, CAST(COALESCE(o.uid,0) AS UNSIGNED) AS uid, \
+    COALESCE(o.order_id,'') AS order_id, CAST(COALESCE(o.order_price,0) AS CHAR) AS order_price, \
+    CAST(COALESCE(o.`type`,0) AS SIGNED) AS `type`, CAST(COALESCE(o.rating,0) AS SIGNED) AS rating, \
+    CAST(COALESCE(o.order_state,0) AS SIGNED) AS order_state, COALESCE(o.order_type,'') AS order_type, \
+    CAST(COALESCE(o.order_time,0) AS SIGNED) AS order_time, CAST(COALESCE(o.once_id,0) AS SIGNED) AS once_id, \
+    CAST(COALESCE(o.crm_uid,0) AS SIGNED) AS crm_uid, CAST(COALESCE(o.usertype,0) AS SIGNED) AS usertype, \
+    CAST(COALESCE(o.integral,0) AS SIGNED) AS integral, COALESCE(o.order_remark,'') AS order_remark, \
+    COALESCE(m.username,'') AS username, COALESCE(c.name,'') AS comname, \
+    COALESCE(r.name,'') AS rating_name, COALESCE(au.name,'') AS crm_name, \
+    COALESCE(o.order_bank,'') AS bank_name, COALESCE(o.order_info,'') AS bank_id";
+
+fn push_php_order_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpOrderFilter<'_>) {
+    qb.push(
+        " FROM phpyun_company_order o \
+         LEFT JOIN phpyun_member m ON m.uid = o.uid \
+         LEFT JOIN phpyun_company c ON c.uid = o.uid \
+         LEFT JOIN phpyun_company_rating r ON r.id = o.rating \
+         LEFT JOIN phpyun_admin_user au ON au.uid = o.crm_uid \
+         WHERE 1=1",
+    );
+    if let Some(uid) = f.uid.filter(|n| *n > 0) {
+        qb.push(" AND o.uid = ");
+        qb.push_bind(uid);
+    }
+    if let Some(ut) = f.usertype.filter(|n| *n > 0) {
+        qb.push(" AND o.usertype = ");
+        qb.push_bind(ut);
+    }
+    if let Some(ot) = f.order_type.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND o.order_type = ");
+        qb.push_bind(ot.to_string());
+    }
+    if let Some(k) = f.order_kind.filter(|n| *n > 0) {
+        qb.push(" AND o.`type` = ");
+        qb.push_bind(k);
+    }
+    if let Some(r) = f.rating.filter(|n| *n > 0) {
+        qb.push(" AND o.rating = ");
+        qb.push_bind(r);
+    }
+    if let Some(st) = f.order_state {
+        qb.push(" AND o.order_state = ");
+        qb.push_bind(st);
+    }
+    if let Some(kw) = f.order_id_kw.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND o.order_id LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(ids) = f.uid_in.filter(|s| !s.is_empty()) {
+        qb.push(" AND o.uid IN (");
+        let mut first = true;
+        for id in ids {
+            if !first {
+                qb.push(",");
+            }
+            qb.push_bind(*id);
+            first = false;
+        }
+        qb.push(")");
+    }
+    if let Some(ids) = f.ids.filter(|s| !s.is_empty()) {
+        qb.push(" AND o.id IN (");
+        let mut first = true;
+        for id in ids {
+            if !first {
+                qb.push(",");
+            }
+            qb.push_bind(*id);
+            first = false;
+        }
+        qb.push(")");
+    }
+    if let Some(t) = f.time_min.filter(|n| *n > 0) {
+        qb.push(" AND o.order_time >= ");
+        qb.push_bind(t);
+    }
+    if let Some(t) = f.time_max.filter(|n| *n > 0) {
+        qb.push(" AND o.order_time < ");
+        qb.push_bind(t);
+    }
+}
+
+pub async fn php_list_orders(
+    pool: &MySqlPool,
+    f: &PhpOrderFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpOrderRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!("SELECT {PHP_ORDER_FIELDS}"));
+    push_php_order_where(&mut qb, f);
+    qb.push(" ORDER BY o.id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_orders(pool: &MySqlPool, f: &PhpOrderFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_php_order_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpOrderSum {
+    pub all_price: String,
+    pub payed: String,
+    pub paying: String,
+    pub wait_pay: String,
+}
+
+pub async fn php_sum_orders(pool: &MySqlPool, f: &PhpOrderFilter<'_>) -> Result<PhpOrderSum, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(COALESCE(SUM(o.order_price),0) AS CHAR) AS all_price, \
+         CAST(COALESCE(SUM(CASE WHEN o.order_state=2 THEN o.order_price ELSE 0 END),0) AS CHAR) AS payed, \
+         CAST(COALESCE(SUM(CASE WHEN o.order_state=3 THEN o.order_price ELSE 0 END),0) AS CHAR) AS paying, \
+         CAST(COALESCE(SUM(CASE WHEN o.order_state=1 THEN o.order_price ELSE 0 END),0) AS CHAR) AS wait_pay",
+    );
+    push_php_order_where(&mut qb, f);
+    qb.build_query_as().fetch_one(pool).await
+}
+
+pub async fn php_find_order(pool: &MySqlPool, id: u64) -> Result<Option<PhpOrderRow>, sqlx::Error> {
+    let sql = format!("SELECT {PHP_ORDER_FIELDS} FROM phpyun_company_order o \
+         LEFT JOIN phpyun_member m ON m.uid = o.uid \
+         LEFT JOIN phpyun_company c ON c.uid = o.uid \
+         LEFT JOIN phpyun_company_rating r ON r.id = o.rating \
+         LEFT JOIN phpyun_admin_user au ON au.uid = o.crm_uid \
+         WHERE o.id = ? LIMIT 1");
+    sqlx::query_as::<_, PhpOrderRow>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn php_update_order(
+    pool: &MySqlPool,
+    id: u64,
+    price: &str,
+    remark: &str,
+    new_order_id: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    if let Some(oid) = new_order_id {
+        return Ok(
+            sqlx::query(
+                "UPDATE phpyun_company_order SET order_price=?, order_remark=?, order_id=? WHERE id=?",
+            )
+            .bind(price)
+            .bind(remark)
+            .bind(oid)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+        );
+    }
+    Ok(
+        sqlx::query("UPDATE phpyun_company_order SET order_price=?, order_remark=? WHERE id=?")
+            .bind(price)
+            .bind(remark)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn php_set_order_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_company_order SET order_state=? WHERE id=?")
+            .bind(state)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn php_delete_orders(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_company_order WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub struct PhpOrderInsert<'a> {
+    pub order_id: &'a str,
+    pub uid: u64,
+    pub order_type: &'a str,
+    pub order_price: &'a str,
+    pub order_time: i64,
+    pub order_state: i32,
+    pub order_remark: &'a str,
+    pub r#type: i32,
+    pub rating: i32,
+    pub integral: i32,
+    pub usertype: i32,
+}
+
+pub async fn php_insert_order(pool: &MySqlPool, a: PhpOrderInsert<'_>) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_order \
+         (uid, order_id, order_type, order_price, order_time, order_state, order_remark, \
+          order_bank, `type`, rating, integral, order_pic, order_info, usertype, is_crm, status) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, '', ?, ?, ?, '', '', ?, 0, 2)",
+    )
+    .bind(a.uid)
+    .bind(a.order_id)
+    .bind(a.order_type)
+    .bind(a.order_price)
+    .bind(a.order_time)
+    .bind(a.order_state)
+    .bind(a.order_remark)
+    .bind(a.r#type)
+    .bind(a.rating)
+    .bind(a.integral)
+    .bind(a.usertype)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn search_member_companies(
+    pool: &MySqlPool,
+    username_like: Option<&str>,
+    comname_like: Option<&str>,
+) -> Result<Vec<(u64, String, String, String, i64)>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(m.uid AS UNSIGNED), COALESCE(m.username,''), COALESCE(c.name,''), \
+         COALESCE(c.rating_name,''), CAST(COALESCE(c.vipetime,0) AS SIGNED) \
+         FROM phpyun_member m LEFT JOIN phpyun_company c ON c.uid = m.uid \
+         WHERE m.usertype = 2",
+    );
+    if let Some(kw) = username_like.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND m.username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(kw) = comname_like.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND c.name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(" ORDER BY m.uid DESC LIMIT 10");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn find_member_uids_like(
+    pool: &MySqlPool,
+    username_like: &str,
+) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE username LIKE ? LIMIT 200",
+    )
+    .bind(format!("%{username_like}%"))
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+pub async fn find_company_uids_like(
+    pool: &MySqlPool,
+    name_like: &str,
+) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? LIMIT 200",
+    )
+    .bind(format!("%{name_like}%"))
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
 }
 
 #[cfg(test)]

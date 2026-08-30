@@ -6,6 +6,12 @@ use std::collections::HashMap;
 use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
+use phpyun_models::admin_gap::extra as gap_extra;
+use phpyun_models::admin_gap::repo as gap_repo;
+use phpyun_models::company_statis::repo as cstatis_repo;
+use phpyun_models::integral_transfer::repo as pay_repo;
+use phpyun_models::member_statis::repo as mstatis_repo;
+use phpyun_models::vip::repo as vip_repo;
 use phpyun_models::announcement::repo as announcement_repo;
 use phpyun_models::article::repo::{self as article_repo, ArticleFilter};
 use phpyun_models::company::repo as company_repo;
@@ -94,6 +100,25 @@ pub async fn dispatch(
         ("ad-class", "delete") => ad_class_del(state, body).await,
         ("ad-class", "delbuy") => ad_class_delbuy(state, body).await,
         ("ad-class", "upsort") => ad_class_upsort(state, body).await,
+        ("finance-order", "searchType") => Ok(PhpOut::Data(finance_order_search_type(state).await?)),
+        ("finance-order", "index") => Ok(PhpOut::Data(finance_order_index(state, body).await?)),
+        ("finance-order", "edit") => Ok(PhpOut::Data(finance_order_edit(state, body).await?)),
+        ("finance-order", "save") => finance_order_save(state, body).await,
+        ("finance-order", "setpay") => finance_order_setpay(state, body).await,
+        ("finance-order", "delete") => finance_order_del(state, body).await,
+        ("finance-order", "xls") => Ok(PhpOut::Data(finance_order_xls(state, body).await?)),
+        ("finance-order", "multiupload") => Err(ApiError::business("upload_not_supported")),
+        ("finance-order", "uploadsave") => Err(ApiError::business("upload_not_supported")),
+        ("finance-order", "htpic_del") => Err(ApiError::business("upload_not_supported")),
+        ("finance-pay", "index") => Ok(PhpOut::Data(finance_pay_index(state, body).await?)),
+        ("finance-pay", "delete") => finance_pay_del(state, body).await,
+        ("finance-recharge", "index") => Ok(PhpOut::Data(finance_recharge_index(state).await?)),
+        ("finance-recharge", "jifenSave") => finance_jifen_save(state, body).await,
+        ("finance-recharge", "comvip") => finance_comvip(state, body).await,
+        ("finance-recharge", "comservice") => finance_comservice(state, body).await,
+        ("finance-recharge", "getservice") => Ok(PhpOut::Data(finance_getservice(state, body).await?)),
+        ("finance-recharge", "searchname") => Ok(PhpOut::Data(finance_searchname(state, body, true).await?)),
+        ("finance-recharge", "searchcom") => Ok(PhpOut::Data(finance_searchname(state, body, false).await?)),
         ("question", "getGroup") => Ok(PhpOut::Data(question_get_group())),
         ("question", "index") => Ok(PhpOut::Data(question_index(state, body).await?)),
         ("question", "add") => Ok(PhpOut::Data(question_add(state, body).await?)),
@@ -2265,4 +2290,744 @@ async fn ad_class_upsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     ad_repo::set_class_orders(state.db.pool(), id, json_i32(body, "orders")).await?;
     Ok(PhpOut::Data(json!({})))
+}
+
+fn pay_name(code: &str) -> &'static str {
+    match code {
+        "alipay" => "支付宝",
+        "tenpay" => "财富通",
+        "bank" => "银行转帐",
+        "alipaydual" => "支付宝双接口",
+        "alipayescow" => "担保交易",
+        "adminpay" => "管理员充值",
+        "balance" => "余额支付",
+        "admincut" => "管理员扣款",
+        "wapalipay" => "支付宝手机支付",
+        _ => "",
+    }
+}
+
+fn order_kind_name(kind: i32) -> &'static str {
+    match kind {
+        1 => "购买会员",
+        2 => "积分充值",
+        3 => "银行转帐",
+        4 => "金额充值",
+        5 => "购买增值包",
+        10 => "职位置顶",
+        11 => "职位紧急",
+        12 => "职位推荐",
+        13 => "自动刷新",
+        14 => "简历置顶",
+        16 => "刷新职位",
+        17 => "刷新兼职",
+        19 => "下载简历",
+        20 => "发布职位",
+        21 => "发布兼职",
+        23 => "面试邀请",
+        24 => "兼职推荐",
+        25 => "店铺招聘",
+        28 => "招聘会报名",
+        _ => "",
+    }
+}
+
+fn pay_state_html(state: i32) -> &'static str {
+    match state {
+        0 => "<font color=red>支付失败</font>",
+        1 => "<font color=green>等待付款</font>",
+        2 => "<font color=#3d7dfd>支付成功</font>",
+        3 => "<font color=#c30ad9>等待确认</font>",
+        4 => "<font color=red>交易关闭</font>",
+        _ => "",
+    }
+}
+
+fn json_present_i32(v: &Value, key: &str) -> Option<i32> {
+    match v.get(key) {
+        None | Some(Value::Null) => None,
+        Some(Value::String(s)) if s.trim().is_empty() => None,
+        Some(_) => Some(json_i32(v, key)),
+    }
+}
+
+fn finance_order_json(r: &vip_repo::PhpOrderRow) -> Value {
+    let rating_name = if r.r#type == 1 && !r.rating_name.is_empty() {
+        format!("：{}", r.rating_name)
+    } else {
+        String::new()
+    };
+    json!({
+        "id": r.id,
+        "uid": r.uid,
+        "order_id": r.order_id,
+        "order_price": r.order_price,
+        "type": r.r#type.to_string(),
+        "type_n": order_kind_name(r.r#type),
+        "rating": r.rating,
+        "rating_name": rating_name,
+        "rating_name_n": r.rating_name,
+        "order_state": r.order_state.to_string(),
+        "order_state_n": pay_state_html(r.order_state),
+        "order_type": r.order_type,
+        "order_type_n": pay_name(&r.order_type),
+        "order_time": fmt_dt(r.order_time),
+        "order_time_ymd": fmt_dt(r.order_time),
+        "once_id": r.once_id,
+        "crm_uid": r.crm_uid,
+        "crm_name": r.crm_name,
+        "usertype": r.usertype.to_string(),
+        "integral": r.integral,
+        "order_remark": r.order_remark,
+        "username": r.username,
+        "comname": r.comname,
+        "bankname": r.bank_name,
+        "bankid": r.bank_id,
+    })
+}
+
+fn new_dingdan(now: i64) -> String {
+    format!("{now}{:05}", (now % 90_000) + 10_000)
+}
+
+async fn finance_order_query(state: &AppState, body: &Value) -> AppResult<OrderQ> {
+    let typezf = json_str(body, "typezf");
+    let order_id_kw = json_str(body, "keyword");
+    let typeca = json_i32(body, "typeca");
+    let mut uid_in = Vec::new();
+    let mut order_id_owned = String::new();
+    if !order_id_kw.is_empty() {
+        match typeca {
+            2 => {
+                uid_in = vip_repo::find_member_uids_like(state.db.reader(), &order_id_kw).await?;
+            }
+            3 => {
+                uid_in = vip_repo::find_company_uids_like(state.db.reader(), &order_id_kw).await?;
+            }
+            _ => order_id_owned = order_id_kw,
+        }
+    }
+    let (t0, t1) = json_date_pair(body, "times");
+    let time_min = if t0.is_empty() {
+        None
+    } else {
+        Some(parse_date_ts(&t0))
+    };
+    let time_max = if t1.is_empty() {
+        None
+    } else {
+        Some(parse_date_ts(&t1) + 86_400)
+    };
+    let mut ids = ids_of(body);
+    if ids.is_empty() {
+        match body.get("uid") {
+            Some(Value::Array(a)) => {
+                ids = a.iter().map(json_u64_val).filter(|n| *n > 0).collect();
+            }
+            Some(Value::String(s)) => {
+                ids = s
+                    .split([',', ';'])
+                    .filter_map(|x| x.trim().parse().ok())
+                    .filter(|n: &u64| *n > 0)
+                    .collect();
+            }
+            Some(Value::Number(n)) => {
+                ids = n.as_u64().filter(|n| *n > 0).into_iter().collect();
+            }
+            _ => {}
+        }
+    }
+    Ok(OrderQ {
+        uid: Some(json_u64(body, "comid")).filter(|n| *n > 0),
+        usertype: if json_u64(body, "comid") > 0 {
+            Some(2)
+        } else {
+            None
+        },
+        typezf,
+        order_kind: json_present_i32(body, "typedd"),
+        rating: json_present_i32(body, "rating"),
+        order_state: json_present_i32(body, "order_state"),
+        order_id_kw: order_id_owned,
+        uid_in,
+        time_min,
+        time_max,
+        ids,
+    })
+}
+
+struct OrderQ {
+    uid: Option<u64>,
+    usertype: Option<i32>,
+    typezf: String,
+    order_kind: Option<i32>,
+    rating: Option<i32>,
+    order_state: Option<i32>,
+    order_id_kw: String,
+    uid_in: Vec<u64>,
+    time_min: Option<i64>,
+    time_max: Option<i64>,
+    ids: Vec<u64>,
+}
+
+fn order_q_filter<'a>(q: &'a OrderQ) -> vip_repo::PhpOrderFilter<'a> {
+    vip_repo::PhpOrderFilter {
+        uid: q.uid,
+        usertype: q.usertype,
+        order_type: if q.typezf.is_empty() {
+            None
+        } else {
+            Some(q.typezf.as_str())
+        },
+        order_kind: q.order_kind,
+        rating: q.rating,
+        order_state: q.order_state,
+        order_id_kw: if q.order_id_kw.is_empty() {
+            None
+        } else {
+            Some(q.order_id_kw.as_str())
+        },
+        uid_in: if q.uid_in.is_empty() {
+            None
+        } else {
+            Some(q.uid_in.as_slice())
+        },
+        time_min: q.time_min,
+        time_max: q.time_max,
+        ids: if q.ids.is_empty() {
+            None
+        } else {
+            Some(q.ids.as_slice())
+        },
+    }
+}
+
+async fn finance_order_search_type(state: &AppState) -> AppResult<Value> {
+    let ratings = company_repo::list_rating_options(state.db.reader()).await?;
+    let ratingarr: Vec<Value> = ratings
+        .into_iter()
+        .map(|r| json!({ "value": r.id, "label": r.name }))
+        .collect();
+    Ok(json!({
+        "pay": {
+            "alipay": "支付宝",
+            "tenpay": "财富通",
+            "bank": "银行转帐",
+            "alipaydual": "支付宝双接口",
+            "alipayescow": "担保交易",
+            "adminpay": "管理员充值",
+            "balance": "余额支付",
+            "admincut": "管理员扣款",
+            "wapalipay": "支付宝手机支付",
+        },
+        "ordertype": {
+            "1": "购买会员",
+            "2": "积分充值",
+            "3": "银行转帐",
+            "4": "金额充值",
+            "5": "购买增值包",
+            "10": "职位置顶",
+            "11": "职位紧急",
+            "12": "职位推荐",
+            "13": "自动刷新",
+            "14": "简历置顶",
+            "16": "刷新职位",
+            "17": "刷新兼职",
+            "19": "下载简历",
+            "20": "发布职位",
+            "21": "发布兼职",
+            "23": "面试邀请",
+            "24": "兼职推荐",
+            "25": "店铺招聘",
+            "28": "招聘会报名",
+        },
+        "ratingarr": ratingarr,
+    }))
+}
+
+async fn finance_order_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let mut q = finance_order_query(state, body).await?;
+    q.ids.clear();
+    let f = order_q_filter(&q);
+    let db = state.db.reader();
+    let rows = vip_repo::php_list_orders(db, &f, offset, limit).await?;
+    let total = vip_repo::php_count_orders(db, &f).await?;
+    let sum = vip_repo::php_sum_orders(db, &f).await?;
+    let list: Vec<Value> = rows.iter().map(finance_order_json).collect();
+    Ok(json!({
+        "data": list,
+        "total": total,
+        "pageSizes": [10, 20, 50, 100],
+        "perPage": per,
+        "page": page,
+        "orderSum": {
+            "orderPriceAll": sum.all_price,
+            "orderPayed": sum.payed,
+            "orderPaying": sum.paying,
+            "orderPay": sum.wait_pay,
+        },
+    }))
+}
+
+async fn finance_order_edit(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let r = vip_repo::php_find_order(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("common_01237"))?;
+    let pricename = setting_repo::find(state.db.reader(), "integral_pricename")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    Ok(json!({
+        "detail": finance_order_json(&r),
+        "htpics": [],
+        "integral_pricename": pricename,
+    }))
+}
+
+async fn finance_order_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let old = vip_repo::php_find_order(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("common_01237"))?;
+    let price = json_str(body, "order_price");
+    let mut remark = json_str(body, "order_remark");
+    let new_oid = if price != old.order_price {
+        let oid = new_dingdan(clock::now_ts());
+        remark = format!("{remark} 改价 {} -> {price}", old.order_id);
+        Some(oid)
+    } else {
+        None
+    };
+    vip_repo::php_update_order(
+        state.db.pool(),
+        id,
+        &price,
+        &remark,
+        new_oid.as_deref(),
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_order_setpay(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let row = vip_repo::php_find_order(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("common_01237"))?;
+    if row.order_state != 1 && row.order_state != 3 {
+        return Err(ApiError::business("common_00735"));
+    }
+    if row.r#type == 2 && row.integral > 0 && row.uid > 0 {
+        let _ = cstatis_repo::add_integral(state.db.pool(), row.uid, i64::from(row.integral)).await;
+    }
+    vip_repo::php_set_order_state(state.db.pool(), id, 2).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_order_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    vip_repo::php_delete_orders(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_order_xls(state: &AppState, body: &Value) -> AppResult<Value> {
+    let q = finance_order_query(state, body).await?;
+    let f = order_q_filter(&q);
+    let rows = vip_repo::php_list_orders(state.db.reader(), &f, 0, 5000).await?;
+    if rows.is_empty() {
+        return Err(ApiError::business("admin_yunying_00004"));
+    }
+    let mut csv = String::from("id,username,comname,order_id,order_type,type,order_price,order_time,order_state,crm_name\n");
+    for r in &rows {
+        let state_plain = match r.order_state {
+            0 => "支付失败",
+            1 => "等待付款",
+            2 => "支付成功",
+            3 => "等待确认",
+            4 => "交易关闭",
+            _ => "",
+        };
+        csv.push_str(&format!(
+            "{},{},{},{},{},{},{},{},{},{}\n",
+            r.id,
+            csv_cell(&r.username),
+            csv_cell(&r.comname),
+            csv_cell(&r.order_id),
+            csv_cell(pay_name(&r.order_type)),
+            csv_cell(order_kind_name(r.r#type)),
+            r.order_price,
+            fmt_dt(r.order_time),
+            csv_cell(state_plain),
+            csv_cell(&r.crm_name),
+        ));
+    }
+    let file = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, csv.as_bytes());
+    Ok(json!({
+        "file": file,
+        "file_name": format!("orders-{}.csv", fmt_date(clock::now_ts())),
+        "status": 1,
+    }))
+}
+
+fn csv_cell(s: &str) -> String {
+    if s.contains(',') || s.contains('"') || s.contains('\n') {
+        format!("\"{}\"", s.replace('"', "\"\""))
+    } else {
+        s.to_string()
+    }
+}
+
+async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let ty = json_i32(body, "type");
+    let mut uid_in = Vec::new();
+    let mut order_id = String::new();
+    let mut remark = String::new();
+    if !kw.is_empty() {
+        match ty {
+            2 => uid_in = vip_repo::find_member_uids_like(state.db.reader(), &kw).await?,
+            3 => remark = kw,
+            _ => order_id = kw,
+        }
+    }
+    let end = json_i32(body, "end");
+    let time_min = if end == 1 {
+        Some(days_ago_ts(1))
+    } else if end > 1 {
+        Some(days_ago_ts(end))
+    } else {
+        None
+    };
+    let f = pay_repo::PhpPayFilter {
+        com_id: Some(json_u64(body, "comid")).filter(|n| *n > 0),
+        usertype: if json_u64(body, "comid") > 0 {
+            Some(2)
+        } else {
+            None
+        },
+        order_id_kw: if order_id.is_empty() { None } else { Some(order_id.as_str()) },
+        remark_kw: if remark.is_empty() { None } else { Some(remark.as_str()) },
+        uid_in: if uid_in.is_empty() { None } else { Some(uid_in.as_slice()) },
+        pay_state: json_present_i32(body, "pay_state"),
+        time_min,
+    };
+    let db = state.db.reader();
+    let rows = pay_repo::php_list_pay(db, &f, offset, limit).await?;
+    let total = pay_repo::php_count_pay(db, &f).await?;
+    let pricename = setting_repo::find(db, "integral_pricename")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let price_str = if r.r#type == 1 {
+                format!("{}{}", r.order_price, pricename)
+            } else {
+                format!("{}元", r.order_price)
+            };
+            json!({
+                "id": r.id,
+                "order_id": r.order_id,
+                "order_price": r.order_price,
+                "price_str": price_str,
+                "pay_time": fmt_dt(r.pay_time),
+                "pay_state": r.pay_state.to_string(),
+                "pay_state_n": pay_state_html(r.pay_state),
+                "pay_remark": r.pay_remark,
+                "username": r.username,
+                "comname": r.comname,
+                "type": r.r#type,
+            })
+        })
+        .collect();
+    Ok(json!({
+        "data": list,
+        "total": total,
+        "pageSizes": [10, 20, 50, 100],
+        "perPage": per,
+        "page": page,
+    }))
+}
+
+async fn finance_pay_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01237"));
+    }
+    pay_repo::php_delete_pay(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_recharge_index(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let pkgs = gap_repo::list_rating_packages(db, None, 0, 200).await?;
+    let rating_list: Vec<Value> = pkgs
+        .iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "service_price": r.service_price,
+                "service_time": r.service_time,
+            })
+        })
+        .collect();
+    let ratingid = pkgs
+        .iter()
+        .find(|r| r.service_time == 0)
+        .map(|r| r.id)
+        .or_else(|| pkgs.first().map(|r| r.id))
+        .unwrap_or(0);
+    let services = gap_extra::list_rating_services(db).await?;
+    let service_list: Vec<Value> = services
+        .into_iter()
+        .filter(|s| s.display == 1)
+        .map(|s| json!({ "id": s.id, "name": s.name, "display": s.display, "sort": s.sort }))
+        .collect();
+    let pricename = setting_repo::find(db, "integral_pricename")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let priceunit = setting_repo::find(db, "integral_priceunit")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    Ok(json!({
+        "rating_list": rating_list,
+        "ratingid": ratingid,
+        "service_list": service_list,
+        "integral_pricename": pricename,
+        "integral_priceunit": priceunit,
+    }))
+}
+
+async fn finance_jifen_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let userarr = json_str(body, "userarr");
+    if userarr.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let integral = json_i32(body, "integral");
+    if integral < 1 {
+        return Err(ApiError::business("admin_yunying_00006"));
+    }
+    let fs = json_i32(body, "fs");
+    let delta = if fs == 2 { -i64::from(integral) } else { i64::from(integral) };
+    let names: Vec<String> = userarr
+        .replace('，', ",")
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+    let members = gap_repo::find_members_by_usernames(state.db.pool(), &names).await?;
+    if members.is_empty() {
+        return Err(ApiError::business("wap_js_00103"));
+    }
+    let now = clock::now_ts();
+    let remark = json_str(body, "remark");
+    let price = json_str(body, "order_price");
+    let order_type = if fs == 2 { "admincut" } else { "adminpay" };
+    let kind = if fs == 2 { 5 } else { 2 };
+    for (uid, usertype, _) in &members {
+        if *usertype == 2 {
+            cstatis_repo::adjust_integral(state.db.pool(), *uid, delta).await?;
+        } else {
+            mstatis_repo::add_balance(state.db.pool(), *uid, delta, now).await?;
+        }
+        let oid = new_dingdan(now);
+        vip_repo::php_insert_order(
+            state.db.pool(),
+            vip_repo::PhpOrderInsert {
+                order_id: &oid,
+                uid: *uid,
+                order_type,
+                order_price: &price,
+                order_time: now,
+                order_state: 2,
+                order_remark: &remark,
+                r#type: kind,
+                rating: 0,
+                integral,
+                usertype: *usertype,
+            },
+        )
+        .await?;
+        pay_repo::php_insert_pay(
+            state.db.pool(),
+            &oid,
+            &integral.to_string(),
+            now,
+            *uid,
+            &remark,
+            1,
+            *usertype,
+        )
+        .await?;
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_comvip(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::business("model_00025"));
+    }
+    let ratingid = json_u64(body, "ratingid");
+    if ratingid == 0 {
+        return Err(ApiError::business("admin_yunying_00091"));
+    }
+    let vipprice = json_str(body, "vipprice");
+    if vipprice.is_empty() {
+        return Err(ApiError::business("common_01408"));
+    }
+    let pkgs = gap_repo::list_rating_packages(state.db.reader(), Some(ratingid), 0, 1).await?;
+    let pkg = pkgs
+        .into_iter()
+        .next()
+        .ok_or_else(|| ApiError::business("admin_yunying_00091"))?;
+    let now = clock::now_ts();
+    let etime = if pkg.service_time == 0 {
+        0
+    } else {
+        let s = json_str(body, "vipetime");
+        if s.is_empty() {
+            return Err(ApiError::business("model_00026"));
+        }
+        parse_date_ts(&s)
+    };
+    company_repo::set_rating(state.db.pool(), uid, pkg.id as i32, &pkg.name).await?;
+    company_repo::set_vip_times(state.db.pool(), uid, now, etime).await?;
+    if let Some(mut st) = cstatis_repo::find_admin(state.db.reader(), uid).await? {
+        st.rating = pkg.id as i32;
+        st.rating_name = pkg.name.clone();
+        st.vip_stime = now;
+        st.vip_etime = etime;
+        let _ = cstatis_repo::update_admin_quotas(state.db.pool(), uid, &st).await?;
+    }
+    let oid = new_dingdan(now);
+    let remark = json_str(body, "remark");
+    vip_repo::php_insert_order(
+        state.db.pool(),
+        vip_repo::PhpOrderInsert {
+            order_id: &oid,
+            uid,
+            order_type: "adminpay",
+            order_price: &vipprice,
+            order_time: now,
+            order_state: 2,
+            order_remark: &remark,
+            r#type: 1,
+            rating: pkg.id as i32,
+            integral: 0,
+            usertype: 2,
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_comservice(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::business("model_00025"));
+    }
+    let pkg = json_u64(body, "service_package");
+    if pkg == 0 {
+        return Err(ApiError::business("common_01307"));
+    }
+    let price = json_str(body, "service_price");
+    if price.is_empty() {
+        return Err(ApiError::business("common_01408"));
+    }
+    let detail = gap_extra::find_rating_detail(state.db.reader(), pkg)
+        .await?
+        .ok_or_else(|| ApiError::business("common_01237"))?;
+    cstatis_repo::add_service_nums(
+        state.db.pool(),
+        uid,
+        detail.job_num,
+        detail.breakjob_num,
+        detail.resume,
+        detail.interview,
+        detail.zph_num,
+        detail.top_num,
+        detail.rec_num,
+        detail.urgent_num,
+    )
+    .await?;
+    let now = clock::now_ts();
+    let oid = new_dingdan(now);
+    vip_repo::php_insert_order(
+        state.db.pool(),
+        vip_repo::PhpOrderInsert {
+            order_id: &oid,
+            uid,
+            order_type: "adminpay",
+            order_price: &price,
+            order_time: now,
+            order_state: 2,
+            order_remark: "common_01293",
+            r#type: 5,
+            rating: pkg as i32,
+            integral: 0,
+            usertype: 2,
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn finance_getservice(state: &AppState, body: &Value) -> AppResult<Value> {
+    let ty = json_u64(body, "type");
+    let rows = gap_extra::list_rating_details(state.db.reader(), ty).await?;
+    if rows.is_empty() {
+        return Err(ApiError::business("common_01237"));
+    }
+    Ok(json!(rows))
+}
+
+async fn finance_searchname(state: &AppState, body: &Value, by_user: bool) -> AppResult<Value> {
+    let kw = if by_user {
+        json_str(body, "username")
+    } else {
+        json_str(body, "comname")
+    };
+    if kw.is_empty() {
+        return Ok(json!({ "error": -1, "namelist": [] }));
+    }
+    let rows = vip_repo::search_member_companies(
+        state.db.reader(),
+        if by_user { Some(kw.as_str()) } else { None },
+        if by_user { None } else { Some(kw.as_str()) },
+    )
+    .await?;
+    if rows.is_empty() {
+        return Ok(json!({ "error": -1, "namelist": [] }));
+    }
+    let namelist: Vec<Value> = rows
+        .into_iter()
+        .map(|(uid, username, comname, rating_name, vipetime)| {
+            json!({
+                "uid": uid,
+                "username": username,
+                "comname": comname,
+                "rating_name": rating_name,
+                "vipetime": vipetime,
+                "vipetime_ymd": if vipetime > 0 { fmt_date(vipetime) } else { "common_01936".into() },
+            })
+        })
+        .collect();
+    Ok(json!({ "error": 0, "namelist": namelist }))
 }

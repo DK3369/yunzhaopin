@@ -705,6 +705,19 @@ pub async fn list_rating_details(
         .await
 }
 
+pub async fn find_rating_detail(
+    pool: &MySqlPool,
+    id: u64,
+) -> Result<Option<RatingServiceDetailRow>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {DETAIL_FIELDS} FROM phpyun_company_service_detail WHERE id=? AND COALESCE(deleted,0)=0 LIMIT 1"
+    );
+    sqlx::query_as::<_, RatingServiceDetailRow>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
 pub struct RatingDetailIn<'a> {
     pub id: Option<u64>,
     pub r#type: i32,
