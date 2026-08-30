@@ -3,11 +3,14 @@
 
 use std::collections::HashMap;
 
-use phpyun_core::utils::fmt_dt;
+use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_models::announcement::repo as announcement_repo;
 use phpyun_models::article::repo::{self as article_repo, ArticleFilter};
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::domain::repo as domain_repo;
+use phpyun_models::gongzhao::repo as gongzhao_repo;
+use phpyun_models::poster_template::repo as whb_repo;
 use phpyun_models::qna::repo as qna_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::special::repo as special_repo;
@@ -63,6 +66,17 @@ pub async fn dispatch(
         ("news", "type") => Ok(PhpOut::Data(news_type(state, body).await?)),
         ("news", "property") => news_property(state, body).await,
         ("news", "delpro") => news_delpro(state, body).await,
+        ("news", "delmenu") => news_delmenu(state, body).await,
+        ("news", "changeSon") => news_change_son(state, body).await,
+        ("gongzhao", "index") => Ok(PhpOut::Data(gongzhao_index(state, body).await?)),
+        ("gongzhao", "getGroup") => Ok(PhpOut::Data(gongzhao_get_group(state).await?)),
+        ("gongzhao", "add") => gongzhao_add(state, user, body).await,
+        ("gongzhao", "delete") => gongzhao_del(state, body).await,
+        ("gongzhao", "checksitedid") => gongzhao_checksitedid(state, body).await,
+        ("gongzhao", "setRec") => gongzhao_set_rec(state, body).await,
+        ("gongzhao", "whb") => Ok(PhpOut::Data(gongzhao_whb(state).await?)),
+        ("announce", "getGroup") => Ok(PhpOut::Data(announce_get_group(state).await?)),
+        ("announce", "checksitedid") => announce_checksitedid(state, body).await,
         ("question", "getGroup") => Ok(PhpOut::Data(question_get_group())),
         ("question", "index") => Ok(PhpOut::Data(question_index(state, body).await?)),
         ("question", "add") => Ok(PhpOut::Data(question_add(state, body).await?)),
@@ -692,6 +706,29 @@ fn days_ago_ts(days: i32) -> i64 {
     now - i64::from(days) * 86_400
 }
 
+fn parse_date_ts(s: &str) -> i64 {
+    let s = s.trim();
+    if s.is_empty() {
+        return 0;
+    }
+    if let Ok(n) = s.parse::<i64>() {
+        return n;
+    }
+    chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d")
+        .ok()
+        .and_then(|d| d.and_hms_opt(0, 0, 0))
+        .map(|dt| dt.and_utc().timestamp())
+        .unwrap_or(0)
+}
+
+fn pic_url(base: &str, pic: &str) -> String {
+    if pic.is_empty() || pic.starts_with("http") {
+        pic.to_string()
+    } else {
+        format!("{}/{}", base.trim_end_matches('/'), pic.trim_start_matches('/'))
+    }
+}
+
 async fn news_index(state: &AppState, body: &Value) -> AppResult<Value> {
     let (page, per, offset, limit) = page_of(body);
     let kw = json_str(body, "keyword");
@@ -1004,6 +1041,190 @@ async fn news_delpro(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let ids = ids_of(body);
     article_repo::delete_properties(state.db.pool(), &ids).await?;
     Ok(PhpOut::Message("ok"))
+}
+
+async fn news_delmenu(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("member_com_00320"));
+    }
+    article_repo::set_group_is_menu(state.db.pool(), id, 0).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn news_change_son(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    let nid = json_i32(body, "nid");
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01236"));
+    }
+    if ids.iter().any(|id| *id == nid as u64) {
+        return Err(ApiError::business("admin_neirong_00011"));
+    }
+    article_repo::set_group_keyid(state.db.pool(), &ids, nid).await?;
+    Ok(PhpOut::Message("admin_neirong_00022"))
+}
+
+async fn gongzhao_get_group(state: &AppState) -> AppResult<Value> {
+    let domains = domain_repo::list_all(state.db.reader()).await?;
+    Ok(json!({
+        "Dname": domain_object(&domains),
+        "today": fmt_date(clock::now_ts()),
+    }))
+}
+
+async fn gongzhao_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let end = json_i32(body, "end");
+    let order_col = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gongzhao_repo::GongzhaoAdminFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        datetime_min: if end > 0 { Some(days_ago_ts(end)) } else { None },
+        order_col: if order_col.is_empty() { "id" } else { order_col.as_str() },
+        order_dir: if order_dir.is_empty() { "desc" } else { order_dir.as_str() },
+    };
+    let db = state.db.reader();
+    let rows = gongzhao_repo::list_admin(db, &f, offset, limit).await?;
+    let total = gongzhao_repo::count_admin(db, &f).await?;
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "keyword": r.keyword,
+                "description": r.description,
+                "content": r.content,
+                "pic": r.pic,
+                "pic_n": pic_url(&base, &r.pic),
+                "datetime": r.datetime,
+                "datetime_n": fmt_date(r.datetime),
+                "startime": r.startime,
+                "startime_n": fmt_date(r.startime),
+                "endtime": r.endtime,
+                "endtime_n": fmt_date(r.endtime),
+                "did": r.did.to_string(),
+                "rec": r.rec,
+                "isRec": r.rec == 1,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn gongzhao_add(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    if has_flag(body, "add") {
+        return Ok(PhpOut::Data(json!({})));
+    }
+    let title = json_str(body, "title");
+    if title.is_empty() {
+        return Err(ApiError::business("admin_01329"));
+    }
+    let start_s = json_str(body, "startime_n");
+    let end_s = json_str(body, "endtime_n");
+    let startime = if start_s.is_empty() {
+        days_ago_ts(1)
+    } else {
+        parse_date_ts(&start_s)
+    };
+    let endtime = parse_date_ts(&end_s);
+    admin_cms_service::upsert_gongzhao(
+        state,
+        user,
+        admin_cms_service::GongzhaoUpsertIn {
+            id: Some(json_u64(body, "id")).filter(|n| *n > 0),
+            title: &title,
+            keyword: &json_str(body, "keyword"),
+            description: &json_str(body, "description"),
+            content: &amp(&json_str(body, "content")),
+            pic: &json_str(body, "pic"),
+            startime,
+            endtime,
+            did: json_i32(body, "did"),
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn gongzhao_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    gongzhao_repo::delete_ids(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn gongzhao_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01236"));
+    }
+    gongzhao_repo::set_did_ids(state.db.pool(), &ids, json_i32(body, "did")).await?;
+    Ok(PhpOut::Message("admin_model_00192"))
+}
+
+async fn gongzhao_set_rec(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "del");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let rec = json_i32(body, "rec");
+    gongzhao_repo::set_rec(state.db.pool(), id, if rec == 1 { 1 } else { 0 }).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn gongzhao_whb(state: &AppState) -> AppResult<Value> {
+    let base = preview_base(state);
+    let rows = whb_repo::list_admin_by_type(state.db.reader(), 4).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .filter(|r| r.isopen == 1)
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "pic": r.pic,
+                "pic_n": pic_url(&base, &r.pic),
+                "sort": r.sort,
+                "isopen": r.isopen,
+            })
+        })
+        .collect();
+    Ok(Value::Array(list))
+}
+
+async fn announce_get_group(state: &AppState) -> AppResult<Value> {
+    let domains = domain_repo::list_all(state.db.reader()).await?;
+    Ok(json!({
+        "search_list": [
+            {"param": "end", "name": "admin_user_weipin_00030", "value": {
+                "1": "common_01940",
+                "3": "admin_user_00179",
+                "7": "admin_user_00178",
+                "15": "admin_user_00180",
+                "30": "admin_user_00175",
+            }},
+        ],
+        "domainList": domain_object(&domains),
+    }))
+}
+
+async fn announce_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    announcement_repo::set_did_ids(state.db.pool(), &ids, json_i32(body, "did")).await?;
+    Ok(PhpOut::Message("admin_model_00191"))
 }
 
 fn question_get_group() -> Value {

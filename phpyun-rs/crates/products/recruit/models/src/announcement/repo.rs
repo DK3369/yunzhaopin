@@ -143,3 +143,22 @@ pub async fn upsert(pool: &MySqlPool, a: AnnouncementUpsert<'_>) -> Result<u64, 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     soft_delete::mark_id(pool, "phpyun_admin_announcement", id).await
 }
+
+pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = sqlx::QueryBuilder::new("UPDATE phpyun_admin_announcement SET did = ");
+    qb.push_bind(did);
+    qb.push(" WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}

@@ -13,7 +13,8 @@
 
 use super::entity::Gongzhao;
 use crate::soft_delete::{self, PREDICATE};
-use sqlx::MySqlPool;
+use sqlx::{FromRow, MySqlPool, QueryBuilder};
+use serde::{Deserialize, Serialize};
 
 const FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -101,7 +102,7 @@ pub async fn upsert(pool: &MySqlPool, a: GongzhaoUpsert<'_>) -> Result<u64, sqlx
         sqlx::query(
             r#"UPDATE phpyun_gongzhao
                SET title = ?, keyword = ?, description = ?, content = ?, pic = ?,
-                   startime = ?, endtime = ?
+                   startime = ?, endtime = ?, did = ?
                WHERE id = ?"#,
         )
         .bind(a.title)
@@ -111,6 +112,7 @@ pub async fn upsert(pool: &MySqlPool, a: GongzhaoUpsert<'_>) -> Result<u64, sqlx
         .bind(a.pic)
         .bind(a.startime)
         .bind(a.endtime)
+        .bind(a.did)
         .bind(id)
         .execute(pool)
         .await?;
@@ -137,4 +139,150 @@ pub async fn upsert(pool: &MySqlPool, a: GongzhaoUpsert<'_>) -> Result<u64, sqlx
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     soft_delete::mark_id(pool, "phpyun_gongzhao", id).await
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct GongzhaoAdminRow {
+    pub id: u64,
+    pub title: String,
+    pub keyword: String,
+    pub description: String,
+    pub content: String,
+    pub pic: String,
+    pub datetime: i64,
+    pub startime: i64,
+    pub endtime: i64,
+    pub did: i32,
+    pub rec: i32,
+}
+
+pub struct GongzhaoAdminFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub datetime_min: Option<i64>,
+    pub order_col: &'a str,
+    pub order_dir: &'a str,
+}
+
+fn gongzhao_order_sql(col: &str, dir: &str) -> &'static str {
+    let desc = !dir.eq_ignore_ascii_case("asc");
+    match col {
+        "datetime" => {
+            if desc {
+                "datetime DESC, id DESC"
+            } else {
+                "datetime ASC, id ASC"
+            }
+        }
+        "startime" => {
+            if desc {
+                "startime DESC, id DESC"
+            } else {
+                "startime ASC, id ASC"
+            }
+        }
+        "endtime" => {
+            if desc {
+                "endtime DESC, id DESC"
+            } else {
+                "endtime ASC, id ASC"
+            }
+        }
+        "title" => {
+            if desc {
+                "title DESC, id DESC"
+            } else {
+                "title ASC, id ASC"
+            }
+        }
+        _ => {
+            if desc {
+                "id DESC"
+            } else {
+                "id ASC"
+            }
+        }
+    }
+}
+
+const ADMIN_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    COALESCE(title, '') AS title, \
+    COALESCE(keyword, '') AS keyword, \
+    COALESCE(description, '') AS description, \
+    COALESCE(content, '') AS content, \
+    COALESCE(pic, '') AS pic, \
+    CAST(COALESCE(datetime, 0) AS SIGNED) AS datetime, \
+    CAST(COALESCE(startime, 0) AS SIGNED) AS startime, \
+    CAST(COALESCE(endtime, 0) AS SIGNED) AS endtime, \
+    CAST(COALESCE(did, 0) AS SIGNED) AS did, \
+    CAST(COALESCE(rec, 0) AS SIGNED) AS rec";
+
+fn push_gongzhao_admin_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &GongzhaoAdminFilter<'_>) {
+    qb.push(format!(" FROM phpyun_gongzhao WHERE {PREDICATE}"));
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(min) = f.datetime_min.filter(|n| *n > 0) {
+        qb.push(" AND datetime >= ");
+        qb.push_bind(min);
+    }
+}
+
+pub async fn list_admin(
+    pool: &MySqlPool,
+    f: &GongzhaoAdminFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<GongzhaoAdminRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!("SELECT {ADMIN_FIELDS}"));
+    push_gongzhao_admin_where(&mut qb, f);
+    qb.push(" ORDER BY ");
+    qb.push(gongzhao_order_sql(f.order_col, f.order_dir));
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_admin(pool: &MySqlPool, f: &GongzhaoAdminFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_gongzhao_admin_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    soft_delete::mark_ids(pool, "phpyun_gongzhao", ids).await
+}
+
+pub async fn set_rec(pool: &MySqlPool, id: u64, rec: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_gongzhao SET rec = ? WHERE id = ?")
+            .bind(rec)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_gongzhao SET did = ");
+    qb.push_bind(did);
+    qb.push(" WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }

@@ -466,6 +466,36 @@ pub async fn insert_group(
     Ok(res.last_insert_id())
 }
 
+pub async fn set_group_is_menu(pool: &MySqlPool, id: u64, is_menu: i32) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_news_group SET is_menu = ? WHERE id = ?")
+            .bind(is_menu)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn set_group_keyid(pool: &MySqlPool, ids: &[u64], keyid: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_news_group SET keyid = ");
+    qb.push_bind(keyid);
+    qb.push(" WHERE id IN (");
+    let mut first = true;
+    for id in ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
 pub async fn patch_group(
     pool: &MySqlPool,
     id: u64,
