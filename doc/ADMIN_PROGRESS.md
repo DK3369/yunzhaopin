@@ -3,8 +3,8 @@
 > 2026-08-30 · 分支 `feat/frontend-backend-split`  
 > 总方案：[FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T0–T14 勾选偏旧，细进度以本文为准）  
 > UI 约定：[ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)  
-> Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)、[`.cursor/plans/admin_微聘兼职名企.plan.md`](../.cursor/plans/admin_微聘兼职名企.plan.md)  
-> 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)、[plans/2026-08-30-admin-weipin-part-hotjob.md](./plans/2026-08-30-admin-weipin-part-hotjob.md)
+> Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)（上午）、[`.cursor/plans/admin_现状盘点_晚.plan.md`](../.cursor/plans/admin_现状盘点_晚.plan.md)（`d03fe9f6` 后）、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)、[`.cursor/plans/admin_微聘兼职名企.plan.md`](../.cursor/plans/admin_微聘兼职名企.plan.md)  
+> 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)、[plans/2026-08-30-admin-weipin-part-hotjob.md](./plans/2026-08-30-admin-weipin-part-hotjob.md)、[plans/2026-08-30-admin-status-evening.md](./plans/2026-08-30-admin-status-evening.md)
 
 ## 文档落盘
 
@@ -52,7 +52,7 @@ flowchart LR
 
 - `web/apps/admin/app/pages/`：**121** 个 path 页，对齐 PHP `router.js`。
 - UI：`web/apps/admin/app/admin-php/`（PHP Vue 语法迁入）。
-- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题/公招/广告/财务走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
+- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题/公招/广告/财务/微聘/兼职/名企/单页/职位分类/微信 savenav 走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
 - 刻意不做：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`。
 
 ## Rust 后台 API
@@ -124,14 +124,22 @@ flowchart LR
 - 会员下单 `POST /v1/mcenter/vip/orders`：`channel=alipay` 时先校验配置再插待支付单，返回 `pay_url`（legacy `create_direct_pay_by_user`，notify `{web_base_url}/callback/alipay`）。`/user/pay` 有 `pay_url` 则跳转，不再自动 mock-paid。
 - 未做：微信 unifiedorder；沙箱真实付款未跑通。支付 notify handler 原本就在。
 
+## 和「已经能用」的差别
+
+页面骨架（121 path）早就在；缺口主要是 **具名 PHP action 是否打到正确 Rust**。招聘/内容/财务/微聘主路径多数已精确映射。未映射的 `httpPost` 会返回「未映射的后台接口」，不会再静默打到列表。总方案 T11 仍写「118 页」，以本文 121 为准。
+
 ## 下一项（本波之后）
 
-兼职/once 图片上传栈、微信 creatnav 调微信 API、校园/猎头/培训、`database`/`generate_*`/`admin_uc`。
+- 兼职/once **图片上传栈**（现无 storage 则 `upload_not_supported`）
+- 微信 **creatnav** 调微信 API（savenav 本地菜单已接，同步服务器未接）
+- 其余 system 分类（城市/行业等）多数仍是 list 启发式，只有职位分类 ajax 收口
+
+刻意不做、不要排进下一批：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`、卸 php-fpm、删 `uploads/`、沙箱真单。
 
 ## 仍弱或故意不做
 
 - RBAC 不解析 `group_power`；导出是 CSV 不是 OLE xls
-- 微信自定义菜单能力仍薄
+- 微信自定义菜单：savenav 本地已接；`a=index`/`a=save` 仍可能落到 wx-nav 列表/upsert（配置页与菜单表混用启发式）；creatnav 未接微信 API
 - 支付：**支付宝页跳已接，沙箱真单未验收**；微信收款未接
 - php-fpm 未卸，`uploads/` 未删
 - jobs 库公告测试行 `id=2` 已 `deleted=1`（列表不可见）
