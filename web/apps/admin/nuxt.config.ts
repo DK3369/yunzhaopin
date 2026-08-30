@@ -16,6 +16,9 @@ function phpAdminEpCompat() {
   }
 }
 
+/** New folder each deploy so Cloudflare cannot mix an old entry with deleted chunks. */
+const adminAssetTag = (process.env.ADMIN_ASSET_TAG || 'dev').replace(/[^a-zA-Z0-9_-]/g, '') || 'dev'
+
 export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   ssr: false,
@@ -41,7 +44,8 @@ export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@element-plus/nuxt', '@nuxtjs/i18n'],
   routeRules: {
     '/favicon.v1.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=60, must-revalidate' } },
+    '/_n/**': { headers: { 'cache-control': 'public, max-age=60, must-revalidate' } },
     '/**': { headers: { 'cache-control': 'no-store' } },
   },
   i18n: {
@@ -66,7 +70,9 @@ export default defineNuxtConfig({
   },
   app: {
     baseURL: '/admin/',
+    buildAssetsDir: `/_n/${adminAssetTag}/`,
     head: {
+      meta: [{ name: 'admin-build', content: adminAssetTag }],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.v1.ico' },
         { rel: 'stylesheet', href: '/admin/php-admin/js/element-icons.css' },
