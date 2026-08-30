@@ -87,9 +87,7 @@ export default defineNuxtConfig({
       script: [
         {
           innerHTML:
-            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";if(!location.search.includes("b=")){location.replace("/admin/?b=' +
-            adminAssetTag +
-            '");}',
+            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";',
         },
         { src: '/admin/php-admin/js/jquery.min.js' },
         { src: '/admin/php-admin/js/echarts.min.js' },
