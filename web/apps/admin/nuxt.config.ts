@@ -42,6 +42,11 @@ export default defineNuxtConfig({
     },
   },
   modules: ['@pinia/nuxt', '@element-plus/nuxt', '@nuxtjs/i18n'],
+  runtimeConfig: {
+    public: {
+      adminAssetTag,
+    },
+  },
   routeRules: {
     '/favicon.v1.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=60, must-revalidate' } },
@@ -82,7 +87,9 @@ export default defineNuxtConfig({
       script: [
         {
           innerHTML:
-            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";',
+            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";if(!location.search.includes("b=")){location.replace("/admin/?b=' +
+            adminAssetTag +
+            '");}',
         },
         { src: '/admin/php-admin/js/jquery.min.js' },
         { src: '/admin/php-admin/js/echarts.min.js' },
