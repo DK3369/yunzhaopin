@@ -2,6 +2,7 @@
 
 > 2026-08-27 · 分支 `feat/frontend-backend-split`
 > 总方案仍见 [FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T3 crate 拆分、T11 后台）。本文是 **T11 的执行约定**：按 PHP 源码 1:1 迁 UI 与接口，不自造页面。
+> **做到哪了**见 [ADMIN_PROGRESS.md](./ADMIN_PROGRESS.md)。
 
 ## 已定接口（不要改）
 

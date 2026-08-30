@@ -588,6 +588,8 @@ zzzz.com/
 
 ---
 
+后台细进度（Nuxt 页、phpMap、伪删除、jobs 库、`:3003`）见 **[ADMIN_PROGRESS.md](./ADMIN_PROGRESS.md)**，不要只看下面 T11 勾选。
+
 ## 9. 进度追踪
 
 - [x] T0 修复终端环境（2026-08-26：Cursor 内置 Shell 仍可能卡死；cargo/pnpm 用子代理。Node 用 `/var/tmp/node-dist/node-v22.22.1-linux-arm64` + corepack pnpm 10.14.0。`CARGO_TARGET_DIR` 与 `TMPDIR=/var/tmp/cargo-tmp`）
