@@ -221,3 +221,62 @@ pub async fn delete_kind(pool: &MySqlPool, id: u64, kind: &str) -> Result<u64, s
     let res = sqlx::query(&sql).bind(id).bind(id).execute(pool).await?;
     Ok(res.rows_affected())
 }
+
+pub async fn patch_job_class(
+    pool: &MySqlPool,
+    id: u64,
+    name: Option<&str>,
+    sort: Option<i32>,
+    e_name: Option<&str>,
+    s_name: Option<&str>,
+    rec: Option<i32>,
+) -> Result<u64, sqlx::Error> {
+    if name.is_none() && sort.is_none() && e_name.is_none() && s_name.is_none() && rec.is_none() {
+        return Ok(0);
+    }
+    let mut qb = sqlx::QueryBuilder::new("UPDATE phpyun_job_class SET ");
+    let mut first = true;
+    if let Some(v) = name {
+        if !first {
+            qb.push(", ");
+        }
+        qb.push("name = ");
+        qb.push_bind(v);
+        first = false;
+    }
+    if let Some(v) = sort {
+        if !first {
+            qb.push(", ");
+        }
+        qb.push("sort = ");
+        qb.push_bind(v);
+        first = false;
+    }
+    if let Some(v) = e_name {
+        if !first {
+            qb.push(", ");
+        }
+        qb.push("e_name = ");
+        qb.push_bind(v);
+        first = false;
+    }
+    if let Some(v) = s_name {
+        if !first {
+            qb.push(", ");
+        }
+        qb.push("s_name = ");
+        qb.push_bind(v);
+        first = false;
+    }
+    if let Some(v) = rec {
+        if !first {
+            qb.push(", ");
+        }
+        qb.push("rec = ");
+        qb.push_bind(v);
+    }
+    qb.push(" WHERE id = ");
+    qb.push_bind(id);
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}

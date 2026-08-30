@@ -501,3 +501,261 @@ pub async fn cancel_pending_once_order(
     .await?;
     Ok(res.rows_affected())
 }
+
+// ---------- admin php-content ----------
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct PriceGearRow {
+    pub id: u64,
+    pub days: i32,
+    pub price: f64,
+}
+
+pub async fn list_price_gears(pool: &MySqlPool) -> Result<Vec<PriceGearRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(days, 0) AS SIGNED) AS days, \
+         (COALESCE(price, 0) + 0e0) AS price \
+         FROM phpyun_once_price_gear ORDER BY days ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn find_price_gear_by_days(
+    pool: &MySqlPool,
+    days: i32,
+    except_id: u64,
+) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_once_price_gear \
+         WHERE days = ? AND id <> ? LIMIT 1",
+    )
+    .bind(days)
+    .bind(except_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
+pub async fn insert_price_gear(pool: &MySqlPool, days: i32, price: f64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("INSERT INTO phpyun_once_price_gear (days, price) VALUES (?, ?)")
+        .bind(days)
+        .bind(price)
+        .execute(pool)
+        .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn update_price_gear(
+    pool: &MySqlPool,
+    id: u64,
+    days: Option<i32>,
+    price: Option<f64>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_once_price_gear SET \
+            days = COALESCE(?, days), \
+            price = COALESCE(?, price) \
+         WHERE id = ?",
+    )
+    .bind(days)
+    .bind(price)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn delete_price_gears(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_once_price_gear WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct AdminOnceRow {
+    pub id: u64,
+    pub title: String,
+    pub companyname: String,
+    pub linkman: String,
+    pub phone: String,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: String,
+    pub require: String,
+    pub salary: String,
+    pub password: String,
+    pub status: i32,
+    pub ctime: i64,
+    pub edate: i64,
+    pub did: i32,
+    pub pic: String,
+    pub yyzz: String,
+    pub hits: i64,
+}
+
+const ADMIN_ONCE_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    COALESCE(title, '') AS title, \
+    COALESCE(companyname, '') AS companyname, \
+    COALESCE(linkman, '') AS linkman, \
+    COALESCE(phone, '') AS phone, \
+    CAST(COALESCE(provinceid, 0) AS SIGNED) AS provinceid, \
+    CAST(COALESCE(cityid, 0) AS SIGNED) AS cityid, \
+    CAST(COALESCE(three_cityid, 0) AS SIGNED) AS three_cityid, \
+    COALESCE(address, '') AS address, \
+    COALESCE(`require`, '') AS `require`, \
+    COALESCE(salary, '') AS salary, \
+    COALESCE(password, '') AS password, \
+    CAST(COALESCE(status, 0) AS SIGNED) AS status, \
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime, \
+    CAST(COALESCE(edate, 0) AS SIGNED) AS edate, \
+    CAST(COALESCE(did, 0) AS SIGNED) AS did, \
+    COALESCE(pic, '') AS pic, \
+    COALESCE(yyzz, '') AS yyzz, \
+    CAST(COALESCE(hits, 0) AS SIGNED) AS hits";
+
+pub async fn find_admin(pool: &MySqlPool, id: u64) -> Result<Option<AdminOnceRow>, sqlx::Error> {
+    let sql = format!("SELECT {ADMIN_ONCE_FIELDS} FROM phpyun_once_job WHERE id = ? LIMIT 1");
+    sqlx::query_as::<_, AdminOnceRow>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub struct AdminOnceSave<'a> {
+    pub title: &'a str,
+    pub companyname: &'a str,
+    pub linkman: &'a str,
+    pub phone: &'a str,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: &'a str,
+    pub require: &'a str,
+    pub salary: &'a str,
+    pub password_md5: Option<&'a str>,
+    pub edate: i64,
+    pub did: i32,
+    pub now: i64,
+}
+
+pub async fn admin_save(
+    pool: &MySqlPool,
+    id: u64,
+    s: &AdminOnceSave<'_>,
+) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        sqlx::query(
+            "UPDATE phpyun_once_job SET title=?, companyname=?, linkman=?, phone=?, \
+             provinceid=?, cityid=?, three_cityid=?, address=?, `require`=?, salary=?, \
+             password=COALESCE(?, password), edate=?, status=1, did=? WHERE id=?",
+        )
+        .bind(s.title)
+        .bind(s.companyname)
+        .bind(s.linkman)
+        .bind(s.phone)
+        .bind(s.provinceid)
+        .bind(s.cityid)
+        .bind(s.three_cityid)
+        .bind(s.address)
+        .bind(s.require)
+        .bind(s.salary)
+        .bind(s.password_md5)
+        .bind(s.edate)
+        .bind(s.did)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_once_job \
+             (title, companyname, linkman, phone, provinceid, cityid, three_cityid, address, \
+              `require`, salary, password, status, did, ctime, edate) \
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)",
+        )
+        .bind(s.title)
+        .bind(s.companyname)
+        .bind(s.linkman)
+        .bind(s.phone)
+        .bind(s.provinceid)
+        .bind(s.cityid)
+        .bind(s.three_cityid)
+        .bind(s.address)
+        .bind(s.require)
+        .bind(s.salary)
+        .bind(s.password_md5.unwrap_or(""))
+        .bind(s.did)
+        .bind(s.now)
+        .bind(s.edate)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_once_job WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn extend_edate(pool: &MySqlPool, ids: &[u64], days: i32, now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() || days <= 0 {
+        return Ok(0);
+    }
+    let add = i64::from(days) * 86_400;
+    let mut n = 0u64;
+    for id in ids {
+        let row: Option<(i64,)> =
+            sqlx::query_as("SELECT CAST(COALESCE(edate, 0) AS SIGNED) FROM phpyun_once_job WHERE id = ?")
+                .bind(*id)
+                .fetch_optional(pool)
+                .await?;
+        let Some((edate,)) = row else {
+            continue;
+        };
+        let next = if edate < now { now + add } else { edate + add };
+        let res = sqlx::query("UPDATE phpyun_once_job SET edate = ? WHERE id = ?")
+            .bind(next)
+            .bind(*id)
+            .execute(pool)
+            .await?;
+        n += res.rows_affected();
+    }
+    Ok(n)
+}
+
+pub async fn refresh_ctime(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_once_job SET ctime = ");
+    qb.push_bind(now);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}

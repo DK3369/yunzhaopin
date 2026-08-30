@@ -292,3 +292,94 @@ pub async fn admin_set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<
         .await?;
     Ok(res.rows_affected())
 }
+
+pub struct AdminTinySave<'a> {
+    pub username: &'a str,
+    pub sex: i32,
+    pub exp: i32,
+    pub job: &'a str,
+    pub mobile: &'a str,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub production: &'a str,
+    pub password_md5: Option<&'a str>,
+    pub now: i64,
+    pub did: u32,
+}
+
+pub async fn admin_save(pool: &MySqlPool, id: u64, s: &AdminTinySave<'_>) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        sqlx::query(
+            "UPDATE phpyun_resume_tiny SET username=?, sex=?, exp=?, job=?, mobile=?, \
+             provinceid=?, cityid=?, three_cityid=?, production=?, \
+             password=COALESCE(?, password), status=1, lastupdate=? WHERE id=?",
+        )
+        .bind(s.username)
+        .bind(s.sex)
+        .bind(s.exp)
+        .bind(s.job)
+        .bind(s.mobile)
+        .bind(s.provinceid)
+        .bind(s.cityid)
+        .bind(s.three_cityid)
+        .bind(s.production)
+        .bind(s.password_md5)
+        .bind(s.now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        create(
+            pool,
+            &CreateTiny {
+                username: s.username,
+                sex: s.sex,
+                exp: s.exp,
+                job: s.job,
+                mobile: s.mobile,
+                password_md5: s.password_md5.unwrap_or(""),
+                provinceid: s.provinceid,
+                cityid: s.cityid,
+                three_cityid: s.three_cityid,
+                production: s.production,
+                status: 1,
+                login_ip: "",
+                now: s.now,
+                did: s.did,
+            },
+        )
+        .await
+    }
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_resume_tiny WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn refresh_ids(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_tiny SET lastupdate = ");
+    qb.push_bind(now);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}

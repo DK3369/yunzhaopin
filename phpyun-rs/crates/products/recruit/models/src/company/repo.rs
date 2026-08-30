@@ -814,6 +814,46 @@ pub async fn hotjob_delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error
     Ok(res.rows_affected())
 }
 
+pub async fn hotjob_find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<HotJobRow>, sqlx::Error> {
+    sqlx::query_as::<_, HotJobRow>(
+        r#"SELECT CAST(id AS UNSIGNED) AS id,
+                  CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid,
+                  COALESCE(username, '') AS username,
+                  COALESCE(hot_pic, '') AS hot_pic,
+                  CAST(COALESCE(time_start, 0) AS SIGNED) AS time_start,
+                  CAST(COALESCE(time_end, 0) AS SIGNED) AS time_end,
+                  CAST(COALESCE(sort, 0) AS SIGNED) AS sort,
+                  COALESCE(beizhu, '') AS beizhu,
+                  CAST(COALESCE(rating_id, 0) AS SIGNED) AS rating_id
+           FROM phpyun_hotjob
+           WHERE uid = ? AND COALESCE(deleted,0)=0
+           ORDER BY id DESC LIMIT 1"#,
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn hotjob_find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<HotJobRow>, sqlx::Error> {
+    sqlx::query_as::<_, HotJobRow>(
+        r#"SELECT CAST(id AS UNSIGNED) AS id,
+                  CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid,
+                  COALESCE(username, '') AS username,
+                  COALESCE(hot_pic, '') AS hot_pic,
+                  CAST(COALESCE(time_start, 0) AS SIGNED) AS time_start,
+                  CAST(COALESCE(time_end, 0) AS SIGNED) AS time_end,
+                  CAST(COALESCE(sort, 0) AS SIGNED) AS sort,
+                  COALESCE(beizhu, '') AS beizhu,
+                  CAST(COALESCE(rating_id, 0) AS SIGNED) AS rating_id
+           FROM phpyun_hotjob
+           WHERE id = ? AND COALESCE(deleted,0)=0
+           LIMIT 1"#,
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 pub struct CompanyExpireRow {
     pub uid: u64,

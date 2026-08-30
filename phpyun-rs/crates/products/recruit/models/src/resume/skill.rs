@@ -90,3 +90,40 @@ pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Er
         .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn php_upsert(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    eid: u64,
+    name: &str,
+    ing: i32,
+    longtime: i32,
+) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        sqlx::query(
+            "UPDATE phpyun_resume_skill SET name = ?, ing = ?, longtime = ? WHERE id = ? AND uid = ?",
+        )
+        .bind(name)
+        .bind(ing)
+        .bind(longtime)
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_resume_skill (uid, eid, name, skill, ing, longtime) \
+             VALUES (?, ?, ?, 0, ?, ?)",
+        )
+        .bind(uid)
+        .bind(eid)
+        .bind(name)
+        .bind(ing)
+        .bind(longtime)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}

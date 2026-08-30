@@ -640,3 +640,188 @@ pub async fn admin_set_state(
         .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn get_statusbody(pool: &MySqlPool, id: u64) -> Result<String, sqlx::Error> {
+    let row: Option<(String,)> =
+        sqlx::query_as("SELECT COALESCE(statusbody, '') FROM phpyun_partjob WHERE id = ?")
+            .bind(id)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.map(|r| r.0).unwrap_or_default())
+}
+
+pub async fn count_pending_except(pool: &MySqlPool, except_id: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_partjob WHERE state = 0 AND id <> ?",
+    )
+    .bind(except_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub struct AdminPartSave<'a> {
+    pub name: &'a str,
+    pub r#type: i32,
+    pub sdate: i64,
+    pub edate: i64,
+    pub worktime: &'a str,
+    pub number: i32,
+    pub sex: i32,
+    pub salary: i32,
+    pub salary_type: i32,
+    pub billing_cycle: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: &'a str,
+    pub r_status: i32,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub content: &'a str,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub state: i32,
+    pub now: i64,
+}
+
+pub async fn admin_update_info(
+    pool: &MySqlPool,
+    id: u64,
+    s: &AdminPartSave<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_partjob SET name=?, `type`=?, sdate=?, edate=?, worktime=?, number=?, sex=?, \
+         salary=?, salary_type=?, billing_cycle=?, provinceid=?, cityid=?, three_cityid=?, address=?, \
+         r_status=?, x=?, y=?, content=?, linkman=?, linktel=?, state=?, lastupdate=? WHERE id=?",
+    )
+    .bind(s.name)
+    .bind(s.r#type)
+    .bind(s.sdate)
+    .bind(s.edate)
+    .bind(s.worktime)
+    .bind(s.number)
+    .bind(s.sex)
+    .bind(s.salary)
+    .bind(s.salary_type)
+    .bind(s.billing_cycle)
+    .bind(s.provinceid)
+    .bind(s.cityid)
+    .bind(s.three_cityid)
+    .bind(s.address)
+    .bind(s.r_status)
+    .bind(s.x)
+    .bind(s.y)
+    .bind(s.content)
+    .bind(s.linkman)
+    .bind(s.linktel)
+    .bind(s.state)
+    .bind(s.now)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_publish_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_partjob SET status = ? WHERE id = ?")
+        .bind(status)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_rec_time(pool: &MySqlPool, ids: &[u64], rec_time: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_partjob SET rec_time = ");
+    qb.push_bind(rec_time);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn add_rec_days(pool: &MySqlPool, ids: &[u64], days: i32, now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() || days <= 0 {
+        return Ok(0);
+    }
+    let add = i64::from(days) * 86_400;
+    let mut n = 0u64;
+    for id in ids {
+        let row: Option<(i64,)> = sqlx::query_as(
+            "SELECT CAST(COALESCE(rec_time, 0) AS SIGNED) FROM phpyun_partjob WHERE id = ?",
+        )
+        .bind(*id)
+        .fetch_optional(pool)
+        .await?;
+        let Some((rec_time,)) = row else {
+            continue;
+        };
+        let next = if rec_time < now { now + add } else { rec_time + add };
+        let res = sqlx::query("UPDATE phpyun_partjob SET rec_time = ? WHERE id = ?")
+            .bind(next)
+            .bind(*id)
+            .execute(pool)
+            .await?;
+        n += res.rows_affected();
+    }
+    Ok(n)
+}
+
+pub async fn extend_edate(pool: &MySqlPool, ids: &[u64], days: i32, now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() || days <= 0 {
+        return Ok(0);
+    }
+    let add = i64::from(days) * 86_400;
+    let mut n = 0u64;
+    for id in ids {
+        let row: Option<(i64, i32)> = sqlx::query_as(
+            "SELECT CAST(COALESCE(edate, 0) AS SIGNED), CAST(COALESCE(state, 0) AS SIGNED) \
+             FROM phpyun_partjob WHERE id = ?",
+        )
+        .bind(*id)
+        .fetch_optional(pool)
+        .await?;
+        let Some((edate, state)) = row else {
+            continue;
+        };
+        if edate == 0 {
+            continue;
+        }
+        let next = if state == 2 || edate < now {
+            now + add
+        } else {
+            edate + add
+        };
+        let res = sqlx::query("UPDATE phpyun_partjob SET edate = ? WHERE id = ?")
+            .bind(next)
+            .bind(*id)
+            .execute(pool)
+            .await?;
+        n += res.rows_affected();
+    }
+    Ok(n)
+}
+
+pub async fn refresh_lastupdate(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_partjob SET lastupdate = ");
+    qb.push_bind(now);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}

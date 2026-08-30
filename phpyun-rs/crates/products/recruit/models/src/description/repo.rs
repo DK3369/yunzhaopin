@@ -184,3 +184,163 @@ pub async fn upsert(pool: &MySqlPool, d: &UpsertDesc<'_>, now: i64) -> Result<u6
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     soft_delete::mark_id(pool, "phpyun_description", id).await
 }
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct PhpDescRow {
+    pub id: u64,
+    pub name: String,
+    pub title: String,
+    pub content: String,
+    pub is_type: i32,
+    pub is_nav: i32,
+    pub sort: i32,
+    pub url: String,
+    pub ctime: i64,
+    pub nid: u64,
+    pub keyword: String,
+    pub descs: String,
+}
+
+const PHP_DESC_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    COALESCE(name, '') AS name, \
+    COALESCE(title, '') AS title, \
+    COALESCE(content, '') AS content, \
+    CAST(COALESCE(is_type, 0) AS SIGNED) AS is_type, \
+    CAST(COALESCE(is_nav, 0) AS SIGNED) AS is_nav, \
+    CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
+    COALESCE(url, '') AS url, \
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime, \
+    CAST(COALESCE(nid, 0) AS UNSIGNED) AS nid, \
+    COALESCE(keyword, '') AS keyword, \
+    COALESCE(descs, '') AS descs";
+
+pub async fn php_list(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    is_type: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpDescRow>, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new("SELECT ");
+    qb.push(PHP_DESC_FIELDS);
+    qb.push(" FROM phpyun_description WHERE ");
+    qb.push(PREDICATE);
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(t) = is_type {
+        qb.push(" AND is_type = ");
+        qb.push_bind(t);
+    }
+    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<PhpDescRow>().fetch_all(pool).await
+}
+
+pub async fn php_count(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    is_type: Option<i32>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new("SELECT COUNT(*) FROM phpyun_description WHERE ");
+    qb.push(PREDICATE);
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(t) = is_type {
+        qb.push(" AND is_type = ");
+        qb.push_bind(t);
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_get(pool: &MySqlPool, id: u64) -> Result<Option<PhpDescRow>, sqlx::Error> {
+    let sql = format!("SELECT {PHP_DESC_FIELDS} FROM phpyun_description WHERE id = ? AND {PREDICATE}");
+    sqlx::query_as::<_, PhpDescRow>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub struct PhpDescSave<'a> {
+    pub name: &'a str,
+    pub nid: u64,
+    pub url: &'a str,
+    pub title: &'a str,
+    pub keyword: &'a str,
+    pub descs: &'a str,
+    pub content: &'a str,
+    pub sort: i32,
+    pub is_nav: i32,
+    pub is_type: i32,
+}
+
+pub async fn php_upsert(pool: &MySqlPool, id: u64, s: &PhpDescSave<'_>, now: i64) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        sqlx::query(
+            "UPDATE phpyun_description SET name=?, nid=?, url=?, title=?, keyword=?, descs=?, \
+             content=?, sort=?, is_nav=?, is_type=?, ctime=? WHERE id=?",
+        )
+        .bind(s.name)
+        .bind(s.nid)
+        .bind(s.url)
+        .bind(s.title)
+        .bind(s.keyword)
+        .bind(s.descs)
+        .bind(s.content)
+        .bind(s.sort)
+        .bind(s.is_nav)
+        .bind(s.is_type)
+        .bind(now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_description \
+             (name, nid, url, title, keyword, descs, content, sort, is_nav, is_type, ctime) \
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(s.name)
+        .bind(s.nid)
+        .bind(s.url)
+        .bind(s.title)
+        .bind(s.keyword)
+        .bind(s.descs)
+        .bind(s.content)
+        .bind(s.sort)
+        .bind(s.is_nav)
+        .bind(s.is_type)
+        .bind(now)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn php_set_sort(pool: &MySqlPool, id: u64, sort: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_description SET sort = ? WHERE id = ?")
+        .bind(sort)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut n = 0u64;
+    for id in ids {
+        n += soft_delete::mark_id(pool, "phpyun_description", *id).await?;
+    }
+    Ok(n)
+}

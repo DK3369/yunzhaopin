@@ -65,7 +65,7 @@ flowchart LR
 
 | module | 已接 action |
 |---|---|
-| `fairs` | index, get-group, add, delete, com, status, audit, getjoblist, upjob, comadd, getcomlist, getzhanwei, upzhanwei, comaddsave, delcom, ajaxsort, upisopen, checksitedid |
+| `fairs` | index, get-group, add, delete, com, status, audit, getjoblist, upjob, comadd, getcomlist, getzhanwei, upzhanwei, comaddsave, delcom, ajaxsort, upisopen, checksitedid, **comxls/comxlscheck**；图片 upload/uploadsave/setthemb/delpic → `upload_not_supported` |
 | `news` | index, addnews, delete, group, addgroup, delgroup, ajax, recommend, changeClass, checksitedid, savepro, type, property, delpro, delmenu, changeSon |
 | `gongzhao` | index, getGroup, add, delete, checksitedid, setRec, whb |
 | `announce` | getGroup, checksitedid |
@@ -73,6 +73,14 @@ flowchart LR
 | `ad-class` | index, info, addclass, delete, delbuy, upsort |
 | `question` | getGroup, index, add, save, delete, recommend, getanswer, statusAnswer, save_answer, delanswer, getcomment, statusAnswerReview, save_review, delreview, config, configSave |
 | `special` | index, add, delete, setOrder, recommend, ajaxsort, setFamous, addlist, set_comaddsearch, audit, comjob |
+| `once` | price_gear CRUD、set/onceset、edit/save/del/ctime/refresh_job |
+| `tiny` | set/tinyset、save/del/refresh |
+| `part` | show、partAudit、recommend、ctime、refresh、del、checkstate |
+| `hotjob` | save、getComList、gethotjob、hotjobinfo、hotNum |
+| `resume` | skill、project、other |
+| `pages` | index/add/save/delete/make/ajax（单页 `phpyun_description`，不再映新闻） |
+| `job-class` | ajax、setrec、get_class |
+| `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav |
 | `finance-order` | index, searchType, edit, save, setpay, delete, xls；凭证 `multiupload`/`uploadsave`/`htpic_del` 明确 `upload_not_supported` |
 | `finance-pay` | index, delete |
 | `finance-recharge` | index, jifenSave, comvip, comservice, getservice, searchname, searchcom |
@@ -103,12 +111,12 @@ flowchart LR
 | 广告位 / 广告分类 | **完成**（修 del→create、ad_class 错表；`is_open=2` 伪删广告） |
 | 财务订单/充值 | **完成**（php-content + phpMap；凭证上传降级为业务错误） |
 | 招聘会/专题主表伪删除 | **完成**（`deleted` 列 + 白名单；del 改 `mark_ids`） |
-| 微聘 once/tiny 定价档与设置 | **进行中**（本波） |
-| 兼职 show/audit | **进行中**（本波） |
-| 名企 `a=save` | **进行中**（本波） |
-| 简历 skill/project/other | **进行中**（本波） |
-| 单页错映新闻 | **进行中**（本波） |
-| 系统分类 ajax / 微信 savenav / 招聘会 xls | **进行中**（本波） |
+| 微聘 once/tiny 定价档与设置 | **完成**（php-content；once `del` 不再误打审核） |
+| 兼职 show/audit | **完成**（show/partAudit/recommend/ctime/refresh/del/checkstate） |
+| 名企 `a=save` | **完成**（接到 `upsert_hotjob`；getComList/gethotjob） |
+| 简历 skill/project/other | **完成** |
+| 单页错映新闻 | **完成**（改走 `php-content/pages`） |
+| 系统分类 ajax / 微信 savenav / 招聘会 xls | **完成**（savenav `error=3`；comxls 出 CSV） |
 
 ### 前台 OAuth / 支付（本轮）
 
@@ -116,9 +124,9 @@ flowchart LR
 - 会员下单 `POST /v1/mcenter/vip/orders`：`channel=alipay` 时先校验配置再插待支付单，返回 `pay_url`（legacy `create_direct_pay_by_user`，notify `{web_base_url}/callback/alipay`）。`/user/pay` 有 `pay_url` 则跳转，不再自动 mock-paid。
 - 未做：微信 unifiedorder；沙箱真实付款未跑通。支付 notify handler 原本就在。
 
-## 下一项（本波）
+## 下一项（本波之后）
 
-微聘 once/tiny、兼职 show/audit、名企 save、简历分项、单页纠偏、分类 ajax、微信 savenav、招聘会 xls。本波之后仍排队：兼职/once 图片上传栈、微信 creatnav 调微信 API、校园/猎头/培训。
+兼职/once 图片上传栈、微信 creatnav 调微信 API、校园/猎头/培训、`database`/`generate_*`/`admin_uc`。
 
 ## 仍弱或故意不做
 

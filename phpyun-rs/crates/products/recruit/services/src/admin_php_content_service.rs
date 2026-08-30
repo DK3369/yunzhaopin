@@ -14,13 +14,24 @@ use phpyun_models::member_statis::repo as mstatis_repo;
 use phpyun_models::vip::repo as vip_repo;
 use phpyun_models::announcement::repo as announcement_repo;
 use phpyun_models::article::repo::{self as article_repo, ArticleFilter};
+use phpyun_auth::md5_hex;
+use phpyun_models::category::repo as cat_repo;
 use phpyun_models::company::repo as company_repo;
+use phpyun_models::description::repo as desc_repo;
 use phpyun_models::domain::repo as domain_repo;
 use phpyun_models::gongzhao::repo as gongzhao_repo;
+use phpyun_models::once_job::repo as once_repo;
+use phpyun_models::part::repo as part_repo;
 use phpyun_models::poster_template::repo as whb_repo;
 use phpyun_models::qna::repo as qna_repo;
+use phpyun_models::resume::other as other_repo;
+use phpyun_models::resume::project as project_repo;
+use phpyun_models::resume::skill as skill_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::special::repo as special_repo;
+use phpyun_models::tiny::repo as tiny_repo;
+use phpyun_models::user::repo as user_repo;
+use phpyun_models::wx_nav::repo as wx_nav_repo;
 use phpyun_models::zph::repo as zph_repo;
 use serde_json::{json, Value};
 
@@ -59,6 +70,12 @@ pub async fn dispatch(
         ("fairs", "ajaxsort") => fairs_ajaxsort(state, body).await,
         ("fairs", "upisopen") => fairs_upisopen(state, user, body).await,
         ("fairs", "checksitedid") => fairs_checksitedid(state, body).await,
+        ("fairs", "comxlscheck") => fairs_comxlscheck(state, body).await,
+        ("fairs", "comxls") => Ok(PhpOut::Data(fairs_comxls(state, body).await?)),
+        ("fairs", "upload") => Err(ApiError::business("upload_not_supported")),
+        ("fairs", "uploadsave") => Err(ApiError::business("upload_not_supported")),
+        ("fairs", "setthemb") => Err(ApiError::business("upload_not_supported")),
+        ("fairs", "delpic") => Err(ApiError::business("upload_not_supported")),
         ("news", "index") => Ok(PhpOut::Data(news_index(state, body).await?)),
         ("news", "addnews") => news_addnews(state, user, body).await,
         ("news", "delete") => news_del(state, user, body).await,
@@ -146,6 +163,50 @@ pub async fn dispatch(
         ("special", "set_comaddsearch") => Ok(PhpOut::Data(special_comaddsearch(state).await?)),
         ("special", "audit") => Ok(PhpOut::Data(special_audit(state, body).await?)),
         ("special", "comjob") => Ok(PhpOut::Data(special_comjob(state, body).await?)),
+        ("once", "price_gear") => Ok(PhpOut::Data(once_price_gear(state).await?)),
+        ("once", "price_gear_add") => once_price_gear_add(state, body).await,
+        ("once", "price_gear_ajax") => once_price_gear_ajax(state, body).await,
+        ("once", "price_gear_del") => once_price_gear_del(state, body).await,
+        ("once", "set") => Ok(PhpOut::Data(once_set(state).await?)),
+        ("once", "onceset") => once_onceset(state, user, body).await,
+        ("once", "edit") => Ok(PhpOut::Data(once_edit(state, body).await?)),
+        ("once", "save") => once_save(state, body).await,
+        ("once", "del") => once_del(state, body).await,
+        ("once", "ctime") => once_ctime(state, body).await,
+        ("once", "refresh_job") => once_refresh(state, body).await,
+        ("tiny", "set") => Ok(PhpOut::Data(tiny_set(state).await?)),
+        ("tiny", "tinyset") => tiny_tinyset(state, user, body).await,
+        ("tiny", "save") => tiny_save(state, body).await,
+        ("tiny", "del") => tiny_del(state, body).await,
+        ("tiny", "refresh") => tiny_refresh(state, body).await,
+        ("part", "show") => part_show(state, body).await,
+        ("part", "partAudit") => Ok(PhpOut::Data(part_audit(state, body).await?)),
+        ("part", "recommend") => part_recommend(state, body).await,
+        ("part", "ctime") => part_ctime(state, body).await,
+        ("part", "refresh") => part_refresh(state, body).await,
+        ("part", "del") => part_del(state, body).await,
+        ("part", "checkstate") => part_checkstate(state, body).await,
+        ("hotjob", "save") => hotjob_save(state, user, body).await,
+        ("hotjob", "getComList") => Ok(PhpOut::Data(hotjob_com_list(state, body).await?)),
+        ("hotjob", "gethotjob") => Ok(PhpOut::Data(hotjob_get(state, body).await?)),
+        ("hotjob", "hotjobinfo") => Ok(PhpOut::Data(hotjob_info(state, body).await?)),
+        ("hotjob", "hotNum") => Ok(PhpOut::Data(hotjob_num(state).await?)),
+        ("resume", "skill") => resume_skill(state, body).await,
+        ("resume", "project") => resume_project(state, body).await,
+        ("resume", "other") => resume_other(state, body).await,
+        ("pages", "index") => Ok(PhpOut::Data(pages_index(state, body).await?)),
+        ("pages", "add") => Ok(PhpOut::Data(pages_add(state, body).await?)),
+        ("pages", "save") => pages_save(state, body).await,
+        ("pages", "delete") => pages_del(state, body).await,
+        ("pages", "make") => Ok(PhpOut::Message("admin_system_00059")),
+        ("pages", "ajax") => pages_ajax(state, body).await,
+        ("job-class", "ajax") => job_class_ajax(state, body).await,
+        ("job-class", "setrec") => job_class_setrec(state, body).await,
+        ("job-class", "get_class") => Ok(PhpOut::Data(job_class_get(state, body).await?)),
+        ("wx-nav", "wxnav") => Ok(PhpOut::Data(wx_nav_list(state).await?)),
+        ("wx-nav", "savenav") => Ok(PhpOut::Data(wx_nav_savenav(state, body).await?)),
+        ("wx-nav", "delnav") => wx_nav_del(state, body).await,
+        ("wx-nav", "ajaxnav") => wx_nav_ajax(state, body).await,
         _ => Err(ApiError::param_invalid("unknown_php_action")),
     }
 }
@@ -213,6 +274,55 @@ fn ids_of(body: &Value) -> Vec<u64> {
             .collect(),
         Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
         _ => Vec::new(),
+    }
+}
+
+fn ids_named(body: &Value, key: &str) -> Vec<u64> {
+    match body.get(key) {
+        Some(Value::Array(a)) => a
+            .iter()
+            .map(json_u64_val)
+            .filter(|n| *n > 0)
+            .collect(),
+        Some(Value::String(s)) => s
+            .split([',', ';'])
+            .filter_map(|x| x.trim().parse().ok())
+            .filter(|n: &u64| *n > 0)
+            .collect(),
+        Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
+        _ => Vec::new(),
+    }
+}
+
+fn json_f64(v: &Value, key: &str) -> f64 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n.as_f64().unwrap_or(0.0),
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(0.0),
+        _ => 0.0,
+    }
+}
+
+fn json_opt_i32(v: &Value, key: &str) -> Option<i32> {
+    match v.get(key) {
+        None | Some(Value::Null) => None,
+        Some(Value::String(s)) if s.trim().is_empty() => None,
+        _ => Some(json_i32(v, key)),
+    }
+}
+
+fn json_csv(body: &Value, key: &str) -> String {
+    match body.get(key) {
+        Some(Value::Array(a)) => a
+            .iter()
+            .map(|v| match v {
+                Value::String(s) => s.trim().to_string(),
+                Value::Number(n) => n.to_string(),
+                _ => String::new(),
+            })
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<_>>()
+            .join(","),
+        _ => json_str(body, key),
     }
 }
 
@@ -3030,4 +3140,998 @@ async fn finance_searchname(state: &AppState, body: &Value, by_user: bool) -> Ap
         })
         .collect();
     Ok(json!({ "error": 0, "namelist": namelist }))
+}
+
+async fn cfg_of(state: &AppState, key: &str) -> String {
+    setting_repo::find(state.db.reader(), key)
+        .await
+        .ok()
+        .flatten()
+        .map(|s| s.value)
+        .unwrap_or_default()
+}
+
+async fn upsert_cfg(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    key: &str,
+    value: &str,
+) -> AppResult<()> {
+    site_setting_service::admin_upsert(
+        state,
+        user,
+        site_setting_service::UpsertInput {
+            key,
+            value,
+            description: "",
+            is_public: true,
+        },
+    )
+    .await
+}
+
+async fn once_price_gear(state: &AppState) -> AppResult<Value> {
+    let list = once_repo::list_price_gears(state.db.reader()).await?;
+    Ok(json!({ "list": list }))
+}
+
+async fn once_price_gear_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let days = json_i32(body, "days");
+    if days <= 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    if once_repo::find_price_gear_by_days(state.db.pool(), days, 0)
+        .await?
+        .is_some()
+    {
+        return Err(ApiError::business("admin_user_00103"));
+    }
+    let _ = once_repo::insert_price_gear(state.db.pool(), days, json_f64(body, "price")).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn once_price_gear_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let days = if has_flag(body, "days") {
+        Some(json_i32(body, "days"))
+    } else {
+        None
+    };
+    if let Some(d) = days {
+        if d > 0 {
+            if once_repo::find_price_gear_by_days(state.db.pool(), d, id)
+                .await?
+                .is_some()
+            {
+                return Err(ApiError::business("admin_user_00103"));
+            }
+        }
+    }
+    let price = if body.get("price").is_some() {
+        Some(json_f64(body, "price"))
+    } else {
+        None
+    };
+    let n = once_repo::update_price_gear(state.db.pool(), id, days, price).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01281"));
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn once_price_gear_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    once_repo::delete_price_gears(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn once_set(state: &AppState) -> AppResult<Value> {
+    let icon = cfg_of(state, "sy_once_icon").await;
+    Ok(json!({
+        "config": {
+            "sy_once": cfg_of(state, "sy_once").await,
+            "sy_once_totalnum": cfg_of(state, "sy_once_totalnum").await,
+            "user_wzp_link": cfg_of(state, "user_wzp_link").await,
+            "com_fast_status": cfg_of(state, "com_fast_status").await,
+            "sy_once_yyzz": cfg_of(state, "sy_once_yyzz").await,
+            "com_xin": cfg_of(state, "com_xin").await,
+            "sy_once_icon_n": pic_url(&preview_base(state), &icon),
+        }
+    }))
+}
+
+async fn once_onceset(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    for key in [
+        "sy_once",
+        "sy_once_totalnum",
+        "user_wzp_link",
+        "com_fast_status",
+        "sy_once_yyzz",
+        "com_xin",
+    ] {
+        if body.get(key).is_some() {
+            upsert_cfg(state, user, key, &json_str(body, key)).await?;
+        }
+    }
+    let icon = json_str(body, "sy_once_icon");
+    if !icon.is_empty() && !icon.starts_with("data:") && !icon.contains("blob:") {
+        upsert_cfg(state, user, "sy_once_icon", &icon).await?;
+    }
+    Ok(PhpOut::Message("admin_user_00106"))
+}
+
+async fn once_edit(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let info = if id > 0 {
+        once_repo::find_admin(state.db.reader(), id).await?
+    } else {
+        None
+    };
+    let base = preview_base(state);
+    Ok(json!({
+        "info": info.map(|r| json!({
+            "id": r.id,
+            "title": r.title,
+            "companyname": r.companyname,
+            "linkman": r.linkman,
+            "phone": r.phone,
+            "provinceid": r.provinceid,
+            "cityid": r.cityid,
+            "three_cityid": r.three_cityid,
+            "address": r.address,
+            "require": r.require,
+            "require_n": r.require,
+            "salary": r.salary,
+            "status": r.status,
+            "ctime": r.ctime,
+            "ctime_n": fmt_dt(r.ctime),
+            "edate": r.edate,
+            "edate_n": if r.edate > 0 { fmt_date(r.edate) } else { String::new() },
+            "did": r.did,
+            "pic": r.pic,
+            "pic_n": pic_url(&base, &r.pic),
+            "yyzz": r.yyzz,
+            "yyzz_n": pic_url(&base, &r.yyzz),
+            "hits": r.hits,
+            "password": "",
+            "city_n": "",
+        })).unwrap_or(json!({}))
+    }))
+}
+
+async fn once_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if has_flag(body, "yyzz") || has_flag(body, "file") {
+        return Err(ApiError::business("upload_not_supported"));
+    }
+    let days = json_i32(body, "edate");
+    let now = clock::now_ts();
+    let edate = now + i64::from(days.max(0)) * 86_400;
+    let pwd = json_str(body, "password");
+    let hashed = if pwd.is_empty() {
+        None
+    } else {
+        Some(md5_hex(&pwd))
+    };
+    let hashed_ref = hashed.as_deref();
+    let _ = once_repo::admin_save(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &once_repo::AdminOnceSave {
+            title: &json_str(body, "title"),
+            companyname: &json_str(body, "companyname"),
+            linkman: &json_str(body, "linkman"),
+            phone: &json_str(body, "phone"),
+            provinceid: json_i32(body, "provinceid"),
+            cityid: json_i32(body, "cityid"),
+            three_cityid: json_i32(body, "three_cityid"),
+            address: &json_str(body, "address"),
+            require: &json_str(body, "require"),
+            salary: &json_str(body, "salary"),
+            password_md5: hashed_ref,
+            edate,
+            did: json_i32(body, "did"),
+            now,
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn once_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    once_repo::delete_ids(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn once_ctime(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    let days = json_i32(body, "endtime");
+    if ids.is_empty() || days <= 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    once_repo::extend_edate(state.db.pool(), &ids, days, clock::now_ts()).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn once_refresh(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    once_repo::refresh_ctime(state.db.pool(), &ids, clock::now_ts()).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn tiny_set(state: &AppState) -> AppResult<Value> {
+    Ok(json!({
+        "config": {
+            "sy_tiny": cfg_of(state, "sy_tiny").await,
+            "sy_tiny_totalnum": cfg_of(state, "sy_tiny_totalnum").await,
+            "user_wjl": cfg_of(state, "user_wjl").await,
+            "user_wjl_link": cfg_of(state, "user_wjl_link").await,
+        }
+    }))
+}
+
+async fn tiny_tinyset(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    for key in ["sy_tiny", "sy_tiny_totalnum", "user_wjl", "user_wjl_link"] {
+        if body.get(key).is_some() {
+            upsert_cfg(state, user, key, &json_str(body, key)).await?;
+        }
+    }
+    Ok(PhpOut::Message("admin_user_00112"))
+}
+
+async fn tiny_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let pwd = json_str(body, "password");
+    let hashed = if pwd.is_empty() {
+        None
+    } else {
+        Some(md5_hex(&pwd))
+    };
+    let hashed_ref = hashed.as_deref();
+    let _ = tiny_repo::admin_save(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &tiny_repo::AdminTinySave {
+            username: &json_str(body, "username"),
+            sex: json_i32(body, "sex"),
+            exp: json_i32(body, "exp"),
+            job: &json_str(body, "job"),
+            mobile: &json_str(body, "mobile"),
+            provinceid: json_i32(body, "provinceid"),
+            cityid: json_i32(body, "cityid"),
+            three_cityid: json_i32(body, "three_cityid"),
+            production: &json_str(body, "production"),
+            password_md5: hashed_ref,
+            now: clock::now_ts(),
+            did: json_u64(body, "did") as u32,
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn tiny_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    tiny_repo::delete_ids(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn tiny_refresh(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    tiny_repo::refresh_ids(state.db.pool(), &ids, clock::now_ts()).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+fn part_show_json(p: &phpyun_models::part::entity::PartJob, statusbody: &str) -> Value {
+    let worktime_n: Vec<String> = p
+        .worktime
+        .as_deref()
+        .unwrap_or("")
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+    json!({
+        "id": p.id,
+        "uid": p.uid,
+        "name": p.name,
+        "com_name": p.com_name,
+        "type": p.r#type,
+        "provinceid": p.provinceid,
+        "cityid": p.cityid,
+        "three_cityid": p.three_cityid,
+        "address": p.address,
+        "number": p.number,
+        "sex": p.sex,
+        "salary": p.salary,
+        "salary_type": p.salary_type,
+        "billing_cycle": p.billing_cycle,
+        "worktime": p.worktime,
+        "worktime_n": worktime_n,
+        "workcishu": worktime_n.len(),
+        "sdate": p.sdate,
+        "sdate_n": if p.sdate > 0 { fmt_date(p.sdate) } else { String::new() },
+        "edate": p.edate,
+        "edate_n": if p.edate > 0 { fmt_date(p.edate) } else { String::new() },
+        "content": p.content,
+        "linkman": p.linkman,
+        "linktel": p.linktel,
+        "state": p.state,
+        "status": p.status,
+        "statusbody": statusbody,
+        "r_status": p.r_status,
+        "rec_time": p.rec_time,
+        "lastupdate": p.lastupdate,
+        "addtime": p.addtime,
+        "did": p.did,
+        "x": p.x,
+        "y": p.y,
+    })
+}
+
+async fn part_show(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if has_flag(body, "update") {
+        let id = json_u64(body, "id");
+        if id == 0 {
+            return Err(ApiError::param_invalid("wap_com_00228"));
+        }
+        let r_status = json_i32(body, "r_status");
+        let job_state = if r_status == 1 { 1 } else { 0 };
+        let edate = if has_flag(body, "timetype") {
+            0
+        } else {
+            parse_date_ts(&json_str(body, "edate"))
+        };
+        part_repo::admin_update_info(
+            state.db.pool(),
+            id,
+            &part_repo::AdminPartSave {
+                name: &json_str(body, "name"),
+                r#type: json_i32(body, "type"),
+                sdate: parse_date_ts(&json_str(body, "sdate")),
+                edate,
+                worktime: &json_csv(body, "worktime"),
+                number: json_i32(body, "number"),
+                sex: json_i32(body, "sex"),
+                salary: json_i32(body, "salary"),
+                salary_type: json_i32(body, "salary_type"),
+                billing_cycle: json_i32(body, "billing_cycle"),
+                provinceid: json_i32(body, "provinceid"),
+                cityid: json_i32(body, "cityid"),
+                three_cityid: json_i32(body, "three_cityid"),
+                address: &json_str(body, "address"),
+                r_status,
+                x: &json_str(body, "x"),
+                y: &json_str(body, "y"),
+                content: &json_str(body, "content"),
+                linkman: &json_str(body, "linkman"),
+                linktel: &json_str(body, "linktel"),
+                state: job_state,
+                now: clock::now_ts(),
+            },
+        )
+        .await?;
+        return Ok(PhpOut::Message("ok"));
+    }
+    let id = json_u64(body, "id");
+    let p = part_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    let statusbody = part_repo::get_statusbody(state.db.reader(), id).await?;
+    let company = company_repo::find_by_uid(state.db.reader(), p.uid).await?;
+    Ok(PhpOut::Data(json!({
+        "show": part_show_json(&p, &statusbody),
+        "company": company.map(|c| json!({"uid": c.uid, "r_status": c.r_status})).unwrap_or(json!({})),
+        "today": fmt_date(clock::now_ts()),
+    })))
+}
+
+async fn part_audit(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let p = part_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    let statusbody = part_repo::get_statusbody(state.db.reader(), id).await?;
+    let mut info = part_show_json(&p, &statusbody);
+    if let Some(m) = user_repo::find_admin_extras(state.db.reader(), p.uid).await? {
+        info["c_status"] = json!(m.status);
+        info["lock_info"] = json!(m.lock_info);
+    }
+    let snum = part_repo::count_pending_except(state.db.reader(), id).await?;
+    Ok(json!({ "info": info, "snum": snum }))
+}
+
+async fn part_recommend(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "pid");
+    if ids.is_empty() {
+        ids = ids_of(body);
+    }
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    if json_i32(body, "s") == 1 {
+        part_repo::set_rec_time(state.db.pool(), &ids, 0).await?;
+    } else {
+        part_repo::add_rec_days(state.db.pool(), &ids, json_i32(body, "days"), clock::now_ts())
+            .await?;
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn part_ctime(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "jobid");
+    if ids.is_empty() {
+        ids = ids_of(body);
+    }
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    part_repo::extend_edate(state.db.pool(), &ids, json_i32(body, "days"), clock::now_ts()).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn part_refresh(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    part_repo::refresh_lastupdate(state.db.pool(), &ids, clock::now_ts()).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn part_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    part_repo::cascade_delete_children(state.db.pool(), &ids).await?;
+    part_repo::delete_by_ids(state.db.pool(), &ids, None).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn part_checkstate(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let mut st = json_i32(body, "state");
+    if id == 0 || st == 0 {
+        return Ok(PhpOut::Message("ok"));
+    }
+    if st == 2 {
+        st = 0;
+    }
+    part_repo::set_publish_status(state.db.pool(), id, st).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn hotjob_com_list(state: &AppState, body: &Value) -> AppResult<Value> {
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Ok(json!([]));
+    }
+    let rows = company_repo::search_brief(state.db.reader(), &name, 20).await?;
+    Ok(json!(rows
+        .into_iter()
+        .map(|c| json!({"value": c.uid, "label": c.name}))
+        .collect::<Vec<_>>()))
+}
+
+fn hotjob_php_json(h: &company_repo::HotJobRow, base: &str) -> Value {
+    json!({
+        "id": h.id,
+        "uid": h.uid,
+        "username": h.username,
+        "hot_pic": h.hot_pic,
+        "hot_pic_n": pic_url(base, &h.hot_pic),
+        "time_start": h.time_start,
+        "time_start_n": if h.time_start > 0 { fmt_date(h.time_start) } else { String::new() },
+        "time_end": h.time_end,
+        "time_end_n": if h.time_end > 0 { fmt_date(h.time_end) } else { String::new() },
+        "sort": h.sort,
+        "beizhu": h.beizhu,
+        "rating_id": h.rating_id,
+    })
+}
+
+async fn hotjob_get(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("uid"));
+    }
+    let base = preview_base(state);
+    let com = company_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    if com.rec == 1 {
+        if let Some(h) = company_repo::hotjob_find_by_uid(state.db.reader(), uid).await? {
+            return Ok(hotjob_php_json(&h, &base));
+        }
+    }
+    let st = cstatis_repo::find_admin(state.db.reader(), uid).await?;
+    let logo = com.logo.clone().unwrap_or_default();
+    Ok(json!({
+        "uid": com.uid,
+        "username": com.name,
+        "hot_pic": logo,
+        "hot_pic_n": pic_url(&base, &logo),
+        "rating_id": st.as_ref().map(|s| s.rating).unwrap_or(0),
+        "rating": st.as_ref().map(|s| s.rating_name.clone()).unwrap_or_default(),
+        "time_start": clock::now_ts(),
+        "time_start_n": fmt_date(clock::now_ts()),
+        "time_end": 0,
+        "time_end_n": "",
+        "sort": 0,
+        "beizhu": "",
+    }))
+}
+
+async fn hotjob_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let uid = json_u64(body, "uid");
+    let base = preview_base(state);
+    if id > 0 {
+        if let Some(h) = company_repo::hotjob_find_by_uid(state.db.reader(), id).await? {
+            return Ok(hotjob_php_json(&h, &base));
+        }
+        if let Some(h) = company_repo::hotjob_find_by_id(state.db.reader(), id).await? {
+            return Ok(hotjob_php_json(&h, &base));
+        }
+    }
+    if uid > 0 {
+        return hotjob_get(state, body).await;
+    }
+    Ok(json!({}))
+}
+
+async fn hotjob_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    if has_flag(body, "mqlogo") {
+        return Err(ApiError::business("upload_not_supported"));
+    }
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("uid"));
+    }
+    let existing = company_repo::hotjob_find_by_uid(state.db.reader(), uid).await?;
+    let mut hot_pic = json_str(body, "hot_pic");
+    if hot_pic.is_empty() {
+        if let Some(h) = existing.as_ref() {
+            hot_pic = h.hot_pic.clone();
+        } else if let Some(c) = company_repo::find_by_uid(state.db.reader(), uid).await? {
+            hot_pic = c.logo.unwrap_or_default();
+        }
+    }
+    let id = json_u64(body, "id");
+    if id == 0 && existing.is_none() && hot_pic.is_empty() {
+        return Err(ApiError::business("admin_user_00072"));
+    }
+    let username = json_str(body, "username");
+    let beizhu = json_str(body, "beizhu");
+    admin_cms_service::upsert_hotjob(
+        state,
+        user,
+        admin_cms_service::HotJobUpsertIn {
+            id: if id > 0 { Some(id) } else { existing.map(|h| h.id) },
+            uid,
+            username: &username,
+            hot_pic: &hot_pic,
+            time_start: parse_date_ts(&json_str(body, "time_start_n")),
+            time_end: parse_date_ts(&json_str(body, "time_end_n")),
+            sort: json_i32(body, "sort"),
+            beizhu: &beizhu,
+            rating_id: json_i32(body, "rating_id"),
+        },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn hotjob_num(state: &AppState) -> AppResult<Value> {
+    let n = company_repo::hotjob_count(state.db.reader()).await?;
+    Ok(json!({ "all": n }))
+}
+
+async fn resume_skill(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let eid = json_u64(body, "eid");
+    if uid == 0 || eid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let id = skill_repo::php_upsert(
+        state.db.pool(),
+        json_u64(body, "id"),
+        uid,
+        eid,
+        &json_str(body, "name"),
+        json_i32(body, "ing"),
+        json_i32(body, "longtime"),
+    )
+    .await?;
+    Ok(PhpOut::Data(json!({ "id": id })))
+}
+
+async fn resume_project(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let eid = json_u64(body, "eid");
+    if uid == 0 || eid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let title = json_str(body, "title");
+    let content = json_str(body, "content");
+    let input = project_repo::ProjectInput {
+        name: &json_str(body, "name"),
+        sdate: parse_date_ts(&json_str(body, "sdate")),
+        edate: parse_date_ts(&json_str(body, "edate")),
+        role: Some(title.as_str()),
+        content: Some(content.as_str()),
+    };
+    let id = json_u64(body, "id");
+    let nid = if id > 0 {
+        project_repo::update(state.db.pool(), id, uid, &input).await?;
+        id
+    } else {
+        project_repo::create(state.db.pool(), uid, eid, &input).await?
+    };
+    Ok(PhpOut::Data(json!({ "id": nid })))
+}
+
+async fn resume_other(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let eid = json_u64(body, "eid");
+    if uid == 0 || eid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let input = other_repo::OtherInput {
+        name: &json_str(body, "name"),
+        content: &json_str(body, "content"),
+    };
+    let id = json_u64(body, "id");
+    let nid = if id > 0 {
+        other_repo::update(state.db.pool(), id, uid, &input).await?;
+        id
+    } else {
+        other_repo::create(state.db.pool(), uid, eid, &input).await?
+    };
+    Ok(PhpOut::Data(json!({ "id": nid })))
+}
+
+async fn pages_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let is_type = json_opt_i32(body, "is_type");
+    let db = state.db.reader();
+    let rows = desc_repo::php_list(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        is_type,
+        offset,
+        limit,
+    )
+    .await?;
+    let total = desc_repo::php_count(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        is_type,
+    )
+    .await?;
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "title": r.title,
+                "is_type": r.is_type,
+                "is_type_n": if r.is_type == 1 { "外部链接" } else { "自定义页面" },
+                "is_nav": r.is_nav.to_string(),
+                "sort": r.sort,
+                "url": r.url,
+                "url_pc": if r.is_type == 1 && !r.url.is_empty() {
+                    r.url.clone()
+                } else {
+                    format!("{base}/index.php?m=about&id={}", r.id)
+                },
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "nid": r.nid,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn pages_add(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let info = if id > 0 {
+        desc_repo::php_get(state.db.reader(), id).await?
+    } else {
+        None
+    };
+    let class = desc_repo::list_classes(state.db.reader()).await?;
+    Ok(json!({
+        "info": info.map(|r| json!({
+            "id": r.id,
+            "name": r.name,
+            "title": r.title,
+            "content": r.content,
+            "is_type": r.is_type.to_string(),
+            "is_nav": r.is_nav.to_string(),
+            "sort": r.sort,
+            "url": r.url,
+            "nid": r.nid,
+            "keyword": r.keyword,
+            "description": r.descs,
+        })).unwrap_or(json!({})),
+        "class": class,
+    }))
+}
+
+async fn pages_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let url = json_str(body, "url");
+    let is_type = json_i32(body, "is_type");
+    if is_type == 1 && url.contains("..") {
+        return Err(ApiError::business("admin_system_00060"));
+    }
+    let name = json_str(body, "name");
+    let title = json_str(body, "title");
+    let keyword = json_str(body, "keyword");
+    let descs = json_str(body, "description");
+    let content = amp(&json_str(body, "content"));
+    let _ = desc_repo::php_upsert(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &desc_repo::PhpDescSave {
+            name: &name,
+            nid: json_u64(body, "nid"),
+            url: &url,
+            title: &title,
+            keyword: &keyword,
+            descs: &descs,
+            content: &content,
+            sort: json_i32(body, "sort"),
+            is_nav: json_i32(body, "is_nav"),
+            is_type,
+        },
+        clock::now_ts(),
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn pages_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    desc_repo::php_delete_ids(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn pages_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    desc_repo::php_set_sort(state.db.pool(), id, json_i32(body, "sort")).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn job_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let name = json_str(body, "name");
+    let e_name = json_str(body, "e_name");
+    let s_name = json_str(body, "s_name");
+    cat_repo::patch_job_class(
+        state.db.pool(),
+        id,
+        if name.is_empty() { None } else { Some(name.as_str()) },
+        if has_flag(body, "sort") {
+            Some(json_i32(body, "sort"))
+        } else {
+            None
+        },
+        if e_name.is_empty() {
+            None
+        } else {
+            Some(e_name.as_str())
+        },
+        if s_name.is_empty() {
+            None
+        } else {
+            Some(s_name.as_str())
+        },
+        None,
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn job_class_setrec(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    cat_repo::patch_job_class(
+        state.db.pool(),
+        id,
+        None,
+        None,
+        None,
+        None,
+        Some(json_i32(body, "rec")),
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn job_class_get(state: &AppState, body: &Value) -> AppResult<Value> {
+    let nid = json_u64(body, "nid");
+    let rows = cat_repo::list_children(state.db.reader(), "job", nid).await?;
+    Ok(json!(rows
+        .into_iter()
+        .map(|c| json!({"id": c.id, "name": c.name, "keyid": c.parent_id}))
+        .collect::<Vec<_>>()))
+}
+
+async fn wx_nav_list(state: &AppState) -> AppResult<Value> {
+    let list = wx_nav_repo::list_all(state.db.reader()).await?;
+    Ok(json!({ "list": list }))
+}
+
+async fn wx_nav_savenav(state: &AppState, body: &Value) -> AppResult<Value> {
+    let name = json_str(body, "name");
+    if name.is_empty() || body.get("keyid").is_none() {
+        return Ok(json!({ "error": 1 }));
+    }
+    let keyid = json_i32(body, "keyid");
+    let nav_type = json_str(body, "type");
+    let key = json_str(body, "key");
+    let url = json_str(body, "url");
+    let appid = json_str(body, "appid");
+    let apppage = json_str(body, "apppage");
+    if keyid > 0 {
+        if nav_type == "click" && key.is_empty() {
+            return Ok(json!({ "error": 1 }));
+        }
+        if nav_type == "miniprogram" && (url.is_empty() || appid.is_empty() || apppage.is_empty()) {
+            return Ok(json!({ "error": 1 }));
+        }
+        if nav_type == "view" && url.is_empty() {
+            return Ok(json!({ "error": 1 }));
+        }
+    }
+    let navid = json_u64(body, "navid");
+    if wx_nav_repo::count_dup_name(state.db.pool(), &name, keyid, navid).await? > 0 {
+        return Ok(json!({ "error": 2 }));
+    }
+    wx_nav_repo::upsert_php(
+        state.db.pool(),
+        if navid > 0 { Some(navid) } else { None },
+        &name,
+        keyid,
+        &key,
+        &url,
+        &nav_type,
+        json_i32(body, "sort"),
+        &appid,
+        &apppage,
+    )
+    .await?;
+    Ok(json!({ "error": 3 }))
+}
+
+async fn wx_nav_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    wx_nav_repo::delete_with_children(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn wx_nav_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let name = json_str(body, "name");
+    wx_nav_repo::patch_field(
+        state.db.pool(),
+        id,
+        if has_flag(body, "sort") {
+            Some(json_i32(body, "sort"))
+        } else {
+            None
+        },
+        if name.is_empty() { None } else { Some(name.as_str()) },
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn fairs_comxlscheck(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let zid = json_u64(body, "zid");
+    if zid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let f = zph_repo::AdminZphComFilter {
+        zid: Some(zid),
+        status: None,
+        keyword: None,
+        keyword_type: 0,
+    };
+    let n = zph_repo::admin_count_coms(state.db.reader(), &f).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_yunying_00004"));
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn fairs_comxls(state: &AppState, body: &Value) -> AppResult<Value> {
+    let zid = json_u64(body, "zid");
+    let f = zph_repo::AdminZphComFilter {
+        zid: Some(zid).filter(|n| *n > 0),
+        status: None,
+        keyword: None,
+        keyword_type: 0,
+    };
+    let mut rows = zph_repo::admin_list_coms(state.db.reader(), &f, 0, 5000).await?;
+    let want = ids_named(body, "cid");
+    if !want.is_empty() {
+        rows.retain(|r| want.contains(&r.id));
+    }
+    if rows.is_empty() {
+        return Err(ApiError::business("admin_yunying_00004"));
+    }
+    let mut csv = String::from("id,uid,com_name,status,sid,cid,bid,jobid,ctime\n");
+    for r in &rows {
+        csv.push_str(&format!(
+            "{},{},{},{},{},{},{},{},{}\n",
+            r.id,
+            r.uid,
+            csv_cell(&r.com_name),
+            r.status,
+            r.sid,
+            r.cid,
+            r.bid,
+            csv_cell(&r.jobid),
+            fmt_dt(r.ctime),
+        ));
+    }
+    let file = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, csv.as_bytes());
+    Ok(json!({
+        "file": file,
+        "file_name": format!("zph-coms-{}.csv", fmt_date(clock::now_ts())),
+        "status": 1,
+    }))
 }
