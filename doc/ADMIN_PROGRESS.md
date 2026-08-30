@@ -3,8 +3,8 @@
 > 2026-08-30 · 分支 `feat/frontend-backend-split`  
 > 总方案：[FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T0–T14 勾选偏旧，细进度以本文为准）  
 > UI 约定：[ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)  
-> Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)  
-> 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)
+> Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)、[`.cursor/plans/admin_微聘兼职名企.plan.md`](../.cursor/plans/admin_微聘兼职名企.plan.md)  
+> 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)、[plans/2026-08-30-admin-weipin-part-hotjob.md](./plans/2026-08-30-admin-weipin-part-hotjob.md)
 
 ## 文档落盘
 
@@ -103,6 +103,12 @@ flowchart LR
 | 广告位 / 广告分类 | **完成**（修 del→create、ad_class 错表；`is_open=2` 伪删广告） |
 | 财务订单/充值 | **完成**（php-content + phpMap；凭证上传降级为业务错误） |
 | 招聘会/专题主表伪删除 | **完成**（`deleted` 列 + 白名单；del 改 `mark_ids`） |
+| 微聘 once/tiny 定价档与设置 | **进行中**（本波） |
+| 兼职 show/audit | **进行中**（本波） |
+| 名企 `a=save` | **进行中**（本波） |
+| 简历 skill/project/other | **进行中**（本波） |
+| 单页错映新闻 | **进行中**（本波） |
+| 系统分类 ajax / 微信 savenav / 招聘会 xls | **进行中**（本波） |
 
 ### 前台 OAuth / 支付（本轮）
 
@@ -110,9 +116,9 @@ flowchart LR
 - 会员下单 `POST /v1/mcenter/vip/orders`：`channel=alipay` 时先校验配置再插待支付单，返回 `pay_url`（legacy `create_direct_pay_by_user`，notify `{web_base_url}/callback/alipay`）。`/user/pay` 有 `pay_url` 则跳转，不再自动 mock-paid。
 - 未做：微信 unifiedorder；沙箱真实付款未跑通。支付 notify handler 原本就在。
 
-## 下一项（本波之后）
+## 下一项（本波）
 
-微聘 once/tiny 定价档、兼职 show/audit、名企 `a=save` 接到已有 `/hotjobs`、简历 skill/project/other、单页 `singlepage` 错映到新闻、系统分类 ajax、微信菜单 savenav、招聘会 xls/图。
+微聘 once/tiny、兼职 show/audit、名企 save、简历分项、单页纠偏、分类 ajax、微信 savenav、招聘会 xls。本波之后仍排队：兼职/once 图片上传栈、微信 creatnav 调微信 API、校园/猎头/培训。
 
 ## 仍弱或故意不做
 
