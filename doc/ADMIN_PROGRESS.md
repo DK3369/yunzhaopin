@@ -3,7 +3,8 @@
 > 2026-08-30 · 分支 `feat/frontend-backend-split`  
 > 总方案：[FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T0–T14 勾选偏旧，细进度以本文为准）  
 > UI 约定：[ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)  
-> Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md) · 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)
+> Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)  
+> 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)
 
 ## 文档落盘
 
@@ -91,12 +92,18 @@ flowchart LR
 | SEO / 注册设置 / 短信 / 海报 / 公告 add GET | 完成（`bc694820`） |
 | 招聘会 / 新闻 / 问答 / 专题具名 action | **完成**（`php-content`，不进 AdminDoc） |
 | 前台 OAuth 回调 + 支付真单 | **回调已接、支付宝跳转已接、沙箱真单未验收** |
+| 公招 / 公告剩余 / 广告 / 财务 | **进行中**（本波） |
+| 招聘会/专题主表伪删除 | **进行中**（本波） |
 
 ### 前台 OAuth / 支付（本轮）
 
 - 登录页 `?code&state` → BFF `POST /api/auth/oauth-login` → Rust `/v1/wap/oauth/{wechat,qq,weibo}/code-login`，写 cookie。点击 OAuth 前把 provider 放进 `sessionStorage`。
 - 会员下单 `POST /v1/mcenter/vip/orders`：`channel=alipay` 时先校验配置再插待支付单，返回 `pay_url`（legacy `create_direct_pay_by_user`，notify `{web_base_url}/callback/alipay`）。`/user/pay` 有 `pay_url` 则跳转，不再自动 mock-paid。
 - 未做：微信 unifiedorder；沙箱真实付款未跑通。支付 notify handler 原本就在。
+
+## 下一项（本波之后）
+
+微聘 once/tiny 定价档、兼职 show/audit、名企 `a=save` 接到已有 `/hotjobs`、简历 skill/project/other、单页 `singlepage` 错映到新闻、系统分类 ajax、微信菜单 savenav、招聘会 xls/图。
 
 ## 仍弱或故意不做
 
