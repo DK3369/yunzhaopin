@@ -1,3 +1,22 @@
+/** EP 3: on el-radio / el-radio-button, `label` as the selected value is deprecated. */
+function rewriteRadioLabelToValue(code: string) {
+  return code.replace(
+    /<(el-radio(?:-button)?)(\s[\s\S]*?)(\/?)>/g,
+    (_full, tag: string, attrs: string, slash: string) => {
+      const hasValue = /\s(?:v-bind:|:)?value\s*=/.test(attrs)
+      if (hasValue) {
+        attrs = attrs
+          .replace(/\s(?:v-bind:|:)?label\s*=\s*(?:"[^"]*"|'[^']*'|[^\s/>]+)/g, '')
+        return `<${tag}${attrs}${slash}>`
+      }
+      attrs = attrs.replace(/(?<=\s)v-bind:label(\s*=)/g, 'v-bind:value$1')
+      attrs = attrs.replace(/(?<=\s):label(\s*=)/g, ':value$1')
+      attrs = attrs.replace(/(?<=\s)label(\s*=)/g, 'value$1')
+      return `<${tag}${attrs}${slash}>`
+    },
+  )
+}
+
 /** Compile-time EP 2.10 compat: do not batch-edit dozens of PHP Vue templates. */
 function phpAdminEpCompat() {
   return {
@@ -10,6 +29,7 @@ function phpAdminEpCompat() {
       out = out.replaceAll(":underline='false'", 'underline="never"')
       out = out.replaceAll(/(?<!v-model):current-page=/g, 'v-model:current-page=')
       out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
+      out = rewriteRadioLabelToValue(out)
       if (out === code) return
       return { code: out, map: null }
     },
