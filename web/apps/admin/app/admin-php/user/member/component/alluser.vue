@@ -57,13 +57,13 @@
                 </template>
                 <el-table-column type="selection" width="55"> </el-table-column>
                 <el-table-column prop="uid" :label="lc('admin_user_00130')" width="90" sortable="custom"> </el-table-column>
-                <el-table-column :label="lc('admin_user_00119')" min-width="180" show-overflow-tooltip>
+                <el-table-column :label="lc('admin_user_00119')" min-width="180">
                     <template #default="props">
                         <div class="moduleProps">
                             <div>{{props.row.countname }}</div>
                             <el-link @click="getMemberUrl(props.row.uid,props.row.usertype)" target="_blank" type="primary">{{props.row.username }}</el-link>
                             <el-tooltip v-if="props.row.status == 2" class="item" effect="dark" :content="lc('admin_user_00138')" placement="top-start">
-                                <i class="el-icon-lock" style="color: orange"></i>
+                                <span><i class="el-icon-lock" style="color: orange"></i></span>
                             </el-tooltip>
                         </div>
                     </template>
@@ -130,10 +130,10 @@
                             <el-button size="small " plain @click="detailFun(scope.row)">{{ lc('wap_js_00073') }}</el-button>
                             <el-popover placement="bottom" width="90" trigger="hover">
                                 <div class="moduleMores">
-                                    <el-button type="text" @click="lockUser(scope.row)">{{ lc('admin_00435') }}</el-button>
-                                    <el-button type="text" @click="resetPassword(scope.row)">{{ lc('admin_user_00137') }}</el-button>
-                                    <el-button type="text" @click="shareZhan(scope.row)">{{ lc('admin_user_weipin_00029') }}</el-button>
-                                    <el-button type="text" @click="del(scope.row)">{{ lc('admin_00436') }}</el-button>
+                                    <el-button link type="primary" @click="lockUser(scope.row)">{{ lc('admin_00435') }}</el-button>
+                                    <el-button link type="primary" @click="resetPassword(scope.row)">{{ lc('admin_user_00137') }}</el-button>
+                                    <el-button link type="primary" @click="shareZhan(scope.row)">{{ lc('admin_user_weipin_00029') }}</el-button>
+                                    <el-button link type="primary" @click="del(scope.row)">{{ lc('admin_00436') }}</el-button>
                                 </div>
                                 <template #reference><el-button size="small" plain @click="visible = !visible">{{ lc('common.more') }}</el-button></template>
                             </el-popover>

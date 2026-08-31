@@ -83,7 +83,7 @@ flowchart LR
 | `pages` | index/add/save/delete/make/ajax（单页 `phpyun_description`，不再映新闻） |
 | `job-class` | ajax、setrec、get_class、up、getJobClass、classadd、ajaxchachong、ajaxpinyin、move |
 | `cat-class` | list/children/add/save/del/ajax/up/add_single/up_single/upp/ajaxpinyin/clearpinyin/ajaxchachong/classadd（城市/行业/企业/个人/兼职/原因/介绍/校园/培训科目；`kind` 在 body） |
-| `user-gap` | company-num、resume-num（raw）、user-num（raw）、mem-num（会员列表统计，信封）、resume-config、user-config、reset-password、matching、resume-audit |
+| `user-gap` | company-num、resume-num（raw）、user-num（raw）、mem-num、mem-index / logout-index / appeal-index（`{data,total,pageSizes}`）、resume-config、user-config、reset-password、matching、resume-audit |
 | `keyword` | map（关键词类型文案） |
 | `web-config` | index、city（save 走 `site-settings/batch`） |
 | `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav、**creatnav**、**config**（公众号设置，不是菜单列表）、zdkeyword/delkeyword/getzdkeyword/save-zdkeyword |

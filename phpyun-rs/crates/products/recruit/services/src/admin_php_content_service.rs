@@ -3,7 +3,7 @@
 
 use std::collections::HashMap;
 
-use phpyun_core::utils::{fmt_date, fmt_dt};
+use phpyun_core::utils::{fmt_date, fmt_dt, fmt_ts};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::admin_gap::extra as gap_extra;
@@ -21,6 +21,7 @@ use phpyun_models::description::repo as desc_repo;
 use phpyun_models::domain::repo as domain_repo;
 use phpyun_models::gongzhao::repo as gongzhao_repo;
 use phpyun_models::job::repo as job_repo;
+use phpyun_models::member_logout::repo as logout_repo;
 use phpyun_models::once_job::repo as once_repo;
 use phpyun_models::part::repo as part_repo;
 use phpyun_models::poster_template::repo as whb_repo;
@@ -244,6 +245,9 @@ pub async fn dispatch(
         ("user-gap", "resume-num") => Ok(PhpOut::Data(user_gap_resume_num(state).await?)),
         ("user-gap", "user-num") => Ok(PhpOut::Data(user_gap_user_num(state).await?)),
         ("user-gap", "mem-num") => Ok(PhpOut::Data(user_gap_mem_num(state).await?)),
+        ("user-gap", "mem-index") => Ok(PhpOut::Data(user_gap_mem_index(state, body).await?)),
+        ("user-gap", "logout-index") => Ok(PhpOut::Data(user_gap_logout_index(state, body).await?)),
+        ("user-gap", "appeal-index") => Ok(PhpOut::Data(user_gap_appeal_index(state, body).await?)),
         ("user-gap", "resume-config") => Ok(PhpOut::Data(user_gap_resume_config(state).await?)),
         ("user-gap", "user-config") => Ok(PhpOut::Data(user_gap_user_config(state).await?)),
         ("keyword", "map") => Ok(PhpOut::Data(keyword_type_map())),
@@ -409,6 +413,44 @@ fn paged(list: Value, total: u64, page: u32, per: u32) -> Value {
         "limit": per,
         "page": page,
     })
+}
+
+/// PHP admin tables that bind `res.data.data` (not `list`).
+fn php_data_table(data: Vec<Value>, total: u64) -> Value {
+    let sizes = vec![10, 20, 50, 100];
+    json!({
+        "data": data,
+        "total": total,
+        "pageSizes": sizes,
+        "page_sizes": sizes,
+    })
+}
+
+fn json_day_range(body: &Value, key: &str) -> (Option<i64>, Option<i64>) {
+    let arr = match body.get(key) {
+        Some(Value::Array(a)) if a.len() >= 2 => a,
+        _ => return (None, None),
+    };
+    let a = match &arr[0] {
+        Value::String(s) => s.as_str(),
+        _ => return (None, None),
+    };
+    let b = match &arr[1] {
+        Value::String(s) => s.as_str(),
+        _ => return (None, None),
+    };
+    if a.trim().is_empty() || b.trim().is_empty() {
+        return (None, None);
+    }
+    let from = chrono::NaiveDate::parse_from_str(a.trim(), "%Y-%m-%d")
+        .ok()
+        .and_then(|d| d.and_hms_opt(0, 0, 0))
+        .map(|t| t.and_utc().timestamp());
+    let to = chrono::NaiveDate::parse_from_str(b.trim(), "%Y-%m-%d")
+        .ok()
+        .and_then(|d| d.and_hms_opt(23, 59, 59))
+        .map(|t| t.and_utc().timestamp());
+    (from, to)
 }
 
 fn amp(s: &str) -> String {
@@ -4771,6 +4813,145 @@ async fn user_gap_mem_num(state: &AppState) -> AppResult<Value> {
         "memAllNum": all,
         "memStatusNum3": lock,
     }))
+}
+
+async fn user_gap_mem_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (_, _, offset, limit) = page_of(body);
+    let utype = json_opt_i32(body, "utype");
+    let usertype = match utype {
+        Some(5) => Some(0),
+        other => other.filter(|v| *v != 0),
+    };
+    let (t0, t1) = json_day_range(body, "times");
+    let time_type = json_str(body, "time_type");
+    let time_col = match time_type.as_str() {
+        "adtime" if t0.is_some() && t1.is_some() => Some("reg_date"),
+        "lotime" if t0.is_some() && t1.is_some() => Some("login_date"),
+        _ => None,
+    };
+    let kw = json_str(body, "keyword");
+    let f = user_repo::PhpMemberListFilter {
+        usertype,
+        status: json_opt_i32(body, "status"),
+        source: json_opt_i32(body, "source"),
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        kw_type: json_i32(body, "type"),
+        time_col,
+        time_from: t0,
+        time_to: t1,
+    };
+    let db = state.db.reader();
+    let rows = user_repo::list_php_members(db, &f, offset, limit).await?;
+    let total = user_repo::count_php_members(db, &f).await?;
+    let data: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "uid": r.uid,
+                "username": r.username,
+                "email": r.email,
+                "moblie": r.moblie,
+                "moblie_status": r.moblie_status,
+                "reg_ip": r.reg_ip,
+                "reg_date": r.reg_date,
+                "reg_date_n": fmt_ts(r.reg_date, "%Y-%m-%d %H:%M:%S"),
+                "login_ip": r.login_ip,
+                "login_date": r.login_date,
+                "login_date_n": fmt_ts(r.login_date, "%Y-%m-%d %H:%M:%S"),
+                "usertype": r.usertype,
+                "status": r.status,
+                "lock_info": r.lock_info,
+                "source": r.source,
+                "did": r.did,
+                "login_address": r.login_address,
+                "moblie_address": r.moblie_address,
+                "countname": "",
+            })
+        })
+        .collect();
+    Ok(php_data_table(data, total))
+}
+
+async fn user_gap_logout_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (_, _, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let db = state.db.reader();
+    let rows = logout_repo::list_admin(
+        db,
+        json_opt_i32(body, "status"),
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        json_i32(body, "type"),
+        offset,
+        limit,
+    )
+    .await?;
+    let total = logout_repo::count_admin(
+        db,
+        json_opt_i32(body, "status"),
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        json_i32(body, "type"),
+    )
+    .await?;
+    let data: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let usertype_name = match r.usertype {
+                1 => "admin_user_00304",
+                2 => "wap_user_00153",
+                _ => "common_02004",
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "username": r.username,
+                "tel": r.tel,
+                "status": r.status,
+                "ctime": r.ctime,
+                "ctime_ymd": fmt_ts(r.ctime, "%Y-%m-%d %H:%M:%S"),
+                "usertype": r.usertype,
+                "usertype_name": usertype_name,
+            })
+        })
+        .collect();
+    Ok(php_data_table(data, total))
+}
+
+async fn user_gap_appeal_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (_, _, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let db = state.db.reader();
+    let rows = user_repo::list_php_appeals(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        json_opt_i32(body, "appealstate"),
+        offset,
+        limit,
+    )
+    .await?;
+    let total = user_repo::count_php_appeals(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        json_opt_i32(body, "appealstate"),
+    )
+    .await?;
+    let data: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "uid": r.uid,
+                "username": r.username,
+                "appeal": r.appeal,
+                "appealtime": r.appealtime,
+                "appealtime_ymd": fmt_ts(r.appealtime, "%Y-%m-%d %H:%M:%S"),
+                "appealstate": r.appealstate,
+                "moblie": r.moblie,
+                "email": r.email,
+            })
+        })
+        .collect();
+    let mut out = php_data_table(data, total);
+    out["promiss"] = json!({ "email": 1, "moblie": 1 });
+    Ok(out)
 }
 
 async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {

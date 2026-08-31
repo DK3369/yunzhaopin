@@ -8,8 +8,8 @@
 //!   qqid / qqunionid / sinaid / wxid / wxopenid / unionid / wxname / bdopenid
 //!   So OAuth binding on the Rust side uses an allowlist mapping provider → real PHP column name.
 
-use super::entity::Member;
-use sqlx::MySqlPool;
+use super::entity::{AdminAppealListRow, AdminMemberListRow, Member};
+use sqlx::{MySqlPool, QueryBuilder};
 
 type OAuthBindingsRow = (
     Option<String>,
@@ -522,6 +522,160 @@ pub async fn count_admin_status(pool: &MySqlPool, status: i32) -> Result<u64, sq
         .bind(status)
         .fetch_one(pool)
         .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+const MEMBER_LIST_FIELDS: &str = "CAST(uid AS UNSIGNED) AS uid, COALESCE(username,'') AS username, \
+    COALESCE(email,'') AS email, COALESCE(moblie,'') AS moblie, \
+    CAST(COALESCE(moblie_status,0) AS SIGNED) AS moblie_status, COALESCE(reg_ip,'') AS reg_ip, \
+    CAST(COALESCE(reg_date,0) AS SIGNED) AS reg_date, COALESCE(login_ip,'') AS login_ip, \
+    CAST(COALESCE(login_date,0) AS SIGNED) AS login_date, CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, \
+    CAST(COALESCE(status,0) AS SIGNED) AS status, COALESCE(lock_info,'') AS lock_info, \
+    CAST(COALESCE(source,0) AS SIGNED) AS source, CAST(COALESCE(did,0) AS UNSIGNED) AS did, \
+    COALESCE(login_address,'') AS login_address, COALESCE(moblie_address,'') AS moblie_address";
+
+pub struct PhpMemberListFilter<'a> {
+    pub usertype: Option<i32>,
+    pub status: Option<i32>,
+    pub source: Option<i32>,
+    pub keyword: Option<&'a str>,
+    pub kw_type: i32,
+    pub time_col: Option<&'a str>,
+    pub time_from: Option<i64>,
+    pub time_to: Option<i64>,
+}
+
+fn push_php_member_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpMemberListFilter<'a>) {
+    qb.push(" AND pid = 0");
+    if let Some(t) = f.usertype {
+        qb.push(" AND usertype = ");
+        qb.push_bind(t);
+    }
+    if let Some(s) = f.status {
+        qb.push(" AND status = ");
+        qb.push_bind(s);
+    }
+    if let Some(src) = f.source.filter(|v| *v > 0) {
+        qb.push(" AND source = ");
+        qb.push_bind(src);
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        match f.kw_type {
+            2 => {
+                qb.push(" AND moblie LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            3 => {
+                let uid: u64 = kw.parse().unwrap_or(0);
+                qb.push(" AND uid = ");
+                qb.push_bind(uid);
+            }
+            4 => {
+                qb.push(" AND (reg_ip LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR login_ip LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            _ => {
+                qb.push(" AND username LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+        }
+    }
+    if let (Some(col), Some(from), Some(to)) = (f.time_col, f.time_from, f.time_to) {
+        let col = match col {
+            "login_date" => "login_date",
+            _ => "reg_date",
+        };
+        qb.push(" AND ");
+        qb.push(col);
+        qb.push(" >= ");
+        qb.push_bind(from);
+        qb.push(" AND ");
+        qb.push(col);
+        qb.push(" <= ");
+        qb.push_bind(to);
+    }
+}
+
+pub async fn list_php_members(
+    pool: &MySqlPool,
+    f: &PhpMemberListFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<AdminMemberListRow>, sqlx::Error> {
+    let limit = phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?;
+    let offset = phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(MEMBER_LIST_FIELDS);
+    qb.push(" FROM phpyun_member WHERE 1=1");
+    push_php_member_filters(&mut qb, f);
+    qb.push(" ORDER BY uid DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_members(
+    pool: &MySqlPool,
+    f: &PhpMemberListFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_member WHERE 1=1");
+    push_php_member_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn list_php_appeals(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    appealstate: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<AdminAppealListRow>, sqlx::Error> {
+    let limit = phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?;
+    let offset = phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(username,'') AS username, \
+         COALESCE(appeal,'') AS appeal, CAST(COALESCE(appealtime,0) AS SIGNED) AS appealtime, \
+         CAST(COALESCE(appealstate,0) AS SIGNED) AS appealstate, COALESCE(moblie,'') AS moblie, \
+         COALESCE(email,'') AS email FROM phpyun_member WHERE appeal IS NOT NULL AND appeal <> ''",
+    );
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(st) = appealstate {
+        qb.push(" AND appealstate = ");
+        qb.push_bind(st);
+    }
+    qb.push(" ORDER BY appealstate ASC, appealtime DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_appeals(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    appealstate: Option<i32>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_member WHERE appeal IS NOT NULL AND appeal <> ''",
+    );
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(st) = appealstate {
+        qb.push(" AND appealstate = ");
+        qb.push_bind(st);
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
