@@ -124,29 +124,6 @@ function patchTableBodyWrapper(inst: Record<string, unknown>) {
   }
 }
 
-const dummyTable = {
-  bodyWrapper: { scrollTop: 0 },
-  doLayout() {},
-  getList() {},
-  init() {},
-}
-
-function patchMissingTableRefs(inst: Record<string, unknown> & { __refsPatched?: boolean }) {
-  const refs = inst.$refs
-  if (!refs || typeof refs !== 'object' || inst.__refsPatched) return
-  inst.__refsPatched = true
-  inst.$refs = new Proxy(refs as Record<string, unknown>, {
-    get(target, prop, recv) {
-      const v = Reflect.get(target, prop, recv)
-      if (v != null) return v
-      if (prop === 'multipleTable' || (typeof prop === 'string' && /Table$/i.test(prop))) {
-        return dummyTable
-      }
-      return v
-    },
-  })
-}
-
 const message = {
   success(msg: string, closeFun?: () => void) {
     ElMessage.success({ message: lc(msg, null, msg), onClose: closeFun })
@@ -372,7 +349,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       inst.$alert = ElMessageBox.alert
       inst.$notify = ElNotification
       inst.$loading = ElLoading.service
-      patchMissingTableRefs(inst as unknown as Record<string, unknown> & { __refsPatched?: boolean })
       // Element Plus tab-click gives paneName / props.name; PHP still reads tab.name.
       const origClick = inst.handleClick
       if (typeof origClick === 'function' && !inst.__epTabPatched) {
