@@ -21,7 +21,6 @@ phpyun_auth.workspace = true
 phpyun_models.workspace = true
 arc-swap.workspace = true
 chrono.workspace = true
-num-traits.workspace = true
 
 [lints]
 workspace = true

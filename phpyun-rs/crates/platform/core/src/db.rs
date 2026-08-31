@@ -34,7 +34,6 @@ use crate::clock;
 use crate::config::Config;
 use crate::metrics as m;
 use crate::{ApiError, AppResult};
-use num_traits::ToPrimitive;
 use sqlx::mysql::{MySqlConnectOptions, MySqlPool, MySqlPoolOptions};
 use sqlx::{ConnectOptions, MySql, Transaction};
 use std::future::Future;
@@ -178,13 +177,13 @@ impl Db {
         m::gauge_set("db.pool.size", f64::from(self.writer.size()));
         m::gauge_set(
             "db.pool.idle",
-            self.writer.num_idle().to_f64().unwrap_or(f64::MAX),
+            crate::numeric::usize_to_f64(self.writer.num_idle()),
         );
         if let Some(reader) = &self.reader {
             m::gauge_set("db.reader.pool.size", f64::from(reader.size()));
             m::gauge_set(
                 "db.reader.pool.idle",
-                reader.num_idle().to_f64().unwrap_or(f64::MAX),
+                crate::numeric::usize_to_f64(reader.num_idle()),
             );
         }
     }

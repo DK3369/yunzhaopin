@@ -8,8 +8,6 @@ use std::any::type_name;
 use std::fmt::{self, Display};
 use std::time::Duration;
 
-use num_traits::ToPrimitive;
-
 use crate::{ApiError, AppResult};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -144,35 +142,58 @@ pub fn saturating_millis(duration: Duration) -> u64 {
     u64::try_from(duration.as_millis()).unwrap_or(u64::MAX)
 }
 
-pub fn finite_to_f64<T>(value: T, context: &'static str) -> AppResult<f64>
-where
-    T: Copy + Display + ToPrimitive,
-{
+pub fn finite_to_f64(value: f64, context: &'static str) -> AppResult<f64> {
     finite_to_f64_checked(value, context).map_err(ApiError::internal)
 }
 
-pub fn finite_to_f64_db<T>(value: T, context: &'static str) -> Result<f64, sqlx::Error>
-where
-    T: Copy + Display + ToPrimitive,
-{
+pub fn finite_to_f64_db(value: f64, context: &'static str) -> Result<f64, sqlx::Error> {
     finite_to_f64_checked(value, context).map_err(|error| sqlx::Error::Decode(Box::new(error)))
 }
 
-fn finite_to_f64_checked<T>(value: T, context: &'static str) -> Result<f64, NumericConversionError>
-where
-    T: Copy + Display + ToPrimitive,
-{
-    let converted = value.to_f64().ok_or_else(|| {
-        NumericConversionError::new::<f64>(context, value, "precision/range conversion failed")
-    })?;
-    if !converted.is_finite() {
+fn finite_to_f64_checked(value: f64, context: &'static str) -> Result<f64, NumericConversionError> {
+    if !value.is_finite() {
         return Err(NumericConversionError::new::<f64>(
             context,
             value,
             "value is not finite",
         ));
     }
-    Ok(converted)
+    Ok(value)
+}
+
+/// Lossy `i64` → `f64` for ratios and price multipliers (pool / chart / VIP).
+#[allow(clippy::as_conversions)]
+pub fn i64_to_f64(value: i64) -> f64 {
+    value as f64
+}
+
+/// Connection-pool idle counts are `usize` but the pool size itself is `u32`.
+pub fn usize_to_f64(value: usize) -> f64 {
+    f64::from(u32::try_from(value).unwrap_or(u32::MAX))
+}
+
+/// Display-only `u32` → `f32` (rating `avg_x100` / 100).
+#[allow(clippy::as_conversions)]
+pub fn u32_to_f32(value: u32) -> f32 {
+    value as f32
+}
+
+#[allow(clippy::as_conversions)]
+fn f64_to_i64(value: f64) -> Option<i64> {
+    if (i64::MIN as f64..=i64::MAX as f64).contains(&value) {
+        Some(value as i64)
+    } else {
+        None
+    }
+}
+
+fn f64_to_u32(value: f64) -> Option<u32> {
+    if (0.0..=f64::from(u32::MAX)).contains(&value) {
+        #[allow(clippy::as_conversions)]
+        Some(value as u32)
+    } else {
+        None
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -214,7 +235,7 @@ fn finite_f64_to_i64_checked(
         FloatRounding::Round => value.round(),
         FloatRounding::Truncate => value.trunc(),
     };
-    normalized.to_i64().ok_or_else(|| {
+    f64_to_i64(normalized).ok_or_else(|| {
         NumericConversionError::new::<i64>(context, value, "value is outside the i64 range")
     })
 }
@@ -239,7 +260,7 @@ fn integral_f64_to_u32_checked(
             "value must be a finite whole number",
         ));
     }
-    value.to_u32().ok_or_else(|| {
+    f64_to_u32(value).ok_or_else(|| {
         NumericConversionError::new::<u32>(context, value, "value is outside the u32 range")
     })
 }

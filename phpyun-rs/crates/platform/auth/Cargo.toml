@@ -6,7 +6,6 @@ edition.workspace = true
 [dependencies]
 argon2.workspace = true
 md-5.workspace = true
-chrono.workspace = true
 tokio.workspace = true
 anyhow.workspace = true
 phpyun_core.workspace = true

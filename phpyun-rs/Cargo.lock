@@ -2115,7 +2115,6 @@ name = "phpyun-api-admin"
 version = "0.1.2"
 dependencies = [
  "axum",
- "chrono",
  "phpyun-core",
  "phpyun-handlers",
  "phpyun-models",
@@ -2134,7 +2133,6 @@ version = "0.1.2"
 dependencies = [
  "anyhow",
  "argon2",
- "chrono",
  "md-5",
  "phpyun-core",
  "tokio",
@@ -2156,7 +2154,6 @@ dependencies = [
  "metrics",
  "metrics-exporter-prometheus",
  "moka",
- "num-traits",
  "redis",
  "reqwest",
  "rust-i18n",
@@ -2182,9 +2179,6 @@ version = "0.1.2"
 dependencies = [
  "axum",
  "axum-test",
- "bytes",
- "chrono",
- "num-traits",
  "phpyun-core",
  "phpyun-models",
  "phpyun-services",
@@ -2237,7 +2231,6 @@ dependencies = [
  "captcha",
  "chrono",
  "md-5",
- "num-traits",
  "phpyun-auth",
  "phpyun-core",
  "phpyun-models",
@@ -2692,7 +2685,6 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "futures-core",
- "h2",
  "http",
  "http-body",
  "http-body-util",
@@ -3644,7 +3636,6 @@ dependencies = [
  "bytes",
  "libc",
  "mio",
- "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
  "socket2",
@@ -4019,7 +4010,6 @@ dependencies = [
  "quote",
  "regex",
  "syn 2.0.119",
- "uuid",
 ]
 
 [[package]]
@@ -4030,7 +4020,6 @@ checksum = "bf3923a6f5c4c6382e0b653c4117f48d631ea17f38ed86e2a828e6f7412f5239"
 dependencies = [
  "getrandom 0.4.3",
  "js-sys",
- "serde_core",
  "wasm-bindgen",
 ]
 

@@ -31,7 +31,7 @@ tower_governor = "0.8"
 # ---- Async runtime ----
 tokio = { version = "1.52", features = [
     "rt-multi-thread", "macros", "sync", "net", "time",
-    "signal", "io-util", "fs", "parking_lot",
+    "signal", "io-util", "fs",
 ] }
 tokio-util = { version = "0.7", features = ["rt"] }
 tokio-stream = "0.1"
@@ -41,7 +41,7 @@ sqlx = { version = "0.8", features = [
     "mysql", "runtime-tokio-rustls", "chrono", "migrate",
 ] }
 redis = { version = "1.2", features = ["tokio-comp", "connection-manager"] }
-reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "http2"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls"] }
 
 # ---- Auth ----
 jsonwebtoken = { version = "10", default-features = false, features = ["rust_crypto"] }
@@ -61,7 +61,6 @@ metrics-exporter-prometheus = { version = "0.16", default-features = false, feat
 
 # ---- Errors ----
 anyhow = "1"
-num-traits = "0.2"
 # Lock-free atomic Arc swap; used by dict_service's global cache read path, ~10ns and fully lock-free.
 arc-swap = "1"
 
@@ -92,7 +91,7 @@ validator = { version = "0.20", features = ["derive"] }
 axum-test = "17"
 
 # ---- OpenAPI auto docs ----
-utoipa = { version = "5", features = ["axum_extras", "chrono", "uuid"] }
+utoipa = { version = "5", features = ["axum_extras", "chrono"] }
 
 # ---- Internal workspace crate aliases (avoid clashing with Rust's built-in `core`) ----
 phpyun_core = { path = "crates/platform/core", package = "phpyun-core" }

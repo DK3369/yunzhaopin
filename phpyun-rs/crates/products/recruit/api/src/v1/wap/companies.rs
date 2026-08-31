@@ -2,6 +2,7 @@
 
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::UidBody;
+use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
 };
@@ -414,13 +415,9 @@ pub async fn company_detail(
         integral: c.integral,
 
         lastupdate: c.lastupdate,
-        addtime_n: chrono::DateTime::from_timestamp(c.addtime, 0)
-            .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-            .unwrap_or_default(),
+        addtime_n: fmt_dt(c.addtime),
         addtime: c.addtime,
-        login_date_n: chrono::DateTime::from_timestamp(c.login_date, 0)
-            .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-            .unwrap_or_default(),
+        login_date_n: fmt_dt(c.login_date),
         login_date: c.login_date,
 
         did: c.did,

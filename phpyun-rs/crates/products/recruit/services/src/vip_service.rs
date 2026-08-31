@@ -277,7 +277,7 @@ pub async fn quote_package_price(
     // PHP `service_discount` is a percent (e.g. 80 = 80%); divide by 100.
     let discount_factor = f64::from(discount) / 100.0;
     let pro = phpyun_core::numeric::finite_to_f64_db(
-        proportion.max(0),
+        phpyun_core::numeric::i64_to_f64(proportion.max(0)),
         "site_setting.integral_proportion",
     )?; // multiplier between yuan and integral
 

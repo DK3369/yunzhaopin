@@ -10,7 +10,6 @@
 //! `lastupdate`. All queries go through the `reader` read replica (auto-falls back to
 //! the writer when none is configured).
 
-use num_traits::ToPrimitive;
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{AppResult, AppState};
 use serde::Serialize;
@@ -111,7 +110,7 @@ fn rate(n: i64, total: i64) -> f64 {
     if total <= 0 {
         0.0
     } else {
-        n.to_f64().unwrap_or_default() / total.to_f64().unwrap_or(1.0)
+        phpyun_core::numeric::i64_to_f64(n) / phpyun_core::numeric::i64_to_f64(total).max(1.0)
     }
 }
 

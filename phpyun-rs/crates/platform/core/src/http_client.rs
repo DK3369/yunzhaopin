@@ -12,7 +12,7 @@
 //! - The underlying `reqwest::Client` is `Arc` internally; `.clone()` across
 //!   threads is zero-cost.
 //! - Keep-alive + per-host connection pool (TCP/TLS reuse on Tokio).
-//! - `rustls` (no `libssl`); HTTP/2 enabled.
+//! - `rustls` (no `libssl`); HTTP/1.1 is enough for WeChat / SMS / OAuth.
 //!
 //! ## Observability
 //! - `http.client.latency_ms{host, status}` histogram.
