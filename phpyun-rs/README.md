@@ -1,20 +1,23 @@
 # phpyun-rs
 
-PHPYun 的 Rust 后端。Web 前台与管理后台见仓库根目录 `web/`（Nuxt 4）。总方案：[doc/FRONTEND_BACKEND_SPLIT.md](../doc/FRONTEND_BACKEND_SPLIT.md)。分层约定：[docs/CRATE_LAYERING.md](docs/CRATE_LAYERING.md)。
+PHPYun 的 Rust 后端。Web 前台与管理后台见仓库根目录 `web/`（Nuxt 4）。
+
+文档分类（现状 / 历史 / 契约 / 运维）：[`.cursor/docs/rust/README.md`](../.cursor/docs/rust/README.md)。分层：[docs/CRATE_LAYERING.md](docs/CRATE_LAYERING.md)。2026-08 方案原稿：[doc/FRONTEND_BACKEND_SPLIT.md](../doc/FRONTEND_BACKEND_SPLIT.md)（文内「现状」已过时）。
 
 旧的 [PROJECT_PLAN.md](../PROJECT_PLAN.md) 描述「保留 PHP 后台 + 灰度」，**已废弃**，以分离方案为准。
 
 ## 快速启动
 
+本机现网用 systemd，不要 `cargo run` 抢 `:3003`：
+
 ```bash
-cd phpyun-rs
-# .env.dev 已包含开发库连接；按需改 DATABASE_URL / REDIS_URL / JWT_SECRET
-cargo run -p phpyun-rs
+/www/wwwroot/zzzz.com/ops/restart.sh rust --build
 curl -i http://127.0.0.1:3003/health
-# 开发环境看契约：http://127.0.0.1:3003/api-docs/v1/openapi.json
 ```
 
-`APP_ENV` 只能是 `dev` / `test` / `prod`。debug 读 `.env.dev`，release 读 `.env.pro`。也可用 `PHPYUN_ENV_FILE` 指定文件。
+本地另起进程时才 `cargo run -p phpyun-rs`（须改 `BIND`）。契约：`http://127.0.0.1:3003/api-docs/v1/openapi.json`。细节见 [`.cursor/docs/rust/run.md`](../.cursor/docs/rust/run.md)。
+
+`APP_ENV` 只能是 `dev` / `test` / `prod`。debug 读 `.env.dev`，release 读 `.env.pro`。也可用 `PHPYUN_ENV_FILE` 指定文件。现网 unit 用 `PHPYUN_ENV_FILE` 指 `.env`（库 **jobs**）。
 
 ## Workspace
 

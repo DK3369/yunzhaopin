@@ -286,8 +286,9 @@ Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/pro
 | 该看 | 不该当现状 |
 |---|---|
 | 本文 | `doc/plans/*.md` 某日提纲 |
-| `ADMIN_PHP_TO_NUXT.md` 约定 | `FRONTEND_BACKEND_SPLIT.md` 里的「当前数字」 |
-| `phpMap.ts`、`dispatch` 源码 | `ADMIN_PROGRESS.md` / `API_GAP.md` 里的条数 |
+| Cursor 分类索引 [`.cursor/docs/rust/README.md`](../.cursor/docs/rust/README.md) | `FRONTEND_BACKEND_SPLIT.md` 里的「当前数字」 |
+| `ADMIN_PHP_TO_NUXT.md` 约定 | `ADMIN_PROGRESS.md` / `API_GAP.md` 里的条数 |
+| `phpMap.ts`、`dispatch` 源码 | `PROJECT_PLAN.md`（「保留 PHP 后台」已废弃） |
 
 改了进 OpenAPI 的路由，才更新 `doc/snapshots/` 并跑：
 

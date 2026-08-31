@@ -9,3 +9,4 @@ alwaysApply: true
 2. **以后没有 `:3000`**。不要 `systemctl start/enable test-jobs-phpyun-rs`，不要绑 `BIND=:3000`，不要把 nginx `/yapi/` `/callback/` `/v1/` 指回 3000。
 3. **不要改 PHP 原项目**：`uploads/` 下控制器、模板、后台 Vue 源码只读对照。用户上传文件目录可继续给静态 alias，但不要改 PHP 业务代码。
 4. 改接口只动 `phpyun-rs/`；改页面只动 `web/`。编译后 `sudo systemctl restart test-jobs-phpyun-rs-3003`。
+5. Rust 文档索引：[`.cursor/docs/rust/README.md`](../docs/rust/README.md)（现状 / 历史 / 契约 / 运维分类）。改 `phpyun-rs/` 时另读 `rust-code.mdc`。

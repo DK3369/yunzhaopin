@@ -1,0 +1,21 @@
+---
+description: 改 phpyun-rs 时读分层、契约、编译方式；禁止 handler 直连 SQL
+globs: phpyun-rs/**
+alwaysApply: false
+---
+
+# 改 Rust 代码
+
+先读 [`.cursor/docs/rust/README.md`](../docs/rust/README.md)。硬边界（`:3003` / `jobs` / 不改 `uploads/`）见 `rust-php-boundary.mdc`。
+
+## 分层
+
+handlers / api-admin **禁止** `sqlx`、`redis`、`reqwest`、业务规则。SQL 在 `models` repo。新接口：App → handlers（`/v1/wap` `/v1/mcenter` 只加法）；后台 → api-admin。不要万能 `invoke`。
+
+## 契约
+
+信封 `{code,key,msg,data}`；`msg` 是已翻译文本。PHP 列表筛选项用 `de_loose_i32_opt` 接 `""`/`"0"`。软删：`format!(... {PREDICATE} ...)`，不要把 `{PREDICATE}` 写进普通 SQL 字符串。改公开路由才动 `doc/snapshots/`。
+
+## 编译 / 重启
+
+`ops/restart.sh rust --build`。手工：`TMPDIR=/var/tmp/cargo-tmp CARGO_TARGET_DIR=phpyun-rs/target cargo build -p phpyun-rs --offline -j 1`，然后 `sudo systemctl restart test-jobs-phpyun-rs-3003`。不要起 `:3000`。reqwest 保持 rustls + ring。

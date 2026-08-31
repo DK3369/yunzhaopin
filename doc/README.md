@@ -2,6 +2,8 @@
 
 **先读 [ARCHITECTURE.md](./ARCHITECTURE.md)。** 文首「完成面一览」是路径 / 端口 / URL；后文是运行拓扑与契约。不是改造任务清单。
 
+Cursor / 改 Rust 时用 [`.cursor/docs/rust/README.md`](../.cursor/docs/rust/README.md)（分类索引，不复制长文）。
+
 | 文件 | 是什么 | 怎么用 |
 |---|---|---|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | **现状**：进程、目录、调用链、契约、硬约束 | 改代码前读 |
