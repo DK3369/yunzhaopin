@@ -262,6 +262,132 @@ pub async fn count_member_logs(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub struct PhpMemberLogFilter<'a> {
+    pub usertype: i32,
+    pub uid: Option<u64>,
+    pub username_like: Option<&'a str>,
+    pub content_like: Option<&'a str>,
+    pub opera: Option<i32>,
+    pub log_type: Option<i32>,
+    pub time_from: Option<i64>,
+    pub time_to: Option<i64>,
+    pub order_t: &'a str,
+    pub order_dir: &'a str,
+}
+
+fn push_php_member_log_filters<'a>(
+    qb: &mut QueryBuilder<'a, sqlx::MySql>,
+    f: &PhpMemberLogFilter<'a>,
+) {
+    qb.push(" AND l.usertype = ");
+    qb.push_bind(f.usertype);
+    if let Some(u) = f.uid.filter(|v| *v > 0) {
+        qb.push(" AND l.uid = ");
+        qb.push_bind(u);
+    }
+    if let Some(kw) = f.username_like.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND l.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(")");
+    }
+    if let Some(kw) = f.content_like.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND (l.content LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR l.id IN (SELECT log_id FROM phpyun_member_log_detail WHERE detail LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push("))");
+    }
+    if let Some(op) = f.opera.filter(|v| *v > 0) {
+        qb.push(" AND l.opera = ");
+        qb.push_bind(op);
+    }
+    if let Some(t) = f.log_type.filter(|v| *v > 0) {
+        qb.push(" AND l.`type` = ");
+        qb.push_bind(t);
+    }
+    if let Some(t0) = f.time_from {
+        qb.push(" AND l.ctime >= ");
+        qb.push_bind(t0);
+    }
+    if let Some(t1) = f.time_to {
+        qb.push(" AND l.ctime <= ");
+        qb.push_bind(t1);
+    }
+}
+
+fn push_php_member_log_order<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, t: &str, order: &str) {
+    let asc = order.eq_ignore_ascii_case("asc");
+    qb.push(" ORDER BY ");
+    qb.push(match (t, asc) {
+        ("uid", true) => "l.uid ASC",
+        ("uid", false) => "l.uid DESC",
+        ("ctime", true) => "l.ctime ASC",
+        ("ctime", false) => "l.ctime DESC",
+        ("id", true) => "l.id ASC",
+        _ => "l.id DESC",
+    });
+}
+
+pub async fn list_php_member_logs(
+    pool: &MySqlPool,
+    f: &PhpMemberLogFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpMemberLogListRow>, sqlx::Error> {
+    let (lmt, off) = lim(limit, offset)?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(l.id AS UNSIGNED) AS id, CAST(COALESCE(l.uid,0) AS UNSIGNED) AS uid, \
+         CAST(COALESCE(l.opera,0) AS SIGNED) AS opera, CAST(COALESCE(l.`type`,0) AS SIGNED) AS `type`, \
+         CAST(COALESCE(l.usertype,0) AS SIGNED) AS usertype, COALESCE(l.content,'') AS content, \
+         COALESCE(l.ip,'') AS ip, CAST(COALESCE(l.ctime,0) AS SIGNED) AS ctime, \
+         CAST(COALESCE(l.remoteport,0) AS SIGNED) AS remoteport, \
+         COALESCE(m.username,'') AS username, COALESCE(r.name,'') AS rname, \
+         CAST(COALESCE(r.def_job,0) AS UNSIGNED) AS eid, COALESCE(c.name,'') AS comname, \
+         CAST(COALESCE(m.pid,0) AS UNSIGNED) AS pid, COALESCE(d.detail,'') AS sub_n \
+         FROM phpyun_member_log l \
+         LEFT JOIN phpyun_member m ON m.uid = l.uid \
+         LEFT JOIN (SELECT uid, MIN(name) AS name, MAX(def_job) AS def_job FROM phpyun_resume GROUP BY uid) r \
+           ON r.uid = l.uid \
+         LEFT JOIN phpyun_company c ON c.uid = l.uid \
+         LEFT JOIN (SELECT log_id, MAX(detail) AS detail FROM phpyun_member_log_detail GROUP BY log_id) d \
+           ON d.log_id = l.id \
+         WHERE 1=1",
+    );
+    push_php_member_log_filters(&mut qb, f);
+    push_php_member_log_order(&mut qb, f.order_t, f.order_dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(lmt);
+    qb.push(" OFFSET ");
+    qb.push_bind(off);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_member_logs(
+    pool: &MySqlPool,
+    f: &PhpMemberLogFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_member_log l WHERE 1=1");
+    push_php_member_log_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_php_member_logs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(pool, "DELETE FROM phpyun_member_log WHERE id IN (", ids).await
+}
+
+pub async fn delete_php_member_logs_by_usertype(
+    pool: &MySqlPool,
+    usertype: i32,
+) -> Result<u64, sqlx::Error> {
+    let r = sqlx::query("DELETE FROM phpyun_member_log WHERE usertype = ?")
+        .bind(usertype)
+        .execute(pool)
+        .await?;
+    Ok(r.rows_affected())
+}
+
 // ---------- company logo / shows / content ----------
 
 pub async fn list_company_photos(

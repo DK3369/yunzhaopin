@@ -8,6 +8,7 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_gap::repo as gap_repo;
+use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::company_statis::repo as cstatis_repo;
 use phpyun_models::integral_transfer::repo as pay_repo;
 use phpyun_models::member_statis::repo as mstatis_repo;
@@ -248,6 +249,10 @@ pub async fn dispatch(
         ("user-gap", "mem-index") => Ok(PhpOut::Data(user_gap_mem_index(state, body).await?)),
         ("user-gap", "logout-index") => Ok(PhpOut::Data(user_gap_logout_index(state, body).await?)),
         ("user-gap", "appeal-index") => Ok(PhpOut::Data(user_gap_appeal_index(state, body).await?)),
+        ("user-gap", "login-index") => Ok(PhpOut::Data(user_gap_login_index(state, body).await?)),
+        ("user-gap", "login-del") => user_gap_login_del(state, body).await,
+        ("user-gap", "memlog-index") => Ok(PhpOut::Data(user_gap_memlog_index(state, body).await?)),
+        ("user-gap", "memlog-del") => user_gap_memlog_del(state, body).await,
         ("user-gap", "resume-config") => Ok(PhpOut::Data(user_gap_resume_config(state).await?)),
         ("user-gap", "user-config") => Ok(PhpOut::Data(user_gap_user_config(state).await?)),
         ("keyword", "map") => Ok(PhpOut::Data(keyword_type_map())),
@@ -4952,6 +4957,201 @@ async fn user_gap_appeal_index(state: &AppState, body: &Value) -> AppResult<Valu
     let mut out = php_data_table(data, total);
     out["promiss"] = json!({ "email": 1, "moblie": 1 });
     Ok(out)
+}
+
+fn start_of_utc_day(ts: i64) -> i64 {
+    ts - ts.rem_euclid(86400)
+}
+
+fn user_gap_log_usertype(body: &Value) -> i32 {
+    json_opt_i32(body, "utype").filter(|v| *v > 0).unwrap_or(1)
+}
+
+fn user_gap_log_del_usertype(body: &Value) -> Option<i32> {
+    match json_str(body, "del").as_str() {
+        "alluser" => Some(1),
+        "allcom" => Some(2),
+        "alltrain" => Some(4),
+        _ => None,
+    }
+}
+
+/// PHP `admin_loginlog::index_action` — `{data,total,pageSizes}`.
+async fn user_gap_login_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (_, _, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let content = json_str(body, "content");
+    let kw_type = json_i32(body, "type");
+    let (t0, t1) = json_day_range(body, "times");
+    let mut username_like: Option<String> = None;
+    let mut content_like: Option<String> = None;
+    let mut uid = json_u64(body, "uid");
+    if !kw.is_empty() {
+        match kw_type {
+            1 => username_like = Some(kw.clone()),
+            2 => content_like = Some(kw.clone()),
+            3 => uid = kw.parse().unwrap_or(0),
+            _ => {}
+        }
+    }
+    if !content.is_empty() {
+        content_like = Some(content.clone());
+    }
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = admin_msg_repo::PhpLoginLogFilter {
+        usertype: user_gap_log_usertype(body),
+        uid: if uid > 0 { Some(uid) } else { None },
+        username_like: username_like.as_deref(),
+        content_like: content_like.as_deref(),
+        time_from: t0,
+        time_to: t1,
+        order_t: order_t.as_str(),
+        order_dir: order_dir.as_str(),
+    };
+    let db = state.db.reader();
+    let rows = admin_msg_repo::list_php_login_logs(db, &f, offset, limit).await?;
+    let total = admin_msg_repo::count_php_login_logs(db, &f).await?;
+    let data: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "usertype": r.usertype,
+                "content": r.content,
+                "ip": r.ip,
+                "ctime": r.ctime,
+                "ctime_ymd": fmt_ts(r.ctime, "%Y-%m-%d %H:%M:%S"),
+                "remoteport": r.remoteport,
+                "username": r.username,
+                "rname": r.rname,
+                "eid": r.eid,
+                "comname": r.comname,
+                "pid": r.pid,
+            })
+        })
+        .collect();
+    Ok(php_data_table(data, total))
+}
+
+/// PHP `admin_loginlog::dellog_action`.
+async fn user_gap_login_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let db = state.db.pool();
+    if let Some(ut) = user_gap_log_del_usertype(body) {
+        admin_msg_repo::delete_php_login_logs_by_usertype(db, ut).await?;
+        let msg = match ut {
+            2 => "admin_01296",
+            4 => "admin_01298",
+            _ => "admin_01297",
+        };
+        return Ok(PhpOut::Message(msg));
+    }
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Ok(PhpOut::Message("model_00034"));
+    }
+    admin_msg_repo::delete_php_login_logs(db, &ids).await?;
+    Ok(PhpOut::Message("admin_model_00163"))
+}
+
+/// PHP `admin_memberlog::index_action` — `{data,total,pageSizes}`.
+async fn user_gap_memlog_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (_, _, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let content = json_str(body, "content");
+    let kw_type = json_i32(body, "type");
+    let (t0, t1) = json_day_range(body, "time");
+    let mut username_like: Option<String> = None;
+    let mut uid = json_u64(body, "uid");
+    if !kw.is_empty() {
+        match kw_type {
+            1 => username_like = Some(kw.clone()),
+            3 => uid = kw.parse().unwrap_or(0),
+            _ => {}
+        }
+    }
+    let now = clock::now_ts();
+    let mut time_from = t0;
+    if let Some(end) = json_opt_i32(body, "end") {
+        let from_end = if end == 1 {
+            start_of_utc_day(now)
+        } else if end > 0 {
+            now.saturating_sub(i64::from(end) * 86400)
+        } else {
+            0
+        };
+        if from_end > 0 {
+            time_from = Some(time_from.map_or(from_end, |t| t.max(from_end)));
+        }
+    }
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gap_repo::PhpMemberLogFilter {
+        usertype: user_gap_log_usertype(body),
+        uid: if uid > 0 { Some(uid) } else { None },
+        username_like: username_like.as_deref(),
+        content_like: if content.is_empty() {
+            None
+        } else {
+            Some(content.as_str())
+        },
+        opera: json_opt_i32(body, "operas"),
+        log_type: json_opt_i32(body, "parrs"),
+        time_from,
+        time_to: t1,
+        order_t: order_t.as_str(),
+        order_dir: order_dir.as_str(),
+    };
+    let db = state.db.reader();
+    let rows = gap_repo::list_php_member_logs(db, &f, offset, limit).await?;
+    let total = gap_repo::count_php_member_logs(db, &f).await?;
+    let data: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "opera": r.opera,
+                "type": r.r#type,
+                "usertype": r.usertype,
+                "content": r.content,
+                "ip": r.ip,
+                "ctime": r.ctime,
+                "ctime_ymd": fmt_ts(r.ctime, "%Y-%m-%d %H:%M:%S"),
+                "remoteport": r.remoteport,
+                "username": r.username,
+                "rname": r.rname,
+                "eid": r.eid,
+                "comname": r.comname,
+                "pid": r.pid,
+                "sub_n": r.sub_n,
+                "com_url": "",
+                "comp_url": "",
+            })
+        })
+        .collect();
+    Ok(php_data_table(data, total))
+}
+
+/// PHP `admin_memberlog::delLog_action`.
+async fn user_gap_memlog_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let db = state.db.pool();
+    if let Some(ut) = user_gap_log_del_usertype(body) {
+        gap_repo::delete_php_member_logs_by_usertype(db, ut).await?;
+        let msg = match ut {
+            2 => "admin_01296",
+            4 => "admin_01298",
+            _ => "admin_01297",
+        };
+        return Ok(PhpOut::Message(msg));
+    }
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Ok(PhpOut::Message("common_00740"));
+    }
+    gap_repo::delete_php_member_logs(db, &ids).await?;
+    Ok(PhpOut::Message("admin_user_00187"))
 }
 
 async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {

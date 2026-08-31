@@ -52,6 +52,26 @@ pub struct MemberLogRow {
     pub ctime: i64,
 }
 
+/// PHP `admin_memberlog::index` row after `getMemlogList(..., utype=admin)`.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct PhpMemberLogListRow {
+    pub id: u64,
+    pub uid: u64,
+    pub opera: i32,
+    pub r#type: i32,
+    pub usertype: i32,
+    pub content: String,
+    pub ip: String,
+    pub ctime: i64,
+    pub remoteport: i32,
+    pub username: String,
+    pub rname: String,
+    pub eid: u64,
+    pub comname: String,
+    pub pid: u64,
+    pub sub_n: String,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct CompanyPhotoRow {
     pub uid: u64,

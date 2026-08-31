@@ -1,7 +1,7 @@
 //! PHP `msgNum_model::msgNum()` pending-review counts for the admin home.
 
 use serde::Serialize;
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct AdminMsgNum {
@@ -166,7 +166,7 @@ pub async fn load(pool: &MySqlPool, now: i64) -> AdminMsgNum {
         + m.userchangenum
         + m.handlenum
         + m.logout
-        +         m.warning;
+        + m.warning;
     m
 }
 
@@ -228,6 +228,141 @@ pub async fn count_login_logs(
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `admin_loginlog::index` row after `getLoginlogList(..., utype=admin)`.
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct PhpLoginLogListRow {
+    pub id: u64,
+    pub uid: u64,
+    pub usertype: i32,
+    pub content: String,
+    pub ip: String,
+    pub ctime: i64,
+    pub remoteport: i32,
+    pub username: String,
+    pub rname: String,
+    pub eid: u64,
+    pub comname: String,
+    pub pid: u64,
+}
+
+pub struct PhpLoginLogFilter<'a> {
+    pub usertype: i32,
+    pub uid: Option<u64>,
+    pub username_like: Option<&'a str>,
+    pub content_like: Option<&'a str>,
+    pub time_from: Option<i64>,
+    pub time_to: Option<i64>,
+    pub order_t: &'a str,
+    pub order_dir: &'a str,
+}
+
+fn push_php_login_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpLoginLogFilter<'a>) {
+    qb.push(" AND l.usertype = ");
+    qb.push_bind(f.usertype);
+    if let Some(u) = f.uid.filter(|v| *v > 0) {
+        qb.push(" AND l.uid = ");
+        qb.push_bind(u);
+    }
+    if let Some(kw) = f.username_like.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND l.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(")");
+    }
+    if let Some(kw) = f.content_like.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND l.content LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(t0) = f.time_from {
+        qb.push(" AND l.ctime >= ");
+        qb.push_bind(t0);
+    }
+    if let Some(t1) = f.time_to {
+        qb.push(" AND l.ctime <= ");
+        qb.push_bind(t1);
+    }
+}
+
+fn push_php_login_order<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, t: &str, order: &str) {
+    let asc = order.eq_ignore_ascii_case("asc");
+    qb.push(" ORDER BY ");
+    qb.push(match (t, asc) {
+        ("uid", true) => "l.uid ASC",
+        ("uid", false) => "l.uid DESC",
+        ("ctime", true) => "l.ctime ASC",
+        ("ctime", false) => "l.ctime DESC",
+        ("id", true) => "l.id ASC",
+        _ => "l.id DESC",
+    });
+}
+
+pub async fn list_php_login_logs(
+    pool: &MySqlPool,
+    f: &PhpLoginLogFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpLoginLogListRow>, sqlx::Error> {
+    let limit = phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?;
+    let offset = phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(l.id AS UNSIGNED) AS id, CAST(COALESCE(l.uid,0) AS UNSIGNED) AS uid, \
+         CAST(COALESCE(l.usertype,0) AS SIGNED) AS usertype, COALESCE(l.content,'') AS content, \
+         COALESCE(l.ip,'') AS ip, CAST(COALESCE(l.ctime,0) AS SIGNED) AS ctime, \
+         CAST(COALESCE(l.remoteport,0) AS SIGNED) AS remoteport, \
+         COALESCE(m.username,'') AS username, COALESCE(r.name,'') AS rname, \
+         CAST(COALESCE(r.def_job,0) AS UNSIGNED) AS eid, COALESCE(c.name,'') AS comname, \
+         CAST(COALESCE(m.pid,0) AS UNSIGNED) AS pid \
+         FROM phpyun_login_log l \
+         LEFT JOIN phpyun_member m ON m.uid = l.uid \
+         LEFT JOIN (SELECT uid, MIN(name) AS name, MAX(def_job) AS def_job FROM phpyun_resume GROUP BY uid) r \
+           ON r.uid = l.uid \
+         LEFT JOIN phpyun_company c ON c.uid = l.uid \
+         WHERE 1=1",
+    );
+    push_php_login_filters(&mut qb, f);
+    push_php_login_order(&mut qb, f.order_t, f.order_dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_login_logs(
+    pool: &MySqlPool,
+    f: &PhpLoginLogFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_login_log l WHERE 1=1");
+    push_php_login_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_php_login_logs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_login_log WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn delete_php_login_logs_by_usertype(
+    pool: &MySqlPool,
+    usertype: i32,
+) -> Result<u64, sqlx::Error> {
+    let r = sqlx::query("DELETE FROM phpyun_login_log WHERE usertype = ?")
+        .bind(usertype)
+        .execute(pool)
+        .await?;
+    Ok(r.rows_affected())
 }
 
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
