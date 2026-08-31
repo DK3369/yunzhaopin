@@ -253,6 +253,16 @@ pub async fn dispatch(
         ("user-gap", "login-del") => user_gap_login_del(state, body).await,
         ("user-gap", "memlog-index") => Ok(PhpOut::Data(user_gap_memlog_index(state, body).await?)),
         ("user-gap", "memlog-del") => user_gap_memlog_del(state, body).await,
+        ("user-gap", "mem-imitate") => Ok(PhpOut::Data(user_gap_mem_imitate(state, body).await?)),
+        ("user-gap", "mem-lock") => user_gap_mem_lock(state, body).await,
+        ("user-gap", "mem-edit") => user_gap_mem_edit(state, body).await,
+        ("user-gap", "mem-del") => user_gap_mem_del(state, body).await,
+        ("user-gap", "appeal-info") => Ok(PhpOut::Data(user_gap_appeal_info(state, body).await?)),
+        ("user-gap", "appeal-success") => user_gap_appeal_success(state, body).await,
+        ("user-gap", "appeal-del") => user_gap_appeal_del(state, body).await,
+        ("user-gap", "logout-status") => user_gap_logout_status(state, body).await,
+        ("user-gap", "logout-del") => user_gap_logout_del(state, body).await,
+        ("user-gap", "logout-num") => Ok(PhpOut::Data(user_gap_logout_num(state).await?)),
         ("user-gap", "resume-config") => Ok(PhpOut::Data(user_gap_resume_config(state).await?)),
         ("user-gap", "user-config") => Ok(PhpOut::Data(user_gap_user_config(state).await?)),
         ("keyword", "map") => Ok(PhpOut::Data(keyword_type_map())),
@@ -5152,6 +5162,276 @@ async fn user_gap_memlog_del(state: &AppState, body: &Value) -> AppResult<PhpOut
     }
     gap_repo::delete_php_member_logs(db, &ids).await?;
     Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `admin_member::Imitate_action` — `{url: sy_weburl/member}` (no PHP cookie).
+async fn user_gap_mem_imitate(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    user_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("wap_com_00228"))?;
+    let web = cfg_of(state, "sy_weburl").await;
+    let url = format!("{}/member", web.trim_end_matches('/'));
+    Ok(json!({ "url": url }))
+}
+
+/// PHP `admin_member::lock_action` / `userinfo::lock`.
+async fn user_gap_mem_lock(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    let lock_info = json_str(body, "lock_info");
+    if status == 2 && lock_info.is_empty() {
+        return Err(ApiError::business("common_06622"));
+    }
+    if status == 1 {
+        if logout_repo::find_pending_by_uid(state.db.reader(), uid)
+            .await?
+            .is_some()
+        {
+            return Err(ApiError::business("common_01459"));
+        }
+    }
+    let db = state.db.pool();
+    let n = user_repo::update_lock(db, uid, status, &lock_info).await?;
+    if n == 0 && user_repo::find_by_uid(db, uid).await?.is_none() {
+        return Err(ApiError::business("common_01071"));
+    }
+    user_repo::lock_related_r_status(db, uid, status).await?;
+    Ok(PhpOut::Message("common_01944"))
+}
+
+/// PHP `admin_member::editSave_action` / `userinfo::upMemberInfo`.
+async fn user_gap_mem_edit(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let reader = state.db.reader();
+    let mem = user_repo::find_by_uid(reader, uid)
+        .await?
+        .ok_or_else(|| ApiError::business("wap_com_00228"))?;
+    let username = {
+        let s = json_str(body, "username");
+        if s.is_empty() {
+            mem.username.clone()
+        } else {
+            s
+        }
+    };
+    let mobile = json_str(body, "moblie");
+    let email = json_str(body, "email");
+    if user_repo::exists_username_except(reader, &username, Some(uid)).await? {
+        return Err(ApiError::business("common_01388"));
+    }
+    if !mobile.is_empty() && user_repo::exists_mobile_except(reader, &mobile, Some(uid)).await? {
+        return Err(ApiError::business("api_wxapp_00008"));
+    }
+    if !email.is_empty() && user_repo::exists_email_except(reader, &email, Some(uid)).await? {
+        return Err(ApiError::business("default_00012"));
+    }
+    let password = json_str(body, "password");
+    let hashed = if password.is_empty() {
+        None
+    } else {
+        let salt: String = Uuid::now_v7().simple().to_string().chars().take(16).collect();
+        let hash = argon2_hash_async(format!("{password}{salt}")).await?;
+        Some((hash, salt))
+    };
+    let pw = hashed
+        .as_ref()
+        .map(|(hash, salt)| (hash.as_str(), salt.as_str()));
+    let db = state.db.pool();
+    let n = user_repo::update_php_admin_member(
+        db,
+        uid,
+        &user_repo::PhpMemberEdit {
+            username: &username,
+            mobile: &mobile,
+            email: &email,
+            reg_ip: &json_str(body, "reg_ip"),
+            did: json_u64(body, "did"),
+            status: json_i32(body, "status"),
+            password: pw,
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("member_user_00603"));
+    }
+    user_repo::sync_php_profile_contact(db, uid, &mobile, &email).await?;
+    Ok(PhpOut::Message("member_user_00602"))
+}
+
+/// PHP `admin_member::del_action` / `userinfo::delMember`.
+async fn user_gap_mem_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = user_repo::delete_php_members(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06641"));
+    }
+    Ok(PhpOut::Message("common_06640"))
+}
+
+async fn php_userinfo_row(state: &AppState, uid: u64, usertype: i32) -> AppResult<Value> {
+    let db = state.db.reader();
+    if usertype == 2 {
+        if let Some(c) = company_repo::find_by_uid(db, uid).await? {
+            return Ok(json!({
+                "uid": c.uid,
+                "name": c.name.unwrap_or_default(),
+                "moblie_status": c.moblie_status,
+                "email_status": c.email_status,
+                "yyzz_status": c.yyzz_status,
+            }));
+        }
+    } else if let Some(r) = resume_repo::find_by_uid(db, uid).await? {
+        return Ok(json!({
+            "uid": r.uid,
+            "name": r.name.unwrap_or_default(),
+            "moblie_status": r.moblie_status,
+            "email_status": r.email_status,
+            "idcard_status": r.idcard_status,
+        }));
+    }
+    Ok(json!({}))
+}
+
+/// PHP `admin_appeal::info_action` — `{user, info}`.
+async fn user_gap_appeal_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "id");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let row = user_repo::find_php_member_detail(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("wap_com_00228"))?;
+    let user = php_userinfo_row(state, row.uid, row.usertype).await?;
+    let mut info = json!({
+        "uid": row.uid,
+        "username": row.username,
+        "email": row.email,
+        "moblie": row.moblie,
+        "usertype": row.usertype,
+        "status": row.status,
+        "did": row.did,
+        "reg_date": row.reg_date,
+        "login_date": row.login_date,
+        "login_hits": row.login_hits,
+        "lock_info": row.lock_info,
+        "appeal": row.appeal,
+        "appealtime": row.appealtime,
+        "appealstate": row.appealstate,
+        "login_ip": row.login_ip,
+        "reg_ip": row.reg_ip,
+        "address": row.address,
+        "login_date_ymd": fmt_date(row.login_date),
+        "reg_date_ymd": fmt_date(row.reg_date),
+    });
+    // shensu.vue assigns `user = res.data.info`; copy profile fields onto info too.
+    if let Some(obj) = info.as_object_mut() {
+        if let Some(v) = user.get("name") {
+            obj.insert("name".into(), v.clone());
+        }
+        for k in ["moblie_status", "email_status", "idcard_status", "yyzz_status"] {
+            if let Some(v) = user.get(k) {
+                obj.insert(k.into(), v.clone());
+            }
+        }
+    }
+    Ok(json!({ "user": user, "info": info }))
+}
+
+/// PHP `admin_appeal::success_action`.
+async fn user_gap_appeal_success(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "id");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = user_repo::update_appeal_state(state.db.pool(), uid, 2).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00002"));
+    }
+    Ok(PhpOut::Message("admin_user_00001"))
+}
+
+/// PHP `admin_appeal::del_action` — clear appeal fields, do not delete member.
+async fn user_gap_appeal_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "del");
+    if ids.is_empty() {
+        let id = json_u64(body, "id");
+        if id > 0 {
+            ids.push(id);
+        }
+    }
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("common_01066"));
+    }
+    let n = user_repo::clear_appeals(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `admin_member_logout::status_action` / `logout::status` (skip mail/SMS).
+async fn user_gap_logout_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("common_01070"));
+    }
+    let row = logout_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("common_01383"))?;
+    let n = logout_repo::approve(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06534"));
+    }
+    if let Some(member) = user_repo::find_by_uid(state.db.reader(), row.uid).await? {
+        let uname: String = Uuid::now_v7().simple().to_string().chars().take(16).collect();
+        let mob = format!("out_{}", member.moblie.as_deref().unwrap_or(""));
+        let mail = format!("out_{}_out", member.email.as_deref().unwrap_or(""));
+        let db = state.db.pool();
+        user_repo::anonymize_logout_member(db, row.uid, &uname, &mob, &mail).await?;
+        user_repo::sync_php_profile_contact(db, row.uid, &mob, &mail).await?;
+        user_repo::lock_related_r_status(db, row.uid, 2).await?;
+    }
+    Ok(PhpOut::Message("model_00208"))
+}
+
+/// PHP `admin_member_logout::del_action`.
+async fn user_gap_logout_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "del");
+    if ids.is_empty() {
+        let id = json_u64(body, "id");
+        if id > 0 {
+            ids.push(id);
+        }
+    }
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = logout_repo::delete_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `logout::getListNumV1` — `{count, weishenhe}`.
+async fn user_gap_logout_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let count = logout_repo::count_admin(db, None, None, 0).await?;
+    let weishenhe = logout_repo::count_admin(db, Some(1), None, 0).await?;
+    Ok(json!({ "count": count, "weishenhe": weishenhe }))
 }
 
 async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {

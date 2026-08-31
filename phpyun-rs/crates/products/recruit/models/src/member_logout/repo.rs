@@ -9,6 +9,27 @@ const FIELDS: &str = "id, \
     COALESCE(status, 0) AS status, \
     COALESCE(ctime, 0) AS ctime";
 
+pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<MemberLogout>, sqlx::Error> {
+    let sql = format!("SELECT {FIELDS} FROM phpyun_member_logout WHERE id = ? LIMIT 1");
+    sqlx::query_as::<_, MemberLogout>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn find_pending_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<MemberLogout>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_member_logout WHERE uid = ? AND status = 1 ORDER BY id DESC LIMIT 1"
+    );
+    sqlx::query_as::<_, MemberLogout>(&sql)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await
+}
+
 pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<MemberLogout>, sqlx::Error> {
     let sql =
         format!("SELECT {FIELDS} FROM phpyun_member_logout WHERE uid = ? ORDER BY id DESC LIMIT 1");
@@ -16,6 +37,20 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<MemberLogo
         .bind(uid)
         .fetch_optional(pool)
         .await
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_member_logout WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn create(

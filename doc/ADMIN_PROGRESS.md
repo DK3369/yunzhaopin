@@ -85,7 +85,7 @@ flowchart LR
 | `pages` | index/add/save/delete/make/ajax（单页 `phpyun_description`，不再映新闻） |
 | `job-class` | ajax、setrec、get_class、up、getJobClass、classadd、ajaxchachong、ajaxpinyin、move |
 | `cat-class` | list/children/add/save/del/ajax/up/add_single/up_single/upp/ajaxpinyin/clearpinyin/ajaxchachong/classadd（城市/行业/企业/个人/兼职/原因/介绍/校园/培训科目；`kind` 在 body） |
-| `user-gap` | company-num、resume-num（raw）、user-num（raw）、mem-num、mem-index / logout-index / appeal-index / login-index / memlog-index（`{data,total,pageSizes}`）、login-del、memlog-del、resume-config、user-config、reset-password、matching、resume-audit |
+| `user-gap` | company-num、resume-num（raw）、user-num（raw）、mem-num、mem-index / logout-index / appeal-index / login-index / memlog-index（`{data,total,pageSizes}`）、login-del、memlog-del、**mem-imitate / mem-lock / mem-edit / mem-del / appeal-info / appeal-success / appeal-del / logout-status / logout-del / logout-num**、resume-config、user-config、reset-password、matching、resume-audit |
 | `keyword` | map（关键词类型文案） |
 | `web-config` | index、city（save 走 `site-settings/batch`） |
 | `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav、**creatnav**、**config**（公众号设置，不是菜单列表）、zdkeyword/delkeyword/getzdkeyword/save-zdkeyword |
@@ -135,6 +135,7 @@ flowchart LR
 | 微信 creatnav / 邮件 ceshi·gettpl·savetpl | **完成**（creatnav 调微信 API；ceshi 入队不保证 SMTP 真发出） |
 | wangEditor 全局脚本 | **完成**（`public/php-admin/js/wangeditor` + nuxt head；emailset/介绍分类/企业 CRM 进页不再因 `window.wangEditor` 500） |
 | 校园分类 UI | **完成**（同构兼职分类；无表则空列表）。猎头/spview/**完整**校园培训业务：**做不到** |
+| 会员 CRM 写（波次 1） | **完成**（Imitate/lock/editSave/del、申诉 info/success/del、注销 status/del/memNum；`php-content/user-gap`） |
 
 ### 前台 OAuth / 支付（本轮）
 
@@ -149,6 +150,8 @@ flowchart LR
 ## 下一项（下一轮按缺口稿实现）
 
 **先做波次 1**：会员 CRM 写（列表已通）。对照 PHP `admin_member` 的 Imitate/lock/editSave/del、`admin_appeal` 的 info/success/del、`admin_member_logout` 的 status/del/memNum。步骤、phpMap 键、Rust 落点见 [plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md) §5。
+
+**波次 1 已接**（`php-content/user-gap`，不进 AdminDoc）：会员 Imitate 返回 `{url}`（不写 PHP cookie，勿打企业 php-imitate）、lock/editSave/del、申诉 info/success/del、注销 status/del/memNum、`admin_member/reset_pw` 精确键。
 
 其后：波次 2 简历列表写（delResume/refresh/rec/label/top）；波次 3 企业剩余写（拆小，优先 writtenOffLog/log/checksitedid）；波次 4+ 系统/工具/运营。
 

@@ -219,20 +219,56 @@ where
 }
 
 pub async fn exists_mobile(pool: &MySqlPool, mobile: &str) -> Result<bool, sqlx::Error> {
-    let row: Option<(u64,)> =
+    exists_mobile_except(pool, mobile, None).await
+}
+
+pub async fn exists_mobile_except(
+    pool: &MySqlPool,
+    mobile: &str,
+    except_uid: Option<u64>,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = if let Some(uid) = except_uid {
+        sqlx::query_as(
+            "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
+             WHERE moblie = ? AND uid <> ? LIMIT 1",
+        )
+        .bind(mobile)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?
+    } else {
         sqlx::query_as("SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE moblie = ? LIMIT 1")
             .bind(mobile)
             .fetch_optional(pool)
-            .await?;
+            .await?
+    };
     Ok(row.is_some())
 }
 
 pub async fn exists_email(pool: &MySqlPool, email: &str) -> Result<bool, sqlx::Error> {
-    let row: Option<(u64,)> =
+    exists_email_except(pool, email, None).await
+}
+
+pub async fn exists_email_except(
+    pool: &MySqlPool,
+    email: &str,
+    except_uid: Option<u64>,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = if let Some(uid) = except_uid {
+        sqlx::query_as(
+            "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
+             WHERE email = ? AND uid <> ? LIMIT 1",
+        )
+        .bind(email)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?
+    } else {
         sqlx::query_as("SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE email = ? LIMIT 1")
             .bind(email)
             .fetch_optional(pool)
-            .await?;
+            .await?
+    };
     Ok(row.is_some())
 }
 
@@ -822,6 +858,259 @@ pub async fn update_username_and_password(
     .bind(salt)
     .bind(password_hash)
     .bind(now)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `admin_appeal::info_action` member row (`getInfo` without field list).
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpMemberDetail {
+    pub uid: u64,
+    pub username: String,
+    pub email: String,
+    pub moblie: String,
+    pub usertype: i32,
+    pub status: i32,
+    pub did: u64,
+    pub reg_date: i64,
+    pub login_date: i64,
+    pub login_hits: i32,
+    pub lock_info: String,
+    pub appeal: String,
+    pub appealtime: i64,
+    pub appealstate: i32,
+    pub login_ip: String,
+    pub reg_ip: String,
+    pub address: String,
+}
+
+pub async fn find_php_member_detail(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<PhpMemberDetail>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(username,'') AS username, \
+         COALESCE(email,'') AS email, COALESCE(moblie,'') AS moblie, \
+         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, \
+         CAST(COALESCE(status,0) AS SIGNED) AS status, \
+         CAST(COALESCE(did,0) AS UNSIGNED) AS did, \
+         CAST(COALESCE(reg_date,0) AS SIGNED) AS reg_date, \
+         CAST(COALESCE(login_date,0) AS SIGNED) AS login_date, \
+         CAST(COALESCE(login_hits,0) AS SIGNED) AS login_hits, \
+         COALESCE(lock_info,'') AS lock_info, COALESCE(appeal,'') AS appeal, \
+         CAST(COALESCE(appealtime,0) AS SIGNED) AS appealtime, \
+         CAST(COALESCE(appealstate,0) AS SIGNED) AS appealstate, \
+         COALESCE(login_ip,'') AS login_ip, COALESCE(reg_ip,'') AS reg_ip, \
+         COALESCE(address,'') AS address \
+         FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+/// PHP `userinfo::lock` → `upInfo` status + lock_info.
+pub async fn update_lock(
+    pool: &MySqlPool,
+    uid: u64,
+    status: i32,
+    lock_info: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET status = ?, lock_info = ? WHERE uid = ?")
+        .bind(status)
+        .bind(lock_info)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `userinfo::commonLock`: resume / company / expect / job / part `r_status`.
+pub async fn lock_related_r_status(
+    pool: &MySqlPool,
+    uid: u64,
+    r_status: i32,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_resume SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_company SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_resume_expect SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_company_job SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_partjob SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub struct PhpMemberEdit<'a> {
+    pub username: &'a str,
+    pub mobile: &'a str,
+    pub email: &'a str,
+    pub reg_ip: &'a str,
+    pub did: u64,
+    pub status: i32,
+    pub password: Option<(&'a str, &'a str)>,
+}
+
+/// PHP `userinfo::upMemberInfo` member row (admin).
+pub async fn update_php_admin_member(
+    pool: &MySqlPool,
+    uid: u64,
+    e: &PhpMemberEdit<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = if let Some((hash, salt)) = e.password {
+        sqlx::query(
+            "UPDATE phpyun_member SET username = ?, moblie = ?, email = ?, reg_ip = ?, did = ?, \
+             status = ?, password = ?, salt = ? WHERE uid = ?",
+        )
+        .bind(e.username)
+        .bind(e.mobile)
+        .bind(e.email)
+        .bind(e.reg_ip)
+        .bind(e.did)
+        .bind(e.status)
+        .bind(hash)
+        .bind(salt)
+        .bind(uid)
+        .execute(pool)
+        .await?
+    } else {
+        sqlx::query(
+            "UPDATE phpyun_member SET username = ?, moblie = ?, email = ?, reg_ip = ?, did = ?, \
+             status = ? WHERE uid = ?",
+        )
+        .bind(e.username)
+        .bind(e.mobile)
+        .bind(e.email)
+        .bind(e.reg_ip)
+        .bind(e.did)
+        .bind(e.status)
+        .bind(uid)
+        .execute(pool)
+        .await?
+    };
+    Ok(res.rows_affected())
+}
+
+/// PHP `upMemberInfo` also writes resume.telphone/email and company.linktel/linkmail.
+pub async fn sync_php_profile_contact(
+    pool: &MySqlPool,
+    uid: u64,
+    mobile: &str,
+    email: &str,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_resume SET telphone = ?, email = ? WHERE uid = ?")
+        .bind(mobile)
+        .bind(email)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_company SET linktel = ?, linkmail = ? WHERE uid = ?")
+        .bind(mobile)
+        .bind(email)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+/// PHP `userinfo::delMember` core: drop member + related profile/job rows.
+pub async fn delete_php_members(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    for sql in [
+        "DELETE FROM phpyun_resume_expect WHERE uid IN (",
+        "DELETE FROM phpyun_company_job WHERE uid IN (",
+        "DELETE FROM phpyun_partjob WHERE uid IN (",
+        "DELETE FROM phpyun_resume WHERE uid IN (",
+        "DELETE FROM phpyun_company WHERE uid IN (",
+    ] {
+        let mut qb = QueryBuilder::new(sql);
+        let mut sep = qb.separated(", ");
+        for uid in uids {
+            sep.push_bind(*uid);
+        }
+        qb.push(")");
+        qb.build().execute(pool).await?;
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_member WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn update_appeal_state(
+    pool: &MySqlPool,
+    uid: u64,
+    appealstate: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET appealstate = ? WHERE uid = ?")
+        .bind(appealstate)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP appeal `del_action`: clear appeal text, keep the member row.
+pub async fn clear_appeals(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_member SET appeal = '', appealtime = 0, appealstate = 1 WHERE uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `logout::status` member anonymize (skip mail/SMS).
+pub async fn anonymize_logout_member(
+    pool: &MySqlPool,
+    uid: u64,
+    username: &str,
+    mobile: &str,
+    email: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_member SET username = ?, moblie = ?, email = ?, status = 2, \
+         lock_info = 'common_06533', pwuid = 0, pw_repeat = 0, \
+         qqid = '', qqunionid = '', sinaid = '', wxid = '', wxopenid = '', unionid = '', \
+         wxname = '', wxbindtime = 0, clientid = '', deviceToken = '', maguid = 0, qfyuid = 0 \
+         WHERE uid = ?",
+    )
+    .bind(username)
+    .bind(mobile)
+    .bind(email)
     .bind(uid)
     .execute(pool)
     .await?;
