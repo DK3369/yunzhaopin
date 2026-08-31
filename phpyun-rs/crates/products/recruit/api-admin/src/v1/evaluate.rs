@@ -34,6 +34,7 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct PaperListQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub keyid: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
@@ -284,6 +285,8 @@ pub async fn delete_question(
 pub struct MsgListQuery {
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
+    /// PHP `el-option value="1"` is a string.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub r#type: Option<i32>,
 }
 
@@ -335,4 +338,20 @@ pub async fn delete_logs(
     user.require_admin()?;
     admin_eval_service::delete_logs(&state, &user, &f.ids).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+#[cfg(test)]
+mod msg_list_query_tests {
+    use super::*;
+
+    #[test]
+    fn type_accepts_php_select_string() {
+        let q: MsgListQuery =
+            serde_json::from_str(r#"{"page":1,"page_size":20,"type":"1","keyword":""}"#).unwrap();
+        assert_eq!(q.r#type, Some(1));
+        let q: MsgListQuery = serde_json::from_str(r#"{"type":"2"}"#).unwrap();
+        assert_eq!(q.r#type, Some(2));
+        let q: MsgListQuery = serde_json::from_str(r#"{}"#).unwrap();
+        assert_eq!(q.r#type, None);
+    }
 }

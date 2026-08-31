@@ -1931,6 +1931,9 @@ export default {
             } else {
                 id = row.id;
             }
+            if (!id || (Array.isArray(id) && !id.length)) {
+                return;
+            }
 
             httpPost('m=user&c=users_resume&a=rec', { id: id, rec: val }).then(function (res) {
                 if (res.data.error > 0) {

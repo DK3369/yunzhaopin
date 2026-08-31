@@ -289,7 +289,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company/reset_companypassword': phpContent('user-gap', 'reset-password'),
   'user/company_job/matching': phpContent('user-gap', 'matching'),
   'user/users_resume/resumeAudit': phpContent('user-gap', 'resume-audit'),
-  'user/users_resume/rec': phpContent('resume', 'rec'),
+  'user/users_resume/rec': {
+    path: '/v1/admin/php-content/resume/rec',
+    transformReq: (b) => ({ id: b.id, rec: b.rec }),
+  },
   'user/users_resume/top': phpContent('resume', 'top'),
   'user/users_resume/refresh': phpContent('resume', 'refresh'),
   'user/users_member/reset_pw': phpContent('user-gap', 'reset-password'),
