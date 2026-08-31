@@ -115,24 +115,19 @@ flowchart LR
 
 site 的 systemd 里 `NUXT_PUBLIC_SITE_URL=https://job1.ov6.com`。改代码只写 **jobs** 库，不要写 **phpyun**。不要再启动 `:3000`。
 
-### 本仓库 Rust 怎么起
+### 本仓库怎么起 / 怎么重启
+
+日常只调 [`ops/restart.sh`](../ops/restart.sh)。走 systemd（`:3003` / `:3001` / `:3002`），会清占用端口的孤儿 node，**不会**动旧 `:3000`。
 
 ```bash
-cd /www/wwwroot/zzzz.com/phpyun-rs
-TMPDIR=/var/tmp/cargo-tmp CARGO_TARGET_DIR=/www/wwwroot/zzzz.com/phpyun-rs/target \
-  cargo build -p phpyun-rs --offline -j 1
-sudo systemctl restart test-jobs-phpyun-rs-3003
+/www/wwwroot/zzzz.com/ops/restart.sh                 # rust + site + admin，不编译
+/www/wwwroot/zzzz.com/ops/restart.sh rust --build    # cargo 后再重启 API
+/www/wwwroot/zzzz.com/ops/restart.sh admin --build   # 重建后台再重启 :3002
+/www/wwwroot/zzzz.com/ops/restart.sh frontend --build
+/www/wwwroot/zzzz.com/ops/restart.sh status
 ```
 
-Admin 重建后只重启 `:3002`：
-
-```bash
-PATH=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin:$PATH
-ADMIN_ASSET_TAG=$(git rev-parse --short HEAD) pnpm --filter @phpyun/admin build
-# kill 仅 cwd=web/apps/admin 且监听 3002 的 node，再：
-RUST_API_URL=http://127.0.0.1:3003 NUXT_RUST_API=http://127.0.0.1:3003 \
-  HOST=127.0.0.1 PORT=3002 node web/apps/admin/.output/server/index.mjs
-```
+不要再 `nohup node .output/server/index.mjs`：进程脱离 systemd 后重启窗口会 503。
 
 开发 token：`:3003` 的 `GET /dev/token`（仅 debug 环境）。
 

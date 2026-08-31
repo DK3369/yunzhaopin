@@ -31,7 +31,7 @@
 
 1. `CARGO_TARGET_DIR=/www/wwwroot/zzzz.com/phpyun-rs/target TMPDIR=/var/tmp/cargo-tmp CARGO_BUILD_JOBS=1 cargo build --release -p phpyun-rs`（链接 OOM 时可用已验收的 `target/debug/phpyun-rs`）
 2. **不要**备份替换 `/opt/phpyun-rs/phpyun-rs`，不要 `systemctl restart test-jobs-phpyun-rs`。新接口只跑 `:3003`。
-3. site/admin 用 Nitro 产物常驻 `:3001` / `:3002`（`RUST_API_URL=http://127.0.0.1:3003`）。无 `.output` 时先 `pnpm --filter @phpyun/site build` / admin build。**不要**把 `/admin/` alias 到 PHP generate 目录。
+3. site/admin 用 Nitro 产物常驻 `:3001` / `:3002`（`RUST_API_URL=http://127.0.0.1:3003`）。日常重启：`ops/restart.sh`（`--build` 会编 rust / pnpm）。**不要** `nohup node`，**不要**把 `/admin/` alias 到 PHP generate 目录。
 4. 备份宝塔 vhost，换成 `ops/nginx/zzzz.com.nuxt-cutover.conf`（保留 `/yapi/` 与 well-known；注释 PHP rewrite；`/data/upload/` alias 到 `uploads/data/upload/`）
 5. `nginx -t && reload`。失败立刻还原 bak
 6. **不删** `uploads/`；不要 `git checkout -- uploads/`；php-fpm 可留着
