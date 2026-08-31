@@ -87,6 +87,32 @@ function parseJsonField(v: unknown): unknown {
   }
 }
 
+function phpSerializedStrings(v: unknown): string[] {
+  if (Array.isArray(v)) return v.map((x) => String(x)).filter(Boolean)
+  if (typeof v !== 'string' || !v.trim()) return []
+  if (v.trimStart().startsWith('[')) {
+    const parsed = parseJsonField(v)
+    if (Array.isArray(parsed)) return parsed.map((x) => String(x)).filter(Boolean)
+  }
+  const out: string[] = []
+  const re = /s:\d+:"(.*?)"/g
+  let m: RegExpExecArray | null
+  while ((m = re.exec(v))) out.push(m[1])
+  return out
+}
+
+/** PHP `users_userset::logo_action`. */
+function usersetLogoShape(data: unknown): Record<string, unknown> {
+  const m = settingsToMap(data)
+  const curl = String(m.sy_ossurl || m.sy_weburl || '')
+  return {
+    curl,
+    sy_member_icon_arr: phpSerializedStrings(m.sy_member_icon_arr),
+    sy_member_iconv_arr: phpSerializedStrings(m.sy_member_iconv_arr),
+    sy_member_skill: String(m.sy_member_skill || ''),
+  }
+}
+
 function pageQuery(body: Record<string, unknown>): Record<string, unknown> {
   const page = Number(body.page || body.currentPage || 1) || 1
   const page_size =
@@ -333,6 +359,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_userset/indexBaseData': phpPage('userset_indexBaseData'),
   'user/users_userset/index': phpPage('userset_index'),
   'user/users_userset': phpPage('userset_index'),
+  'user/users_userset/logo': { path: '/v1/admin/site-settings/list', transformRes: usersetLogoShape },
   'user/company_comset/index': phpPage('comset_index'),
   'user/company_comset': phpPage('comset_index'),
   'tool/emailset/index': phpPage('emailset_index'),

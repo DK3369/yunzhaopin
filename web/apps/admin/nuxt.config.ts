@@ -45,6 +45,8 @@ function phpAdminEpCompat() {
       out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
       out = rewriteRadioLabelToValue(out)
       out = rewriteButtonTypeText(out)
+      // Auto-import bypasses vueApp.component('ElSwitch'); rename so php-compat wrap applies.
+      out = out.replace(/<(\/?)el-switch\b/gi, '<$1PhpElSwitch')
       if (out === code) return
       return { code: out, map: null }
     },

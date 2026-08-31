@@ -442,7 +442,7 @@ async fn list_biz(
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);
-    qb.build_query_as().fetch_all(pool).await
+    phpyun_core::db::ok_default_if_object_missing(qb.build_query_as().fetch_all(pool).await)
 }
 
 async fn count_biz(pool: &MySqlPool, inner: &str, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
@@ -457,7 +457,8 @@ async fn count_biz(pool: &MySqlPool, inner: &str, keyword: Option<&str>) -> Resu
         qb.push_bind(format!("%{kw}%"));
         qb.push(")");
     }
-    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    let row: Result<(i64,), _> = qb.build_query_as().fetch_one(pool).await;
+    let (n,) = phpyun_core::db::ok_default_if_object_missing(row)?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

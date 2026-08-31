@@ -12,6 +12,45 @@ function coerceSwitchValue(val: unknown, active: unknown, inactive: unknown) {
   return inactive
 }
 
+function attrOf(attrs: Record<string, unknown>, camel: string, kebab: string) {
+  return attrs[camel] !== undefined ? attrs[camel] : attrs[kebab]
+}
+
+function phpSwitchVNode(attrs: Record<string, unknown>, slots: Record<string, unknown>) {
+  const active = attrOf(attrs, 'activeValue', 'active-value') ?? true
+  const inactive = attrOf(attrs, 'inactiveValue', 'inactive-value') ?? false
+  const model = attrOf(attrs, 'modelValue', 'model-value')
+  return h(
+    ElSwitchBase,
+    {
+      ...attrs,
+      modelValue: coerceSwitchValue(model, active, inactive),
+    },
+    slots,
+  )
+}
+
+function unwrapMaybeRef(v: unknown): unknown {
+  if (v && typeof v === 'object' && 'value' in (v as object) && !Array.isArray(v)) {
+    const inner = (v as { value: unknown }).value
+    if (inner == null || typeof inner === 'string' || typeof inner === 'number' || typeof inner === 'boolean') {
+      return inner
+    }
+  }
+  return v
+}
+
+function phpTabName(tab: unknown): string {
+  if (tab == null) return ''
+  if (typeof tab === 'string' || typeof tab === 'number') return String(tab)
+  if (typeof tab !== 'object') return ''
+  const t = tab as Record<string, unknown>
+  const props = t.props as Record<string, unknown> | undefined
+  const raw = unwrapMaybeRef(t.paneName) ?? unwrapMaybeRef(props?.name) ?? unwrapMaybeRef(t.name)
+  if (raw == null || typeof raw === 'object') return ''
+  return String(raw)
+}
+
 function formatMonth(date: Date) {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
@@ -49,9 +88,7 @@ function scrollToTop(container = '.moduleDome') {
 }
 
 /** Element Plus table has no Vue2 `bodyWrapper`; PHP pages still assign scrollTop. */
-function patchTableBodyWrapper(inst: Record<string, unknown>) {
-  const refs = inst.$refs as Record<string, unknown> | undefined
-  const t = refs?.multipleTable as { bodyWrapper?: unknown; $el?: HTMLElement } | undefined
+function ensureBodyWrapper(t: { bodyWrapper?: unknown; $el?: HTMLElement } | null | undefined) {
   if (!t || typeof t !== 'object') return
   if (t.bodyWrapper) return
   const dummy = { scrollTop: 0 }
@@ -67,6 +104,47 @@ function patchTableBodyWrapper(inst: Record<string, unknown>) {
   } catch {
     t.bodyWrapper = dummy
   }
+}
+
+function looksLikeTable(v: unknown): v is { bodyWrapper?: unknown; $el?: HTMLElement } {
+  if (!v || typeof v !== 'object') return false
+  const el = (v as { $el?: HTMLElement }).$el
+  if (!el || typeof el.querySelector !== 'function') return false
+  return el.classList?.contains('el-table') || !!el.querySelector('.el-table__body-wrapper')
+}
+
+function patchTableBodyWrapper(inst: Record<string, unknown>) {
+  const refs = inst.$refs as Record<string, unknown> | undefined
+  if (!refs) return
+  for (const v of Object.values(refs)) {
+    const list = Array.isArray(v) ? v : [v]
+    for (const item of list) {
+      if (looksLikeTable(item)) ensureBodyWrapper(item)
+    }
+  }
+}
+
+const dummyTable = {
+  bodyWrapper: { scrollTop: 0 },
+  doLayout() {},
+  getList() {},
+  init() {},
+}
+
+function patchMissingTableRefs(inst: Record<string, unknown> & { __refsPatched?: boolean }) {
+  const refs = inst.$refs
+  if (!refs || typeof refs !== 'object' || inst.__refsPatched) return
+  inst.__refsPatched = true
+  inst.$refs = new Proxy(refs as Record<string, unknown>, {
+    get(target, prop, recv) {
+      const v = Reflect.get(target, prop, recv)
+      if (v != null) return v
+      if (prop === 'multipleTable' || (typeof prop === 'string' && /Table$/i.test(prop))) {
+        return dummyTable
+      }
+      return v
+    },
+  })
 }
 
 const message = {
@@ -129,24 +207,15 @@ function delConfirm(
 }
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  nuxtApp.vueApp.component('ElSwitch', {
-    name: 'ElSwitchPhpCompat',
+  const switchCompat = {
+    name: 'PhpElSwitch',
     inheritAttrs: false,
-    setup(_props, { attrs, slots }) {
-      return () => {
-        const active = attrs.activeValue ?? true
-        const inactive = attrs.inactiveValue ?? false
-        return h(
-          ElSwitchBase,
-          {
-            ...attrs,
-            modelValue: coerceSwitchValue(attrs.modelValue, active, inactive),
-          },
-          slots,
-        )
-      }
+    setup(_props: unknown, { attrs, slots }: { attrs: Record<string, unknown>; slots: Record<string, unknown> }) {
+      return () => phpSwitchVNode(attrs, slots)
     },
-  })
+  }
+  nuxtApp.vueApp.component('ElSwitch', switchCompat)
+  nuxtApp.vueApp.component('PhpElSwitch', switchCompat)
 
   const loc = readStoredLocale()
   persistLocale(loc)
@@ -303,32 +372,31 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       inst.$alert = ElMessageBox.alert
       inst.$notify = ElNotification
       inst.$loading = ElLoading.service
+      patchMissingTableRefs(inst as unknown as Record<string, unknown> & { __refsPatched?: boolean })
       // Element Plus tab-click gives paneName / props.name; PHP still reads tab.name.
       const origClick = inst.handleClick
       if (typeof origClick === 'function' && !inst.__epTabPatched) {
         inst.__epTabPatched = true
         inst.handleClick = function (tab: unknown, event?: unknown) {
-          if (tab && typeof tab === 'object') {
-            const t = tab as Record<string, unknown>
-            const props = t.props as Record<string, unknown> | undefined
-            const name = t.paneName ?? props?.name ?? t.name
-            if (name != null && t.name == null) {
-              try {
-                t.name = name
-              } catch {
-                /* frozen pane */
-              }
-            }
-            if (t.name == null && name != null) {
-              tab = new Proxy(t, {
-                get(target, prop, recv) {
-                  if (prop === 'name') return name
-                  return Reflect.get(target, prop, recv)
-                },
-              })
-            }
+          const name = phpTabName(tab)
+          const phpTab =
+            tab && typeof tab === 'object'
+              ? new Proxy(tab as object, {
+                  get(target, prop, recv) {
+                    if (prop === 'name' || prop === 'paneName') return name
+                    return Reflect.get(target, prop, recv)
+                  },
+                })
+              : { name, paneName: name }
+          try {
+            return origClick.call(this, phpTab, event)
+          } catch {
+            const refs = (this as { $refs?: Record<string, { getList?: () => void; doLayout?: () => void; init?: () => void }> }).$refs
+            const hit = name && refs ? refs[name] : undefined
+            hit?.getList?.()
+            hit?.doLayout?.()
+            hit?.init?.()
           }
-          return origClick.call(this, tab, event)
         }
       }
     },

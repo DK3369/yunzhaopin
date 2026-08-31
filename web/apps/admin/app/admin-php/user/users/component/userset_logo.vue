@@ -172,18 +172,18 @@ export default {
             let _this = this;
             httpPost('m=user&c=users_userset&a=logo', {}).then(function (response) {
                 let res = response.data;
-                this.curl  = res.data.curl;
+                let d = res && res.data && typeof res.data === 'object' ? res.data : {};
+                _this.curl = d.curl || _this.curl || '';
                 if (res.error === 0) {
                     _this.fileListMan = [];
-                    res.data.sy_member_icon_arr.forEach((item) => {
+                    (Array.isArray(d.sy_member_icon_arr) ? d.sy_member_icon_arr : []).forEach((item) => {
                         _this.fileListMan.push({name: '', url: _this.curl + '/' + item});
                     });
                     _this.fileListWoman = [];
-                    res.data.sy_member_iconv_arr.forEach((item) => {
+                    (Array.isArray(d.sy_member_iconv_arr) ? d.sy_member_iconv_arr : []).forEach((item) => {
                         _this.fileListWoman.push({name: '', url: _this.curl + '/' + item});
                     });
-                    _this.sy_member_skill = '';
-                    _this.sy_member_skill = res.data.sy_member_skill ? _this.curl + '/' + res.data.sy_member_skill : '';
+                    _this.sy_member_skill = d.sy_member_skill ? _this.curl + '/' + d.sy_member_skill : '';
                 }
             });
         },

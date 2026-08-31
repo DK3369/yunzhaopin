@@ -5,6 +5,11 @@ import { resolvePhpAction } from '~/utils/phpMap'
 
 type PhpEnvelope = { error: number; msg?: string; data?: unknown }
 
+function phpFailData(data: unknown): unknown {
+  if (data && typeof data === 'object') return data
+  return { list: [], total: 0 }
+}
+
 function formToObject(params: unknown): Record<string, unknown> {
   if (!params) return {}
   if (typeof FormData !== 'undefined' && params instanceof FormData) {
@@ -61,7 +66,7 @@ export async function httpPost(
       data: {
         error: 1,
         msg: `未映射的后台接口: ${url}`,
-        data: '',
+        data: phpFailData(''),
       },
     }
   }
@@ -69,7 +74,7 @@ export async function httpPost(
   try {
     const env = await postAdmin(action.path, req)
     if (env.code !== 200) {
-      return { data: { error: 1, msg: env.msg || env.key || 'error', data: env.data } }
+      return { data: { error: 1, msg: env.msg || env.key || 'error', data: phpFailData(env.data) } }
     }
     const data = action.transformRes ? action.transformRes(env.data) : env.data
     if (action.rawBody) {
@@ -83,7 +88,7 @@ export async function httpPost(
       data: {
         error: 1,
         msg: env?.msg || anyErr?.message || 'request failed',
-        data: env?.data ?? '',
+        data: phpFailData(env?.data),
       },
     }
   }
