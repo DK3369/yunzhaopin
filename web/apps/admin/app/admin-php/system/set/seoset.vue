@@ -7,15 +7,15 @@
             </div>
             <template>
                 <el-tabs :tab-position="tabPosition" v-model="curTab">
-                    <el-tab-pane v-for="(item, index) in seomodel" :key="index" :label="item" :name="index">
-                        <seotab :ref="index" :action="curTab" v-if="curTab==index"></seotab>
+                    <el-tab-pane v-for="pane in seomodelTabs" :key="pane.key" :label="pane.label" :name="pane.key">
+                        <seotab ref="seotabInst" :action="curTab" v-if="curTab===pane.key"></seotab>
                     </el-tab-pane>
                 </el-tabs>
             </template>
         </div>
         <div class="modluDrawer">
             <el-drawer :title="detail.id ? lc('admin_system_00630') : lc('admin_system_00380')" v-model="drawerSeoshezhi" :append-to-body="true" :show-close="true" :with-header="true" size="45%">
-                <seoshezhi @child-event="closeSeoshezhi" call="seo" :seoid="detail.id" :detail="detail"></seoshezhi>
+                <seoshezhi v-if="drawerSeoshezhi" @child-event="closeSeoshezhi" call="seo" :seoid="detail.id" :detail="detail"></seoshezhi>
             </el-drawer>
         </div>
     </div>
@@ -55,17 +55,26 @@ export default {
             'seotab': Seotab,
             'seoshezhi': Seoshezhi,
         },
+        computed: {
+            seomodelTabs() {
+                const m = this.seomodel
+                if (!m || typeof m !== 'object' || Array.isArray(m)) return []
+                return Object.keys(m).map((key) => ({ key, label: m[key] }))
+            },
+        },
         created: function() {
+            if (typeof window !== 'undefined') window.custoapp = this
             this.getSeomodel();
-
-
+        },
+        beforeUnmount() {
+            if (typeof window !== 'undefined' && window.custoapp === this) window.custoapp = undefined
         },
         methods: {
             async getSeomodel() {
                 let res = await httpPost('m=system&c=set_seo')
-                let data = res.data.data;
-
-                this.seomodel = data.seomodel;
+                let data = (res && res.data && res.data.data) || {}
+                const model = data.seomodel
+                this.seomodel = model && typeof model === 'object' && !Array.isArray(model) ? model : {}
 
                 for (let key in this.seomodel) {
                     this.curTab = key; // 赋值默认tab
@@ -73,7 +82,7 @@ export default {
                 }
             },
             openSeoshezhi(data) {
-                this.detail = data;
+                this.detail = data || {};
 
                 this.drawerSeoshezhi = true;
             },
@@ -81,10 +90,9 @@ export default {
                 this.drawerSeoshezhi = false;
             },
             seotabRefresh() {
-                let refs = this.$refs[this.curTab];
-                if (refs.length > 0) {
-                    refs[0].getList();
-                }
+                const refs = this.$refs.seotabInst
+                const inst = Array.isArray(refs) ? refs[0] : refs
+                if (inst && typeof inst.getList === 'function') inst.getList()
             },
         },
     }

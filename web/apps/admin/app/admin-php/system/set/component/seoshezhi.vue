@@ -264,19 +264,19 @@ export default {
             that.loading = true;
             that.emptytext = lc('admin_user_weipin_00026');
             httpPost(url, params).then(function(response) {
-                let data = response.data.data;
+                let data = (response && response.data && response.data.data) || {};
 
-                that.Dname = data.Dname;
+                that.Dname = data.Dname && typeof data.Dname === 'object' ? data.Dname : {};
                 if (call == 'seo') {
-                    that.seomodel = data.seomodel;
+                    that.seomodel = data.seomodel && typeof data.seomodel === 'object' ? data.seomodel : {};
                     if (data.info) {
                         that.ruleForm = data.info;
                     }
                 } else if (call == 'module') {
-                    that.seo = data.seo;
+                    that.seo = Array.isArray(data.seo) ? data.seo : [];
                 }
 
-                let seoconfig = data.seoconfig,
+                let seoconfig = data.seoconfig && typeof data.seoconfig === 'object' ? data.seoconfig : {},
                     tableData = [],
                     seoconfigList = [],
                     publicList = [];
@@ -294,8 +294,10 @@ export default {
                         continue;
                     }
 
-                    for (let key2 in seoconfig[key]) {
-                        tableData.push({ code: key2, title: seoconfig[key][key2] });
+                    const group = seoconfig[key]
+                    if (!group || typeof group !== 'object') continue
+                    for (let key2 in group) {
+                        tableData.push({ code: key2, title: group[key2] });
                     }
 
                     seoconfigList.push({ seomodel: key, tableData: publicList.concat(tableData) });
@@ -313,7 +315,7 @@ export default {
             let that = this;
 
             httpPost('m=system&c=set_module&a=getseo', { id: val }).then(function(response) {
-                let data = response.data.data;
+                let data = (response && response.data && response.data.data) || {};
 
                 that.$set(that.ruleForm, 'description', data.description);
                 that.$set(that.ruleForm, 'did', data.did);
@@ -429,8 +431,9 @@ export default {
                     message.success(res.msg, function() {
                         that.$emit("child-event");
                         if (call == 'seo') {
-                            if (custoapp.curTab == ruleForm.seomodel) {
-                                custoapp.seotabRefresh(); // {{ lc('wap_user_00334') }}TAB{{ lc('wap_00316') }}
+                            const app = typeof window !== 'undefined' ? window.custoapp : null
+                            if (app && app.curTab == ruleForm.seomodel && typeof app.seotabRefresh === 'function') {
+                                app.seotabRefresh();
                             }
                         }
                     })

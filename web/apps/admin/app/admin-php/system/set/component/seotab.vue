@@ -77,9 +77,9 @@ export default {
         async getList() {
             this.loading = true;
             let res = await httpPost('m=system&c=set_seo', { action: this.action });
-            let data = res.data.data;
+            let data = (res && res.data && res.data.data) || {};
 
-            this.list = data.seolist ? data.seolist : [];
+            this.list = Array.isArray(data.seolist) ? data.seolist : [];
             this.loading = false;
             this.emptytext = lc('admin_user_weipin_00026');
             let listlen = this.list.length
@@ -92,7 +92,10 @@ export default {
             }
         },
         openSeo(data) {
-            custoapp.openSeoshezhi(data ? data : {});
+            const app = typeof window !== 'undefined' ? window.custoapp : null
+            if (app && typeof app.openSeoshezhi === 'function') {
+                app.openSeoshezhi(data ? data : {});
+            }
         },
         del(idx) {
             let that = this;

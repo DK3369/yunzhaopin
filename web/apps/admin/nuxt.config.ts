@@ -67,6 +67,7 @@ export default defineNuxtConfig({
       baseUrl: '(globalThis.baseUrl||"/admin/api/php-admin?")',
       getUrlParams: '(globalThis.getUrlParams)',
       AMap: '(globalThis.AMap)',
+      custoapp: '(globalThis.custoapp)',
     },
     plugins: [phpAdminEpCompat()],
     server: {

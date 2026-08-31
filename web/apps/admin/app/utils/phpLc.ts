@@ -64,6 +64,7 @@ declare global {
     yunAdminTransText?: (text: unknown) => string
     httpPost?: typeof import('./httpPost').httpPost
     homeapp?: Record<string, unknown>
+    custoapp?: { openSeoshezhi?: (data: unknown) => void; seotabRefresh?: () => void; curTab?: string }
     echarts?: {
       init: (el: unknown) => { setOption: (...a: unknown[]) => void; resize: () => void }
       graphic: { LinearGradient: new (...a: unknown[]) => unknown }
