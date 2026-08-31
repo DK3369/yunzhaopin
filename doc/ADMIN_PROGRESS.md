@@ -1,9 +1,11 @@
 # 管理后台进度（Admin Nuxt + Rust API + 伪删除）
 
+> **架构读 [ARCHITECTURE.md](./ARCHITECTURE.md)。** 本文是实施流水账；映射条数、`plans/` 未映射名单会过期，以 `phpMap.ts` 为准。
+>
 > 2026-08-31 · 分支 `feat/frontend-backend-split`  
-> 总方案：[FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T0–T14 勾选偏旧，细进度以本文为准）  
+> 总方案：[FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T0–T14 勾选偏旧）  
 > UI 约定：[ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)  
-> **缺口与下一轮接法（主稿）**：[plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md)（全量未映射名单 + 波次 1–4 步骤；本文不重复粘贴）  
+> 旧缺口稿（名单已过期）：[plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md)  
 > Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)（上午）、[`.cursor/plans/admin_现状盘点_晚.plan.md`](../.cursor/plans/admin_现状盘点_晚.plan.md)（`d03fe9f6` 后）、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)、[`.cursor/plans/admin_微聘兼职名企.plan.md`](../.cursor/plans/admin_微聘兼职名企.plan.md)  
 > 实施稿：[plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md)、[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)、[plans/2026-08-30-admin-weipin-part-hotjob.md](./plans/2026-08-30-admin-weipin-part-hotjob.md)、[plans/2026-08-30-admin-status-evening.md](./plans/2026-08-30-admin-status-evening.md)
 
@@ -13,7 +15,8 @@
 |---|---|
 | `.cursor/plans/*.plan.md` | Cursor plan 原文，**进 git** |
 | `doc/ADMIN_PROGRESS.md` | 本文：后台做到哪、伪删除范围、下一项 |
-| `doc/plans/YYYY-MM-DD-短名.md` | 每次实施 plan 的可读稿；**缺口执行稿**为 [2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md) |
+| `doc/ARCHITECTURE.md` | **现状架构**（先读这个） |
+| `doc/plans/YYYY-MM-DD-短名.md` | 当日实施稿，接完即过期，不当总图 |
 
 每次 plan：现状更新本文。2026-08-31 缺口稿 **只落** `doc/plans/`（不双写 `.cursor/plans/`）。其它次仍可两边都有。不要 ignore `.cursor/`。
 
@@ -136,6 +139,7 @@ flowchart LR
 | wangEditor 全局脚本 | **完成**（`public/php-admin/js/wangeditor` + nuxt head；emailset/介绍分类/企业 CRM 进页不再因 `window.wangEditor` 500） |
 | 校园分类 UI | **完成**（同构兼职分类；无表则空列表）。猎头/spview/**完整**校园培训业务：**做不到** |
 | 会员 CRM 写（波次 1） | **完成**（Imitate/lock/editSave/del、申诉 info/success/del、注销 status/del/memNum；`php-content/user-gap`） |
+| 简历 rec/top/refresh、面试模板、求职记录 | **完成**（`php-content/resume`；面试表 `phpyun_yqmb`；`php-content/comlog`） |
 
 ### 前台 OAuth / 支付（本轮）
 
@@ -147,13 +151,11 @@ flowchart LR
 
 页面骨架（121 path）早就在；缺口主要是 **具名 PHP action 是否打到正确 Rust**。招聘/内容/财务/微聘主路径多数已精确映射。未映射的 `httpPost` 会返回「未映射的后台接口」，不会再静默打到列表（列表常一直转圈）。总方案 T11 仍写「118 页」，以本文 121 为准。
 
-## 下一项（下一轮按缺口稿实现）
+## 下一项
 
-**先做波次 1**：会员 CRM 写（列表已通）。对照 PHP `admin_member` 的 Imitate/lock/editSave/del、`admin_appeal` 的 info/success/del、`admin_member_logout` 的 status/del/memNum。步骤、phpMap 键、Rust 落点见 [plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md) §5。
+缺口稿波次 1（会员 CRM 写）已接。波次 2 里的简历 `rec`/`top`/`refresh`、面试模板 `php-content/interview`（表 `phpyun_yqmb`）、求职记录 `php-content/comlog` 也已接，**不要再按 [plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md) 当总图**。
 
-**波次 1 已接**（`php-content/user-gap`，不进 AdminDoc）：会员 Imitate 返回 `{url}`（不写 PHP cookie，勿打企业 php-imitate）、lock/editSave/del、申诉 info/success/del、注销 status/del/memNum、`admin_member/reset_pw` 精确键。
-
-其后：波次 2 简历列表写（delResume/refresh/rec/label/top）；波次 3 企业剩余写（拆小，优先 writtenOffLog/log/checksitedid）；波次 4+ 系统/工具/运营。
+未映射的 `m/c/a` 以 `phpMap.ts` 运行时报错为准，对照 PHP 控制器逐条补。不要再写一份会过期的全量名单。
 
 仍排队、与具名 action 无关：
 

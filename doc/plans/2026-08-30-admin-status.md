@@ -1,5 +1,7 @@
 # 2026-08-30 实施稿：Admin 现状盘点落入 doc + git
 
+> **当日备忘，不是架构。** 现状读 [ARCHITECTURE.md](../ARCHITECTURE.md)。
+
 对应 Cursor plan：`.cursor/plans/admin_现状盘点.plan.md`。
 
 ## 范围

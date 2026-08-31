@@ -1,5 +1,8 @@
 # 前后端分离改造方案：PHP 全量退役，Rust + Nuxt 4 接管
 
+> **现状架构请读 [ARCHITECTURE.md](./ARCHITECTURE.md)。**  
+> 本文是 2026-08 的 **T0–T14 方案**。文中「没有 main.rs / 没有 package.json / admin 72 条 / 服务器跑不起来」等已过时：binary 在 `crates/apps/server`，前端在 `web/`，Admin OpenAPI 快照 **297** 条，另有不进快照的 `php-content`。
+>
 > 文档版本 v2.0 · 2026-08-25（进度备注更新 2026-08-26 晚）
 > 状态：T1–T13 已按文末备注验收；**T14 现网页面已切 Nuxt+Rust**（本 vhost 不再 fastcgi；**未**停 php-fpm、**未**删 `uploads/`，见 `ops/T14_RETIRE_PHP.md`）
 > 分支：`feat/frontend-backend-split`

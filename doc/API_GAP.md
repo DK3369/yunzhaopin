@@ -1,6 +1,8 @@
 # 后端接口缺口盘点（T4）
 
-对照：PHP 控制器 vs Rust OpenAPI（2026-08-26 晚，test-jobs.ov6.com **已切 Nuxt+Rust**）。
+> **过期盘点（2026-08-26）。** 现状与端口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。下文 admin「115 条」已过时（OpenAPI 快照现为 **297**，另有 php-content）。
+>
+> 对照：PHP 控制器 vs Rust OpenAPI（2026-08-26 晚，test-jobs.ov6.com **已切 Nuxt+Rust**）。
 
 - Rust v1：`doc/snapshots/v1_paths.txt` **405** 条（`/v1/wap` 177 + `/v1/mcenter` 228）
 - Rust admin：`doc/snapshots/admin_paths.txt` **115** 条

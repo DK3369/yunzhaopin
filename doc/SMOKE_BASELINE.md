@@ -1,5 +1,7 @@
 # endpoint_smoke 基线（T2）
 
+> **过期记录（2026-08-26）。** 现状见 [ARCHITECTURE.md](./ARCHITECTURE.md)。下文 admin「115 条」已过时（快照现为 **297**）。
+
 记录时间：2026-08-26。环境：`PHPYUN_ENV_FILE` → `phpyun-rs/.env.dev`（MySQL `phpyun_test` @ 127.0.0.1:3306，Redis db 15）。
 
 `phpyun_test` 当时：**177 张 `phpyun_` 表结构 + 合计 14 行**（会话/审计/1 份简历种子），几乎空库。列表类 200 + empty list 是数据空，不是路由挂了。

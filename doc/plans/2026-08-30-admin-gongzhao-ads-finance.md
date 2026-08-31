@@ -1,5 +1,7 @@
 # 2026-08-30 实施稿：公招 / 广告 / 财务 + 伪删除
 
+> **当日备忘，不是架构。** 现状读 [ARCHITECTURE.md](../ARCHITECTURE.md)。
+
 对应 Cursor plan：`.cursor/plans/admin_下一批迁移.plan.md`。
 
 ## 范围

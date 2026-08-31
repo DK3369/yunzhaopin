@@ -1,5 +1,7 @@
 # 2026-08-30 实施稿：Admin 现状盘点（晚，`d03fe9f6` 后）
 
+> **当日备忘，不是架构。** 现状读 [ARCHITECTURE.md](../ARCHITECTURE.md)。
+
 对应 Cursor plan 仓库副本：`.cursor/plans/admin_现状盘点_晚.plan.md`。  
 活文档：`doc/ADMIN_PROGRESS.md`。不改 Cursor UI 里的 plan 原文。
 

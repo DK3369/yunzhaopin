@@ -1,8 +1,10 @@
 # 管理后台：PHP 完整复刻到 Nuxt 4 + api-admin
 
+> **运行拓扑与契约见 [ARCHITECTURE.md](./ARCHITECTURE.md)。** 本文是后台工作约定，仍有效。
+>
 > 2026-08-27 · 分支 `feat/frontend-backend-split`
-> 总方案仍见 [FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T3 crate 拆分、T11 后台）。本文是 **T11 的执行约定**：按 PHP 源码 1:1 迁 UI 与接口，不自造页面。
-> **做到哪了**见 [ADMIN_PROGRESS.md](./ADMIN_PROGRESS.md)。
+> 总方案仍见 [FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T3 crate 拆分、T11 后台；文内数字过时）。本文是 **T11 的执行约定**：按 PHP 源码 1:1 迁 UI 与接口，不自造页面。
+> **流水账**见 [ADMIN_PROGRESS.md](./ADMIN_PROGRESS.md)（条数会过期）。
 
 ## 已定接口（不要改）
 

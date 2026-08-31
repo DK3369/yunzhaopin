@@ -1,5 +1,7 @@
 # 2026-08-30 实施稿：微聘 / 兼职 / 名企 / 简历分项 / 单页
 
+> **当日备忘，不是架构。** 现状读 [ARCHITECTURE.md](../ARCHITECTURE.md)。
+
 对应 Cursor plan：`.cursor/plans/admin_微聘兼职名企.plan.md`。
 
 ## 范围
