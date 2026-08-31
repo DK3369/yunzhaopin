@@ -508,6 +508,23 @@ pub async fn admin_count(pool: &MySqlPool, f: &AdminUserFilter<'_>) -> Result<u6
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `msgNum::memNumV1`: total members with `pid = 0` (not child accounts).
+pub async fn count_admin_pid0(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_member WHERE pid = 0")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `msgNum::memNumV1`: members with a given `status` (2 = locked).
+pub async fn count_admin_status(pool: &MySqlPool, status: i32) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_member WHERE status = ?")
+        .bind(status)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn admin_set_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_member SET status = ? WHERE uid = ?")
         .bind(status)

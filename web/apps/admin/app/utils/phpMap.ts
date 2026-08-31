@@ -266,6 +266,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_resume/getConfig': phpContent('user-gap', 'resume-config'),
   'user/users_member/userNum': phpContentRaw('user-gap', 'user-num'),
   'user/users_member/getConfigData': phpContent('user-gap', 'user-config'),
+  'user/admin_member/memNum': phpContent('user-gap', 'mem-num'),
   'user/company/reset_companypassword': phpContent('user-gap', 'reset-password'),
   'user/company_job/matching': phpContent('user-gap', 'matching'),
   'user/users_resume/resumeAudit': phpContent('user-gap', 'resume-audit'),

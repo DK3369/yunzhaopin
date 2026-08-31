@@ -243,6 +243,7 @@ pub async fn dispatch(
         ("user-gap", "company-num") => Ok(PhpOut::Data(user_gap_company_num(state).await?)),
         ("user-gap", "resume-num") => Ok(PhpOut::Data(user_gap_resume_num(state).await?)),
         ("user-gap", "user-num") => Ok(PhpOut::Data(user_gap_user_num(state).await?)),
+        ("user-gap", "mem-num") => Ok(PhpOut::Data(user_gap_mem_num(state).await?)),
         ("user-gap", "resume-config") => Ok(PhpOut::Data(user_gap_resume_config(state).await?)),
         ("user-gap", "user-config") => Ok(PhpOut::Data(user_gap_user_config(state).await?)),
         ("keyword", "map") => Ok(PhpOut::Data(keyword_type_map())),
@@ -4758,6 +4759,17 @@ async fn user_gap_user_num(state: &AppState) -> AppResult<Value> {
     Ok(json!({
         "userAllNum": all,
         "userStatusNum3": lock,
+    }))
+}
+
+/// PHP `msgNum::memNumV1` — Vue reads `res.data.memAllNum` / `memStatusNum3` (envelope, not raw).
+async fn user_gap_mem_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let all = user_repo::count_admin_pid0(db).await?;
+    let lock = user_repo::count_admin_status(db, 2).await?;
+    Ok(json!({
+        "memAllNum": all,
+        "memStatusNum3": lock,
     }))
 }
 
