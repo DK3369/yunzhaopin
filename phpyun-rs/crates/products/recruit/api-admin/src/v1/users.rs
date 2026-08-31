@@ -27,8 +27,10 @@ pub fn routes() -> Router<AppState> {
 pub struct UserListQuery {
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 9))]
     pub usertype: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 9))]
     pub status: Option<i32>,
 }

@@ -601,6 +601,7 @@ pub struct AdminOnceRow {
     pub pic: String,
     pub yyzz: String,
     pub hits: i64,
+    pub pay: i32,
 }
 
 const ADMIN_ONCE_FIELDS: &str = "\
@@ -622,7 +623,8 @@ const ADMIN_ONCE_FIELDS: &str = "\
     CAST(COALESCE(did, 0) AS SIGNED) AS did, \
     COALESCE(pic, '') AS pic, \
     COALESCE(yyzz, '') AS yyzz, \
-    CAST(COALESCE(hits, 0) AS SIGNED) AS hits";
+    CAST(COALESCE(hits, 0) AS SIGNED) AS hits, \
+    CAST(COALESCE(pay, 0) AS SIGNED) AS pay";
 
 pub async fn find_admin(pool: &MySqlPool, id: u64) -> Result<Option<AdminOnceRow>, sqlx::Error> {
     let sql = format!("SELECT {ADMIN_ONCE_FIELDS} FROM phpyun_once_job WHERE id = ? LIMIT 1");
@@ -758,4 +760,176 @@ pub async fn refresh_ctime(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u6
     qb.push(")");
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
+}
+
+/// PHP `weipin_once::index_action` filters (keyword type / UI status / ctime).
+#[derive(Debug, Default, Clone)]
+pub struct AdminOncePhpFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub keyword_type: i32,
+    pub list_status: Option<i32>,
+    pub ctime_min: Option<i64>,
+    pub now: i64,
+}
+
+fn push_admin_php_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &AdminOncePhpFilter<'a>) {
+    if let Some(kw) = f.keyword {
+        if !kw.is_empty() {
+            let col = match f.keyword_type {
+                3 => "phone",
+                4 => "linkman",
+                5 => "companyname",
+                _ => "title",
+            };
+            qb.push(" AND ");
+            qb.push(col);
+            qb.push(" LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+    }
+    match f.list_status {
+        Some(1) => {
+            qb.push(" AND status = 1 AND edate > ");
+            qb.push_bind(f.now);
+        }
+        Some(3) => {
+            qb.push(" AND status = 0 AND edate > ");
+            qb.push_bind(f.now);
+        }
+        Some(2) => {
+            qb.push(" AND edate < ");
+            qb.push_bind(f.now);
+        }
+        _ => {}
+    }
+    if let Some(min) = f.ctime_min {
+        qb.push(" AND ctime >= ");
+        qb.push_bind(min);
+    }
+}
+
+fn push_once_php_order(qb: &mut QueryBuilder<'_, sqlx::MySql>, col: &str, dir: &str) {
+    let dir = if dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
+    let col = match col {
+        "id" | "ctime" | "edate" | "status" | "title" | "phone" | "companyname" | "linkman"
+        | "hits" => col,
+        _ => "",
+    };
+    if col.is_empty() {
+        qb.push(" ORDER BY ctime DESC, id DESC");
+    } else {
+        qb.push(" ORDER BY ");
+        qb.push(col);
+        qb.push(" ");
+        qb.push(dir);
+        qb.push(", id ");
+        qb.push(dir);
+    }
+}
+
+pub async fn admin_php_list(
+    pool: &MySqlPool,
+    f: &AdminOncePhpFilter<'_>,
+    offset: u64,
+    limit: u64,
+    order_col: &str,
+    order_dir: &str,
+) -> Result<Vec<AdminOnceRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(ADMIN_ONCE_FIELDS);
+    qb.push(" FROM phpyun_once_job WHERE 1=1");
+    push_admin_php_filters(&mut qb, f);
+    push_once_php_order(&mut qb, order_col, order_dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<AdminOnceRow>().fetch_all(pool).await
+}
+
+pub async fn admin_php_count(pool: &MySqlPool, f: &AdminOncePhpFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_once_job WHERE 1=1");
+    push_admin_php_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_all(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_once_job")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_pending_unexpired(pool: &MySqlPool, now: i64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_once_job WHERE status = 0 AND edate > ?",
+    )
+    .bind(now)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_expired(pool: &MySqlPool, now: i64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_once_job WHERE edate < ?")
+        .bind(now)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_pay_eq(pool: &MySqlPool, ids: &[u64], pay: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_once_job WHERE pay = ");
+    qb.push_bind(pay);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn admin_set_status_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_once_job SET status = ");
+    qb.push_bind(status);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_once_job SET did = ");
+    qb.push_bind(did);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }

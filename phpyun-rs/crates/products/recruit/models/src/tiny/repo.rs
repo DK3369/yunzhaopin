@@ -383,3 +383,146 @@ pub async fn refresh_ids(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64,
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }
+
+/// PHP `weipin_tiny::index_action` filters.
+#[derive(Debug, Default, Clone)]
+pub struct AdminTinyPhpFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub keyword_type: i32,
+    pub status: Option<i32>,
+    pub sex: Option<i32>,
+    pub exp: Option<i32>,
+    pub time_min: Option<i64>,
+}
+
+fn push_admin_php_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &AdminTinyPhpFilter<'a>) {
+    if let Some(kw) = f.keyword {
+        if !kw.is_empty() {
+            let col = match f.keyword_type {
+                1 => "username",
+                3 => "mobile",
+                4 => "qq",
+                _ => "job",
+            };
+            qb.push(" AND ");
+            qb.push(col);
+            qb.push(" LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+    }
+    if let Some(s) = f.status {
+        qb.push(" AND status = ");
+        qb.push_bind(s);
+    }
+    if let Some(v) = f.sex {
+        qb.push(" AND sex = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.exp {
+        qb.push(" AND exp = ");
+        qb.push_bind(v);
+    }
+    if let Some(min) = f.time_min {
+        qb.push(" AND time >= ");
+        qb.push_bind(min);
+    }
+}
+
+fn push_tiny_php_order(qb: &mut QueryBuilder<'_, sqlx::MySql>, col: &str, dir: &str) {
+    let dir = if dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
+    let col = match col {
+        "id" | "time" | "lastupdate" | "status" | "username" | "job" | "mobile" => col,
+        _ => "",
+    };
+    if col.is_empty() {
+        qb.push(" ORDER BY status ASC, lastupdate DESC, id DESC");
+    } else {
+        qb.push(" ORDER BY ");
+        qb.push(col);
+        qb.push(" ");
+        qb.push(dir);
+        qb.push(", id ");
+        qb.push(dir);
+    }
+}
+
+pub async fn admin_php_list(
+    pool: &MySqlPool,
+    f: &AdminTinyPhpFilter<'_>,
+    offset: u64,
+    limit: u64,
+    order_col: &str,
+    order_dir: &str,
+) -> Result<Vec<TinyResume>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(FIELDS);
+    qb.push(" FROM phpyun_resume_tiny WHERE 1=1");
+    push_admin_php_filters(&mut qb, f);
+    push_tiny_php_order(&mut qb, order_col, order_dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<TinyResume>().fetch_all(pool).await
+}
+
+pub async fn admin_php_count(pool: &MySqlPool, f: &AdminTinyPhpFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_resume_tiny WHERE 1=1");
+    push_admin_php_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_all(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_tiny")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_by_status(pool: &MySqlPool, status: i32) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_tiny WHERE status = ?")
+        .bind(status)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn admin_set_status_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_tiny SET status = ");
+    qb.push_bind(status);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_tiny SET did = ");
+    qb.push_bind(did);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}

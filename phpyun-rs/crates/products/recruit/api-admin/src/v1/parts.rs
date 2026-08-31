@@ -2,13 +2,15 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::part::entity::PartJob;
 use phpyun_services::admin_cms_service;
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+
+use crate::dto::AdminPaged;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,6 +20,7 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[serde(default, alias = "status", deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub state: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
@@ -29,11 +32,11 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiResponse<Paged<PartJob>>> {
+) -> AppResult<ApiResponse<AdminPaged<PartJob>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(
+    Ok(ApiResponse::data(AdminPaged::from(
         admin_cms_service::list_parts(&state, q.state, q.keyword.as_deref(), page).await?,
-    ))
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

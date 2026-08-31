@@ -401,8 +401,23 @@ async fn tiny_get_cache(state: &AppState) -> AppResult<Value> {
         "user_sex": { "1": "男", "2": "女" },
         "user_word": user_word,
         "search_list": [
+            search_kv("sex", "admin_01323", str_map(&[
+                ("1", "男"), ("2", "女"),
+            ])),
+            search_kv("exp", "wap_00526", {
+                let mut m = Map::new();
+                for item in &user_word {
+                    if let (Some(id), Some(name)) = (item.get("id"), item.get("name")) {
+                        let key = id.as_i64().map(|n| n.to_string()).unwrap_or_else(|| id.to_string());
+                        if let Some(s) = name.as_str() {
+                            m.insert(key, Value::String(s.to_string()));
+                        }
+                    }
+                }
+                m
+            }),
             search_kv("status", "wap_com_00406", str_map(&[
-                ("1", "wap_user_00165"), ("3", "wap_user_00166"), ("2", "member_com_00304"),
+                ("1", "wap_user_00165"), ("2", "wap_user_00166"),
             ])),
             search_kv("time", "admin_user_weipin_00030", time_search()),
         ],

@@ -29,19 +29,29 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
 pub struct JobListQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub state: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub status: Option<i32>,
     #[validate(length(max = 32))]
     pub jtype: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub edu: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub exp: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub source: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub rating: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub r#type: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub uid: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub job_class: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub city_class: Option<i32>,
 }
 

@@ -173,6 +173,10 @@ pub async fn dispatch(
         ("special", "set_comaddsearch") => Ok(PhpOut::Data(special_comaddsearch(state).await?)),
         ("special", "audit") => Ok(PhpOut::Data(special_audit(state, body).await?)),
         ("special", "comjob") => Ok(PhpOut::Data(special_comjob(state, body).await?)),
+        ("once", "index") => Ok(PhpOut::Data(once_index(state, body).await?)),
+        ("once", "once-num") => Ok(PhpOut::Data(once_num(state).await?)),
+        ("once", "status") => Ok(PhpOut::Data(once_status(state, body).await?)),
+        ("once", "checksitedid") => once_checksitedid(state, body).await,
         ("once", "price_gear") => Ok(PhpOut::Data(once_price_gear(state).await?)),
         ("once", "price_gear_add") => once_price_gear_add(state, body).await,
         ("once", "price_gear_ajax") => once_price_gear_ajax(state, body).await,
@@ -184,6 +188,10 @@ pub async fn dispatch(
         ("once", "del") => once_del(state, body).await,
         ("once", "ctime") => once_ctime(state, body).await,
         ("once", "refresh_job") => once_refresh(state, body).await,
+        ("tiny", "index") => Ok(PhpOut::Data(tiny_index(state, body).await?)),
+        ("tiny", "tiny-num") => Ok(PhpOut::Data(tiny_num(state).await?)),
+        ("tiny", "status") => tiny_status(state, body).await,
+        ("tiny", "checksitedid") => tiny_checksitedid(state, body).await,
         ("tiny", "set") => Ok(PhpOut::Data(tiny_set(state).await?)),
         ("tiny", "tinyset") => tiny_tinyset(state, user, body).await,
         ("tiny", "save") => tiny_save(state, body).await,
@@ -986,6 +994,44 @@ fn pic_url(base: &str, pic: &str) -> String {
         pic.to_string()
     } else {
         format!("{}/{}", base.trim_end_matches('/'), pic.trim_start_matches('/'))
+    }
+}
+
+fn trunc_chars(s: &str, n: usize) -> String {
+    s.chars().take(n).collect()
+}
+
+fn city_n(dicts: &dict_service::LocalizedDicts, p: i32, c: i32, t: i32) -> String {
+    let mut parts = Vec::new();
+    for id in [p, c, t] {
+        if id > 0 {
+            let n = dicts.city(id);
+            if !n.is_empty() {
+                parts.push(n.to_string());
+            }
+        }
+    }
+    parts.join("-")
+}
+
+fn sex_n(sex: i32) -> &'static str {
+    match sex {
+        1 => "男",
+        2 => "女",
+        _ => "",
+    }
+}
+
+fn php_time_min(body: &Value) -> Option<i64> {
+    let n = json_i32(body, "time");
+    if n <= 0 {
+        return None;
+    }
+    let now = clock::now_ts();
+    if n == 1 {
+        Some(start_of_utc_day(now))
+    } else {
+        Some(now - i64::from(n) * 86_400)
     }
 }
 
@@ -3278,6 +3324,114 @@ async fn upsert_cfg(
     .await
 }
 
+async fn once_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let now = clock::now_ts();
+    let f = once_repo::AdminOncePhpFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        keyword_type: json_i32(body, "type"),
+        list_status: json_opt_i32(body, "status").filter(|v| *v > 0),
+        ctime_min: php_time_min(body),
+        now,
+    };
+    let db = state.db.reader();
+    let total = once_repo::admin_php_count(db, &f).await?;
+    let rows = if total > 0 {
+        once_repo::admin_php_list(
+            db,
+            &f,
+            offset,
+            limit,
+            &json_str(body, "t"),
+            &json_str(body, "order"),
+        )
+        .await?
+    } else {
+        Vec::new()
+    };
+    let dicts = dict_service::get(state).await?;
+    let base = preview_base(state);
+    let icon = cfg_of(state, "sy_once_icon").await;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let expired = r.edate > 0 && r.edate < now;
+            let pic = if r.pic.is_empty() { icon.clone() } else { r.pic.clone() };
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "companyname": r.companyname,
+                "linkman": trunc_chars(&r.linkman, 5),
+                "phone": r.phone,
+                "provinceid": r.provinceid,
+                "cityid": r.cityid,
+                "three_cityid": r.three_cityid,
+                "address": r.address,
+                "require": r.require,
+                "salary": r.salary,
+                "status": if expired { 2 } else { r.status },
+                "ctime": r.ctime,
+                "ctime_n": fmt_date(r.ctime),
+                "edate": r.edate,
+                "edate_n": fmt_date(r.edate),
+                "did": r.did,
+                "pic": r.pic,
+                "pic_n": pic_url(&base, &pic),
+                "yyzz": r.yyzz,
+                "yyzz_n": pic_url(&base, &r.yyzz),
+                "hits": r.hits,
+                "pay": r.pay,
+                "city_n": city_n(&dicts, r.provinceid, r.cityid, r.three_cityid),
+                "once_url": format!("{base}/index.php?m=once&c=show&id={}", r.id),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn once_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let now = clock::now_ts();
+    let mut out = serde_json::Map::new();
+    let all = once_repo::count_all(db).await?;
+    if all > 0 {
+        out.insert("onceAllNum".into(), json!(all));
+    }
+    let pending = once_repo::count_pending_unexpired(db, now).await?;
+    if pending > 0 {
+        out.insert("onceStatusNum1".into(), json!(pending));
+    }
+    let expired = once_repo::count_expired(db, now).await?;
+    if expired > 0 {
+        out.insert("onceStatusNum2".into(), json!(expired));
+    }
+    Ok(Value::Object(out))
+}
+
+async fn once_status(state: &AppState, body: &Value) -> AppResult<Value> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    if once_repo::count_pay_eq(state.db.reader(), &ids, 1).await? > 0 {
+        return Ok(json!({ "status": 3 }));
+    }
+    let raw = json_i32(body, "status");
+    let db_status = if raw == 2 { 1 } else { raw };
+    once_repo::admin_set_status_ids(state.db.pool(), &ids, db_status).await?;
+    Ok(json!({ "status": db_status }))
+}
+
+async fn once_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    once_repo::set_did_ids(state.db.pool(), &ids, json_i32(body, "did")).await?;
+    Ok(PhpOut::Message("admin_model_00143"))
+}
+
 async fn once_price_gear(state: &AppState) -> AppResult<Value> {
     let list = once_repo::list_price_gears(state.db.reader()).await?;
     Ok(json!({ "list": list }))
@@ -3481,6 +3635,121 @@ async fn once_refresh(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     once_repo::refresh_ctime(state.db.pool(), &ids, clock::now_ts()).await?;
     Ok(PhpOut::Message("ok"))
+}
+
+async fn tiny_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let ui_status = json_opt_i32(body, "status").filter(|v| *v > 0);
+    let db_status = match ui_status {
+        Some(2) => Some(0),
+        Some(1) => Some(1),
+        _ => None,
+    };
+    let f = tiny_repo::AdminTinyPhpFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        keyword_type: json_i32(body, "type"),
+        status: db_status,
+        sex: json_opt_i32(body, "sex").filter(|v| *v > 0),
+        exp: json_opt_i32(body, "exp").filter(|v| *v > 0),
+        time_min: php_time_min(body),
+    };
+    let db = state.db.reader();
+    let total = tiny_repo::admin_php_count(db, &f).await?;
+    let rows = if total > 0 {
+        tiny_repo::admin_php_list(
+            db,
+            &f,
+            offset,
+            limit,
+            &json_str(body, "t"),
+            &json_str(body, "order"),
+        )
+        .await?
+    } else {
+        Vec::new()
+    };
+    let dicts = dict_service::get(state).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let city_one = if r.provinceid > 0 {
+                dicts.city(r.provinceid).to_string()
+            } else {
+                String::new()
+            };
+            let city_two = if r.cityid > 0 {
+                format!("-{}", dicts.city(r.cityid))
+            } else {
+                String::new()
+            };
+            let city_three = if r.three_cityid > 0 {
+                format!("-{}", dicts.city(r.three_cityid))
+            } else {
+                String::new()
+            };
+            json!({
+                "id": r.id,
+                "username": r.username,
+                "sex": r.sex,
+                "sex_n": sex_n(r.sex),
+                "exp": r.exp,
+                "exp_n": dicts.userclass(r.exp),
+                "job": r.job,
+                "mobile": r.mobile,
+                "provinceid": r.provinceid,
+                "cityid": r.cityid,
+                "three_cityid": r.three_cityid,
+                "city_one": city_one,
+                "city_two": city_two,
+                "city_three": city_three,
+                "production": r.production,
+                "status": r.status,
+                "time": r.time,
+                "time_n": fmt_dt(r.time),
+                "lastupdate": r.lastupdate,
+                "lastupdate_n": fmt_date(r.lastupdate),
+                "did": r.did,
+                "hits": r.hits,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn tiny_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let mut out = serde_json::Map::new();
+    let all = tiny_repo::count_all(db).await?;
+    if all > 0 {
+        out.insert("tinyAllNum".into(), json!(all));
+    }
+    let pending = tiny_repo::count_by_status(db, 0).await?;
+    if pending > 0 {
+        out.insert("tinyStatusNum".into(), json!(pending));
+    }
+    Ok(Value::Object(out))
+}
+
+async fn tiny_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = tiny_repo::admin_set_status_ids(state.db.pool(), &ids, json_i32(body, "status")).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00113"));
+    }
+    Ok(PhpOut::Message("admin_01324"))
+}
+
+async fn tiny_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    tiny_repo::set_did_ids(state.db.pool(), &ids, json_i32(body, "did")).await?;
+    Ok(PhpOut::Message("admin_model_00142"))
 }
 
 async fn tiny_set(state: &AppState) -> AppResult<Value> {
