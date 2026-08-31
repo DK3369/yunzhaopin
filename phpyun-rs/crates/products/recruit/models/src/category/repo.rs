@@ -429,7 +429,7 @@ fn php_row_sql(kind: &str, table: &str) -> String {
                     '' AS variable, \
                     COALESCE(e_name,'') AS e_name, \
                     '' AS letter, CAST(1 AS SIGNED) AS display, '' AS code, \
-                    '' AS content, \
+                    COALESCE(content,'') AS content, \
                     CAST(COALESCE(rec,0) AS SIGNED) AS rec \
              FROM {table} WHERE {pred}"
         ),
@@ -781,6 +781,41 @@ pub async fn city_dup_pinyin(
          WHERE COALESCE(deleted,0)=0 AND e_name <> '' \
            AND e_name IN ( \
              SELECT e_name FROM phpyun_city_class \
+             WHERE COALESCE(deleted,0)=0 AND e_name <> '' \
+             GROUP BY e_name HAVING COUNT(*) > 1 \
+           ) \
+         ORDER BY e_name ASC, id ASC LIMIT ? OFFSET ?",
+    )
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn patch_job_class_parent(
+    pool: &MySqlPool,
+    id: u64,
+    keyid: u64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_job_class SET keyid = ? WHERE id = ? AND COALESCE(deleted,0)=0")
+        .bind(keyid)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn job_dup_pinyin(
+    pool: &MySqlPool,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<CityDupRow>, sqlx::Error> {
+    sqlx::query_as::<_, CityDupRow>(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, COALESCE(e_name,'') AS e_name \
+         FROM phpyun_job_class \
+         WHERE COALESCE(deleted,0)=0 AND e_name <> '' \
+           AND e_name IN ( \
+             SELECT e_name FROM phpyun_job_class \
              WHERE COALESCE(deleted,0)=0 AND e_name <> '' \
              GROUP BY e_name HAVING COUNT(*) > 1 \
            ) \

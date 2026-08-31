@@ -136,6 +136,21 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     w.yunAdminT = (text: unknown) => String(text ?? '')
     w.yunAdminTransText = (text: unknown) => String(text ?? '')
     w.yunAdminTranslateDOM = () => undefined
+    // PHP pages load wangEditor in HTML; Nuxt must still have a fallback if the
+    // script tag races Vue chunks. Real editor comes from public/php-admin/js/wangeditor.
+    if (!w.wangEditor || typeof (w.wangEditor as { createEditor?: unknown }).createEditor !== 'function') {
+      const stubEditor = () => ({
+        getHtml: () => '',
+        getText: () => '',
+        setHtml: () => undefined,
+        destroy: () => undefined,
+        on: () => undefined,
+      })
+      w.wangEditor = {
+        createEditor: stubEditor,
+        createToolbar: () => ({ destroy: () => undefined }),
+      }
+    }
     w.message = message
     w.delConfirm = delConfirm
     w.formatMonth = formatMonth

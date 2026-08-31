@@ -1116,3 +1116,202 @@ pub async fn list_news_property(pool: &MySqlPool) -> Result<Vec<NewsPropertyRow>
     .fetch_all(pool)
     .await
 }
+
+pub async fn count_wx_zdkeyword(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+    let kw = keyword.unwrap_or("").trim();
+    let n: (i64,) = if kw.is_empty() {
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_wxzdkeyword")
+            .fetch_one(pool)
+            .await?
+    } else {
+        let like = format!("%{kw}%");
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_wxzdkeyword WHERE keyword LIKE ?")
+            .bind(like)
+            .fetch_one(pool)
+            .await?
+    };
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
+pub async fn list_wx_zdkeyword(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<WxZdKeywordRow>, sqlx::Error> {
+    let kw = keyword.unwrap_or("").trim();
+    if kw.is_empty() {
+        sqlx::query_as::<_, WxZdKeywordRow>(
+            "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, \
+                    COALESCE(keyword,'') AS keyword, COALESCE(content,'') AS content, \
+                    CAST(COALESCE(time,0) AS SIGNED) AS time \
+             FROM phpyun_wxzdkeyword ORDER BY time DESC LIMIT ? OFFSET ?",
+        )
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+    } else {
+        let like = format!("%{kw}%");
+        sqlx::query_as::<_, WxZdKeywordRow>(
+            "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, \
+                    COALESCE(keyword,'') AS keyword, COALESCE(content,'') AS content, \
+                    CAST(COALESCE(time,0) AS SIGNED) AS time \
+             FROM phpyun_wxzdkeyword WHERE keyword LIKE ? \
+             ORDER BY time DESC LIMIT ? OFFSET ?",
+        )
+        .bind(like)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+    }
+}
+
+pub async fn get_wx_zdkeyword(
+    pool: &MySqlPool,
+    id: u64,
+) -> Result<Option<WxZdKeywordRow>, sqlx::Error> {
+    sqlx::query_as::<_, WxZdKeywordRow>(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, \
+                COALESCE(keyword,'') AS keyword, COALESCE(content,'') AS content, \
+                CAST(COALESCE(time,0) AS SIGNED) AS time \
+         FROM phpyun_wxzdkeyword WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn upsert_wx_zdkeyword(
+    pool: &MySqlPool,
+    id: u64,
+    title: &str,
+    keyword: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        sqlx::query(
+            "UPDATE phpyun_wxzdkeyword SET title = ?, keyword = ?, time = ? WHERE id = ?",
+        )
+        .bind(title)
+        .bind(keyword)
+        .bind(now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        Ok(id)
+    } else {
+        let res = sqlx::query(
+            "INSERT INTO phpyun_wxzdkeyword (title, keyword, content, time) VALUES (?, ?, '', ?)",
+        )
+        .bind(title)
+        .bind(keyword)
+        .bind(now)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn delete_wx_zdkeyword(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_wxzdkeyword WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn list_wx_zdcon(pool: &MySqlPool, kid: u64) -> Result<Vec<WxZdConRow>, sqlx::Error> {
+    sqlx::query_as::<_, WxZdConRow>(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(kid,0) AS UNSIGNED) AS kid, \
+                COALESCE(msgtype,'') AS msgtype, COALESCE(content,'') AS content, \
+                CAST(COALESCE(media_id,0) AS SIGNED) AS media_id, \
+                CAST(COALESCE(sort,0) AS SIGNED) AS sort, \
+                CAST(COALESCE(time,0) AS SIGNED) AS time \
+         FROM phpyun_wxzdcon WHERE kid = ? ORDER BY sort DESC, id ASC",
+    )
+    .bind(kid)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn insert_wx_zdcon(
+    pool: &MySqlPool,
+    kid: u64,
+    msgtype: &str,
+    content: &str,
+    media_id: i32,
+    sort: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_wxzdcon (kid, msgtype, content, media_id, sort, time) \
+         VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(kid)
+    .bind(msgtype)
+    .bind(content)
+    .bind(media_id)
+    .bind(sort)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn update_wx_zdcon(
+    pool: &MySqlPool,
+    id: u64,
+    msgtype: &str,
+    content: &str,
+    media_id: i32,
+    sort: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_wxzdcon SET msgtype = ?, content = ?, media_id = ?, sort = ?, time = ? WHERE id = ?",
+    )
+    .bind(msgtype)
+    .bind(content)
+    .bind(media_id)
+    .bind(sort)
+    .bind(now)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn delete_wx_zdcon_ids(pool: &MySqlPool, ids: &[u64], kid: u64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_wxzdcon WHERE kid = ");
+    qb.push_bind(kid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn delete_wx_zdcon_by_kids(pool: &MySqlPool, kids: &[u64]) -> Result<u64, sqlx::Error> {
+    if kids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_wxzdcon WHERE kid IN (");
+    let mut sep = qb.separated(", ");
+    for id in kids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}

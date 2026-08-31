@@ -83,14 +83,21 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: '/admin/php-admin/js/element-icons.css' },
         { rel: 'stylesheet', href: '/admin/php-admin/adstyle/phpyun.css' },
         { rel: 'stylesheet', href: '/admin/php-admin/images/admin.css' },
+        { rel: 'stylesheet', href: '/admin/php-admin/js/wangeditor/index.css' },
       ],
       script: [
         {
           innerHTML:
-            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";',
+            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";globalThis.wangEditor=globalThis.wangEditor||{createEditor:function(){return{getHtml:function(){return""},getText:function(){return""},setHtml:function(){},destroy:function(){},on:function(){}}},createToolbar:function(){return{destroy:function(){}}}};',
         },
         { src: '/admin/php-admin/js/jquery.min.js' },
         { src: '/admin/php-admin/js/echarts.min.js' },
+        {
+          src: '/admin/php-admin/js/wangeditor/index.js',
+          tagPosition: 'head',
+          defer: false,
+          async: false,
+        },
       ],
     },
   },

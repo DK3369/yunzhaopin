@@ -28,6 +28,7 @@ use phpyun_models::qna::repo as qna_repo;
 use phpyun_models::resume::expect as expect_repo;
 use phpyun_models::resume::other as other_repo;
 use phpyun_models::resume::project as project_repo;
+use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume::skill as skill_repo;
 use phpyun_models::site_page::repo as site_page_repo;
 use phpyun_models::site_setting::repo as setting_repo;
@@ -40,6 +41,7 @@ use serde_json::{json, Value};
 
 use crate::admin_cms_service;
 use crate::admin_longtail_service;
+use crate::dict_service;
 use crate::site_setting_service;
 use crate::wechat_api_service;
 use uuid::Uuid;
@@ -209,11 +211,22 @@ pub async fn dispatch(
         ("job-class", "ajax") => job_class_ajax(state, body).await,
         ("job-class", "setrec") => job_class_setrec(state, body).await,
         ("job-class", "get_class") => Ok(PhpOut::Data(job_class_get(state, body).await?)),
+        ("job-class", "up") => Ok(PhpOut::Data(job_class_up(state, body).await?)),
+        ("job-class", "getJobClass") => Ok(PhpOut::Data(job_class_roots(state).await?)),
+        ("job-class", "classadd") => Ok(PhpOut::Data(job_class_classadd(state, body).await?)),
+        ("job-class", "ajaxchachong") => Ok(PhpOut::Data(job_class_chachong(state, body).await?)),
+        ("job-class", "ajaxpinyin") => Ok(PhpOut::Message("admin_system_00081")),
+        ("job-class", "move") => job_class_move(state, body).await,
         ("wx-nav", "wxnav") => Ok(PhpOut::Data(wx_nav_list(state).await?)),
         ("wx-nav", "savenav") => Ok(PhpOut::Data(wx_nav_savenav(state, body).await?)),
         ("wx-nav", "delnav") => wx_nav_del(state, body).await,
         ("wx-nav", "ajaxnav") => wx_nav_ajax(state, body).await,
         ("wx-nav", "creatnav") => Ok(PhpOut::Data(wx_nav_creatnav(state).await?)),
+        ("wx-nav", "config") => Ok(PhpOut::Data(wx_nav_config(state).await?)),
+        ("wx-nav", "zdkeyword") => Ok(PhpOut::Data(wx_zdkeyword_list(state, body).await?)),
+        ("wx-nav", "delkeyword") => wx_zdkeyword_del(state, body).await,
+        ("wx-nav", "getzdkeyword") => Ok(PhpOut::Data(wx_zdkeyword_get(state, body).await?)),
+        ("wx-nav", "save-zdkeyword") => wx_zdkeyword_save(state, body).await,
         ("cat-class", "list") => Ok(PhpOut::Data(cat_class_list(state, body).await?)),
         ("cat-class", "children") => Ok(PhpOut::Data(cat_class_children(state, body).await?)),
         ("cat-class", "add") | ("cat-class", "save") => cat_class_save(state, body).await,
@@ -228,6 +241,13 @@ pub async fn dispatch(
         ("cat-class", "ajaxchachong") => Ok(PhpOut::Data(cat_class_chachong(state, body).await?)),
         ("cat-class", "classadd") => Ok(PhpOut::Data(cat_class_one(state, body).await?)),
         ("user-gap", "company-num") => Ok(PhpOut::Data(user_gap_company_num(state).await?)),
+        ("user-gap", "resume-num") => Ok(PhpOut::Data(user_gap_resume_num(state).await?)),
+        ("user-gap", "user-num") => Ok(PhpOut::Data(user_gap_user_num(state).await?)),
+        ("user-gap", "resume-config") => Ok(PhpOut::Data(user_gap_resume_config(state).await?)),
+        ("user-gap", "user-config") => Ok(PhpOut::Data(user_gap_user_config(state).await?)),
+        ("keyword", "map") => Ok(PhpOut::Data(keyword_type_map())),
+        ("web-config", "index") => Ok(PhpOut::Data(web_config_index(state).await?)),
+        ("web-config", "city") => Ok(PhpOut::Data(web_config_city(state, body).await?)),
         ("user-gap", "reset-password") => user_gap_reset_password(state, body).await,
         ("user-gap", "matching") => Ok(PhpOut::Data(user_gap_matching(state, body).await?)),
         ("user-gap", "resume-audit") => {
@@ -382,6 +402,7 @@ fn paged(list: Value, total: u64, page: u32, per: u32) -> Value {
         "total": total,
         "perPage": per,
         "pageSize": per,
+        "page_size": per,
         "pageSizes": sizes,
         "page_sizes": sizes,
         "limit": per,
@@ -4200,6 +4221,7 @@ fn cat_row_json(kind: &str, r: &cat_repo::CatPhpRow, level: i32) -> Value {
     if kind == "job" {
         v["e_name"] = json!(r.e_name.clone());
         v["rec"] = json!(r.rec);
+        v["content"] = json!(r.content.clone());
     }
     if kind == "introduce" || kind == "introduce_class" {
         v["content"] = json!(r.content.clone());
@@ -4675,5 +4697,587 @@ async fn email_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut> 
         &content,
     )
     .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+fn kv_obj(pairs: &[(&str, &str)]) -> Value {
+    let mut m = serde_json::Map::new();
+    for (k, v) in pairs {
+        m.insert((*k).into(), json!(*v));
+    }
+    Value::Object(m)
+}
+
+fn search_item(param: &str, name: &str, value: Value) -> Value {
+    json!({ "param": param, "name": name, "value": value })
+}
+
+fn class_map(dicts: &dict_service::LocalizedDicts, var: &str) -> Value {
+    let mut m = serde_json::Map::new();
+    for (id, name) in dicts.userclass_by_variable(var) {
+        m.insert(id.to_string(), json!(name));
+    }
+    Value::Object(m)
+}
+
+const SOURCE_MAP: &[(&str, &str)] = &[
+    ("1", "网页"),
+    ("2", "手机"),
+    ("4", "微信"),
+    ("6", "采集"),
+    ("8", "QQ登录"),
+    ("9", "微信扫一扫"),
+    ("10", "微博"),
+    ("11", "PC快速投递"),
+    ("12", "WAP快速投递"),
+    ("21", "账户分离"),
+    ("26", "预留信息"),
+];
+
+async fn user_gap_resume_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let all = expect_repo::count_admin_all(db).await?;
+    let s0 = expect_repo::count_admin_state(db, 0).await?;
+    let s3 = expect_repo::count_admin_state(db, 3).await?;
+    let lock = expect_repo::count_admin_r_status(db, 2).await?;
+    let teen_since = clock::now_ts() - 16 * 365 * 86400;
+    let teen = expect_repo::count_admin_teen(db, teen_since).await?;
+    Ok(json!({
+        "resumeAllNum": all,
+        "resumeStatusNum1": s0,
+        "resumeStatusNum2": s3,
+        "resumeStatusNum3": lock,
+        "resumeTeenNum": teen,
+    }))
+}
+
+async fn user_gap_user_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let all = resume_repo::count_admin(db, None, None).await?;
+    let lock = resume_repo::count_admin(db, Some(2), None).await?;
+    Ok(json!({
+        "userAllNum": all,
+        "userStatusNum3": lock,
+    }))
+}
+
+async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let source = kv_obj(SOURCE_MAP);
+    let search_list = vec![
+        search_item(
+            "status",
+            "wap_com_00406",
+            kv_obj(&[
+                ("1", "wap_user_00165"),
+                ("2", "admin_user_00138"),
+                ("3", "wap_user_00167"),
+                ("4", "wap_user_00166"),
+            ]),
+        ),
+        search_item("source", "admin_yunying_00139", source.clone()),
+        search_item(
+            "service",
+            "member_com_00107",
+            kv_obj(&[("1", "wap_user_00335"), ("2", "wap_01465")]),
+        ),
+        search_item("type", "wap_user_00012", class_map(&dicts, "user_type")),
+        search_item(
+            "salary",
+            "member_user_00106",
+            kv_obj(&[
+                ("2000_4000", "2000-4000"),
+                ("4000_6000", "4000-6000"),
+                ("6000_8000", "6000-8000"),
+                ("8000_10000", "8000-10000"),
+                ("10000", "common_06590"),
+            ]),
+        ),
+        search_item(
+            "age",
+            "wap_com_00302",
+            kv_obj(&[
+                ("16_20", "admin_user_00376"),
+                ("21_30", "admin_user_00377"),
+                ("31_40", "admin_user_00378"),
+                ("41_50", "admin_user_00379"),
+                ("50", "admin_01316"),
+            ]),
+        ),
+        search_item(
+            "sex",
+            "wap_com_00303",
+            kv_obj(&[("3", "不限"), ("1", "男"), ("2", "女")]),
+        ),
+        search_item("marriage", "wap_com_00282", class_map(&dicts, "user_marriage")),
+        search_item(
+            "remark",
+            "admin_01317",
+            kv_obj(&[("1", "是"), ("2", "否")]),
+        ),
+        search_item("edu", "wap_com_00283", class_map(&dicts, "user_edu")),
+        search_item("exp", "wap_user_00240", class_map(&dicts, "user_word")),
+        search_item("report", "wap_com_00279", class_map(&dicts, "user_report")),
+        search_item(
+            "integrity",
+            "member_user_00151",
+            kv_obj(&[
+                ("1", "55%以上"),
+                ("2", "65%以上"),
+                ("3", "75%以上"),
+                ("4", "85%以上"),
+                ("55", "等于55%"),
+                ("65", "等于65%"),
+            ]),
+        ),
+    ];
+    let export_type = kv_obj(&[
+        ("rtype_id", "member_com_00012"),
+        ("rtype_name", "member_com_00013"),
+        ("rtype_uid", "admin_user_00130"),
+        ("rtype_uname", "wap_00529"),
+        ("rtype_sex", "wap_com_00303"),
+        ("rtype_birthday", "member_com_00016"),
+        ("type_marriage", "member_user_00162"),
+        ("type_height", "member_user_00165"),
+        ("type_nationality", "member_user_00164"),
+        ("type_weight", "member_user_00160"),
+        ("type_idcard", "member_com_00014"),
+        ("type_telphone", "member_user_00163"),
+        ("type_telhome", "member_com_00015"),
+        ("type_email", "member_com_00018"),
+        ("rtype_edu", "member_com_00011"),
+        ("type_homepage", "member_com_00008"),
+        ("type_address", "wap_01362"),
+        ("rtype_exp", "wap_user_00240"),
+        ("type_domicile", "common_01989"),
+        ("type_living", "wap_user_00242"),
+        ("type_description", "member_com_00009"),
+        ("rtype_hy", "member_com_00010"),
+        ("rtype_job_classid", "wap_com_00353"),
+        ("rtype_city_classid", "wap_js_00083"),
+        ("rtype_minsalary,maxsalary", "member_com_00017"),
+        ("rtype_type", "wap_user_00012"),
+        ("rtype_report", "wap_com_00279"),
+        ("rtype_lastdate", "wap_00326"),
+    ]);
+    Ok(json!({
+        "source": source,
+        "search_list": search_list,
+        "exportType": export_type,
+    }))
+}
+
+async fn user_gap_user_config(state: &AppState) -> AppResult<Value> {
+    let source = kv_obj(SOURCE_MAP);
+    let search_list = vec![
+        search_item("source", "admin_yunying_00139", source.clone()),
+        search_item(
+            "status",
+            "member_user_00181",
+            kv_obj(&[("1", "admin_user_00149"), ("2", "admin_user_00150")]),
+        ),
+        search_item(
+            "def_job",
+            "admin_user_company_00294",
+            kv_obj(&[("1", "是"), ("2", "否")]),
+        ),
+    ];
+    let domains = domain_repo::list_all(state.db.reader()).await?;
+    Ok(json!({
+        "search_list": search_list,
+        "source": source,
+        "domainList": domain_object(&domains),
+    }))
+}
+
+fn keyword_type_map() -> Value {
+    kv_obj(&[
+        ("1", "wap_js_00130"),
+        ("2", "wap_user_00220"),
+        ("3", "wap_user_00154"),
+        ("4", "default_00262"),
+        ("5", "wap_com_00428"),
+        ("8", "admin_01381"),
+        ("9", "admin_01382"),
+        ("10", "wap_user_00084"),
+        ("11", "admin_user_00018"),
+        ("12", "wap_user_00223"),
+        ("13", "wap_js_00066"),
+    ])
+}
+
+const WEB_CONFIG_KEYS: &[&str] = &[
+    "sy_seo_rewrite",
+    "sy_header_fix",
+    "sy_footer_fix",
+    "sy_linksq",
+    "sy_wap_jump",
+    "sy_pc_jump_wap",
+    "sy_h5_share",
+    "sy_advice_mobilecode",
+    "sy_job_lookfx",
+    "sy_wxwap_list",
+    "sy_wap_comtpl",
+    "sy_uni_comtpl",
+    "sy_news_rewrite",
+    "sy_ewm_type",
+    "sy_default_userclass",
+    "sy_default_comclass",
+    "resume_salarytype",
+    "sy_indexpage",
+    "sy_datacycle",
+    "sy_datacycle_job",
+    "sy_datacycle_com",
+    "sy_logintime",
+    "sy_login_type",
+    "sy_resume_visitors",
+    "sy_adclick",
+    "sy_recommend_day_num",
+    "sy_recommend_interval",
+    "sy_resumeout_day_num",
+    "sy_resumeout_interval",
+    "sy_zhanzhang_baidu",
+    "sy_outlinks",
+    "sy_shenming",
+    "sy_job_hits",
+    "sy_web_city_one",
+    "sy_web_city_two",
+    "sy_sxsjgs",
+    "sy_closeOrder",
+    "sy_autoref",
+    "sy_autorefrand",
+];
+
+async fn settings_hash(state: &AppState) -> AppResult<HashMap<String, String>> {
+    let rows = setting_repo::list_all(state.db.reader()).await?;
+    Ok(rows.into_iter().map(|r| (r.key_name, r.value)).collect())
+}
+
+fn city_label_pairs(rows: &[(i32, String)]) -> Vec<Value> {
+    rows.iter()
+        .map(|(id, name)| json!({ "label": name, "value": *id }))
+        .collect()
+}
+
+async fn web_config_index(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    let mut config = serde_json::Map::new();
+    for k in WEB_CONFIG_KEYS {
+        config.insert((*k).into(), json!(cfg.get(*k).cloned().unwrap_or_default()));
+    }
+    let dicts = dict_service::get(state).await?;
+    Ok(json!({
+        "config": config,
+        "province": city_label_pairs(&dicts.city_provinces()),
+    }))
+}
+
+async fn web_config_city(state: &AppState, body: &Value) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let city_id = json_i32(body, "city_id");
+    let rows = if city_id > 0 {
+        dicts.city_of_parent(city_id)
+    } else {
+        dicts.city_provinces()
+    };
+    Ok(json!({ "city": city_label_pairs(&rows) }))
+}
+
+fn checkpic_url(cfg: &HashMap<String, String>, path: &str) -> String {
+    let p = path.trim();
+    if p.is_empty() {
+        return String::new();
+    }
+    if p.starts_with("http://") || p.starts_with("https://") {
+        return p.to_string();
+    }
+    let base = cfg
+        .get("sy_ossurl")
+        .filter(|s| !s.is_empty())
+        .or_else(|| cfg.get("sy_weburl"))
+        .cloned()
+        .unwrap_or_default();
+    if base.is_empty() {
+        return p.to_string();
+    }
+    format!(
+        "{}/{}",
+        base.trim_end_matches('/'),
+        p.trim_start_matches('/')
+    )
+}
+
+async fn wx_nav_config(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    let web = cfg.get("sy_weburl").cloned().unwrap_or_default();
+    let welcom_type = cfg
+        .get("wx_welcom_type")
+        .filter(|s| !s.is_empty())
+        .cloned()
+        .unwrap_or_else(|| "nowxcom".into());
+    let htlogin = cfg
+        .get("wx_author_htlogin")
+        .cloned()
+        .unwrap_or_else(|| "1".into());
+    Ok(json!({
+        "wx_name": cfg.get("wx_name").cloned().unwrap_or_default(),
+        "backurl": format!("{}/weixin/index.php", web.trim_end_matches('/')),
+        "wx_token": cfg.get("wx_token").cloned().unwrap_or_default(),
+        "wx_appid": cfg.get("wx_appid").cloned().unwrap_or_default(),
+        "wx_appsecret": cfg.get("wx_appsecret").cloned().unwrap_or_default(),
+        "wx_welcom": cfg.get("wx_welcom").cloned().unwrap_or_default(),
+        "wx_welcom_type": welcom_type,
+        "sy_wxcom_pic": checkpic_url(&cfg, cfg.get("sy_wxcom_pic").map(String::as_str).unwrap_or("")),
+        "wx_search": cfg.get("wx_search").cloned().unwrap_or_default(),
+        "wx_search_no": cfg.get("wx_search_no").cloned().unwrap_or_default(),
+        "sy_wx_qcode": checkpic_url(&cfg, cfg.get("sy_wx_qcode").map(String::as_str).unwrap_or("")),
+        "sy_wx_logo": checkpic_url(&cfg, cfg.get("sy_wx_logo").map(String::as_str).unwrap_or("")),
+        "sy_wx_sharelogo": checkpic_url(&cfg, cfg.get("sy_wx_sharelogo").map(String::as_str).unwrap_or("")),
+        "wx_rz": cfg.get("wx_rz").cloned().unwrap_or_default(),
+        "wx_author": cfg.get("wx_author").cloned().unwrap_or_default(),
+        "wx_author_htlogin": htlogin,
+        "wx_popWin": cfg.get("wx_popWin").cloned().unwrap_or_default(),
+    }))
+}
+
+async fn wx_zdkeyword_list(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let kw_opt = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let db = state.db.reader();
+    let total = gap_extra::count_wx_zdkeyword(db, kw_opt).await?;
+    let rows = gap_extra::list_wx_zdkeyword(db, kw_opt, offset, limit).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "keyword": r.keyword,
+                "content": r.content,
+                "time": r.time,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn wx_zdkeyword_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("common_01066"));
+    }
+    gap_extra::delete_wx_zdcon_by_kids(state.db.pool(), &ids).await?;
+    gap_extra::delete_wx_zdkeyword(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn wx_zdkeyword_get(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Ok(json!({ "row": {} }));
+    }
+    let Some(row) = gap_extra::get_wx_zdkeyword(state.db.reader(), id).await? else {
+        return Ok(json!({ "row": {} }));
+    };
+    let cons = gap_extra::list_wx_zdcon(state.db.reader(), id).await?;
+    let conarr: Vec<Value> = cons
+        .into_iter()
+        .map(|c| {
+            json!({
+                "id": c.id,
+                "kid": c.kid,
+                "msgtype": c.msgtype,
+                "content": c.content,
+                "media_id": c.media_id,
+                "sort": c.sort,
+                "time": c.time,
+                "ctime_n": fmt_dt(c.time),
+                "image_n": "",
+                "newimage": "",
+            })
+        })
+        .collect();
+    Ok(json!({
+        "row": {
+            "id": row.id,
+            "title": row.title,
+            "keyword": row.keyword,
+            "content": row.content,
+            "time": row.time,
+            "conarr": conarr,
+        }
+    }))
+}
+
+async fn wx_zdkeyword_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let title = json_str(body, "title");
+    if title.is_empty() {
+        return Err(ApiError::param_invalid("admin_tool_00050"));
+    }
+    let keyword = json_str(body, "keyword");
+    if keyword.is_empty() {
+        return Err(ApiError::param_invalid("admin_tool_00586"));
+    }
+    let now = clock::now_ts();
+    let kid = gap_extra::upsert_wx_zdkeyword(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &title,
+        &keyword,
+        now,
+    )
+    .await?;
+    let del_ids = ids_named(body, "del_idarr");
+    if !del_ids.is_empty() {
+        gap_extra::delete_wx_zdcon_ids(state.db.pool(), &del_ids, kid).await?;
+    }
+    let items: Vec<Value> = match body.get("content") {
+        Some(Value::Array(a)) => a.clone(),
+        Some(Value::String(s)) => serde_json::from_str(s).unwrap_or_default(),
+        _ => Vec::new(),
+    };
+    for item in items {
+        let msgtype = json_str(&item, "msgtype");
+        let content = match item.get("content") {
+            Some(Value::String(s)) => s.clone(),
+            Some(other) => other.to_string(),
+            None => String::new(),
+        };
+        let media_id = json_i32(&item, "media_id");
+        let sort = json_i32(&item, "sort");
+        if json_i32(&item, "isadd") == 1 {
+            gap_extra::insert_wx_zdcon(
+                state.db.pool(),
+                kid,
+                &msgtype,
+                &content,
+                media_id,
+                sort,
+                now,
+            )
+            .await?;
+        } else {
+            let cid = json_u64(&item, "id");
+            if cid > 0 {
+                gap_extra::update_wx_zdcon(
+                    state.db.pool(),
+                    cid,
+                    &msgtype,
+                    &content,
+                    media_id,
+                    sort,
+                    now,
+                )
+                .await?;
+            }
+        }
+    }
+    Ok(PhpOut::Message("wap_user_00104"))
+}
+
+async fn job_class_roots(state: &AppState) -> AppResult<Value> {
+    let rows = cat_repo::list_php(state.db.reader(), "job", None).await?;
+    Ok(Value::Array(
+        rows.iter().map(|r| cat_row_json("job", r, 1)).collect(),
+    ))
+}
+
+async fn job_class_up(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let position = job_class_roots(state).await?;
+    let mut onejob = json!({});
+    let mut twojob = Value::Array(vec![]);
+    let mut threejob = serde_json::Map::new();
+    if id > 0 {
+        if let Some(one) = cat_repo::get_php(state.db.reader(), "job", id).await? {
+            onejob = cat_row_json("job", &one, 1);
+            let twos = cat_repo::list_php(state.db.reader(), "job", Some(id)).await?;
+            let mut two_arr = Vec::new();
+            for two in &twos {
+                two_arr.push(cat_row_json("job", two, 2));
+                let threes = cat_repo::list_php(state.db.reader(), "job", Some(two.id)).await?;
+                threejob.insert(
+                    two.id.to_string(),
+                    Value::Array(threes.iter().map(|t| cat_row_json("job", t, 3)).collect()),
+                );
+            }
+            twojob = Value::Array(two_arr);
+        }
+    }
+    Ok(json!({
+        "id": id,
+        "onejob": onejob,
+        "twojob": twojob,
+        "threejob": threejob,
+        "position": position,
+    }))
+}
+
+async fn job_class_classadd(state: &AppState, body: &Value) -> AppResult<Value> {
+    let position = job_class_roots(state).await?;
+    let id = json_u64(body, "id");
+    let tid = json_u64(body, "tid");
+    if id > 0 {
+        let info = cat_repo::get_php(state.db.reader(), "job", id)
+            .await?
+            .map(|r| cat_row_json("job", &r, 1))
+            .unwrap_or(json!({}));
+        let job_id = info.get("keyid").and_then(|v| v.as_u64()).unwrap_or(0);
+        let job = if job_id > 0 {
+            cat_repo::get_php(state.db.reader(), "job", job_id)
+                .await?
+                .map(|r| cat_row_json("job", &r, 1))
+                .unwrap_or(json!({}))
+        } else {
+            json!({})
+        };
+        let class2_parent = job.get("keyid").and_then(|v| v.as_u64()).unwrap_or(0);
+        let class2 = if class2_parent > 0 {
+            let rows = cat_repo::list_php(state.db.reader(), "job", Some(class2_parent)).await?;
+            Value::Array(rows.iter().map(|r| cat_row_json("job", r, 2)).collect())
+        } else {
+            Value::Array(vec![])
+        };
+        return Ok(json!({
+            "type": "three",
+            "info": info,
+            "class2": class2,
+            "job": job,
+            "position": position,
+        }));
+    }
+    if tid > 0 {
+        let info = cat_repo::get_php(state.db.reader(), "job", tid)
+            .await?
+            .map(|r| cat_row_json("job", &r, 1))
+            .unwrap_or(json!({}));
+        return Ok(json!({
+            "type": "two",
+            "info": info,
+            "position": position,
+        }));
+    }
+    Ok(json!({ "position": position }))
+}
+
+async fn job_class_chachong(state: &AppState, body: &Value) -> AppResult<Value> {
+    let page = json_u64(body, "page").max(0);
+    let limit = 50u64;
+    let offset = page.saturating_mul(limit);
+    let list = cat_repo::job_dup_pinyin(state.db.reader(), offset, limit).await?;
+    Ok(json!({ "list": list, "page": page }))
+}
+
+async fn job_class_move(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let pid = json_u64(body, "pid");
+    if pid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let keyid = json_u64(body, "keyid");
+    let nid = json_u64(body, "nid");
+    let parent = if keyid > 0 { keyid } else { nid };
+    cat_repo::patch_job_class_parent(state.db.pool(), pid, parent).await?;
     Ok(PhpOut::Message("ok"))
 }

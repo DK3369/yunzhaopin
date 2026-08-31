@@ -445,3 +445,23 @@ pub struct NewsPropertyRow {
     pub name: String,
     pub value: String,
 }
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct WxZdKeywordRow {
+    pub id: u64,
+    pub title: String,
+    pub keyword: String,
+    pub content: String,
+    pub time: i64,
+}
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct WxZdConRow {
+    pub id: u64,
+    pub kid: u64,
+    pub msgtype: String,
+    pub content: String,
+    pub media_id: i32,
+    pub sort: i32,
+    pub time: i64,
+}

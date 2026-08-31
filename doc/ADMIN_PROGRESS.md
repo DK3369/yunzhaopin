@@ -81,10 +81,12 @@ flowchart LR
 | `hotjob` | save、getComList、gethotjob、hotjobinfo、hotNum |
 | `resume` | skill、project、other |
 | `pages` | index/add/save/delete/make/ajax（单页 `phpyun_description`，不再映新闻） |
-| `job-class` | ajax、setrec、get_class |
+| `job-class` | ajax、setrec、get_class、up、getJobClass、classadd、ajaxchachong、ajaxpinyin、move |
 | `cat-class` | list/children/add/save/del/ajax/up/add_single/up_single/upp/ajaxpinyin/clearpinyin/ajaxchachong/classadd（城市/行业/企业/个人/兼职/原因/介绍/校园/培训科目；`kind` 在 body） |
-| `user-gap` | company-num、reset-password、matching、resume-audit |
-| `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav、**creatnav**（调微信 menu/create；无 appid 返回 `admin_tool_00053`） |
+| `user-gap` | company-num、resume-num（raw）、user-num（raw）、resume-config、user-config、reset-password、matching、resume-audit |
+| `keyword` | map（关键词类型文案） |
+| `web-config` | index、city（save 走 `site-settings/batch`） |
+| `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav、**creatnav**、**config**（公众号设置，不是菜单列表）、zdkeyword/delkeyword/getzdkeyword/save-zdkeyword |
 | `email-set` | ceshi（入队 `email.verify_queued`）、gettpl、savetpl |
 | `finance-order` | index, searchType, edit, save, setpay, delete, xls；凭证 `multiupload`/`uploadsave`/`htpic_del` 明确 `upload_not_supported` |
 | `finance-pay` | index, delete |
@@ -124,7 +126,12 @@ flowchart LR
 | 系统分类 ajax / 微信 savenav / 招聘会 xls | **完成**（savenav `error=3`；comxls 出 CSV） |
 | 城市/行业/会员/兼职分类 ajax·add·del | **完成**（`php-content/cat-class`；行业表改为 `phpyun_industry` 不再误打 comclass） |
 | 企业 companyNum / 重置密码 / 职位 matching / 简历 resumeAudit | **完成**（`php-content/user-gap`；matching 为简化列表） |
+| 简历 resumeNum/getConfig、个人 userNum/getConfigData | **完成**（resumeNum/userNum 为 rawBody） |
+| 关键词 keyWord、页面设置 index/city/save | **完成**（save 走 site-settings/batch） |
+| 微信设置 index/save 不再误打 wx-navs；zdkeyword 列表 | **完成** |
+| 职位分类 up/getJobClass/classadd/move/查重 | **完成**（ajaxpinyin 仍直接成功、未转拼音） |
 | 微信 creatnav / 邮件 ceshi·gettpl·savetpl | **完成**（creatnav 调微信 API；ceshi 入队不保证 SMTP 真发出） |
+| wangEditor 全局脚本 | **完成**（`public/php-admin/js/wangeditor` + nuxt head；emailset/介绍分类/企业 CRM 进页不再因 `window.wangEditor` 500） |
 | 校园分类 UI | **完成**（同构兼职分类；无表则空列表）。猎头/spview/**完整**校园培训业务：**做不到** |
 
 ### 前台 OAuth / 支付（本轮）
@@ -151,7 +158,7 @@ flowchart LR
 - RBAC 不解析 `group_power`；导出是 CSV 不是 OLE xls
 - 微信自定义菜单：savenav 本地已接；**creatnav 已接微信 menu/create**（无 `WECHAT_APPID` 时业务错误，不 500）
 - 关键词/分站开关数字：`KeywordForm`/`KeywordStatusForm`/`DomainForm` 宽松反序列化（bool/字符串不再 400）
-- 已修：`window.yunAdminT is not a function`；`del*`/`*save` 启发式误路由
+- 已修：`window.yunAdminT is not a function`；`del*`/`*save` 启发式误路由；`window.wangEditor` 未挂导致 emailset/introduce_class/companycrm 进页 500
 - 支付：**支付宝页跳已接，沙箱真单未验收**；微信收款未接
 - php-fpm 未卸，`uploads/` 未删
 - jobs 库公告测试行 `id=2` 已 `deleted=1`（列表不可见）

@@ -562,3 +562,44 @@ pub async fn recompute_whour(
         .await?;
     Ok(())
 }
+
+async fn count_expect(pool: &MySqlPool, extra: &str) -> Result<u64, sqlx::Error> {
+    let sql = format!("SELECT COUNT(*) FROM phpyun_resume_expect WHERE 1=1 {extra}");
+    let n: (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
+pub async fn count_admin_all(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    count_expect(pool, "").await
+}
+
+pub async fn count_admin_state(pool: &MySqlPool, state: i32) -> Result<u64, sqlx::Error> {
+    let n: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_expect WHERE state = ?")
+            .bind(state)
+            .fetch_one(pool)
+            .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
+pub async fn count_admin_r_status(pool: &MySqlPool, r_status: i32) -> Result<u64, sqlx::Error> {
+    let n: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_expect WHERE r_status = ?")
+            .bind(r_status)
+            .fetch_one(pool)
+            .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
+/// PHP `msgNum::resumeNum` teen count: birthday unix > now-16y.
+pub async fn count_admin_teen(pool: &MySqlPool, since_unix: i64) -> Result<u64, sqlx::Error> {
+    let n: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_resume_expect \
+         WHERE birthday <> '' \
+           AND UNIX_TIMESTAMP(STR_TO_DATE(CONCAT(LEFT(birthday,7),'-01'), '%Y-%m-%d')) > ?",
+    )
+    .bind(since_unix)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
