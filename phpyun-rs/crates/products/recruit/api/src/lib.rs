@@ -27,5 +27,5 @@ pub mod routes;
 pub mod v1;
 pub mod v2;
 
-pub use openapi::{swagger_ui, v1_openapi, V1Doc, V2Doc};
+pub use openapi::{v1_openapi, V1Doc, V2Doc};
 pub use routes::{assemble, build_router, build_router_with_state};

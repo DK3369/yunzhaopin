@@ -27,14 +27,16 @@
 //! }
 //! ```
 
-use std::sync::OnceLock;
 use validator::ValidationError;
 
 /// Mainland China mobile number: `1[3-9]\d{9}`.
 pub fn cn_mobile(v: &str) -> Result<(), ValidationError> {
-    static RE: OnceLock<regex::Regex> = OnceLock::new();
-    let re = RE.get_or_init(|| regex::Regex::new(r"^1[3-9]\d{9}$").expect("valid regex"));
-    if re.is_match(v) {
+    let b = v.as_bytes();
+    if b.len() == 11
+        && b[0] == b'1'
+        && (b'3'..=b'9').contains(&b[1])
+        && b[2..].iter().all(u8::is_ascii_digit)
+    {
         Ok(())
     } else {
         Err(ValidationError::new("cn_mobile"))
@@ -44,9 +46,11 @@ pub fn cn_mobile(v: &str) -> Result<(), ValidationError> {
 /// Mainland China resident ID card: 18 chars (last char is X / x / digit). Format
 /// check only — does not validate the check digit.
 pub fn cn_id_card(v: &str) -> Result<(), ValidationError> {
-    static RE: OnceLock<regex::Regex> = OnceLock::new();
-    let re = RE.get_or_init(|| regex::Regex::new(r"^\d{17}[\dXx]$").expect("valid regex"));
-    if re.is_match(v) {
+    let b = v.as_bytes();
+    if b.len() == 18
+        && b[..17].iter().all(u8::is_ascii_digit)
+        && (b[17].is_ascii_digit() || b[17] == b'X' || b[17] == b'x')
+    {
         Ok(())
     } else {
         Err(ValidationError::new("cn_id_card"))
@@ -86,10 +90,12 @@ pub fn strong_password(v: &str) -> Result<(), ValidationError> {
 
 /// Username: 3–30 chars; letters / digits / underscore; first char can't be a digit.
 pub fn username(v: &str) -> Result<(), ValidationError> {
-    static RE: OnceLock<regex::Regex> = OnceLock::new();
-    let re = RE
-        .get_or_init(|| regex::Regex::new(r"^[A-Za-z_][A-Za-z0-9_]{2,29}$").expect("valid regex"));
-    if re.is_match(v) {
+    let b = v.as_bytes();
+    let first_ok = b.first().is_some_and(|c| c.is_ascii_alphabetic() || *c == b'_');
+    if (3..=30).contains(&b.len())
+        && first_ok
+        && b[1..].iter().all(|c| c.is_ascii_alphanumeric() || *c == b'_')
+    {
         Ok(())
     } else {
         Err(ValidationError::new("username"))

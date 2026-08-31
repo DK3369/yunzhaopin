@@ -1,7 +1,7 @@
 //! HTTP server binary for the PHPYun Rust backend.
 //!
 //! The workspace is otherwise library-only. This crate wires:
-//! `Config::load` → telemetry → rayon → tokio runtime → `AppState` →
+//! `Config::load` → telemetry → tokio runtime → `AppState` →
 //! `assemble` (handlers + api-admin) → graceful shutdown.
 
 use std::net::SocketAddr;
@@ -11,13 +11,12 @@ use anyhow::Context;
 use phpyun_core::db::run_migrations;
 use phpyun_core::scheduler::Scheduler;
 use phpyun_core::shutdown::{wait_for_signal, CancellationToken};
-use phpyun_core::{metrics, rayon_pool, telemetry, AppState, Config};
+use phpyun_core::{metrics, telemetry, AppState, Config};
 use phpyun_handlers::assemble;
 
 fn main() -> anyhow::Result<()> {
     let config = Config::load().context("load configuration")?;
     telemetry::init(&config.log_level, config.env);
-    rayon_pool::init(0);
 
     let mut builder = tokio::runtime::Builder::new_multi_thread();
     builder.enable_all().thread_name("phpyun-worker");

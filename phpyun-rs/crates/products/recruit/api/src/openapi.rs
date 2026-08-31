@@ -2,15 +2,13 @@
 //!
 //! - `/api-docs/v1/openapi.json` — V1 spec
 //! - `/api-docs/v2/openapi.json` — V2 spec
-//! - `/docs` — Swagger UI top-left dropdown to choose v1 / v2
 //!
-//! When adding v3: define `V3Doc` and add one more `.url(...)` line in `swagger_ui()`.
+//! When adding v3: define `V3Doc` and add one more route in `api_docs_router()`.
 
 use utoipa::{
     openapi::security::{Http, HttpAuthScheme, SecurityScheme},
     Modify, OpenApi,
 };
-use utoipa_swagger_ui::SwaggerUi;
 
 use crate::{v1, v2};
 
@@ -1010,50 +1008,73 @@ pub fn v1_openapi() -> utoipa::openapi::OpenApi {
 )]
 pub struct V2Doc;
 
-/// Swagger UI single URL with a top-left dropdown to switch between versions.
-///
-/// In non-prod a long-lived admin "dev token" is embedded in the spec's
-/// `info.description` (rendered as Markdown by Swagger UI). The user copies
-/// it once, clicks **Authorize**, pastes — and `persist_authorization(true)`
-/// keeps it in browser localStorage across reloads.
-pub fn swagger_ui() -> SwaggerUi {
-    swagger_ui_with(None)
+fn inject_dev_banner(openapi: &mut utoipa::openapi::OpenApi) {
+    let Some(t) = phpyun_core::dev_token::tokens() else {
+        return;
+    };
+    let banner = format!(
+        "\n\n---\n\n## 开发环境快捷登录\n\n\
+            uid=1, 30 年 TTL。把对应角色的 token 放进 `Authorization: Bearer …`。\n\n\
+            **admin**:\n```\n{admin}\n```\n\n\
+            **jobseeker**:\n```\n{js}\n```\n\n\
+            **employer**:\n```\n{er}\n```\n\n\
+            JSON 接口取 token: [`GET /dev/token`](/dev/token)（仅测试环境返回）。\n\n---\n",
+        admin = t.admin,
+        js = t.jobseeker,
+        er = t.employer,
+    );
+    openapi.info.description = Some(format!(
+        "{}{banner}",
+        openapi.info.description.clone().unwrap_or_default()
+    ));
 }
 
-/// Same as [`swagger_ui`], plus an optional extra spec (admin crate).
-pub fn swagger_ui_with(extra: Option<(&'static str, utoipa::openapi::OpenApi)>) -> SwaggerUi {
+/// Serve OpenAPI JSON (dev/test only). Extra spec is typically admin.
+pub fn api_docs_router<S>(extra: Option<(&'static str, utoipa::openapi::OpenApi)>) -> axum::Router<S>
+where
+    S: Clone + Send + Sync + 'static,
+{
+    use axum::{routing::get, Json, Router};
+
     let mut v1 = v1_openapi();
     let mut v2 = V2Doc::openapi();
-    if let Some(t) = phpyun_core::dev_token::tokens() {
-        let banner = format!(
-            "\n\n---\n\n## 🔑 开发环境快捷登录\n\n\
-            uid=1,30 年 TTL。点右上角 **Authorize**,在 `bearerAuth` 框里粘贴对应角色的 token\
-            (**不要带 `Bearer ` 前缀**,Swagger 会自动加)。浏览器会记住,下次打开不用重新粘贴。\n\n\
-            **admin**(默认 / `/v1/admin/*`):\n```\n{admin}\n```\n\n\
-            **jobseeker**(`/v1/mcenter/resume/*` 等求职者专属):\n```\n{js}\n```\n\n\
-            **employer**(`/v1/mcenter/applications` 等企业专属):\n```\n{er}\n```\n\n\
-            JSON 接口取 token:[`GET /dev/token`](/dev/token)(仅测试环境返回)。\n\n---\n",
-            admin = t.admin,
-            js = t.jobseeker,
-            er = t.employer,
+    inject_dev_banner(&mut v1);
+    inject_dev_banner(&mut v2);
+    let mut router = Router::new()
+        .route(
+            "/api-docs/v1/openapi.json",
+            get({
+                let spec = v1;
+                move || {
+                    let spec = spec.clone();
+                    async move { Json(spec) }
+                }
+            }),
+        )
+        .route(
+            "/api-docs/v2/openapi.json",
+            get({
+                let spec = v2;
+                move || {
+                    let spec = spec.clone();
+                    async move { Json(spec) }
+                }
+            }),
         );
-        let inject = |info: &mut utoipa::openapi::Info| {
-            info.description = Some(format!(
-                "{}{banner}",
-                info.description.clone().unwrap_or_default()
-            ));
-        };
-        inject(&mut v1.info);
-        inject(&mut v2.info);
+    if let Some((path, mut spec)) = extra {
+        inject_dev_banner(&mut spec);
+        router = router.route(
+            path,
+            get({
+                let spec = spec;
+                move || {
+                    let spec = spec.clone();
+                    async move { Json(spec) }
+                }
+            }),
+        );
     }
-    let mut ui = SwaggerUi::new("/docs")
-        .url("/api-docs/v1/openapi.json", v1)
-        .url("/api-docs/v2/openapi.json", v2)
-        .config(utoipa_swagger_ui::Config::default().persist_authorization(true));
-    if let Some((url, spec)) = extra {
-        ui = ui.url(url, spec);
-    }
-    ui
+    router
 }
 
 #[cfg(test)]

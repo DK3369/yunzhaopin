@@ -398,7 +398,7 @@ pub async fn login_or_register_with_email_code(
                 .chars()
                 .take(16)
                 .collect::<String>();
-            let random_password = uuid::Uuid::new_v4().simple().to_string();
+            let random_password = uuid::Uuid::now_v7().simple().to_string();
             let hash = argon2_hash_async(format!("{random_password}{salt}")).await?;
             let email_c = email.clone();
             let ip = ctx.ip.to_string();

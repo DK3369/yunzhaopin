@@ -247,7 +247,7 @@ fn governor_error_response(error: GovernorError) -> Response {
 /// - **Paths explicitly exempted via [`RouteRules::allow_get`]**: GET is
 ///   allowed too. These include third-party protocol handshakes whose verb we
 ///   do not control, and public-read SSR aliases registered by route modules.
-/// - **Everything else** (`/health`, `/ready`, `/docs/*`, `openapi.json`):
+/// - **Everything else** (`/health`, `/ready`, `openapi.json`):
 ///   GET / POST / HEAD / OPTIONS, anything else 404.
 async fn only_get_post(State(rules): State<Rules>, req: Request, next: Next) -> Response {
     use axum::http::Method;

@@ -1,4 +1,4 @@
-//! Prometheus metrics, tracing-context bridging, and a business metric facade.
+//! Prometheus metrics and a business metric facade.
 //!
 //! Business code should not call `metrics::counter!(...)` directly — use the typed
 //! helpers in this module instead:
@@ -12,28 +12,19 @@
 //! strings don't get scattered across the workspace.
 
 use metrics_exporter_prometheus::PrometheusBuilder;
-use metrics_tracing_context::{MetricsLayer, TracingContextLayer};
-use metrics_util::layers::Layer;
 use std::net::SocketAddr;
 
-/// Install the Prometheus recorder + tracing-context bridge. Starts an HTTP
-/// listener that exposes `/metrics`.
+/// Install the Prometheus recorder and start an HTTP listener that exposes `/metrics`.
 pub fn install_prometheus(bind: &str) -> anyhow::Result<()> {
     let addr: SocketAddr = bind.parse()?;
     let (recorder, exporter) = PrometheusBuilder::new().with_http_listener(addr).build()?;
 
-    let layered = TracingContextLayer::all().layer(recorder);
-    metrics::set_global_recorder(layered)
+    metrics::set_global_recorder(recorder)
         .map_err(|e| anyhow::anyhow!("metrics recorder already set: {e}"))?;
 
     tokio::spawn(exporter);
     tracing::info!(%bind, "prometheus endpoint up");
     Ok(())
-}
-
-/// `tracing_subscriber` layer that bridges tracing spans into metrics labels.
-pub fn tracing_metrics_layer() -> MetricsLayer {
-    MetricsLayer::new()
 }
 
 // ==================== Business metric facade ====================

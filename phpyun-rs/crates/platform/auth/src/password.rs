@@ -1,17 +1,13 @@
 //! Password hashing and verification.
 //!
-//! Concurrency strategy:
-//! - **Single hash/verify** uses `tokio::task::spawn_blocking`. argon2 is CPU-intensive (60~300ms);
-//!   running it directly on the async runtime would block worker threads and drag down other requests.
-//! - **Bulk migration** (one-shot upgrade of legacy md5 database) uses `rayon::par_iter`,
-//!   parallelizing across all physical cores for ~10x the single-threaded throughput.
+//! Single hash/verify uses `tokio::task::spawn_blocking`. argon2 is CPU-intensive
+//! (60~300ms); running it directly on the async runtime would block worker threads.
 
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Algorithm, Argon2, Params, Version,
 };
 use md5::{Digest, Md5};
-use rayon::prelude::*;
 
 // ========== Low-level synchronous implementation ==========
 
@@ -91,24 +87,6 @@ pub fn md5_hex(input: &str) -> String {
     format!("{:x}", Md5::digest(input.as_bytes()))
 }
 
-// ========== Rayon batch processing (data migration scripts) ==========
-
-/// Bulk-upgrade legacy md5 passwords to argon2. Uses rayon for parallelism, achieving roughly
-/// N-times single-threaded throughput on an N-core machine.
-///
-/// Typical usage:
-/// - Input: `Vec<(uid, plaintext_pw)>` — requires an extra side-channel entry point (e.g. collected during user login)
-/// - Output: `Vec<(uid, new_argon2_hash)>` — then bulk UPDATE
-///
-/// **Do not** feed legacy md5 hashes directly as input — argon2 needs plaintext, and we only have
-/// the plaintext at the moment a login verification succeeds.
-pub fn batch_hash_passwords(plaintexts: Vec<(u64, String)>) -> Vec<(u64, anyhow::Result<String>)> {
-    plaintexts
-        .into_par_iter()
-        .map(|(uid, pw)| (uid, argon2_hash_sync(&pw)))
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -129,16 +107,6 @@ mod tests {
         let h = argon2_hash(&format!("s3cr3t{salt}")).unwrap();
         assert!(verify_password("s3cr3t", &h, salt));
         assert!(!verify_password("nope", &h, salt));
-    }
-
-    #[test]
-    fn batch_rayon_works() {
-        let input: Vec<(u64, String)> = (0..16).map(|i| (i, format!("pw-{i}"))).collect();
-        let out = batch_hash_passwords(input);
-        assert_eq!(out.len(), 16);
-        for (_uid, r) in &out {
-            assert!(r.is_ok());
-        }
     }
 
     #[tokio::test]

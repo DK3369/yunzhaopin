@@ -14,7 +14,6 @@ phpyun_core.workspace = true
 phpyun_services.workspace = true
 phpyun_models.workspace = true
 utoipa.workspace = true
-utoipa-swagger-ui.workspace = true
 uuid.workspace = true
 bytes.workspace = true
 chrono.workspace = true
@@ -23,7 +22,6 @@ num-traits.workspace = true
 [dev-dependencies]
 axum-test.workspace = true
 tokio = { workspace = true }
-regex.workspace = true
 tower = { workspace = true }
 tracing-subscriber = { workspace = true }
 sqlx.workspace = true

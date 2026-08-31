@@ -364,7 +364,7 @@ pub async fn create_pay_order(state: &AppState, input: PayInput<'_>) -> AppResul
 }
 
 fn uuid_suffix() -> u32 {
-    let uuid = uuid::Uuid::new_v4();
+    let uuid = uuid::Uuid::now_v7();
     let bytes = uuid.as_bytes();
     u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) % 100_000
 }

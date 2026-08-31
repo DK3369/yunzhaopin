@@ -36,12 +36,9 @@ tokio = { version = "1.52", features = [
 tokio-util = { version = "0.7", features = ["rt"] }
 tokio-stream = "0.1"
 
-# ---- CPU data parallelism ----
-rayon = "1.12"
-
 # ---- DB / Redis / outbound HTTP ----
 sqlx = { version = "0.8", features = [
-    "mysql", "runtime-tokio-rustls", "chrono", "json", "migrate",
+    "mysql", "runtime-tokio-rustls", "chrono", "migrate",
 ] }
 redis = { version = "1.2", features = ["tokio-comp", "connection-manager"] }
 reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "http2"] }
@@ -61,11 +58,8 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 metrics = "0.24"
 metrics-exporter-prometheus = { version = "0.16", default-features = false, features = ["http-listener"] }
-metrics-tracing-context = "0.17"
-metrics-util = "0.18"
 
 # ---- Errors ----
-thiserror = "2"
 anyhow = "1"
 num-traits = "0.2"
 # Lock-free atomic Arc swap; used by dict_service's global cache read path, ~10ns and fully lock-free.
@@ -80,7 +74,7 @@ rust-i18n = "3"
 
 # ---- Tools ----
 chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1", features = ["v4", "v7", "serde"] }
+uuid = { version = "1", features = ["v7"] }
 dotenvy = "0.15"
 cron = "0.16"          # cron expression parsing for the scheduler
 async-trait = "0.1"    # used by the storage trait
@@ -93,14 +87,12 @@ moka = { version = "0.12", features = ["future"] }
 
 # ---- Request validation ----
 validator = { version = "0.20", features = ["derive"] }
-regex = "1"
 
 # ---- Testing ----
 axum-test = "17"
 
 # ---- OpenAPI auto docs ----
 utoipa = { version = "5", features = ["axum_extras", "chrono", "uuid"] }
-utoipa-swagger-ui = { version = "9", features = ["axum"] }
 
 # ---- Internal workspace crate aliases (avoid clashing with Rust's built-in `core`) ----
 phpyun_core = { path = "crates/platform/core", package = "phpyun-core" }

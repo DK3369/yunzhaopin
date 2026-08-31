@@ -8,7 +8,7 @@
 //! ## Unversioned
 //! - `/health`, `/ready` — ops probes
 //! - `/files/*` — static uploaded files (local FS backend for dev; prod uses CDN, mounting here is optional)
-//! - `/docs`, `/api-docs/vN/openapi.json` — Swagger UI (dev/test only; one spec per version)
+//! - `/api-docs/vN/openapi.json` — OpenAPI JSON (dev/test only; one spec per version)
 //!
 //! ## Middleware mounted on demand
 //! - Global middleware is installed by `mw::install`;
@@ -46,7 +46,7 @@ where
     S: Clone + Send + Sync + 'static,
 {
     if env.is_dev_or_test() {
-        router.merge(openapi::swagger_ui_with(extra_docs))
+        router.merge(openapi::api_docs_router(extra_docs))
     } else {
         router
     }
@@ -105,15 +105,16 @@ mod tests {
                 status_for(env, "/api-docs/v1/openapi.json").await,
                 StatusCode::OK
             );
-            assert_ne!(status_for(env, "/docs/").await, StatusCode::NOT_FOUND);
+            assert_eq!(
+                status_for(env, "/api-docs/v2/openapi.json").await,
+                StatusCode::OK
+            );
         }
     }
 
     #[tokio::test]
     async fn api_docs_do_not_exist_in_production() {
         for path in [
-            "/docs",
-            "/docs/",
             "/api-docs/v1/openapi.json",
             "/api-docs/v2/openapi.json",
         ] {
