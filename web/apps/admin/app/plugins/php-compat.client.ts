@@ -151,6 +151,44 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         createToolbar: () => ({ destroy: () => undefined }),
       }
     }
+    // Remaining PHP Vue2 pages still call UE.getEditor (UEditor). Stub so they
+    // don't throw ReferenceError; content is read/written on the textarea by id.
+    if (!w.UE || typeof (w.UE as { getEditor?: unknown }).getEditor !== 'function') {
+      const ueById = new Map<string, Record<string, unknown>>()
+      w.UE = {
+        getEditor(id: string) {
+          const key = String(id || '')
+          const hit = ueById.get(key)
+          if (hit) return hit
+          const read = () => {
+            const el = document.getElementById(key) as HTMLTextAreaElement | HTMLElement | null
+            if (!el) return ''
+            return 'value' in el ? String((el as HTMLTextAreaElement).value || '') : el.innerHTML
+          }
+          const write = (html: string) => {
+            const el = document.getElementById(key) as HTMLTextAreaElement | HTMLElement | null
+            if (!el) return
+            if ('value' in el) (el as HTMLTextAreaElement).value = html
+            else el.innerHTML = html
+          }
+          const inst: Record<string, unknown> = {
+            ready(fn?: () => void) {
+              fn?.()
+            },
+            getContent: read,
+            getPlainTxt: read,
+            setContent: write,
+            setDisabled() {},
+            setEnabled() {},
+            destroy() {
+              ueById.delete(key)
+            },
+          }
+          ueById.set(key, inst)
+          return inst
+        },
+      }
+    }
     w.message = message
     w.delConfirm = delConfirm
     w.formatMonth = formatMonth
@@ -227,12 +265,43 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       },
     },
     created() {
-      const inst = this as unknown as Record<string, unknown>
+      const inst = this as unknown as Record<string, unknown> & {
+        handleClick?: (tab: unknown, event?: unknown) => unknown
+        __epTabPatched?: boolean
+      }
       inst.$message = ElMessage
       inst.$confirm = ElMessageBox.confirm
       inst.$alert = ElMessageBox.alert
       inst.$notify = ElNotification
       inst.$loading = ElLoading.service
+      // Element Plus tab-click gives paneName / props.name; PHP still reads tab.name.
+      const origClick = inst.handleClick
+      if (typeof origClick === 'function' && !inst.__epTabPatched) {
+        inst.__epTabPatched = true
+        inst.handleClick = function (tab: unknown, event?: unknown) {
+          if (tab && typeof tab === 'object') {
+            const t = tab as Record<string, unknown>
+            const props = t.props as Record<string, unknown> | undefined
+            const name = t.paneName ?? props?.name ?? t.name
+            if (name != null && t.name == null) {
+              try {
+                t.name = name
+              } catch {
+                /* frozen pane */
+              }
+            }
+            if (t.name == null && name != null) {
+              tab = new Proxy(t, {
+                get(target, prop, recv) {
+                  if (prop === 'name') return name
+                  return Reflect.get(target, prop, recv)
+                },
+              })
+            }
+          }
+          return origClick.call(this, tab, event)
+        }
+      }
     },
     mounted() {
       patchTableBodyWrapper(this as unknown as Record<string, unknown>)

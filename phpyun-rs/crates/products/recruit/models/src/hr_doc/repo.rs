@@ -234,15 +234,16 @@ pub async fn delete_docs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Err
 }
 
 pub async fn list_classes(pool: &MySqlPool) -> Result<Vec<ToolboxClass>, sqlx::Error> {
-    sqlx::query_as::<_, ToolboxClass>(
+    let sql = format!(
         "SELECT CAST(id AS UNSIGNED) AS id, \
                 COALESCE(name, '') AS name, \
                 COALESCE(content, '') AS content, \
                 COALESCE(pic, '') AS pic \
-         FROM phpyun_toolbox_class WHERE {PREDICATE} ORDER BY id ASC",
-    )
-    .fetch_all(pool)
-    .await
+         FROM phpyun_toolbox_class WHERE {PREDICATE} ORDER BY id ASC"
+    );
+    sqlx::query_as::<_, ToolboxClass>(&sql)
+        .fetch_all(pool)
+        .await
 }
 
 pub async fn upsert_class(

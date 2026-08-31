@@ -129,14 +129,20 @@ export default {
                 that.loading = true;
                 that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=toolbox_class',{}, {hideloading: true}).then(function (response) {
-                    let res = response.data,
-                        data = res.data;
-
-                    that.list = data.list;
+                    let res = response.data || {};
+                    let data = res.data || {};
+                    that.list = Array.isArray(data.list) ? data.list : [];
                     that.loading = false;
                     if (that.list.length === 0){
                         that.emptytext = lc('wap_js_00113');
                     }
+                    if (res.error > 0 && res.msg) {
+                        message.error(res.msg);
+                    }
+                }).catch(function () {
+                    that.list = [];
+                    that.loading = false;
+                    that.emptytext = lc('wap_js_00113');
                 })
             },
 
