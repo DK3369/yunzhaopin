@@ -58,7 +58,9 @@ pub async fn list_sms(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct LoginLogQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub usertype: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub uid: Option<u64>,
 }
 

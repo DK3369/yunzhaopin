@@ -128,12 +128,17 @@ pub async fn sms_send(
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct SidQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub sid: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub id: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub status: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub temptype: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub uid: Option<u64>,
 }
 

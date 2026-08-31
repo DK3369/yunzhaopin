@@ -57,7 +57,7 @@ export function readStoredLocale(): WebLocale {
 export function persistWebLocale(locale: WebLocale) {
   if (!import.meta.client) return
   localStorage.setItem(COOKIE, locale)
-  const val = `${COOKIE}=${locale}; max-age=${MAX_AGE}; SameSite=Lax`
-  document.cookie = `${val}; path=/`
-  document.cookie = `${val}; path=/admin/`
+  const secure = location.protocol === 'https:' ? '; Secure' : ''
+  const val = `${COOKIE}=${locale}; max-age=${MAX_AGE}; path=/; SameSite=Lax${secure}`
+  document.cookie = val
 }

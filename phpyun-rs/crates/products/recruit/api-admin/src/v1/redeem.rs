@@ -134,8 +134,10 @@ pub struct RewardListQuery {
     /// Default false (admin sees everything)
     #[serde(default)]
     pub only_active: bool,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     #[validate(range(min = 1, max = 99_999_999))]
     pub nid: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     #[validate(range(min = 1, max = 99_999_999))]
     pub tnid: Option<u64>,
 }

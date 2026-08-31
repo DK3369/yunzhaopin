@@ -21,9 +21,11 @@ pub fn routes() -> Router<AppState> {
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// PHP `status` → `phpyun_question.state`
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub status: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub is_recom: Option<i32>,
 }
 
@@ -75,4 +77,19 @@ pub async fn delete(
     user.require_admin()?;
     admin_cms_service::delete_question(&state, &user, f.id).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+#[cfg(test)]
+mod list_query_tests {
+    use super::*;
+
+    #[test]
+    fn status_accepts_php_select_string() {
+        let q: ListQuery = serde_json::from_str(
+            r#"{"page":1,"page_size":20,"status":"1","is_recom":"","keyword":""}"#,
+        )
+        .unwrap();
+        assert_eq!(q.status, Some(1));
+        assert_eq!(q.is_recom, None);
+    }
 }

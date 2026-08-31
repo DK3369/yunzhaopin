@@ -23,6 +23,7 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct ListQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub pid: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,

@@ -62,23 +62,45 @@ function toggleDiv() {
           <div class="loginIptbox" id="loginapp">
             <template v-if="islook">
               <div v-if="showDiv1" class="loginTabse">
-                <ul class="logoinList">
+                <form @submit.prevent="login">
+                  <ul class="logoinList">
                   <li>
                     <div class="adminLogins">
-                      <input v-model="username" type="text" class="ipt" :placeholder="lc('wap_00208')" />
+                      <label class="sr-only" for="admin-username">{{ lc('wap_00208') }}</label>
+                      <input
+                        id="admin-username"
+                        v-model="username"
+                        name="username"
+                        type="text"
+                        class="ipt"
+                        autocomplete="username"
+                        :placeholder="lc('wap_00208')"
+                        :aria-label="lc('wap_00208')"
+                      />
                     </div>
                   </li>
                   <li>
                     <div class="adminLogins adminLoginTwo">
-                      <input v-model="password" type="password" class="ipt" :placeholder="lc('wap_js_00139')" @keyup.enter="login" />
+                      <label class="sr-only" for="admin-password">{{ lc('wap_js_00139') }}</label>
+                      <input
+                        id="admin-password"
+                        v-model="password"
+                        name="password"
+                        type="password"
+                        class="ipt"
+                        autocomplete="current-password"
+                        :placeholder="lc('wap_js_00139')"
+                        :aria-label="lc('wap_js_00139')"
+                      />
                     </div>
                   </li>
                   <li>
                     <div class="adminLoginsButton">
-                      <span id="submit_bt" class="adminLogiSub" @click="login">{{ $t('common.login') }}</span>
+                      <button id="submit_bt" type="submit" class="adminLogiSub">{{ $t('common.login') }}</button>
                     </div>
                   </li>
-                </ul>
+                  </ul>
+                </form>
                 <p v-if="err" style="color: #e34848; text-align: center">{{ err }}</p>
                 <p style="text-align: center; margin-top: 12px; font-size: 13px">
                   <LangSwitch reload />
@@ -108,3 +130,23 @@ function toggleDiv() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+button.adminLogiSub {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+</style>
