@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/main.css'],
-  modules: ['@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/sitemap'],
+  modules: ['@nuxtjs/i18n', '@nuxtjs/sitemap'],
   i18n: {
     locales: [
       { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },

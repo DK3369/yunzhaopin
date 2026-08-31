@@ -1,8 +1,5 @@
 {
   "name": "@phpyun/layer-base",
   "private": true,
-  "type": "module",
-  "dependencies": {
-    "nuxt": "4.5.2"
-  }
+  "type": "module"
 }

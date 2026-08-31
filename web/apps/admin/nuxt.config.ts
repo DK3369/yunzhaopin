@@ -41,7 +41,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  modules: ['@pinia/nuxt', '@element-plus/nuxt', '@nuxtjs/i18n'],
+  modules: ['@element-plus/nuxt', '@nuxtjs/i18n'],
   runtimeConfig: {
     public: {
       adminAssetTag,
