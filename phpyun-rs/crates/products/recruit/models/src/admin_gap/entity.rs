@@ -115,14 +115,22 @@ pub struct JobRefreshLogRow {
     pub remark: String,
 }
 
+/// PHP `set_guanjianci::index_action` JSON: check/bold/tuijian are booleans for el-switch.
+fn ser_flag_bool<S: serde::Serializer>(v: &i32, s: S) -> Result<S::Ok, S::Error> {
+    s.serialize_bool(*v != 0)
+}
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct HotKeyAdminRow {
     pub id: u64,
     pub key_name: String,
     pub num: i32,
     pub r#type: i32,
+    #[serde(serialize_with = "ser_flag_bool")]
     pub check: i32,
+    #[serde(serialize_with = "ser_flag_bool")]
     pub bold: i32,
+    #[serde(serialize_with = "ser_flag_bool")]
     pub tuijian: i32,
     pub color: String,
     pub size: String,

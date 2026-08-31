@@ -638,18 +638,13 @@ const HOTKEY_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, COALESCE(key_name,'') A
     CAST(COALESCE(`check`,0) AS SIGNED) AS `check`, CAST(COALESCE(bold,0) AS SIGNED) AS bold, \
     CAST(COALESCE(tuijian,0) AS SIGNED) AS tuijian, COALESCE(color,'') AS color, COALESCE(size,'') AS size";
 
-pub async fn list_hot_keys(
-    pool: &MySqlPool,
+fn push_hotkey_filters<'a>(
+    qb: &mut QueryBuilder<'a, sqlx::MySql>,
     r#type: Option<i32>,
-    keyword: Option<&str>,
-    offset: u64,
-    limit: u64,
-) -> Result<Vec<HotKeyAdminRow>, sqlx::Error> {
-    let (l, o) = lim(limit, offset)?;
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(HOTKEY_FIELDS);
-    qb.push(" FROM phpyun_hot_key WHERE ");
-    qb.push(PREDICATE);
+    keyword: Option<&'a str>,
+    rec: Option<i32>,
+    check: Option<i32>,
+) {
     if let Some(t) = r#type.filter(|v| *v > 0) {
         qb.push(" AND `type` = ");
         qb.push_bind(t);
@@ -658,6 +653,42 @@ pub async fn list_hot_keys(
         qb.push(" AND key_name LIKE ");
         qb.push_bind(format!("%{kw}%"));
     }
+    // PHP index_action: rec 1/2 → tuijian 1/0; check 1 / "2" → check=1 / <>1
+    match rec {
+        Some(1) => {
+            qb.push(" AND tuijian = 1");
+        }
+        Some(2) => {
+            qb.push(" AND tuijian = 0");
+        }
+        _ => {}
+    }
+    match check {
+        Some(1) => {
+            qb.push(" AND `check` = 1");
+        }
+        Some(2) => {
+            qb.push(" AND `check` <> 1");
+        }
+        _ => {}
+    }
+}
+
+pub async fn list_hot_keys(
+    pool: &MySqlPool,
+    r#type: Option<i32>,
+    keyword: Option<&str>,
+    rec: Option<i32>,
+    check: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<HotKeyAdminRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(HOTKEY_FIELDS);
+    qb.push(" FROM phpyun_hot_key WHERE ");
+    qb.push(PREDICATE);
+    push_hotkey_filters(&mut qb, r#type, keyword, rec, check);
     qb.push(" ORDER BY id DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
@@ -669,17 +700,12 @@ pub async fn count_hot_keys(
     pool: &MySqlPool,
     r#type: Option<i32>,
     keyword: Option<&str>,
+    rec: Option<i32>,
+    check: Option<i32>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new(format!("SELECT COUNT(*) FROM phpyun_hot_key WHERE {PREDICATE}"));
-    if let Some(t) = r#type.filter(|v| *v > 0) {
-        qb.push(" AND `type` = ");
-        qb.push_bind(t);
-    }
-    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND key_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-    }
+    push_hotkey_filters(&mut qb, r#type, keyword, rec, check);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }

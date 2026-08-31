@@ -427,11 +427,11 @@ export default {
                 this.saveType = false;
             },
             changeDefault: function (row, type) {
+                if (this.loading) return;
                 let _this = this;
                 let url = _this.uri + 'set_guanjianci&a=recup';
                 const defaultVal = row[type];
                 let sendData = {
-                    page: this.page,
                     type: type,
                     rec: defaultVal,
                     id: row.id

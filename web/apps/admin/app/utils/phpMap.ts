@@ -28,6 +28,15 @@ function isOn(v: unknown): boolean {
   return v === true || v === 1 || v === '1'
 }
 
+function keywordListPhp(data: unknown): Record<string, unknown> {
+  const d = asRecord(data)
+  const list = (Array.isArray(d.list) ? d.list : []).map((row) => {
+    const r = asRecord(row)
+    return { ...r, check: isOn(r.check), bold: isOn(r.bold), tuijian: isOn(r.tuijian) }
+  })
+  return { ...d, list }
+}
+
 /** PHP `set_config::index_action` computed fields on top of KV config. */
 function configIndexShape(data: unknown): Record<string, unknown> {
   const m = settingsToMap(data)
@@ -651,8 +660,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_comrating/list': { path: '/v1/admin/rating-services/details', transformReq: pageQuery },
   'user/company_comrating/saves': { path: '/v1/admin/rating-services/details/save' },
 
-  'system/set_guanjianci': { path: '/v1/admin/keywords/list', transformReq: pageQuery },
-  'system/set_guanjianci/index': { path: '/v1/admin/keywords/list', transformReq: pageQuery },
+  'system/set_guanjianci': { path: '/v1/admin/keywords/list', transformReq: pageQuery, transformRes: keywordListPhp },
+  'system/set_guanjianci/index': { path: '/v1/admin/keywords/list', transformReq: pageQuery, transformRes: keywordListPhp },
   'system/set_guanjianci/keyWord': phpContent('keyword', 'map'),
   'system/set_guanjianci/save': { path: '/v1/admin/keywords' },
   'system/set_guanjianci/del': { path: '/v1/admin/keywords/delete', transformReq: idsFromDel },

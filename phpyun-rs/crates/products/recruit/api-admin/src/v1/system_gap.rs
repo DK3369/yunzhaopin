@@ -59,6 +59,10 @@ pub struct KwQuery {
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub rec: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub check: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub logtype: Option<i32>,
 }
 
@@ -71,7 +75,14 @@ pub async fn list_keywords(
 ) -> AppResult<ApiResponse<AdminPaged<HotKeyAdminRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
-        admin_system_gap_service::list_keywords(&state, q.r#type, q.keyword.as_deref(), page)
+        admin_system_gap_service::list_keywords(
+            &state,
+            q.r#type,
+            q.keyword.as_deref(),
+            q.rec,
+            q.check,
+            page,
+        )
             .await?,
     )))
 }
@@ -767,5 +778,25 @@ mod recup_form_tests {
         assert_eq!(f.rec, 0);
         let f: RecupForm = serde_json::from_str(r#"{"id":12,"type":"tuijian","rec":"true"}"#).unwrap();
         assert_eq!(f.rec, 1);
+    }
+
+    #[test]
+    fn keyword_list_row_flags_are_json_bools() {
+        let row = HotKeyAdminRow {
+            id: 1,
+            key_name: "php".into(),
+            num: 3,
+            r#type: 1,
+            check: 1,
+            bold: 0,
+            tuijian: 1,
+            color: "#1890FF".into(),
+            size: "12".into(),
+        };
+        let v = serde_json::to_value(&row).unwrap();
+        assert_eq!(v["check"], true);
+        assert_eq!(v["bold"], false);
+        assert_eq!(v["tuijian"], true);
+        assert_eq!(v["type"], 1);
     }
 }

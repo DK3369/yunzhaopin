@@ -24,11 +24,13 @@ pub async fn list_keywords(
     state: &AppState,
     r#type: Option<i32>,
     keyword: Option<&str>,
+    rec: Option<i32>,
+    check: Option<i32>,
     page: Pagination,
 ) -> AppResult<Paged<HotKeyAdminRow>> {
     let db = state.db.reader();
-    let list = gap::list_hot_keys(db, r#type, keyword, page.offset, page.limit).await?;
-    let total = gap::count_hot_keys(db, r#type, keyword).await?;
+    let list = gap::list_hot_keys(db, r#type, keyword, rec, check, page.offset, page.limit).await?;
+    let total = gap::count_hot_keys(db, r#type, keyword, rec, check).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
