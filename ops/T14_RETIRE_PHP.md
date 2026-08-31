@@ -2,7 +2,7 @@
 
 **2026-08-26 已切站**：本 vhost 页面走 Nuxt，API 走 Rust。**不删** `uploads/`；php-fpm 可留着，只是这个 vhost 不再 `fastcgi`。
 
-开发验收端口：新 Rust `:3003`，site Nitro `:3001`，admin Nitro `:3002`。**禁止**替换/重启 systemd `:3000`。
+开发验收端口：Rust `:3003`，site Nitro `:3001`，admin Nitro `:3002`。旧 systemd `:3000` **已停用**（2026-08-31）。
 
 ## 已准备的材料
 
@@ -14,7 +14,8 @@
 | `ops/systemd/phpyun-site.service` | Nuxt site 模板（`@@SITE_DIR@@`） |
 | `ops/systemd/test-jobs-phpyun-site.service` | 现网 site：Nitro `node .output/server/index.mjs` `:3001`，`RUST_API_URL=http://127.0.0.1:3003` |
 | `ops/systemd/test-jobs-phpyun-admin.service` | 现网 admin：Nitro `:3002`，同上 `RUST_API_URL` |
-| `ops/systemd/test-jobs-phpyun-rs.service` | **原栈** Rust `:3000`（`/opt/phpyun-rs/phpyun-rs`），本项目不改 |
+| `ops/systemd/test-jobs-phpyun-rs-3003.service` | 现网 Rust `:3003`（本仓库 debug binary，库 jobs） |
+| `ops/systemd/test-jobs-phpyun-rs.service` | **已停用** 的原栈 `:3000`（`/opt/phpyun-rs/phpyun-rs`） |
 
 ## 切换前必须绿
 

@@ -52,11 +52,11 @@ PC / H5 **不是两套应用**：一个 Nuxt，CSS 用 `min-width:1200px` / `max
 | 入口 | `phpyun-rs/crates/apps/server/`（唯一 `main.rs`，binary `phpyun-rs`） |
 | 业务 / 平台 | `.../services/`、`.../models/`；`crates/platform/{core,auth}` |
 | 契约快照 | `doc/snapshots/v1_paths.txt`（**405** 条） |
-| 进程 | 本仓库 debug **`:3003`**（metrics `:9091`）连库 **jobs**；systemd **`:3000`**（`:9090`）仍连 **phpyun**，**禁止动** |
+| 进程 | systemd `test-jobs-phpyun-rs-3003` **`:3003`**（metrics `:9091`），库 **jobs**。旧 `:3000` 已停用。 |
 | 本机 URL | `http://127.0.0.1:3003/v1/wap/*`、`/v1/mcenter/*`、`/v2/wap/*`、`/callback/*`、`/health` |
 | OpenAPI | `http://127.0.0.1:3003/api-docs/v1/openapi.json`（Swagger `/docs/`） |
-| 公网 Flutter | nginx **`/yapi/`** 剥前缀后打 **`:3000`**，如 `https://test-jobs.ov6.com/yapi/v1/wap/...` |
-| 支付回调 | 公网 **`/callback/`** → **`:3000`**（旧库） |
+| 公网 Flutter | nginx **`/yapi/`** 剥前缀后打 **`:3003`**，如 `https://test-jobs.ov6.com/yapi/v1/wap/...` |
+| 支付回调 | 公网 **`/callback/`** → **`:3003`**（库 **jobs**） |
 
 ### 4. Rust Admin API（只给 Nuxt admin）
 
@@ -68,7 +68,7 @@ PC / H5 **不是两套应用**：一个 Nuxt，CSS 用 `min-width:1200px` / `max
 | PHP 长尾 | `POST /v1/admin/php-content/{module}/{action}`（**不进** OpenAPI；实现 `services/src/admin_php_content_service.rs`） |
 | 本机 URL | `http://127.0.0.1:3003/v1/admin/...` |
 | OpenAPI | `http://127.0.0.1:3003/api-docs/admin/openapi.json` |
-| 谁打它 | 只应经 Admin BFF 打 **`:3003`**。不要用 `/yapi/` → `:3000` 做后台开发。 |
+| 谁打它 | 经 Admin BFF 或 `/yapi/v1/admin/...` 都打 **`:3003`**。 |
 
 ---
 

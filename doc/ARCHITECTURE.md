@@ -52,11 +52,11 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 | 入口 | `phpyun-rs/crates/apps/server/`（唯一 `main.rs`，binary `phpyun-rs`） |
 | 业务 / 平台 | `.../services/`、`.../models/`；`crates/platform/{core,auth}` |
 | 契约快照 | `doc/snapshots/v1_paths.txt`（**405** 条） |
-| 进程 | 本仓库 debug **`:3003`**（metrics `:9091`）连库 **jobs**；systemd **`:3000`**（`:9090`）仍连 **phpyun**，**禁止动** |
+| 进程 | systemd `test-jobs-phpyun-rs-3003` **`:3003`**（metrics `:9091`），库 **jobs**。旧 `:3000` 已停用。 |
 | 本机 URL | `http://127.0.0.1:3003/v1/wap/*`、`/v1/mcenter/*`、`/v2/wap/*`、`/callback/*`、`/health` |
 | OpenAPI | `http://127.0.0.1:3003/api-docs/v1/openapi.json`（Swagger `/docs/`） |
-| 公网 Flutter | nginx **`/yapi/`** 剥前缀后打 **`:3000`**，如 `https://test-jobs.ov6.com/yapi/v1/wap/...` |
-| 支付回调 | 公网 **`/callback/`** → **`:3000`**（旧库） |
+| 公网 Flutter | nginx **`/yapi/`** 剥前缀后打 **`:3003`**，如 `https://test-jobs.ov6.com/yapi/v1/wap/...` |
+| 支付回调 | 公网 **`/callback/`** → **`:3003`**（库 **jobs**） |
 
 ### Rust Admin API（只给 Nuxt admin）
 
@@ -68,7 +68,7 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 | PHP 长尾 | `POST /v1/admin/php-content/{module}/{action}`（**不进** OpenAPI；实现 `services/src/admin_php_content_service.rs`） |
 | 本机 URL | `http://127.0.0.1:3003/v1/admin/...` |
 | OpenAPI | `http://127.0.0.1:3003/api-docs/admin/openapi.json` |
-| 谁打它 | 只应经 Admin BFF 打 **`:3003`**。不要用 `/yapi/` → `:3000` 做后台开发。 |
+| 谁打它 | 经 Admin BFF 或 `/yapi/v1/admin/...` 都打 **`:3003`**。 |
 
 ---
 
@@ -76,16 +76,15 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 
 ## 1. 运行拓扑
 
-本机同时有 **两套 Rust、四个监听口**。不要混。
+本机 **一份** Rust（`:3003`）+ site `:3001` + admin `:3002`。旧 systemd `:3000` 已 disable。
 
 | 进程 | HTTP | Metrics | 二进制 | MySQL | 谁在用 |
 |---|---|---|---|---|---|
-| systemd `test-jobs-phpyun-rs` | **`:3000`** | **`:9090`** | `/opt/phpyun-rs/phpyun-rs` | 进程仍连库 **phpyun** | 旧栈、`/yapi/`、支付 `/callback/`。**禁止 kill / 重启 / 替换**（8/27 启动后 `.env` 已改成 jobs，重启会改库） |
-| 本仓库 debug | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | 库 **jobs** | Site / Admin 的 `RUST_API_URL`。**改后台只写这个库** |
+| systemd `test-jobs-phpyun-rs-3003` | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | 库 **jobs** | Site / Admin / `/yapi/` / `/callback/` |
 | Nuxt site | **`:3001`** | — | `web/apps/site/.output/server/index.mjs` | 经 `:3003` | 公网页 |
 | Nuxt admin | **`:3002`** | — | `web/apps/admin/.output/server/index.mjs` | 经 `:3003` | `/admin/` |
 
-仓库里的切站样例是 `ops/nginx/zzzz.com.nuxt-cutover.conf`（`server_name test-jobs.ov6.com`）。job1 / job2 等 vhost 用同一套四口，不要把 Site/Admin 指到 `:3000`：
+仓库里的切站样例是 `ops/nginx/zzzz.com.nuxt-cutover.conf`（`server_name test-jobs.ov6.com`）。job1 / job2 等 vhost 同一套三口：
 
 | location | 上游 |
 |---|---|
@@ -93,8 +92,8 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 | `/admin/` | `:3002` admin |
 | `/api/` | `:3001`（Site BFF，再转发 Rust） |
 | `/data/upload/` | `uploads/data/upload/` 静态 |
-| `/yapi/` | **`:3000`** 旧 Rust OpenAPI |
-| `/callback/` | **`:3000`** 支付/采集回调（打旧库） |
+| `/yapi/` `/v1/` `/v2/` `/health` `/ready` | **`:3003`** |
+| `/callback/` | **`:3003`** 支付/采集回调 |
 
 ```mermaid
 flowchart LR
@@ -102,35 +101,32 @@ flowchart LR
   nginx[Nginx]
   site[Nuxt_site_3001]
   admin[Nuxt_admin_3002]
-  rustNew[Rust_debug_3003]
-  rustOld[systemd_Rust_3000]
+  rust[Rust_3003]
   jobs[(MySQL_jobs)]
-  phpYun[(MySQL_phpyun)]
 
   browser --> nginx
   nginx -->|"/ /api"| site
   nginx -->|"/admin"| admin
-  nginx -->|"/yapi /callback"| rustOld
-  site -->|"BFF rustApi"| rustNew
-  admin -->|"BFF /admin/api/proxy"| rustNew
-  rustNew --> jobs
-  rustOld --> phpYun
+  nginx -->|"/yapi /callback /v1"| rust
+  site -->|"BFF rustApi"| rust
+  admin -->|"BFF /admin/api/proxy"| rust
+  rust --> jobs
 ```
 
-site 的 systemd 里 `NUXT_PUBLIC_SITE_URL=https://job1.ov6.com`。改代码只写 **jobs** 库，不要写 **phpyun**。
+site 的 systemd 里 `NUXT_PUBLIC_SITE_URL=https://job1.ov6.com`。改代码只写 **jobs** 库，不要写 **phpyun**。不要再启动 `:3000`。
 
-### 本仓库 debug 怎么起
+### 本仓库 Rust 怎么起
 
 ```bash
-# Rust（cwd 为 phpyun-rs，勿动 :3000）
 cd /www/wwwroot/zzzz.com/phpyun-rs
 TMPDIR=/var/tmp/cargo-tmp CARGO_TARGET_DIR=/www/wwwroot/zzzz.com/phpyun-rs/target \
   cargo build -p phpyun-rs --offline -j 1
-PHPYUN_ENV_FILE=/www/wwwroot/zzzz.com/phpyun-rs/.env \
-  BIND=127.0.0.1:3003 METRICS_BIND=127.0.0.1:9091 \
-  ./target/debug/phpyun-rs
+sudo systemctl restart test-jobs-phpyun-rs-3003
+```
 
-# Admin 重建后只重启 :3002
+Admin 重建后只重启 `:3002`：
+
+```bash
 PATH=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin:$PATH
 ADMIN_ASSET_TAG=$(git rev-parse --short HEAD) pnpm --filter @phpyun/admin build
 # kill 仅 cwd=web/apps/admin 且监听 3002 的 node，再：
@@ -226,7 +222,7 @@ JWT `usertype`：`1` 求职者、`2` 企业、`3` 后台。Cookie 由 Nuxt BFF �
 
 - `server/routes/api/proxy/[...path].ts` — 把 cookie 换成 Bearer，转发 `runtimeConfig.rustApi`（默认 `http://127.0.0.1:3003`）
 - `server/routes/api/auth/*` — 前台登录 / 后台登录 / refresh / me / OAuth
-- 禁止把 `rustApi` 指到 `:3000`
+- `runtimeConfig.rustApi` 默认 `http://127.0.0.1:3003`
 
 Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/proxy/v1/admin/...`。
 
@@ -255,8 +251,8 @@ Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/pro
 ## 5. 数据与删除
 
 - **schema 不动**：表名仍是 `phpyun_*`，不改结构。8/30 起业务库换成独立库名 **`jobs`**（commit `852b7792`），不是继续写原库 `phpyun`。
-- **Site / Admin（`:3003`）连 `jobs`**。`phpyun-rs/.env` 与 `.env.pro` 都是这个库。`.env.dev` 是测试库 `phpyun_test`。
-- **systemd `:3000` 仍连 `phpyun`**：进程 8/27 启动，当时 `.env` 还是 phpyun；8/30 改文件后**没有重启**，内存里还是旧连接。禁止为了「对齐 jobs」去重启它。
+- **Site / Admin / `/yapi/` / `/callback/`（`:3003`）连 `jobs`**。`phpyun-rs/.env` 与 `.env.pro` 都是这个库。`.env.dev` 是测试库 `phpyun_test`。
+- 原库 **`phpyun`** 不再给 Rust 进程。不要再启动旧 `:3000`。
 - 后台一批表用 `deleted=1` 伪删除，列表加 `COALESCE(deleted,0)=0`。白名单在 models `soft_delete`。
 - 仍物理删或改业务状态的：职位下架 `state`、会员注销、日志 purge、财务订单（按 PHP）等。
 - 回收站 `/v1/admin/recycle-bin` 是 PHP recycle 表，不是通用 `deleted` 还原器。
@@ -266,7 +262,7 @@ Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/pro
 
 ## 6. 硬约束
 
-1. **不要动 systemd `:3000` / `:9090`**，不要替换 `/opt/phpyun-rs/phpyun-rs`。
+1. **不要再启动旧 `:3000`**（`test-jobs-phpyun-rs` 已 disable）。API 只走 `test-jobs-phpyun-rs-3003`。
 2. **不要改 `uploads/`**（含 PHP 控制器和后台模板）。
 3. **不要**给 Admin 做万能 `invoke`。
 4. **不要**把 php-content 写进 AdminDoc 快照。

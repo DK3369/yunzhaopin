@@ -1,6 +1,6 @@
 # Production configuration. Keep this file out of Git and restrict permissions.
 APP_ENV=prod
-BIND=127.0.0.1:3000
+BIND=127.0.0.1:3003
 RUST_LOG=info,phpyun_core=info,phpyun_handlers=info,phpyun_services=info
 WORKER_THREADS=0
 THREAD_STACK_MB=2
@@ -38,7 +38,7 @@ JWT_REFRESH_TTL_SECS=2592000
 
 # Production policy
 WEB_BASE_URL=https://zzzz.com
-METRICS_BIND=127.0.0.1:9090
+METRICS_BIND=127.0.0.1:9091
 CORS_ALLOWED_ORIGINS=https://zzzz.com,https://www.zzzz.com
 RUN_MIGRATIONS_ON_BOOT=false
 EVENTBUS_KIND=redis-stream

@@ -1,7 +1,5 @@
-# 已停用（2026-08-31）：流量改走 test-jobs-phpyun-rs-3003。不要再 enable 本 unit。
-
 [Unit]
-Description=PHPYun Rust API for test-jobs.ov6.com (retired :3000)
+Description=PHPYun Rust API on :3003 (jobs DB)
 Wants=network-online.target
 After=network-online.target
 
@@ -10,8 +8,11 @@ Type=simple
 User=aa
 Group=aa
 WorkingDirectory=/www/wwwroot/zzzz.com/phpyun-rs
-Environment=PHPYUN_ENV_FILE=.env
-ExecStart=/opt/phpyun-rs/phpyun-rs
+Environment=PHPYUN_ENV_FILE=/www/wwwroot/zzzz.com/phpyun-rs/.env
+Environment=BIND=127.0.0.1:3003
+Environment=METRICS_BIND=127.0.0.1:9091
+Environment=TMPDIR=/var/tmp/cargo-tmp
+ExecStart=/www/wwwroot/zzzz.com/phpyun-rs/target/debug/phpyun-rs
 Restart=on-failure
 RestartSec=5s
 TimeoutStopSec=30s

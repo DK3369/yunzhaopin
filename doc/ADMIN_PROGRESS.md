@@ -22,16 +22,15 @@
 
 ## 运行时
 
-两份 `phpyun-rs`、共 4 个监听口（每进程：HTTP + metrics）。`.env` 默认 `BIND=127.0.0.1:3000`、`METRICS_BIND=127.0.0.1:9090`；本仓库 debug 用环境变量改绑。
+一份 `phpyun-rs`，监听 `:3003` / `:9091`。旧 `:3000` 已 disable。`.env` 的 `BIND`/`METRICS_BIND` 已是 3003/9091。
 
 | 进程 | HTTP | Metrics | 二进制 | 库 | 谁在用 |
 |---|---|---|---|---|---|
-| systemd `test-jobs-phpyun-rs` | **`:3000`** | **`:9090`** | `/opt/phpyun-rs/phpyun-rs` | 进程仍为 **phpyun**（8/27 起，未重启） | 旧栈。**禁止 kill/重启/替换** |
-| 本仓库 debug | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | **jobs** | Admin/Site `RUST_API_URL` |
+| systemd `test-jobs-phpyun-rs-3003` | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | **jobs** | Site / Admin / `/yapi/` / `/callback/` |
 
-Nuxt（不是 Rust）：`:3001` site、`:3002` admin。
+Nuxt：`:3001` site、`:3002` admin。
 
-调用链：Vue `httpPost('m=&c=&a=')` → `web/apps/admin/app/utils/phpMap.ts` → BFF `/api/proxy` → **`:3003`** `POST /v1/admin/*`。没有万能 invoke。业务只写 **jobs**，不写 **phpyun**。
+调用链：Vue `httpPost('m=&c=&a=')` → `web/apps/admin/app/utils/phpMap.ts` → BFF `/api/proxy` → **`:3003`** `POST /v1/admin/*`。没有万能 invoke。业务只写 **jobs**。
 
 ```mermaid
 flowchart LR
@@ -39,17 +38,14 @@ flowchart LR
   nginx[Nginx_vhost]
   site[Nuxt_site_3001]
   admin[Nuxt_admin_3002]
-  rustNew[Rust_debug_3003]
-  rustOld[systemd_Rust_3000]
+  rust[Rust_3003]
   jobs[(MySQL_jobs)]
-  phpYun[(MySQL_phpyun)]
   browser --> nginx
   nginx --> site
   nginx --> admin
-  site --> rustNew
-  admin -->|"BFF /api/proxy"| rustNew
-  rustNew --> jobs
-  rustOld --> phpYun
+  site --> rust
+  admin -->|"BFF /api/proxy"| rust
+  rust --> jobs
 ```
 
 ## Admin Nuxt
@@ -179,6 +175,6 @@ flowchart LR
 - 新闻分组树拼法较糙；Alipay 缺密钥时下单会 422（不再留下无 URL 的待支付单）
 - 已修：分站列表 SQL `{PREDICATE}` 未插值导致 500；系统消息 `type` 字符串 400；分类 list 缺 `kind` 时默认 `job`（旧 JS 不再 400）；关键词开关 `keywords/recup` 接受布尔 `rec`（不再 400）。
 - 本波 job2 抽测：121 个 SPA path HTTP 200、HTML `no-store`；关键词 status 布尔 200；城市/行业/会员/兼职/校园分类 list 200（校园/培训科目无表则空列表）；`companyNum`/`matching`/`wxnav`/`gettpl`/`creatnav` 200。数据调用 `data-call/list` 同类 `{PREDICATE}` 未 `format!` 已修。
-- Admin BFF `runtimeConfig.rustApi` 默认 `:3003`（禁止落到 systemd `:3000`）；HTML `no-store`。
+- Admin BFF `runtimeConfig.rustApi` 默认 `:3003`；HTML `no-store`。
 - `php-compat` 给 `el-table` 补 `bodyWrapper`；构建期把 `:underline="false"` / 旧分页绑定编成 EP 2.10 API，不批量改模板。
 - Admin 静态资源按构建号分目录 (`/_n/<tag>/`)；HTML `no-store`。不要对文档发 `Clear-Site-Data` 或强制 `?b=` 跳转（Chrome 会打不开 `/admin/`）。
