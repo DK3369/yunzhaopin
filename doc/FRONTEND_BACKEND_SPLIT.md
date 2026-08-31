@@ -11,6 +11,67 @@
 > v1.2：管理后台改为同样用 Nuxt 4（`ssr: false`），前端合并为一个 pnpm monorepo
 > v2.0：明确现有 Rust API 是 **Flutter App 的既有契约、不可破坏**；新增后端 crate 拆分设计（`api-admin`）与接口完整性/唯一性的保障机制
 
+## 完成面一览（路径 / 端口 / URL）
+
+> 2026-08-31 按仓库实况。Rust 的 **App API 与 Admin API 是同一个 binary、同一组端口**，只是 crate 和 URL 前缀不同。更细的约束见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+### 1. Nuxt 前台（PC + H5 同一套，`@phpyun/site`）
+
+PC / H5 **不是两套应用**：一个 Nuxt，CSS 用 `min-width:1200px` / `max-width:1199px` 切换。Flutter **不在本仓库**，见第 3 节。
+
+| 项 | 现状 |
+|---|---|
+| 代码 | `web/apps/site/`（页面 `app/pages/`，约 **85** 个 `.vue`） |
+| 公共层 | `web/layers/base/`（BFF、登录 cookie）、`web/layers/ui/` |
+| 样式 / 上传静态 | `uploads/app/template/{default,wap,member}` 挂成站点 `/legacy/pc` `/legacy/h5` `/legacy/member`；用户文件 `/data/upload/` |
+| 进程 | **`:3001`** · `web/apps/site/.output/server/index.mjs` · `RUST_API_URL=http://127.0.0.1:3003` |
+| 公网页面 | `https://job1.ov6.com/`（systemd `NUXT_PUBLIC_SITE_URL`）；切站样例 `https://test-jobs.ov6.com/` |
+| 本机 | `http://127.0.0.1:3001/` |
+| 浏览器 URL | `/` `/jobs` `/jobs/:id` `/companies` `/login` `/register`；求职者 `/user/**`、企业 `/com/**`（这两段 `ssr: false`） |
+| 调 API | 浏览器 → **`/api/proxy/v1/wap/...`**、**`/api/proxy/v1/mcenter/...`**（Nitro BFF）→ Rust **`:3003`** |
+| 登录 BFF | `web/layers/base/server/routes/api/auth/`（如 `POST /api/auth/login`） |
+
+### 2. Nuxt 管理后台（`@phpyun/admin`）
+
+| 项 | 现状 |
+|---|---|
+| 代码 | `web/apps/admin/`；页面 `app/pages/*.vue`（**121** 个，对齐 PHP `router.js`） |
+| UI / 映射 | `app/admin-php/`；`app/utils/phpMap.ts`；静态 `public/php-admin/` |
+| 进程 | **`:3002`** · `web/apps/admin/.output/server/index.mjs` · `ssr: false` · `baseURL=/admin/` |
+| 公网页面 | `https://job2.ov6.com/admin/`；切站样例 `https://test-jobs.ov6.com/admin/` |
+| 本机 | 直连 `http://127.0.0.1:3002/admin/`（经 nginx 则主机名 + `/admin/`） |
+| 浏览器 URL | `/admin/login`、`/admin/index`，以及 121 个 PHP path（如 `/admin/companyjob`、`/admin/resume`） |
+| 调 API | 浏览器 → **`/admin/api/proxy/v1/admin/...`** → Rust **`:3003`** |
+| 登录 | `POST /admin/api/auth/admin-login` → Rust `POST /v1/admin/login` |
+
+### 3. Rust App API（给 Flutter + Nuxt 前台）
+
+| 项 | 现状 |
+|---|---|
+| 代码 | `phpyun-rs/crates/products/recruit/api/`（包名 `phpyun-handlers`） |
+| 入口 | `phpyun-rs/crates/apps/server/`（唯一 `main.rs`，binary `phpyun-rs`） |
+| 业务 / 平台 | `.../services/`、`.../models/`；`crates/platform/{core,auth}` |
+| 契约快照 | `doc/snapshots/v1_paths.txt`（**405** 条） |
+| 进程 | 本仓库 debug **`:3003`**（metrics `:9091`）连库 **jobs**；systemd **`:3000`**（`:9090`）仍连 **phpyun**，**禁止动** |
+| 本机 URL | `http://127.0.0.1:3003/v1/wap/*`、`/v1/mcenter/*`、`/v2/wap/*`、`/callback/*`、`/health` |
+| OpenAPI | `http://127.0.0.1:3003/api-docs/v1/openapi.json`（Swagger `/docs/`） |
+| 公网 Flutter | nginx **`/yapi/`** 剥前缀后打 **`:3000`**，如 `https://test-jobs.ov6.com/yapi/v1/wap/...` |
+| 支付回调 | 公网 **`/callback/`** → **`:3000`**（旧库） |
+
+### 4. Rust Admin API（只给 Nuxt admin）
+
+| 项 | 现状 |
+|---|---|
+| 代码 | `phpyun-rs/crates/products/recruit/api-admin/`（包名 `phpyun-api-admin`） |
+| 挂载 | 与第 3 节 **同一进程、同一端口**，`assemble` 时 merge admin router |
+| 具名路径 | `doc/snapshots/admin_paths.txt`（**297** 条），如 `/v1/admin/login` `/v1/admin/menu` `/v1/admin/jobs` |
+| PHP 长尾 | `POST /v1/admin/php-content/{module}/{action}`（**不进** OpenAPI；实现 `services/src/admin_php_content_service.rs`） |
+| 本机 URL | `http://127.0.0.1:3003/v1/admin/...` |
+| OpenAPI | `http://127.0.0.1:3003/api-docs/admin/openapi.json` |
+| 谁打它 | 只应经 Admin BFF 打 **`:3003`**。不要用 `/yapi/` → `:3000` 做后台开发。 |
+
+---
+
 ## 如何使用本文档
 
 下面的任务按 `T0` 到 `T14` 编号，每块都是**可独立执行的单元**，包含目标、前置条件、步骤、验收标准和建议的 commit 信息。
