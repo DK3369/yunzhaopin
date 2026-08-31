@@ -45,8 +45,10 @@ function phpAdminEpCompat() {
       out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
       out = rewriteChoiceLabelToValue(out)
       out = rewriteButtonTypeText(out)
-      // Auto-import bypasses vueApp.component('ElSwitch'); rename so php-compat wrap applies.
+      // Auto-import bypasses vueApp.component('ElSwitch'/'ElTooltip'); rename so php-compat wrap applies.
       out = out.replace(/<(\/?)el-switch\b/gi, '<$1PhpElSwitch')
+      out = out.replace(/<(\/?)el-tooltip\b/gi, '<$1PhpElTooltip')
+      out = out.replace(/^\s*console\.log\(\s*tab\s*,\s*event\s*\)\s*;?\s*$/gm, '')
       if (out === code) return
       return { code: out, map: null }
     },

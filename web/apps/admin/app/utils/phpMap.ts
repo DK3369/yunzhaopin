@@ -882,6 +882,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'yunying/yingxiao_tuiguang/resume': { path: '/v1/admin/marketing/resume' },
   'yunying/yingxiao_hrlog': { path: '/v1/admin/hr-logs', transformReq: pageQuery },
   'yunying/yingxiao_hrlog/index': { path: '/v1/admin/hr-logs', transformReq: pageQuery },
+  'yunying/yingxiao_hrlog/datashowset': { path: '/v1/admin/site-settings/php-datashowset' },
+  'yunying/yingxiao_hrlog/datashowsetSave': { path: '/v1/admin/site-settings/php-datashowset-save' },
   'yunying/special_special/com': {
     path: '/v1/admin/specials/companies',
     transformReq: (b) => ({ ...pageQuery(b), sid: Number(b.id || b.sid || 0) }),

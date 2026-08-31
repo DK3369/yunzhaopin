@@ -1,5 +1,12 @@
-import { h } from 'vue'
-import { ElMessage, ElMessageBox, ElLoading, ElNotification, ElSwitch as ElSwitchBase } from 'element-plus'
+import { Comment, Fragment, h, Text, type VNode } from 'vue'
+import {
+  ElMessage,
+  ElMessageBox,
+  ElLoading,
+  ElNotification,
+  ElSwitch as ElSwitchBase,
+  ElTooltip as ElTooltipBase,
+} from 'element-plus'
 import { httpPost } from '~/utils/httpPost'
 import { lc, persistLocale, readStoredLocale } from '~/utils/phpLc'
 
@@ -38,6 +45,64 @@ function unwrapMaybeRef(v: unknown): unknown {
     }
   }
   return v
+}
+
+function isIgnorableVNode(n: unknown): boolean {
+  if (n == null || n === false) return true
+  if (typeof n !== 'object') return false
+  const vn = n as VNode
+  if (vn.type === Comment) return true
+  if (vn.type === Text && !String(vn.children ?? '').trim()) return true
+  return false
+}
+
+function flattenVNodes(nodes: unknown[]): unknown[] {
+  const out: unknown[] = []
+  for (const n of nodes) {
+    if (isIgnorableVNode(n)) continue
+    const vn = n as VNode
+    if (vn && vn.type === Fragment && Array.isArray(vn.children)) {
+      out.push(...flattenVNodes(vn.children as unknown[]))
+      continue
+    }
+    out.push(n)
+  }
+  return out
+}
+
+/** PHP Element UI 2 put popup body + trigger both in the default slot; EP 3 ElOnlyChild wants one trigger. */
+function phpTooltipVNode(attrs: Record<string, unknown>, slots: Record<string, unknown>) {
+  const slotFn = slots.default as (() => unknown[]) | undefined
+  const kids = flattenVNodes(slotFn?.() || [])
+  const hasContentProp = attrs.content != null && attrs.content !== ''
+  const contentSlot = slots.content as (() => unknown) | undefined
+  let trigger = kids
+  let content = contentSlot
+  if (!content && !hasContentProp && kids.length >= 2) {
+    content = () => kids.slice(0, -1)
+    trigger = [kids[kids.length - 1]]
+  }
+  if (trigger.length !== 1) {
+    trigger = [h('span', { class: 'php-el-tooltip-trigger' }, trigger as VNode[])]
+  }
+  return h(ElTooltipBase, attrs, {
+    ...slots,
+    content,
+    default: () => trigger,
+  })
+}
+
+function firstNamedRef(
+  inst: Record<string, unknown>,
+  name: string,
+): { getList?: () => void; doLayout?: () => void; init?: () => void } | undefined {
+  if (!name) return undefined
+  const refs = inst.$refs as Record<string, unknown> | undefined
+  if (!refs) return undefined
+  const hit = refs[name]
+  const one = Array.isArray(hit) ? hit[0] : hit
+  if (!one || typeof one !== 'object') return undefined
+  return one as { getList?: () => void; doLayout?: () => void; init?: () => void }
 }
 
 function phpTabName(tab: unknown): string {
@@ -210,6 +275,15 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   }
   nuxtApp.vueApp.component('ElSwitch', switchCompat)
   nuxtApp.vueApp.component('PhpElSwitch', switchCompat)
+  const tooltipCompat = {
+    name: 'PhpElTooltip',
+    inheritAttrs: false,
+    setup(_props: unknown, { attrs, slots }: { attrs: Record<string, unknown>; slots: Record<string, unknown> }) {
+      return () => phpTooltipVNode(attrs, slots)
+    },
+  }
+  nuxtApp.vueApp.component('ElTooltip', tooltipCompat)
+  nuxtApp.vueApp.component('PhpElTooltip', tooltipCompat)
 
   const loc = readStoredLocale()
   persistLocale(loc)
@@ -361,17 +435,19 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       const inst = this as unknown as Record<string, unknown> & {
         handleClick?: (tab: unknown, event?: unknown) => unknown
         __epTabPatched?: boolean
+        $options?: { methods?: { handleClick?: unknown }; name?: string }
       }
       inst.$message = ElMessage
       inst.$confirm = ElMessageBox.confirm
       inst.$alert = ElMessageBox.alert
       inst.$notify = ElNotification
       inst.$loading = ElLoading.service
-      // Element Plus tab-click gives paneName / props.name; PHP still reads tab.name.
+      // Only PHP options-API pages. Do not wrap Element Plus internals named handleClick.
+      const ownClick = inst.$options?.methods?.handleClick
       const origClick = inst.handleClick
-      if (typeof origClick === 'function' && !inst.__epTabPatched) {
+      if (typeof ownClick === 'function' && typeof origClick === 'function' && !inst.__epTabPatched) {
         inst.__epTabPatched = true
-        inst.handleClick = function (tab: unknown, event?: unknown) {
+        inst.handleClick = (tab: unknown, event?: unknown) => {
           const name = phpTabName(tab)
           const phpTab =
             tab && typeof tab === 'object'
@@ -383,10 +459,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 })
               : { name, paneName: name }
           try {
-            return origClick.call(this, phpTab, event)
+            return origClick.call(inst, phpTab, event)
           } catch {
-            const refs = (this as { $refs?: Record<string, { getList?: () => void; doLayout?: () => void; init?: () => void }> }).$refs
-            const hit = name && refs ? refs[name] : undefined
+            const hit = firstNamedRef(inst, name)
             hit?.getList?.()
             hit?.doLayout?.()
             hit?.init?.()

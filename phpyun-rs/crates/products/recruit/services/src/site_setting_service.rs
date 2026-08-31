@@ -714,3 +714,56 @@ pub async fn hbconfig_save_open(
     whb_repo::set_open_ids(state.db.pool(), typ, &ids).await?;
     Ok(())
 }
+
+const DATASHOW_KEYS: &[(&str, &str)] = &[
+    ("sy_datashow_title", ""),
+    ("sy_datashowhy_base", ""),
+    ("sy_datashowreg_base", ""),
+    ("sy_datashowlogin_base", ""),
+    ("sy_datashowjob_base", ""),
+    ("sy_datashow_city_lev", "2"),
+];
+
+/// PHP `yingxiao_hrlog::datashowset_action`.
+pub async fn datashowset_index(state: &AppState, user: &AuthenticatedUser) -> AppResult<Value> {
+    user.require_admin()?;
+    let rows = setting_repo::list_all(state.db.reader()).await?;
+    let cfg = cfg_map(&rows);
+    let web = cfg
+        .get("sy_weburl")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim_end_matches('/');
+    Ok(json!({
+        "previewUrl": format!("{web}/wap/index.php?c=ajax&a=dataShowIndex"),
+        "previewCode": format!("{web}/index.php?m=ajax&c=pubqrcode&toc=ajax&toa=dataShowIndex&toid=-1"),
+        "config": pick_map(&cfg, DATASHOW_KEYS),
+    }))
+}
+
+/// PHP `yingxiao_hrlog::datashowsetSave_action`.
+pub async fn datashowset_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    for (k, default) in DATASHOW_KEYS {
+        let mut val = str_field(body, k);
+        if *k == "sy_datashow_city_lev" && val.is_empty() {
+            val = (*default).to_string();
+        }
+        admin_upsert(
+            state,
+            user,
+            UpsertInput {
+                key: k,
+                value: &val,
+                description: "",
+                is_public: false,
+            },
+        )
+        .await?;
+    }
+    Ok(())
+}

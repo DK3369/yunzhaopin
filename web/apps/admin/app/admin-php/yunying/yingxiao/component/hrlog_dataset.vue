@@ -192,11 +192,11 @@ export default {
             let that = this;
             httpPost('m=yunying&c=yingxiao_hrlog&a=datashowset').then(function (response) {
                 let res = response.data,
-                    data = res.data;
+                    data = (res && res.data) || {};
 
-                that.ruleForm = data.config;
-                that.previewUrl = data.previewUrl;
-                that.previewCode = data.previewCode;
+                that.ruleForm = data.config && typeof data.config === 'object' ? data.config : {};
+                that.previewUrl = data.previewUrl || '';
+                that.previewCode = data.previewCode || '';
             })
         },
 

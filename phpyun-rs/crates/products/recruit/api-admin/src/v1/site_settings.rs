@@ -30,6 +30,8 @@ pub fn routes() -> Router<AppState> {
         .route("/site-settings/php-hb-saveset", post(php_hb_saveset))
         .route("/site-settings/php-hb-list", post(php_hb_list))
         .route("/site-settings/php-hb-save-open", post(php_hb_save_open))
+        .route("/site-settings/php-datashowset", post(php_datashowset))
+        .route("/site-settings/php-datashowset-save", post(php_datashowset_save))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -466,4 +468,24 @@ pub async fn php_hb_save_open(
 ) -> AppResult<ApiResponse> {
     site_setting_service::hbconfig_save_open(&state, &user, &body).await?;
     Ok(ApiResponse::message("admin_01451"))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-datashowset", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_datashowset(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        site_setting_service::datashowset_index(&state, &user).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/site-settings/php-datashowset-save", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn php_datashowset_save(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::datashowset_save(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_01454"))
 }
