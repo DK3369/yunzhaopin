@@ -224,8 +224,10 @@ fn validate_id_items(ids: &[u64]) -> Result<(), validator::ValidationError> {
 /// `{ status: Option<i32> }` — admin list filter envelope. The 0..=99 bound is
 /// permissive on purpose; handlers further interpret the value (0=pending,
 /// 1=approved, ...) via service logic.
+/// PHP pages send `status: ""` or `"0"`; reject those as i32 → HTTP 400.
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct StatusFilterBody {
+    #[serde(default, deserialize_with = "crate::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 99))]
     pub status: Option<i32>,
 }

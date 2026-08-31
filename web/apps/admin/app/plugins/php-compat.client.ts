@@ -1,6 +1,16 @@
-import { ElMessage, ElMessageBox, ElLoading, ElNotification } from 'element-plus'
+import { h } from 'vue'
+import { ElMessage, ElMessageBox, ElLoading, ElNotification, ElSwitch as ElSwitchBase } from 'element-plus'
 import { httpPost } from '~/utils/httpPost'
 import { lc, persistLocale, readStoredLocale } from '~/utils/phpLc'
+
+function coerceSwitchValue(val: unknown, active: unknown, inactive: unknown) {
+  if (Object.is(val, active) || Object.is(val, inactive)) return val
+  if (val === true || val === 1 || val === '1') return active
+  if (val === false || val === 0 || val === '0' || val == null || val === '') return inactive
+  if (String(val) === String(active)) return active
+  if (String(val) === String(inactive)) return inactive
+  return inactive
+}
 
 function formatMonth(date: Date) {
   const year = date.getFullYear()
@@ -119,6 +129,25 @@ function delConfirm(
 }
 
 export default defineNuxtPlugin(async (nuxtApp) => {
+  nuxtApp.vueApp.component('ElSwitch', {
+    name: 'ElSwitchPhpCompat',
+    inheritAttrs: false,
+    setup(_props, { attrs, slots }) {
+      return () => {
+        const active = attrs.activeValue ?? true
+        const inactive = attrs.inactiveValue ?? false
+        return h(
+          ElSwitchBase,
+          {
+            ...attrs,
+            modelValue: coerceSwitchValue(attrs.modelValue, active, inactive),
+          },
+          slots,
+        )
+      }
+    },
+  })
+
   const loc = readStoredLocale()
   persistLocale(loc)
   const i18n = nuxtApp.$i18n as { setLocale?: (c: string) => Promise<void> } | undefined

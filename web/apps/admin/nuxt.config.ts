@@ -17,6 +17,20 @@ function rewriteRadioLabelToValue(code: string) {
   )
 }
 
+/** EP 3: el-button `type="text"` is deprecated; use `link`. Do not touch `<input type="text">`. */
+function rewriteButtonTypeText(code: string) {
+  return code.replace(
+    /<(el-button)(\s[\s\S]*?)(\/?)>/g,
+    (_full, tag: string, attrs: string, slash: string) => {
+      attrs = attrs.replace(/(?<=\s)type(\s*=\s*)(["'])text\2/g, 'type$1$2link$2')
+      attrs = attrs.replace(/(?<=\s):type(\s*=\s*)(["'])text\2/g, ':type$1$2link$2')
+      attrs = attrs.replace(/(?<=\s):type(\s*=\s*)"'text'"/g, ':type$1"\'link\'"')
+      attrs = attrs.replace(/(?<=\s):type(\s*=\s*)'"text"'/g, ':type$1\'"link"\'')
+      return `<${tag}${attrs}${slash}>`
+    },
+  )
+}
+
 /** Compile-time EP 2.10 compat: do not batch-edit dozens of PHP Vue templates. */
 function phpAdminEpCompat() {
   return {
@@ -30,6 +44,7 @@ function phpAdminEpCompat() {
       out = out.replaceAll(/(?<!v-model):current-page=/g, 'v-model:current-page=')
       out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
       out = rewriteRadioLabelToValue(out)
+      out = rewriteButtonTypeText(out)
       if (out === code) return
       return { code: out, map: null }
     },
