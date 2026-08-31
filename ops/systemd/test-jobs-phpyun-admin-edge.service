@@ -1,0 +1,21 @@
+[Unit]
+Description=PHPYun admin edge (static /admin/_n + proxy) on :3002
+After=network-online.target test-jobs-phpyun-admin.service
+
+[Service]
+Type=simple
+User=aa
+Group=aa
+WorkingDirectory=/www/wwwroot/zzzz.com
+Environment=PATH=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin:/usr/bin
+Environment=TMPDIR=/var/tmp/npm-tmp
+Environment=HOST=127.0.0.1
+Environment=PORT=3002
+Environment=ADMIN_UPSTREAM=127.0.0.1:3005
+Environment=ADMIN_PUBLIC=/www/wwwroot/zzzz.com/web/apps/admin/.output/public
+ExecStart=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin/node /www/wwwroot/zzzz.com/ops/admin-edge.mjs
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=multi-user.target

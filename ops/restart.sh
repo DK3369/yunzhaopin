@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 现网前后端重启（本机 job1/job2）。
-# 只管 :3003（Rust）+ :3001（site）+ :3002（admin）。
+# 只管 :3003（Rust）+ :3001（site）+ :3002（admin edge）+ :3005（admin Nitro）。
 # 绝不 start/enable 旧 :3000（test-jobs-phpyun-rs）。
 set -Eeuo pipefail
 
@@ -13,11 +13,13 @@ WEB_DIR="${ROOT}/web"
 UNIT_RS="test-jobs-phpyun-rs-3003"
 UNIT_SITE="test-jobs-phpyun-site"
 UNIT_ADMIN="test-jobs-phpyun-admin"
+UNIT_ADMIN_EDGE="test-jobs-phpyun-admin-edge"
 RETIRED_RS="test-jobs-phpyun-rs"
 
 PORT_RS=3003
 PORT_SITE=3001
 PORT_ADMIN=3002
+PORT_ADMIN_NITRO=3005
 
 CARGO_TMP="${CARGO_TMP:-/var/tmp/cargo-tmp}"
 NPM_TMP="${NPM_TMP:-/var/tmp/npm-tmp}"
@@ -46,7 +48,7 @@ usage() {
   ops/restart.sh rust            只重启 API :3003
   ops/restart.sh rust --build    cargo build 后再重启 :3003
   ops/restart.sh site            只重启前台 :3001
-  ops/restart.sh admin           只重启后台 :3002
+  ops/restart.sh admin           只重启后台 Nitro :3005（对外仍 :3002）
   ops/restart.sh frontend        重启 site + admin
   ops/restart.sh frontend --build
   ops/restart.sh status          看 systemd / 端口 / HTTP
@@ -57,6 +59,8 @@ usage() {
   --no-verify  跳过 HTTP 探活
 
 不会动旧 :3000（test-jobs-phpyun-rs）。改 PHP 原项目请不要用本脚本当借口。
+admin 对外 :3002 是 edge（hashed /admin/_n 走磁盘），Nitro 在 :3005。
+--build 只弹 Nitro，避免 Cloudflare 把 JS/CSS 打成 503。
 EOF
 }
 
@@ -161,11 +165,12 @@ ensure_units() {
   install_unit "${UNIT_RS}"
   install_unit "${UNIT_SITE}"
   install_unit "${UNIT_ADMIN}"
+  install_unit "${UNIT_ADMIN_EDGE}"
   if [[ "${NEED_DAEMON_RELOAD}" -eq 1 ]]; then
     log "systemctl daemon-reload"
     sys daemon-reload
   fi
-  sys enable "${UNIT_RS}" "${UNIT_SITE}" "${UNIT_ADMIN}" >/dev/null
+  sys enable "${UNIT_RS}" "${UNIT_SITE}" "${UNIT_ADMIN}" "${UNIT_ADMIN_EDGE}" >/dev/null
   if sys is-enabled --quiet "${RETIRED_RS}" 2>/dev/null; then
     log "旧 ${RETIRED_RS} 仍是 enabled，正在 disable（不 stop，避免误伤回退机）"
     sys disable "${RETIRED_RS}" >/dev/null || true
@@ -278,12 +283,13 @@ verify_admin() {
 do_status() {
   local unit port url
   printf '%-32s %-10s %-8s %s\n' "unit" "active" "port" "listen"
-  for unit in "${UNIT_RS}" "${UNIT_SITE}" "${UNIT_ADMIN}"; do
+  for unit in "${UNIT_RS}" "${UNIT_SITE}" "${UNIT_ADMIN_EDGE}" "${UNIT_ADMIN}"; do
     local st="inactive" pids="-"
     case "${unit}" in
       "${UNIT_RS}") port="${PORT_RS}" ;;
       "${UNIT_SITE}") port="${PORT_SITE}" ;;
-      "${UNIT_ADMIN}") port="${PORT_ADMIN}" ;;
+      "${UNIT_ADMIN_EDGE}") port="${PORT_ADMIN}" ;;
+      "${UNIT_ADMIN}") port="${PORT_ADMIN_NITRO}" ;;
     esac
     if sys is-active --quiet "${unit}"; then
       st="active"
@@ -325,11 +331,45 @@ restart_site() {
   fi
 }
 
+wait_unit() {
+  local unit="$1"
+  local i
+  for i in $(seq 1 20); do
+    if sys is-active --quiet "${unit}"; then
+      return 0
+    fi
+    sleep 0.5
+  done
+  sys status --no-pager -l "${unit}" >&2 || true
+  fail "${unit} 未能进入 active"
+}
+
+# 对外 :3002 由 edge 占着。重启只弹 Nitro :3005，hashed /_n 继续从磁盘出。
+bounce_admin_nitro() {
+  if sys is-active --quiet "${UNIT_ADMIN_EDGE}" 2>/dev/null \
+    && [[ -n "$(listen_pids "${PORT_ADMIN}")" ]]; then
+    bounce_unit "${UNIT_ADMIN}" "${PORT_ADMIN_NITRO}"
+    return 0
+  fi
+  log "切到 admin edge :${PORT_ADMIN} + Nitro :${PORT_ADMIN_NITRO}"
+  sys stop "${UNIT_ADMIN}" || true
+  sys stop "${UNIT_ADMIN_EDGE}" || true
+  sleep 0.4
+  free_port "${PORT_ADMIN}"
+  free_port "${PORT_ADMIN_NITRO}"
+  log "启动 ${UNIT_ADMIN}"
+  sys start "${UNIT_ADMIN}"
+  wait_unit "${UNIT_ADMIN}"
+  log "启动 ${UNIT_ADMIN_EDGE}"
+  sys start "${UNIT_ADMIN_EDGE}"
+  wait_unit "${UNIT_ADMIN_EDGE}"
+}
+
 restart_admin() {
   if [[ "${DO_BUILD}" -eq 1 ]]; then
     build_nuxt "@phpyun/admin"
   fi
-  bounce_unit "${UNIT_ADMIN}" "${PORT_ADMIN}"
+  bounce_admin_nitro
   if [[ "${DO_VERIFY}" -eq 1 ]]; then
     verify_admin
   fi
@@ -402,7 +442,7 @@ case "${TARGET}" in
       DO_BUILD=0
     fi
     bounce_unit "${UNIT_SITE}" "${PORT_SITE}"
-    bounce_unit "${UNIT_ADMIN}" "${PORT_ADMIN}"
+    bounce_admin_nitro
     if [[ "${DO_VERIFY}" -eq 1 ]]; then
       verify_site
       verify_admin
@@ -417,7 +457,7 @@ case "${TARGET}" in
     fi
     bounce_unit "${UNIT_RS}" "${PORT_RS}"
     bounce_unit "${UNIT_SITE}" "${PORT_SITE}"
-    bounce_unit "${UNIT_ADMIN}" "${PORT_ADMIN}"
+    bounce_admin_nitro
     if [[ "${DO_VERIFY}" -eq 1 ]]; then
       verify_rust
       verify_site
