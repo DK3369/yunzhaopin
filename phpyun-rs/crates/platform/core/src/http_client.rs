@@ -12,7 +12,7 @@
 //! - The underlying `reqwest::Client` is `Arc` internally; `.clone()` across
 //!   threads is zero-cost.
 //! - Keep-alive + per-host connection pool (TCP/TLS reuse on Tokio).
-//! - `rustls` (no `libssl`); HTTP/1.1 is enough for WeChat / SMS / OAuth.
+//! - `rustls` + **ring** (no `libssl` / aws-lc); HTTP/1.1 is enough for WeChat / SMS / OAuth.
 //!
 //! ## Observability
 //! - `http.client.latency_ms{host, status}` histogram.
@@ -27,7 +27,12 @@ use serde::{de::DeserializeOwned, Serialize};
 use std::time::{Duration, Instant};
 use tracing::Instrument;
 
+fn install_rustls_ring() {
+    let _ = rustls::crypto::ring::default_provider().install_default();
+}
+
 fn build_client(timeout_secs: u64, pool_max_idle_per_host: usize) -> anyhow::Result<Client> {
+    install_rustls_ring();
     let client = Client::builder()
         .timeout(Duration::from_secs(timeout_secs))
         .connect_timeout(Duration::from_secs(5))
@@ -331,6 +336,11 @@ fn jitter_ms(base: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn client_builds_with_ring_provider() {
+        Http::new(5, 2).expect("reqwest client needs a rustls crypto provider");
+    }
 
     #[test]
     fn host_of_extracts_host() {

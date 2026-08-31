@@ -26,7 +26,7 @@ tower-http = { version = "0.6", features = [
     "trace", "cors", "limit", "compression-gzip",
     "request-id", "timeout", "set-header",
 ] }
-tower_governor = "0.8"
+tower_governor = { version = "0.8", default-features = false, features = ["axum"] }
 
 # ---- Async runtime ----
 tokio = { version = "1.52", features = [
@@ -37,11 +37,13 @@ tokio-util = { version = "0.7", features = ["rt"] }
 tokio-stream = "0.1"
 
 # ---- DB / Redis / outbound HTTP ----
-sqlx = { version = "0.8", features = [
-    "mysql", "runtime-tokio-rustls", "chrono", "migrate",
+sqlx = { version = "0.8", default-features = false, features = [
+    "mysql", "runtime-tokio-rustls", "chrono", "migrate", "macros", "json",
 ] }
 redis = { version = "1.2", features = ["tokio-comp", "connection-manager"] }
-reqwest = { version = "0.13", default-features = false, features = ["json", "rustls"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls-no-provider"] }
+# Process-wide rustls crypto (ring). reqwest 0.13 rustls-no-provider does not install one.
+rustls = { version = "0.23", default-features = false, features = ["std", "tls12", "ring"] }
 
 # ---- Auth ----
 jsonwebtoken = { version = "10", default-features = false, features = ["rust_crypto"] }
