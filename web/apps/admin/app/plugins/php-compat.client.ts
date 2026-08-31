@@ -74,7 +74,7 @@ function flattenVNodes(nodes: unknown[]): unknown[] {
 function phpTooltipVNode(attrs: Record<string, unknown>, slots: Record<string, unknown>) {
   const slotFn = slots.default as (() => unknown[]) | undefined
   const kids = flattenVNodes(slotFn?.() || [])
-  const hasContentProp = attrs.content != null && attrs.content !== ''
+  const hasContentProp = attrs.content != null && String(attrs.content) !== ''
   const contentSlot = slots.content as (() => unknown) | undefined
   let trigger = kids
   let content = contentSlot
@@ -82,13 +82,15 @@ function phpTooltipVNode(attrs: Record<string, unknown>, slots: Record<string, u
     content = () => kids.slice(0, -1)
     trigger = [kids[kids.length - 1]]
   }
-  if (trigger.length !== 1) {
-    trigger = [h('span', { class: 'php-el-tooltip-trigger' }, trigger as VNode[])]
-  }
+  const wrapped = h(
+    'span',
+    { class: 'php-el-only-child', style: 'display:inline' },
+    trigger as VNode[],
+  )
   return h(ElTooltipBase, attrs, {
     ...slots,
     content,
-    default: () => trigger,
+    default: () => wrapped,
   })
 }
 

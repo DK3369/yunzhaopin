@@ -93,7 +93,13 @@ export default defineNuxtConfig({
     '/favicon.v1.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=60, must-revalidate' } },
     '/_n/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/**': { headers: { 'cache-control': 'no-store' } },
+    '/**': {
+      headers: {
+        'cache-control': 'no-store, no-cache, must-revalidate',
+        'cdn-cache-control': 'no-store',
+        'cloudflare-cdn-cache-control': 'no-store',
+      },
+    },
   },
   i18n: {
     locales: [
