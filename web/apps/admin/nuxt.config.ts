@@ -1,7 +1,7 @@
-/** EP 3: on el-radio / el-radio-button, `label` as the selected value is deprecated. */
-function rewriteRadioLabelToValue(code: string) {
+/** EP 3: radio/checkbox `label` as the selected value is deprecated. Not el-form-item / el-table-column. */
+function rewriteChoiceLabelToValue(code: string) {
   return code.replace(
-    /<(el-radio(?:-button)?)(\s[\s\S]*?)(\/?)>/g,
+    /<(el-(?:radio|checkbox)(?:-button)?)(\s[\s\S]*?)(\/?)>/g,
     (_full, tag: string, attrs: string, slash: string) => {
       const hasValue = /\s(?:v-bind:|:)?value\s*=/.test(attrs)
       if (hasValue) {
@@ -43,7 +43,7 @@ function phpAdminEpCompat() {
       out = out.replaceAll(":underline='false'", 'underline="never"')
       out = out.replaceAll(/(?<!v-model):current-page=/g, 'v-model:current-page=')
       out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
-      out = rewriteRadioLabelToValue(out)
+      out = rewriteChoiceLabelToValue(out)
       out = rewriteButtonTypeText(out)
       // Auto-import bypasses vueApp.component('ElSwitch'); rename so php-compat wrap applies.
       out = out.replace(/<(\/?)el-switch\b/gi, '<$1PhpElSwitch')
@@ -65,6 +65,8 @@ export default defineNuxtConfig({
       endLoading: '(globalThis.endLoading||function(){})',
       startLoading: '(globalThis.startLoading||function(){})',
       baseUrl: '(globalThis.baseUrl||"/admin/api/php-admin?")',
+      getUrlParams: '(globalThis.getUrlParams)',
+      AMap: '(globalThis.AMap)',
     },
     plugins: [phpAdminEpCompat()],
     server: {
@@ -87,7 +89,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/favicon.v1.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=60, must-revalidate' } },
-    '/_n/**': { headers: { 'cache-control': 'public, max-age=60, must-revalidate' } },
+    '/_n/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/**': { headers: { 'cache-control': 'no-store' } },
   },
   i18n: {
@@ -126,7 +128,7 @@ export default defineNuxtConfig({
       script: [
         {
           innerHTML:
-            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";globalThis.wangEditor=globalThis.wangEditor||{createEditor:function(){return{getHtml:function(){return""},getText:function(){return""},setHtml:function(){},destroy:function(){},on:function(){}}},createToolbar:function(){return{destroy:function(){}}}};',
+            'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";globalThis.getUrlParams=globalThis.getUrlParams||function(l){l=l||window.location;var qs="",a={},p,n;if(l.search)qs=l.search.slice(1);else if(l.hash&&l.hash.indexOf("?")>=0)qs=l.hash.slice(l.hash.indexOf("?")+1);qs.split("&").forEach(function(s){if(!s)return;p=s.split("=");n=decodeURIComponent(p[0]||"");if(n)a[n]=decodeURIComponent(p[1]||"");});return a;};globalThis.wangEditor=globalThis.wangEditor||{createEditor:function(){return{getHtml:function(){return""},getText:function(){return""},setHtml:function(){},destroy:function(){},on:function(){}}},createToolbar:function(){return{destroy:function(){}}}};',
         },
         { src: '/admin/php-admin/js/jquery.min.js' },
         { src: '/admin/php-admin/js/echarts.min.js' },

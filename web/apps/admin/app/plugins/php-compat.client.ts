@@ -51,6 +51,23 @@ function phpTabName(tab: unknown): string {
   return String(raw)
 }
 
+function getUrlParams(locationLike: Location | { search?: string; hash?: string } = window.location) {
+  let qs = ''
+  if (locationLike.search) qs = locationLike.search.slice(1)
+  else if (locationLike.hash && locationLike.hash.includes('?')) {
+    qs = locationLike.hash.slice(locationLike.hash.indexOf('?') + 1)
+  }
+  const args: Record<string, string> = {}
+  if (!qs) return args
+  for (const part of qs.split('&')) {
+    if (!part) continue
+    const item = part.split('=')
+    const name = decodeURIComponent(item[0] || '')
+    if (name) args[name] = decodeURIComponent(item[1] || '')
+  }
+  return args
+}
+
 function formatMonth(date: Date) {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
@@ -273,6 +290,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     w.isArray = isArray
     w.isEmpty = isEmpty
     w.scrollToTop = scrollToTop
+    w.getUrlParams = getUrlParams
     w.showFullScreenLoading = () => undefined
     w.tryHideFullScreenLoading = () => undefined
     let loadingInst: { close: () => void } | null = null

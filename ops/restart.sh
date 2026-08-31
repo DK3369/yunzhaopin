@@ -21,6 +21,7 @@ PORT_ADMIN=3002
 
 CARGO_TMP="${CARGO_TMP:-/var/tmp/cargo-tmp}"
 NPM_TMP="${NPM_TMP:-/var/tmp/npm-tmp}"
+ADMIN_N_PREV="${ADMIN_N_PREV:-/var/tmp/phpyun-admin-n-prev}"
 NODE_BIN="${NODE_BIN:-}"
 
 DO_BUILD=0
@@ -229,17 +230,49 @@ build_rust() {
 build_nuxt() {
   local filter="$1"
   local tag
+  local pub d name
   resolve_node_bin
   mkdir -p "${NPM_TMP}"
   export PATH="${NODE_BIN}:${HOME}/.cargo/bin:${PATH}"
   export TMPDIR="${NPM_TMP}"
   need_cmd pnpm
   tag="$(git -C "${ROOT}" rev-parse --short HEAD)"
+  pub="${WEB_DIR}/apps/admin/.output/public/_n"
+  if [[ "${filter}" == "@phpyun/admin" && -d "${pub}" ]]; then
+    rm -rf "${ADMIN_N_PREV}"
+    cp -a "${pub}" "${ADMIN_N_PREV}"
+  fi
   log "pnpm --filter ${filter} build  (ADMIN_ASSET_TAG=${tag})"
   (
     cd "${WEB_DIR}"
     ADMIN_ASSET_TAG="${tag}" pnpm --filter "${filter}" build
   )
+  if [[ "${filter}" == "@phpyun/admin" && -d "${ADMIN_N_PREV}" ]]; then
+    mkdir -p "${pub}"
+    for d in "${ADMIN_N_PREV}"/*; do
+      [[ -d "${d}" ]] || continue
+      name="$(basename "${d}")"
+      if [[ ! -d "${pub}/${name}" ]]; then
+        log "保留上一版 hashed 资源 _n/${name}"
+        cp -a "${d}" "${pub}/${name}"
+      fi
+    done
+  fi
+}
+
+verify_admin() {
+  wait_http "admin" "http://127.0.0.1:${PORT_ADMIN}/admin/login"
+  local href code ctype
+  href="$(curl -sS --max-time 5 "http://127.0.0.1:${PORT_ADMIN}/admin/login" | grep -oE '/admin/_n/[^" ]+\.css' | head -1 || true)"
+  if [[ -z "${href}" ]]; then
+    return 0
+  fi
+  code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${PORT_ADMIN}${href}" || printf '000')"
+  ctype="$(curl -sS -o /dev/null -w '%{content_type}' --max-time 5 "http://127.0.0.1:${PORT_ADMIN}${href}" || true)"
+  log "admin css ${href} → ${code} ${ctype}"
+  if [[ "${code}" != "200" || "${ctype}" != text/css* ]]; then
+    fail "admin hashed css 未就绪: ${href} → ${code} ${ctype}"
+  fi
 }
 
 do_status() {
@@ -271,7 +304,6 @@ do_status() {
 
 verify_rust() { wait_http "rust" "http://127.0.0.1:${PORT_RS}/health"; }
 verify_site() { wait_http "site" "http://127.0.0.1:${PORT_SITE}/"; }
-verify_admin() { wait_http "admin" "http://127.0.0.1:${PORT_ADMIN}/admin/login"; }
 
 restart_rust() {
   if [[ "${DO_BUILD}" -eq 1 ]]; then
