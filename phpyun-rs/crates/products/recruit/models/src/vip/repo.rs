@@ -67,6 +67,22 @@ pub async fn list_active_packages(
     .await
 }
 
+/// PHP `ratingM->getList(array('category'=>1))` 后台职位筛选项套餐名。
+pub async fn list_admin_rating_names(
+    pool: &MySqlPool,
+    category: i32,
+) -> Result<Vec<(u64, String)>, sqlx::Error> {
+    sqlx::query_as(
+        r#"SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name
+           FROM phpyun_company_rating
+           WHERE COALESCE(deleted,0)=0 AND COALESCE(category,0) = ?
+           ORDER BY COALESCE(sort,0) ASC, id ASC"#,
+    )
+    .bind(category)
+    .fetch_all(pool)
+    .await
+}
+
 // ==================== Pricing quote (PHPYun `getVipPrice` semantics) ====================
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

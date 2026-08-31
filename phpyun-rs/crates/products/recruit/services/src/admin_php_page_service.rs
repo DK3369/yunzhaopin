@@ -17,6 +17,7 @@ use phpyun_models::site_setting::repo as setting_repo;
 use serde_json::{json, Map, Value};
 
 use crate::{admin_dashboard_service, category_service, dict_service, redeem_service};
+use phpyun_models::vip::repo as vip_repo;
 
 const SOURCE: &[(&str, &str)] = &[
     ("1", "网页"),
@@ -285,6 +286,7 @@ pub async fn php_page(
     user.require_admin()?;
     match kind {
         "resume_getCache" => resume_get_cache(state).await,
+        "job_getCacheData" => job_get_cache_data(state).await,
         "tiny_getCache" => tiny_get_cache(state).await,
         "once_getCache" => once_get_cache(state).await,
         "friendlink_getCache" => friendlink_get_cache(state).await,
@@ -361,6 +363,56 @@ async fn resume_get_cache(state: &AppState) -> AppResult<Value> {
     let dicts = dict_service::get(state).await?;
     let (userdata, userclass_name) = userdata_from(&dicts);
     Ok(json!({ "userdata": userdata, "userclass_name": userclass_name }))
+}
+
+/// PHP `company_job::getCacheData_action`：筛选项对象 + 职位/城市级联。
+async fn job_get_cache_data(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let jobs = cat_nodes(state, "job").await?;
+    let cities = cat_nodes(state, "city").await?;
+    let edu = dicts.comclass_by_variable("job_edu");
+    let exp = dicts.comclass_by_variable("job_exp");
+    let mut payload = admin_dashboard_service::php_cache_payload(&jobs, &cities, &edu, &exp);
+    let (job_name, _, _) = job_cache(&jobs);
+    let (city_name, _, _) = job_cache(&cities);
+    let (comdata, comclass_name) = comdata_from(&dicts);
+    let mut source = Map::new();
+    for (k, v) in SOURCE {
+        source.insert((*k).into(), Value::String((*v).into()));
+    }
+    let pkgs = vip_repo::list_admin_rating_names(state.db.reader(), 1).await?;
+    let mut rating = Map::new();
+    for (id, name) in pkgs {
+        rating.insert(id.to_string(), Value::String(name));
+    }
+    if let Some(search) = payload.get_mut("search_list").and_then(|v| v.as_object_mut()) {
+        if let Some(src) = search.get_mut("source").and_then(|v| v.as_object_mut()) {
+            src.insert("value".into(), Value::Object(source));
+        }
+        if let Some(rt) = search.get_mut("rating").and_then(|v| v.as_object_mut()) {
+            rt.insert("value".into(), Value::Object(rating));
+        }
+    }
+    payload["job_name"] = Value::Object(job_name.clone());
+    payload["city_name"] = Value::Object(city_name.clone());
+    payload["comdata"] = Value::Object(comdata.clone());
+    payload["comclass_name"] = Value::Object(comclass_name.clone());
+    payload["cache"] = json!({
+        "comdata": comdata,
+        "comclass_name": comclass_name,
+        "job_name": job_name,
+        "city_name": city_name,
+    });
+    let map_key = setting_repo::find(state.db.reader(), "map_key")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let map_secret = setting_repo::find(state.db.reader(), "map_secret")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    admin_dashboard_service::attach_amap(&mut payload, &map_key, &map_secret);
+    Ok(payload)
 }
 
 /// PHP `users_member::edit` / `users_resume::editResume` 字典块。

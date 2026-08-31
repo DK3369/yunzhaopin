@@ -2,7 +2,7 @@
 //! salary). A job seeker may have multiple preference rows.
 
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, MySqlPool};
+use sqlx::{FromRow, MySqlPool, QueryBuilder};
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct Expect {
@@ -589,6 +589,73 @@ pub async fn count_admin_r_status(pool: &MySqlPool, r_status: i32) -> Result<u64
             .fetch_one(pool)
             .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
+/// PHP `resume::recResume`：`resume_expect.rec_resume`.
+pub async fn admin_set_rec(pool: &MySqlPool, ids: &[u64], rec: i32) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_expect SET rec_resume = ");
+    qb.push_bind(rec);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// PHP `resume::topResume`：`top` / `topdate`.
+pub async fn admin_set_top(
+    pool: &MySqlPool,
+    ids: &[u64],
+    top: i32,
+    topdate: i64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_expect SET top = ");
+    qb.push_bind(top);
+    qb.push(", topdate = ");
+    qb.push_bind(topdate);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// PHP `resume::refreshResume`：刷 `resume_expect.lastupdate`，并同步 `resume.lastupdate`。
+pub async fn admin_refresh_ids(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_expect SET lastupdate = ");
+    qb.push_bind(now);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let n = qb.build().execute(pool).await?.rows_affected();
+    let mut qb2 = QueryBuilder::new(
+        "UPDATE phpyun_resume SET lastupdate = ",
+    );
+    qb2.push_bind(now);
+    qb2.push(" WHERE uid IN (SELECT uid FROM phpyun_resume_expect WHERE id IN (");
+    let mut sep2 = qb2.separated(", ");
+    for id in ids {
+        sep2.push_bind(*id);
+    }
+    qb2.push("))");
+    let _ = qb2.build().execute(pool).await;
+    Ok(n)
 }
 
 /// PHP `msgNum::resumeNum` teen count: birthday unix > now-16y.

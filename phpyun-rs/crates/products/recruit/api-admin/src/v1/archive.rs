@@ -85,10 +85,13 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct KwQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub status: Option<i32>,
     #[validate(length(max = 80))]
     pub keyword: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub uid: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub r#type: Option<i32>,
 }
 

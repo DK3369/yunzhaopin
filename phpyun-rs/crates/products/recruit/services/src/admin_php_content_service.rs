@@ -21,6 +21,7 @@ use phpyun_models::company::repo as company_repo;
 use phpyun_models::description::repo as desc_repo;
 use phpyun_models::domain::repo as domain_repo;
 use phpyun_models::gongzhao::repo as gongzhao_repo;
+use phpyun_models::interview_template::repo as yqmb_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::member_logout::repo as logout_repo;
 use phpyun_models::once_job::repo as once_repo;
@@ -212,6 +213,15 @@ pub async fn dispatch(
         ("resume", "skill") => resume_skill(state, body).await,
         ("resume", "project") => resume_project(state, body).await,
         ("resume", "other") => resume_other(state, body).await,
+        ("resume", "rec") => resume_rec(state, body).await,
+        ("resume", "top") => resume_top(state, body).await,
+        ("resume", "refresh") => resume_refresh(state, body).await,
+        ("interview", "index") => Ok(PhpOut::Data(interview_index(state, body).await?)),
+        ("interview", "save") => interview_save(state, body).await,
+        ("interview", "status") => interview_status(state, body).await,
+        ("interview", "delYqmb") => interview_del(state, body).await,
+        ("comlog", "userid-job") => Ok(PhpOut::Data(comlog_userid_job(state, body).await?)),
+        ("comlog", "deluseridjob") => comlog_del_userid_job(state, body).await,
         ("pages", "index") => Ok(PhpOut::Data(pages_index(state, body).await?)),
         ("pages", "add") => Ok(PhpOut::Data(pages_add(state, body).await?)),
         ("pages", "save") => pages_save(state, body).await,
@@ -6221,5 +6231,263 @@ async fn job_class_move(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let nid = json_u64(body, "nid");
     let parent = if keyid > 0 { keyid } else { nid };
     cat_repo::patch_job_class_parent(state.db.pool(), pid, parent).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+fn parse_intertime(body: &Value) -> i64 {
+    match body.get("intertime") {
+        Some(Value::Number(n)) => n.as_i64().unwrap_or(0),
+        Some(Value::String(s)) => {
+            let s = s.trim();
+            if s.is_empty() {
+                return 0;
+            }
+            if let Ok(n) = s.parse::<i64>() {
+                return n;
+            }
+            for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"] {
+                if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(s, fmt) {
+                    return dt.and_utc().timestamp();
+                }
+            }
+            if let Ok(d) = chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d") {
+                return d
+                    .and_hms_opt(0, 0, 0)
+                    .map(|t| t.and_utc().timestamp())
+                    .unwrap_or(0);
+            }
+            0
+        }
+        _ => 0,
+    }
+}
+
+/// PHP `company_interview::index_action` — 面试模板 `yqmb`，不是 userid_msg。
+async fn interview_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let f = yqmb_repo::AdminYqmbFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        keyword_type: json_i32(body, "type"),
+        status: json_opt_i32(body, "status"),
+    };
+    let db = state.db.reader();
+    let total = yqmb_repo::admin_php_count(db, &f).await?;
+    let rows = if total > 0 {
+        yqmb_repo::admin_php_list(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "name": r.name,
+                "linkman": r.linkman,
+                "linktel": r.linktel,
+                "address": r.address,
+                "intertime": fmt_dt(r.intertime),
+                "content": r.content,
+                "addtime": r.addtime,
+                "addtime_n": fmt_dt(r.addtime),
+                "status": r.status,
+                "statusbody": r.statusbody,
+                "comname": r.comname,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn interview_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("common_06682"));
+    }
+    let name = json_str(body, "name");
+    let linkman = json_str(body, "linkman");
+    let linktel = json_str(body, "linktel");
+    let address = json_str(body, "address");
+    let content = json_str(body, "content");
+    let intertime = parse_intertime(body);
+    if linkman.is_empty() {
+        return Err(ApiError::param_invalid("member_com_00677"));
+    }
+    if intertime <= 0 {
+        return Err(ApiError::param_invalid("member_com_00681"));
+    }
+    if linktel.is_empty() {
+        return Err(ApiError::param_invalid("common_06291"));
+    }
+    if address.is_empty() {
+        return Err(ApiError::param_invalid("member_com_00680"));
+    }
+    let com = company_repo::find_by_uid(state.db.reader(), uid).await?;
+    if com.is_none() {
+        return Err(ApiError::param_invalid("common_06682"));
+    }
+    let tpl_name = if name.is_empty() {
+        format!("{linkman}")
+    } else {
+        name
+    };
+    let id = json_u64(body, "id");
+    let now = clock::now_ts();
+    if id > 0 {
+        yqmb_repo::admin_update(
+            state.db.pool(),
+            id,
+            uid,
+            &tpl_name,
+            &linkman,
+            &linktel,
+            &content,
+            &address,
+            intertime,
+            0,
+        )
+        .await?;
+    } else {
+        yqmb_repo::admin_insert(
+            state.db.pool(),
+            uid,
+            &tpl_name,
+            &linkman,
+            &linktel,
+            &content,
+            &address,
+            intertime,
+            0,
+            now,
+        )
+        .await?;
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn interview_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    let status = json_i32(body, "status");
+    if ids.is_empty() || status == 0 {
+        return Err(ApiError::param_invalid("common_01716"));
+    }
+    let body_txt = json_str(body, "statusbody");
+    yqmb_repo::admin_set_status(state.db.pool(), &ids, status, &body_txt).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn interview_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("common_01066"));
+    }
+    yqmb_repo::admin_delete_ids(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+/// PHP `company_comlog::index_action` 职位申请记录。
+async fn comlog_userid_job(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let (from, to) = json_day_range(body, "times");
+    let f = gap_extra::UseridJobPhpFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        keyword_type: json_i32(body, "type"),
+        browse: json_opt_i32(body, "browse"),
+        datetime_from: from,
+        datetime_to: to,
+        job_id: {
+            let n = json_u64(body, "job_id");
+            if n > 0 { Some(n) } else { None }
+        },
+        com_id: {
+            let n = json_u64(body, "com_id");
+            if n > 0 { Some(n) } else { None }
+        },
+        user_id: {
+            let n = json_u64(body, "user_id");
+            if n > 0 { Some(n) } else { None }
+        },
+    };
+    let db = state.db.reader();
+    let total = gap_extra::count_userid_job_php(db, &f).await?;
+    let rows = if total > 0 {
+        gap_extra::list_userid_job_php(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let dt = if r.datetime > 0 {
+                fmt_date(r.datetime)
+            } else {
+                String::new()
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "eid": r.eid,
+                "job_name": r.job_name,
+                "job_url": format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", r.jobid),
+                "com_name": r.com_name,
+                "com_url": format!("{base}/index.php?m=company&c=show&id={}&look=admin", r.comid),
+                "username_n": r.username,
+                "telphone": r.telphone,
+                "telphone_url": r.telphone,
+                "is_browse": r.is_browse,
+                "datetime": r.datetime,
+                "datetime_n_n": dt,
+                "isdel_n": r.isdel_n,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn comlog_del_userid_job(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    gap_extra::delete_userid_job_ids(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn resume_rec(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let rec = json_i32(body, "rec");
+    expect_repo::admin_set_rec(state.db.pool(), &ids, rec).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn resume_top(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let (top, topdate) = if has_flag(body, "s") {
+        (0, 0)
+    } else {
+        let days = json_i32(body, "addday").max(0);
+        let now = clock::now_ts();
+        (1, now + i64::from(days) * 86400)
+    };
+    expect_repo::admin_set_top(state.db.pool(), &ids, top, topdate).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn resume_refresh(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    expect_repo::admin_refresh_ids(state.db.pool(), &ids, clock::now_ts()).await?;
     Ok(PhpOut::Message("ok"))
 }

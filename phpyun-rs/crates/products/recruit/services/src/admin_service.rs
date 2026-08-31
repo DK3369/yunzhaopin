@@ -149,19 +149,21 @@ pub async fn list_jobs_filtered(
 
 pub async fn job_stats(state: &AppState) -> AppResult<serde_json::Value> {
     let db = state.db.reader();
+    let total = job_repo::admin_count(db, None).await?;
     let pending = job_repo::admin_count(db, Some(0)).await?;
     let passed = job_repo::admin_count(db, Some(1)).await?;
     let rejected = job_repo::admin_count(db, Some(3)).await?;
+    // PHP `msgNum::jobNum` 下架：`status = 1`（筛选项里 UI 的 2 才会映射成 DB 0）
     let offline = job_repo::admin_count_filtered(
         db,
         &AdminJobFilter {
-            status: Some(2),
+            status: Some(1),
             ..AdminJobFilter::default()
         },
     )
     .await?;
     Ok(serde_json::json!({
-        "total": pending + passed + rejected,
+        "total": total,
         "dsh": pending,
         "wtg": rejected,
         "xj": offline,

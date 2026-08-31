@@ -1315,3 +1315,101 @@ pub async fn delete_wx_zdcon_by_kids(pool: &MySqlPool, kids: &[u64]) -> Result<u
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
+
+/// PHP `company_comlog::index_action` 申请记录筛选项。
+#[derive(Debug, Default, Clone)]
+pub struct UseridJobPhpFilter<'a> {
+    pub keyword: Option<&'a str>,
+    /// 1 职位名 / 2 公司名 / 3 个人姓名
+    pub keyword_type: i32,
+    pub browse: Option<i32>,
+    pub datetime_from: Option<i64>,
+    pub datetime_to: Option<i64>,
+    pub job_id: Option<u64>,
+    pub com_id: Option<u64>,
+    pub user_id: Option<u64>,
+}
+
+fn push_userid_job_php<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &UseridJobPhpFilter<'a>) {
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        match f.keyword_type {
+            2 => {
+                qb.push(" AND t.com_name LIKE ");
+                qb.push_bind(like);
+            }
+            3 => {
+                qb.push(" AND t.username LIKE ");
+                qb.push_bind(like);
+            }
+            _ => {
+                qb.push(" AND t.job_name LIKE ");
+                qb.push_bind(like);
+            }
+        }
+    }
+    if let Some(b) = f.browse {
+        qb.push(" AND t.is_browse = ");
+        qb.push_bind(b);
+    }
+    if let Some(from) = f.datetime_from {
+        qb.push(" AND t.datetime >= ");
+        qb.push_bind(from);
+    }
+    if let Some(to) = f.datetime_to {
+        qb.push(" AND t.datetime <= ");
+        qb.push_bind(to);
+    }
+    if let Some(id) = f.job_id {
+        qb.push(" AND t.jobid = ");
+        qb.push_bind(id);
+    }
+    if let Some(id) = f.com_id {
+        qb.push(" AND t.comid = ");
+        qb.push_bind(id);
+    }
+    if let Some(id) = f.user_id {
+        qb.push(" AND t.uid = ");
+        qb.push_bind(id);
+    }
+}
+
+pub async fn list_userid_job_php(
+    pool: &MySqlPool,
+    f: &UseridJobPhpFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<BizLogRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new(format!("SELECT {BIZ_SELECT} FROM ({USERID_JOB_INNER}) t WHERE 1=1"));
+    push_userid_job_php(&mut qb, f);
+    qb.push(" ORDER BY t.id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_userid_job_php(
+    pool: &MySqlPool,
+    f: &UseridJobPhpFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new(format!("SELECT COUNT(*) FROM ({USERID_JOB_INNER}) t WHERE 1=1"));
+    push_userid_job_php(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_userid_job_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_userid_job WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}

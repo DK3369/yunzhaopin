@@ -7,8 +7,10 @@ use phpyun_core::{
 };
 use phpyun_models::job::entity::Job;
 use phpyun_models::job::repo::AdminJobFilter;
+use phpyun_models::vip::repo as vip_repo;
 use phpyun_services::{admin_php_page_service, admin_service, dict_service};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
@@ -77,14 +79,33 @@ pub struct AdminJobRow {
     pub sdate_n: String,
     pub lastupdate: i64,
     pub lastupdate_n_n: String,
+    pub lastupdate_n: String,
     pub edu: i32,
     pub edu_n: String,
     pub exp: i32,
     pub exp_n: String,
     pub rating: i32,
+    pub rating_name: String,
+    pub source: i32,
+    pub joburl: String,
+    pub comurl: String,
+    pub istop: bool,
+    pub isurgent: bool,
+    pub iszp: bool,
+    #[serde(rename = "browseNum")]
+    pub browse_num: i32,
+    #[serde(rename = "inviteNum")]
+    pub invite_num: i32,
 }
 
-fn row_from(j: Job, dicts: &dict_service::LocalizedDicts, now: i64) -> AdminJobRow {
+fn row_from(
+    j: Job,
+    dicts: &dict_service::LocalizedDicts,
+    now: i64,
+    base: &str,
+    rating_names: &HashMap<i32, String>,
+) -> AdminJobRow {
+    let last_n = fmt_dt(j.lastupdate);
     AdminJobRow {
         id: j.id,
         uid: j.uid,
@@ -104,12 +125,22 @@ fn row_from(j: Job, dicts: &dict_service::LocalizedDicts, now: i64) -> AdminJobR
         sdate: j.sdate,
         sdate_n: fmt_dt(j.sdate),
         lastupdate: j.lastupdate,
-        lastupdate_n_n: fmt_dt(j.lastupdate),
+        lastupdate_n_n: last_n.clone(),
+        lastupdate_n: last_n,
         edu: j.edu,
         edu_n: dicts.comclass(j.edu).to_string(),
         exp: j.exp,
         exp_n: dicts.comclass(j.exp).to_string(),
         rating: j.rating,
+        rating_name: rating_names.get(&j.rating).cloned().unwrap_or_default(),
+        source: j.source,
+        joburl: format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", j.id),
+        comurl: format!("{base}/index.php?m=company&c=show&id={}&look=admin", j.uid),
+        istop: j.xsdate > now,
+        isurgent: j.urgent == 1 && j.urgent_time > now,
+        iszp: j.status == 0,
+        browse_num: 0,
+        invite_num: 0,
     }
 }
 
@@ -147,8 +178,21 @@ pub async fn list(
     let r = admin_service::list_jobs_filtered(&state, &f, page).await?;
     let dicts = dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
+    let base = state
+        .config
+        .web_base_url
+        .clone()
+        .unwrap_or_else(|| "https://zzzz.com".into());
+    let pkgs = vip_repo::list_admin_rating_names(state.db.reader(), 1).await?;
+    let rating_names: HashMap<i32, String> = pkgs
+        .into_iter()
+        .map(|(id, name)| (id as i32, name))
+        .collect();
     Ok(ApiResponse::data(AdminPaged::from(phpyun_core::Paged::new(
-        r.list.into_iter().map(|j| row_from(j, &dicts, now)).collect(),
+        r.list
+            .into_iter()
+            .map(|j| row_from(j, &dicts, now, &base, &rating_names))
+            .collect(),
         r.total,
         r.page,
         r.page_size,
