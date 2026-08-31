@@ -1,10 +1,11 @@
 # 管理后台进度（Admin Nuxt + Rust API + 伪删除）
 
-> 2026-08-30 · 分支 `feat/frontend-backend-split`  
+> 2026-08-31 · 分支 `feat/frontend-backend-split`  
 > 总方案：[FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（T0–T14 勾选偏旧，细进度以本文为准）  
 > UI 约定：[ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md)  
+> **缺口与下一轮接法（主稿）**：[plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md)（全量未映射名单 + 波次 1–4 步骤；本文不重复粘贴）  
 > Cursor plan 原文：[`.cursor/plans/admin_现状盘点.plan.md`](../.cursor/plans/admin_现状盘点.plan.md)（上午）、[`.cursor/plans/admin_现状盘点_晚.plan.md`](../.cursor/plans/admin_现状盘点_晚.plan.md)（`d03fe9f6` 后）、[`.cursor/plans/admin_下一批迁移.plan.md`](../.cursor/plans/admin_下一批迁移.plan.md)、[`.cursor/plans/admin_微聘兼职名企.plan.md`](../.cursor/plans/admin_微聘兼职名企.plan.md)  
-> 实施稿：[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)、[plans/2026-08-30-admin-weipin-part-hotjob.md](./plans/2026-08-30-admin-weipin-part-hotjob.md)、[plans/2026-08-30-admin-status-evening.md](./plans/2026-08-30-admin-status-evening.md)
+> 实施稿：[plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md)、[plans/2026-08-30-admin-status.md](./plans/2026-08-30-admin-status.md)、[plans/2026-08-30-admin-gongzhao-ads-finance.md](./plans/2026-08-30-admin-gongzhao-ads-finance.md)、[plans/2026-08-30-admin-weipin-part-hotjob.md](./plans/2026-08-30-admin-weipin-part-hotjob.md)、[plans/2026-08-30-admin-status-evening.md](./plans/2026-08-30-admin-status-evening.md)
 
 ## 文档落盘
 
@@ -12,9 +13,9 @@
 |---|---|
 | `.cursor/plans/*.plan.md` | Cursor plan 原文，**进 git** |
 | `doc/ADMIN_PROGRESS.md` | 本文：后台做到哪、伪删除范围、下一项 |
-| `doc/plans/YYYY-MM-DD-短名.md` | 每次实施 plan 的可读稿 |
+| `doc/plans/YYYY-MM-DD-短名.md` | 每次实施 plan 的可读稿；**缺口执行稿**为 [2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md) |
 
-每次 plan：**仓库 `.cursor/plans/` + `doc/plans/`** 都要有；现状更新本文。不要 ignore `.cursor/`。
+每次 plan：现状更新本文。2026-08-31 缺口稿 **只落** `doc/plans/`（不双写 `.cursor/plans/`）。其它次仍可两边都有。不要 ignore `.cursor/`。
 
 ## 运行时
 
@@ -50,8 +51,9 @@ flowchart LR
 
 ## Admin Nuxt
 
-- `web/apps/admin/app/pages/`：**121** 个 path 页，对齐 PHP `router.js`。
+- `web/apps/admin/app/pages/`：**121** 个 path 页，对齐 PHP `router.js`（骨架齐）。
 - UI：`web/apps/admin/app/admin-php/`（PHP Vue 语法迁入）。
+- 映射进度（2026-08-31 再扫，规则对齐 `resolvePhpAction`）：PHP **120** 控制器 / **945** 个 `*_action`；Vue 抽出 **842** 个唯一 `m/c/a`；已映射 **538（63.9%）**；未映射 **304** 条 / **77** 个控制器。名单与分波接法见 [plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md)，本文不另写一份清单。
 - `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。`moduleAction` **只认精确** `del`/`delete`/`save`/`add`/`status`（不再把 `delStatisDetail` 打到错表）。招聘会/新闻/问答/专题/公招/广告/财务/微聘/兼职/名企/单页/职位分类/系统分类 ajax/微信 savenav·creatnav/邮件测试 走 `phpContent`。
 - `php-compat` 挂 `window.yunAdminT` / `yunAdminTransText` 身份函数（PHP 33 个文件在 `data()` 里调用，不再 TypeError）。
 - 校园分类页已换成与兼职分类同构 UI（PHP 仅有 `category_schoolclass` 控制器；jobs 库无 `phpyun_schoolclass` 时列表为空）。
@@ -142,9 +144,15 @@ flowchart LR
 
 ## 和「已经能用」的差别
 
-页面骨架（121 path）早就在；缺口主要是 **具名 PHP action 是否打到正确 Rust**。招聘/内容/财务/微聘主路径多数已精确映射。未映射的 `httpPost` 会返回「未映射的后台接口」，不会再静默打到列表。总方案 T11 仍写「118 页」，以本文 121 为准。
+页面骨架（121 path）早就在；缺口主要是 **具名 PHP action 是否打到正确 Rust**。招聘/内容/财务/微聘主路径多数已精确映射。未映射的 `httpPost` 会返回「未映射的后台接口」，不会再静默打到列表（列表常一直转圈）。总方案 T11 仍写「118 页」，以本文 121 为准。
 
-## 下一项（本波之后）
+## 下一项（下一轮按缺口稿实现）
+
+**先做波次 1**：会员 CRM 写（列表已通）。对照 PHP `admin_member` 的 Imitate/lock/editSave/del、`admin_appeal` 的 info/success/del、`admin_member_logout` 的 status/del/memNum。步骤、phpMap 键、Rust 落点见 [plans/2026-08-31-admin-gap.md](./plans/2026-08-31-admin-gap.md) §5。
+
+其后：波次 2 简历列表写（delResume/refresh/rec/label/top）；波次 3 企业剩余写（拆小，优先 writtenOffLog/log/checksitedid）；波次 4+ 系统/工具/运营。
+
+仍排队、与具名 action 无关：
 
 - 兼职/once **图片上传栈**（现无 storage 则 `upload_not_supported`）
 - 城市拼音生成（`ajaxpinyin` 现直接成功，未接汉字转拼音）
