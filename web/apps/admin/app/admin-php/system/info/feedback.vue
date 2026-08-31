@@ -37,6 +37,7 @@
                 <el-table-column prop="id" :label="lc('common_02108')" width="80" sortable="custom">
                 </el-table-column>
                 <el-table-column prop="infotype_n" :label="lc('admin_system_00203')">
+                    <template #default="scope">{{ lc(scope.row.infotype_n) }}</template>
                 </el-table-column>
 				<el-table-column prop="username" :label="lc('wap_01431')">
 				</el-table-column>
@@ -137,10 +138,10 @@ export default {
                     },
                     page: 1,
                     prevPage: 0,
-                    limit: 0,
+                    limit: 10,
                     list: [],
                     total: 0,
-                    pageSizes: [],
+                    pageSizes: [10, 20, 50, 100],
 
                     checkedAll: false,
                     selectedItem: [],
@@ -157,7 +158,12 @@ export default {
             },
             created() {
                 var that = this
-                let query = window.parent.homeapp.$route.query;
+                let query = {}
+                try {
+                    query = (window.parent && window.parent.homeapp && window.parent.homeapp.$route && window.parent.homeapp.$route.query) || {}
+                } catch (e) {
+                    query = {}
+                }
                 if (query.status) {
                     that.searchOption.feedbackstatus = query.status;
                 }
@@ -172,8 +178,8 @@ export default {
                     this.search();
                 },
                 handle(row) {
-                    this.ruleFormHandle.status = row.status;
-                    this.ruleFormHandle.content = row.handlecontent;
+                    this.ruleFormHandle.status = String(row.status == 2 ? 2 : 1);
+                    this.ruleFormHandle.content = row.handlecontent || '';
                     this.ruleFormHandle.id = row.id;
                     this.handleBox = true;
                 },
@@ -213,23 +219,32 @@ export default {
                     httpPost('m=system&c=info_feedback&a=index', {...params, ...searchOption}, {hideloading: true}).then(function (data) {
                         let res = data.data;
                         if (res.error == 0) {
-                            that.tableData = res.data.list;
+                            let payload = res.data && typeof res.data === 'object' ? res.data : {}
+                            that.tableData = Array.isArray(payload.list) ? payload.list : [];
                             if (that.prevPage != that.page) {
                                 that.prevPage = that.page;
                                 that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                             }
                             that.loading = false;
-                            that.total = parseInt(res.data.total);
-                            that.pageSizes = res.data.pageSizes;
-                            that.limit = parseInt(res.data.pageSize);
-                            if (that.page > res.data.page) {
-                                that.page = parseInt(res.data.page); // 最后一页被删除后，取最新的页数
+                            that.total = parseInt(payload.total) || 0;
+                            that.pageSizes = Array.isArray(payload.pageSizes) && payload.pageSizes.length ? payload.pageSizes : [10, 20, 50, 100];
+                            that.limit = parseInt(payload.pageSize || payload.limit) || 10;
+                            if (payload.page && that.page > payload.page) {
+                                that.page = parseInt(payload.page); // 最后一页被删除后，取最新的页数
                             }
                             if (that.tableData.length === 0){
                                 that.emptytext = window.lc('wap_js_00113');
                             }
+                        } else {
+                            that.loading = false;
+                            that.tableData = [];
+                            that.pageSizes = [10, 20, 50, 100];
+                            that.emptytext = window.lc('wap_js_00113');
                         }
                     }).catch(function (error) {
+                        that.loading = false;
+                        that.tableData = [];
+                        that.pageSizes = [10, 20, 50, 100];
                         console.log(error)
                     })
                 },

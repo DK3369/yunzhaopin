@@ -46,6 +46,7 @@ pub async fn submit(
         &state,
         user.as_ref(),
         FeedbackInput {
+            username: "",
             category: &f.category,
             content: &f.content,
             contact: f.contact.as_deref().unwrap_or(""),

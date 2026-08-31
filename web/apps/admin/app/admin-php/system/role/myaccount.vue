@@ -4,49 +4,56 @@
         <template>
             <el-descriptions :title="lc('admin_system_00224')" direction="vertical" :column="4" border>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-user"></i>
-                        {{ lc('admin_user_00140') }}</template>
+                        {{ lc('admin_user_00140') }}
+                    </template>
                     {{user.username}}
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-mobile-phone"></i>
-                        {{ lc('wap_01619') }}</template>
+                        {{ lc('wap_01619') }}
+                    </template>
                     {{user.mobile}}
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-postcard"></i>
-                        {{ lc('member_user_00230') }}</template>
+                        {{ lc('member_user_00230') }}
+                    </template>
                     {{user.real_name}}
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-alarm-clock"></i>
-                        {{ lc('admin_system_00222') }}</template>
+                        {{ lc('admin_system_00222') }}
+                    </template>
                     {{user.last_login}}
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-tickets"></i>
-                        {{ lc('admin_user_company_00372') }}</template>
+                        {{ lc('admin_user_company_00372') }}
+                    </template>
                     <el-tag size="small" type="warning">{{user.group_name}}</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-alarm-clock"></i>
-                        {{ lc('wap_user_00371') }}</template>
+                        {{ lc('wap_user_00371') }}
+                    </template>
                     <div class="admin_item">
                         <div class=""> *********</div>
                         <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">{{ lc('wap_js_00073') }}</el-button>
                     </div>
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-link"></i>
-                        {{ lc('wap_user_00115') }}</template>
-                    <div class="admin_item" v-if="user.wxid == ''">
+                        {{ lc('wap_user_00115') }}
+                    </template>
+                    <div class="admin_item" v-if="!user.wxid">
                         <div class="">{{ lc('admin_system_00225') }}</div>
                         <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">{{ lc('member_user_00234') }}</el-button>
                     </div>
@@ -56,10 +63,11 @@
                     </div>
                 </el-descriptions-item>
                 <el-descriptions-item>
-                    <template>
+                    <template #label>
                         <i class="el-icon-link"></i>
-                        {{ lc('admin_system_00223') }}</template>
-                    <div class="admin_item" v-if="user.qy_wxid == ''">
+                        {{ lc('admin_system_00223') }}
+                    </template>
+                    <div class="admin_item" v-if="!user.qy_wxid">
                         <div class="">{{ lc('admin_system_00225') }}</div>
                         <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">{{ lc('member_user_00234') }}</el-button>
                     </div>
@@ -153,6 +161,7 @@ export default {
                 user: {
                     username: '',
                     mobile: '',
+                    real_name: '',
                     name: '',
                     wxid: '',
                     qy_wxid: '',
@@ -188,22 +197,24 @@ export default {
             },
         },
         created: function () {
-            let query = getUrlParams(window.parent.location);
-            if (query.ly) {
-                this.ly = query.ly;
-            }
             this.getInfo();
         },
         methods: {
-            handleClick(tab, event) {
-                console.log(tab, event);
-            },
+            handleClick() {},
             async getInfo() {
                 let that = this;
+                let query = {}
+                try {
+                    const fn = window.getUrlParams
+                    if (typeof fn === 'function') query = fn(window.parent.location) || {}
+                } catch (e) {}
+                if (query.ly) {
+                    this.ly = query.ly;
+                }
                 httpPost('m=system&c=role_myuser&a=index', {}).then(function (result) {
                     var res = result.data
-                    if (res.error == 0) {
-                        that.user = res.data
+                    if (res.error == 0 && res.data && typeof res.data === 'object') {
+                        that.user = Object.assign({}, that.user, res.data)
                     }
                     if (that.ly == 'pass') { // 弹出修改密码框
                         that.drawer = true;

@@ -44,7 +44,7 @@ export default {
             return {
                 tabPosition: 'left',
 
-                curTab: '',
+                curTab: 'index',
                 seomodel: {},
 
                 drawerSeoshezhi: false,
@@ -71,14 +71,17 @@ export default {
         },
         methods: {
             async getSeomodel() {
-                let res = await httpPost('m=system&c=set_seo')
-                let data = (res && res.data && res.data.data) || {}
-                const model = data.seomodel
-                this.seomodel = model && typeof model === 'object' && !Array.isArray(model) ? model : {}
-
-                for (let key in this.seomodel) {
-                    this.curTab = key; // 赋值默认tab
-                    break;
+                try {
+                    let res = await httpPost('m=system&c=set_seo')
+                    let data = (res && res.data && res.data.data) || {}
+                    const model = data.seomodel
+                    this.seomodel = model && typeof model === 'object' && !Array.isArray(model) ? model : {}
+                    const keys = Object.keys(this.seomodel)
+                    if (keys.length) {
+                        this.curTab = this.seomodel[this.curTab] ? this.curTab : keys[0]
+                    }
+                } catch (e) {
+                    this.seomodel = {}
                 }
             },
             openSeoshezhi(data) {
@@ -97,3 +100,8 @@ export default {
         },
     }
 </script>
+<style>
+.seosetSubject {
+    min-height: calc(100vh - 180px);
+}
+</style>

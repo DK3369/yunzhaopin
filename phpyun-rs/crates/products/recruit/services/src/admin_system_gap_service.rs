@@ -336,8 +336,13 @@ pub struct MyUserView {
     pub real_name: String,
     pub mobile: String,
     pub wxid: String,
-    pub last_login: i64,
+    pub qy_wxid: String,
+    pub last_login: String,
     pub group_name: String,
+    pub qy_app_id: String,
+    pub agent_id: String,
+    pub redirect_uri: String,
+    pub state: String,
 }
 
 pub async fn my_user(state: &AppState, actor: &AuthenticatedUser) -> AppResult<MyUserView> {
@@ -345,14 +350,48 @@ pub async fn my_user(state: &AppState, actor: &AuthenticatedUser) -> AppResult<M
         .await?
         .ok_or_else(|| ApiError::param_invalid("admin_not_found"))?;
     let group_name = rbac_repo::group_name(state.db.reader(), row.5).await?;
+    let cfg = setting_repo::list_all(state.db.reader()).await?;
+    let mut map = std::collections::HashMap::new();
+    for s in cfg {
+        map.insert(s.key_name, s.value);
+    }
+    let web = map.get("sy_weburl").cloned().unwrap_or_default();
+    let qy_app_id = map.get("wx_qy_corpid").cloned().unwrap_or_default();
+    let agent_id = map
+        .get("wx_photo_agentId")
+        .cloned()
+        .filter(|s| !s.is_empty())
+        .or_else(|| map.get("wx_qy_agentid").cloned())
+        .unwrap_or_default();
+    let redirect_uri = {
+        let base = web.trim_end_matches('/');
+        format!("{base}/admin/myaccount")
+    };
     Ok(MyUserView {
         username: row.0,
         real_name: row.1,
         mobile: row.2,
         wxid: row.3,
-        last_login: row.4,
+        qy_wxid: String::new(),
+        last_login: phpyun_core::utils::fmt_ts(row.4, "%Y-%m-%d %H:%M:%S"),
         group_name,
+        qy_app_id,
+        agent_id,
+        redirect_uri,
+        state: String::new(),
     })
+}
+
+pub async fn unbind_wx(state: &AppState, actor: &AuthenticatedUser) -> AppResult<()> {
+    let row = rbac_repo::find_profile(state.db.reader(), actor.uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("admin_not_found"))?;
+    if row.3.is_empty() {
+        return Err(ApiError::business("admin_system_00024"));
+    }
+    rbac_repo::clear_wxid(state.db.pool(), actor.uid).await?;
+    audit_write(state, actor, "admin.me.unbind_wx", format!("uid:{}", actor.uid)).await;
+    Ok(())
 }
 
 pub async fn save_password(

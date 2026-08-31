@@ -777,6 +777,11 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/role_myuser': { path: '/v1/admin/rbac/myuser' },
   'system/role_myuser/index': { path: '/v1/admin/rbac/myuser' },
   'system/role_myuser/savePass': { path: '/v1/admin/rbac/me/password' },
+  'system/role_myuser/delAdminWxBind': { path: '/v1/admin/rbac/php-unbind-wx' },
+  'system/info_feedback': { path: '/v1/admin/feedback/php-index', transformReq: pageQuery },
+  'system/info_feedback/index': { path: '/v1/admin/feedback/php-index', transformReq: pageQuery },
+  'system/info_feedback/status': { path: '/v1/admin/feedback/php-status' },
+  'system/info_feedback/del': { path: '/v1/admin/feedback/php-del' },
   'system/set_tplset': { path: '/v1/admin/tpl/comtpl' },
   'system/set_tplset/comtpl': { path: '/v1/admin/tpl/comtpl' },
   'system/set_tplset/check_style': { path: '/v1/admin/tpl/style' },
@@ -1016,7 +1021,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/nav': { path: '/v1/admin/nav/list' },
   'system/cron': { path: '/v1/admin/cron' },
   'system/warning': { path: '/v1/admin/warnings/list' },
-  'system/feedback': { path: '/v1/admin/feedback' },
+  'system/feedback': { path: '/v1/admin/feedback/php-index', transformReq: pageQuery },
 }
 
 type ModuleRoutes = { list: string; del?: string; status?: string; save?: string }
@@ -1061,7 +1066,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'system/admin_nav': { list: '/v1/admin/nav/list', save: '/v1/admin/nav' },
   'system/set_cron': { list: '/v1/admin/cron/table', save: '/v1/admin/cron/save', del: '/v1/admin/cron/delete' },
   'system/warning': { list: '/v1/admin/warnings/list' },
-  'system/info_feedback': { list: '/v1/admin/feedback', status: '/v1/admin/feedback/status', del: '/v1/admin/feedback/status' },
+  'system/info_feedback': { list: '/v1/admin/feedback/php-index', status: '/v1/admin/feedback/php-status', del: '/v1/admin/feedback/php-del' },
   'system/set_friendlink': { list: '/v1/admin/friend-links/list', del: '/v1/admin/friend-links/delete', save: '/v1/admin/friend-links', status: '/v1/admin/friend-links' },
   'system/set_config': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'system/set_payset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },

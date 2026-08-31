@@ -22,6 +22,9 @@ pub struct AdviceForm {
     #[validate(length(max = 32))]
     #[serde(default)]
     pub moblie: String,
+    #[validate(length(max = 20))]
+    #[serde(default)]
+    pub username: String,
 }
 
 /// Submit advice/feedback
@@ -42,6 +45,7 @@ pub async fn submit(
         &state,
         user.as_ref(),
         FeedbackInput {
+            username: &f.username,
             category: &f.infotype,
             content: &f.content,
             contact: &f.moblie,

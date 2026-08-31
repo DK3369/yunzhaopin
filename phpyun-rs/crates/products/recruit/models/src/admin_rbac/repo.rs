@@ -206,6 +206,16 @@ pub async fn update_password(pool: &MySqlPool, uid: u64, password: &str) -> Resu
     )
 }
 
+pub async fn clear_wxid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_admin_user SET wxid = '' WHERE uid = ?")
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
 pub async fn update_profile(
     pool: &MySqlPool,
     uid: u64,

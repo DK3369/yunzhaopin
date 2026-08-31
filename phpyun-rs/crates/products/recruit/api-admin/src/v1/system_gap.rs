@@ -46,6 +46,7 @@ pub fn routes() -> Router<AppState> {
         .route("/rbac/me/password", post(save_password))
         .route("/rbac/me/update", post(update_profile))
         .route("/rbac/myuser", post(my_user))
+        .route("/rbac/php-unbind-wx", post(php_unbind_wx))
         .route("/tpl/comtpl", post(list_comtpl))
         .route("/tpl/style", post(set_style))
         .route("/modules", post(list_modules))
@@ -450,6 +451,15 @@ pub async fn my_user(
     Ok(ApiResponse::data(
         admin_system_gap_service::my_user(&state, &user).await?,
     ))
+}
+
+pub async fn php_unbind_wx(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    admin_system_gap_service::unbind_wx(&state, &user).await?;
+    Ok(ApiResponse::message("admin_01377"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

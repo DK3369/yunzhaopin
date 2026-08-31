@@ -118,7 +118,7 @@ function phpTabName(tab: unknown): string {
   return String(raw)
 }
 
-function getUrlParams(locationLike: Location | { search?: string; hash?: string } = window.location) {
+function parseLocationQuery(locationLike: Location | { search?: string; hash?: string } = window.location) {
   let qs = ''
   if (locationLike.search) qs = locationLike.search.slice(1)
   else if (locationLike.hash && locationLike.hash.includes('?')) {
@@ -366,7 +366,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     w.isArray = isArray
     w.isEmpty = isEmpty
     w.scrollToTop = scrollToTop
-    w.getUrlParams = getUrlParams
+    w.getUrlParams = parseLocationQuery
     w.showFullScreenLoading = () => undefined
     w.tryHideFullScreenLoading = () => undefined
     let loadingInst: { close: () => void } | null = null

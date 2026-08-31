@@ -1,12 +1,12 @@
 //! Feedback queue (admin).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     dto::{BatchResult, StatusFilterBody},
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::admin_service;
+use phpyun_services::{admin_service, feedback_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -16,6 +16,9 @@ pub fn routes() -> Router<AppState> {
         .route("/feedback", post(list))
         .route("/feedback/status", post(set_status))
         .route("/feedback/batch/status", post(batch_set_status))
+        .route("/feedback/php-index", post(php_index))
+        .route("/feedback/php-status", post(php_status))
+        .route("/feedback/php-del", post(php_del))
 }
 
 fn fb_status_name(s: i32) -> &'static str {
@@ -137,4 +140,32 @@ pub async fn batch_set_status(
         requested: r.requested,
         affected: r.affected,
     }))
+}
+
+pub async fn php_index(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        feedback_service::admin_php_index(&state, &user, &body).await?,
+    ))
+}
+
+pub async fn php_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    feedback_service::admin_php_status(&state, &user, &body).await?;
+    Ok(ApiResponse::message("common_06362"))
+}
+
+pub async fn php_del(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    feedback_service::admin_php_del(&state, &user, &body).await?;
+    Ok(ApiResponse::message("admin_user_00187"))
 }
