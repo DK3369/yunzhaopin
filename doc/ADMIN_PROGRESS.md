@@ -26,7 +26,7 @@
 
 | 进程 | HTTP | Metrics | 二进制 | 库 | 谁在用 |
 |---|---|---|---|---|---|
-| systemd `test-jobs-phpyun-rs` | **`:3000`** | **`:9090`** | `/opt/phpyun-rs/phpyun-rs` | 原库 phpyun | 旧栈。**禁止 kill/重启/替换** |
+| systemd `test-jobs-phpyun-rs` | **`:3000`** | **`:9090`** | `/opt/phpyun-rs/phpyun-rs` | 进程仍为 **phpyun**（8/27 起，未重启） | 旧栈。**禁止 kill/重启/替换** |
 | 本仓库 debug | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | **jobs** | Admin/Site `RUST_API_URL` |
 
 Nuxt（不是 Rust）：`:3001` site、`:3002` admin。

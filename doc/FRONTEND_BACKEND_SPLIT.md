@@ -26,6 +26,7 @@
 ### 现状
 
 - **`phpyun-rs` 已有 481 条 axum 路由**：`/v1/wap` 177 条、`/v1/mcenter` 227 条、`/v1/admin` 72 条、`/v2` 1 条、运维 4 条。配套 99 个 service、80 个 model、640 多处 sqlx 查询，477 个接口带 utoipa OpenAPI 注解。
+  - **（2026-08-31 更正）** 上面 72 条是本文起草时（约 8/25）**还没拆 `api-admin`、还没接 PHP 后台长尾**的库存。后台接口一直在 `/v1/admin`，crate 是 `products/recruit/api-admin`。现在 OpenAPI 快照 **297** 条（`doc/snapshots/admin_paths.txt`）；另有 `POST /v1/admin/php-content/{module}/{action}` **不进** OpenAPI，`dispatch` 里约 230 个 `(module,action)`。不要拿 72 当现状。
 - **但它现在跑不起来**。`phpyun-rs/Cargo.toml` 第 3-4 行写着 "Server binaries ... intentionally out of scope"，全仓库没有任何 `main.rs`，五个 member 全是 library crate。
 - **Web 前端零起点**。整个仓库没有 `package.json`。PHP 侧是 479 个 Smarty 模板做服务端渲染（default 100 / wap 209 / member 123），后台是 Vue 2.7 + Element UI + httpVueLoader 浏览器直接加载 219 个 `.vue`，没有任何构建链。
 - **数据库不动**。161 张表、`phpyun_` 前缀，schema 全程保持不变。

@@ -19,8 +19,8 @@ PHP 页面已切走。现在跑的是：
 
 | 进程 | HTTP | Metrics | 二进制 | MySQL | 谁在用 |
 |---|---|---|---|---|---|
-| systemd `test-jobs-phpyun-rs` | **`:3000`** | **`:9090`** | `/opt/phpyun-rs/phpyun-rs` | 库 **phpyun** | 旧栈、`/yapi/`、支付 `/callback/`。**禁止 kill / 重启 / 替换** |
-| 本仓库 debug | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | 库 **jobs** | Site / Admin 的 `RUST_API_URL` |
+| systemd `test-jobs-phpyun-rs` | **`:3000`** | **`:9090`** | `/opt/phpyun-rs/phpyun-rs` | 进程仍连库 **phpyun** | 旧栈、`/yapi/`、支付 `/callback/`。**禁止 kill / 重启 / 替换**（8/27 启动后 `.env` 已改成 jobs，重启会改库） |
+| 本仓库 debug | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | 库 **jobs** | Site / Admin 的 `RUST_API_URL`。**改后台只写这个库** |
 | Nuxt site | **`:3001`** | — | `web/apps/site/.output/server/index.mjs` | 经 `:3003` | 公网页 |
 | Nuxt admin | **`:3002`** | — | `web/apps/admin/.output/server/index.mjs` | 经 `:3003` | `/admin/` |
 
@@ -193,7 +193,9 @@ Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/pro
 
 ## 5. 数据与删除
 
-- 表名 `phpyun_*`。debug 连 **jobs**，systemd `:3000` 连 **phpyun**。
+- **schema 不动**：表名仍是 `phpyun_*`，不改结构。8/30 起业务库换成独立库名 **`jobs`**（commit `852b7792`），不是继续写原库 `phpyun`。
+- **Site / Admin（`:3003`）连 `jobs`**。`phpyun-rs/.env` 与 `.env.pro` 都是这个库。`.env.dev` 是测试库 `phpyun_test`。
+- **systemd `:3000` 仍连 `phpyun`**：进程 8/27 启动，当时 `.env` 还是 phpyun；8/30 改文件后**没有重启**，内存里还是旧连接。禁止为了「对齐 jobs」去重启它。
 - 后台一批表用 `deleted=1` 伪删除，列表加 `COALESCE(deleted,0)=0`。白名单在 models `soft_delete`。
 - 仍物理删或改业务状态的：职位下架 `state`、会员注销、日志 purge、财务订单（按 PHP）等。
 - 回收站 `/v1/admin/recycle-bin` 是 PHP recycle 表，不是通用 `deleted` 还原器。
