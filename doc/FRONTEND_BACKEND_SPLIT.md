@@ -13,7 +13,7 @@
 
 ## 完成面一览（路径 / 端口 / URL）
 
-> 2026-08-31 按仓库实况。Rust 的 **App API 与 Admin API 是同一个 binary、同一组端口**，只是 crate 和 URL 前缀不同。更细的约束见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+> 2026-08-31 按仓库实况。Rust **只 `:3003`、库 jobs，以后没有 `:3000`。** App API 与 Admin API 同一进程，URL 前缀不同。PHP 原项目 `uploads/` **不要改**。更细约束见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
 ### 1. Nuxt 前台（PC + H5 同一套，`@phpyun/site`）
 

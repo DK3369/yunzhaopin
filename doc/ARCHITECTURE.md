@@ -7,9 +7,9 @@ PHP 页面已切走。现在跑的是：
 
 - **前台 / 会员中心**：Nuxt 4（`web/apps/site`）
 - **管理后台**：Nuxt 4 SPA（`web/apps/admin`，`ssr: false`）
-- **API**：Rust axum（`phpyun-rs`），同一进程挂 App 接口 + 后台接口
+- **API**：Rust axum（`phpyun-rs`），**只听 `:3003`，库 `jobs`。以后没有 `:3000`。**
 - **Flutter App**：继续用 `/v1/wap`、`/v1/mcenter`（契约只加法）
-- **`uploads/`**：PHP 源码与静态资源，**只读对照**，不改业务
+- **`uploads/`**：PHP 原项目，**不要改代码**（只读对照 + 用户上传静态）
 
 ## 完成面一览（路径 / 端口 / URL）
 

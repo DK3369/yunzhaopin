@@ -1,6 +1,6 @@
 # 后端接口缺口盘点（T4）
 
-> **过期盘点（2026-08-26）。** 现状与端口见 [ARCHITECTURE.md](./ARCHITECTURE.md)。下文 admin「115 条」已过时（OpenAPI 快照现为 **297**，另有 php-content）。
+> **过期盘点（2026-08-26）。** 现状见 [ARCHITECTURE.md](./ARCHITECTURE.md)。Rust **只 `:3003` / 库 jobs**，旧 `:3000` 已停；`uploads/` PHP 不改。
 >
 > 对照：PHP 控制器 vs Rust OpenAPI（2026-08-26 晚，test-jobs.ov6.com **已切 Nuxt+Rust**）。
 

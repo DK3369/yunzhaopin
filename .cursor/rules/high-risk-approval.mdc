@@ -12,6 +12,8 @@ alwaysApply: true
 - `git checkout` / `git restore` / `git reset` 覆盖**任意目录或多个文件**
 - `git push --force`、`git reset --hard`
 - 删除语言包、模板、`tools/` 下脚本、`data/lang/auto/aliases.php` 等
+- **改 `uploads/` 里的 PHP 原项目**（控制器、Smarty、后台 `.vue` 源码）
+- **启动或 enable 旧 Rust `:3000`**（`test-jobs-phpyun-rs`）
 - 单次任务改动 **超过 3 个文件**（同一逻辑的小提交除外，仍须先列出清单）
 - 运行会**写入**文件的 `tools/*.php` 扫描/迁移脚本
 
