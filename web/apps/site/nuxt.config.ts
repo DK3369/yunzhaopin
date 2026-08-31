@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/main.css'],
-  modules: ['@nuxtjs/i18n', '@nuxtjs/sitemap'],
+  modules: ['@nuxtjs/i18n'],
   i18n: {
     locales: [
       { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },
@@ -39,12 +39,6 @@ export default defineNuxtConfig({
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3001',
     },
-  },
-  site: {
-    url: process.env.NUXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3001',
-  },
-  sitemap: {
-    sources: ['/api/__sitemap__/urls'],
   },
   routeRules: {
     '/user/**': { ssr: false },

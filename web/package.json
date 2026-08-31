@@ -22,7 +22,9 @@
   "pnpm": {
     "onlyBuiltDependencies": ["esbuild"],
     "overrides": {
-      "@vue/compiler-sfc": "3.5.42"
+      "@vue/compiler-sfc": "3.5.42",
+      "@vue/shared": "3.5.42",
+      "esbuild": "0.28.2"
     }
   }
 }

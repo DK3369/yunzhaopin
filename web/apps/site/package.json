@@ -6,16 +6,14 @@
     "dev": "nuxt dev --port 3001",
     "build": "nuxt build",
     "preview": "nuxt preview",
-    "gen:types": "openapi-typescript ${OPENAPI_SPEC:-../../../doc/snapshots/v1.openapi.json} -o app/types/openapi.d.ts"
+    "gen:types": "pnpm dlx openapi-typescript@7.13.0 ${OPENAPI_SPEC:-../../../doc/snapshots/v1.openapi.json} -o app/types/openapi.d.ts"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.0.6",
-    "@nuxtjs/sitemap": "^8.5.0",
     "nuxt": "4.5.2",
     "vue": "^3.5.42"
   },
   "devDependencies": {
-    "openapi-typescript": "^7.9.1",
     "typescript": "^5.9.2"
   }
 }
