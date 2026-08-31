@@ -60,6 +60,8 @@ export async function setAdminLocale(locale: AdminLocale | string): Promise<Admi
 declare global {
   interface Window {
     lc?: typeof lc
+    yunAdminT?: (text: unknown) => string
+    yunAdminTransText?: (text: unknown) => string
     httpPost?: typeof import('./httpPost').httpPost
     homeapp?: Record<string, unknown>
     echarts?: {

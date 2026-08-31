@@ -173,6 +173,13 @@ function catKind(kind: string): PhpAction {
   return { path: '/v1/admin/categories/list', transformReq: (b) => ({ ...b, kind }) }
 }
 
+function catClass(kind: string, act: string): PhpAction {
+  return {
+    path: `/v1/admin/php-content/cat-class/${act}`,
+    transformReq: (b) => ({ ...pageQuery(b), kind }),
+  }
+}
+
 function sysmsgQuery(body: Record<string, unknown>): Record<string, unknown> {
   const q = pageQuery(body)
   const typeNum = Number(q.type)
@@ -245,7 +252,11 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'common/cache/getJobChildIds': phpPage('job_child_ids'),
   'common/cache/getCityChildIds': phpPage('city_child_ids'),
 
-  'user/company': { path: '/v1/admin/companies', transformReq: pageQuery },
+  'user/company/companyNum': phpContent('user-gap', 'company-num'),
+  'user/company/reset_companypassword': phpContent('user-gap', 'reset-password'),
+  'user/company_job/matching': phpContent('user-gap', 'matching'),
+  'user/users_resume/resumeAudit': phpContent('user-gap', 'resume-audit'),
+  'user/users_member/reset_pw': phpContent('user-gap', 'reset-password'),
   'user/company/index': { path: '/v1/admin/companies', transformReq: pageQuery },
   'user/company/xls': { path: '/v1/admin/companies/export' },
   'user/company/getCache': { path: '/v1/admin/companies/php-cache' },
@@ -688,16 +699,67 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_module': { path: '/v1/admin/modules' },
   'system/set_module/index': { path: '/v1/admin/modules' },
   'system/set_module/save': { path: '/v1/admin/modules/save' },
-  'system/category_userclass': catKind('userclass'),
-  'system/category_userclass/index': catKind('userclass'),
-  'system/category_comclass': catKind('comclass'),
-  'system/category_comclass/index': catKind('comclass'),
-  'system/category_partclass': catKind('partclass'),
-  'system/category_partclass/index': catKind('partclass'),
-  'system/category_reason': catKind('reason'),
-  'system/category_reason/index': catKind('reason'),
-  'system/category_industry': catKind('industry'),
-  'system/category_industry/index': catKind('industry'),
+  'system/category_userclass': catClass('userclass', 'list'),
+  'system/category_userclass/index': catClass('userclass', 'list'),
+  'system/category_userclass/ajax': catClass('userclass', 'ajax'),
+  'system/category_userclass/save': catClass('userclass', 'save'),
+  'system/category_userclass/add': catClass('userclass', 'add'),
+  'system/category_userclass/del': catClass('userclass', 'del'),
+  'system/category_userclass/up': catClass('userclass', 'up'),
+  'system/category_comclass': catClass('comclass', 'list'),
+  'system/category_comclass/index': catClass('comclass', 'list'),
+  'system/category_comclass/ajax': catClass('comclass', 'ajax'),
+  'system/category_comclass/save': catClass('comclass', 'save'),
+  'system/category_comclass/add': catClass('comclass', 'add'),
+  'system/category_comclass/del': catClass('comclass', 'del'),
+  'system/category_comclass/up': catClass('comclass', 'up'),
+  'system/category_partclass': catClass('partclass', 'list'),
+  'system/category_partclass/index': catClass('partclass', 'list'),
+  'system/category_partclass/ajax': catClass('partclass', 'ajax'),
+  'system/category_partclass/save': catClass('partclass', 'save'),
+  'system/category_partclass/add': catClass('partclass', 'add'),
+  'system/category_partclass/del': catClass('partclass', 'del'),
+  'system/category_partclass/up': catClass('partclass', 'up'),
+  'system/category_reason': catClass('reason', 'list'),
+  'system/category_reason/index': catClass('reason', 'list'),
+  'system/category_reason/ajax': catClass('reason', 'ajax'),
+  'system/category_reason/save': catClass('reason', 'save'),
+  'system/category_reason/del': catClass('reason', 'del'),
+  'system/category_industry': catClass('industry', 'list'),
+  'system/category_industry/index': catClass('industry', 'list'),
+  'system/category_industry/ajax': catClass('industry', 'ajax'),
+  'system/category_industry/add': catClass('industry', 'add'),
+  'system/category_industry/save': catClass('industry', 'save'),
+  'system/category_industry/del': catClass('industry', 'del'),
+  'system/category_city': catClass('city', 'list'),
+  'system/category_city/index': catClass('city', 'list'),
+  'system/category_city/ajax': catClass('city', 'ajax'),
+  'system/category_city/del': catClass('city', 'del'),
+  'system/category_city/get_city_children': catClass('city', 'children'),
+  'system/category_city/add_single': catClass('city', 'add_single'),
+  'system/category_city/up_single': catClass('city', 'up_single'),
+  'system/category_city/upp': catClass('city', 'upp'),
+  'system/category_city/ajaxpinyin': catClass('city', 'ajaxpinyin'),
+  'system/category_city/clearpinyin': catClass('city', 'clearpinyin'),
+  'system/category_city/ajaxchachong': catClass('city', 'ajaxchachong'),
+  'system/category_schoolclass': catClass('schoolclass', 'list'),
+  'system/category_schoolclass/index': catClass('schoolclass', 'list'),
+  'system/category_schoolclass/ajax': catClass('schoolclass', 'ajax'),
+  'system/category_schoolclass/save': catClass('schoolclass', 'save'),
+  'system/category_schoolclass/del': catClass('schoolclass', 'del'),
+  'system/category_schoolclass/up': catClass('schoolclass', 'up'),
+  'system/category_px_subject_class': catClass('px_subject', 'list'),
+  'system/category_px_subject_class/index': catClass('px_subject', 'list'),
+  'system/category_px_subject_class/ajax': catClass('px_subject', 'ajax'),
+  'system/category_px_subject_class/save': catClass('px_subject', 'save'),
+  'system/category_px_subject_class/del': catClass('px_subject', 'del'),
+  'system/category_px_subject_class/up': catClass('px_subject', 'up'),
+  'system/category_introduce_class': catClass('introduce', 'list'),
+  'system/category_introduce_class/index': catClass('introduce', 'list'),
+  'system/category_introduce_class/ajax': catClass('introduce', 'ajax'),
+  'system/category_introduce_class/save': catClass('introduce', 'save'),
+  'system/category_introduce_class/del': catClass('introduce', 'del'),
+  'system/category_introduce_class/classadd': catClass('introduce', 'classadd'),
 
   'yunying/yingxiao_tuiguang': { path: '/v1/admin/marketing/email-status' },
   'yunying/yingxiao_tuiguang/index': { path: '/v1/admin/marketing/email-status' },
@@ -847,6 +909,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'tool/weixinmenu/savenav': phpContentRaw('wx-nav', 'savenav'),
   'tool/weixinmenu/delnav': phpContent('wx-nav', 'delnav'),
   'tool/weixinmenu/ajaxnav': phpContent('wx-nav', 'ajaxnav'),
+  'tool/weixinmenu/creatnav': phpContentRaw('wx-nav', 'creatnav'),
+  'tool/emailset/ceshi': phpContent('email-set', 'ceshi'),
+  'tool/emailset/gettpl': phpContent('email-set', 'gettpl'),
+  'tool/emailset/savetpl': phpContent('email-set', 'savetpl'),
   'system/role_user': { path: '/v1/admin/rbac/users' },
   'system/role_ugroup': { path: '/v1/admin/rbac/groups' },
   'system/nav': { path: '/v1/admin/nav/list' },
@@ -890,11 +956,6 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'yunying/shop_class': { list: '/v1/admin/redeem-classes/list', del: '/v1/admin/redeem-classes/delete', save: '/v1/admin/redeem-classes' },
   'yunying/shop_list': { list: '/v1/admin/redeem-orders', status: '/v1/admin/redeem-orders/approve' },
   'system/category_job_class': { list: '/v1/admin/categories/list', save: '/v1/admin/categories', del: '/v1/admin/categories/update' },
-  'system/category_city': { list: '/v1/admin/regions', save: '/v1/admin/regions', del: '/v1/admin/regions/delete' },
-  'system/category_industry': { list: '/v1/admin/categories/list' },
-  'system/category_partclass': { list: '/v1/admin/categories/list', save: '/v1/admin/categories', del: '/v1/admin/categories/update' },
-  'system/category_userclass': { list: '/v1/admin/categories/list', save: '/v1/admin/categories', del: '/v1/admin/categories/update' },
-  'system/category_comclass': { list: '/v1/admin/categories/list', save: '/v1/admin/categories', del: '/v1/admin/categories/update' },
   'system/role_user': { list: '/v1/admin/rbac/users', status: '/v1/admin/rbac/users/status' },
   'system/role_ugroup': { list: '/v1/admin/rbac/groups' },
   'system/role_myuser': { list: '/v1/admin/rbac/myuser' },
@@ -975,13 +1036,15 @@ function isIndexAction(a: string): boolean {
 
 function moduleAction(mod: ModuleRoutes, a: string): PhpAction | undefined {
   const act = (a || 'index').toLowerCase()
-  if ((act === 'del' || act.startsWith('del') || act === 'delete') && mod.del) {
+  // Exact verbs only. Prefix matches (delStatisDetail, configSave) used to hit the
+  // wrong table and show up as 400/500. Named PHP actions must be in PHP_ADMIN_MAP.
+  if ((act === 'del' || act === 'delete') && mod.del) {
     return { path: mod.del, transformReq: idsFromDel }
   }
   if ((act === 'status' || act === 'audit' || act === 'checkstate') && mod.status) {
     return { path: mod.status }
   }
-  if ((act === 'save' || act.endsWith('save')) && mod.save) {
+  if (act === 'save' && mod.save) {
     return { path: mod.save }
   }
   if (act === 'add' && mod.save) {

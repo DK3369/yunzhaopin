@@ -53,7 +53,7 @@
             </div>
         </div>
         <el-dialog :title="lc('admin_system_00125')" width="40%" v-model="addVisible" :modal-append-to-body="false" :append-to-body="true">
-            <partclass_add :position="position" @child-event-getlist="handleList"></partclass_add>
+            <partclass_add :position="position" :mod="mod" @child-event-getlist="handleList"></partclass_add>
         </el-dialog>
     </div>
 </template>
@@ -79,6 +79,7 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
 export default {
     props: {
         id: {type: [Number, String], default: 0},
+        mod: { type: String, default: 'category_partclass' },
     },
     data: function () {
         return {
@@ -130,7 +131,7 @@ export default {
             let _this = this;
             let sendData = {id: row.id};
             sendData[column.property] = row[column.property];
-            httpPost('m=system&c=category_partclass&a=ajax', sendData, {hideloading: true}).then(function (response) {
+            httpPost('m=system&c=' + this.mod + '&a=ajax', sendData, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     message.success(window.yunAdminT(lc('admin_user_company_00208')));
@@ -167,7 +168,7 @@ export default {
             let params = {id: this.id};
             _this.loading = true;
             _this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
-            httpPost('m=system&c=category_partclass&a=up', params).then(function (response) {
+            httpPost('m=system&c=' + this.mod + '&a=up', params).then(function (response) {
                 let res = response.data;
                 let list = [];
                 if (res.data.class1) {
@@ -218,7 +219,7 @@ export default {
         },
         delete(params) {
             let _this = this;
-            httpPost('m=system&c=category_partclass&a=del', params).then(function (response) {
+            httpPost('m=system&c=' + this.mod + '&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     message.success(window.yunAdminT(lc('admin_user_00187')));

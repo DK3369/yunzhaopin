@@ -19,3 +19,27 @@ pub async fn find_by_code(pool: &MySqlPool, code: &str) -> Result<Option<SitePag
         .fetch_optional(pool)
         .await
 }
+
+pub async fn upsert_content(
+    pool: &MySqlPool,
+    name: &str,
+    title: &str,
+    content: &str,
+) -> Result<(), sqlx::Error> {
+    let n = sqlx::query("UPDATE phpyun_templates SET content=?, title=? WHERE name=?")
+        .bind(content)
+        .bind(title)
+        .bind(name)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    if n == 0 {
+        sqlx::query("INSERT INTO phpyun_templates (name, title, content) VALUES (?, ?, ?)")
+            .bind(name)
+            .bind(title)
+            .bind(content)
+            .execute(pool)
+            .await?;
+    }
+    Ok(())
+}

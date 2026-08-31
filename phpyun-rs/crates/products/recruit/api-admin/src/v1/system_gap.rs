@@ -78,16 +78,17 @@ pub async fn list_keywords(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct KeywordForm {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub id: Option<u64>,
     #[validate(length(min = 1, max = 100))]
     pub key_name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub r#type: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub check: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub bold: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub tuijian: i32,
     #[serde(default)]
     pub color: String,
@@ -150,9 +151,9 @@ pub struct DomainForm {
     pub title: String,
     #[validate(length(min = 1, max = 200))]
     pub domain: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub fz_type: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub mode: i32,
     #[serde(default)]
     pub web_title: String,
@@ -160,11 +161,11 @@ pub struct DomainForm {
     pub indexdir: String,
     #[serde(default)]
     pub style: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub hy: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub cityid: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub province: i32,
     #[serde(default)]
     pub tpl: String,
@@ -599,16 +600,17 @@ pub async fn recup_keyword(
 pub struct KeywordStatusForm {
     #[serde(default)]
     pub pid: String,
-    #[serde(default)]
-    pub check: String,
-    #[serde(default)]
-    pub tuijian: String,
-    #[serde(default)]
-    pub bold: String,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
+    pub check: i32,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
+    pub tuijian: i32,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
+    pub bold: i32,
     #[serde(default)]
     pub color: String,
     #[serde(default)]
     pub size: String,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub r#type: Option<i32>,
 }
 
@@ -623,9 +625,9 @@ pub async fn keyword_status(
         &state,
         &user,
         &f.pid,
-        &f.check,
-        &f.tuijian,
-        &f.bold,
+        f.check,
+        f.tuijian,
+        f.bold,
         &f.color,
         &f.size,
         f.r#type,
@@ -659,6 +661,7 @@ pub async fn domain_config(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct DomainAdminForm {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     pub uid: Option<u64>,
     #[validate(length(min = 1, max = 80))]
     pub username: String,
@@ -666,9 +669,9 @@ pub struct DomainAdminForm {
     pub name: String,
     #[serde(default)]
     pub password: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub m_id: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
     pub did: u64,
 }
 

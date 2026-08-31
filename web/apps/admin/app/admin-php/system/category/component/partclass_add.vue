@@ -58,6 +58,7 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
 export default {
     props: {
         position: Array,
+        mod: { type: String, default: 'category_partclass' },
     },
     data: function () {
         return {
@@ -95,7 +96,7 @@ export default {
                 return;
             }
             _this.submitLoading = true;
-            httpPost('m=system&c=category_partclass&a=save', params).then(function (response) {
+            httpPost('m=system&c=' + this.mod + '&a=save', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     message.success(res.msg);

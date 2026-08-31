@@ -52,8 +52,10 @@ flowchart LR
 
 - `web/apps/admin/app/pages/`：**121** 个 path 页，对齐 PHP `router.js`。
 - UI：`web/apps/admin/app/admin-php/`（PHP Vue 语法迁入）。
-- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。具名 action **禁止**静默落到 list（`904fff4b`）。招聘会/新闻/问答/专题/公招/广告/财务/微聘/兼职/名企/单页/职位分类/微信 savenav 走 `phpContent` → `POST /v1/admin/php-content/{module}/{action}`。
-- 刻意不做：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`。
+- `phpMap`：具名 `m/c/a` + `MODULE_ROUTES` 的 list/save/del/status。`moduleAction` **只认精确** `del`/`delete`/`save`/`add`/`status`（不再把 `delStatisDetail` 打到错表）。招聘会/新闻/问答/专题/公招/广告/财务/微聘/兼职/名企/单页/职位分类/系统分类 ajax/微信 savenav·creatnav/邮件测试 走 `phpContent`。
+- `php-compat` 挂 `window.yunAdminT` / `yunAdminTransText` 身份函数（PHP 33 个文件在 `data()` 里调用，不再 TypeError）。
+- 校园分类页已换成与兼职分类同构 UI（PHP 仅有 `category_schoolclass` 控制器；jobs 库无 `phpyun_schoolclass` 时列表为空）。
+- **做不到（uploads 无后台源码）**：猎头、spview、完整校园/培训业务后台。培训只迁了 `px_subject_class` 分类接口（无独立 router 页）。`database`/`generate_*`/`admin_uc` 仍是占位。
 
 ## Rust 后台 API
 
@@ -80,7 +82,10 @@ flowchart LR
 | `resume` | skill、project、other |
 | `pages` | index/add/save/delete/make/ajax（单页 `phpyun_description`，不再映新闻） |
 | `job-class` | ajax、setrec、get_class |
-| `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav |
+| `cat-class` | list/children/add/save/del/ajax/up/add_single/up_single/upp/ajaxpinyin/clearpinyin/ajaxchachong/classadd（城市/行业/企业/个人/兼职/原因/介绍/校园/培训科目；`kind` 在 body） |
+| `user-gap` | company-num、reset-password、matching、resume-audit |
+| `wx-nav` | wxnav、savenav（成功 `error=3`）、delnav、ajaxnav、**creatnav**（调微信 menu/create；无 appid 返回 `admin_tool_00053`） |
+| `email-set` | ceshi（入队 `email.verify_queued`）、gettpl、savetpl |
 | `finance-order` | index, searchType, edit, save, setpay, delete, xls；凭证 `multiupload`/`uploadsave`/`htpic_del` 明确 `upload_not_supported` |
 | `finance-pay` | index, delete |
 | `finance-recharge` | index, jifenSave, comvip, comservice, getservice, searchname, searchcom |
@@ -117,6 +122,10 @@ flowchart LR
 | 简历 skill/project/other | **完成** |
 | 单页错映新闻 | **完成**（改走 `php-content/pages`） |
 | 系统分类 ajax / 微信 savenav / 招聘会 xls | **完成**（savenav `error=3`；comxls 出 CSV） |
+| 城市/行业/会员/兼职分类 ajax·add·del | **完成**（`php-content/cat-class`；行业表改为 `phpyun_industry` 不再误打 comclass） |
+| 企业 companyNum / 重置密码 / 职位 matching / 简历 resumeAudit | **完成**（`php-content/user-gap`；matching 为简化列表） |
+| 微信 creatnav / 邮件 ceshi·gettpl·savetpl | **完成**（creatnav 调微信 API；ceshi 入队不保证 SMTP 真发出） |
+| 校园分类 UI | **完成**（同构兼职分类；无表则空列表）。猎头/spview/**完整**校园培训业务：**做不到** |
 
 ### 前台 OAuth / 支付（本轮）
 
@@ -131,21 +140,25 @@ flowchart LR
 ## 下一项（本波之后）
 
 - 兼职/once **图片上传栈**（现无 storage 则 `upload_not_supported`）
-- 微信 **creatnav** 调微信 API（savenav 本地菜单已接，同步服务器未接）
-- 其余 system 分类（城市/行业等）多数仍是 list 启发式；职位分类 `index` 已补 `kind=job`，行业 `kind=industry`。ajax 仍只有职位分类收口
+- 城市拼音生成（`ajaxpinyin` 现直接成功，未接汉字转拼音）
+- `database` / `generate_*` / `admin_uc` 破坏性写操作（须再点头）
+- matching 完整按职位/城市/学历过滤（现为默认简历列表）
 
-刻意不做、不要排进下一批：校园/猎头/培训/spview、`database`/`generate_*`/`admin_uc`、卸 php-fpm、删 `uploads/`、沙箱真单。
+刻意不做：猎头、spview、完整校园/培训业务后台（uploads 无源码）、卸 php-fpm、删 `uploads/`、沙箱真单。
 
 ## 仍弱或故意不做
 
 - RBAC 不解析 `group_power`；导出是 CSV 不是 OLE xls
-- 微信自定义菜单：savenav 本地已接；`a=index`/`a=save` 仍可能落到 wx-nav 列表/upsert（配置页与菜单表混用启发式）；creatnav 未接微信 API
+- 微信自定义菜单：savenav 本地已接；**creatnav 已接微信 menu/create**（无 `WECHAT_APPID` 时业务错误，不 500）
+- 关键词/分站开关数字：`KeywordForm`/`KeywordStatusForm`/`DomainForm` 宽松反序列化（bool/字符串不再 400）
+- 已修：`window.yunAdminT is not a function`；`del*`/`*save` 启发式误路由
 - 支付：**支付宝页跳已接，沙箱真单未验收**；微信收款未接
 - php-fpm 未卸，`uploads/` 未删
 - jobs 库公告测试行 `id=2` 已 `deleted=1`（列表不可见）
 - jobs 招聘会/专题测试行 `id=1` 已 `deleted=1`（本波伪删除抽测）
 - 新闻分组树拼法较糙；Alipay 缺密钥时下单会 422（不再留下无 URL 的待支付单）
 - 已修：分站列表 SQL `{PREDICATE}` 未插值导致 500；系统消息 `type` 字符串 400；分类 list 缺 `kind` 时默认 `job`（旧 JS 不再 400）；关键词开关 `keywords/recup` 接受布尔 `rec`（不再 400）。
+- 本波 job2 抽测：121 个 SPA path HTTP 200、HTML `no-store`；关键词 status 布尔 200；城市/行业/会员/兼职/校园分类 list 200（校园/培训科目无表则空列表）；`companyNum`/`matching`/`wxnav`/`gettpl`/`creatnav` 200。数据调用 `data-call/list` 同类 `{PREDICATE}` 未 `format!` 已修。
 - Admin BFF `runtimeConfig.rustApi` 默认 `:3003`（禁止落到 systemd `:3000`）；HTML `no-store`。
 - `php-compat` 给 `el-table` 补 `bodyWrapper`；构建期把 `:underline="false"` / 旧分页绑定编成 EP 2.10 API，不批量改模板。
 - Admin 静态资源按构建号分目录 (`/_n/<tag>/`)；HTML `no-store`。不要对文档发 `Clear-Site-Data` 或强制 `?b=` 跳转（Chrome 会打不开 `/admin/`）。

@@ -564,21 +564,13 @@ pub async fn recup_keyword(
     Ok(())
 }
 
-fn truthy_i32(v: &str, fallback: i32) -> i32 {
-    match v.trim() {
-        "true" | "1" => 1,
-        "false" | "0" => 0,
-        other => other.parse().unwrap_or(fallback),
-    }
-}
-
 pub async fn batch_keyword_status(
     state: &AppState,
     actor: &AuthenticatedUser,
     pid: &str,
-    check: &str,
-    tuijian: &str,
-    bold: &str,
+    check: i32,
+    tuijian: i32,
+    bold: i32,
     color: &str,
     size: &str,
     r#type: Option<i32>,
@@ -590,9 +582,9 @@ pub async fn batch_keyword_status(
     gap2::batch_hot_key_status(
         state.db.pool(),
         &ids,
-        truthy_i32(check, 0),
-        truthy_i32(tuijian, 0),
-        truthy_i32(bold, 0),
+        check,
+        tuijian,
+        bold,
         color,
         size,
         r#type,

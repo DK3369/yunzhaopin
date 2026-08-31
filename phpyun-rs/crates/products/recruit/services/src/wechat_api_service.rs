@@ -24,6 +24,8 @@ const TOKEN_URL: &str = "https://api.weixin.qq.com/cgi-bin/token";
 const QR_CREATE_URL: &str = "https://api.weixin.qq.com/cgi-bin/qrcode/create";
 const CUSTOM_SEND_URL: &str = "https://api.weixin.qq.com/cgi-bin/message/custom/send";
 const SHOW_QR_URL: &str = "https://mp.weixin.qq.com/cgi-bin/showqrcode";
+const MENU_CREATE_URL: &str = "https://api.weixin.qq.com/cgi-bin/menu/create";
+const MENU_DELETE_URL: &str = "https://api.weixin.qq.com/cgi-bin/menu/delete";
 
 // ==================== access_token ====================
 
@@ -217,6 +219,30 @@ pub async fn send_text(state: &AppState, openid: &str, content: &str) -> AppResu
         if code != 0 {
             return Err(ApiError::upstream(format!(
                 "wechat custom send errcode={code} errmsg={}",
+                resp.errmsg.unwrap_or_default()
+            )));
+        }
+    }
+    Ok(())
+}
+
+/// PHP `weixinmenu::creatnav_action`: drop the remote menu then POST `cgi-bin/menu/create`.
+pub async fn replace_menu(state: &AppState, menu: &serde_json::Value) -> AppResult<()> {
+    let token = get_access_token(state).await?;
+    let del = format!(
+        "{MENU_DELETE_URL}?access_token={}",
+        urlencoding_minimal(&token)
+    );
+    let _: Result<ErrResp, _> = state.http.get_json(&del).await;
+    let url = format!(
+        "{MENU_CREATE_URL}?access_token={}",
+        urlencoding_minimal(&token)
+    );
+    let resp: ErrResp = state.http.post_json(&url, menu).await?;
+    if let Some(code) = resp.errcode {
+        if code != 0 {
+            return Err(ApiError::upstream(format!(
+                "wechat menu create errcode={code} errmsg={}",
                 resp.errmsg.unwrap_or_default()
             )));
         }

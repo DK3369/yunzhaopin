@@ -58,30 +58,34 @@ impl From<phpyun_models::category::entity::Category> for CatItem {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CatForm {
-    #[serde(default)]
-    #[validate(range(min = 1, max = 99_999_999))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub parent_id: u64,
     #[validate(length(min = 1, max = 32))]
     pub kind: String,
     #[validate(length(min = 1, max = 120))]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CatPatchForm {
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
     #[validate(range(min = 1, max = 99_999_999))]
     pub id: u64,
 
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
     #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: Option<u64>,
     #[validate(length(min = 1, max = 120))]
     pub name: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
     /// 0=offline / 1=online / 2=deleted (soft delete)
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 2))]
     pub status: Option<i32>,
 }

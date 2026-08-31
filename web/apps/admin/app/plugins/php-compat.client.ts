@@ -132,6 +132,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     window.lc = lc
     window.httpPost = httpPost
     const w = window as unknown as Record<string, unknown>
+    // PHP api.js: yunAdminT wraps already-translated lc() text. Nuxt lc() already i18n's.
+    w.yunAdminT = (text: unknown) => String(text ?? '')
+    w.yunAdminTransText = (text: unknown) => String(text ?? '')
+    w.yunAdminTranslateDOM = () => undefined
     w.message = message
     w.delConfirm = delConfirm
     w.formatMonth = formatMonth

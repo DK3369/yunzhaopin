@@ -138,13 +138,18 @@ pub fn de_loose_ts_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<i64>, D
 fn coerce_value_to_i64<E: de::Error>(v: Value) -> Result<i64, E> {
     match v {
         Value::Null => Ok(0),
+        Value::Bool(b) => Ok(i64::from(b)),
         Value::Number(n) => Ok(n.as_i64().unwrap_or(0)),
         Value::String(s) => {
             let t = s.trim();
             if t.is_empty() {
                 Ok(0)
             } else {
-                t.parse::<i64>().map_err(E::custom)
+                match t {
+                    "true" | "on" | "yes" => Ok(1),
+                    "false" | "off" | "no" => Ok(0),
+                    _ => t.parse::<i64>().map_err(E::custom),
+                }
             }
         }
         other => Err(E::custom(format!(
@@ -202,6 +207,24 @@ pub fn de_loose_i32_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<i32>, 
     }
     let n = coerce_value_to_i64(v)?;
     i32::try_from(n).map(Some).map_err(de::Error::custom)
+}
+
+/// `Option<u64>` — empty / null / 0 become `None`.
+pub fn de_loose_u64_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<u64>, D::Error> {
+    let v = Value::deserialize(d)?;
+    if v.is_null() {
+        return Ok(None);
+    }
+    if let Value::String(s) = &v {
+        if s.trim().is_empty() {
+            return Ok(None);
+        }
+    }
+    let n = coerce_value_to_i64(v)?;
+    if n == 0 {
+        return Ok(None);
+    }
+    u64::try_from(n).map(Some).map_err(de::Error::custom)
 }
 
 #[cfg(test)]

@@ -14,19 +14,22 @@ use phpyun_models::member_statis::repo as mstatis_repo;
 use phpyun_models::vip::repo as vip_repo;
 use phpyun_models::announcement::repo as announcement_repo;
 use phpyun_models::article::repo::{self as article_repo, ArticleFilter};
-use phpyun_auth::md5_hex;
+use phpyun_auth::{argon2_hash_async, md5_hex};
 use phpyun_models::category::repo as cat_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::description::repo as desc_repo;
 use phpyun_models::domain::repo as domain_repo;
 use phpyun_models::gongzhao::repo as gongzhao_repo;
+use phpyun_models::job::repo as job_repo;
 use phpyun_models::once_job::repo as once_repo;
 use phpyun_models::part::repo as part_repo;
 use phpyun_models::poster_template::repo as whb_repo;
 use phpyun_models::qna::repo as qna_repo;
+use phpyun_models::resume::expect as expect_repo;
 use phpyun_models::resume::other as other_repo;
 use phpyun_models::resume::project as project_repo;
 use phpyun_models::resume::skill as skill_repo;
+use phpyun_models::site_page::repo as site_page_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::special::repo as special_repo;
 use phpyun_models::tiny::repo as tiny_repo;
@@ -36,7 +39,10 @@ use phpyun_models::zph::repo as zph_repo;
 use serde_json::{json, Value};
 
 use crate::admin_cms_service;
+use crate::admin_longtail_service;
 use crate::site_setting_service;
+use crate::wechat_api_service;
+use uuid::Uuid;
 
 pub enum PhpOut {
     Data(Value),
@@ -207,6 +213,29 @@ pub async fn dispatch(
         ("wx-nav", "savenav") => Ok(PhpOut::Data(wx_nav_savenav(state, body).await?)),
         ("wx-nav", "delnav") => wx_nav_del(state, body).await,
         ("wx-nav", "ajaxnav") => wx_nav_ajax(state, body).await,
+        ("wx-nav", "creatnav") => Ok(PhpOut::Data(wx_nav_creatnav(state).await?)),
+        ("cat-class", "list") => Ok(PhpOut::Data(cat_class_list(state, body).await?)),
+        ("cat-class", "children") => Ok(PhpOut::Data(cat_class_children(state, body).await?)),
+        ("cat-class", "add") | ("cat-class", "save") => cat_class_save(state, body).await,
+        ("cat-class", "del") => cat_class_del(state, body).await,
+        ("cat-class", "ajax") => cat_class_ajax(state, body).await,
+        ("cat-class", "up") => Ok(PhpOut::Data(cat_class_up(state, body).await?)),
+        ("cat-class", "add_single") => cat_class_add_single(state, body).await,
+        ("cat-class", "up_single") => cat_class_up_single(state, body).await,
+        ("cat-class", "upp") => cat_class_upp(state, body).await,
+        ("cat-class", "ajaxpinyin") => Ok(PhpOut::Message("admin_system_00081")),
+        ("cat-class", "clearpinyin") => cat_class_clearpinyin(state).await,
+        ("cat-class", "ajaxchachong") => Ok(PhpOut::Data(cat_class_chachong(state, body).await?)),
+        ("cat-class", "classadd") => Ok(PhpOut::Data(cat_class_one(state, body).await?)),
+        ("user-gap", "company-num") => Ok(PhpOut::Data(user_gap_company_num(state).await?)),
+        ("user-gap", "reset-password") => user_gap_reset_password(state, body).await,
+        ("user-gap", "matching") => Ok(PhpOut::Data(user_gap_matching(state, body).await?)),
+        ("user-gap", "resume-audit") => {
+            Ok(PhpOut::Data(user_gap_resume_audit(state, user, body).await?))
+        }
+        ("email-set", "ceshi") => email_set_ceshi(state, body).await,
+        ("email-set", "gettpl") => Ok(PhpOut::Data(email_set_gettpl(state, body).await?)),
+        ("email-set", "savetpl") => email_set_savetpl(state, body).await,
         _ => Err(ApiError::param_invalid("unknown_php_action")),
     }
 }
@@ -4134,4 +4163,517 @@ async fn fairs_comxls(state: &AppState, body: &Value) -> AppResult<Value> {
         "file_name": format!("zph-coms-{}.csv", fmt_date(clock::now_ts())),
         "status": 1,
     }))
+}
+
+fn cat_kind(body: &Value) -> String {
+    let k = json_str(body, "kind");
+    if k.is_empty() {
+        "city".into()
+    } else {
+        k
+    }
+}
+
+fn dash_names(s: &str) -> Vec<String> {
+    s.split(['-', '\n', ','])
+        .map(|x| x.trim().to_string())
+        .filter(|x| !x.is_empty())
+        .collect()
+}
+
+fn cat_row_json(kind: &str, r: &cat_repo::CatPhpRow, level: i32) -> Value {
+    let mut v = json!({
+        "id": r.id,
+        "name": r.name,
+        "sort": r.sort,
+        "keyid": r.keyid,
+        "variable": r.variable,
+    });
+    if kind == "city" {
+        v["e_name"] = json!(r.e_name.clone());
+        v["letter"] = json!(r.letter.clone());
+        v["display"] = json!(r.display.to_string());
+        v["code"] = json!(r.code.clone());
+        v["level"] = json!(level);
+        v["hasChildren"] = json!(level < 3);
+    }
+    if kind == "job" {
+        v["e_name"] = json!(r.e_name.clone());
+        v["rec"] = json!(r.rec);
+    }
+    if kind == "introduce" || kind == "introduce_class" {
+        v["content"] = json!(r.content.clone());
+    }
+    v
+}
+
+async fn cat_class_list(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kind = cat_kind(body);
+    let rows = cat_repo::list_php(state.db.reader(), &kind, None).await?;
+    let level = 1;
+    Ok(Value::Array(
+        rows.iter()
+            .map(|r| cat_row_json(&kind, r, level))
+            .collect(),
+    ))
+}
+
+async fn cat_class_children(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kind = cat_kind(body);
+    let keyid = json_u64(body, "keyid");
+    if keyid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let level = json_i32(body, "level").max(1);
+    let rows = cat_repo::list_php(state.db.reader(), &kind, Some(keyid)).await?;
+    let list: Vec<Value> = rows
+        .iter()
+        .map(|r| cat_row_json(&kind, r, level))
+        .collect();
+    Ok(json!({ "list": list }))
+}
+
+async fn cat_class_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let kind = cat_kind(body);
+    let id = json_u64(body, "id");
+    let name_owned = json_str(body, "name");
+    let content_owned = json_str(body, "content");
+    if id > 0 {
+        cat_repo::patch_php(
+            state.db.pool(),
+            &kind,
+            id,
+            if name_owned.is_empty() {
+                None
+            } else {
+                Some(name_owned.as_str())
+            },
+            if has_flag(body, "sort") {
+                Some(json_i32(body, "sort"))
+            } else {
+                None
+            },
+            None,
+            if content_owned.is_empty() {
+                None
+            } else {
+                Some(content_owned.as_str())
+            },
+        )
+        .await?;
+        return Ok(PhpOut::Message("ok"));
+    }
+    let names = dash_names(&name_owned);
+    if names.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let vars = dash_names(&json_str(body, "str"));
+    let parent = json_u64(body, "nid");
+    let ctype = json_str(body, "ctype");
+    let parent_id = if ctype == "2" { parent } else { 0 };
+    for (i, name) in names.iter().enumerate() {
+        let variable = vars.get(i).map(|s| s.as_str()).unwrap_or("");
+        let nid = cat_repo::insert_php(
+            state.db.pool(),
+            &kind,
+            parent_id,
+            name,
+            json_i32(body, "sort"),
+            variable,
+        )
+        .await?;
+        if !content_owned.is_empty() && nid > 0 {
+            cat_repo::patch_php(
+                state.db.pool(),
+                &kind,
+                nid,
+                None,
+                None,
+                None,
+                Some(content_owned.as_str()),
+            )
+            .await?;
+        }
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn cat_class_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let kind = cat_kind(body);
+    let mut ids = ids_named(body, "delid");
+    ids.extend(ids_of(body));
+    ids.sort_unstable();
+    ids.dedup();
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    cat_repo::delete_php_ids(state.db.pool(), &kind, &ids).await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn cat_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let kind = cat_kind(body);
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let name_owned = json_str(body, "name");
+    let e_name_owned = json_str(body, "e_name");
+    cat_repo::patch_php(
+        state.db.pool(),
+        &kind,
+        id,
+        if name_owned.is_empty() {
+            None
+        } else {
+            Some(name_owned.as_str())
+        },
+        if has_flag(body, "sort") {
+            Some(json_i32(body, "sort"))
+        } else {
+            None
+        },
+        if e_name_owned.is_empty() {
+            None
+        } else {
+            Some(e_name_owned.as_str())
+        },
+        None,
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn cat_class_up(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kind = cat_kind(body);
+    let id = json_u64(body, "id");
+    let roots = cat_repo::list_php(state.db.reader(), &kind, None).await?;
+    let position: Vec<Value> = roots.iter().map(|r| cat_row_json(&kind, r, 1)).collect();
+    let mut class1 = Value::Null;
+    let mut class2 = Value::Array(vec![]);
+    if id > 0 {
+        if let Some(one) = cat_repo::get_php(state.db.reader(), &kind, id).await? {
+            class1 = cat_row_json(&kind, &one, 1);
+            let kids = cat_repo::list_php(state.db.reader(), &kind, Some(id)).await?;
+            class2 = Value::Array(kids.iter().map(|r| cat_row_json(&kind, r, 2)).collect());
+        }
+    }
+    Ok(json!({ "class1": class1, "class2": class2, "position": position }))
+}
+
+async fn cat_class_add_single(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::param_invalid("admin_system_00089"));
+    }
+    cat_repo::insert_city(
+        state.db.pool(),
+        json_u64(body, "keyid"),
+        &name,
+        &json_str(body, "letter"),
+        json_i32(body, "display"),
+        json_i32(body, "sort"),
+        &json_str(body, "e_name"),
+        &json_str(body, "code"),
+    )
+    .await?;
+    Ok(PhpOut::Message("admin_01367"))
+}
+
+async fn cat_class_up_single(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let name = json_str(body, "name");
+    if id == 0 || name.is_empty() {
+        return Err(ApiError::param_invalid("admin_system_00089"));
+    }
+    cat_repo::update_city(
+        state.db.pool(),
+        id,
+        &name,
+        &json_str(body, "letter"),
+        json_i32(body, "display"),
+        json_i32(body, "sort"),
+        &json_str(body, "e_name"),
+        &json_str(body, "code"),
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn cat_class_upp(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id_arr = json_str(body, "id_arr");
+    if id_arr.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    for part in id_arr.split(',') {
+        let id: u64 = part.trim().parse().unwrap_or(0);
+        if id == 0 {
+            continue;
+        }
+        let name = json_str(body, &format!("cityname_{id}"));
+        if name.is_empty() {
+            continue;
+        }
+        cat_repo::update_city(
+            state.db.pool(),
+            id,
+            &name,
+            &json_str(body, &format!("letter_{id}")),
+            json_i32(body, &format!("display_{id}")),
+            json_i32(body, &format!("citysort_{id}")),
+            &json_str(body, &format!("citye_name_{id}")),
+            &json_str(body, &format!("citycode_{id}")),
+        )
+        .await?;
+    }
+    Ok(PhpOut::Message("admin_system_00002"))
+}
+
+async fn cat_class_clearpinyin(state: &AppState) -> AppResult<PhpOut> {
+    cat_repo::city_clear_pinyin(state.db.pool()).await?;
+    Ok(PhpOut::Message("admin_01369"))
+}
+
+async fn cat_class_chachong(state: &AppState, body: &Value) -> AppResult<Value> {
+    let page = json_u64(body, "page").max(0);
+    let limit = 50u64;
+    let offset = page.saturating_mul(limit);
+    let list = cat_repo::city_dup_pinyin(state.db.reader(), offset, limit).await?;
+    Ok(json!({ "list": list, "page": page }))
+}
+
+async fn cat_class_one(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kind = cat_kind(body);
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Ok(json!({}));
+    }
+    Ok(cat_repo::get_php(state.db.reader(), &kind, id)
+        .await?
+        .map(|r| cat_row_json(&kind, &r, 1))
+        .unwrap_or(json!({})))
+}
+
+async fn user_gap_company_num(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let all = company_repo::count_admin(db, None, None).await?;
+    let s0 = company_repo::count_admin(db, Some(0), None).await?;
+    let s3 = company_repo::count_admin(db, Some(3), None).await?;
+    let s2 = company_repo::count_admin(db, Some(2), None).await?;
+    Ok(json!({
+        "companyAllNum": all,
+        "companyStatusNum1": s0,
+        "companyStatusNum2": s3,
+        "companyStatusNum3": s2,
+    }))
+}
+
+async fn user_gap_reset_password(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let salt: String = Uuid::now_v7().simple().to_string().chars().take(16).collect();
+    let password_hash = argon2_hash_async(format!("123456{salt}")).await?;
+    user_repo::update_password_with_salt(state.db.pool(), uid, &password_hash, &salt).await?;
+    Ok(PhpOut::Message("admin_model_00119"))
+}
+
+async fn user_gap_matching(state: &AppState, body: &Value) -> AppResult<Value> {
+    let job_id = json_u64(body, "id");
+    let comid = if job_id > 0 {
+        job_repo::find_by_id(state.db.reader(), job_id)
+            .await?
+            .map(|j| j.uid)
+            .unwrap_or(0)
+    } else {
+        0
+    };
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let list = expect_repo::list_match_admin(
+        state.db.reader(),
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        offset,
+        limit,
+    )
+    .await?;
+    let total = expect_repo::count_match_admin(
+        state.db.reader(),
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+    )
+    .await?;
+    let rows: Vec<Value> = list
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "name": r.name,
+                "uname": r.uname,
+                "username": r.username,
+                "moblie": r.moblie,
+                "defaults": r.defaults,
+                "integrity": r.integrity,
+                "status": r.status,
+                "edu": r.edu,
+                "exp": r.exp,
+                "lastupdate": r.lastupdate,
+                "salary": if r.maxsalary > 0 {
+                    format!("{}-{}", r.minsalary, r.maxsalary)
+                } else {
+                    r.minsalary.to_string()
+                },
+                "edu_n": "",
+                "exp_n": "",
+                "city_n": "",
+                "report_n": "",
+                "type_n": "",
+                "citynum": 0,
+                "cityall": "",
+            })
+        })
+        .collect();
+    Ok(json!({
+        "list": rows,
+        "total": total,
+        "perPage": per,
+        "pageSizes": [10, 20, 50, 100],
+        "comid": comid,
+        "page": page,
+    }))
+}
+
+async fn user_gap_resume_audit(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<Value> {
+    let eid = json_u64(body, "id");
+    if eid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let row = expect_repo::find_admin_by_id(state.db.reader(), eid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("wap_com_00228"))?;
+    let mut data = admin_longtail_service::resume_php_edit(state, user, row.uid, eid).await?;
+    if let Some(obj) = data.as_object_mut() {
+        let info = obj
+            .get("expectData")
+            .and_then(|e| e.get("expect"))
+            .cloned()
+            .unwrap_or_else(|| json!({ "id": eid, "uid": row.uid }));
+        obj.insert("info".into(), info);
+        obj.entry("snum".to_string()).or_insert(json!(0));
+    }
+    Ok(data)
+}
+
+fn wx_nav_apply_type(btn: &mut Value, nav: &phpyun_models::wx_nav::entity::WxNav) {
+    match nav.nav_type.as_str() {
+        "view" => {
+            btn["type"] = json!("view");
+            btn["url"] = json!(nav.url);
+        }
+        "click" => {
+            btn["type"] = json!("click");
+            btn["key"] = json!(nav.key);
+        }
+        "miniprogram" => {
+            btn["type"] = json!("miniprogram");
+            btn["url"] = json!(nav.url);
+            btn["appid"] = json!(nav.appid);
+            btn["pagepath"] = json!(nav.apppage);
+        }
+        _ => {}
+    }
+}
+
+async fn wx_nav_creatnav(state: &AppState) -> AppResult<Value> {
+    let navs = wx_nav_repo::list_all(state.db.reader()).await?;
+    let mut buttons = Vec::new();
+    for root in navs.iter().filter(|n| n.keyid == 0) {
+        let kids: Vec<_> = navs.iter().filter(|n| n.keyid == root.id as i32).collect();
+        let mut btn = json!({ "name": root.name });
+        if kids.is_empty() {
+            wx_nav_apply_type(&mut btn, root);
+        } else {
+            let subs: Vec<Value> = kids
+                .iter()
+                .map(|k| {
+                    let mut s = json!({ "name": k.name });
+                    wx_nav_apply_type(&mut s, k);
+                    s
+                })
+                .collect();
+            btn["sub_button"] = json!(subs);
+        }
+        buttons.push(btn);
+    }
+    if buttons.is_empty() {
+        return Ok(json!({ "error": 1, "msg": "admin_tool_00053" }));
+    }
+    let menu = json!({ "button": buttons });
+    match wechat_api_service::replace_menu(state, &menu).await {
+        Ok(()) => Ok(json!({ "error": 0, "msg": "admin_01473" })),
+        Err(_) => Ok(json!({ "error": 1, "msg": "admin_tool_00053" })),
+    }
+}
+
+async fn email_set_ceshi(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let email = json_str(body, "ceshi_email");
+    if email.is_empty() || !email.contains('@') {
+        return Err(ApiError::param_invalid("email"));
+    }
+    let smtp = gap_extra::list_admin_email(state.db.reader()).await?;
+    if smtp.is_empty() {
+        return Err(ApiError::business("admin_tool_00026"));
+    }
+    let _ = state
+        .events
+        .publish_json(
+            "email.verify_queued",
+            &json!({
+                "kind": "admin_smtp_test",
+                "email": email,
+                "smtp_id": json_u64(body, "id"),
+                "subject": "SMTP test",
+            }),
+        )
+        .await;
+    Ok(PhpOut::Message("admin_tool_00027"))
+}
+
+async fn email_set_gettpl(state: &AppState, body: &Value) -> AppResult<Value> {
+    let name = json_str(body, "name");
+    let row = if name.is_empty() {
+        None
+    } else {
+        site_page_repo::find_by_code(state.db.reader(), &name).await?
+    };
+    Ok(json!({
+        "info": row.map(|r| json!({
+            "name": r.code,
+            "title": r.title,
+            "content": r.content,
+        })).unwrap_or(json!({})),
+        "tpl_temp": {},
+        "tpl_n": name,
+    }))
+}
+
+async fn email_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let content = json_str(body, "content").replace("amp;nbsp;", "nbsp;");
+    site_page_repo::upsert_content(
+        state.db.pool(),
+        &name,
+        &json_str(body, "title"),
+        &content,
+    )
+    .await?;
+    Ok(PhpOut::Message("ok"))
 }

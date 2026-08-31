@@ -1383,13 +1383,13 @@ pub async fn list_outside(
     limit: u64,
 ) -> Result<Vec<OutsideRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
-    sqlx::query_as::<_, OutsideRow>(
+    sqlx::query_as::<_, OutsideRow>(&format!(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, COALESCE(`type`,'') AS `type`, \
          CAST(COALESCE(titlelen,0) AS SIGNED) AS titlelen, CAST(COALESCE(infolen,0) AS SIGNED) AS infolen, \
          CAST(COALESCE(num,0) AS SIGNED) AS num, COALESCE(code,'') AS code, \
          CAST(COALESCE(lasttime,0) AS SIGNED) AS lasttime \
-         FROM phpyun_outside WHERE {PREDICATE} ORDER BY id DESC LIMIT ? OFFSET ?",
-    )
+         FROM phpyun_outside WHERE {PREDICATE} ORDER BY id DESC LIMIT ? OFFSET ?"
+    ))
     .bind(l)
     .bind(o)
     .fetch_all(pool)

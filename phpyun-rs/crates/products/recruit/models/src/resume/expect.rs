@@ -126,6 +126,106 @@ pub async fn list_defaults_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<Vec
     q.fetch_all(pool).await
 }
 
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct MatchExpectRow {
+    #[sqlx(try_from = "i32")]
+    pub id: u64,
+    #[sqlx(try_from = "i32")]
+    pub uid: u64,
+    pub name: String,
+    pub uname: String,
+    pub username: String,
+    pub moblie: String,
+    pub defaults: i32,
+    pub integrity: i32,
+    pub status: i32,
+    pub edu: i32,
+    pub exp: i32,
+    pub lastupdate: i64,
+    pub minsalary: i32,
+    pub maxsalary: i32,
+}
+
+pub async fn list_match_admin(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<MatchExpectRow>, sqlx::Error> {
+    let kw = keyword.unwrap_or("").trim();
+    if kw.is_empty() {
+        sqlx::query_as::<_, MatchExpectRow>(
+            "SELECT CAST(e.id AS SIGNED) AS id, CAST(e.uid AS SIGNED) AS uid, \
+                    COALESCE(e.name,'') AS name, COALESCE(e.uname,'') AS uname, \
+                    COALESCE(m.username,'') AS username, COALESCE(m.moblie,'') AS moblie, \
+                    CAST(COALESCE(e.defaults,0) AS SIGNED) AS defaults, \
+                    CAST(COALESCE(e.integrity,0) AS SIGNED) AS integrity, \
+                    CAST(COALESCE(e.status,0) AS SIGNED) AS status, \
+                    CAST(COALESCE(e.edu,0) AS SIGNED) AS edu, \
+                    CAST(COALESCE(e.exp,0) AS SIGNED) AS exp, \
+                    CAST(COALESCE(e.lastupdate,0) AS SIGNED) AS lastupdate, \
+                    CAST(COALESCE(e.minsalary,0) AS SIGNED) AS minsalary, \
+                    CAST(COALESCE(e.maxsalary,0) AS SIGNED) AS maxsalary \
+             FROM phpyun_resume_expect e \
+             LEFT JOIN phpyun_member m ON m.uid = e.uid \
+             WHERE e.state = 1 AND e.status = 1 AND e.r_status = 1 AND COALESCE(e.defaults,0) = 1 \
+             ORDER BY e.lastupdate DESC LIMIT ? OFFSET ?",
+        )
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+    } else {
+        let like = format!("%{kw}%");
+        sqlx::query_as::<_, MatchExpectRow>(
+            "SELECT CAST(e.id AS SIGNED) AS id, CAST(e.uid AS SIGNED) AS uid, \
+                    COALESCE(e.name,'') AS name, COALESCE(e.uname,'') AS uname, \
+                    COALESCE(m.username,'') AS username, COALESCE(m.moblie,'') AS moblie, \
+                    CAST(COALESCE(e.defaults,0) AS SIGNED) AS defaults, \
+                    CAST(COALESCE(e.integrity,0) AS SIGNED) AS integrity, \
+                    CAST(COALESCE(e.status,0) AS SIGNED) AS status, \
+                    CAST(COALESCE(e.edu,0) AS SIGNED) AS edu, \
+                    CAST(COALESCE(e.exp,0) AS SIGNED) AS exp, \
+                    CAST(COALESCE(e.lastupdate,0) AS SIGNED) AS lastupdate, \
+                    CAST(COALESCE(e.minsalary,0) AS SIGNED) AS minsalary, \
+                    CAST(COALESCE(e.maxsalary,0) AS SIGNED) AS maxsalary \
+             FROM phpyun_resume_expect e \
+             LEFT JOIN phpyun_member m ON m.uid = e.uid \
+             WHERE e.state = 1 AND e.status = 1 AND e.r_status = 1 AND COALESCE(e.defaults,0) = 1 \
+               AND e.name LIKE ? \
+             ORDER BY e.lastupdate DESC LIMIT ? OFFSET ?",
+        )
+        .bind(like)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+    }
+}
+
+pub async fn count_match_admin(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+    let kw = keyword.unwrap_or("").trim();
+    let n: (i64,) = if kw.is_empty() {
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_resume_expect e \
+             WHERE e.state = 1 AND e.status = 1 AND e.r_status = 1 AND COALESCE(e.defaults,0) = 1",
+        )
+        .fetch_one(pool)
+        .await?
+    } else {
+        let like = format!("%{kw}%");
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_resume_expect e \
+             WHERE e.state = 1 AND e.status = 1 AND e.r_status = 1 AND COALESCE(e.defaults,0) = 1 \
+               AND e.name LIKE ?",
+        )
+        .bind(like)
+        .fetch_one(pool)
+        .await?
+    };
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
 pub struct ExpectInput<'a> {
     pub name: Option<&'a str>,
     pub job_classid: i64,
