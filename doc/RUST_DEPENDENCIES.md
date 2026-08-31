@@ -7,13 +7,13 @@
 | 口径 | 数量 | 含义 |
 |---|---:|---|
 | 本仓库 crate | 7 | `phpyun-*` workspace members |
-| 锁文件 crate 名 | **398** | `[[package]]` 去重后的 name |
-| 锁文件 (name, version) | **425** | 同一名字多版本会重复计 |
+| 锁文件 crate 名 | **398** | 含 Windows 占位；Linux 清单见下文 |
+| 锁文件 (name, version) | **425** | Cargo 跨平台记账，Linux **不编** Windows 那 31 条 |
 | 外部 (name, version) | 418 | 去掉 7 个本仓库 crate |
 | 直接依赖 | 33 行（约 40 个 crate） | `[workspace.dependencies]` |
 | Cargo.lock 行数 | 4393 | 含 checksum / 依赖列表 |
 
-IDE 或 `cargo tree` 有时显示 **600+**：那是把重复边、多版本、以及 Linux 根本不会编的 `windows_*` / `wasm-bindgen` 也算进去。直接依赖大约 40 个，其余几乎全是 axum / tokio / sqlx / rustls 间接拉进来的。再减到一百以内要换栈，这次不做。
+IDE 或 `cargo tree` 有时显示 **600+**：重复边、多版本、以及 Linux 不编的 Windows / wasm 占位。Windows 那 31 条见下一节「Windows 包」——**从清单里拿掉了，但 Cargo.lock 里删不掉**（tokio 等库的 `cfg(windows)` 声明）。
 
 ## 这次减掉的虚胖（feature，不改接口）
 
@@ -187,9 +187,17 @@ IDE 或 `cargo tree` 有时显示 **600+**：那是把重复边、多版本、�
 | tower-http gzip | 现网 nginx 未开 gzip |
 | moka / arc-swap / cron / sha1 / md-5 | 热路径或 PHP 兼容 |
 
-## 完整锁文件（全部 crate）
+## Windows 包：锁文件里有，Linux 不编译
 
-共 **425** 条 `(name, version)`，按名字排序。`本仓库` = workspace member，其余为 crates.io。
+本机和线上都是 Linux，**不会编、不会进 binary**。Cargo 的 lock 必须按「所有目标平台」记账，所以 `tokio` / `mio` / `socket2` / `ring` 声明的 `cfg(windows)` 依赖仍会写进 `Cargo.lock`。手删下一轮 `cargo build` 会加回来，也不能 fork 这些库来去掉。
+
+共 **31** 条 / **21** 个名字：`schannel`、`winapi`、`winapi-i686-pc-windows-gnu`、`winapi-util`、`winapi-x86_64-pc-windows-gnu`、`windows-core`、`windows-implement`、`windows-interface`、`windows-link`、`windows-result`、`windows-strings`、`windows-sys`、`windows-targets`、`windows_aarch64_gnullvm`、`windows_aarch64_msvc`、`windows_i686_gnu`、`windows_i686_gnullvm`、`windows_i686_msvc`、`windows_x86_64_gnu`、`windows_x86_64_gnullvm`、`windows_x86_64_msvc`。
+
+下面完整表已去掉这些行。
+
+## 完整锁文件（Linux 会碰到的 crate）
+
+锁文件全量 425 条；去掉 Windows 占位后 **394** 条（377 个名字）。按名字排序。`本仓库` = workspace member。
 
 | crate | version | 来源 |
 |---|---|---|
@@ -456,7 +464,6 @@ IDE 或 `cargo tree` 有时显示 **600+**：那是把重复边、多版本、�
 | `rustversion` | 1.0.23 | 外部 |
 | `ryu` | 1.0.23 | 外部 |
 | `same-file` | 1.0.6 | 外部 |
-| `schannel` | 0.1.29 | 外部 |
 | `scopeguard` | 1.2.0 | 外部 |
 | `sec1` | 0.7.3 | 外部 |
 | `security-framework` | 3.7.0 | 外部 |
@@ -570,36 +577,6 @@ IDE 或 `cargo tree` 有时显示 **600+**：那是把重复边、多版本、�
 | `webpki-roots` | 0.26.11 | 外部 |
 | `webpki-roots` | 1.0.9 | 外部 |
 | `whoami` | 1.6.1 | 外部 |
-| `winapi` | 0.3.9 | 外部 |
-| `winapi-i686-pc-windows-gnu` | 0.4.0 | 外部 |
-| `winapi-util` | 0.1.11 | 外部 |
-| `winapi-x86_64-pc-windows-gnu` | 0.4.0 | 外部 |
-| `windows-core` | 0.62.2 | 外部 |
-| `windows-implement` | 0.60.2 | 外部 |
-| `windows-interface` | 0.59.3 | 外部 |
-| `windows-link` | 0.2.1 | 外部 |
-| `windows-result` | 0.4.1 | 外部 |
-| `windows-strings` | 0.5.1 | 外部 |
-| `windows-sys` | 0.48.0 | 外部 |
-| `windows-sys` | 0.52.0 | 外部 |
-| `windows-sys` | 0.61.2 | 外部 |
-| `windows-targets` | 0.48.5 | 外部 |
-| `windows-targets` | 0.52.6 | 外部 |
-| `windows_aarch64_gnullvm` | 0.48.5 | 外部 |
-| `windows_aarch64_gnullvm` | 0.52.6 | 外部 |
-| `windows_aarch64_msvc` | 0.48.5 | 外部 |
-| `windows_aarch64_msvc` | 0.52.6 | 外部 |
-| `windows_i686_gnu` | 0.48.5 | 外部 |
-| `windows_i686_gnu` | 0.52.6 | 外部 |
-| `windows_i686_gnullvm` | 0.52.6 | 外部 |
-| `windows_i686_msvc` | 0.48.5 | 外部 |
-| `windows_i686_msvc` | 0.52.6 | 外部 |
-| `windows_x86_64_gnu` | 0.48.5 | 外部 |
-| `windows_x86_64_gnu` | 0.52.6 | 外部 |
-| `windows_x86_64_gnullvm` | 0.48.5 | 外部 |
-| `windows_x86_64_gnullvm` | 0.52.6 | 外部 |
-| `windows_x86_64_msvc` | 0.48.5 | 外部 |
-| `windows_x86_64_msvc` | 0.52.6 | 外部 |
 | `winnow` | 0.7.15 | 外部 |
 | `wit-bindgen` | 0.57.1 | 外部 |
 | `writeable` | 0.6.3 | 外部 |
@@ -619,7 +596,7 @@ IDE 或 `cargo tree` 有时显示 **600+**：那是把重复边、多版本、�
 | `zlib-rs` | 0.6.7 | 外部 |
 | `zmij` | 1.0.23 | 外部 |
 
-多版本（同一名字出现多次）：
+多版本（同一名字出现多次，已排除 windows-*）：
 
-`hashbrown`×4, `getrandom`×3, `windows-sys`×3, `base64`×2, `bitflags`×2, `foldhash`×2, `r-efi`×2, `rand`×2, `rand_chacha`×2, `rand_core`×2, `redox_syscall`×2, `syn`×2, `thiserror`×2, `thiserror-impl`×2, `webpki-roots`×2, `windows-targets`×2, `windows_aarch64_gnullvm`×2, `windows_aarch64_msvc`×2, `windows_i686_gnu`×2, `windows_i686_msvc`×2, `windows_x86_64_gnu`×2, `windows_x86_64_gnullvm`×2, `windows_x86_64_msvc`×2
+`hashbrown`×4, `getrandom`×3, `base64`×2, `bitflags`×2, `foldhash`×2, `r-efi`×2, `rand`×2, `rand_chacha`×2, `rand_core`×2, `redox_syscall`×2, `syn`×2, `thiserror`×2, `thiserror-impl`×2, `webpki-roots`×2
 
