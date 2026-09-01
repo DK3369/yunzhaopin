@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { lc, translateMenuText } from '~/utils/phpLc'
+import { lc, persistLocale, translateMenuText } from '~/utils/phpLc'
 import { httpPost } from '~/utils/httpPost'
 
 type MenuItem = {
@@ -77,6 +77,7 @@ const msgNum = ref(0)
 const msgNumLoad = ref(false)
 const msgNumData = ref<Array<{ name: string; num: number; menudata: Record<string, unknown> }>>([])
 const dialogLanguage = ref(false)
+const languageForm = reactive<{ lang: 'zh' | 'en' }>({ lang: 'zh' })
 const dialogMap = ref(false)
 const dialogShortcutMenu = ref(false)
 const formShortcutMenu = ref<number[]>([])
@@ -216,6 +217,19 @@ async function clearCache() {
 }
 function openPage(url: string) {
   window.open(url || '/', '_blank')
+}
+function openLanguageSetting() {
+  languageForm.lang = locale.value === 'en' ? 'en' : 'zh'
+  dialogLanguage.value = true
+}
+function saveLanguage() {
+  const lang = languageForm.lang === 'en' ? 'en' : 'zh'
+  persistLocale(lang)
+  dialogLanguage.value = false
+  if (!import.meta.client) return
+  const url = new URL(window.location.href)
+  url.searchParams.set('lang', lang)
+  window.location.href = url.toString()
 }
 function openShortcutMenu() {
   const ids = (me.value?.customize_ids || []).map(Number).filter((n) => n > 0)
@@ -438,7 +452,7 @@ onMounted(() => {
                     <span>{{ lc('admin_index_00050') }}</span>
                   </div>
                   <div class="subjeHeadTuichus">
-                    <div @click="dialogLanguage = true">
+                    <div @click="openLanguageSetting">
                       <img src="/admin/php-admin/images/index_topright7.png" alt="" />
                       <span>{{ lc('admin_index_00075') }}</span>
                     </div>
@@ -542,13 +556,41 @@ onMounted(() => {
         <el-button type="primary" :loading="saveShortcutLoading" @click="saveShortcutMenu">{{ lc('wap_com_00019') }}</el-button>
       </template>
     </el-dialog>
-    <el-dialog v-model="dialogLanguage" :title="lc('admin_index_00075')" width="360px">
-      <LangSwitch reload />
-    </el-dialog>
+    <div class="homeelDialog">
+      <el-dialog
+        v-model="dialogLanguage"
+        :title="lc('admin_index_00075')"
+        width="360px"
+        :append-to-body="false"
+      >
+        <el-radio-group v-model="languageForm.lang" class="admin-lang-radios">
+          <el-radio label="en" value="en">English</el-radio>
+          <el-radio label="zh" value="zh">{{ lc('admin_index_00071') }}</el-radio>
+        </el-radio-group>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogLanguage = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+            <el-button type="primary" @click="saveLanguage">{{ lc('wap_com_00019') }}</el-button>
+          </span>
+        </template>
+      </el-dialog>
+    </div>
   </section>
 </template>
 
 <style>
+.admin-lang-radios {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+  padding: 8px 4px 4px;
+  min-height: 36px;
+}
+.admin-lang-radios .el-radio {
+  margin-right: 0;
+  height: auto;
+}
 .el-table__empty-block {
   min-height: 260px;
 }
