@@ -8,6 +8,7 @@
     "locked": "账号已被冻结",
     "param_missing": "缺少必填参数：%{field}",
     "param_invalid": "参数错误",
+    "wap_com_00228": "参数错误",
     "platform": "平台",
     "target_id": "目标 ID",
     "param_invalid_with": "参数错误：%{detail}",
@@ -308,7 +309,10 @@
     "common_06471": "单页面类别删除成功",
     "common_06472": "单页面删除成功",
     "admin_user_00186": "删除失败",
-    "admin_01401": "生成失败"
+    "admin_01401": "生成失败",
+    "wap_com_00228": "参数错误",
+    "admin_index_00010": "快捷导航设置失败",
+    "admin_index_00011": "快捷导航设置成功"
   },
   "recommend": {
     "disabled": "推荐功能已关闭",

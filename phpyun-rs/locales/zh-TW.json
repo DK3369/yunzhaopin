@@ -8,6 +8,7 @@
     "locked": "帳號已被凍結",
     "param_missing": "缺少必填參數：%{field}",
     "param_invalid": "參數錯誤",
+    "wap_com_00228": "參數錯誤",
     "platform": "平台",
     "target_id": "目標 ID",
     "param_invalid_with": "參數錯誤：%{detail}",
@@ -308,7 +309,10 @@
     "common_06471": "單頁面類別刪除成功",
     "common_06472": "單頁面刪除成功",
     "admin_user_00186": "刪除失敗",
-    "admin_01401": "產生失敗"
+    "admin_01401": "產生失敗",
+    "wap_com_00228": "參數錯誤",
+    "admin_index_00010": "快捷導航設定失敗",
+    "admin_index_00011": "快捷導航設定成功"
   },
   "recommend": {
     "disabled": "推薦功能已關閉",

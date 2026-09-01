@@ -8,6 +8,7 @@
     "locked": "Account is locked",
     "param_missing": "Missing required parameter: %{field}",
     "param_invalid": "Invalid parameter",
+    "wap_com_00228": "Parameter error",
     "platform": "Platform",
     "target_id": "Target ID",
     "param_invalid_with": "Invalid parameter: %{detail}",
@@ -314,7 +315,10 @@
     "common_06471": "Single-page category deleted",
     "common_06472": "Single page deleted",
     "admin_user_00186": "Delete failed",
-    "admin_01401": "Generate failed"
+    "admin_01401": "Generate failed",
+    "wap_com_00228": "Parameter error",
+    "admin_index_00010": "Shortcut navigation save failed",
+    "admin_index_00011": "Shortcut navigation saved successfully"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

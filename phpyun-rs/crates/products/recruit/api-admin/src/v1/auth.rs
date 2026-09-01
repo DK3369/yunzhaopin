@@ -23,6 +23,7 @@ pub fn guarded_routes() -> Router<AppState> {
     Router::new()
         .route("/me", post(admin_me))
         .route("/menu", post(admin_menu))
+        .route("/menu/shortcut", post(admin_menu_shortcut))
         .route("/logout", post(admin_logout))
 }
 
@@ -109,6 +110,9 @@ pub struct AdminMeView {
     pub name: String,
     pub group_name: String,
     pub m_id: i32,
+    pub last_login: String,
+    pub power: Vec<i64>,
+    pub customize_ids: Vec<i64>,
 }
 
 impl From<AdminMe> for AdminMeView {
@@ -120,7 +124,46 @@ impl From<AdminMe> for AdminMeView {
             name: m.name,
             group_name: m.group_name,
             m_id: m.m_id,
+            last_login: m.last_login,
+            power: m.power,
+            customize_ids: m.customize_ids,
         }
+    }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ShortcutForm {
+    /// PHP `$_POST['chk_value']` — array, CSV, or JSON string of nav ids.
+    #[serde(default, deserialize_with = "de_chk_value")]
+    #[schema(value_type = Vec<i64>)]
+    pub chk_value: Vec<i64>,
+}
+
+fn de_chk_value<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<i64>, D::Error> {
+    let v = serde_json::Value::deserialize(d)?;
+    Ok(parse_chk_value(v))
+}
+
+fn parse_chk_value(v: serde_json::Value) -> Vec<i64> {
+    match v {
+        serde_json::Value::Array(a) => a.into_iter().flat_map(parse_chk_value).collect(),
+        serde_json::Value::String(s) => {
+            let t = s.trim();
+            if t.is_empty() {
+                Vec::new()
+            } else if t.starts_with('[') {
+                serde_json::from_str::<serde_json::Value>(t)
+                    .map(parse_chk_value)
+                    .unwrap_or_default()
+            } else {
+                t.split(|c: char| c == ',' || c == ';' || c.is_whitespace())
+                    .filter_map(|p| p.trim().parse().ok())
+                    .filter(|n: &i64| *n > 0)
+                    .collect()
+            }
+        }
+        serde_json::Value::Number(n) => n.as_i64().filter(|x| *x > 0).into_iter().collect(),
+        _ => Vec::new(),
     }
 }
 
@@ -166,6 +209,24 @@ pub async fn admin_menu(
 ) -> AppResult<ApiResponse<Vec<AdminMenuView>>> {
     let list = admin_auth_service::menu(&state, &user).await?;
     Ok(ApiResponse::data(list.into_iter().map(AdminMenuView::from).collect()))
+}
+
+/// PHP `index::shortcut_menu_action`.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/menu/shortcut",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ShortcutForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn admin_menu_shortcut(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(form): ValidatedJson<ShortcutForm>,
+) -> AppResult<ApiResponse> {
+    admin_auth_service::save_shortcut_menu(&state, &user, &form.chk_value).await?;
+    Ok(ApiResponse::message("admin_index_00011"))
 }
 
 #[utoipa::path(post, path = "/v1/admin/logout", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]

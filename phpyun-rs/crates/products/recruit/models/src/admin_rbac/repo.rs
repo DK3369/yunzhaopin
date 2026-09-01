@@ -290,3 +290,104 @@ pub async fn list_navigation(pool: &MySqlPool) -> Result<Vec<AdminNavRow>, sqlx:
     .fetch_all(pool)
     .await
 }
+
+pub async fn user_lasttime(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(lasttime, 0) AS SIGNED) FROM phpyun_admin_user WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}
+
+/// PHP `log::getAdminLog(uid, content=wap_01263, orderby=ctime)` — latest login log.
+pub async fn latest_login_log_ctime(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(ctime, 0) AS SIGNED) FROM phpyun_admin_log \
+         WHERE uid = ? AND (content = 'wap_01263' OR content LIKE '%登录成功%' OR content LIKE '%Login successful%') \
+         ORDER BY ctime DESC, id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}
+
+pub fn parse_nav_ids_json(raw: &str) -> Vec<i64> {
+    let v: serde_json::Value = serde_json::from_str(raw).unwrap_or(serde_json::Value::Null);
+    match v {
+        serde_json::Value::Array(a) => a
+            .iter()
+            .filter_map(|x| {
+                x.as_i64()
+                    .or_else(|| x.as_u64().map(|u| u as i64))
+                    .or_else(|| x.as_str()?.parse().ok())
+            })
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub async fn customize_nav_ids(pool: &MySqlPool, auid: u64) -> Result<Option<Vec<i64>>, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(nav_ids, '') FROM phpyun_admin_customize_navs WHERE auid = ? LIMIT 1",
+    )
+    .bind(auid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(raw,)| parse_nav_ids_json(&raw)))
+}
+
+pub async fn upsert_customize_nav(
+    pool: &MySqlPool,
+    auid: u64,
+    nav_ids_json: &str,
+    ctime: i64,
+) -> Result<(), sqlx::Error> {
+    let exist: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_admin_customize_navs WHERE auid = ? LIMIT 1",
+    )
+    .bind(auid)
+    .fetch_optional(pool)
+    .await?;
+    if let Some((id,)) = exist {
+        sqlx::query("UPDATE phpyun_admin_customize_navs SET nav_ids = ? WHERE id = ?")
+            .bind(nav_ids_json)
+            .bind(id)
+            .execute(pool)
+            .await?;
+    } else {
+        sqlx::query(
+            "INSERT INTO phpyun_admin_customize_navs (nav_ids, auid, ctime) VALUES (?, ?, ?)",
+        )
+        .bind(nav_ids_json)
+        .bind(auid)
+        .bind(ctime)
+        .execute(pool)
+        .await?;
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_nav_ids_json;
+
+    #[test]
+    fn parse_nav_ids_numbers() {
+        assert_eq!(parse_nav_ids_json("[16,33,104]"), vec![16, 33, 104]);
+    }
+
+    #[test]
+    fn parse_nav_ids_strings() {
+        assert_eq!(parse_nav_ids_json(r#"["16","33"]"#), vec![16, 33]);
+    }
+
+    #[test]
+    fn parse_nav_ids_invalid() {
+        assert!(parse_nav_ids_json("").is_empty());
+        assert!(parse_nav_ids_json("{}").is_empty());
+    }
+}
+

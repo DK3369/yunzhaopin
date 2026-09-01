@@ -21,6 +21,12 @@ const { t, te } = useI18n()
 const { data: menu } = await useAsyncData('admin-php-menu', () =>
   useApi().post<MenuItem[]>('/v1/admin/menu', {}),
 )
+const me = useState<{
+  usertype?: number
+  last_login?: string
+  power?: number[]
+  customize_ids?: number[]
+} | null>('admin-me')
 const items = computed(() => (Array.isArray(menu.value) ? menu.value : []).filter((m) => m.id))
 const byId = computed(() => {
   const map = new Map<number, MenuItem>()
@@ -38,7 +44,29 @@ function hrefOf(m: MenuItem) {
   if (!p) return ''
   return p.startsWith('/') ? p : `/${p}`
 }
-const shortcuts = computed(() => items.value.filter((m) => hrefOf(m) && m.menu === 1).slice(0, 20))
+function hasPower(id: number) {
+  const p = me.value?.power
+  if (!Array.isArray(p) || !p.length) return false
+  return p.some((x) => Number(x) === id)
+}
+const shortcuts = computed(() => {
+  const ids = (me.value?.customize_ids || []).map(Number).filter((n) => n > 0)
+  if (ids.length) {
+    return ids
+      .map((id) => byId.value.get(id))
+      .filter((m): m is MenuItem => !!m && !!hrefOf(m))
+  }
+  return items.value.filter((m) => hrefOf(m) && m.menu === 2)
+})
+const navTree = computed(() =>
+  roots.value.map((root) => ({
+    ...root,
+    children: children(root.id).map((sec) => ({
+      ...sec,
+      children: children(sec.id),
+    })),
+  })),
+)
 
 const subWidth = ref(false)
 const curMenu = ref(0)
@@ -51,6 +79,8 @@ const msgNumData = ref<Array<{ name: string; num: number; menudata: Record<strin
 const dialogLanguage = ref(false)
 const dialogMap = ref(false)
 const dialogShortcutMenu = ref(false)
+const formShortcutMenu = ref<number[]>([])
+const saveShortcutLoading = ref(false)
 const searchFormMap = reactive({ keyword: '' })
 const tabList = ref<
   Array<{ nav_id: number; one_menu_id: number; two_menu_id: number; name: string; path: string; isdel: boolean; query?: Record<string, unknown> }>
@@ -188,6 +218,31 @@ async function clearCache() {
 }
 function openPage(url: string) {
   window.open(url || '/', '_blank')
+}
+function openShortcutMenu() {
+  const ids = (me.value?.customize_ids || []).map(Number).filter((n) => n > 0)
+  formShortcutMenu.value = ids.length ? [...ids] : shortcuts.value.map((m) => m.id)
+  dialogShortcutMenu.value = true
+}
+async function saveShortcutMenu() {
+  if (saveShortcutLoading.value) return
+  if (!formShortcutMenu.value.length) {
+    ElMessage.error(lc('admin_index_00039'))
+    return
+  }
+  saveShortcutLoading.value = true
+  const res = await httpPost('m=index&c=shortcut_menu', { chk_value: formShortcutMenu.value })
+  const body = res.data as { error?: number; msg?: string }
+  if (body.error) {
+    saveShortcutLoading.value = false
+    ElMessage.error(body.msg || lc('admin_index_00010'))
+    return
+  }
+  dialogShortcutMenu.value = false
+  if (me.value) me.value.customize_ids = [...formShortcutMenu.value]
+  ElMessage.success(body.msg || lc('admin_index_00011'))
+  saveShortcutLoading.value = false
+  router.go(0)
 }
 
 watch(
@@ -363,7 +418,7 @@ onMounted(() => {
                 <img src="/admin/php-admin/images/head3.png" alt="" />
               </div>
             </div>
-            <div class="subHeadRigList" @click="dialogMap = true">
+            <div v-if="hasPower(161)" class="subHeadRigList" @click="dialogMap = true">
               <div class="subHeadRigIcon">
                 <img src="/admin/php-admin/images/head4.png" alt="" />
               </div>
@@ -376,10 +431,26 @@ onMounted(() => {
             <div class="subHeadRigUser">
               <el-popover placement="top-start" :width="140" trigger="hover">
                 <div class="subHeadlogout">
-                  <div class="subjeHeadFlex" @click="dialogLanguage = true">
-                    <span>{{ lc('admin_index_00075') }}</span>
+                  <div class="subjeHeadDenl">
+                    <h3>{{ lc('admin_yunying_00131') }}</h3>
+                    <span>{{ me?.last_login || '' }}</span>
+                  </div>
+                  <div class="subjeHeadFlex" @click="openShortcutMenu">
+                    <img src="/admin/php-admin/images/index_topright4.png" alt="" />
+                    <span>{{ lc('admin_index_00050') }}</span>
                   </div>
                   <div class="subjeHeadTuichus">
+                    <div @click="dialogLanguage = true">
+                      <img src="/admin/php-admin/images/index_topright7.png" alt="" />
+                      <span>{{ lc('admin_index_00075') }}</span>
+                    </div>
+                    <div
+                      v-if="hasPower(809)"
+                      @click="checkMenuTwo(5, 102, 104, 'weixin_00009', '/myaccount', { ly: 'pass' })"
+                    >
+                      <img src="/admin/php-admin/images/index_topright7.png" alt="" />
+                      <span>{{ lc('member_user_00226') }}</span>
+                    </div>
                     <div @click="logout">
                       <img src="/admin/php-admin/images/admin_navicon7.png" alt="" />
                       <span>{{ lc('wap_user_00177') }}</span>
@@ -451,6 +522,27 @@ onMounted(() => {
           </div>
         </div>
       </div>
+    </el-dialog>
+    <el-dialog v-model="dialogShortcutMenu" :title="lc('admin_index_00050')" width="680px">
+      <div class="homeDiaCaidan" style="height: 420px; overflow: auto">
+        <el-checkbox-group v-model="formShortcutMenu">
+          <div v-for="oneSMItem in navTree" :key="oneSMItem.id" class="homeDiaCaiConts">
+            <div class="homeDiaCaiOntite"><span>{{ menuLabel(oneSMItem) }}</span></div>
+            <div v-for="twoSMItem in oneSMItem.children" :key="twoSMItem.id" class="homeDiaCaiLis">
+              <div class="homeCaiTwoTite"><span>{{ menuLabel(twoSMItem) }}</span></div>
+              <div v-if="twoSMItem.children?.length" class="homeCaiTwoNeir">
+                <div v-for="threeSMItem in twoSMItem.children" :key="threeSMItem.id" class="homeCaiTwocheck">
+                  <el-checkbox :value="threeSMItem.id">{{ menuLabel(threeSMItem) }}</el-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-checkbox-group>
+      </div>
+      <template #footer>
+        <el-button @click="dialogShortcutMenu = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+        <el-button type="primary" :loading="saveShortcutLoading" @click="saveShortcutMenu">{{ lc('wap_com_00019') }}</el-button>
+      </template>
     </el-dialog>
     <el-dialog v-model="dialogLanguage" :title="lc('admin_index_00075')" width="360px">
       <LangSwitch reload />

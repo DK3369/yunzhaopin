@@ -66,6 +66,6 @@ mod snapshot_tests {
         let mut actual: Vec<_> = crate::openapi().paths.paths.keys().cloned().collect();
         actual.sort();
         assert_eq!(actual, expected);
-        assert_eq!(actual.len(), 297);
+        assert_eq!(actual.len(), 307);
     }
 }

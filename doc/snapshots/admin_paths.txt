@@ -25,7 +25,11 @@
 /v1/admin/categories/list
 /v1/admin/categories/update
 /v1/admin/companies
+/v1/admin/companies/check-com-name
+/v1/admin/companies/check-username
 /v1/admin/companies/export
+/v1/admin/companies/php-add-form
+/v1/admin/companies/php-cache
 /v1/admin/companies/rating
 /v1/admin/companies/ratings
 /v1/admin/companies/status
@@ -163,6 +167,7 @@
 /v1/admin/marketing/sms-status
 /v1/admin/me
 /v1/admin/menu
+/v1/admin/menu/shortcut
 /v1/admin/modules
 /v1/admin/modules/save
 /v1/admin/nav
@@ -240,6 +245,11 @@
 /v1/admin/site-settings/batch
 /v1/admin/site-settings/delete
 /v1/admin/site-settings/list
+/v1/admin/site-settings/payset
+/v1/admin/site-settings/payset/alipay
+/v1/admin/site-settings/payset/bank
+/v1/admin/site-settings/payset/bank-delete
+/v1/admin/site-settings/payset/tenpay
 /v1/admin/sms-logs
 /v1/admin/specials
 /v1/admin/specials/companies

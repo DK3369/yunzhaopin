@@ -1,4 +1,9 @@
-type AdminMe = { usertype?: number }
+type AdminMe = {
+  usertype?: number
+  last_login?: string
+  power?: number[]
+  customize_ids?: number[]
+}
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (to.path === '/login' || to.path === '/hello') return

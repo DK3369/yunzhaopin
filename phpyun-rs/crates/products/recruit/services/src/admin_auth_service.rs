@@ -31,6 +31,12 @@ pub struct AdminMe {
     pub name: String,
     pub group_name: String,
     pub m_id: i32,
+    /// PHP `$admin_lasttime` formatted `Y-m-d H:i:s`.
+    pub last_login: String,
+    /// PHP `$power` — admin_navigation ids this group may use.
+    pub power: Vec<i64>,
+    /// PHP `getMenu` `customizeIds` (custom table, else `menu=2` defaults).
+    pub customize_ids: Vec<i64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -163,9 +169,24 @@ pub async fn me(state: &AppState, user: &AuthenticatedUser) -> AppResult<AdminMe
     let row = rbac_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
         .ok_or_else(ApiError::unauth)?;
-    let group_name = rbac_repo::group_name(state.db.reader(), row.m_id)
-        .await
-        .unwrap_or_default();
+    let db = state.db.reader();
+    let (group_name, power_vec, last_log, lasttime, stored, navs) = tokio::try_join!(
+        rbac_repo::group_name(db, row.m_id),
+        rbac_repo::group_power_ids(db, row.m_id),
+        rbac_repo::latest_login_log_ctime(db, row.uid),
+        rbac_repo::user_lasttime(db, row.uid),
+        rbac_repo::customize_nav_ids(db, row.uid),
+        rbac_repo::list_navigation(db),
+    )?;
+    let power: HashSet<i64> = power_vec.iter().copied().collect();
+    let customize_ids = resolve_customize_ids(&navs, &power, stored);
+    let ts = if last_log > 0 {
+        last_log
+    } else if lasttime > 0 {
+        lasttime
+    } else {
+        clock::now_ts()
+    };
     Ok(AdminMe {
         uid: row.uid,
         usertype: 3,
@@ -173,7 +194,54 @@ pub async fn me(state: &AppState, user: &AuthenticatedUser) -> AppResult<AdminMe
         name: row.name,
         group_name,
         m_id: row.m_id,
+        last_login: phpyun_core::utils::fmt_ts(ts, "%Y-%m-%d %H:%M:%S"),
+        power: power_vec,
+        customize_ids,
     })
+}
+
+/// PHP `index::shortcut_menu_action` + `navigation::setCustomizeNav`.
+pub async fn save_shortcut_menu(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    chk_value: &[i64],
+) -> AppResult<()> {
+    require_active_admin(state, user).await?;
+    let ids: Vec<i64> = chk_value.iter().copied().filter(|id| *id > 0).collect();
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let json = serde_json::to_string(&ids).unwrap_or_else(|_| "[]".to_string());
+    rbac_repo::upsert_customize_nav(state.db.pool(), user.uid, &json, clock::now_ts()).await?;
+    Ok(())
+}
+
+/// PHP `getMenu`: custom `nav_ids` in power, else default `menu==2` rows.
+fn resolve_customize_ids(
+    navs: &[AdminNavRow],
+    power: &HashSet<i64>,
+    stored: Option<Vec<i64>>,
+) -> Vec<i64> {
+    let in_power = |id: i64| power.is_empty() || power.contains(&id);
+    let default_ids: Vec<i64> = navs
+        .iter()
+        .filter(|n| n.menu == 2 && in_power(n.id))
+        .map(|n| n.id)
+        .collect();
+    let Some(raw) = stored else {
+        return default_ids;
+    };
+    let allowed: HashSet<i64> = raw.into_iter().filter(|id| in_power(*id)).collect();
+    let filtered: Vec<i64> = navs
+        .iter()
+        .filter(|n| allowed.contains(&n.id))
+        .map(|n| n.id)
+        .collect();
+    if filtered.is_empty() {
+        default_ids
+    } else {
+        filtered
+    }
 }
 
 pub async fn menu(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<AdminMenuItem>> {

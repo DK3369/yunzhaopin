@@ -270,6 +270,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   },
   'index/del_cache': { path: '/v1/admin/cache/clear' },
   'index/get_navigation': { path: '/v1/admin/menu' },
+  'index/getMenu': { path: '/v1/admin/menu' },
+  'index/shortcut_menu': { path: '/v1/admin/menu/shortcut' },
   'index/logout': { path: '/v1/admin/logout' },
 
   'user/company_job': { path: '/v1/admin/jobs', transformReq: pageQuery },
