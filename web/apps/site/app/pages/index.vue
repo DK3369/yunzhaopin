@@ -17,6 +17,16 @@ type FriendLink = { id: number; name: string; url: string; logo?: string; catego
 const api = useApi()
 const { t } = useI18n()
 const { siteName, me, h5Nav } = useSiteChrome()
+const h5NavPage = ref(0)
+const h5NavPages = computed(() => {
+  const list = h5Nav.value || []
+  const pages: typeof list[] = []
+  for (let i = 0; i < list.length; i += 4) pages.push(list.slice(i, i + 4))
+  return pages
+})
+watch(h5NavPages, (pages) => {
+  if (h5NavPage.value >= pages.length) h5NavPage.value = 0
+})
 
 const { data: home, error } = await useAsyncData('home', async () => {
   const h = (await api.get('/v1/wap/home', { did: 0 })) as {
@@ -505,15 +515,31 @@ useHead({
           </div>
         </div>
         <div class="job">
-          <div class="navbox_jgw">
-            <NuxtLink v-for="item in h5Nav" :key="item.to" :to="item.to">
-              <div class="full-time">
-                <div class="full-time-logo">
-                  <img :src="item.icon" alt="" style="width: 100%" />
-                </div>
-                <div class="full-time-word">{{ item.label }}</div>
+          <div class="swiper-container navbox_jgw" id="navswiper">
+            <div
+              class="swiper-wrapper"
+              :style="{ transform: `translate3d(-${h5NavPage * 100}%,0,0)` }"
+            >
+              <div v-for="(page, pi) in h5NavPages" :key="pi" class="swiper-slide">
+                <NuxtLink v-for="item in page" :key="String(item.id || item.to)" :to="item.to">
+                  <div class="full-time">
+                    <div class="full-time-logo">
+                      <img :src="item.icon" alt="" style="width: 100%" />
+                    </div>
+                    <div class="full-time-word">{{ item.label }}</div>
+                  </div>
+                </NuxtLink>
               </div>
-            </NuxtLink>
+            </div>
+            <div v-if="h5NavPages.length > 1" class="swiper-pagination navbox_fyq">
+              <span
+                v-for="(_, i) in h5NavPages"
+                :key="i"
+                class="swiper-pagination-bullet"
+                :class="{ 'swiper-pagination-bullet-active': i === h5NavPage }"
+                @click="h5NavPage = i"
+              />
+            </div>
           </div>
         </div>
         <div v-if="announcements.length" class="inform">

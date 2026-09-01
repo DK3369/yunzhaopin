@@ -1,6 +1,7 @@
 import {
   DEFAULT_H5_NAV,
   descHref,
+  isNavModuleOn,
   mapNavUrl,
   mediaUrl,
   type NavItem,
@@ -60,6 +61,7 @@ export function useSiteChrome() {
             icon_n?: string
             parent_id?: number
             sort?: number
+            config?: string
           }>
         >('/v1/wap/nav', { position: '1' })
         .catch(() => []),
@@ -104,8 +106,10 @@ export function useSiteChrome() {
         icon: n.icon_n || n.icon,
         parent_id: Number(n.parent_id || 0),
         sort: Number(n.sort || 0),
+        config: n.config || '',
       }))
       .filter((n) => n.label)
+      .filter((n) => isNavModuleOn(settings.value, n.to, n.config))
       .sort((a, b) => a.sort - b.sort || (a.id || 0) - (b.id || 0))
   }
 
@@ -120,13 +124,13 @@ export function useSiteChrome() {
           { label: t('default_00114'), to: '/companies' },
           { label: t('member_com_00293'), to: '/fairs' },
           { label: t('common.article'), to: '/articles' },
-        ]
+        ].filter((n) => isNavModuleOn(settings.value, n.to))
     return rows.map((n) => ({ ...n, label: labelForNav(n) }))
   })
 
   const h5Nav = computed<NavItem[]>(() => {
     const withIcon = mappedRows().filter((n) => n.parent_id === 26 && n.icon)
-    const rows = withIcon.length >= 4 ? withIcon.slice(0, 8) : DEFAULT_H5_NAV
+    const rows = withIcon.length >= 4 ? withIcon : DEFAULT_H5_NAV.filter((n) => isNavModuleOn(settings.value, n.to))
     return rows.map((n) => ({
       ...n,
       icon: mediaUrl(n.icon_n || n.icon, n.icon || ''),

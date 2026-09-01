@@ -7,6 +7,8 @@ export type NavItem = {
   icon_n?: string
   parent_id?: number
   sort?: number
+  /** PHP `phpyun_navigation.config` — module key used by 模块设置. */
+  config?: string
 }
 
 export type CatNode = {
@@ -95,6 +97,42 @@ const MODULE_PATH: Record<string, string> = {
   index: '/',
   wap: '/',
   forgetpw: '/forgetpw',
+}
+
+/** Reverse of MODULE_PATH for `sy_{module}_web`. Home / custom links have no key. */
+const PATH_TO_MODULE: Record<string, string> = {
+  '/jobs': 'job',
+  '/resumes': 'resume',
+  '/companies': 'company',
+  '/articles': 'article',
+  '/fairs': 'zph',
+  '/announcements': 'announcement',
+  '/tiny': 'tiny',
+  '/once': 'once',
+  '/parts': 'part',
+  '/questions': 'ask',
+  '/map': 'map',
+  '/eval': 'evaluate',
+  '/advice': 'advice',
+  '/redeem': 'redeem',
+  '/hr': 'hr',
+  '/specials': 'special',
+  '/gongzhao': 'gongzhao',
+}
+
+/**
+ * PHP 模块开关：`sy_{m}_web == 2` 关闭。后台保存模块时会把对应导航 `display` 打成 0，
+ * 但 `config` 列经常是空的，所以前台再按 URL 推断一次。
+ */
+export function isNavModuleOn(
+  settings: Record<string, string>,
+  to: string,
+  config?: string | null,
+): boolean {
+  if (!to || to === '/') return true
+  const key = String(config || '').trim() || PATH_TO_MODULE[to] || ''
+  if (!key) return true
+  return String(settings[`sy_${key}_web`] || '') !== '2'
 }
 
 export const DEFAULT_NAV: NavItem[] = [
