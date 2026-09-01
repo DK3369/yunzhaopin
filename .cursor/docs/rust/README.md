@@ -32,7 +32,7 @@
 
 | 文件 | 怎么用 |
 |---|---|
-| [`ops/restart.sh`](../../../ops/restart.sh) | 现网重启 rust `:3003` + web `:3001`（site `:3004` + admin `:3005`） |
+| [`ops/restart.sh`](../../../ops/restart.sh) | 现网重启 rust `:3003` + site `:3001`（PC/H5 + `/admin`） |
 | [`ops/systemd/test-jobs-phpyun-rs-3003.service`](../../../ops/systemd/test-jobs-phpyun-rs-3003.service) | 现网 unit；binary 是 `target/debug/phpyun-rs` |
 | [`ops/systemd/test-jobs-phpyun-rs.service`](../../../ops/systemd/test-jobs-phpyun-rs.service) | **已停用** 的 `:3000` |
 | [phpyun-rs/deploy/INSTALL.md](../../../phpyun-rs/deploy/INSTALL.md) | **release tar 安装说明**，不是这台机的 systemd |

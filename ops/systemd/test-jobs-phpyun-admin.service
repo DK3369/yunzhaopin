@@ -1,5 +1,5 @@
 [Unit]
-Description=PHPYun Nuxt admin (Nitro) on :3005
+Description=PHPYun Nuxt admin (Nitro unix socket, no TCP port)
 After=network-online.target
 
 [Service]
@@ -10,12 +10,10 @@ WorkingDirectory=/www/wwwroot/zzzz.com/web/apps/admin
 Environment=PATH=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin:/usr/bin
 Environment=TMPDIR=/var/tmp/npm-tmp
 Environment=NODE_ENV=production
-Environment=HOST=127.0.0.1
-Environment=PORT=3005
-Environment=NITRO_HOST=127.0.0.1
-Environment=NITRO_PORT=3005
+Environment=NITRO_UNIX_SOCKET=/var/tmp/phpyun-admin.sock
 Environment=RUST_API_URL=http://127.0.0.1:3003
 Environment=NUXT_RUST_API=http://127.0.0.1:3003
+ExecStartPre=/bin/rm -f /var/tmp/phpyun-admin.sock
 ExecStart=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin/node /www/wwwroot/zzzz.com/web/apps/admin/.output/server/index.mjs
 Restart=on-failure
 RestartSec=5s

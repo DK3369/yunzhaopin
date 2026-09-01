@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
- * Public web port :3001. PC / H5 (site Nitro) and /admin (admin Nitro) share it.
- * Hashed `/admin/_n/` is served from disk so Cloudflare does not 503 those files
- * while admin Nitro restarts. Do not bind this process to :3002.
+ * Retired. PC/H5 and /admin now share site Nitro :3001.
+ * Do not start this process; do not bind :3002 / :3004 / :3005.
  */
 import http from 'node:http'
 import { createReadStream, existsSync, statSync } from 'node:fs'
