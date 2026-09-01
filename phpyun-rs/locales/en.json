@@ -304,7 +304,17 @@
     "rejected": "Rejected",
     "purged": "Permanently deleted",
     "reloaded": "Reloaded",
-    "email_verified": "Email verified"
+    "email_verified": "Email verified",
+    "admin_system_00661": "Static page",
+    "admin_system_00663": "Custom page",
+    "admin_00198": "External link",
+    "admin_system_00059": "Generated",
+    "admin_system_00058": "Static page URL must end with .html",
+    "admin_system_00060": "Invalid static page URL",
+    "common_06471": "Single-page category deleted",
+    "common_06472": "Single page deleted",
+    "admin_user_00186": "Delete failed",
+    "admin_01401": "Generate failed"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

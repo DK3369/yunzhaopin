@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 
+use phpyun_core::i18n;
 use phpyun_core::utils::{fmt_date, fmt_dt, fmt_ts};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
@@ -44,6 +45,7 @@ use serde_json::{json, Value};
 
 use crate::admin_cms_service;
 use crate::admin_longtail_service;
+use crate::description_service;
 use crate::dict_service;
 use crate::site_setting_service;
 use crate::wechat_api_service;
@@ -228,6 +230,10 @@ pub async fn dispatch(
         ("pages", "delete") => pages_del(state, body).await,
         ("pages", "make") => Ok(PhpOut::Message("admin_system_00059")),
         ("pages", "ajax") => pages_ajax(state, body).await,
+        ("desc-class", "index") => Ok(PhpOut::Data(desc_class_index(state, body).await?)),
+        ("desc-class", "add") => Ok(PhpOut::Data(desc_class_add(state, body).await?)),
+        ("desc-class", "ajax") => desc_class_ajax(state, body).await,
+        ("desc-class", "delete") => desc_class_del(state, body).await,
         ("job-class", "ajax") => job_class_ajax(state, body).await,
         ("job-class", "setrec") => job_class_setrec(state, body).await,
         ("job-class", "get_class") => Ok(PhpOut::Data(job_class_get(state, body).await?)),
@@ -4227,7 +4233,6 @@ async fn pages_index(state: &AppState, body: &Value) -> AppResult<Value> {
         is_type,
     )
     .await?;
-    let base = preview_base(state);
     let list: Vec<Value> = rows
         .into_iter()
         .map(|r| {
@@ -4236,22 +4241,63 @@ async fn pages_index(state: &AppState, body: &Value) -> AppResult<Value> {
                 "name": r.name,
                 "title": r.title,
                 "is_type": r.is_type,
-                "is_type_n": if r.is_type == 1 { "外部链接" } else { "自定义页面" },
+                "is_type_n": desc_is_type_n(r.is_type),
                 "is_nav": r.is_nav.to_string(),
                 "sort": r.sort,
                 "url": r.url,
-                "url_pc": if r.is_type == 1 && !r.url.is_empty() {
-                    r.url.clone()
-                } else {
-                    format!("{base}/index.php?m=about&id={}", r.id)
-                },
+                "url_pc": desc_preview_url(state, r.id),
                 "ctime": r.ctime,
-                "ctime_n": fmt_dt(r.ctime),
+                "ctime_n": fmt_date(r.ctime),
                 "nid": r.nid,
             })
         })
         .collect();
     Ok(paged(Value::Array(list), total, page, per))
+}
+
+fn desc_is_type_n(is_type: i32) -> String {
+    let lang = i18n::current_lang();
+    let key = match is_type {
+        1 => "messages.admin_system_00661",
+        2 => "messages.admin_00198",
+        _ => "messages.admin_system_00663",
+    };
+    i18n::t(key, lang)
+}
+
+fn desc_preview_url(state: &AppState, id: u64) -> String {
+    format!("{}/get/{id}", preview_base(state).trim_end_matches('/'))
+}
+
+fn desc_content(raw: &str) -> String {
+    amp(raw)
+        .replace("background-color:#ffffff", "")
+        .replace("background-color:#fff", "")
+        .replace("white-space:nowrap;", "")
+        .replace("<img ", "<img style=\"max-width:100%\" ")
+}
+
+/// PHP `singlepage::save_action` static-html path checks.
+fn validate_static_html_url(url: &str) -> AppResult<String> {
+    let mut u = url.trim().replace('\\', "/");
+    if u.contains("..") {
+        return Err(ApiError::business("messages.admin_system_00060"));
+    }
+    if let Some(rest) = u.strip_prefix('/') {
+        u = rest.to_string();
+    }
+    if u.is_empty() || u.split('/').any(|p| p.is_empty() || p == "." || p == "..") {
+        return Err(ApiError::business("messages.admin_system_00060"));
+    }
+    let last = u
+        .rsplit('/')
+        .next()
+        .unwrap_or(u.as_str())
+        .to_ascii_lowercase();
+    if !last.ends_with(".html") {
+        return Err(ApiError::business("messages.admin_system_00058"));
+    }
+    Ok(u)
 }
 
 async fn pages_add(state: &AppState, body: &Value) -> AppResult<Value> {
@@ -4261,7 +4307,7 @@ async fn pages_add(state: &AppState, body: &Value) -> AppResult<Value> {
     } else {
         None
     };
-    let class = desc_repo::list_classes(state.db.reader()).await?;
+    let class = desc_repo::php_list_all_classes(state.db.reader()).await?;
     Ok(json!({
         "info": info.map(|r| json!({
             "id": r.id,
@@ -4274,23 +4320,32 @@ async fn pages_add(state: &AppState, body: &Value) -> AppResult<Value> {
             "url": r.url,
             "nid": r.nid,
             "keyword": r.keyword,
+            "descs": r.descs,
             "description": r.descs,
+            "top_tpl": r.top_tpl.to_string(),
+            "top_tpl_dir": r.top_tpl_dir,
+            "footer_tpl": r.footer_tpl.to_string(),
+            "footer_tpl_dir": r.footer_tpl_dir,
         })).unwrap_or(json!({})),
         "class": class,
     }))
 }
 
 async fn pages_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
-    let url = json_str(body, "url");
     let is_type = json_i32(body, "is_type");
-    if is_type == 1 && url.contains("..") {
-        return Err(ApiError::business("admin_system_00060"));
-    }
+    let raw_url = json_str(body, "url");
+    let url = if is_type == 1 {
+        validate_static_html_url(&raw_url)?
+    } else {
+        raw_url
+    };
     let name = json_str(body, "name");
     let title = json_str(body, "title");
     let keyword = json_str(body, "keyword");
     let descs = json_str(body, "description");
-    let content = amp(&json_str(body, "content"));
+    let content = desc_content(&json_str(body, "content"));
+    let top_tpl_dir = json_str(body, "top_tpl_dir");
+    let footer_tpl_dir = json_str(body, "footer_tpl_dir");
     let _ = desc_repo::php_upsert(
         state.db.pool(),
         json_u64(body, "id"),
@@ -4305,6 +4360,10 @@ async fn pages_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             sort: json_i32(body, "sort"),
             is_nav: json_i32(body, "is_nav"),
             is_type,
+            top_tpl: json_i32(body, "top_tpl"),
+            top_tpl_dir: &top_tpl_dir,
+            footer_tpl: json_i32(body, "footer_tpl"),
+            footer_tpl_dir: &footer_tpl_dir,
         },
         clock::now_ts(),
     )
@@ -4317,8 +4376,11 @@ async fn pages_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if ids.is_empty() {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
-    desc_repo::php_delete_ids(state.db.pool(), &ids).await?;
-    Ok(PhpOut::Message("ok"))
+    let n = desc_repo::php_delete_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("messages.admin_user_00186"));
+    }
+    Ok(PhpOut::Message("common_06472"))
 }
 
 async fn pages_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
@@ -4328,6 +4390,99 @@ async fn pages_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     desc_repo::php_set_sort(state.db.pool(), id, json_i32(body, "sort")).await?;
     Ok(PhpOut::Message("ok"))
+}
+
+fn desc_class_names(body: &Value) -> Vec<String> {
+    json_str(body, "name")
+        .split('-')
+        .map(|s| {
+            let t = s.trim();
+            t.chars().take(50).collect::<String>()
+        })
+        .filter(|s| !s.is_empty())
+        .collect()
+}
+
+/// PHP `singleclass::index_action`: list + total + perPage (`sy_listnum` default 10).
+async fn desc_class_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let page = json_u64(body, "page").max(1) as u32;
+    let mut per = json_u64(body, "page_size");
+    if per == 0 {
+        per = json_u64(body, "limit");
+    }
+    if per == 0 {
+        per = json_u64(body, "perPage");
+    }
+    if per == 0 {
+        per = 10;
+    }
+    let per = per.clamp(1, 100) as u32;
+    let offset = u64::from(page.saturating_sub(1)) * u64::from(per);
+    let db = state.db.reader();
+    let rows = desc_repo::php_list_classes(db, offset, u64::from(per)).await?;
+    let total = desc_repo::php_count_classes(db).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|c| json!({ "id": c.id, "name": c.name, "sort": c.sort }))
+        .collect();
+    Ok(json!({
+        "list": list,
+        "total": total,
+        "perPage": per,
+        "page_size": per,
+        "page": page,
+    }))
+}
+
+/// PHP `addDesClass`: error 1=duplicate, 2=ok, 3=fail.
+async fn desc_class_add(state: &AppState, body: &Value) -> AppResult<Value> {
+    let names = desc_class_names(body);
+    if names.is_empty() {
+        return Ok(json!({ "error": 3 }));
+    }
+    if desc_repo::php_class_names_exist(state.db.pool(), &names).await? {
+        return Ok(json!({ "error": 1 }));
+    }
+    let now = clock::now_ts();
+    for n in &names {
+        desc_repo::insert_class(state.db.pool(), n, 0, now).await?;
+    }
+    description_service::invalidate_classes_cache().await;
+    Ok(json!({ "error": 2 }))
+}
+
+async fn desc_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let name = json_str(body, "name");
+    let sort = if has_flag(body, "sort") {
+        Some(json_i32(body, "sort"))
+    } else {
+        None
+    };
+    let name_ref = if has_flag(body, "name") {
+        Some(name.as_str())
+    } else {
+        None
+    };
+    desc_repo::php_update_class(state.db.pool(), id, name_ref, sort).await?;
+    description_service::invalidate_classes_cache().await;
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn desc_class_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = desc_repo::php_delete_class_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("messages.admin_user_00186"));
+    }
+    description_service::invalidate_classes_cache().await;
+    Ok(PhpOut::Message("common_06471"))
 }
 
 async fn job_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {

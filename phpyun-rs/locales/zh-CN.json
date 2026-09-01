@@ -298,7 +298,17 @@
     "rejected": "已拒绝",
     "purged": "已永久删除",
     "reloaded": "已重新加载",
-    "email_verified": "邮箱已验证"
+    "email_verified": "邮箱已验证",
+    "admin_system_00661": "生成静态页",
+    "admin_system_00663": "自定义页面",
+    "admin_00198": "外部链接",
+    "admin_system_00059": "生成成功",
+    "admin_system_00058": "静态页地址必须以 .html 结尾",
+    "admin_system_00060": "静态页地址不合法",
+    "common_06471": "单页面类别删除成功",
+    "common_06472": "单页面删除成功",
+    "admin_user_00186": "删除失败",
+    "admin_01401": "生成失败"
   },
   "recommend": {
     "disabled": "推荐功能已关闭",

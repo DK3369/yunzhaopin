@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 现网前后端重启（本机 job1/job2）。
-# 只管 :3003（Rust）+ :3001（site）+ :3002（admin edge）+ :3005（admin Nitro）。
+# 只管 :3003（Rust）+ :3001（web edge：PC/H5+/admin）+ :3004（site Nitro）+ :3005（admin Nitro）。
 # 绝不 start/enable 旧 :3000（test-jobs-phpyun-rs）。
 set -Eeuo pipefail
 
@@ -17,9 +17,10 @@ UNIT_ADMIN_EDGE="test-jobs-phpyun-admin-edge"
 RETIRED_RS="test-jobs-phpyun-rs"
 
 PORT_RS=3003
-PORT_SITE=3001
-PORT_ADMIN=3002
+PORT_WEB=3001
+PORT_SITE=3004
 PORT_ADMIN_NITRO=3005
+PORT_OLD_ADMIN=3002
 
 CARGO_TMP="${CARGO_TMP:-/var/tmp/cargo-tmp}"
 NPM_TMP="${NPM_TMP:-/var/tmp/npm-tmp}"
@@ -47,8 +48,8 @@ usage() {
   ops/restart.sh all --build     先编译再重启全部
   ops/restart.sh rust            只重启 API :3003
   ops/restart.sh rust --build    cargo build 后再重启 :3003
-  ops/restart.sh site            只重启前台 :3001
-  ops/restart.sh admin           只重启后台 Nitro :3005（对外仍 :3002）
+  ops/restart.sh site            只重启前台 Nitro :3004（对外仍 :3001）
+  ops/restart.sh admin           只重启后台 Nitro :3005（对外仍 :3001）
   ops/restart.sh frontend        重启 site + admin
   ops/restart.sh frontend --build
   ops/restart.sh status          看 systemd / 端口 / HTTP
@@ -59,7 +60,8 @@ usage() {
   --no-verify  跳过 HTTP 探活
 
 不会动旧 :3000（test-jobs-phpyun-rs）。改 PHP 原项目请不要用本脚本当借口。
-admin 对外 :3002 是 edge（hashed /admin/_n 走磁盘），Nitro 在 :3005。
+PC/H5/后台对外只有 :3001（edge：hashed /admin/_n 走磁盘）。
+site Nitro :3004，admin Nitro :3005。不要 bounce edge，不要再对外开 :3002。
 --build 只弹 Nitro，避免 Cloudflare 把 JS/CSS 打成 503。
 EOF
 }
@@ -192,12 +194,21 @@ bounce_unit() {
   local i
   for i in $(seq 1 20); do
     if sys is-active --quiet "${unit}"; then
-      return 0
+      break
     fi
     sleep 0.5
   done
-  sys status --no-pager -l "${unit}" >&2 || true
-  fail "${unit} 未能进入 active"
+  if ! sys is-active --quiet "${unit}"; then
+    sys status --no-pager -l "${unit}" >&2 || true
+    fail "${unit} 未能进入 active"
+  fi
+  for i in $(seq 1 20); do
+    if [[ -n "$(listen_pids "${port}")" ]]; then
+      return 0
+    fi
+    sleep 0.3
+  done
+  log "warn: ${unit} active 但 :${port} 尚未监听"
 }
 
 wait_http() {
@@ -266,14 +277,14 @@ build_nuxt() {
 }
 
 verify_admin() {
-  wait_http "admin" "http://127.0.0.1:${PORT_ADMIN}/admin/login"
+  wait_http "admin" "http://127.0.0.1:${PORT_WEB}/admin/login"
   local href code ctype
-  href="$(curl -sS --max-time 5 "http://127.0.0.1:${PORT_ADMIN}/admin/login" | grep -oE '/admin/_n/[^" ]+\.css' | head -1 || true)"
+  href="$(curl -sS --max-time 5 "http://127.0.0.1:${PORT_WEB}/admin/login" | grep -oE '/admin/_n/[^" ]+\.css' | head -1 || true)"
   if [[ -z "${href}" ]]; then
     return 0
   fi
-  code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${PORT_ADMIN}${href}" || printf '000')"
-  ctype="$(curl -sS -o /dev/null -w '%{content_type}' --max-time 5 "http://127.0.0.1:${PORT_ADMIN}${href}" || true)"
+  code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${PORT_WEB}${href}" || printf '000')"
+  ctype="$(curl -sS -o /dev/null -w '%{content_type}' --max-time 5 "http://127.0.0.1:${PORT_WEB}${href}" || true)"
   log "admin css ${href} → ${code} ${ctype}"
   if [[ "${code}" != "200" || "${ctype}" != text/css* ]]; then
     fail "admin hashed css 未就绪: ${href} → ${code} ${ctype}"
@@ -288,7 +299,7 @@ do_status() {
     case "${unit}" in
       "${UNIT_RS}") port="${PORT_RS}" ;;
       "${UNIT_SITE}") port="${PORT_SITE}" ;;
-      "${UNIT_ADMIN_EDGE}") port="${PORT_ADMIN}" ;;
+      "${UNIT_ADMIN_EDGE}") port="${PORT_WEB}" ;;
       "${UNIT_ADMIN}") port="${PORT_ADMIN_NITRO}" ;;
     esac
     if sys is-active --quiet "${unit}"; then
@@ -304,12 +315,12 @@ do_status() {
   printf '\n'
   printf 'HTTP\n'
   printf '  rust   /health          %s\n' "$(http_code "http://127.0.0.1:${PORT_RS}/health")"
-  printf '  site   /                %s\n' "$(http_code "http://127.0.0.1:${PORT_SITE}/")"
-  printf '  admin  /admin/login     %s\n' "$(http_code "http://127.0.0.1:${PORT_ADMIN}/admin/login")"
+  printf '  web    /                %s\n' "$(http_code "http://127.0.0.1:${PORT_WEB}/")"
+  printf '  admin  /admin/login     %s\n' "$(http_code "http://127.0.0.1:${PORT_WEB}/admin/login")"
 }
 
 verify_rust() { wait_http "rust" "http://127.0.0.1:${PORT_RS}/health"; }
-verify_site() { wait_http "site" "http://127.0.0.1:${PORT_SITE}/"; }
+verify_site() { wait_http "site" "http://127.0.0.1:${PORT_WEB}/"; }
 
 restart_rust() {
   if [[ "${DO_BUILD}" -eq 1 ]]; then
@@ -326,6 +337,7 @@ restart_site() {
     build_nuxt "@phpyun/site"
   fi
   bounce_unit "${UNIT_SITE}" "${PORT_SITE}"
+  ensure_web_edge
   if [[ "${DO_VERIFY}" -eq 1 ]]; then
     verify_site
   fi
@@ -344,25 +356,38 @@ wait_unit() {
   fail "${unit} 未能进入 active"
 }
 
-# 对外 :3002 由 edge 占着。重启只弹 Nitro :3005，hashed /_n 继续从磁盘出。
-bounce_admin_nitro() {
-  if sys is-active --quiet "${UNIT_ADMIN_EDGE}" 2>/dev/null \
-    && [[ -n "$(listen_pids "${PORT_ADMIN}")" ]]; then
-    bounce_unit "${UNIT_ADMIN}" "${PORT_ADMIN_NITRO}"
+# site 必须先占 :3004，edge 才能绑 :3001。不要把 Nitro 绑到 3001。
+ensure_site_internal() {
+  if sys is-active --quiet "${UNIT_SITE}" 2>/dev/null \
+    && [[ -n "$(listen_pids "${PORT_SITE}")" ]]; then
     return 0
   fi
-  log "切到 admin edge :${PORT_ADMIN} + Nitro :${PORT_ADMIN_NITRO}"
-  sys stop "${UNIT_ADMIN}" || true
+  bounce_unit "${UNIT_SITE}" "${PORT_SITE}"
+}
+
+# 对外 :3001 由 edge 占着。不要 bounce edge。
+ensure_web_edge() {
+  if sys is-active --quiet "${UNIT_ADMIN_EDGE}" 2>/dev/null \
+    && [[ -n "$(listen_pids "${PORT_WEB}")" ]]; then
+    return 0
+  fi
+  ensure_site_internal
+  log "启动 web edge :${PORT_WEB}（site :${PORT_SITE} admin :${PORT_ADMIN_NITRO}）"
   sys stop "${UNIT_ADMIN_EDGE}" || true
   sleep 0.4
-  free_port "${PORT_ADMIN}"
-  free_port "${PORT_ADMIN_NITRO}"
-  log "启动 ${UNIT_ADMIN}"
-  sys start "${UNIT_ADMIN}"
-  wait_unit "${UNIT_ADMIN}"
-  log "启动 ${UNIT_ADMIN_EDGE}"
+  free_port "${PORT_WEB}"
+  if [[ -n "$(listen_pids "${PORT_OLD_ADMIN}")" ]]; then
+    log "释放旧对外 :${PORT_OLD_ADMIN}"
+    free_port "${PORT_OLD_ADMIN}"
+  fi
   sys start "${UNIT_ADMIN_EDGE}"
   wait_unit "${UNIT_ADMIN_EDGE}"
+}
+
+# 重启只弹 Nitro :3005，hashed /_n 继续从磁盘出。
+bounce_admin_nitro() {
+  ensure_web_edge
+  bounce_unit "${UNIT_ADMIN}" "${PORT_ADMIN_NITRO}"
 }
 
 restart_admin() {

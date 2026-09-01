@@ -10,4 +10,4 @@ alwaysApply: true
 3. **不要改 PHP 原项目**：`uploads/` 下控制器、模板、后台 Vue 源码只读对照。用户上传文件目录可继续给静态 alias，但不要改 PHP 业务代码。
 4. 改接口只动 `phpyun-rs/`；改页面只动 `web/`。编译后 `sudo systemctl restart test-jobs-phpyun-rs-3003`。
 5. Rust 文档索引：[`.cursor/docs/rust/README.md`](../docs/rust/README.md)（现状 / 历史 / 契约 / 运维分类）。改 `phpyun-rs/` 时另读 `rust-code.mdc`。
-6. Admin **对外仍是 `:3002`**（`test-jobs-phpyun-admin-edge`：磁盘出 `/admin/_n`，其余反代）。Nitro 在 **`:3005`**（`test-jobs-phpyun-admin`）。不要把 Nitro 再绑回 3002，也不要 bounce edge。
+6. **Web 对外只有 `:3001`**（`test-jobs-phpyun-admin-edge`：PC/H5 + `/admin`）。site Nitro 在 **`:3004`**，admin Nitro 在 **`:3005`**。hashed `/admin/_n` 走磁盘。不要把 Nitro 绑到 3001/3002，不要 bounce edge，不要再对外开 `:3002`。

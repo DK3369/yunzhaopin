@@ -7,6 +7,8 @@ export type PhpAction = {
   transformRes?: (data: unknown) => unknown
   /** PHP msgNum echoes the object as the whole body */
   rawBody?: boolean
+  /** PHP `admin_json($code)` — map envelope msg onto Vue `res.error` */
+  phpError?: number
 }
 
 function asRecord(data: unknown): Record<string, unknown> {
@@ -120,6 +122,15 @@ function pageQuery(body: Record<string, unknown>): Record<string, unknown> {
   return { ...body, page, page_size }
 }
 
+function pageQueryDef(def: number) {
+  return (body: Record<string, unknown>): Record<string, unknown> => {
+    const page = Number(body.page || body.currentPage || 1) || 1
+    const page_size =
+      Number(body.page_size || body.pageSize || body.limit || body.perPage || def) || def
+    return { ...body, page, page_size }
+  }
+}
+
 function idFromDel(body: Record<string, unknown>): Record<string, unknown> {
   const ids = idsFromDel(body).ids as number[]
   return { id: ids[0] || Number(body.id || 0) }
@@ -202,6 +213,10 @@ function phpContent(mod: string, act: string): PhpAction {
 
 function phpContentRaw(mod: string, act: string): PhpAction {
   return { path: `/v1/admin/php-content/${mod}/${act}`, rawBody: true }
+}
+
+function phpContentCode(mod: string, act: string, error: number): PhpAction {
+  return { path: `/v1/admin/php-content/${mod}/${act}`, phpError: error }
 }
 
 function catKind(kind: string): PhpAction {
@@ -999,9 +1014,14 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/singlepage/index': phpContent('pages', 'index'),
   'system/singlepage/add': phpContent('pages', 'add'),
   'system/singlepage/save': phpContent('pages', 'save'),
-  'system/singlepage/del': phpContent('pages', 'delete'),
+  'system/singlepage/del': phpContentCode('pages', 'delete', 9),
   'system/singlepage/make': phpContent('pages', 'make'),
   'system/singlepage/ajax': phpContent('pages', 'ajax'),
+  'system/singleclass': { path: '/v1/admin/php-content/desc-class/index', transformReq: pageQueryDef(10) },
+  'system/singleclass/index': { path: '/v1/admin/php-content/desc-class/index', transformReq: pageQueryDef(10) },
+  'system/singleclass/add': phpContentRaw('desc-class', 'add'),
+  'system/singleclass/ajax': phpContent('desc-class', 'ajax'),
+  'system/singleclass/del': phpContentCode('desc-class', 'delete', 9),
   'tool/weixinmenu/index': phpContent('wx-nav', 'config'),
   'tool/weixinmenu/save': { path: '/v1/admin/site-settings/batch' },
   'tool/weixinmenu/wxnav': phpContent('wx-nav', 'wxnav'),
@@ -1106,7 +1126,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'system/domain_group': { list: '/v1/admin/domain-admins' },
   'system/domain_list': { list: '/v1/admin/domains', save: '/v1/admin/domains/upsert', del: '/v1/admin/domains/delete' },
   'system/singlepage': { list: '/v1/admin/php-content/pages/index' },
-  'system/singleclass': { list: '/v1/admin/categories/list' },
+  'system/singleclass': { list: '/v1/admin/php-content/desc-class/index' },
   'system/category_introduce_class': { list: '/v1/admin/desc-classes/list' },
   'system/set_navmap': { list: '/v1/admin/navmap', save: '/v1/admin/navmap/save', del: '/v1/admin/navmap/delete' },
   'system/category_reason': { list: '/v1/admin/categories/list' },

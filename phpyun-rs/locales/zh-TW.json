@@ -298,7 +298,17 @@
     "rejected": "已拒絕",
     "purged": "已永久刪除",
     "reloaded": "已重新載入",
-    "email_verified": "信箱已驗證"
+    "email_verified": "信箱已驗證",
+    "admin_system_00661": "產生靜態頁",
+    "admin_system_00663": "自訂頁面",
+    "admin_00198": "外部連結",
+    "admin_system_00059": "產生成功",
+    "admin_system_00058": "靜態頁地址必須以 .html 結尾",
+    "admin_system_00060": "靜態頁地址不合法",
+    "common_06471": "單頁面類別刪除成功",
+    "common_06472": "單頁面刪除成功",
+    "admin_user_00186": "刪除失敗",
+    "admin_01401": "產生失敗"
   },
   "recommend": {
     "disabled": "推薦功能已關閉",

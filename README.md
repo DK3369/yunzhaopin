@@ -28,8 +28,8 @@ BIND=127.0.0.1:3003 METRICS_BIND=127.0.0.1:9091 \
 
 # 前台（另开终端；Node 22 + pnpm 10.14）
 cd web
-RUST_API_URL=http://127.0.0.1:3003 pnpm --filter @phpyun/site dev   # :3001
-RUST_API_URL=http://127.0.0.1:3003 pnpm --filter @phpyun/admin dev  # :3002
+RUST_API_URL=http://127.0.0.1:3003 pnpm --filter @phpyun/site dev   # :3001 PC/H5 + /admin 反代
+RUST_API_URL=http://127.0.0.1:3003 pnpm --filter @phpyun/admin dev  # :3002 仅本机；浏览器走 :3001/admin/
 ```
 
 更完整的命令见 [phpyun-rs/README.md](phpyun-rs/README.md)。下线 PHP 的步骤见 [ops/T14_RETIRE_PHP.md](ops/T14_RETIRE_PHP.md)（须明确同意后才执行）。

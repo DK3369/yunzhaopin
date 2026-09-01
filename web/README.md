@@ -6,10 +6,10 @@ pnpm workspace：`apps/site`（SSR）+ `apps/admin`（`ssr: false`）+ `layers/b
 cd web
 pnpm install
 # 另开终端：cd ../phpyun-rs && cargo run -p phpyun-rs
-pnpm dev:site    # :3001
-pnpm dev:admin   # :3002  静态后台；登录走 /api/auth/*（httpOnly cookie `token`）
+pnpm dev:site    # :3001（PC/H5；并把 /admin 反代到 admin dev）
+pnpm dev:admin   # :3002 仅本机进程；浏览器走 http://127.0.0.1:3001/admin/
 pnpm gen:types:site    # 需 Rust /api-docs/v1/openapi.json
 pnpm gen:types:admin
 ```
 
-生产：site 用 `nuxt build` 常驻 Node；admin 用 `nuxt generate`，Nginx 托管 `/admin`，`/api` 反代到 site 的 Nitro（BFF），`/v1` `/v2` `/callback` `/health` 反代 Rust。见 `ops/nginx/frontend-backend-split.conf`。
+生产：nginx `/` `/api/` `/admin/` 都到 `:3001`（web edge）。site Nitro `:3004`，admin Nitro `:3005`。见 `ops/nginx/zzzz.com.nuxt-cutover.conf`。

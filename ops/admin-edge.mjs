@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * Public admin port :3002. Serves hashed `/admin/_n/` from disk so Cloudflare
- * does not 503 those files while Nitro restarts. Everything else proxies to Nitro.
+ * Public web port :3001. PC / H5 (site Nitro) and /admin (admin Nitro) share it.
+ * Hashed `/admin/_n/` is served from disk so Cloudflare does not 503 those files
+ * while admin Nitro restarts. Do not bind this process to :3002.
  */
 import http from 'node:http'
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { extname, join, normalize } from 'node:path'
 
 const PUBLIC_DIR = process.env.ADMIN_PUBLIC || '/www/wwwroot/zzzz.com/web/apps/admin/.output/public'
-const UPSTREAM = process.env.ADMIN_UPSTREAM || '127.0.0.1:3005'
+const SITE_UPSTREAM = process.env.SITE_UPSTREAM || '127.0.0.1:3004'
+const ADMIN_UPSTREAM = process.env.ADMIN_UPSTREAM || '127.0.0.1:3005'
 const HOST = process.env.HOST || '127.0.0.1'
-const PORT = Number(process.env.PORT || 3002)
+const PORT = Number(process.env.PORT || 3001)
 const PUBLIC_ROOT = normalize(PUBLIC_DIR)
 
 const MIME = {
@@ -25,9 +27,17 @@ const MIME = {
   '.woff2': 'font/woff2',
 }
 
-function hashedFile(urlPath) {
-  const raw = decodeURIComponent(String(urlPath || '').split('?')[0])
-  const noAdmin = raw.replace(/^\/admin(?=\/)/, '')
+function urlPath(url) {
+  return decodeURIComponent(String(url || '').split('?')[0])
+}
+
+function isAdminPath(url) {
+  const raw = urlPath(url)
+  return raw === '/admin' || raw.startsWith('/admin/')
+}
+
+function hashedFile(url) {
+  const noAdmin = urlPath(url).replace(/^\/admin(?=\/)/, '')
   if (!noAdmin.startsWith('/_n/')) return null
   const abs = normalize(join(PUBLIC_ROOT, noAdmin.slice(1)))
   if (!abs.startsWith(PUBLIC_ROOT + '/') && abs !== PUBLIC_ROOT) return null
@@ -56,16 +66,21 @@ function serveFile(req, res, abs) {
   createReadStream(abs).pipe(res)
 }
 
-function proxy(req, res) {
-  const [hostname, port] = UPSTREAM.split(':')
-  const headers = { ...req.headers }
+function splitUpstream(upstream) {
+  const i = String(upstream).lastIndexOf(':')
+  if (i <= 0) return { hostname: String(upstream), port: 80 }
+  return { hostname: upstream.slice(0, i), port: Number(upstream.slice(i + 1) || 80) }
+}
+
+function proxy(req, res, upstream) {
+  const { hostname, port } = splitUpstream(upstream)
   const p = http.request(
     {
       hostname,
-      port: Number(port || 80),
+      port,
       path: req.url,
       method: req.method,
-      headers,
+      headers: { ...req.headers },
     },
     (up) => {
       res.writeHead(up.statusCode || 502, up.headers)
@@ -79,22 +94,57 @@ function proxy(req, res) {
         'cache-control': 'no-store',
       })
     }
-    res.end('admin upstream unavailable')
+    res.end('upstream unavailable')
   })
   req.pipe(p)
 }
 
-http
-  .createServer((req, res) => {
-    if (req.method === 'GET' || req.method === 'HEAD') {
-      const file = hashedFile(req.url)
-      if (file) {
-        serveFile(req, res, file)
-        return
+function proxyUpgrade(req, socket, head, upstream) {
+  const { hostname, port } = splitUpstream(upstream)
+  const p = http.request({
+    hostname,
+    port,
+    path: req.url,
+    method: req.method,
+    headers: { ...req.headers },
+  })
+  p.on('upgrade', (upRes, upSocket, upHead) => {
+    const lines = [`HTTP/1.1 ${upRes.statusCode || 101} Switching Protocols`]
+    for (const [k, v] of Object.entries(upRes.headers)) {
+      if (v == null) continue
+      if (Array.isArray(v)) {
+        for (const item of v) lines.push(`${k}: ${item}`)
+      } else {
+        lines.push(`${k}: ${v}`)
       }
     }
-    proxy(req, res)
+    socket.write(`${lines.join('\r\n')}\r\n\r\n`)
+    if (upHead?.length) upSocket.unshift(upHead)
+    if (head?.length) socket.unshift(head)
+    upSocket.pipe(socket)
+    socket.pipe(upSocket)
   })
-  .listen(PORT, HOST, () => {
-    console.log(`admin-edge http://${HOST}:${PORT} _n=${PUBLIC_ROOT} upstream=${UPSTREAM}`)
-  })
+  p.on('error', () => socket.destroy())
+  p.end()
+}
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET' || req.method === 'HEAD') {
+    const file = hashedFile(req.url)
+    if (file) {
+      serveFile(req, res, file)
+      return
+    }
+  }
+  proxy(req, res, isAdminPath(req.url) ? ADMIN_UPSTREAM : SITE_UPSTREAM)
+})
+
+server.on('upgrade', (req, socket, head) => {
+  proxyUpgrade(req, socket, head, isAdminPath(req.url) ? ADMIN_UPSTREAM : SITE_UPSTREAM)
+})
+
+server.listen(PORT, HOST, () => {
+  console.log(
+    `web-edge http://${HOST}:${PORT} site=${SITE_UPSTREAM} admin=${ADMIN_UPSTREAM} _n=${PUBLIC_ROOT}`,
+  )
+})

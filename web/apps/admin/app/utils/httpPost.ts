@@ -77,6 +77,9 @@ export async function httpPost(
       return { data: { error: 1, msg: env.msg || env.key || 'error', data: phpFailData(env.data) } }
     }
     const data = action.transformRes ? action.transformRes(env.data) : env.data
+    if (action.phpError != null) {
+      return { data: { error: action.phpError, msg: env.msg || 'ok', data } }
+    }
     if (action.rawBody) {
       return { data: (data && typeof data === 'object' ? data : {}) as Record<string, unknown> }
     }

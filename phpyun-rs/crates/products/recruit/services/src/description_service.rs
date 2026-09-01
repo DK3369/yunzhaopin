@@ -23,7 +23,7 @@ fn classes_cache() -> &'static SimpleCache<(), Vec<DescClass>> {
 }
 
 /// Invalidate after writes (call after admin create/update/delete)
-async fn invalidate_classes_cache() {
+pub async fn invalidate_classes_cache() {
     if let Some(c) = CLASSES_CACHE.get() {
         c.invalidate(&()).await;
     }

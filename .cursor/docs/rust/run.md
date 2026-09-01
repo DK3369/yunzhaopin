@@ -36,7 +36,7 @@ unit 的 `ExecStart` 是 **debug** binary：`phpyun-rs/target/debug/phpyun-rs`�
 | `http://127.0.0.1:3003/api-docs/v1/openapi.json` | App 契约（dev/test） |
 | `http://127.0.0.1:3003/api-docs/admin/openapi.json` | Admin 契约 |
 
-公网：nginx `/yapi/` `/callback/` `/v1/` → `:3003`。Site `:3001`、Admin `:3002` 的 `RUST_API_URL` 必须是 `http://127.0.0.1:3003`。
+公网：nginx `/yapi/` `/callback/` `/v1/` → `:3003`。nginx `/` 与 `/admin/` → web edge `:3001`。site/admin 的 `RUST_API_URL` 必须是 `http://127.0.0.1:3003`。
 
 ## 验证改接口
 

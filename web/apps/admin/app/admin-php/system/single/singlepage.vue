@@ -155,10 +155,10 @@ export default {
                     endLoading();
                     var res = result.data
                     if (res.error == 0) {
-                        that.tableData = res.data.list
-                        that.total = parseInt(res.data.total)
-                        that.page_sizes = res.data.page_sizes;
-						that.limit = res.data.page_size;
+                        that.tableData = (res.data && res.data.list) ? res.data.list : []
+                        that.total = parseInt(res.data.total || 0)
+                        that.page_sizes = res.data.page_sizes || [10, 20, 50, 100];
+						that.limit = res.data.page_size || that.limit || 20;
                         if (that.prevPage != that.currentPage) {
                             that.prevPage = that.currentPage;
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;

@@ -128,9 +128,9 @@ export default {
                     httpPost('m=system&c=singleclass&a=index', params).then(function(result){
                         var res = result.data
                         if (res.error == 0) {
-                            that.tableData = res.data.list
-                            that.total = parseInt(res.data.total)
-                            that.perPage = parseInt(res.data.perPage)
+                            that.tableData = (res.data && res.data.list) ? res.data.list : []
+                            that.total = parseInt(res.data.total || 0)
+                            that.perPage = parseInt(res.data.perPage || 10)
                             if (that.prevPage != that.currentPage) {
                                 that.prevPage = that.currentPage;
                                 that.$refs.multipleTable.bodyWrapper.scrollTop = 0;

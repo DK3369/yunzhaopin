@@ -1,5 +1,5 @@
 [Unit]
-Description=PHPYun Nuxt site (Nitro) on :3001
+Description=PHPYun Nuxt site (Nitro) on :3004
 After=network-online.target
 
 [Service]
@@ -11,9 +11,9 @@ Environment=PATH=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin:/usr/bin
 Environment=TMPDIR=/var/tmp/npm-tmp
 Environment=NODE_ENV=production
 Environment=HOST=127.0.0.1
-Environment=PORT=3001
+Environment=PORT=3004
 Environment=NITRO_HOST=127.0.0.1
-Environment=NITRO_PORT=3001
+Environment=NITRO_PORT=3004
 Environment=RUST_API_URL=http://127.0.0.1:3003
 Environment=NUXT_RUST_API=http://127.0.0.1:3003
 Environment=NUXT_PUBLIC_SITE_URL=https://job1.ov6.com

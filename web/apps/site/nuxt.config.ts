@@ -80,6 +80,10 @@ export default defineNuxtConfig({
   },
   nitro: {
     prerender: { crawlLinks: false, routes: [] },
+    // 本机 `pnpm dev:admin` 仍占 :3002；浏览器只开 :3001，/admin 反代过去。现网由 :3001 edge 分流。
+    devProxy: {
+      '/admin': { target: 'http://127.0.0.1:3002', changeOrigin: true },
+    },
     publicAssets: [
       {
         baseURL: 'legacy/pc/style',
