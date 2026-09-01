@@ -67,6 +67,11 @@ pub struct ArticleFilter<'a> {
     pub category: Option<&'a str>,
     pub keyword: Option<&'a str>,
     pub rec_only: bool,
+    /// PHP Smarty `{yun:}article type=...{/yun}`: `FIND_IN_SET(tag, describe)`.
+    /// Whitelisted to alphanumerics (`t`, `indextj`, …).
+    pub describe_tag: Option<&'a str>,
+    /// PHP `pic=1`: require a non-empty `newsphoto`.
+    pub cover_only: bool,
     pub did: u32,
     pub datetime_min: Option<i64>,
     pub author_kw: Option<&'a str>,
@@ -127,6 +132,19 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a
     }
     if f.rec_only {
         qb.push(" AND FIND_IN_SET('1', COALESCE(n.`describe`, '')) > 0");
+    }
+    if let Some(tag) = f.describe_tag {
+        if !tag.is_empty()
+            && tag.len() <= 32
+            && tag.bytes().all(|b| b.is_ascii_alphanumeric())
+        {
+            qb.push(" AND FIND_IN_SET(");
+            qb.push_bind(tag);
+            qb.push(", COALESCE(n.`describe`, '')) > 0");
+        }
+    }
+    if f.cover_only {
+        qb.push(" AND COALESCE(n.newsphoto, '') <> ''");
     }
     if let Some(ts) = f.datetime_min {
         qb.push(" AND n.datetime >= ");

@@ -31,6 +31,9 @@ pub struct CompanySummary {
 
     // ---- Other ----
     pub logo: Option<String>,
+    /// Homepage famous-company banner (`phpyun_hotjob.hot_pic`). Absent on regular lists.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hot_pic: Option<String>,
     pub rec: i32,
     pub hits: i32,
     pub rating: i32,

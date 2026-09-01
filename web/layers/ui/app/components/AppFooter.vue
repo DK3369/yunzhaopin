@@ -19,9 +19,9 @@
               <dt>{{ $t('common.website_nav') }}</dt>
               <dd>
                 <ul>
-                  <li><NuxtLink to="/pages/about">{{ $t('common.home') }}</NuxtLink></li>
-                  <li><NuxtLink to="/pages/contact">{{ $t('common.phone') }}</NuxtLink></li>
-                  <li><NuxtLink to="/advice">{{ $t('common.site_notice') }}</NuxtLink></li>
+                  <li><NuxtLink to="/">{{ $t('common.home') }}</NuxtLink></li>
+                  <li>{{ $t('common.phone') }}<template v-if="phone"> {{ phone }}</template></li>
+                  <li><NuxtLink to="/announcements">{{ $t('common.site_notice') }}</NuxtLink></li>
                 </ul>
               </dd>
             </dl>

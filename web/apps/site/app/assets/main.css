@@ -120,12 +120,46 @@ html {
     cursor: pointer;
     font-size: 15px;
   }
+  .index_huandeng {
+    position: relative;
+    overflow: hidden;
+  }
+  .index_huandeng .banner-slides a {
+    display: none;
+  }
+  .index_huandeng .banner-slides a.is-on {
+    display: block;
+  }
   .index_huandeng img {
     width: 100%;
     height: 315px;
     object-fit: cover;
     display: block;
     border-radius: 5px;
+  }
+  .banner-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    text-align: center;
+    z-index: 2;
+  }
+  .banner-dots span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+  }
+  .banner-dots span.is-on {
+    background: #fff;
+  }
+  .index_banner_1250 .b_tip img {
+    max-width: 100%;
+    display: block;
   }
   .yunheader_60jpbox {
     overflow-x: auto;
@@ -188,12 +222,40 @@ html {
     color: #999;
     font-size: 0.32rem;
   }
+  .roll {
+    position: relative;
+  }
+  .roll > a {
+    display: none;
+  }
+  .roll > a.is-on {
+    display: block;
+  }
   img.h5-banner {
     width: 100%;
     height: 3.2rem;
     object-fit: cover;
     border-radius: 6px;
     display: block;
+  }
+  .h5-banner-dots {
+    bottom: 0.16rem;
+  }
+  .h5-job-tabs {
+    display: flex;
+    gap: 0.32rem;
+    padding: 0.24rem 0.3rem 0.12rem;
+  }
+  .h5-job-tabs button {
+    background: transparent;
+    border: 0;
+    color: #666;
+    font-size: 0.32rem;
+    padding: 0;
+  }
+  .h5-job-tabs button.on {
+    color: #2778f8;
+    font-weight: 600;
   }
   .site-wordmark {
     font-size: 0.48rem;

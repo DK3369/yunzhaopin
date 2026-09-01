@@ -100,6 +100,7 @@ pub fn company_summary_from_dict(
         city_two: dicts.city(c.cityid).to_string(),
 
         logo: c.logo,
+        hot_pic: None,
         rec: c.rec,
         hits: c.hits,
         rating: c.rating,

@@ -1,5 +1,18 @@
 <script setup lang="ts">
-import { catTree, formatSalary, listFailMsg, mediaUrl, PLACEHOLDER_BANNER, PLACEHOLDER_LOGO, type CatNode, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
+
+type Banner = { image_n?: string; image?: string; link?: string; title?: string; pic_content?: string }
+type ArticleLike = {
+  id: number
+  title: string
+  datetime_n?: string
+  published_at_n?: string
+  cover?: string
+  picurl?: string
+  category?: string
+  name?: string
+}
+type FriendLink = { id: number; name: string; url: string; logo?: string; category?: string }
 
 const api = useApi()
 const { t } = useI18n()
@@ -8,20 +21,18 @@ const { siteName, me, h5Nav } = useSiteChrome()
 const { data: home, error } = await useAsyncData('home', async () => {
   const h = (await api.get('/v1/wap/home', { did: 0 })) as {
     hot_jobs?: JobLike[]
-    rec_companies?: Array<Record<string, unknown>>
+    rec_companies?: CompanyLike[]
     announcements?: unknown[]
     hot_keywords?: unknown[]
-    new_articles?: unknown[]
+    new_articles?: ArticleLike[]
+    featured_articles?: ArticleLike[]
+    hot_articles?: ArticleLike[]
   }
   const [rec, latest, urgent] = await Promise.all([
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
   ])
-  if (!(h.rec_companies || []).length) {
-    const c = await api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies', { page_size: 12 })
-    h.rec_companies = c.list || []
-  }
   return {
     ...h,
     rec_jobs: rec.list || [],
@@ -33,10 +44,21 @@ const { data: cats } = await useAsyncData('job-cats', () =>
   api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
 )
 const { data: adsPc } = await useAsyncData('ads-3', () =>
-  api.get<Array<{ image_n?: string; image?: string; link?: string; title?: string }>>('/v1/wap/ads', { slot: '3', limit: 5 }).catch(() => []),
+  api.get<Banner[]>('/v1/wap/ads', { slot: '3', limit: 5 }).catch(() => [] as Banner[]),
 )
 const { data: adsH5 } = await useAsyncData('ads-50', () =>
-  api.get<Array<{ image_n?: string; image?: string; link?: string; title?: string }>>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => []),
+  api.get<Banner[]>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => [] as Banner[]),
+)
+const { data: adsMid } = await useAsyncData('ads-mid', async () => {
+  const [slot13, slot14, slot15] = await Promise.all([
+    api.get<Banner[]>('/v1/wap/ads', { slot: '13', limit: 3 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '14', limit: 3 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '15', limit: 3 }).catch(() => [] as Banner[]),
+  ])
+  return { slot13: slot13 || [], slot14: slot14 || [], slot15: slot15 || [] }
+})
+const { data: friendLinks } = await useAsyncData('home-links', () =>
+  api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
 )
 const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', () =>
   api
@@ -50,21 +72,53 @@ const latestJobList = computed(() => {
   const extra = (home.value as { latest_jobs?: JobLike[] } | null)?.latest_jobs || []
   return extra.length ? extra : hotJobs.value
 })
-const recJobList = computed(() => {
-  const extra = (home.value as { rec_jobs?: JobLike[] } | null)?.rec_jobs || []
-  return extra.length ? extra : latestJobList.value
+const recJobList = computed(() => ((home.value as { rec_jobs?: JobLike[] } | null)?.rec_jobs || []) as JobLike[])
+const urgentList = computed(() => ((home.value as { urgent_jobs?: JobLike[] } | null)?.urgent_jobs || []) as JobLike[])
+const companies = computed(() => (home.value?.rec_companies || []) as CompanyLike[])
+const announcements = computed(() => (home.value?.announcements || []) as Array<{ id: number; title: string }>)
+const keywords = computed(() => (home.value?.hot_keywords || []) as Array<{ keyword: string }>)
+const articles = computed(() => (home.value?.new_articles || []) as ArticleLike[])
+const featuredArticles = computed(() => {
+  const tagged = (home.value?.featured_articles || []) as ArticleLike[]
+  if (tagged.length) return tagged.slice(0, 2)
+  return articles.value.filter((a) => a.picurl || a.cover).slice(0, 2)
 })
-const urgentList = computed(() => {
-  const extra = (home.value as { urgent_jobs?: JobLike[] } | null)?.urgent_jobs || []
-  return extra.length ? extra : latestJobList.value.slice(0, 8)
-})
-const companies = computed(() => home.value?.rec_companies || [])
-const announcements = computed(() => home.value?.announcements || [])
-const keywords = computed(() => home.value?.hot_keywords || [])
-const articles = computed(() => home.value?.new_articles || [])
+const hotArticles = computed(() => (home.value?.hot_articles || []) as ArticleLike[])
 const resumeList = computed(() => resumes.value?.list || [])
-const pcBanners = computed(() => adsPc.value || [])
-const h5Banners = computed(() => adsH5.value || [])
+const pcBanners = computed(() => (adsPc.value || []).filter((b) => b.image_n || b.image))
+const h5Banners = computed(() => (adsH5.value || []).filter((b) => b.image_n || b.image))
+const mid13 = computed(() => adsMid.value?.slot13 || [])
+const mid14 = computed(() => adsMid.value?.slot14 || [])
+const mid15 = computed(() => adsMid.value?.slot15 || [])
+const hasMidAds = computed(() => mid13.value.length + mid14.value.length + mid15.value.length > 0)
+const linkList = computed(() => (Array.isArray(friendLinks.value) ? friendLinks.value : []) as FriendLink[])
+const linkPics = computed(() => linkList.value.filter((l) => String(l.category) === '2' && (l.logo || '').trim()))
+const linkTexts = computed(() => linkList.value.filter((l) => String(l.category) !== '2'))
+const hasLinks = computed(() => linkPics.value.length + linkTexts.value.length > 0)
+
+const pcSlide = ref(0)
+const h5Slide = ref(0)
+const h5Tab = ref<'latest' | 'rec'>('latest')
+const h5JobList = computed(() => (h5Tab.value === 'rec' ? recJobList.value : latestJobList.value))
+
+let pcTimer: ReturnType<typeof setInterval> | undefined
+let h5Timer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  pcTimer = setInterval(() => {
+    if (pcBanners.value.length > 1) pcSlide.value = (pcSlide.value + 1) % pcBanners.value.length
+  }, 4000)
+  h5Timer = setInterval(() => {
+    if (h5Banners.value.length > 1) h5Slide.value = (h5Slide.value + 1) % h5Banners.value.length
+  }, 4000)
+})
+onBeforeUnmount(() => {
+  if (pcTimer) clearInterval(pcTimer)
+  if (h5Timer) clearInterval(h5Timer)
+})
+
+function adHref(ad: Banner) {
+  return ad.link || undefined
+}
 
 const loginUser = ref('')
 const loginPass = ref('')
@@ -84,7 +138,7 @@ async function homeLogin() {
 }
 
 useSeoMeta({
-  title: () => `${siteName.value} - ${t('common.home')}`,
+  title: () => (siteName.value ? `${siteName.value} - ${t('common.home')}` : t('common.home')),
   description: () => `${t('common.job')} / ${t('common.company')} / ${t('common.article')}`,
 })
 useHead({
@@ -134,11 +188,25 @@ useHead({
           </div>
 
           <div class="index_frist_box">
-            <div class="index_huandeng">
-              <a v-if="pcBanners[0]" :href="pcBanners[0].link || '/jobs'">
-                <img :src="mediaUrl(pcBanners[0].image_n || pcBanners[0].image, PLACEHOLDER_BANNER)" :alt="pcBanners[0].title || ''" />
-              </a>
-              <img v-else :src="PLACEHOLDER_BANNER" alt="" />
+            <div v-if="pcBanners.length" class="index_huandeng">
+              <div class="banner-slides">
+                <a
+                  v-for="(b, i) in pcBanners"
+                  :key="i"
+                  :class="{ 'is-on': i === pcSlide }"
+                  :href="b.link || '/jobs'"
+                >
+                  <img :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" />
+                </a>
+              </div>
+              <div v-if="pcBanners.length > 1" class="banner-dots">
+                <span
+                  v-for="(_, i) in pcBanners"
+                  :key="i"
+                  :class="{ 'is-on': i === pcSlide }"
+                  @click="pcSlide = i"
+                />
+              </div>
             </div>
             <div class="yunheader_60jpbox">
               <div v-for="job in urgentList" :key="job.id" class="js_new">
@@ -152,6 +220,7 @@ useHead({
                 </NuxtLink>
                 <div class="yunheader_60jpcom">{{ job.com_name }}</div>
               </div>
+              <p v-if="!urgentList.length" class="muted" style="padding: 16px 8px">{{ $t('ui.no_jobs') }}</p>
             </div>
           </div>
 
@@ -198,6 +267,29 @@ useHead({
         </div>
       </div>
 
+      <div v-if="hasMidAds" class="index_banner fl">
+        <div class="index_banner_1250 fl">
+          <div v-for="ad in mid13" :key="'13-' + (ad.title || ad.image)" class="b_w1200 b_tip">
+            <a v-if="ad.image_n || ad.image" :href="adHref(ad) || '/jobs'">
+              <img :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+            </a>
+            <div v-else-if="ad.pic_content" v-html="ad.pic_content" />
+          </div>
+          <div v-for="ad in mid14" :key="'14-' + (ad.title || ad.image)" class="b_w289 b_tip">
+            <a v-if="ad.image_n || ad.image" :href="adHref(ad) || '/jobs'">
+              <img :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+            </a>
+            <div v-else-if="ad.pic_content" v-html="ad.pic_content" />
+          </div>
+          <div v-for="ad in mid15" :key="'15-' + (ad.title || ad.image)" class="b_w143 b_tip">
+            <a v-if="ad.image_n || ad.image" :href="adHref(ad) || '/jobs'">
+              <img :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+            </a>
+            <div v-else-if="ad.pic_content" v-html="ad.pic_content" />
+          </div>
+        </div>
+      </div>
+
       <div class="index_frame_right">
         <div class="yunheader_60_tit">
           <NuxtLink to="/companies" class="yunheader_60_tit_a">
@@ -225,7 +317,7 @@ useHead({
           <ul>
             <JobCard v-for="job in recJobList" :key="'r' + job.id" :job="job" />
           </ul>
-          <p v-if="!recJobList.length" class="muted" style="padding: 20px">{{ $t('ui.no_hot_jobs') }}</p>
+          <p v-if="!recJobList.length" class="muted" style="padding: 20px">{{ $t('ui.no_jobs') }}</p>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/jobs">{{ $t('common.view_more') }}</NuxtLink></div>
 
@@ -238,6 +330,7 @@ useHead({
           <ul>
             <JobCard v-for="job in latestJobList" :key="'n' + job.id" :job="job" />
           </ul>
+          <p v-if="!latestJobList.length" class="muted" style="padding: 20px">{{ $t('ui.no_jobs') }}</p>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/jobs">{{ $t('common.view_more') }}</NuxtLink></div>
       </div>
@@ -279,8 +372,23 @@ useHead({
             <i class="yunheader_60_tit_line" />{{ $t('home.workplace_news') }}<i class="yunheader_60_tit_rline" />
           </NuxtLink>
         </div>
+        <div class="yunheader_60_tit_p" data-no="1">{{ $t('home.workplace_headline') }}</div>
         <div class="index_news_box60">
           <div class="index_news_box">
+            <div v-for="a in featuredArticles" :key="'p' + a.id" class="index_news_list">
+              <div class="index_news_list_img">
+                <NuxtLink :to="`/articles/${a.id}`">
+                  <img :src="mediaUrl(a.picurl || a.cover, PLACEHOLDER_LOGO)" width="190" height="120" :alt="a.title" />
+                </NuxtLink>
+              </div>
+              <div class="index_news_list_info">
+                <div class="index_news_list_name">
+                  <NuxtLink :to="`/articles/${a.id}`" :title="a.title">{{ a.title }}</NuxtLink>
+                </div>
+                <div class="index_news_list_lb">{{ a.category || a.name || '' }}</div>
+                <div class="index_news_list_time">{{ a.datetime_n || a.published_at_n }}</div>
+              </div>
+            </div>
             <ul class="index_news_list_list">
               <li v-for="a in articles" :key="a.id">
                 <NuxtLink :to="`/articles/${a.id}`">
@@ -289,7 +397,37 @@ useHead({
                 <em>{{ a.datetime_n || a.published_at_n }}</em>
               </li>
             </ul>
-            <p v-if="!articles.length" class="muted" style="padding: 20px">{{ $t('wap_00144') }}</p>
+            <p v-if="!articles.length && !featuredArticles.length" class="muted" style="padding: 20px">{{ $t('wap_00144') }}</p>
+          </div>
+          <div v-if="hotArticles.length" class="index_hotnews">
+            <ul>
+              <li v-for="(a, idx) in hotArticles" :key="'h' + a.id">
+                <span class="index_hotnews_n" :class="idx < 3 ? 'hot' + (idx + 1) : ''">{{ idx + 1 }}</span>
+                <NuxtLink :to="`/articles/${a.id}`" :title="a.title">{{ a.title }}</NuxtLink>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="yunheader_60lookmore"><NuxtLink to="/articles">{{ $t('common.view_more') }}</NuxtLink></div>
+      </div>
+
+      <div v-if="hasLinks" class="index_zl_box">
+        <div class="index_link_box fl">
+          <div class="new_index_tit">
+            <span class="new_index_tit_list new_index_tit_cur">{{ $t('default_00256') }}<i class="new_index_tit_line" /></span>
+            <NuxtLink to="/links" class="new_index_tit_more">{{ $t('common.view_more') }}</NuxtLink>
+          </div>
+          <div>
+            <div v-if="linkPics.length" class="index_link_box_banner">
+              <a v-for="l in linkPics" :key="'img' + l.id" :href="l.url" target="_blank" rel="nofollow noopener">
+                <img :src="mediaUrl(l.logo)" :alt="l.name" width="160" height="50" />
+              </a>
+            </div>
+            <div v-if="linkTexts.length" class="index_link_box_p">
+              <span v-for="l in linkTexts" :key="'txt' + l.id" class="index_link_box_p_name">
+                <a :href="l.url" target="_blank" rel="nofollow noopener">{{ l.name }}</a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -300,11 +438,23 @@ useHead({
   <div class="site-h5">
     <div class="index_body">
       <div class="banner">
-        <div class="roll">
-          <a v-if="h5Banners[0]" :href="h5Banners[0].link || '/jobs'">
-            <img class="h5-banner" :src="mediaUrl(h5Banners[0].image_n || h5Banners[0].image, PLACEHOLDER_BANNER)" alt="" />
+        <div v-if="h5Banners.length" class="roll">
+          <a
+            v-for="(b, i) in h5Banners"
+            :key="i"
+            :class="{ 'is-on': i === h5Slide }"
+            :href="b.link || '/jobs'"
+          >
+            <img class="h5-banner" :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" />
           </a>
-          <img v-else class="h5-banner" :src="PLACEHOLDER_BANNER" alt="" />
+          <div v-if="h5Banners.length > 1" class="banner-dots h5-banner-dots">
+            <span
+              v-for="(_, i) in h5Banners"
+              :key="i"
+              :class="{ 'is-on': i === h5Slide }"
+              @click="h5Slide = i"
+            />
+          </div>
         </div>
         <div class="job">
           <div class="navbox_jgw">
@@ -371,8 +521,12 @@ useHead({
       </div>
 
       <div class="tab">
-        <JobCard v-for="job in latestJobList" :key="job.id" :job="job" />
-        <p v-if="!latestJobList.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_hot_jobs') }}</p>
+        <div class="h5-job-tabs">
+          <button type="button" :class="{ on: h5Tab === 'latest' }" @click="h5Tab = 'latest'">{{ $t('common.latest') }}</button>
+          <button type="button" :class="{ on: h5Tab === 'rec' }" @click="h5Tab = 'rec'">{{ $t('common.recommended') }}</button>
+        </div>
+        <JobCard v-for="job in h5JobList" :key="h5Tab + job.id" :job="job" />
+        <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_jobs') }}</p>
         <div class="yunheader_60lookmore" style="text-align: center; padding: 0.3rem 0 0.6rem">
           <NuxtLink to="/jobs">{{ $t('wap_00518') }}</NuxtLink>
         </div>

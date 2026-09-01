@@ -236,6 +236,7 @@ pub async fn list_articles(
         did: q.did,
         datetime_min: None,
         author_kw: None,
+        ..Default::default()
     };
     let r = article_service::list_public(&state, &filter, page).await?;
     Ok(ApiResponse::data(Paged::new(

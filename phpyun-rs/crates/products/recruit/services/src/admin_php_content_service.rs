@@ -1080,6 +1080,7 @@ async fn news_index(state: &AppState, body: &Value) -> AppResult<Value> {
         } else {
             None
         },
+        ..Default::default()
     };
     let db = state.db.reader();
     let rows = article_repo::list_admin(db, &f, offset, limit).await?;

@@ -33,17 +33,26 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingView {
 
 /// List public settings, or return selectable report reasons when
 /// `key=report_reasons`.
+#[derive(Debug, Default, serde::Deserialize, utoipa::ToSchema)]
+pub struct SettingsListBody {
+    /// Empty = all public settings. `report_reasons` returns report-reason options.
+    #[serde(default)]
+    pub key: String,
+}
+
+/// List public settings, or return selectable report reasons when
+/// `key=report_reasons`.
 #[utoipa::path(
     post,
     path = "/v1/wap/site/settings",
     tag = "wap",
-    request_body = GetOneBody,
+    request_body = SettingsListBody,
     responses((status = 200, description = "Public settings, or report reason options for report_reasons"))
 )]
 pub async fn list(
     State(state): State<AppState>,
     lang: Lang,
-    body: Option<Json<GetOneBody>>,
+    body: Option<Json<SettingsListBody>>,
 ) -> AppResult<ApiResponse<Value>> {
     if body.as_ref().is_some_and(|b| b.key == "report_reasons") {
         let reasons = report_repo::list_reasons(state.db.reader()).await?;

@@ -164,6 +164,30 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Company>, 
         .await
 }
 
+/// Load full company rows for the given uids, preserving input order.
+pub async fn list_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<Vec<Company>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let placeholders = std::iter::repeat_n("?", uids.len())
+        .collect::<Vec<_>>()
+        .join(",");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_company WHERE uid IN ({placeholders})");
+    let signed_uids = uids
+        .iter()
+        .copied()
+        .map(|uid| phpyun_core::numeric::checked_db_i64(uid, "company.uid"))
+        .collect::<Result<Vec<i64>, _>>()?;
+    let mut q = sqlx::query_as::<_, Company>(&sql);
+    for uid in signed_uids {
+        q = q.bind(uid);
+    }
+    let rows = q.fetch_all(pool).await?;
+    let mut map: std::collections::HashMap<u64, Company> =
+        rows.into_iter().map(|c| (c.uid, c)).collect();
+    Ok(uids.iter().filter_map(|uid| map.remove(uid)).collect())
+}
+
 pub async fn touch_jobtime(pool: &MySqlPool, uid: u64, now: i64) -> Result<(), sqlx::Error> {
     sqlx::query("UPDATE phpyun_company SET jobtime = ?, lastupdate = ? WHERE uid = ?")
         .bind(now)
@@ -658,13 +682,14 @@ pub async fn search_brief(
 }
 
 /// Featured companies on the homepage — counterpart of PHP
-/// `wap/index::getmq_action`. Joins `phpyun_hotjob` (paid promo banners)
+/// `{yun:}hotjob{/yun}` / `wap/index::getmq_action`. Joins `phpyun_hotjob`
 /// with `phpyun_company`, filtering by:
-///   - `phpyun_company.hottime > now` (company-level paid window)
-///   - `phpyun_company.r_status = 1`  (approved)
+///   - `phpyun_company.r_status = 1` (approved)
 ///   - `phpyun_hotjob.time_start < now AND time_end > now` (active banner)
 ///
-/// `sort_mode`: 0 = `sort` ASC (default), 1 = `lastupdate` DESC, 2 = `RAND()`.
+/// PHP does **not** require `company.hottime` for this widget (that column is
+/// used for sticky/rec companies). `sort_mode`: 0 = `sort` DESC (admin order),
+/// 1 = `lastupdate` DESC, 2 = `RAND()`.
 pub async fn list_hot(
     pool: &MySqlPool,
     sort_mode: i32,
@@ -676,7 +701,7 @@ pub async fn list_hot(
     let order_clause = match sort_mode {
         1 => "h.lastupdate DESC, h.id DESC",
         2 => "RAND()",
-        _ => "h.sort ASC, h.id DESC",
+        _ => "h.sort DESC, h.id DESC",
     };
     let sql = format!(
         "SELECT \
@@ -688,8 +713,7 @@ pub async fn list_hot(
             CAST(? AS SIGNED) AS sort_mode \
          FROM phpyun_hotjob h \
          JOIN phpyun_company c ON c.uid = h.uid \
-         WHERE c.hottime > ? \
-           AND c.r_status = 1 \
+         WHERE c.r_status = 1 \
            AND h.time_start < ? \
            AND h.time_end > ? \
            AND COALESCE(h.deleted,0)=0 \
@@ -698,7 +722,6 @@ pub async fn list_hot(
     );
     sqlx::query_as::<_, HotCompany>(&sql)
         .bind(sort_mode)
-        .bind(now)
         .bind(now)
         .bind(now)
         .bind(limit)

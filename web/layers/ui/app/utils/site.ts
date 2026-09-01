@@ -59,6 +59,8 @@ export type CompanyLike = {
   city_two?: string
   logo?: string | null
   logo_n?: string | null
+  hot_pic?: string | null
+  hot_pic_n?: string | null
   hits?: number
   job_num?: number
   yyzz_status?: number

@@ -30,10 +30,14 @@ export function useSiteChrome() {
     return m
   })
 
-  const siteName = computed(
-    () => settings.value.sy_webname || String(runtime.public.siteName || t('common.job')),
-  )
-  const phone = computed(() => settings.value.sy_freewebtel || '')
+  const siteName = computed(() => {
+    const fromSetting = String(settings.value.sy_webname || '').trim()
+    if (fromSetting) return fromSetting
+    const fromEnv = String(runtime.public.siteName || '').trim()
+    if (fromEnv && fromEnv !== '招聘') return fromEnv
+    return ''
+  })
+  const phone = computed(() => String(settings.value.sy_freewebtel || '').trim())
   const worktime = computed(() => settings.value.sy_worktime || '')
   const copyright = computed(() => settings.value.sy_webcopyright || '')
   const record = computed(() => settings.value.sy_webrecord || '')

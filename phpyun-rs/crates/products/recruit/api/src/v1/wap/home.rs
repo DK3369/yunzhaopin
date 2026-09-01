@@ -60,10 +60,14 @@ pub struct HomeData {
     pub announcements: Vec<AnnouncementSummary>,
     /// Reuses `wap::jobs::JobSummary` (30+ dictionary-translated fields)
     pub hot_jobs: Vec<super::jobs::JobSummary>,
-    /// Reuses `wap::companies::CompanySummary` (17 dictionary-translated fields)
+    /// Reuses `wap::companies::CompanySummary` (famous companies from `phpyun_hotjob`)
     pub rec_companies: Vec<super::companies::CompanySummary>,
     /// Reuses `wap::articles::ArticleSummary` (27 fields, includes category name / CDN URL / formatted time)
     pub new_articles: Vec<super::articles::ArticleSummary>,
+    /// PHP `{yun:}article type=t pic=1 limit=2{/yun}`
+    pub featured_articles: Vec<super::articles::ArticleSummary>,
+    /// PHP `{yun:}article type=indextj limit=10{/yun}`
+    pub hot_articles: Vec<super::articles::ArticleSummary>,
     pub hot_keywords: Vec<HotKeyword>,
 }
 
@@ -103,16 +107,32 @@ pub async fn home(
             .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
         rec_companies: {
+            let pics = p.rec_hot_pics;
             let mut list: Vec<super::companies::CompanySummary> = p
                 .rec_companies
                 .into_iter()
                 .map(|c| super::companies::company_summary_from_dict(c, &dicts))
                 .collect();
+            for row in &mut list {
+                if let Some(pic) = pics.get(&row.uid) {
+                    row.hot_pic = Some(pic.clone());
+                }
+            }
             super::companies::fill_job_nums(&state, &mut list).await;
             list
         },
         new_articles: p
             .new_articles
+            .into_iter()
+            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, &state))
+            .collect(),
+        featured_articles: p
+            .featured_articles
+            .into_iter()
+            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, &state))
+            .collect(),
+        hot_articles: p
+            .hot_articles
             .into_iter()
             .map(|a| super::articles::ArticleSummary::from_with_ctx(a, &state))
             .collect(),
