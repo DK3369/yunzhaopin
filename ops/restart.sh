@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # 现网前后端重启（本机 job1/job2）。
 # 只管 :3003（Rust）+ :3001（site Nitro：PC/H5 + /admin）。
+# Rust metrics 固定 :9091，和 :3003 是同一进程，不是新项目。
 # admin Nitro 走 unix socket，不占 TCP。
 # 绝不 start/enable 旧 :3000（test-jobs-phpyun-rs）。
-# 不要再开 :3002 / :3004 / :3005；占用 3001 就杀掉再绑。
+# 启动前：对应端口占用就杀掉再绑同一端口，绝不改绑新 TCP。
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,6 +20,7 @@ UNIT_ADMIN_EDGE="test-jobs-phpyun-admin-edge"
 RETIRED_RS="test-jobs-phpyun-rs"
 
 PORT_RS=3003
+PORT_RS_METRICS=9091
 PORT_SITE=3001
 ADMIN_SOCK="${ADMIN_SOCK:-/var/tmp/phpyun-admin.sock}"
 RETIRED_WEB_PORTS=(3002 3004 3005)
@@ -61,8 +63,9 @@ usage() {
   --no-verify  跳过 HTTP 探活
 
 不会动旧 :3000（test-jobs-phpyun-rs）。改 PHP 原项目请不要用本脚本当借口。
-Web TCP 只有 :3001，API 只有 :3003。占用 3001 就杀掉再绑，不要新建 TCP 端口。
-admin 不占 3002/3005。
+Web TCP 只有 :3001，API 只有 :3003（metrics :9091）。
+启动前检测占用：有进程就杀，再绑回同一端口，不要新建 3002/3004/3005。
+admin 不占 TCP。
 EOF
 }
 
@@ -103,9 +106,27 @@ http_ok() {
   esac
 }
 
+# ss 无 root 时经常看不到 pid=。优先 sudo，按「本地端口号恰好等于」过滤，避免 13003 误伤 3003。
+ss_listen_lines() {
+  local port="$1"
+  local raw=""
+  raw="$("${SUDO[@]}" ss -H -ltnp 2>/dev/null || true)"
+  if [[ -z "${raw}" ]]; then
+    raw="$(ss -H -ltnp 2>/dev/null || true)"
+  fi
+  printf '%s\n' "${raw}" | awk -v port="${port}" '
+    NF >= 4 {
+      n = split($4, a, /:/)
+      lp = a[n]
+      gsub(/[^0-9]/, "", lp)
+      if (lp == port) print
+    }
+  '
+}
+
 listen_pids() {
   local port="$1"
-  ss -H -ltnp "sport = :${port}" 2>/dev/null \
+  ss_listen_lines "${port}" \
     | grep -oE 'pid=[0-9]+' \
     | cut -d= -f2 \
     | sort -u \
@@ -123,30 +144,31 @@ kill_pid() {
   local pid="$1"
   [[ "${pid}" =~ ^[1-9][0-9]*$ ]] || return 0
   [[ "${pid}" == "1" ]] && return 0
-  kill "${pid}" 2>/dev/null || true
+  "${SUDO[@]}" kill "${pid}" 2>/dev/null || kill "${pid}" 2>/dev/null || true
   sleep 0.4
-  if kill -0 "${pid}" 2>/dev/null; then
-    kill -KILL "${pid}" 2>/dev/null || true
+  if "${SUDO[@]}" kill -0 "${pid}" 2>/dev/null || kill -0 "${pid}" 2>/dev/null; then
+    "${SUDO[@]}" kill -KILL "${pid}" 2>/dev/null || kill -KILL "${pid}" 2>/dev/null || true
   fi
 }
 
 free_port() {
   local port="$1"
   local pid
-  local left
+  if [[ -z "$(ss_listen_lines "${port}")" ]]; then
+    return 0
+  fi
+  log "端口 :${port} 占用中，先杀再绑同一端口"
   for pid in $(listen_pids "${port}"); do
-    log "清端口 :${port} 残留 pid=${pid}"
+    log "清端口 :${port} pid=${pid}"
     kill_pid "${pid}"
   done
-  left="$(listen_pids "${port}")"
-  if [[ -n "${left}" ]]; then
+  if [[ -n "$(ss_listen_lines "${port}")" ]]; then
     log "sudo fuser -k ${port}/tcp"
     "${SUDO[@]}" fuser -k "${port}/tcp" >/dev/null 2>&1 || true
     sleep 0.3
   fi
-  left="$(listen_pids "${port}")"
-  if [[ -n "${left}" ]]; then
-    fail "端口 :${port} 仍被占用: ${left}"
+  if [[ -n "$(ss_listen_lines "${port}")" ]]; then
+    fail "端口 :${port} 仍被占用: $(listen_pids "${port}")"
   fi
 }
 
@@ -197,7 +219,7 @@ retire_extra_web() {
     sys stop "${UNIT_ADMIN_EDGE}" || true
   fi
   for port in "${RETIRED_WEB_PORTS[@]}"; do
-    if [[ -n "$(listen_pids "${port}")" ]]; then
+    if [[ -n "$(ss_listen_lines "${port}")" ]]; then
       log "释放旧端口 :${port}"
       free_port "${port}"
     fi
@@ -231,14 +253,18 @@ ensure_admin_sock() {
 
 bounce_unit() {
   local unit="$1"
-  local port="$2"
+  shift
+  local ports=("$@")
+  local port i
+  [[ ${#ports[@]} -gt 0 ]] || fail "bounce_unit ${unit} 未指定端口"
   log "停止 ${unit}"
   sys stop "${unit}" || true
   sleep 0.4
-  free_port "${port}"
-  log "启动 ${unit}"
+  for port in "${ports[@]}"; do
+    free_port "${port}"
+  done
+  log "启动 ${unit}（$(printf ':%s ' "${ports[@]}")）"
   sys start "${unit}"
-  local i
   for i in $(seq 1 20); do
     if sys is-active --quiet "${unit}"; then
       break
@@ -249,13 +275,17 @@ bounce_unit() {
     sys status --no-pager -l "${unit}" >&2 || true
     fail "${unit} 未能进入 active"
   fi
-  for i in $(seq 1 20); do
-    if [[ -n "$(listen_pids "${port}")" ]]; then
-      return 0
+  for port in "${ports[@]}"; do
+    for i in $(seq 1 20); do
+      if [[ -n "$(ss_listen_lines "${port}")" ]]; then
+        break
+      fi
+      sleep 0.3
+    done
+    if [[ -z "$(ss_listen_lines "${port}")" ]]; then
+      log "warn: ${unit} active 但 :${port} 尚未监听"
     fi
-    sleep 0.3
   done
-  log "warn: ${unit} active 但 :${port} 尚未监听"
 }
 
 wait_http() {
@@ -341,20 +371,23 @@ verify_admin() {
 do_status() {
   local unit port st pids
   printf '%-32s %-10s %-8s %s\n' "unit" "active" "port" "listen"
-  for unit in "${UNIT_RS}" "${UNIT_SITE}"; do
-    st="inactive"
-    pids="-"
-    case "${unit}" in
-      "${UNIT_RS}") port="${PORT_RS}" ;;
-      "${UNIT_SITE}") port="${PORT_SITE}" ;;
-    esac
-    if sys is-active --quiet "${unit}"; then
-      st="active"
-    fi
-    pids="$(listen_pids "${port}")"
-    [[ -n "${pids}" ]] || pids="-"
-    printf '%-32s %-10s :%-7s %s\n' "${unit}" "${st}" "${port}" "${pids}"
-  done
+  st="inactive"
+  if sys is-active --quiet "${UNIT_RS}"; then
+    st="active"
+  fi
+  pids="$(listen_pids "${PORT_RS}")"
+  [[ -n "${pids}" ]] || pids="-"
+  printf '%-32s %-10s :%-7s %s\n' "${UNIT_RS}" "${st}" "${PORT_RS}" "${pids}"
+  pids="$(listen_pids "${PORT_RS_METRICS}")"
+  [[ -n "${pids}" ]] || pids="-"
+  printf '%-32s %-10s :%-7s %s\n' "(metrics)" "${st}" "${PORT_RS_METRICS}" "${pids}"
+  st="inactive"
+  if sys is-active --quiet "${UNIT_SITE}"; then
+    st="active"
+  fi
+  pids="$(listen_pids "${PORT_SITE}")"
+  [[ -n "${pids}" ]] || pids="-"
+  printf '%-32s %-10s :%-7s %s\n' "${UNIT_SITE}" "${st}" "${PORT_SITE}" "${pids}"
   st="inactive"
   if sys is-active --quiet "${UNIT_ADMIN}" 2>/dev/null; then
     st="active"
@@ -384,7 +417,7 @@ restart_rust() {
   if [[ "${DO_BUILD}" -eq 1 ]]; then
     build_rust
   fi
-  bounce_unit "${UNIT_RS}" "${PORT_RS}"
+  bounce_unit "${UNIT_RS}" "${PORT_RS}" "${PORT_RS_METRICS}"
   if [[ "${DO_VERIFY}" -eq 1 ]]; then
     verify_rust
   fi
@@ -494,7 +527,7 @@ case "${TARGET}" in
       build_nuxt "@phpyun/admin"
       DO_BUILD=0
     fi
-    bounce_unit "${UNIT_RS}" "${PORT_RS}"
+    bounce_unit "${UNIT_RS}" "${PORT_RS}" "${PORT_RS_METRICS}"
     restart_site
     if [[ "${DO_VERIFY}" -eq 1 ]]; then
       verify_rust
