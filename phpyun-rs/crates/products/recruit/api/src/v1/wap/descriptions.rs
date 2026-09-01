@@ -1,13 +1,21 @@
 //! Public single-page CMS (mirrors PHPYun `description`): class list / list / detail.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+};
 use phpyun_services::description_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/legal"];
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -15,7 +23,7 @@ pub fn routes() -> Router<AppState> {
         .route("/descriptions", post(list))
         .route("/descriptions/get", post(get_one))
         .route("/descriptions/by-name", post(get_by_name))
-        .route("/legal", post(get_legal_page))
+        .route("/legal", get(get_legal_page).post(get_legal_page))
 }
 
 /// Class item -- all 4 columns of phpyun_desc_class.
@@ -216,7 +224,7 @@ pub async fn get_by_name(
 )]
 pub async fn get_legal_page(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<GetLegalPageBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<GetLegalPageBody>,
 ) -> AppResult<ApiResponse<DescDetail>> {
     let slug = b.slug;
     phpyun_core::validators::ensure_path_token(&slug)?;

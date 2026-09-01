@@ -2,9 +2,17 @@
 const code = String(useRoute().params.code || '')
 const { t } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(`site-page-${code}`, () =>
-  api.get('/v1/wap/site/pages', { code }),
-)
+const LEGAL = new Set(['about', 'contact', 'privacy', 'protocol'])
+const { data } = await useAsyncData(`site-page-${code}`, async () => {
+  if (LEGAL.has(code)) {
+    return await api.get<{ title?: string; content?: string }>('/v1/wap/legal', { slug: code })
+  }
+  try {
+    return await api.get<{ title?: string; content?: string }>('/v1/wap/site/pages', { code })
+  } catch {
+    return null
+  }
+})
 useSeoMeta({ title: () => String(data.value?.title || t('ui.pages')) })
 useHead({ link: [{ rel: 'canonical', href: `/pages/${code}` }] })
 </script>

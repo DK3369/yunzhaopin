@@ -50,19 +50,31 @@ const { data: adsH5 } = await useAsyncData('ads-50', () =>
   api.get<Banner[]>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => [] as Banner[]),
 )
 const { data: adsMid } = await useAsyncData('ads-mid', async () => {
-  const [slot13, slot14, slot15] = await Promise.all([
+  const [slot13, slot14, slot15, slot72, slot73, slot92, slot503] = await Promise.all([
     api.get<Banner[]>('/v1/wap/ads', { slot: '13', limit: 3 }).catch(() => [] as Banner[]),
     api.get<Banner[]>('/v1/wap/ads', { slot: '14', limit: 3 }).catch(() => [] as Banner[]),
     api.get<Banner[]>('/v1/wap/ads', { slot: '15', limit: 3 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '72', limit: 1 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '73', limit: 1 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '92', limit: 5 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '503', limit: 3 }).catch(() => [] as Banner[]),
   ])
-  return { slot13: slot13 || [], slot14: slot14 || [], slot15: slot15 || [] }
+  return {
+    slot13: slot13 || [],
+    slot14: slot14 || [],
+    slot15: slot15 || [],
+    slot72: slot72 || [],
+    slot73: slot73 || [],
+    slot92: slot92 || [],
+    slot503: slot503 || [],
+  }
 })
 const { data: friendLinks } = await useAsyncData('home-links', () =>
   api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
 )
 const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', () =>
   api
-    .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 })
+    .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8, recg: true })
     .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
 )
 
@@ -90,6 +102,10 @@ const h5Banners = computed(() => (adsH5.value || []).filter((b) => b.image_n || 
 const mid13 = computed(() => adsMid.value?.slot13 || [])
 const mid14 = computed(() => adsMid.value?.slot14 || [])
 const mid15 = computed(() => adsMid.value?.slot15 || [])
+const ads72 = computed(() => (adsMid.value?.slot72 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const ads73 = computed(() => (adsMid.value?.slot73 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const ads92 = computed(() => (adsMid.value?.slot92 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const ads503 = computed(() => (adsMid.value?.slot503 || []).filter((b) => b.image_n || b.image || b.pic_content))
 const hasMidAds = computed(() => mid13.value.length + mid14.value.length + mid15.value.length > 0)
 const linkList = computed(() => (Array.isArray(friendLinks.value) ? friendLinks.value : []) as FriendLink[])
 const linkPics = computed(() => linkList.value.filter((l) => String(l.category) === '2' && (l.logo || '').trim()))
@@ -98,11 +114,18 @@ const hasLinks = computed(() => linkPics.value.length + linkTexts.value.length >
 
 const pcSlide = ref(0)
 const h5Slide = ref(0)
-const h5Tab = ref<'latest' | 'rec'>('latest')
-const h5JobList = computed(() => (h5Tab.value === 'rec' ? recJobList.value : latestJobList.value))
+const noticeSlide = ref(0)
+const h5Tab = ref<'latest' | 'urgent' | 'rec'>('latest')
+const h5JobList = computed(() => {
+  if (h5Tab.value === 'urgent') return urgentList.value
+  if (h5Tab.value === 'rec') return recJobList.value
+  return latestJobList.value
+})
+const noticeItem = computed(() => announcements.value[noticeSlide.value] || announcements.value[0])
 
 let pcTimer: ReturnType<typeof setInterval> | undefined
 let h5Timer: ReturnType<typeof setInterval> | undefined
+let noticeTimer: ReturnType<typeof setInterval> | undefined
 onMounted(() => {
   pcTimer = setInterval(() => {
     if (pcBanners.value.length > 1) pcSlide.value = (pcSlide.value + 1) % pcBanners.value.length
@@ -110,10 +133,14 @@ onMounted(() => {
   h5Timer = setInterval(() => {
     if (h5Banners.value.length > 1) h5Slide.value = (h5Slide.value + 1) % h5Banners.value.length
   }, 4000)
+  noticeTimer = setInterval(() => {
+    if (announcements.value.length > 1) noticeSlide.value = (noticeSlide.value + 1) % announcements.value.length
+  }, 3500)
 })
 onBeforeUnmount(() => {
   if (pcTimer) clearInterval(pcTimer)
   if (h5Timer) clearInterval(h5Timer)
+  if (noticeTimer) clearInterval(noticeTimer)
 })
 
 function adHref(ad: Banner) {
@@ -150,6 +177,16 @@ useHead({
   <!-- ========== PC 首页，对齐 default/index/index.htm ========== -->
   <div class="site-pc">
     <p v-if="error" class="w1200 muted" style="padding: 12px 0">{{ $t('ui.home_unavailable') }}</p>
+    <div v-if="ads73.length" class="index_zs_banner index_zs_banner2">
+      <a v-for="(ad, i) in ads73" :key="'73-' + i" :href="adHref(ad) || '/jobs'">
+        <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+      </a>
+    </div>
+    <div v-if="ads72.length" class="index_zs_banner index_zs_banner1">
+      <a v-for="(ad, i) in ads72" :key="'72-' + i" :href="adHref(ad) || '/jobs'">
+        <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+      </a>
+    </div>
     <div class="w1200">
       <div class="first_floor">
         <div class="first_floor_top">
@@ -335,6 +372,17 @@ useHead({
         <div class="yunheader_60lookmore"><NuxtLink to="/jobs">{{ $t('common.view_more') }}</NuxtLink></div>
       </div>
 
+      <div v-if="ads92.length" class="index_banner fl">
+        <div class="index_banner_1250 fl">
+          <div v-for="(ad, i) in ads92" :key="'92-' + i" class="b_w1200 b_tip">
+            <a v-if="ad.image_n || ad.image" :href="adHref(ad) || '/jobs'">
+              <img :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+            </a>
+            <div v-else-if="ad.pic_content" v-html="ad.pic_content" />
+          </div>
+        </div>
+      </div>
+
       <div class="index_zl_box">
         <div class="yunheader_60_tit">
           <NuxtLink to="/resumes" class="yunheader_60_tit_a">
@@ -474,8 +522,8 @@ useHead({
               <img src="/legacy/h5/images/home_icon_notice.png" alt="" style="width: 100%" />
             </NuxtLink>
           </div>
-          <NuxtLink :to="`/announcements/${announcements[0].id}`" style="color: #666">
-            <i class="inform-word conceal_word">{{ announcements[0].title }}</i>
+          <NuxtLink v-if="noticeItem" :to="`/announcements/${noticeItem.id}`" style="color: #666">
+            <i class="inform-word conceal_word">{{ noticeItem.title }}</i>
           </NuxtLink>
         </div>
       </div>
@@ -520,15 +568,32 @@ useHead({
         </div>
       </div>
 
+      <div v-if="ads503.length" class="zd_banner">
+        <a v-for="(ad, i) in ads503" :key="'503-' + i" :href="adHref(ad) || '/jobs'">
+          <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+        </a>
+      </div>
+
       <div class="tab">
         <div class="h5-job-tabs">
           <button type="button" :class="{ on: h5Tab === 'latest' }" @click="h5Tab = 'latest'">{{ $t('common.latest') }}</button>
-          <button type="button" :class="{ on: h5Tab === 'rec' }" @click="h5Tab = 'rec'">{{ $t('common.recommended') }}</button>
+          <button type="button" :class="{ on: h5Tab === 'urgent' }" @click="h5Tab = 'urgent'">{{ $t('wap_00222') }}</button>
+          <button type="button" :class="{ on: h5Tab === 'rec' }" @click="h5Tab = 'rec'">{{ $t('wap_com_00251') }}</button>
         </div>
         <JobCard v-for="job in h5JobList" :key="h5Tab + job.id" :job="job" />
         <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_jobs') }}</p>
         <div class="yunheader_60lookmore" style="text-align: center; padding: 0.3rem 0 0.6rem">
           <NuxtLink to="/jobs">{{ $t('wap_00518') }}</NuxtLink>
+        </div>
+      </div>
+
+      <div class="yun_newedition_footer">
+        <div>
+          <NuxtLink to="/advice">{{ $t('wap_user_00203') }}</NuxtLink>
+          <span class="yun_newedition_footer_line">|</span>
+          <NuxtLink to="/pages/about">{{ $t('wap_00218') }}</NuxtLink>
+          <span class="yun_newedition_footer_line">|</span>
+          <NuxtLink to="/pages/contact">{{ $t('wap_00220') }}</NuxtLink>
         </div>
       </div>
     </div>

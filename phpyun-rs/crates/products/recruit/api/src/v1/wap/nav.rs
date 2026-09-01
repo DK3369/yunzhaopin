@@ -80,7 +80,9 @@ pub async fn list(
     phpyun_core::validators::ensure_path_token(&position)?;
     let list = nav_menu_service::list(&state, &position).await?;
     Ok(ApiResponse::data(
-        list.into_iter().map(NavItem::from).collect(),
+        list.into_iter()
+            .map(|n| NavItem::from_with_ctx(n, &state))
+            .collect(),
     ))
 }
 

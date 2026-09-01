@@ -58,6 +58,9 @@ pub struct ResumeListQuery {
     #[serde(default = "default_did")]
     #[validate(range(max = 9_999_999))]
     pub did: u32,
+    /// PHP homepage `{yun:}userlist recg=1{/yun}` (recommended talent).
+    #[serde(default)]
+    pub recg: bool,
 }
 fn default_did() -> u32 {
     0
@@ -283,6 +286,7 @@ pub async fn list_resumes(
         sex: q.sex,
         marriage: q.marriage,
         did: q.did,
+        recg: q.recg,
     };
     let r = resume_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

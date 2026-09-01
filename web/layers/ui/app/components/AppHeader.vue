@@ -31,24 +31,49 @@
         </div>
         <div class="hp_head_search fl">
           <div class="hp_head_searchbor">
-            <form action="/jobs" method="get">
-              <div class="hp_head_search_job fl">
-                <span class="hp_head_search_job_b">{{ $t('common.job') }}</span>
+            <form :action="searchAction" method="get">
+              <div class="hp_head_search_job fl" @click.stop="searchMenu = !searchMenu">
+                <span class="hp_head_search_job_b">{{ searchKindLabel }}</span>
+                <div v-show="searchMenu" class="index_header_seach_find_list yunHeaderSearch_list_box">
+                  <a href="javascript:;" @click.prevent="setSearchKind('job')">{{ $t('default_00246') }}</a>
+                  <a href="javascript:;" @click.prevent="setSearchKind('resume')">{{ $t('default_00312') }}</a>
+                  <a href="javascript:;" @click.prevent="setSearchKind('tiny')">{{ $t('wap_js_00066') }}</a>
+                  <a href="javascript:;" @click.prevent="setSearchKind('once')">{{ $t('wap_js_00130') }}</a>
+                </div>
               </div>
               <input
                 class="hp_head_search_text fl"
                 type="text"
                 name="keyword"
                 :value="String(route.query.keyword || '')"
-                :placeholder="$t('default_00348')"
+                :placeholder="searchPlaceholder"
               />
               <input class="hp_head_search_sr fl" type="submit" :value="$t('common.search')" />
             </form>
           </div>
+          <div class="clear" />
+          <div class="hp_head_search_bom">
+            <div class="hp_head_search_bom_left">
+              <span style="color: #a4a1a1">{{ $t('common_02507') }}</span>
+              <NuxtLink
+                v-for="k in hotSearches"
+                :key="k.keyword"
+                :to="`/jobs?keyword=${encodeURIComponent(k.keyword)}`"
+                :title="k.keyword"
+              >{{ k.keyword }}</NuxtLink>
+            </div>
+            <div class="yun_new_header_search_more moreOptions">
+              <div>
+                <NuxtLink to="/jobs">{{ $t('default_00246') }}</NuxtLink>
+                <NuxtLink to="/map">{{ $t('default_00139') }}</NuxtLink>
+                <NuxtLink to="/jobs">{{ $t('common.search') }}</NuxtLink>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="yunheader_60nav">
           <ul>
-            <li v-for="item in nav" :key="item.to + item.label" :class="{ nav_list_hover: navActive(item.to) }">
+            <li v-for="item in nav" :key="String(item.id || item.to) + item.label" :class="{ nav_list_hover: navActive(item.to) }">
               <NuxtLink :to="item.to" class="png">{{ item.label }}</NuxtLink>
               <i class="yun_new_headernav_list_line" />
             </li>
@@ -69,7 +94,7 @@
         </div>
         <div class="yun_header_nav_box">
           <ul>
-            <li v-for="item in nav" :key="item.to + item.label" :class="{ nav_list_hover: navActive(item.to) }">
+            <li v-for="item in nav" :key="String(item.id || item.to) + item.label" :class="{ nav_list_hover: navActive(item.to) }">
               <NuxtLink :to="item.to" class="png">{{ item.label }}</NuxtLink>
               <i class="yun_new_headernav_list_line" />
             </li>
@@ -118,6 +143,7 @@
 
 <script setup lang="ts">
 const route = useRoute()
+const { t } = useI18n()
 const {
   siteName,
   phone,
@@ -130,7 +156,30 @@ const {
   h5Title,
   logout,
   navActive,
+  hotSearches,
 } = useSiteChrome()
+
+type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
+const searchKind = ref<SearchKind>('job')
+const searchMenu = ref(false)
+const searchAction = computed(() => {
+  if (searchKind.value === 'resume') return '/resumes'
+  if (searchKind.value === 'tiny') return '/tiny'
+  if (searchKind.value === 'once') return '/once'
+  return '/jobs'
+})
+const searchKindLabel = computed(() => {
+  if (searchKind.value === 'resume') return t('default_00312')
+  if (searchKind.value === 'tiny') return t('wap_js_00066')
+  if (searchKind.value === 'once') return t('wap_js_00130')
+  return t('default_00246')
+})
+const searchPlaceholder = computed(() => t('default_00348'))
+
+function setSearchKind(kind: SearchKind) {
+  searchKind.value = kind
+  searchMenu.value = false
+}
 
 function goBack() {
   if (window.history.length > 1) {
@@ -139,4 +188,10 @@ function goBack() {
   }
   navigateTo('/')
 }
+
+onMounted(() => {
+  document.addEventListener('click', () => {
+    searchMenu.value = false
+  })
+})
 </script>

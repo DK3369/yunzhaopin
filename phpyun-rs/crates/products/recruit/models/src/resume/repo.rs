@@ -65,6 +65,8 @@ pub struct ResumeFilter<'a> {
     pub sex: Option<i32>,
     pub marriage: Option<i32>,
     pub did: u32,
+    /// PHP `userlist recg=1` → `phpyun_resume_expect.rec_resume = 1`
+    pub recg: bool,
 }
 
 pub async fn list_public(
@@ -144,6 +146,11 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
     if let Some(v) = f.marriage {
         qb.push(" AND marriage = ");
         qb.push_bind(v);
+    }
+    if f.recg {
+        qb.push(
+            " AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE COALESCE(rec_resume,0) = 1)",
+        );
     }
 }
 

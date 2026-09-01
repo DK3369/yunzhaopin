@@ -1,5 +1,6 @@
 import {
   DEFAULT_H5_NAV,
+  descHref,
   mapNavUrl,
   mediaUrl,
   type NavItem,
@@ -50,10 +51,17 @@ export function useSiteChrome() {
     'site-nav-1',
     () =>
       api
-        .get<Array<{ id: number; label: string; url: string; icon?: string; icon_n?: string }>>(
-          '/v1/wap/nav',
-          { position: '1' },
-        )
+        .get<
+          Array<{
+            id: number
+            label: string
+            url: string
+            icon?: string
+            icon_n?: string
+            parent_id?: number
+            sort?: number
+          }>
+        >('/v1/wap/nav', { position: '1' })
         .catch(() => []),
     { default: () => [] },
   )
@@ -66,7 +74,7 @@ export function useSiteChrome() {
     '/fairs': 'member_com_00293',
     '/articles': 'common.article',
     '/parts': 'ui.part',
-    '/map': 'wap_00317',
+    '/map': 'ui.map',
     '/eval': 'ui.eval',
     '/questions': 'ui.qa',
     '/announcements': 'ui.announcements',
@@ -76,6 +84,7 @@ export function useSiteChrome() {
     '/redeem': 'ui.redeem',
     '/specials': 'ui.specials',
     '/gongzhao': 'ui.gongzhao',
+    '/advice': 'wap_user_00203',
   }
 
   function labelForNav(item: { to: string; label: string }) {
@@ -85,16 +94,23 @@ export function useSiteChrome() {
     return item.label
   }
 
-  const nav = computed<NavItem[]>(() => {
-    const list = (navRaw.value || [])
+  function mappedRows() {
+    return (navRaw.value || [])
       .map((n) => ({
         id: n.id,
         label: n.label,
         url: n.url,
         to: mapNavUrl(n.url),
         icon: n.icon_n || n.icon,
+        parent_id: Number(n.parent_id || 0),
+        sort: Number(n.sort || 0),
       }))
       .filter((n) => n.label)
+      .sort((a, b) => a.sort - b.sort || (a.id || 0) - (b.id || 0))
+  }
+
+  const nav = computed<NavItem[]>(() => {
+    const list = mappedRows().filter((n) => n.parent_id === 1)
     const rows = list.length
       ? list
       : [
@@ -109,10 +125,65 @@ export function useSiteChrome() {
   })
 
   const h5Nav = computed<NavItem[]>(() => {
-    const withIcon = nav.value.filter((n) => n.icon && n.to !== '/')
+    const withIcon = mappedRows().filter((n) => n.parent_id === 26 && n.icon)
     const rows = withIcon.length >= 4 ? withIcon.slice(0, 8) : DEFAULT_H5_NAV
-    return rows.map((n) => ({ ...n, label: labelForNav(n) }))
+    return rows.map((n) => ({
+      ...n,
+      icon: mediaUrl(n.icon_n || n.icon, n.icon || ''),
+      label: labelForNav(n),
+    }))
   })
+
+  type DescClass = { id: number; name: string }
+  type DescRow = { id: number; class_id: number; title: string; link_url?: string; is_type?: number }
+
+  const { data: descClasses } = useAsyncData(
+    'site-desc-classes',
+    () => api.post<DescClass[]>('/v1/wap/descriptions/classes', {}).catch(() => [] as DescClass[]),
+    { default: () => [] as DescClass[] },
+  )
+  const { data: descRows } = useAsyncData(
+    'site-desc-rows',
+    () =>
+      api
+        .post<{ list: DescRow[] }>('/v1/wap/descriptions', { page: 1, page_size: 80 })
+        .catch(() => ({ list: [] as DescRow[] })),
+    { default: () => ({ list: [] as DescRow[] }) },
+  )
+
+  const footerNav = computed(() => {
+    const classes = descClasses.value || []
+    const rows = descRows.value?.list || []
+    return classes
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        list: rows
+          .filter((r) => r.class_id === c.id)
+          .slice(0, 5)
+          .map((r) => ({
+            id: r.id,
+            title: r.title,
+            to: descHref(r),
+          })),
+      }))
+      .filter((c) => c.list.length)
+  })
+
+  const { data: hotSearches } = useAsyncData(
+    'site-hot-searches-job',
+    () =>
+      api
+        .get<Array<{ keyword: string }>>('/v1/wap/hot-searches', { scope: 'job', limit: 6 })
+        .catch(() => [] as Array<{ keyword: string }>),
+    { default: () => [] as Array<{ keyword: string }> },
+  )
+
+  const wxQr = computed(() => mediaUrl(settings.value.sy_wx_qcode))
+  const wapQr = computed(() => mediaUrl(settings.value.sy_wap_qcode))
+  const perfor = computed(() => String(settings.value.sy_perfor || '').trim())
+  const hrlicense = computed(() => String(settings.value.sy_hrlicense || '').trim())
+  const secord = computed(() => String(settings.value.sy_websecord || '').trim())
 
   const { data: me } = useAsyncData(
     'auth-me',
@@ -146,7 +217,7 @@ export function useSiteChrome() {
       '/forgetpw': t('wap_js_00123'),
       '/search': t('common.search'),
       '/eval': t('ui.eval'),
-      '/map': t('wap_00317'),
+      '/map': t('ui.map'),
       '/advice': t('wap_user_00203'),
       '/tiny': t('ui.tiny'),
       '/once': t('ui.once'),
@@ -197,6 +268,13 @@ export function useSiteChrome() {
     logoH5,
     nav,
     h5Nav,
+    footerNav,
+    hotSearches,
+    wxQr,
+    wapQr,
+    perfor,
+    hrlicense,
+    secord,
     me,
     isHome,
     isAuth,

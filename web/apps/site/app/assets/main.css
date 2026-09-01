@@ -50,6 +50,15 @@ html {
   .yunheader_60logo .site-wordmark {
     line-height: 115px;
   }
+  .hp_head_search_job {
+    position: relative;
+    cursor: pointer;
+  }
+  .index_zs_banner img {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
+  }
   .site-inner {
     width: 1200px;
     margin: 16px auto 0;
@@ -256,6 +265,24 @@ html {
   .h5-job-tabs button.on {
     color: #2778f8;
     font-weight: 600;
+  }
+  .yun_newedition_footer {
+    text-align: center;
+    padding: 0.4rem 0 1.2rem;
+    font-size: 0.28rem;
+    color: #999;
+  }
+  .yun_newedition_footer a {
+    color: #666;
+  }
+  .yun_newedition_footer_line {
+    margin: 0 0.12rem;
+    color: #ddd;
+  }
+  .zd_banner img {
+    width: 100%;
+    display: block;
+    border-radius: 6px;
   }
   .site-wordmark {
     font-size: 0.48rem;

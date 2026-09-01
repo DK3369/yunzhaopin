@@ -15,29 +15,55 @@
           <div class="hp_foot_wh fl">
             <i class="hp_foot_wh_lline" />
             <i class="hp_foot_wh_rline" />
-            <dl>
-              <dt>{{ $t('common.website_nav') }}</dt>
-              <dd>
-                <ul>
-                  <li><NuxtLink to="/">{{ $t('common.home') }}</NuxtLink></li>
-                  <li>{{ $t('common.phone') }}<template v-if="phone"> {{ phone }}</template></li>
-                  <li><NuxtLink to="/announcements">{{ $t('common.site_notice') }}</NuxtLink></li>
-                </ul>
-              </dd>
-            </dl>
-            <dl>
-              <dt>{{ $t('common.search') }}</dt>
-              <dd>
-                <ul>
-                  <li><NuxtLink to="/jobs">{{ $t('default_00246') }}</NuxtLink></li>
-                  <li><NuxtLink to="/resumes">{{ $t('common.resume') }}</NuxtLink></li>
-                  <li><NuxtLink to="/companies">{{ $t('common.company') }}</NuxtLink></li>
-                  <li><NuxtLink to="/fairs">{{ $t('member_com_00293') }}</NuxtLink></li>
-                  <li><NuxtLink to="/articles">{{ $t('common.article') }}</NuxtLink></li>
-                </ul>
-              </dd>
-            </dl>
+            <template v-if="footerNav.length">
+              <dl v-for="col in footerNav" :key="col.id">
+                <dt>{{ col.name }}</dt>
+                <dd>
+                  <ul>
+                    <li v-for="item in col.list" :key="item.id">
+                      <NuxtLink :to="item.to" :title="item.title">{{ item.title }}</NuxtLink>
+                    </li>
+                  </ul>
+                </dd>
+              </dl>
+            </template>
+            <template v-else>
+              <dl>
+                <dt>{{ $t('common.website_nav') }}</dt>
+                <dd>
+                  <ul>
+                    <li><NuxtLink to="/">{{ $t('common.home') }}</NuxtLink></li>
+                    <li>{{ $t('common.phone') }}<template v-if="phone"> {{ phone }}</template></li>
+                    <li><NuxtLink to="/announcements">{{ $t('common.site_notice') }}</NuxtLink></li>
+                  </ul>
+                </dd>
+              </dl>
+              <dl>
+                <dt>{{ $t('common.search') }}</dt>
+                <dd>
+                  <ul>
+                    <li><NuxtLink to="/jobs">{{ $t('default_00246') }}</NuxtLink></li>
+                    <li><NuxtLink to="/resumes">{{ $t('common.resume') }}</NuxtLink></li>
+                    <li><NuxtLink to="/companies">{{ $t('common.company') }}</NuxtLink></li>
+                    <li><NuxtLink to="/fairs">{{ $t('member_com_00293') }}</NuxtLink></li>
+                    <li><NuxtLink to="/articles">{{ $t('common.article') }}</NuxtLink></li>
+                  </ul>
+                </dd>
+              </dl>
+            </template>
           </div>
+        </div>
+        <div v-if="wxQr" class="hp_foot_wx fr">
+          <dl>
+            <dt><img :src="wxQr" width="105" height="105" alt="" /></dt>
+            <dd>{{ $t('default_00130') }}</dd>
+          </dl>
+        </div>
+        <div v-if="wapQr" class="hp_foot_wx fr">
+          <dl>
+            <dt><img :src="wapQr" width="105" height="105" alt="" /></dt>
+            <dd>{{ $t('common_02413') }}</dd>
+          </dl>
         </div>
       </div>
       <div class="clear" />
@@ -47,10 +73,15 @@
             {{ copyright || `© ${new Date().getFullYear()} ${siteName}` }}
             <i class="hp_foot_bt_cr">
               <a v-if="record" href="https://beian.miit.gov.cn" target="_blank" rel="nofollow">{{ record }}</a>
+              <a v-if="secord" href="https://www.beian.gov.cn" target="_blank" rel="nofollow">{{ secord }}</a>
             </i>
           </p>
           <p v-if="address || email">
             {{ $t('wap_js_00082') }}：{{ address }} <span v-if="email">EMAIL：{{ email }}</span>
+          </p>
+          <p v-if="perfor || hrlicense">
+            <a v-if="perfor" href="/pages/jyxkz" target="_blank">ICP经营许可证: {{ perfor }}</a>
+            <a v-if="hrlicense" href="/pages/rlzy" target="_blank">人力资源证: {{ hrlicense }}</a>
           </p>
           <p>Powered by PHPYun.</p>
         </div>
@@ -102,7 +133,7 @@
 
 <script setup lang="ts">
 const route = useRoute()
-const { siteName, phone, worktime, copyright, record, email, address, me, memberHome } = useSiteChrome()
+const { siteName, phone, worktime, copyright, record, email, address, me, memberHome, footerNav, wxQr, wapQr, perfor, hrlicense, secord } = useSiteChrome()
 
 function tabIcon(kind: 'home' | 'job' | 'news' | 'me') {
   const on =

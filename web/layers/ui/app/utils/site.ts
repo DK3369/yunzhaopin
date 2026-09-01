@@ -5,6 +5,8 @@ export type NavItem = {
   to: string
   icon?: string
   icon_n?: string
+  parent_id?: number
+  sort?: number
 }
 
 export type CatNode = {
@@ -73,6 +75,7 @@ const MODULE_PATH: Record<string, string> = {
   resume: '/resumes',
   company: '/companies',
   article: '/articles',
+  news: '/articles',
   zph: '/fairs',
   announcement: '/announcements',
   login: '/login',
@@ -122,14 +125,31 @@ export function mediaUrl(path?: string | null, fallback = ''): string {
   return `/${p.replace(/^(\.\/)+/, '')}`
 }
 
+function modulePath(name?: string | null): string | undefined {
+  if (!name) return undefined
+  const key = name.replace(/^\.\//, '').replace(/\/+$/, '').replace(/\.(html?|php)$/i, '').toLowerCase()
+  if (!key) return '/'
+  return MODULE_PATH[key]
+}
+
+/** PHP `phpyun_navigation.url` is often a relative module path (`job/`, `evaluate`). */
 export function mapNavUrl(url?: string | null): string {
   if (!url) return '/'
-  const raw = String(url).trim()
+  const raw = String(url).trim().replace(/^\.\//, '')
   if (!raw) return '/'
+
   if (raw.startsWith('/')) {
-    const path = raw.split('?')[0]
-    if (!path.includes('index.php')) return path || '/'
+    const pathOnly = raw.split('?')[0]
+    if (pathOnly.startsWith('/about/')) {
+      const code = pathOnly.replace(/^\/about\//, '').replace(/\.html?$/i, '')
+      return code ? `/pages/${code}` : '/'
+    }
+    if (!pathOnly.toLowerCase().includes('index.php')) {
+      const first = pathOnly.replace(/^\//, '').split('/')[0]
+      return modulePath(first) || pathOnly || '/'
+    }
   }
+
   try {
     const u = raw.includes('://') ? new URL(raw) : new URL(raw, 'http://local.invalid/')
     const q = u.searchParams
@@ -138,12 +158,30 @@ export function mapNavUrl(url?: string | null): string {
     if (m === 'member' || raw.includes('/member')) return '/user'
     if (m === 'wap' && c && MODULE_PATH[c]) return MODULE_PATH[c]
     if (m && MODULE_PATH[m]) return MODULE_PATH[m]
+    if (!m && c && MODULE_PATH[c]) return MODULE_PATH[c]
+    const segs = u.pathname.split('/').filter(Boolean)
+    const fromPath = modulePath(segs[0])
+    if (fromPath) return fromPath
   } catch {
     /* ignore */
   }
+
+  const first = raw.split(/[/?#]/).filter(Boolean)[0]
+  const fromRel = modulePath(first)
+  if (fromRel) return fromRel
   const m = raw.match(/[?&]m=(\w+)/)
   if (m?.[1] && MODULE_PATH[m[1]]) return MODULE_PATH[m[1]]
   return '/'
+}
+
+/** PHP footer `{yun:}desc{/yun}`: about/*.html is CMS detail; other urls follow nav mapping. */
+export function descHref(item: { id: number; link_url?: string | null }): string {
+  const u = String(item.link_url || '').trim()
+  if (!u) return `/get/${item.id}`
+  if (/^https?:\/\//i.test(u) || u.startsWith('//')) return u
+  const path = u.startsWith('/') ? u : `/${u}`
+  if (/^\/about\//i.test(path) || path.toLowerCase().includes('/about/')) return `/get/${item.id}`
+  return mapNavUrl(path)
 }
 
 export function listFailMsg(err: unknown, rateLimit: string, fallback: string): string {
