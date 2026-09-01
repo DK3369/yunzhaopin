@@ -135,6 +135,22 @@ pub struct JobRefreshLogRow {
     pub remark: String,
 }
 
+/// PHP `company_job_refresh_log::index` admin row after job/part JOIN.
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpJobRefreshLogRow {
+    pub id: u64,
+    pub uid: u64,
+    pub jobid: u64,
+    pub usertype: i32,
+    pub r#type: i32,
+    pub r_time: i64,
+    pub ip: String,
+    pub remark: String,
+    pub port: i32,
+    pub job_name: String,
+    pub com_name: String,
+}
+
 /// PHP `set_guanjianci::index_action` JSON: check/bold/tuijian are booleans for el-switch.
 fn ser_flag_bool<S: serde::Serializer>(v: &i32, s: S) -> Result<S::Ok, S::Error> {
     s.serialize_bool(*v != 0)

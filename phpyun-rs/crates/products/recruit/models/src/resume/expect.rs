@@ -670,3 +670,292 @@ pub async fn count_admin_teen(pool: &MySqlPool, since_unix: i64) -> Result<u64, 
     .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n.0))
 }
+
+/// PHP `users_resume::index_action` list row (`resume_expect` + member).
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpResumeListRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub uname: String,
+    pub username: String,
+    pub moblie: String,
+    pub moblie_address: String,
+    pub lock_info: String,
+    pub edu: i32,
+    pub exp: i32,
+    pub integrity: i32,
+    pub status: i32,
+    pub state: i32,
+    pub r_status: i32,
+    pub statusbody: String,
+    pub rec_resume: i32,
+    pub top: i32,
+    pub topdate: i64,
+    pub defaults: i32,
+    pub lastupdate: i64,
+    pub ctime: i64,
+    pub source: i32,
+    pub add_ip: String,
+    pub ip_address: String,
+    pub city_classid: String,
+    pub doc: i32,
+    pub sq_num: i32,
+}
+
+pub struct PhpResumeListFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub keytype: i32,
+    pub status: Option<i32>,
+    pub source: Option<i32>,
+    pub r#type: Option<i32>,
+    pub edu: Option<i32>,
+    pub exp: Option<i32>,
+    pub service: Option<i32>,
+    pub teen: bool,
+    pub teen_since: i64,
+    pub now: i64,
+    pub time_col: Option<&'a str>,
+    pub time_from: Option<i64>,
+    pub time_to: Option<i64>,
+    pub job_class: Option<&'a str>,
+    pub city_class: Option<&'a str>,
+    pub order_t: &'a str,
+    pub order_dir: &'a str,
+}
+
+fn push_find_in_set_any<'a>(
+    qb: &mut QueryBuilder<'a, sqlx::MySql>,
+    col: &str,
+    csv: Option<&str>,
+) {
+    let Some(raw) = csv.map(str::trim).filter(|s| !s.is_empty()) else {
+        return;
+    };
+    let ids: Vec<String> = raw
+        .split([',', '，'])
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(str::to_string)
+        .collect();
+    if ids.is_empty() {
+        return;
+    }
+    qb.push(" AND (");
+    for (i, id) in ids.iter().enumerate() {
+        if i > 0 {
+            qb.push(" OR ");
+        }
+        qb.push("FIND_IN_SET(");
+        qb.push_bind(id.clone());
+        qb.push(", ");
+        qb.push(col);
+        qb.push(")");
+    }
+    qb.push(")");
+}
+
+fn push_php_resume_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpResumeListFilter<'a>) {
+    if let Some(st) = f.status.filter(|v| *v > 0) {
+        if st == 2 {
+            qb.push(" AND e.r_status = 2");
+        } else {
+            let state = if st == 4 { 0 } else { st };
+            qb.push(" AND e.state = ");
+            qb.push_bind(state);
+        }
+    }
+    if let Some(src) = f.source.filter(|v| *v > 0) {
+        qb.push(" AND e.source = ");
+        qb.push_bind(src);
+    }
+    if let Some(t) = f.r#type.filter(|v| *v > 0) {
+        qb.push(" AND e.`type` = ");
+        qb.push_bind(t);
+    }
+    if let Some(edu) = f.edu.filter(|v| *v > 0) {
+        qb.push(" AND e.edu = ");
+        qb.push_bind(edu);
+    }
+    if let Some(exp) = f.exp.filter(|v| *v > 0) {
+        qb.push(" AND e.exp = ");
+        qb.push_bind(exp);
+    }
+    match f.service {
+        Some(1) => {
+            qb.push(" AND COALESCE(e.top,0) = 1 AND COALESCE(e.topdate,0) > ");
+            qb.push_bind(f.now);
+        }
+        Some(2) => {
+            qb.push(" AND COALESCE(e.rec_resume,0) = 1");
+        }
+        _ => {}
+    }
+    if f.teen {
+        qb.push(
+            " AND e.birthday <> '' AND UNIX_TIMESTAMP(STR_TO_DATE(CONCAT(LEFT(e.birthday,7),'-01'), '%Y-%m-%d')) > ",
+        );
+        qb.push_bind(f.teen_since);
+    }
+    push_find_in_set_any(qb, "e.job_classid", f.job_class);
+    push_find_in_set_any(qb, "e.city_classid", f.city_class);
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        match f.keytype {
+            2 => {
+                qb.push(" AND e.uname LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            3 => {
+                let id: u64 = kw.parse().unwrap_or(0);
+                qb.push(" AND e.id = ");
+                qb.push_bind(id);
+            }
+            4 => {
+                qb.push(" AND m.username LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            5 => {
+                qb.push(" AND (m.moblie LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR r.telphone LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            6 => {
+                qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_edu WHERE name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR title LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR specialty LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            7 => {
+                qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_work WHERE name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR title LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR content LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            8 => {
+                qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_project WHERE name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR title LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR content LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            9 => {
+                qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_training WHERE name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR title LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR content LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            10 => {
+                qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_skill WHERE name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+            11 => {
+                qb.push(" AND e.add_ip LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            _ => {
+                qb.push(" AND e.name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+        }
+    }
+    if let (Some(col), Some(from), Some(to)) = (f.time_col, f.time_from, f.time_to) {
+        let col = match col {
+            "ctime" => "e.ctime",
+            _ => "e.lastupdate",
+        };
+        qb.push(" AND ");
+        qb.push(col);
+        qb.push(" >= ");
+        qb.push_bind(from);
+        qb.push(" AND ");
+        qb.push(col);
+        qb.push(" <= ");
+        qb.push_bind(to);
+    }
+}
+
+fn push_php_resume_order(qb: &mut QueryBuilder<'_, sqlx::MySql>, t: &str, order: &str) {
+    let asc = order.eq_ignore_ascii_case("asc");
+    qb.push(" ORDER BY ");
+    qb.push(match (t, asc) {
+        ("id", true) => "e.id ASC",
+        ("id", false) => "e.id DESC",
+        ("uid", true) => "e.uid ASC",
+        ("uid", false) => "e.uid DESC",
+        ("ctime", true) => "e.ctime ASC",
+        ("ctime", false) => "e.ctime DESC",
+        ("lastupdate" | "time", true) => "e.lastupdate ASC",
+        _ => "e.lastupdate DESC",
+    });
+}
+
+const PHP_RESUME_LIST_FIELDS: &str = "CAST(e.id AS UNSIGNED) AS id, CAST(e.uid AS UNSIGNED) AS uid, \
+    COALESCE(e.name,'') AS name, COALESCE(e.uname,'') AS uname, \
+    COALESCE(m.username,'') AS username, \
+    COALESCE(NULLIF(m.moblie,''), r.telphone, '') AS moblie, \
+    COALESCE(m.moblie_address,'') AS moblie_address, COALESCE(m.lock_info,'') AS lock_info, \
+    CAST(COALESCE(e.edu,0) AS SIGNED) AS edu, CAST(COALESCE(e.exp,0) AS SIGNED) AS exp, \
+    CAST(COALESCE(e.integrity,0) AS SIGNED) AS integrity, \
+    CAST(COALESCE(e.status,0) AS SIGNED) AS status, CAST(COALESCE(e.state,0) AS SIGNED) AS state, \
+    CAST(COALESCE(e.r_status,0) AS SIGNED) AS r_status, COALESCE(e.statusbody,'') AS statusbody, \
+    CAST(COALESCE(e.rec_resume,0) AS SIGNED) AS rec_resume, CAST(COALESCE(e.top,0) AS SIGNED) AS top, \
+    CAST(COALESCE(e.topdate,0) AS SIGNED) AS topdate, CAST(COALESCE(e.defaults,0) AS SIGNED) AS defaults, \
+    CAST(COALESCE(e.lastupdate,0) AS SIGNED) AS lastupdate, CAST(COALESCE(e.ctime,0) AS SIGNED) AS ctime, \
+    CAST(COALESCE(e.source,0) AS SIGNED) AS source, COALESCE(e.add_ip,'') AS add_ip, \
+    COALESCE(e.ip_address,'') AS ip_address, COALESCE(e.city_classid,'') AS city_classid, \
+    CAST(COALESCE(e.doc,0) AS SIGNED) AS doc, \
+    CAST((SELECT COUNT(*) FROM phpyun_userid_job uj WHERE uj.eid = e.id AND uj.uid = e.uid) AS SIGNED) AS sq_num";
+
+pub async fn list_php_resumes(
+    pool: &MySqlPool,
+    f: &PhpResumeListFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpResumeListRow>, sqlx::Error> {
+    let limit = phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?;
+    let offset = phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(PHP_RESUME_LIST_FIELDS);
+    qb.push(
+        " FROM phpyun_resume_expect e \
+         LEFT JOIN phpyun_member m ON m.uid = e.uid \
+         LEFT JOIN phpyun_resume r ON r.uid = e.uid \
+         WHERE 1=1",
+    );
+    push_php_resume_filters(&mut qb, f);
+    push_php_resume_order(&mut qb, f.order_t, f.order_dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_resumes(
+    pool: &MySqlPool,
+    f: &PhpResumeListFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_resume_expect e \
+         LEFT JOIN phpyun_member m ON m.uid = e.uid \
+         LEFT JOIN phpyun_resume r ON r.uid = e.uid \
+         WHERE 1=1",
+    );
+    push_php_resume_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

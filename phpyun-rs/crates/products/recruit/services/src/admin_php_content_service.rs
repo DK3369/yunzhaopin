@@ -294,6 +294,12 @@ pub async fn dispatch(
         ("web-config", "city") => Ok(PhpOut::Data(web_config_city(state, body).await?)),
         ("user-gap", "reset-password") => user_gap_reset_password(state, body).await,
         ("user-gap", "matching") => Ok(PhpOut::Data(user_gap_matching(state, body).await?)),
+        ("user-gap", "company-index") => Ok(PhpOut::Data(user_gap_company_index(state, body).await?)),
+        ("user-gap", "resume-index") => Ok(PhpOut::Data(user_gap_resume_index(state, body).await?)),
+        ("user-gap", "job-refresh-index") => {
+            Ok(PhpOut::Data(user_gap_job_refresh_index(state, body).await?))
+        }
+        ("user-gap", "job-refresh-del") => user_gap_job_refresh_del(state, body).await,
         ("user-gap", "resume-audit") => {
             Ok(PhpOut::Data(user_gap_resume_audit(state, user, body).await?))
         }
@@ -5550,9 +5556,19 @@ async fn user_gap_memlog_index(state: &AppState, body: &Value) -> AppResult<Valu
     let db = state.db.reader();
     let rows = gap_repo::list_php_member_logs(db, &f, offset, limit).await?;
     let total = gap_repo::count_php_member_logs(db, &f).await?;
+    let base = preview_base(state);
     let data: Vec<Value> = rows
         .into_iter()
         .map(|r| {
+            let com_url = if r.comname.is_empty() {
+                String::new()
+            } else {
+                format!(
+                    "{}/index.php?m=company&c=show&id={}&look=admin",
+                    base.trim_end_matches('/'),
+                    r.uid
+                )
+            };
             json!({
                 "id": r.id,
                 "uid": r.uid,
@@ -5570,7 +5586,7 @@ async fn user_gap_memlog_index(state: &AppState, body: &Value) -> AppResult<Valu
                 "comname": r.comname,
                 "pid": r.pid,
                 "sub_n": r.sub_n,
-                "com_url": "",
+                "com_url": com_url,
                 "comp_url": "",
             })
         })
@@ -6645,4 +6661,307 @@ async fn resume_refresh(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     expect_repo::admin_refresh_ids(state.db.pool(), &ids, clock::now_ts()).await?;
     Ok(PhpOut::Message("ok"))
+}
+
+fn web_base(state: &AppState) -> String {
+    state
+        .config
+        .web_base_url
+        .as_deref()
+        .unwrap_or("")
+        .trim_end_matches('/')
+        .to_string()
+}
+
+fn csv_city_labels(dicts: &dict_service::LocalizedDicts, csv: &str) -> (String, String, i32) {
+    let mut names = Vec::new();
+    for part in csv.split([',', '，']) {
+        let Ok(id) = part.trim().parse::<i32>() else {
+            continue;
+        };
+        if id <= 0 {
+            continue;
+        }
+        let n = dicts.city(id);
+        if !n.is_empty() {
+            names.push(n.to_string());
+        }
+    }
+    let city_n = names.first().cloned().unwrap_or_default();
+    let citynum = i32::try_from(names.len()).unwrap_or(0);
+    let cityall = names.join("、");
+    (city_n, cityall, citynum)
+}
+
+fn wx_bind_msg(wxid: &str, unionid: &str) -> String {
+    let zh = !matches!(i18n::current_lang(), i18n::Lang::En);
+    match (wxid.is_empty(), unionid.is_empty()) {
+        (true, _) if zh => "公众号未绑定".into(),
+        (true, _) => "Official account is not bound".into(),
+        (_, true) if zh => "公众号已绑定".into(),
+        (_, true) => "Official account is bound".into(),
+        _ if zh => "公众号已绑定，微信开放平台已绑定".into(),
+        _ => "Official account is bound, and WeChat Open Platform is bound".into(),
+    }
+}
+
+fn port_label(port: i32) -> &'static str {
+    match port {
+        1 => "PC",
+        2 => "WAP",
+        5 => "Admin",
+        _ => "",
+    }
+}
+
+/// PHP `company::index_action` — `{list,total,perPage,pageSizes}`.
+async fn user_gap_company_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let (t0, t1) = json_day_range(body, "times");
+    let time_type = json_str(body, "time_type");
+    let time_col = match time_type.as_str() {
+        "lotime" if t0.is_some() && t1.is_some() => Some("login_date"),
+        "adtime" if t0.is_some() && t1.is_some() => Some("reg_date"),
+        _ => None,
+    };
+    let status = json_opt_i32(body, "status").filter(|v| *v > 0);
+    let r_status = status.map(|s| match s {
+        4 => 0,
+        5 => 4,
+        other => other,
+    });
+    let city = json_csv(body, "city_class");
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = company_repo::PhpCompanyListFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        kw_type: json_i32(body, "type"),
+        r_status,
+        rating: json_opt_i32(body, "rating"),
+        rec: json_opt_i32(body, "rec"),
+        source: json_opt_i32(body, "source"),
+        crm_uid: json_opt_i32(body, "gw"),
+        has_job: json_opt_i32(body, "has_job"),
+        fact_status: json_opt_i32(body, "fact_status"),
+        map_status: json_opt_i32(body, "map_status"),
+        city_class: if city.is_empty() {
+            None
+        } else {
+            Some(city.as_str())
+        },
+        time_col,
+        time_from: t0,
+        time_to: t1,
+        order_t: &order_t,
+        order_dir: &order_dir,
+    };
+    let db = state.db.reader();
+    let rows = company_repo::list_php_companies(db, &f, offset, limit).await?;
+    let total = company_repo::count_php_companies(db, &f).await?;
+    let base = web_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "uid": r.uid,
+                "name": r.name,
+                "shortname": r.shortname,
+                "r_status": r.r_status,
+                "rating": r.rating,
+                "rating_name": r.rating_name,
+                "oldrating_name": "",
+                "vipetime": r.vipetime,
+                "vip_etime_n": fmt_date(r.vipetime),
+                "yyzz_status": r.yyzz_status,
+                "logo": r.logo,
+                "linktel": r.linktel,
+                "linkphone": r.linkphone,
+                "linkmail": r.linkmail,
+                "crm_uid": r.crm_uid,
+                "crm_name": r.crm_name,
+                "fact_status": r.fact_status,
+                "moblie_status": r.moblie_status,
+                "email_status": r.email_status,
+                "username": r.username,
+                "usertype": r.usertype,
+                "wxid": r.wxid,
+                "wxopenid": r.wxopenid,
+                "unionid": r.unionid,
+                "wxBindmsg": wx_bind_msg(&r.wxid, &r.unionid),
+                "lock_info": r.lock_info,
+                "source": r.source,
+                "login_ip": r.login_ip,
+                "login_address": r.login_address,
+                "moblie_address": r.moblie_address,
+                "login_date": r.login_date,
+                "login_date_n": fmt_dt(r.login_date),
+                "reg_date": r.reg_date,
+                "reg_date_n": fmt_dt(r.reg_date),
+                "jobnum": r.jobnum,
+                "zz_jobnum": r.zz_jobnum,
+                "comUrl": format!("{base}/index.php?m=company&c=show&id={}&look=admin", r.uid),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `users_resume::index_action` — `{list,total,page_sizes,limit,page}`.
+async fn user_gap_resume_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let (t0, t1) = json_day_range(body, "times");
+    let time_type = json_str(body, "time_type");
+    let time_col = match time_type.as_str() {
+        "adtime" if t0.is_some() && t1.is_some() => Some("ctime"),
+        "uptime" if t0.is_some() && t1.is_some() => Some("lastupdate"),
+        _ => None,
+    };
+    let now = clock::now_ts();
+    let job_class = json_csv(body, "job_class");
+    let city_class = json_csv(body, "city_class");
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = expect_repo::PhpResumeListFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        keytype: json_i32(body, "keytype"),
+        status: json_opt_i32(body, "status"),
+        source: json_opt_i32(body, "source"),
+        r#type: json_opt_i32(body, "type"),
+        edu: json_opt_i32(body, "edu"),
+        exp: json_opt_i32(body, "exp"),
+        service: json_opt_i32(body, "service"),
+        teen: json_i32(body, "teen") == 1,
+        teen_since: now - 16 * 365 * 86400,
+        now,
+        time_col,
+        time_from: t0,
+        time_to: t1,
+        job_class: if job_class.is_empty() {
+            None
+        } else {
+            Some(job_class.as_str())
+        },
+        city_class: if city_class.is_empty() {
+            None
+        } else {
+            Some(city_class.as_str())
+        },
+        order_t: &order_t,
+        order_dir: &order_dir,
+    };
+    let db = state.db.reader();
+    let rows = expect_repo::list_php_resumes(db, &f, offset, limit).await?;
+    let total = expect_repo::count_php_resumes(db, &f).await?;
+    let dicts = dict_service::get(state).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let (city_n, cityall, citynum) = csv_city_labels(&dicts, &r.city_classid);
+            let top_day = if r.topdate > now {
+                ((r.topdate - now) as f64 / 86400.0).ceil() as i64
+            } else {
+                0
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "name": r.name,
+                "uname": r.uname,
+                "username": r.username,
+                "moblie": r.moblie,
+                "moblie_address": r.moblie_address,
+                "lock_info": r.lock_info,
+                "edu": r.edu,
+                "edu_n": dicts.user_or_com(r.edu),
+                "exp": r.exp,
+                "exp_n": dicts.user_or_com(r.exp),
+                "integrity": r.integrity,
+                "status": r.status,
+                "state": r.state,
+                "r_status": r.r_status,
+                "statusbody": r.statusbody,
+                "rec_resume": r.rec_resume.to_string(),
+                "top": r.top,
+                "top_day": top_day,
+                "defaults": r.defaults,
+                "lastupdate": r.lastupdate,
+                "lastupdate_n": fmt_dt(r.lastupdate),
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "source": r.source,
+                "add_ip": r.add_ip,
+                "ip_address": r.ip_address,
+                "city_classid": r.city_classid,
+                "city_n": city_n,
+                "cityall": cityall,
+                "citynum": citynum,
+                "doc": r.doc,
+                "sq_num": r.sq_num,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `company_job_refresh_log::index_action`.
+async fn user_gap_job_refresh_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let r#type = json_opt_i32(body, "type");
+    let ktype = json_i32(body, "ktype");
+    let db = state.db.reader();
+    let rows = gap_repo::list_php_refresh_logs(
+        db,
+        r#type,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        ktype,
+        offset,
+        limit,
+    )
+    .await?;
+    let total = gap_repo::count_php_refresh_logs(
+        db,
+        r#type,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        ktype,
+        )
+        .await?;
+    let base = web_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let joburl = if r.r#type == 2 {
+                format!("{base}/index.php?m=part&c=show&id={}&look=admin", r.jobid)
+            } else {
+                format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", r.jobid)
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "jobid": r.jobid,
+                "usertype": r.usertype,
+                "type": r.r#type,
+                "ip": r.ip,
+                "remark": r.remark,
+                "job_name": r.job_name,
+                "com_name": r.com_name,
+                "port_n": port_label(r.port),
+                "r_time_n": fmt_dt(r.r_time),
+                "joburl": joburl,
+                "comurl": format!("{base}/index.php?m=company&c=show&id={}&look=admin", r.uid),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn user_gap_job_refresh_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Ok(PhpOut::Message("common_00740"));
+    }
+    gap_repo::delete_php_refresh_logs(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("admin_user_00187"))
 }

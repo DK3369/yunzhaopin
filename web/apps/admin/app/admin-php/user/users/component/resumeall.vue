@@ -114,9 +114,9 @@
                                <!-- <span v-if="scope.row.defaults == 1" class="user_resumrmr">Default</span>-->
                             </div>
                             <div class="">
-                                {{ lc('admin_00496') }}
-                                <span v-if="scope.row.edu_n">{{ lc('admin_00497') }}</span>
-                                <span v-if="scope.row.exp_n">{{ lc('admin_00498') }}</span>
+                                <span v-if="scope.row.edu_n">{{ scope.row.edu_n }}</span>
+                                <span v-if="scope.row.edu_n && scope.row.exp_n"> / </span>
+                                <span v-if="scope.row.exp_n">{{ scope.row.exp_n }}</span>
                             </div>
                             <div class="">
                                 <span class="gsd">
@@ -1747,26 +1747,32 @@ export default {
             that.loading = true;
             httpPost('m=user&c=users_resume', { ...params, ...searchForm }, {hideloading: true}).then(function (response) {
                 let res = response.data,
-                    data = res.data;
+                    data = (res && res.data) ? res.data : {};
 
-                that.list = data.list;
-                that.total = parseInt(data.total);
-                that.pageSizes = data.page_sizes;
+                that.list = data.list || [];
+                that.total = parseInt(data.total || 0);
+                that.pageSizes = data.page_sizes || [10, 20, 50, 100];
                 if (that.limit === 0) {
-                    that.limit = parseInt(data.limit); // Use default count from system config
+                    that.limit = parseInt(data.limit || 20);
                 }
-                if (that.page > data.page) {
-                    that.page = parseInt(data.page); // Use latest page after the last page is deleted
+                if (data.page && that.page > data.page) {
+                    that.page = parseInt(data.page);
                 }
                 that.loading = false;
                 if(that.prevPage != that.page){
                     that.prevPage = that.page;
-                    that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    if (that.$refs.multipleTable && that.$refs.multipleTable.bodyWrapper) {
+                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
                     scrollToTop()
                 }
                 if (that.list.length === 0) {
                     that.dataText = lc('wap_js_00113');
                 }
+            }).catch(function () {
+                that.list = [];
+                that.dataText = lc('wap_js_00113');
+                that.loading = false;
             })
         },
 

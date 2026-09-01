@@ -152,22 +152,30 @@ export default {
             _this.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=user&c=company_job_refresh_log&a=index', params,{hideloading: true}).then(function (response) {
                 let res = response.data;
-                if (res.error === 0) {
-                    _this.tableData = res.data.list;
-                    _this.total = res.data.total;
-                    _this.searchForm.limit = res.data.perPage;
-                    _this.pageSizes = res.data.pageSizes;
-                    _this.loading = false;
+                if (res.error === 0 && res.data) {
+                    _this.tableData = res.data.list || [];
+                    _this.total = res.data.total || 0;
+                    _this.searchForm.limit = res.data.perPage || 20;
+                    _this.pageSizes = res.data.pageSizes || [10, 20, 50, 100];
                     if(_this.prevPage != _this.searchForm.page){
                         _this.prevPage = _this.searchForm.page;
-                        _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        if (_this.$refs.multipleTable && _this.$refs.multipleTable.bodyWrapper) {
+                            _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
                     }
                     if (_this.tableData.length === 0){
                         _this.emptytext = lc('wap_js_00113');
                     }
+                } else {
+                    _this.tableData = [];
+                    _this.emptytext = lc('wap_js_00113');
                 }
+                _this.loading = false;
             }).catch(function (error) {
                 console.log(error);
+                _this.tableData = [];
+                _this.emptytext = lc('wap_js_00113');
+                _this.loading = false;
             });
         },
         deleteRow(scope, isMore) {

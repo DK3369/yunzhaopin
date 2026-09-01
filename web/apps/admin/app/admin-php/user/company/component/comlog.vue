@@ -265,13 +265,14 @@ export default {
             httpPost(url, _this.search, {hideloading: true}).then(function(response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    _this.tableData = res.data.data;
-                    _this.total = res.data.total;
-                    _this.loading = false;
-                    _this.pageSizes = res.data.pageSizes;
+                    _this.tableData = (res.data && res.data.data) ? res.data.data : [];
+                    _this.total = res.data.total || 0;
+                    _this.pageSizes = res.data.pageSizes || [10, 20, 50, 100];
 					if(_this.prevPage != _this.page){
 						_this.prevPage = _this.page;
-						_this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+						if (_this.$refs.multipleTable && _this.$refs.multipleTable.bodyWrapper) {
+							_this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+						}
                         if (_this.scrolltop) {
                             scrollToTop()
                         }
@@ -279,7 +280,15 @@ export default {
                     if (_this.tableData.length === 0) {
                         _this.dataText = lc('wap_js_00113');
                     }
+                } else {
+                    _this.tableData = [];
+                    _this.dataText = lc('wap_js_00113');
                 }
+                _this.loading = false;
+            }).catch(function() {
+                _this.tableData = [];
+                _this.dataText = lc('wap_js_00113');
+                _this.loading = false;
             })
         },
         del: function(detail) {

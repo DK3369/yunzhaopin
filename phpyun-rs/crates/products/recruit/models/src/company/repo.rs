@@ -1126,3 +1126,243 @@ pub async fn set_vip_times(
         .await?;
     Ok(())
 }
+
+/// PHP `company::index_action` + `company.model::getDataList` admin row.
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpCompanyListRow {
+    pub uid: u64,
+    pub name: String,
+    pub shortname: String,
+    pub r_status: i32,
+    pub rating: i32,
+    pub rating_name: String,
+    pub vipetime: i64,
+    pub yyzz_status: i32,
+    pub logo: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub linkmail: String,
+    pub crm_uid: i32,
+    pub crm_name: String,
+    pub fact_status: i32,
+    pub moblie_status: i32,
+    pub email_status: i32,
+    pub username: String,
+    pub usertype: i32,
+    pub wxid: String,
+    pub wxopenid: String,
+    pub unionid: String,
+    pub lock_info: String,
+    pub source: i32,
+    pub login_ip: String,
+    pub login_address: String,
+    pub moblie_address: String,
+    pub login_date: i64,
+    pub reg_date: i64,
+    pub jobnum: i32,
+    pub zz_jobnum: i32,
+}
+
+pub struct PhpCompanyListFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub kw_type: i32,
+    pub r_status: Option<i32>,
+    pub rating: Option<i32>,
+    pub rec: Option<i32>,
+    pub source: Option<i32>,
+    pub crm_uid: Option<i32>,
+    pub has_job: Option<i32>,
+    pub fact_status: Option<i32>,
+    pub map_status: Option<i32>,
+    pub city_class: Option<&'a str>,
+    pub time_col: Option<&'a str>,
+    pub time_from: Option<i64>,
+    pub time_to: Option<i64>,
+    pub order_t: &'a str,
+    pub order_dir: &'a str,
+}
+
+fn push_php_company_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpCompanyListFilter<'a>) {
+    if let Some(st) = f.r_status {
+        qb.push(" AND c.r_status = ");
+        qb.push_bind(st);
+    }
+    if let Some(r) = f.rating.filter(|v| *v > 0) {
+        qb.push(" AND c.rating = ");
+        qb.push_bind(r);
+    }
+    if let Some(rec) = f.rec.filter(|v| *v > 0) {
+        qb.push(" AND c.rec = ");
+        qb.push_bind(rec);
+    }
+    if let Some(src) = f.source.filter(|v| *v > 0) {
+        qb.push(" AND m.source = ");
+        qb.push_bind(src);
+    }
+    if let Some(gw) = f.crm_uid.filter(|v| *v > 0) {
+        qb.push(" AND c.crm_uid = ");
+        qb.push_bind(gw);
+    }
+    match f.has_job {
+        Some(1) => {
+            qb.push(" AND COALESCE(c.jobtime,0) > 0");
+        }
+        Some(2) => {
+            qb.push(" AND COALESCE(c.jobtime,0) = 0");
+        }
+        _ => {}
+    }
+    match f.fact_status {
+        Some(1) => {
+            qb.push(" AND COALESCE(c.fact_status,0) = 1");
+        }
+        Some(2) => {
+            qb.push(" AND COALESCE(c.fact_status,0) = 0");
+        }
+        _ => {}
+    }
+    match f.map_status {
+        Some(1) => {
+            qb.push(" AND COALESCE(c.x,'') <> '' AND COALESCE(c.y,'') <> ''");
+        }
+        Some(2) => {
+            qb.push(" AND (COALESCE(c.x,'') = '' OR COALESCE(c.y,'') = '')");
+        }
+        _ => {}
+    }
+    if let Some(city) = f.city_class.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND (FIND_IN_SET(c.provinceid, ");
+        qb.push_bind(city);
+        qb.push(") OR FIND_IN_SET(c.cityid, ");
+        qb.push_bind(city);
+        qb.push(") OR FIND_IN_SET(c.three_cityid, ");
+        qb.push_bind(city);
+        qb.push("))");
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        match f.kw_type {
+            2 => {
+                qb.push(" AND m.username LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            3 => {
+                qb.push(" AND c.linkman LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            4 => {
+                qb.push(" AND c.linktel LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            5 => {
+                qb.push(" AND c.linkmail LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            6 => {
+                let uid: u64 = kw.parse().unwrap_or(0);
+                qb.push(" AND c.uid = ");
+                qb.push_bind(uid);
+            }
+            7 => {
+                qb.push(" AND m.login_ip LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            8 => {
+                qb.push(" AND c.address LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            _ => {
+                qb.push(" AND (c.name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(" OR c.shortname LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+        }
+    }
+    if let (Some(col), Some(from), Some(to)) = (f.time_col, f.time_from, f.time_to) {
+        let col = match col {
+            "login_date" => "COALESCE(m.login_date, c.login_date)",
+            _ => "m.reg_date",
+        };
+        qb.push(" AND ");
+        qb.push(col);
+        qb.push(" >= ");
+        qb.push_bind(from);
+        qb.push(" AND ");
+        qb.push(col);
+        qb.push(" <= ");
+        qb.push_bind(to);
+    }
+}
+
+fn push_php_company_order(qb: &mut QueryBuilder<'_, sqlx::MySql>, t: &str, order: &str) {
+    let asc = order.eq_ignore_ascii_case("asc");
+    qb.push(" ORDER BY ");
+    qb.push(match (t, asc) {
+        ("uid", true) => "c.uid ASC",
+        ("login_date", true) => "COALESCE(m.login_date, c.login_date) ASC",
+        ("login_date", false) => "COALESCE(m.login_date, c.login_date) DESC",
+        ("vipetime", true) => "c.vipetime ASC",
+        ("vipetime", false) => "c.vipetime DESC",
+        _ => "c.uid DESC",
+    });
+}
+
+const PHP_COMPANY_LIST_FIELDS: &str = "CAST(c.uid AS UNSIGNED) AS uid, COALESCE(c.name,'') AS name, \
+    COALESCE(c.shortname,'') AS shortname, CAST(COALESCE(c.r_status,0) AS SIGNED) AS r_status, \
+    CAST(COALESCE(c.rating,0) AS SIGNED) AS rating, COALESCE(c.rating_name,'') AS rating_name, \
+    CAST(COALESCE(c.vipetime,0) AS SIGNED) AS vipetime, \
+    CAST(COALESCE(c.yyzz_status,0) AS SIGNED) AS yyzz_status, COALESCE(c.logo,'') AS logo, \
+    COALESCE(c.linktel,'') AS linktel, COALESCE(c.linkphone,'') AS linkphone, \
+    COALESCE(c.linkmail,'') AS linkmail, CAST(COALESCE(c.crm_uid,0) AS SIGNED) AS crm_uid, \
+    COALESCE(NULLIF(a.name,''), a.username, '') AS crm_name, \
+    CAST(COALESCE(c.fact_status,0) AS SIGNED) AS fact_status, \
+    CAST(COALESCE(c.moblie_status,0) AS SIGNED) AS moblie_status, \
+    CAST(COALESCE(c.email_status,0) AS SIGNED) AS email_status, \
+    COALESCE(m.username,'') AS username, CAST(COALESCE(m.usertype,2) AS SIGNED) AS usertype, \
+    COALESCE(m.wxid,'') AS wxid, COALESCE(m.wxopenid,'') AS wxopenid, \
+    COALESCE(m.unionid,'') AS unionid, COALESCE(m.lock_info,'') AS lock_info, \
+    CAST(COALESCE(m.source,0) AS SIGNED) AS source, COALESCE(m.login_ip,'') AS login_ip, \
+    COALESCE(m.login_address,'') AS login_address, COALESCE(m.moblie_address,'') AS moblie_address, \
+    CAST(COALESCE(m.login_date, c.login_date, 0) AS SIGNED) AS login_date, \
+    CAST(COALESCE(m.reg_date,0) AS SIGNED) AS reg_date, \
+    CAST((SELECT COUNT(*) FROM phpyun_company_job j WHERE j.uid = c.uid) AS SIGNED) AS jobnum, \
+    CAST((SELECT COUNT(*) FROM phpyun_company_job j WHERE j.uid = c.uid AND COALESCE(j.status,0) = 0 AND COALESCE(j.state,0) = 1) AS SIGNED) AS zz_jobnum";
+
+pub async fn list_php_companies(
+    pool: &MySqlPool,
+    f: &PhpCompanyListFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpCompanyListRow>, sqlx::Error> {
+    let limit = phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?;
+    let offset = phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(PHP_COMPANY_LIST_FIELDS);
+    qb.push(
+        " FROM phpyun_company c \
+         LEFT JOIN phpyun_member m ON m.uid = c.uid \
+         LEFT JOIN phpyun_admin_user a ON a.uid = c.crm_uid \
+         WHERE 1=1",
+    );
+    push_php_company_filters(&mut qb, f);
+    push_php_company_order(&mut qb, f.order_t, f.order_dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_companies(
+    pool: &MySqlPool,
+    f: &PhpCompanyListFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_company c \
+         LEFT JOIN phpyun_member m ON m.uid = c.uid WHERE 1=1",
+    );
+    push_php_company_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

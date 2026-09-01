@@ -757,6 +757,95 @@ pub async fn count_refresh_logs(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub async fn list_php_refresh_logs(
+    pool: &MySqlPool,
+    r#type: Option<i32>,
+    keyword: Option<&str>,
+    ktype: i32,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpJobRefreshLogRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(l.id AS UNSIGNED) AS id, CAST(COALESCE(l.uid,0) AS UNSIGNED) AS uid, \
+         CAST(COALESCE(l.jobid,0) AS UNSIGNED) AS jobid, \
+         CAST(COALESCE(l.usertype,0) AS SIGNED) AS usertype, \
+         CAST(COALESCE(l.`type`,0) AS SIGNED) AS `type`, \
+         CAST(COALESCE(NULLIF(l.r_time,''),'0') AS SIGNED) AS r_time, \
+         COALESCE(l.ip,'') AS ip, COALESCE(l.remark,'') AS remark, \
+         CAST(COALESCE(l.port,0) AS SIGNED) AS port, \
+         COALESCE(NULLIF(j.name,''), p.name, '') AS job_name, \
+         COALESCE(NULLIF(j.com_name,''), p.com_name, '') AS com_name \
+         FROM phpyun_job_refresh_log l \
+         LEFT JOIN phpyun_company_job j ON l.`type` = 1 AND j.id = l.jobid \
+         LEFT JOIN phpyun_partjob p ON l.`type` = 2 AND p.id = l.jobid \
+         WHERE 1=1",
+    );
+    if let Some(t) = r#type.filter(|v| *v > 0) {
+        qb.push(" AND l.`type` = ");
+        qb.push_bind(t);
+    }
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        if ktype == 2 {
+            qb.push(" AND (j.name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR p.name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        } else {
+            qb.push(" AND (j.com_name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR p.com_name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        }
+    }
+    qb.push(" ORDER BY l.id DESC LIMIT ");
+    qb.push_bind(l);
+    qb.push(" OFFSET ");
+    qb.push_bind(o);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_php_refresh_logs(
+    pool: &MySqlPool,
+    r#type: Option<i32>,
+    keyword: Option<&str>,
+    ktype: i32,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_job_refresh_log l \
+         LEFT JOIN phpyun_company_job j ON l.`type` = 1 AND j.id = l.jobid \
+         LEFT JOIN phpyun_partjob p ON l.`type` = 2 AND p.id = l.jobid \
+         WHERE 1=1",
+    );
+    if let Some(t) = r#type.filter(|v| *v > 0) {
+        qb.push(" AND l.`type` = ");
+        qb.push_bind(t);
+    }
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        if ktype == 2 {
+            qb.push(" AND (j.name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR p.name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        } else {
+            qb.push(" AND (j.com_name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR p.com_name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        }
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_php_refresh_logs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(pool, "DELETE FROM phpyun_job_refresh_log WHERE id IN (", ids).await
+}
+
 // ---------- keywords / cron / error / sysmsg / navmap / domain ----------
 
 const HOTKEY_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, COALESCE(key_name,'') AS key_name, \
