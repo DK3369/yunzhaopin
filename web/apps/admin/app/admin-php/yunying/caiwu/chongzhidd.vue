@@ -700,7 +700,7 @@ export default {
                     return isJPG && isLt2M;
                 },
                 beforeRemove(file, fileList) {
-                    return this.$confirm(lc('admin_yunying_00201', [file.name]));
+                    return this.$confirm(lc('admin_vue_00137', [file.name]));
                 },
                 handleSizeChange(val) {
                     this.pageSize = val;

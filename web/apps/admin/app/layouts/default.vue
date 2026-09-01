@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { lc } from '~/utils/phpLc'
+import { lc, translateMenuText } from '~/utils/phpLc'
 import { httpPost } from '~/utils/httpPost'
 
 type MenuItem = {
@@ -16,7 +16,7 @@ type MenuItem = {
 
 const route = useRoute()
 const router = useRouter()
-const { t, te } = useI18n()
+const { locale } = useI18n()
 
 const { data: menu } = await useAsyncData('admin-php-menu', () =>
   useApi().post<MenuItem[]>('/v1/admin/menu', {}),
@@ -115,15 +115,13 @@ function checkMenu(val: number) {
   if (val === 0) navigateTo('/index')
 }
 function tabLabel(tab: { name: string; two_menu_id: number; path: string }) {
-  if (tab.name === 'index' || tab.path === '/index') return String(t('wap_00191'))
-  const navKey = `nav.${tab.two_menu_id}`
-  if (tab.two_menu_id && te(navKey)) return String(t(navKey))
-  if (tab.name && te(tab.name)) return String(t(tab.name))
-  return tab.name
+  void locale.value
+  if (tab.name === 'index' || tab.path === '/index') return lc('wap_00191')
+  return translateMenuText(tab.name, tab.two_menu_id)
 }
 function menuLabel(m: MenuItem) {
-  const key = `nav.${m.id}`
-  return te(key) ? String(t(key)) : m.name
+  void locale.value
+  return translateMenuText(m.name, m.id)
 }
 function filteredMapItems(parent: MenuItem) {
   const kw = searchFormMap.keyword.trim()

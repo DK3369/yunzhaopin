@@ -8,7 +8,7 @@ import {
   ElTooltip as ElTooltipBase,
 } from 'element-plus'
 import { httpPost } from '~/utils/httpPost'
-import { lc, persistLocale, readStoredLocale } from '~/utils/phpLc'
+import { applyPhpLcFixes, lc, persistLocale, readStoredLocale, translateMenuText } from '~/utils/phpLc'
 
 function coerceSwitchValue(val: unknown, active: unknown, inactive: unknown) {
   if (Object.is(val, active) || Object.is(val, inactive)) return val
@@ -295,14 +295,21 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   } catch {
     /* Element Plus locale follows useI18n on next paint */
   }
+  applyPhpLcFixes()
 
   if (import.meta.client) {
     window.lc = lc
     window.httpPost = httpPost
     const w = window as unknown as Record<string, unknown>
-    // PHP api.js: yunAdminT wraps already-translated lc() text. Nuxt lc() already i18n's.
-    w.yunAdminT = (text: unknown) => String(text ?? '')
-    w.yunAdminTransText = (text: unknown) => String(text ?? '')
+    // PHP api.js: skip on zh; leftover Chinese → alias → lc(). Exact match only.
+    w.yunAdminT = (text: unknown) => {
+      if (readStoredLocale() === 'zh') return String(text ?? '')
+      return translateMenuText(String(text ?? ''))
+    }
+    w.yunAdminTransText = (text: unknown) => {
+      if (readStoredLocale() === 'zh') return String(text ?? '')
+      return translateMenuText(String(text ?? ''))
+    }
     w.yunAdminTranslateDOM = () => undefined
     // PHP pages load wangEditor in HTML; Nuxt must still have a fallback if the
     // script tag races Vue chunks. Real editor comes from public/php-admin/js/wangeditor.
