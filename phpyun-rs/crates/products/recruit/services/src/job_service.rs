@@ -3,9 +3,11 @@
 //! Implements the list and detail portions of PHPYun `wap/job::index_action` +
 //! `wap/job::comapply_action`. Application submission lives in `apply_service`.
 
-use phpyun_core::ApiError;
-use phpyun_core::{clock, AppResult, AppState, Pagination};
+use chrono::Timelike;
+use phpyun_core::utils::mask_contact;
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
+use phpyun_models::site_setting::repo as setting_repo;
 
 /// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
 /// + the `joblist` Smarty plugin (`smarty_internal_compile_joblist.php`).
@@ -145,6 +147,13 @@ pub struct JobDetailData {
     pub login_date: i64,
     pub com_address: String,
     pub com_name: String,
+    pub yyzz_status: i32,
+    pub moblie_status: i32,
+    pub email_status: i32,
+    pub fact_status: i32,
+    pub money: i32,
+    pub content: String,
+    pub linkjob: String,
 }
 
 pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
@@ -173,11 +182,15 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         com_rating,
         comqcode,
         linkman,
-        linktel,
-        linkphone,
-        linkmail,
         com_address,
         com_name,
+        yyzz_status,
+        moblie_status,
+        email_status,
+        fact_status,
+        money,
+        content,
+        linkjob,
     ) = if let Some(c) = company {
         (
             c.logo.unwrap_or_default(),
@@ -189,11 +202,15 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
             c.rating,
             c.comqcode.unwrap_or_default(),
             c.linkman.unwrap_or_default(),
-            c.linktel.clone().filter(|s| !s.is_empty()).unwrap_or_else(|| c.linkphone.clone().unwrap_or_default()),
-            c.linkphone.unwrap_or_default(),
-            c.linkmail.unwrap_or_default(),
             c.address.unwrap_or_default(),
             c.name.unwrap_or_default(),
+            c.yyzz_status,
+            c.moblie_status,
+            c.email_status,
+            c.fact_status,
+            c.money,
+            c.content.unwrap_or_default(),
+            c.linkjob.unwrap_or_default(),
         )
     } else {
         (
@@ -208,7 +225,11 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
             String::new(),
             String::new(),
             String::new(),
-            String::new(),
+            0,
+            0,
+            0,
+            0,
+            0,
             String::new(),
             String::new(),
         )
@@ -225,12 +246,252 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         com_rating,
         comqcode,
         linkman,
-        linktel,
-        linkphone,
-        linkmail,
+        linktel: String::new(),
+        linkphone: String::new(),
+        linkmail: String::new(),
         login_date,
         com_address,
         com_name,
+        yyzz_status,
+        moblie_status,
+        email_status,
+        fact_status,
+        money,
+        content,
+        linkjob,
+    })
+}
+
+/// Public contact payload aligned with PHP `getCompanyJobTel` + `setCompanyLink`.
+/// Full telephone is only present when `revealed`; email is never returned.
+#[derive(Debug, Clone)]
+pub struct PublicJobContact {
+    pub job_id: u64,
+    pub linkman: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub linktel_n: String,
+    pub linkphone_n: String,
+    pub address: String,
+    pub city_id: i32,
+    pub x: String,
+    pub y: String,
+    pub link_code: i32,
+    pub link_msg: String,
+    pub link_sub: i32,
+    pub revealed: bool,
+}
+
+fn cfg_i32(map: &std::collections::HashMap<String, String>, key: &str, default: i32) -> i32 {
+    map.get(key)
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(default)
+}
+
+fn cfg_csv_has(map: &std::collections::HashMap<String, String>, key: &str, rating: i32) -> bool {
+    let raw = map.get(key).map(|s| s.trim()).unwrap_or("");
+    if raw.is_empty() {
+        return false;
+    }
+    raw.split(',')
+        .any(|p| p.trim().parse::<i32>().ok() == Some(rating))
+}
+
+fn not_disturb_blocks(raw: &str, now: i64) -> bool {
+    let parts: Vec<&str> = raw.split('-').collect();
+    if parts.len() != 2 {
+        return false;
+    }
+    fn hm(s: &str) -> Option<(u32, u32)> {
+        let mut it = s.trim().split(':');
+        let h = it.next()?.trim().parse().ok()?;
+        let m = it.next().unwrap_or("0").trim().parse().ok()?;
+        Some((h, m))
+    }
+    let Some((sh, sm)) = hm(parts[0]) else {
+        return false;
+    };
+    let Some((eh, em)) = hm(parts[1]) else {
+        return false;
+    };
+    let Some(dt) = chrono::DateTime::from_timestamp(now, 0) else {
+        return false;
+    };
+    let cur = dt.hour() * 60 + dt.minute();
+    let start = sh * 60 + sm;
+    let end = eh * 60 + em;
+    if start > end {
+        // e.g. 22:00-06:00
+        !(cur < start && cur > end)
+    } else {
+        cur > start && cur < end
+    }
+}
+
+/// PHP `job.model.php::getCompanyJobTel` / `setCompanyLink` for the public site.
+pub async fn resolve_job_contact(
+    state: &AppState,
+    job_id: u64,
+    user: Option<&AuthenticatedUser>,
+) -> AppResult<PublicJobContact> {
+    let raw = job_repo::get_job_contact(state.db.reader(), job_id)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("job_not_found"))?;
+
+    let cfg = setting_repo::find_many(
+        state.db.reader(),
+        &[
+            "com_login_link",
+            "com_link_look",
+            "com_link_no",
+            "sy_link_tips",
+            "sy_comprivacy_open",
+            "sy_privacy_rating",
+        ],
+    )
+    .await
+    .unwrap_or_default();
+
+    let hidden_tip = {
+        let custom = cfg.get("sy_link_tips").map(|s| s.trim()).unwrap_or("");
+        if custom.is_empty() {
+            "admin_user_company_00263".to_string()
+        } else {
+            custom.to_string()
+        }
+    };
+
+    let mut link_code: i32 = 0;
+    let mut link_msg = String::new();
+    let mut link_sub: i32 = 0;
+
+    let uid = user.map(|u| u.uid);
+    let usertype = user.map(|u| i32::from(u.usertype)).unwrap_or(0);
+
+    if uid == Some(raw.com_uid) {
+        link_code = 1;
+    } else if raw.infostatus == 2 {
+        link_msg = hidden_tip.clone();
+        link_code = 2;
+    } else if raw.is_link == 3 {
+        link_msg = hidden_tip.clone();
+        link_code = 3;
+    } else if cfg_csv_has(&cfg, "com_link_no", raw.rating) {
+        link_msg = hidden_tip.clone();
+        link_code = 4;
+    } else if cfg_i32(&cfg, "com_link_look", 1) == 1 {
+        match cfg_i32(&cfg, "com_login_link", 1) {
+            2 => {
+                link_msg = hidden_tip.clone();
+                link_code = 5;
+            }
+            3 => {
+                if usertype != 1 {
+                    link_msg = "common_01411".to_string();
+                    link_code = 6;
+                }
+            }
+            4 => {
+                if usertype != 1 {
+                    link_msg = "common_01411".to_string();
+                    link_code = 6;
+                } else if let Some(uid) = uid {
+                    let n = phpyun_models::resume::expect::count_by_uid(state.db.reader(), uid)
+                        .await
+                        .unwrap_or(0);
+                    if n == 0 {
+                        link_msg = "common_01541".to_string();
+                        link_code = 7;
+                    } else if let Ok(Some((state_n, _status))) =
+                        phpyun_models::resume::expect::find_default_state_by_uid(
+                            state.db.reader(),
+                            uid,
+                        )
+                        .await
+                    {
+                        if state_n != 1 {
+                            link_msg = "wap_00369".to_string();
+                            link_code = 7;
+                            link_sub = 1;
+                        }
+                    }
+                }
+            }
+            5 => {
+                if usertype != 1 {
+                    link_msg = "common_01411".to_string();
+                    link_code = 6;
+                } else if let Some(uid) = uid {
+                    let (sq, ms) = tokio::join!(
+                        phpyun_models::apply::repo::count_active_by_uid_job(
+                            state.db.reader(),
+                            uid,
+                            job_id,
+                        ),
+                        phpyun_models::apply::repo::count_userid_msg_by_uid_job(
+                            state.db.reader(),
+                            uid,
+                            job_id,
+                        ),
+                    );
+                    let applied = sq.unwrap_or(0) > 0 || ms.unwrap_or(0) > 0;
+                    if applied {
+                        if cfg_i32(&cfg, "sy_comprivacy_open", 0) == 1
+                            && !cfg_csv_has(&cfg, "sy_privacy_rating", raw.rating)
+                        {
+                            link_msg = "common_01934".to_string();
+                            link_code = 10;
+                        }
+                    } else {
+                        link_msg = "common_01540".to_string();
+                        link_code = 8;
+                    }
+                }
+            }
+            _ => {}
+        }
+    } else {
+        link_msg = "common_02372".to_string();
+        link_code = 9;
+    }
+
+    if link_code == 1
+        && raw.infostatus == 1
+        && not_disturb_blocks(&raw.not_disturb, clock::now_ts())
+    {
+        link_msg = "common_00973".to_string();
+        link_code = 2;
+    }
+
+    if link_msg.is_empty() && link_code == 0 {
+        link_code = 1;
+    }
+
+    let revealed = link_code == 1;
+    // PHP unsets plaintext tel/phone when linkMsg is set; we never return email.
+    Ok(PublicJobContact {
+        job_id,
+        linkman: raw.linkman,
+        linktel: if revealed {
+            raw.linktel.clone()
+        } else {
+            String::new()
+        },
+        linkphone: if revealed {
+            raw.linkphone.clone()
+        } else {
+            String::new()
+        },
+        linktel_n: mask_contact(&raw.linktel),
+        linkphone_n: mask_contact(&raw.linkphone),
+        address: raw.address,
+        city_id: raw.cityid,
+        x: raw.x,
+        y: raw.y,
+        link_code,
+        link_msg,
+        link_sub,
+        revealed,
     })
 }
 

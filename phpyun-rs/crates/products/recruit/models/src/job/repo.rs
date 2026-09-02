@@ -1175,6 +1175,12 @@ pub async fn bump_and_get_jobhits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx
 
 #[derive(Debug, Clone, Default)]
 pub struct JobContact {
+    pub com_uid: u64,
+    pub is_link: i32,
+    pub rating: i32,
+    /// PHP `company.infostatus`: 1 = public, 2 = hide contact.
+    pub infostatus: i32,
+    pub not_disturb: String,
     pub linkman: String,
     pub linktel: String,
     pub linkphone: String,
@@ -1185,7 +1191,19 @@ pub struct JobContact {
     pub y: String,
 }
 
-type DefaultContactRow = (String, String, String, String, String, i32, String, String);
+type CompanyContactRow = (
+    String,
+    String,
+    String,
+    String,
+    String,
+    i32,
+    String,
+    String,
+    i32,
+    i32,
+    String,
+);
 
 pub async fn get_job_contact(
     pool: &MySqlPool,
@@ -1204,17 +1222,18 @@ pub async fn get_job_contact(
         return Ok(None);
     };
 
-    let default_row: Option<DefaultContactRow> = sqlx::query_as(
+    let default_row: Option<CompanyContactRow> = sqlx::query_as(
         "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
                 COALESCE(linkmail, ''), COALESCE(address, ''), COALESCE(cityid, 0), \
-                COALESCE(x, ''), COALESCE(y, '') \
+                COALESCE(x, ''), COALESCE(y, ''), \
+                COALESCE(infostatus, 1), COALESCE(rating, 0), COALESCE(not_disturb, '') \
            FROM phpyun_company WHERE uid = ? LIMIT 1",
     )
     .bind(com_uid)
     .fetch_optional(pool)
     .await?;
-    let default_contact = default_row.map(
-        |(linkman, linktel, linkphone, linkmail, address, cityid, x, y)| JobContact {
+    let (default_contact, rating, infostatus, not_disturb) = match default_row {
+        Some((
             linkman,
             linktel,
             linkphone,
@@ -1223,22 +1242,59 @@ pub async fn get_job_contact(
             cityid,
             x,
             y,
-        },
-    );
+            infostatus,
+            rating,
+            not_disturb,
+        )) => (
+            JobContact {
+                com_uid,
+                is_link,
+                rating,
+                infostatus,
+                not_disturb: not_disturb.clone(),
+                linkman,
+                linktel,
+                linkphone,
+                linkmail,
+                address,
+                cityid,
+                x,
+                y,
+            },
+            rating,
+            infostatus,
+            not_disturb,
+        ),
+        None => (
+            JobContact {
+                com_uid,
+                is_link,
+                infostatus: 1,
+                ..JobContact::default()
+            },
+            0,
+            1,
+            String::new(),
+        ),
+    };
 
-    let alt: Option<JobContact> = if link_id > 0 {
-        let alt_row: Option<(String, String, String, String, i32, String, String)> =
-            sqlx::query_as(
-                "SELECT COALESCE(link_man, ''), COALESCE(link_moblie, ''), \
+    let overlay: Option<JobContact> = if link_id > 0 {
+        let alt_row: Option<(String, String, String, String, i32, String, String)> = sqlx::query_as(
+            "SELECT COALESCE(link_man, ''), COALESCE(link_moblie, ''), \
                     COALESCE(link_phone, ''), COALESCE(link_address, ''), \
                     COALESCE(cityid, 0), COALESCE(x, ''), COALESCE(y, '') \
                FROM phpyun_company_job_link WHERE id = ? LIMIT 1",
-            )
-            .bind(link_id)
-            .fetch_optional(pool)
-            .await?;
+        )
+        .bind(link_id)
+        .fetch_optional(pool)
+        .await?;
         alt_row.map(
             |(link_man, link_moblie, link_phone, link_address, cityid, x, y)| JobContact {
+                com_uid,
+                is_link,
+                rating,
+                infostatus,
+                not_disturb: not_disturb.clone(),
                 linkman: link_man,
                 linktel: link_moblie,
                 linkphone: link_phone,
@@ -1253,10 +1309,19 @@ pub async fn get_job_contact(
         None
     };
 
-    let resolved = match is_link {
-        2 => alt.or(default_contact),
-        3 => alt,
+    let mut resolved = match is_link {
+        2 => overlay.unwrap_or(default_contact),
+        3 => overlay.unwrap_or_else(|| JobContact {
+            com_uid,
+            is_link,
+            rating,
+            infostatus,
+            not_disturb,
+            ..JobContact::default()
+        }),
         _ => default_contact,
     };
-    Ok(resolved)
+    resolved.com_uid = com_uid;
+    resolved.is_link = is_link;
+    Ok(Some(resolved))
 }

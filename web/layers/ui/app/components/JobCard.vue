@@ -47,20 +47,38 @@
 
   <!-- PC 职位搜索卡，对齐 default/job/search.htm -->
   <div v-if="variant === 'search'" class="search_job_list site-pc">
+    <div v-if="Number(job.fact_status) === 1" class="job_sdhybox">
+      <span class="job_sdhy">
+        <img src="/legacy/pc/images/ptyz.png" alt="" class="png" width="16" />
+        {{ $t('wap_00274') }}
+      </span>
+    </div>
     <div class="yunjoblist_new">
       <div class="yunjoblist_newname">
         <NuxtLink :to="`/jobs/${job.id}`" class="yunjoblist_newname_a" :title="job.name">{{ job.name }}</NuxtLink>
-        <i v-if="job.newtime" class="job_newicon">new</i>
+        <i v-if="job.newtime" class="job_newicon">{{ $t('common_02081') }}</i>
         <img v-if="job.is_urgent" src="/legacy/pc/images/jobjp.png" alt="" class="co_zzjp png" />
         <img v-if="job.is_rec" src="/legacy/pc/images/jobtj.png" alt="" class="co_zzjp png" />
       </div>
       <div class="yunjoblist_newcomename">
         <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="search_job_com_name">{{ job.com_name }}</NuxtLink>
         <span v-else class="search_job_com_name">{{ job.com_name }}</span>
-        <i v-if="Number(job.yyzz_status) === 1" class="job_qy_rz_icon" />
+        <img
+          v-if="Number(job.yyzz_status) === 1"
+          src="/legacy/pc/images/disc_icon10.png"
+          alt=""
+          class="png"
+          width="16"
+        />
       </div>
+      <a
+        href="javascript:;"
+        class="yunjoblist_new_icon"
+        :class="{ yunjoblist_new_icon_cur: expanded }"
+        @click.prevent="expanded = !expanded"
+      />
     </div>
-    <div class="jobshow">
+    <div class="jobshow" :class="{ none: !expanded }">
       <div class="search_job_left_siaber">
         <div class="company_det">
           <span class="search_job_l_xz">{{ salary }}</span>
@@ -71,13 +89,13 @@
           <template v-if="job.exp_n">
             <span class="search_job_list_box_line">|</span>
             <span class="search_job_list_box_s">
-              <em class="com_search_job_em">{{ job.exp_n }}{{ $t('home.experience_suffix') }}</em>
+              <em class="com_search_job_em">{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}</em>
             </span>
           </template>
           <template v-if="job.edu_n">
             <span class="search_job_list_box_line">|</span>
             <span class="search_job_list_box_s">
-              <em class="com_search_job_em">{{ job.edu_n }}{{ $t('home.education_suffix') }}</em>
+              <em class="com_search_job_em">{{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}</em>
             </span>
           </template>
         </div>
@@ -90,15 +108,29 @@
         </div>
       </div>
       <div class="yun_joblist_ope">
-        <NuxtLink :to="`/jobs/${job.id}`" class="search_job_Apply_fast">{{ $t('wap_00574') }}</NuxtLink>
+        <NuxtLink
+          :to="`/jobs/${job.id}`"
+          :class="job.is_applied ? 'search_job_Apply_fast_ysq' : 'search_job_Apply_fast'"
+        >{{ job.is_applied ? $t('default_00251') : $t('wap_00574') }}</NuxtLink>
       </div>
       <div class="job_bottom">
         <div class="job_bottomleft">
           <div v-if="welfare.length" class="job_welfare_tag">
             <span v-for="w in welfare" :key="w" class="job_welfare_tag_s">{{ w }}</span>
           </div>
+          <div v-else class="job_welfare_tag">
+            <span v-if="job.number_n" class="job_welfare_tag_s">{{ $t('common_01994') }}{{ job.number_n }}</span>
+            <span v-if="job.age_n" class="job_welfare_tag_s">{{ $t('wap_com_00302') }}{{ job.age_n }}</span>
+            <span v-if="job.sex_n" class="job_welfare_tag_s">{{ $t('wap_com_00303') }}{{ job.sex_n }}</span>
+          </div>
         </div>
-        <span v-if="posted" class="yunjoblist_new_time">{{ posted }}</span>
+        <div class="job_bottomcont">
+          <a href="javascript:;" class="yunjoblist_newwxbth">{{ $t('common_02398') }}</a>
+        </div>
+        <span v-if="timeInfo.text" class="yunjoblist_new_time">
+          <span v-if="timeInfo.hot" style="color: red">{{ timeInfo.text }}</span>
+          <template v-else>{{ timeInfo.text }}</template>
+        </span>
       </div>
     </div>
   </div>
@@ -110,9 +142,9 @@
         <NuxtLink :to="`/jobs/${job.id}`">{{ job.name }}</NuxtLink>
       </div>
       <div class="com_details_com_otherjob_info">
-        <template v-if="job.exp_n">{{ job.exp_n }}{{ $t('home.experience_suffix') }}</template>
+        <template v-if="job.exp_n">{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}</template>
         <span v-if="job.exp_n && job.edu_n" class="com_details_line">|</span>
-        <template v-if="job.edu_n">{{ job.edu_n }}{{ $t('home.education_suffix') }}</template>
+        <template v-if="job.edu_n">{{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}</template>
       </div>
     </div>
     <div class="com_details_com_otherjob_c">
@@ -135,8 +167,8 @@
       <div class="comnew_jobxz">{{ salary }}</div>
       <div class="comnew_jobinfo">
         <span>{{ city }}</span>
-        <template v-if="job.edu_n"> · {{ job.edu_n }}{{ $t('home.education_suffix') }}</template>
-        <template v-if="job.exp_n"> · {{ job.exp_n }}{{ $t('home.experience_suffix') }}</template>
+        <template v-if="job.edu_n"> · {{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}</template>
+        <template v-if="job.exp_n"> · {{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}</template>
       </div>
       <div v-if="welfare.length" class="welfare">
         <span v-for="w in welfare" :key="w" class="welfare_n">{{ w }}</span>
@@ -163,11 +195,11 @@
         <span>{{ cityH5 }}</span>
         <template v-if="job.exp_n">
           <i class="newjob_info_line" />
-          <span>{{ job.exp_n }}{{ $t('home.experience_suffix') }}</span>
+          <span>{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}</span>
         </template>
         <template v-if="job.edu_n">
           <i class="newjob_info_line" />
-          <span>{{ job.edu_n }}{{ $t('home.education_suffix') }}</span>
+          <span>{{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}</span>
         </template>
         <span class="newjob_fw">
           <img v-if="job.is_rec" src="/legacy/h5/images/icon_recommend.png" alt="" />
@@ -190,14 +222,27 @@
 </template>
 
 <script setup lang="ts">
-import { formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '../utils/site'
+import {
+  dictReqLabel,
+  formatJobListTime,
+  formatSalary,
+  formatUnixDate,
+  mediaUrl,
+  PLACEHOLDER_LOGO,
+  type JobLike,
+} from '../utils/site'
 
 const props = withDefaults(
   defineProps<{ job: JobLike; variant?: 'home' | 'search' | 'tab' | 'com' | 'firm' }>(),
   { variant: 'home' },
 )
 const { t } = useI18n()
-const salary = computed(() => formatSalary(props.job, t('common.negotiable'), t('ui.yuan')))
+const { settings } = useSiteChrome()
+const expanded = ref(true)
+const salaryType = computed(() => Number(settings.value.resume_salarytype || 1))
+const salary = computed(() =>
+  formatSalary(props.job, t('common.negotiable'), salaryType.value, t('common_01943')),
+)
 const city = computed(() => {
   const one = props.job.job_city_one || ''
   const two = props.job.job_city_two || props.job.city_two || ''
@@ -210,6 +255,17 @@ const cityH5 = computed(
 )
 const logo = computed(() => mediaUrl(props.job.com_logo || props.job.logo, PLACEHOLDER_LOGO))
 const posted = computed(() => props.job.lastupdate_n || formatUnixDate(props.job.lastupdate))
+const timeInfo = computed(() =>
+  formatJobListTime(
+    props.job.lastupdate,
+    {
+      yesterday: t('common_02000'),
+      hoursAgo: t('admin_system_00652'),
+      minutesAgo: t('common_01895'),
+    },
+    posted.value,
+  ),
+)
 const welfare = computed(() => {
   const w = props.job.welfare_n || props.job.welfare
   if (Array.isArray(w)) return w.map(String).filter(Boolean)

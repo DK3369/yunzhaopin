@@ -33,6 +33,29 @@ pub async fn find(pool: &MySqlPool, key: &str) -> Result<Option<SiteSetting>, sq
         .await
 }
 
+pub async fn find_many(
+    pool: &MySqlPool,
+    keys: &[&str],
+) -> Result<std::collections::HashMap<String, String>, sqlx::Error> {
+    let mut out = std::collections::HashMap::new();
+    if keys.is_empty() {
+        return Ok(out);
+    }
+    let placeholders = vec!["?"; keys.len()].join(",");
+    let sql = format!(
+        "SELECT COALESCE(name,''), COALESCE(config,'') FROM phpyun_admin_config WHERE name IN ({placeholders})"
+    );
+    let mut q = sqlx::query_as::<_, (String, String)>(&sql);
+    for k in keys {
+        q = q.bind(*k);
+    }
+    let rows = q.fetch_all(pool).await?;
+    for (name, value) in rows {
+        out.insert(name, value);
+    }
+    Ok(out)
+}
+
 pub async fn upsert(
     pool: &MySqlPool,
     key: &str,

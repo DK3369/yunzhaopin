@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, listFailMsg, type CatNode, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, listFailMsg, type CatNode, type JobLike } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
 const route = useRoute()
@@ -19,16 +19,26 @@ const hy = computed(() => numQuery(route.query.hy))
 const welfare = computed(() => numQuery(route.query.welfare))
 const report = computed(() => numQuery(route.query.report))
 const uptime = computed(() => numQuery(route.query.uptime))
+const sex = computed(() => numQuery(route.query.sex))
 const urgent = computed(() => route.query.urgent === '1')
 const rec = computed(() => route.query.rec === '1')
 const cert = computed(() => route.query.cert === '1')
 const order = computed(() => String(route.query.order || ''))
 const salaryBound = computed(() => (salaryId.value ? SALARY_BOUNDS[salaryId.value] : undefined))
+const { settings } = useSiteChrome()
+const sexSwitch = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
+const hiddenFilters = computed(() => {
+  const skip = new Set(['keyword', 'page'])
+  return Object.entries(route.query)
+    .filter(([k, v]) => !skip.has(k) && v != null && String(v) !== '')
+    .map(([k, v]) => [k, String(Array.isArray(v) ? v[0] : v)] as const)
+})
+const freeTel = computed(() => String(settings.value.sy_freewebtel || ''))
 const api = useApi()
 
 const { data, error } = await useAsyncData(
   () =>
-    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${uptime.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
+    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
   () =>
     api.get<{ list: JobLike[]; total: number }>('/v1/wap/jobs', {
       page: page.value,
@@ -46,6 +56,7 @@ const { data, error } = await useAsyncData(
       welfare: welfare.value,
       report: report.value,
       uptime: uptime.value,
+      sex: sex.value,
       min_salary: salaryBound.value?.min_salary,
       max_salary: salaryBound.value?.max_salary,
       urgent: urgent.value ? true : undefined,
@@ -110,8 +121,11 @@ const { data: districts } = await useAsyncData(
           .catch(() => [] as DictItem[])
       : Promise.resolve([] as DictItem[]),
 )
-const { data: ads } = await useAsyncData('ads-504', () =>
-  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '504', limit: 3 }).catch(() => []),
+const { data: adsTop } = await useAsyncData('ads-507', () =>
+  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '507', limit: 1 }).catch(() => []),
+)
+const { data: adsSide } = await useAsyncData('ads-7', () =>
+  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '7', limit: 5 }).catch(() => []),
 )
 
 const jobItems = computed(() => jobRoots.value.map((c) => ({ id: c.id, name: c.name })))
@@ -138,30 +152,58 @@ const uptimeItems = computed<DictItem[]>(() => [
   { id: 30, name: t('admin_user_00175') },
   { id: 90, name: t('wap_00431') },
 ])
+const sexItems = computed<DictItem[]>(() => [
+  { id: 1, name: t('common_02092') },
+  { id: 2, name: t('common_02069') },
+])
 const { data: recSide } = await useAsyncData(
   () => `jobs-rec-side-${locale.value}`,
   () => api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 10 }).catch(() => ({ list: [] as JobLike[] })),
 )
 
 const selected = computed(() => {
-  const rows: Array<{ param: string; name: string }> = []
-  if (keyword.value) rows.push({ param: 'keyword', name: keyword.value })
-  if (jobLabel.value) rows.push({ param: 'job1', name: jobLabel.value })
-  if (cityLabel.value) rows.push({ param: 'province_id', name: cityLabel.value })
+  const rows: Array<{ param: string; name: string; extra?: Record<string, undefined> }> = []
+  if (keyword.value) rows.push({ param: 'keyword', name: `${t('admin_tool_00574')}：${keyword.value}` })
+  if (job1.value) {
+    const n = dictName(jobItems.value, job1.value)
+    if (n) rows.push({ param: 'job1', name: `${t('admin_user_company_00377')}：${n}`, extra: { job1_son: undefined, job_post: undefined } })
+  }
+  if (job1Son.value) {
+    const n = dictName(job2Items.value, job1Son.value)
+    if (n) rows.push({ param: 'job1_son', name: n, extra: { job_post: undefined } })
+  }
+  if (jobPost.value) {
+    const n = dictName(job3Items.value, jobPost.value)
+    if (n) rows.push({ param: 'job_post', name: n })
+  }
+  if (provinceId.value) {
+    const n = dictName(provinces.value, provinceId.value)
+    if (n) rows.push({ param: 'province_id', name: `${t('member_user_00198')}：${n}`, extra: { city_id: undefined, three_city_id: undefined } })
+  }
+  if (cityId.value) {
+    const n = dictName(cities.value, cityId.value)
+    if (n) rows.push({ param: 'city_id', name: n, extra: { three_city_id: undefined } })
+  }
+  if (threeCityId.value) {
+    const n = dictName(districts.value, threeCityId.value)
+    if (n) rows.push({ param: 'three_city_id', name: n })
+  }
   const hyN = dictName(industries.value, hy.value)
-  if (hyN) rows.push({ param: 'hy', name: hyN })
+  if (hyN) rows.push({ param: 'hy', name: `${t('admin_user_company_00373')}：${hyN}` })
   const eduN = dictName(edus.value, edu.value)
-  if (eduN) rows.push({ param: 'edu', name: eduN })
+  if (eduN) rows.push({ param: 'edu', name: `${t('home.education_suffix')}：${eduN}` })
   const expN = dictName(exps.value, exp.value)
-  if (expN) rows.push({ param: 'exp', name: expN })
+  if (expN) rows.push({ param: 'exp', name: `${t('wap_user_00240')}：${expN}` })
   const salaryN = dictName(salaries.value, salaryId.value)
-  if (salaryN) rows.push({ param: 'salary', name: salaryN })
+  if (salaryN) rows.push({ param: 'salary', name: `${t('member_user_00106')}：${salaryN}` })
   const welN = dictName(welfares.value, welfare.value)
   if (welN) rows.push({ param: 'welfare', name: welN })
   const reportN = dictName(reports.value, report.value)
-  if (reportN) rows.push({ param: 'report', name: reportN })
+  if (reportN) rows.push({ param: 'report', name: `${t('wap_com_00279')}：${reportN}` })
   const upN = dictName(uptimeItems.value, uptime.value)
-  if (upN) rows.push({ param: 'uptime', name: upN })
+  if (upN) rows.push({ param: 'uptime', name: `${t('wap_00326')}：${upN}` })
+  const sexN = dictName(sexItems.value, sex.value)
+  if (sexN) rows.push({ param: 'sex', name: `${t('wap_com_00303')}：${sexN}` })
   if (cert.value) rows.push({ param: 'cert', name: t('common_02393') })
   return rows
 })
@@ -179,42 +221,34 @@ function goPage(p: number) {
   <div class="site-pc">
     <div class="yun_jobbody">
       <div class="yun_content">
-        <div class="current_Location com_current_Location png">
+        <div class="current_Location com_current_Location png none">
           <div class="fl">
             {{ $t('common_01498') }}：
             <NuxtLink to="/">{{ $t('common.home') }}</NuxtLink> >
             <span>{{ $t('default_00246') }}</span>
           </div>
         </div>
-        <div v-if="ads?.length" class="yun_jobbanner">
-          <img v-for="(ad, i) in ads" :key="i" :src="ad.image_n" alt="" />
+        <div class="clear" />
+        <div v-if="adsTop?.length" class="yun_jobbanner">
+          <img v-for="(ad, i) in adsTop" :key="i" :src="ad.image_n" alt="" />
         </div>
-        <form action="/jobs" method="get" class="jobsearch_newbox">
-          <div class="yun_job_search">
-            <div class="yun_job_search_cont searchContButton">
-              <div class="yun_job_search_textcont">
-                <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('default_00348')" />
+        <div class="clear" />
+        <form action="/jobs" method="get">
+          <div class="jobsearch_newbox">
+            <div class="yun_job_search">
+              <div class="yun_job_search_cont searchContButton">
+                <div class="yun_job_search_textcont">
+                  <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('default_00348')" />
+                </div>
+                <input class="Search_jobs_submit yun_bg_color jobsSubmit" type="submit" :value="$t('common.search')" />
               </div>
-              <input class="Search_jobs_submit yun_bg_color jobsSubmit" type="submit" :value="$t('common.search')" />
             </div>
           </div>
-        </form>
-        <div v-if="selected.length" class="Search_close_box">
-          <div>
-            <div class="Search_clear">
-              <NuxtLink to="/jobs">{{ $t('default_00059') }}</NuxtLink>
-            </div>
-            <span class="Search_close_box_s">{{ $t('default_00058') }}</span>
-          </div>
-          <NuxtLink
-            v-for="s in selected"
-            :key="s.param"
-            :to="{ path: '/jobs', query: mergeQuery(route.query, { [s.param]: undefined }) }"
-            class="Search_jobs_c_a disc_fac"
-          >{{ s.name }}</NuxtLink>
-        </div>
-        <div class="Search_jobs_box">
+          <div class="clear" />
+          <input v-for="[k, v] in hiddenFilters" :key="k" type="hidden" :name="k" :value="v" />
+          <div class="Search_jobs_box">
           <FilterRow
+            v-if="!job1"
             :label="$t('common.job')"
             param="job1"
             :items="jobItems"
@@ -223,7 +257,7 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
           />
           <FilterRow
-            v-if="job1 && job2Items.length"
+            v-if="job1 && !job1Son"
             :label="$t('common_01972')"
             param="job1_son"
             :items="job2Items"
@@ -232,7 +266,7 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
           />
           <FilterRow
-            v-if="job1Son && job3Items.length"
+            v-if="job1Son"
             :label="$t('admin_00223')"
             param="job_post"
             :items="job3Items"
@@ -240,33 +274,21 @@ function goPage(p: number) {
             path="/jobs"
             :all-label="$t('common.all')"
           />
-          <FilterRow
+          <CityFilterBox
             :label="$t('member_com_00378')"
-            param="province_id"
-            :items="provinces || []"
-            :current="provinceId"
             path="/jobs"
             :all-label="$t('common.all')"
+            :unlimited-label="$t('common_01936')"
+            :more-label="$t('common.more')"
+            :provinces="provinces || []"
+            :cities="cities || []"
+            :districts="districts || []"
+            :province-id="provinceId"
+            :city-id="cityId"
+            :three-city-id="threeCityId"
           />
           <FilterRow
-            v-if="provinceId && (cities || []).length"
-            :label="$t('common_02110')"
-            param="city_id"
-            :items="cities || []"
-            :current="cityId"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
-            v-if="cityId && (districts || []).length"
-            :label="$t('common_01936')"
-            param="three_city_id"
-            :items="districts || []"
-            :current="threeCityId"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
+            extra-class="search_more"
             :label="$t('member_user_00106')"
             param="salary"
             :items="salaries || []"
@@ -274,57 +296,91 @@ function goPage(p: number) {
             path="/jobs"
             :all-label="$t('common.all')"
           />
-          <FilterRow
-            :label="$t('wap_com_00167')"
-            param="welfare"
-            :items="welfares || []"
-            :current="welfare"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
-            :label="$t('wap_com_00283')"
-            param="edu"
-            :items="edus || []"
-            :current="edu"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
-            :label="$t('wap_com_00287')"
-            param="exp"
-            :items="exps || []"
-            :current="exp"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
-            v-if="(reports || []).length"
-            :label="$t('wap_com_00279')"
-            param="report"
-            :items="reports || []"
-            :current="report"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
-            :label="$t('default_00360')"
-            param="hy"
-            :items="industries || []"
-            :current="hy"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
-          <FilterRow
-            :label="$t('wap_00326')"
-            param="uptime"
-            :items="uptimeItems"
-            :current="uptime"
-            path="/jobs"
-            :all-label="$t('common.all')"
-          />
+          <div class="searchmorelist">
+            <div class="Search_jobs_form_list search_more">
+              <div class="Search_jobs_name">{{ $t('common.more') }}：</div>
+              <div class="Search_jobs_sub" style="width: 1090px">
+                <MoreFilterSelect
+                  v-if="(welfares || []).length"
+                  :label="$t('wap_com_00167')"
+                  param="welfare"
+                  :items="welfares || []"
+                  :current="welfare"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                />
+                <MoreFilterSelect
+                  :label="$t('wap_com_00283')"
+                  param="edu"
+                  :items="edus || []"
+                  :current="edu"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                />
+                <MoreFilterSelect
+                  :label="$t('wap_com_00287')"
+                  param="exp"
+                  :items="exps || []"
+                  :current="exp"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                />
+                <MoreFilterSelect
+                  v-if="sexSwitch"
+                  :label="$t('wap_com_00332')"
+                  param="sex"
+                  :items="sexItems"
+                  :current="sex"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                />
+                <MoreFilterSelect
+                  v-if="(reports || []).length"
+                  :label="$t('wap_com_00279')"
+                  param="report"
+                  :items="reports || []"
+                  :current="report"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                />
+                <MoreFilterSelect
+                  :label="$t('default_00360')"
+                  param="hy"
+                  :items="industries || []"
+                  :current="hy"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                  wide
+                />
+                <MoreFilterSelect
+                  :label="$t('wap_00326')"
+                  param="uptime"
+                  :items="uptimeItems"
+                  :current="uptime"
+                  path="/jobs"
+                  :all-label="$t('common.all')"
+                />
+              </div>
+            </div>
+          </div>
+          <div v-if="selected.length" class="Search_close_box">
+            <div>
+              <div class="Search_clear">
+                <NuxtLink to="/jobs">{{ $t('default_00059') }}</NuxtLink>
+              </div>
+              <span class="Search_close_box_s">{{ $t('default_00058') }}</span>
+            </div>
+            <NuxtLink
+              v-for="s in selected"
+              :key="s.param"
+              :to="{ path: '/jobs', query: mergeQuery(route.query, { [s.param]: undefined, ...(s.extra || {}) }) }"
+              class="Search_jobs_c_a disc_fac"
+            >{{ s.name }}</NuxtLink>
+          </div>
+          <div class="clear" />
         </div>
-        <div class="search_h1_box">
+        </form>
+        <div class="search_h1_box" style="overflow: hidden; position: relative">
           <div class="search_h1_box_title">
             <ul class="search_h1_box_list">
               <li :class="{ search_job_all: !urgent && !rec && !order && !cert }">
@@ -347,15 +403,17 @@ function goPage(p: number) {
                 <NuxtLink
                   :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: urgent ? undefined : '1' }) }"
                   class="job_zt"
-                  >{{ $t('member_com_00326') }}</NuxtLink
                 >
+                  {{ $t('member_com_00326') }} <i class="job_jp_chk" />
+                </NuxtLink>
               </li>
               <li :class="{ search_h1_box_cur: rec }" class="job_tj_t">
                 <NuxtLink
                   :to="{ path: '/jobs', query: mergeQuery(route.query, { rec: rec ? undefined : '1' }) }"
                   class="job_zt"
-                  >{{ $t('home.recommended_jobs') }}</NuxtLink
                 >
+                  {{ $t('home.recommended_jobs') }} <i class="job_tj_chk" />
+                </NuxtLink>
               </li>
               <li :class="{ search_h1_box_cur: cert }">
                 <NuxtLink
@@ -366,6 +424,7 @@ function goPage(p: number) {
                 </NuxtLink>
               </li>
             </ul>
+            <div v-if="freeTel" class="search_h1_box_t fr">{{ $t('default_00363') }}{{ freeTel }}</div>
           </div>
         </div>
         <div class="left_job_all fl">
@@ -382,18 +441,21 @@ function goPage(p: number) {
             <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
           </div>
         </div>
-        <div v-if="(ads && ads.length) || (recSide?.list || []).length" class="yun_job_list_right">
-          <div v-if="ads?.length" class="yun_job_list_right_banner">
-            <img v-for="(ad, i) in ads" :key="i" :src="ad.image_n" alt="" />
+        <div v-if="(adsSide && adsSide.length) || (recSide?.list || []).length" class="yun_job_list_right">
+          <div v-if="adsSide?.length" class="yun_job_list_right_banner">
+            <img v-for="(ad, i) in adsSide" :key="i" :src="ad.image_n" alt="" />
           </div>
           <div v-if="(recSide?.list || []).length" class="job_recommendation">
             <div class="job_recommendation_title">
-              <span class="job_recommendation_span">{{ $t('home.recommended_jobs') }}</span>
+              <span class="job_recommendation_span"><i class="job_recommendation_span_line" />{{ $t('default_00249') }}</span>
             </div>
             <ul class="job_recommendation_list">
               <li v-for="job in recSide?.list || []" :key="job.id">
                 <NuxtLink :to="`/jobs/${job.id}`" class="job_recommendation_jobname">{{ job.name }}</NuxtLink>
                 <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="job_recommendation_Comname">{{ job.com_name }}</NuxtLink>
+                <div class="job_recommendation_msg">
+                  <span><em class="job_right_box_list_c">{{ formatSalary(job, $t('common.negotiable'), Number(settings.resume_salarytype || 1), $t('common_01943')) }}</em></span>
+                </div>
               </li>
             </ul>
           </div>
@@ -442,8 +504,8 @@ function goPage(p: number) {
       />
     </div>
     <div class="main_part" style="padding-top: 0.2rem">
-      <div v-if="ads?.length" class="jobzd_banner">
-        <img v-for="(ad, i) in ads" :key="i" :src="ad.image_n" alt="" style="width: 100%" />
+      <div v-if="adsTop?.length" class="jobzd_banner">
+        <img v-for="(ad, i) in adsTop" :key="i" :src="ad.image_n" alt="" style="width: 100%" />
       </div>
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>

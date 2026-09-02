@@ -70,6 +70,12 @@ pub struct JobSummary {
     /// Education-level name (PHP `comclass` dict, e.g. "本科") —
     /// filled by `job_summary_from_dict*`; empty for `From<Job>`.
     pub edu_n: String,
+    /// Headcount dict name (PHP `job_number`). Additive.
+    pub number_n: String,
+    /// Age dict name (PHP `job_age`). Additive.
+    pub age_n: String,
+    /// Gender dict name (PHP `sex_n`). Additive.
+    pub sex_n: String,
     /// Company nature name (PHP `pr_n`). Additive.
     pub pr_n: String,
     /// Company size name (PHP `mun_n`). Additive.
@@ -145,6 +151,9 @@ impl From<Job> for JobSummary {
             exp_n: String::new(),
             edu: j.edu,
             edu_n: String::new(),
+            number_n: String::new(),
+            age_n: String::new(),
+            sex_n: String::new(),
             pr_n: String::new(),
             mun_n: String::new(),
             welfare_n: Vec::new(),

@@ -50,6 +50,11 @@ export type JobLike = {
   welfare_n?: string[] | string
   yyzz_status?: number
   fact_status?: number
+  number_n?: string
+  age_n?: string
+  sex_n?: string
+  is_favorited?: boolean
+  is_applied?: boolean
 }
 
 export type CompanyLike = {
@@ -231,12 +236,35 @@ export function listFailMsg(err: unknown, rateLimit: string, fallback: string): 
   return e.data?.msg || e.message || fallback
 }
 
-export function formatSalary(job: JobLike, negotiable = '', unit = ''): string {
+/** PHP `salaryUnit($minsalary, $maxsalary)` — `resume_salarytype` 1=元 / 2=千 / 3=K / 4=k. */
+export function formatSalary(
+  job: JobLike,
+  negotiable = '',
+  salaryType = 1,
+  plus = '',
+): string {
   const min = Number(job.min_salary ?? job.minsalary ?? 0)
   const max = Number(job.max_salary ?? job.maxsalary ?? 0)
   if (!min && !max) return negotiable
-  if (min && max) return `${min}-${max}${unit}`
-  return `${min || max}${unit}`
+  const type = Number(salaryType) || 1
+  const unit = type === 2 ? '千' : type === 3 ? 'K' : type === 4 ? 'k' : '元'
+  const n = (v: number) => (type === 1 ? String(v) : String(Math.floor((v / 1000) * 10) / 10))
+  if (min && max) {
+    if (max < 2000) return type === 1 ? `2000${unit}${plus}` : `2${unit}${plus}`
+    return `${n(min)}-${n(max)}${unit}`
+  }
+  return `${n(min || max)}${unit}`
+}
+
+/** Skip mixing CJK dict labels with Latin suffixes (e.g. 不限 + experience). */
+export function dictReqLabel(name: string, suffix = ''): string {
+  const n = String(name || '').trim()
+  const s = String(suffix || '')
+  if (!n || !s) return n
+  const nCjk = /[\u4e00-\u9fff]/.test(n)
+  const sCjk = /[\u4e00-\u9fff]/.test(s)
+  if (nCjk !== sCjk) return n
+  return `${n}${s}`
 }
 
 export function formatUnixDate(ts?: number | string | null): string {
@@ -248,6 +276,30 @@ export function formatUnixDate(ts?: number | string | null): string {
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
+}
+
+/** PHP `smarty_internal_compile_joblist` `$list.time` + `lastupdateStyle`. */
+export function formatJobListTime(
+  ts?: number | string | null,
+  labels?: { yesterday: string; hoursAgo: string; minutesAgo: string },
+  fallback = '',
+): { text: string; hot: boolean } {
+  const n = Number(ts || 0)
+  if (!n) return { text: fallback, hot: false }
+  const ms = n * 1000
+  const now = new Date()
+  const beginToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const beginYesterday = beginToday - 86_400_000
+  if (ms >= beginYesterday && ms < beginToday) {
+    return { text: labels?.yesterday || fallback, hot: false }
+  }
+  if (ms >= beginToday) {
+    const hours = Math.floor((Date.now() - ms) / 3_600_000)
+    if (hours >= 1) return { text: `${hours}${labels?.hoursAgo || ''}`, hot: true }
+    const mins = Math.max(1, Math.ceil((Date.now() - ms) / 60_000))
+    return { text: `${mins}${labels?.minutesAgo || ''}`, hot: true }
+  }
+  return { text: formatUnixDate(n) || fallback, hot: false }
 }
 
 export function companyName(c: CompanyLike, fallback = ''): string {

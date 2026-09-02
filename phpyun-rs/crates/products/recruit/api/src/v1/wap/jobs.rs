@@ -13,7 +13,7 @@ use phpyun_core::{
     ValidatedJsonOrQuery,
 };
 use phpyun_services::hot_search_service;
-use phpyun_services::job_service::{self, JobSearch};
+use phpyun_services::job_service::{self, JobSearch, PublicJobContact};
 use phpyun_services::view_service::{self, KIND_JOB};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -221,6 +221,9 @@ pub fn job_summary_from_dict_fav(
         exp_n: dicts.comclass(j.exp).to_string(),
         edu: j.edu,
         edu_n: dicts.comclass(j.edu).to_string(),
+        number_n: dicts.comclass(j.number).to_string(),
+        age_n: dicts.comclass(j.age).to_string(),
+        sex_n: dicts.comclass(j.sex).to_string(),
         pr_n: String::new(),
         mun_n: String::new(),
         welfare_n,
@@ -488,12 +491,14 @@ pub async fn build_job_detail_value(
         (0, 0, 0, 0)
     };
 
+    let contact = job_service::resolve_job_contact(state, id, user).await?;
+
     // --- Assemble the response grouped by business concern ---
     Ok(json::json!({
         // Job main table (Job entity serialized directly; field names = original DB column names)
         "job": d.job,
 
-        // Company-related
+        // Company-related — no plaintext phone/email (PHP comapply only shows masked tel).
         "company": {
             "logo": d.com_logo,
             "provinceid": d.com_provinceid,
@@ -504,13 +509,21 @@ pub async fn build_job_detail_value(
             "rating": d.com_rating,
             "qcode": d.comqcode,
             "linkman": d.linkman,
-            "linktel": d.linktel,
-            "linkphone": d.linkphone,
-            "linkmail": d.linkmail,
+            "linkjob": d.linkjob,
             "login_date": d.login_date,
             "address": d.com_address,
             "name": d.com_name,
+            "content": d.content,
+            "money": d.money,
+            "yyzz_status": d.yyzz_status,
+            "moblie_status": d.moblie_status,
+            "email_status": d.email_status,
+            "fact_status": d.fact_status,
         },
+
+        // Page HTML never prints plaintext (PHP `$link.linkData.linktel_n`).
+        // Full numbers only come from `/v1/wap/jobs/contact` after 查看电话.
+        "contact": public_contact_json(&contact, false),
 
         // Dictionary translation results (display-only, read-only)
         "dict": {
@@ -852,23 +865,64 @@ pub async fn bump_jobhits(
 pub struct JobContactView {
     pub job_id: u64,
     pub linkman: String,
+    /// Full number only when PHP `linkCode == 1`; otherwise empty.
     pub linktel: String,
     pub linkphone: String,
-    pub linkmail: String,
+    pub linktel_n: String,
+    pub linkphone_n: String,
     pub address: String,
     pub city_id: i32,
     pub city_name: String,
-    /// Longitude (BD-09 normalised same way as the company detail endpoint).
     pub x: String,
-    /// Latitude
     pub y: String,
+    /// PHP `setCompanyLink` `linkCode`.
+    pub link_code: i32,
+    /// i18n key or custom `sy_link_tips` text.
+    pub link_msg: String,
+    pub link_sub: i32,
+    pub revealed: bool,
+}
+
+fn public_contact_json(c: &PublicJobContact, include_plain: bool) -> json::Value {
+    let plain = include_plain && c.revealed;
+    json::json!({
+        "linkman": c.linkman,
+        "linktel": if plain { &c.linktel } else { "" },
+        "linkphone": if plain { &c.linkphone } else { "" },
+        "linktel_n": c.linktel_n,
+        "linkphone_n": c.linkphone_n,
+        "address": c.address,
+        "link_code": c.link_code,
+        "link_msg": c.link_msg,
+        "link_sub": c.link_sub,
+        "revealed": plain,
+    })
+}
+
+fn contact_view(c: PublicJobContact, city_name: String) -> JobContactView {
+    JobContactView {
+        job_id: c.job_id,
+        linkman: c.linkman,
+        linktel: c.linktel,
+        linkphone: c.linkphone,
+        linktel_n: c.linktel_n,
+        linkphone_n: c.linkphone_n,
+        address: c.address,
+        city_id: c.city_id,
+        city_name,
+        x: c.x,
+        y: c.y,
+        link_code: c.link_code,
+        link_msg: c.link_msg,
+        link_sub: c.link_sub,
+        revealed: c.revealed,
+    }
 }
 
 /// Resolve the contact info for a single job. Counterpart of PHP
-/// `app/job/comapply::getJobLink_action`. The job row's `is_link` field
-/// selects between the company's default contact (1), the per-job alternate
-/// (`company_job_link`, with fallback to default — 2), and the alternate
-/// without fallback (3). 404 when the job is missing.
+/// `app/job/comapply::getJobLink_action` / `gettel_action`.
+/// Plaintext tel is returned only when `setCompanyLink` yields `linkCode=1`.
+/// Email is never included (PC comapply.htm does not display it).
 #[utoipa::path(
     post,
     path = "/v1/wap/jobs/contact",
@@ -881,28 +935,12 @@ pub struct JobContactView {
 )]
 pub async fn job_contact(
     State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<JobContactView>> {
     let id = b.id;
-    let c = phpyun_models::job::repo::get_job_contact(state.db.reader(), id)
-        .await?
-        .ok_or_else(|| phpyun_core::ApiError::param_invalid("job_not_found"))?;
-
-    // Resolve city name from the dict cache so the front-end doesn't need a
-    // second round-trip just to render it.
+    let c = job_service::resolve_job_contact(&state, id, user.as_ref()).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    let city_name = dicts.city(c.cityid).to_string();
-
-    Ok(ApiResponse::data(JobContactView {
-        job_id: id,
-        linkman: c.linkman,
-        linktel: c.linktel,
-        linkphone: c.linkphone,
-        linkmail: c.linkmail,
-        address: c.address,
-        city_id: c.cityid,
-        city_name,
-        x: c.x,
-        y: c.y,
-    }))
+    let city_name = dicts.city(c.city_id).to_string();
+    Ok(ApiResponse::data(contact_view(c, city_name)))
 }

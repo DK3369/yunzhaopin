@@ -17,7 +17,9 @@ const memberItems = computed(() => (route.path.startsWith('/com') ? comItems.val
 
 useHead({
   htmlAttrs: { lang: () => (locale.value === 'en' ? 'en' : 'zh-CN') },
-  bodyAttrs: { class: 'body_bg' },
+  bodyAttrs: {
+    class: () => (/^\/jobs\/\d+/.test(route.path) ? 'comapply_bg' : 'body_bg'),
+  },
   link: () => [
     { rel: 'canonical', href: `${siteUrl}${route.path}` },
     ...(route.path.startsWith('/user') || route.path.startsWith('/com')

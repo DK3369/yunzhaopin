@@ -73,6 +73,31 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx
 /// model fans every child off the expect that owns it. The previous
 /// Rust port hard-coded `eid = uid`, which caused children to detach
 /// from any expect and re-runs of the wizard to leak orphan rows.
+pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_expect WHERE uid = ?")
+            .bind(uid)
+            .fetch_one(pool)
+            .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `setCompanyLink` default-resume check: `defaults=1` then `state`.
+pub async fn find_default_state_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<(i32, i32)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT COALESCE(state, 0), COALESCE(status, 0) \
+           FROM phpyun_resume_expect \
+          WHERE uid = ? AND COALESCE(defaults, 0) = 1 \
+          ORDER BY lastupdate DESC, id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
 pub async fn find_default_id_by_uid(
     pool: &MySqlPool,
     uid: u64,

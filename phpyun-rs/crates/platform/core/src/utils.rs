@@ -61,6 +61,26 @@ pub fn mask_tel(s: &str) -> String {
     format!("{prefix}****{suffix}")
 }
 
+/// PHP `job.model.php::setContactHide` + `substr_replace(..., '****', 4, 4)`:
+/// mobile numbers use first-3/last-4; other strings replace 4 chars at offset 4.
+pub fn mask_contact(s: &str) -> String {
+    let trimmed = s.trim();
+    if trimmed.is_empty() {
+        return String::new();
+    }
+    let digits: String = trimmed.chars().filter(|c| c.is_ascii_digit()).collect();
+    if digits.len() >= 11 {
+        return mask_tel(&digits);
+    }
+    let chars: Vec<char> = trimmed.chars().collect();
+    if chars.len() > 8 {
+        let head: String = chars.iter().take(4).collect();
+        let tail: String = chars.iter().skip(8).collect();
+        return format!("{head}****{tail}");
+    }
+    mask_tel(trimmed)
+}
+
 /// Display-name mask: first char + `**`. Used for resume detail when the
 /// jobseeker hasn't agreed to publish their full name.
 pub fn mask_name_short(s: &str) -> String {
@@ -184,6 +204,13 @@ mod tests {
     #[test]
     fn mask_tel_redacts_middle() {
         assert_eq!(mask_tel("13800138000"), "138****8000");
+    }
+
+    #[test]
+    fn mask_contact_mobile_and_landline() {
+        assert_eq!(mask_contact("13800138000"), "138****8000");
+        assert_eq!(mask_contact("010-88886666"), "010-****6666");
+        assert_eq!(mask_contact(""), "");
     }
 
     #[test]

@@ -202,9 +202,13 @@ pub struct CompanyDetail {
     // ---- Contact info ----
     pub linkman: Option<String>,
     pub linkjob: Option<String>,
+    #[serde(skip_serializing)]
     pub linkqq: Option<String>,
+    #[serde(skip_serializing)]
     pub linkphone: Option<String>,
+    #[serde(skip_serializing)]
     pub linktel: Option<String>,
+    #[serde(skip_serializing)]
     pub linkmail: Option<String>,
     pub website: Option<String>,
 
@@ -386,10 +390,10 @@ pub async fn company_detail(
 
         linkman: c.linkman,
         linkjob: c.linkjob,
-        linkqq: c.linkqq,
-        linkphone: c.linkphone,
-        linktel: c.linktel,
-        linkmail: c.linkmail,
+        linkqq: None,
+        linkphone: None,
+        linktel: None,
+        linkmail: None,
         website: c.website,
 
         logo: c.logo,

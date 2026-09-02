@@ -28,6 +28,39 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Apply>, sqlx
         .await
 }
 
+/// PHP `setCompanyLink` com_login_link=5: applied if userid_job (is_browse<>6) or userid_msg.
+pub async fn count_active_by_uid_job(
+    pool: &MySqlPool,
+    uid: u64,
+    job_id: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job \
+          WHERE uid = ? AND job_id = ? AND isdel = 9 AND COALESCE(is_browse, 0) <> 6",
+    )
+    .bind(uid)
+    .bind(job_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_userid_msg_by_uid_job(
+    pool: &MySqlPool,
+    uid: u64,
+    job_id: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+          WHERE uid = ? AND jobid = ? AND isdel = 9",
+    )
+    .bind(uid)
+    .bind(job_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn find_by_uid_job(
     pool: &MySqlPool,
     uid: u64,
