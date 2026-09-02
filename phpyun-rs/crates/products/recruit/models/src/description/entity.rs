@@ -13,8 +13,11 @@ pub struct DescClass {
 pub struct Description {
     pub id: u64,
     pub class_id: u64,
+    /// PHP `name`：页脚链接文案。和 SEO `title` 不是同一列。
+    pub name: String,
     pub title: String,
     pub content: String,
+    pub is_nav: i32,
     pub is_type: i32,
     pub link_url: String,
     pub sort: i32,

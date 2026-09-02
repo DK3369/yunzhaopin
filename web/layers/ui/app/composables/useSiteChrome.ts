@@ -139,7 +139,7 @@ export function useSiteChrome() {
   })
 
   type DescClass = { id: number; name: string }
-  type DescRow = { id: number; class_id: number; title: string; link_url?: string; is_type?: number }
+  type DescRow = { id: number; class_id: number; name?: string; title: string; is_nav?: number; link_url?: string; is_type?: number }
 
   const { data: descClasses } = useAsyncData(
     'site-desc-classes',
@@ -167,7 +167,7 @@ export function useSiteChrome() {
           .slice(0, 5)
           .map((r) => ({
             id: r.id,
-            title: r.title,
+            title: String(r.name || '').trim() || r.title,
             to: descHref(r),
           })),
       }))

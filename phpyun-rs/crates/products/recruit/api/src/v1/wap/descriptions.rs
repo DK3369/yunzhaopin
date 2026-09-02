@@ -73,9 +73,12 @@ pub struct ListQuery {
 pub struct DescItem {
     pub id: u64,
     pub class_id: u64,
+    /// PHP `phpyun_description.name` — footer link text.
+    pub name: String,
     pub title: String,
     /// First 100 characters of content
     pub content_excerpt: String,
+    pub is_nav: i32,
     pub is_type: i32,
     pub link_url: String,
     pub sort: i32,
@@ -92,8 +95,10 @@ impl From<phpyun_models::description::entity::Description> for DescItem {
         Self {
             id: d.id,
             class_id: d.class_id,
+            name: d.name,
             title: d.title,
             content_excerpt,
+            is_nav: d.is_nav,
             is_type: d.is_type,
             link_url: d.link_url,
             sort: d.sort,
@@ -130,6 +135,7 @@ pub async fn list(
 pub struct DescDetail {
     pub id: u64,
     pub class_id: u64,
+    pub name: String,
     pub title: String,
     pub content: String,
     pub is_type: i32,
@@ -147,6 +153,7 @@ impl From<phpyun_models::description::entity::Description> for DescDetail {
         Self {
             id: d.id,
             class_id: d.class_id,
+            name: d.name,
             title: d.title,
             content: d.content,
             is_type: d.is_type,

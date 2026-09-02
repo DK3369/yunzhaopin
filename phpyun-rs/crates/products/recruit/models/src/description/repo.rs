@@ -21,8 +21,10 @@ const CLASS_FIELDS: &str = "\
 const DESC_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
     CAST(COALESCE(nid, 0) AS UNSIGNED) AS class_id, \
+    COALESCE(name, '') AS name, \
     COALESCE(title, '') AS title, \
     COALESCE(content, '') AS content, \
+    CAST(COALESCE(is_nav, 0) AS SIGNED) AS is_nav, \
     CAST(COALESCE(is_type, 0) AS SIGNED) AS is_type, \
     COALESCE(url, '') AS link_url, \
     CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
@@ -148,12 +150,14 @@ pub async fn php_delete_class_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, 
 pub async fn list(
     pool: &MySqlPool,
     class_id: Option<u64>,
-    _only_visible: bool,
+    only_visible: bool,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Description>, sqlx::Error> {
-    // PHPYun has no status column; only_visible has no effect (PHP itself doesn't filter).
     let mut sql = format!("SELECT {DESC_FIELDS} FROM phpyun_description WHERE {PREDICATE}");
+    if only_visible {
+        sql.push_str(" AND COALESCE(is_nav, 0) = 1");
+    }
     if class_id.is_some() {
         sql.push_str(" AND nid = ?");
     }
@@ -168,9 +172,12 @@ pub async fn list(
 pub async fn count(
     pool: &MySqlPool,
     class_id: Option<u64>,
-    _only_visible: bool,
+    only_visible: bool,
 ) -> Result<u64, sqlx::Error> {
     let mut sql = format!("SELECT COUNT(*) FROM phpyun_description WHERE {PREDICATE}");
+    if only_visible {
+        sql.push_str(" AND COALESCE(is_nav, 0) = 1");
+    }
     if class_id.is_some() {
         sql.push_str(" AND nid = ?");
     }
