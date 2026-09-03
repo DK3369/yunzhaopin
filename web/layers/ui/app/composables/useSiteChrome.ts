@@ -128,6 +128,12 @@ export function useSiteChrome() {
     return rows.map((n) => ({ ...n, label: labelForNav(n) }))
   })
 
+  const appNav = computed<NavItem[]>(() =>
+    mappedRows()
+      .filter((n) => n.parent_id === 11)
+      .map((n) => ({ ...n, label: labelForNav(n) })),
+  )
+
   const h5Nav = computed<NavItem[]>(() => {
     const withIcon = mappedRows().filter((n) => n.parent_id === 26 && n.icon)
     const rows = withIcon.length >= 4 ? withIcon : DEFAULT_H5_NAV.filter((n) => isNavModuleOn(settings.value, n.to))
@@ -271,6 +277,7 @@ export function useSiteChrome() {
     logoPc,
     logoH5,
     nav,
+    appNav,
     h5Nav,
     footerNav,
     hotSearches,

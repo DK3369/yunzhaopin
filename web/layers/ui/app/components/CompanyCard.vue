@@ -1,5 +1,11 @@
 <template>
-  <li v-if="variant === 'home'" class="site-pc">
+  <li
+    v-if="variant === 'home'"
+    class="site-pc"
+    :class="{ current1: hover }"
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
+  >
     <div class="index_mq_box_pic">
       <NuxtLink :to="`/companies/${company.uid}`" class="tlogo_p_a" :title="title">
         <img class="on" :src="logo" :alt="title" />
@@ -13,6 +19,32 @@
     </div>
     <div class="index_mq_box_hot">
       <span class="index_mq_box_hot_n">{{ jobNumLabel }}</span>{{ $t('home.hot_recruiting_jobs') }}
+    </div>
+    <div class="index_mq_box_cont_showall">
+      <div class="index_mq_box_cont_showall_c">
+        <div class="index_mq_box_cont_bg" />
+        <div class="index_mq_box_cont_showjob">
+          <div class="index_mq_box_cont_showjob_c">
+            <div class="index_mq_box_cont_showcomname">
+              <NuxtLink :to="`/companies/${company.uid}`" :title="title">{{ title }}</NuxtLink>
+            </div>
+            <div class="index_mq_box_cont_showcomname_linebox">
+              <i class="index_mq_box_cont_showcomname_line" />
+            </div>
+            <template v-if="openJobs.length">
+              <div v-for="job in openJobs" :key="job.id" class="index_mq_box_cont_showjoblist">
+                <NuxtLink :to="`/jobs/${job.id}`">{{ job.name }}</NuxtLink>
+              </div>
+              <div v-if="showMoreJobs" class="index_mq_box_cont_showjobmore">
+                <NuxtLink :to="`/companies/${company.uid}`">{{ $t('common.view_more') }}</NuxtLink>
+              </div>
+            </template>
+            <div v-else class="index_mq_box_cont_showjobmore">
+              <a>{{ $t('home.no_recruiting_jobs') }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </li>
   <NuxtLink v-if="variant === 'home'" class="site-h5 mqnewlist" :to="`/companies/${company.uid}`">
@@ -101,6 +133,7 @@ const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' 
   variant: 'home',
 })
 const { t } = useI18n()
+const hover = ref(false)
 const title = computed(() => companyName(props.company, t('common.company')))
 const logo = computed(() => {
   if (props.variant === 'home') {
@@ -115,6 +148,8 @@ const jobNumLabel = computed(() => {
   if (typeof props.company.job_num === 'number') return String(props.company.job_num)
   return '0'
 })
+const openJobs = computed(() => (props.company.open_jobs || []).slice(0, 3))
+const showMoreJobs = computed(() => Number(props.company.job_num || 0) > openJobs.value.length)
 const welfareTags = computed(() => {
   const w = props.company.welfare_n
   if (Array.isArray(w)) return w.map(String).filter(Boolean).slice(0, 6)

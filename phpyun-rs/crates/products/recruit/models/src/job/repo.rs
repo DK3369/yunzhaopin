@@ -48,6 +48,8 @@ pub struct JobFilter<'a> {
     pub rec: bool,
     /// `cert=true` → company business license verified (`yyzz_status=1`).
     pub cert: bool,
+    /// PHP `joblist bid=1`: `xsdate > now` (竞价置顶).
+    pub bid: bool,
     /// PHP `order`: `lastdate` / `sdate`. Empty keeps sticky-then-refresh sort.
     pub order: Option<&'a str>,
     /// Company uid (`phpyun_company_job.uid`). Additive filter for company pages.
@@ -256,6 +258,10 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
     }
     if f.cert {
         qb.push(" AND uid IN (SELECT uid FROM phpyun_company WHERE yyzz_status = 1)");
+    }
+    if f.bid {
+        qb.push(" AND xsdate > ");
+        qb.push_bind(now);
     }
     if let Some(uid) = f.uid {
         qb.push(" AND uid = ");

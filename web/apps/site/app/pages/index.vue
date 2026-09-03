@@ -98,11 +98,17 @@ const { data: adsMid } = await useAsyncData('ads-mid', async () => {
 const { data: friendLinks } = await useAsyncData('home-links', () =>
   api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
 )
-const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', () =>
-  api
-    .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8, recg: true })
-    .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
-)
+const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', async () => {
+  const [rec, latest] = await Promise.all([
+    api
+      .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8, recg: true })
+      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+    api
+      .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 16 })
+      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+  ])
+  return { rec: rec.list || [], latest: latest.list || [] }
+})
 
 const jobCats = computed(() => catTree(cats.value || [], 11))
 const hotJobs = computed(() => (home.value?.hot_jobs || []) as JobLike[])
@@ -122,7 +128,14 @@ const featuredArticles = computed(() => {
   return articles.value.filter((a) => a.picurl || a.cover).slice(0, 2)
 })
 const hotArticles = computed(() => (home.value?.hot_articles || []) as ArticleLike[])
-const resumeList = computed(() => resumes.value?.list || [])
+const resumeList = computed(() => resumes.value?.rec || [])
+const latestResumeList = computed(() => resumes.value?.latest || [])
+function resumeSex(r: Record<string, unknown>) {
+  const n = Number(r.sex || 0)
+  if (n === 1) return t('common_02092')
+  if (n === 2) return t('common_02069')
+  return ''
+}
 const pcBanners = computed(() => (adsPc.value || []).filter((b) => b.image_n || b.image))
 const h5Banners = computed(() => (adsH5.value || []).filter((b) => b.image_n || b.image))
 const mid13 = computed(() => adsMid.value?.slot13 || [])
@@ -468,6 +481,27 @@ useHead({
             listFailMsg(resumeError, $t('ui.rate_limit'), $t('ui.load_failed'))
           }}</p>
           <p v-else-if="!resumeGate && !resumeList.length" class="muted" style="padding: 20px">{{ $t('ui.no_public_resumes') }}</p>
+        </div>
+        <div v-if="!resumeGate && latestResumeList.length" class="index_resume_user_list index_zw_item">
+          <ul>
+            <li v-for="r in latestResumeList" :key="'n' + String(r.uid || r.id)">
+              <div class="index_resume_user">
+                <NuxtLink :to="`/resumes/${r.uid}`" class="index_resume_username">
+                  <img :src="mediaUrl(String(r.photo || r.photo_n || ''), PLACEHOLDER_LOGO)" width="30" height="30" alt="" />
+                  {{ r.display_name || r.name || r.uname || $t('common_02430') }}
+                </NuxtLink>
+              </div>
+              <div class="index_resume_userinfo">
+                <template v-if="resumeSex(r)">{{ resumeSex(r) }}<i class="index_resume_userinfo_line">|</i></template>
+                <template v-if="r.age">{{ r.age }}{{ $t('home.age_suffix') }}<i class="index_resume_userinfo_line">|</i></template>
+                <template v-if="r.exp_n">{{ r.exp_n }}{{ $t('home.experience_suffix') }}<i v-if="r.edu_n || r.education_n" class="index_resume_userinfo_line">|</i></template>
+                <template v-if="r.edu_n || r.education_n">{{ r.edu_n || r.education_n }}{{ $t('home.education_suffix') }}</template>
+              </div>
+              <div class="index_resume_useryx">
+                {{ $t('home.intention') }}<span class="index_resume_useryx_n">{{ r.expect_name || r.job_classid_n || r.expect || r.job_post_n || '' }}</span>
+              </div>
+            </li>
+          </ul>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/resumes">{{ $t('common.view_more') }}</NuxtLink></div>
       </div>

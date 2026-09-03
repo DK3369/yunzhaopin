@@ -119,6 +119,7 @@ pub async fn home(
                 }
             }
             super::companies::fill_job_nums(&state, &mut list).await;
+            super::companies::fill_open_jobs(&state, &mut list).await;
             list
         },
         new_articles: p

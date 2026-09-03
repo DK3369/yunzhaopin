@@ -492,6 +492,37 @@ pub async fn count_interview_invites(pool: &MySqlPool, uid: u64) -> Result<u64, 
     Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
+/// Public open jobs for a batch of company uids (homepage hover). Ordered
+/// newest first; the caller slices per uid (PHP hotjob shows 3 names).
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct OpenJobBrief {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+}
+
+pub async fn list_open_job_briefs_by_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<Vec<OpenJobBrief>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let placeholders = vec!["?"; uids.len()].join(",");
+    let sql = format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(uid AS UNSIGNED) AS uid, COALESCE(name,'') AS name \
+         FROM phpyun_company_job \
+         WHERE uid IN ({placeholders}) AND state = 1 AND status = 0 AND r_status = 1 \
+           AND (edate = 0 OR edate > UNIX_TIMESTAMP()) \
+         ORDER BY lastupdate DESC, id DESC"
+    );
+    let mut q = sqlx::query_as::<_, OpenJobBrief>(&sql);
+    for uid in uids {
+        q = q.bind(phpyun_core::numeric::checked_db_i64(*uid, "company.uid")?);
+    }
+    q.fetch_all(pool).await
+}
+
 /// Open-job counts for a batch of company uids (one round-trip).
 pub async fn count_open_jobs_by_uids(
     pool: &MySqlPool,

@@ -79,6 +79,7 @@ export type CompanyLike = {
   welfare_n?: string[] | string
   rating?: number
   rating_name?: string | null
+  open_jobs?: Array<{ id: number; name: string }>
 }
 
 const MODULE_PATH: Record<string, string> = {

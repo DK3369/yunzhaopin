@@ -40,6 +40,8 @@ pub struct JobSearch {
     pub urgent: bool,
     pub rec: bool,
     pub cert: bool,
+    /// PHP `bid=1` / `xsdate > now`.
+    pub bid: bool,
     /// PHP `order=lastdate|sdate`
     pub order: Option<String>,
     pub uid: Option<u64>,
@@ -95,6 +97,7 @@ pub async fn list_public(
         urgent: search.urgent,
         rec: search.rec,
         cert: search.cert,
+        bid: search.bid,
         order: search.order.as_deref(),
         uid: search.uid,
         did: search.did,

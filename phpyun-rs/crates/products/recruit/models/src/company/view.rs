@@ -46,4 +46,14 @@ pub struct CompanySummary {
     pub fact_status: i32,
     /// PHP `$com.welfare_n`.
     pub welfare_n: Vec<String>,
+    /// Homepage famous-company hover (PHP `hotjob` 插件最多 3 条在招).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub open_jobs: Vec<CompanyOpenJob>,
+}
+
+/// Brief job row for the famous-company hover panel.
+#[derive(Debug, Serialize, ToSchema, Clone)]
+pub struct CompanyOpenJob {
+    pub id: u64,
+    pub name: String,
 }

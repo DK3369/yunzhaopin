@@ -25,7 +25,7 @@ const rec = computed(() => route.query.rec === '1')
 const cert = computed(() => route.query.cert === '1')
 const order = computed(() => String(route.query.order || ''))
 const salaryBound = computed(() => (salaryId.value ? SALARY_BOUNDS[salaryId.value] : undefined))
-const { settings } = useSiteChrome()
+const { settings, hotSearches } = useSiteChrome()
 const sexSwitch = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
 const hiddenFilters = computed(() => {
   const skip = new Set(['keyword', 'page'])
@@ -65,7 +65,7 @@ const { data, error } = await useAsyncData(
       order: order.value || undefined,
     }),
 )
-const list = computed(() => data.value?.list || [])
+const listRaw = computed(() => data.value?.list || [])
 
 const { data: cats } = await useAsyncData(
   () => `job-cats-${locale.value}`,
@@ -158,8 +158,59 @@ const sexItems = computed<DictItem[]>(() => [
 ])
 const { data: recSide } = await useAsyncData(
   () => `jobs-rec-side-${locale.value}`,
-  () => api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 10 }).catch(() => ({ list: [] as JobLike[] })),
+  () => api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 30 }).catch(() => ({ list: [] as JobLike[] })),
 )
+const recBatch = ref(0)
+const recVisible = computed(() => {
+  const all = recSide.value?.list || []
+  if (all.length <= 10) return all
+  const start = (recBatch.value * 10) % all.length
+  const out: JobLike[] = []
+  for (let i = 0; i < 10; i++) out.push(all[(start + i) % all.length])
+  return out
+})
+function exchangeRec() {
+  const n = recSide.value?.list?.length || 0
+  if (n > 10) recBatch.value += 1
+}
+const { data: bidJobs } = await useAsyncData(
+  () =>
+    `jobs-bid-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}`,
+  () =>
+    page.value > 1
+      ? Promise.resolve({ list: [] as JobLike[] })
+      : api
+          .get<{ list: JobLike[] }>('/v1/wap/jobs', {
+            page: 1,
+            page_size: 20,
+            keyword: keyword.value || undefined,
+            job1: job1.value,
+            job1_son: job1Son.value,
+            job_post: jobPost.value,
+            province_id: provinceId.value,
+            city_id: cityId.value,
+            three_city_id: threeCityId.value,
+            edu: edu.value,
+            exp: exp.value,
+            hy: hy.value,
+            welfare: welfare.value,
+            report: report.value,
+            uptime: uptime.value,
+            sex: sex.value,
+            min_salary: salaryBound.value?.min_salary,
+            max_salary: salaryBound.value?.max_salary,
+            urgent: urgent.value ? true : undefined,
+            rec: rec.value ? true : undefined,
+            cert: cert.value ? true : undefined,
+            bid: true,
+          })
+          .catch(() => ({ list: [] as JobLike[] })),
+)
+const bidList = computed(() => (page.value > 1 ? [] : bidJobs.value?.list || []))
+const list = computed(() => {
+  const ids = new Set(bidList.value.map((j) => j.id))
+  return ids.size ? listRaw.value.filter((j) => !ids.has(j.id)) : listRaw.value
+})
 
 const selected = computed(() => {
   const rows: Array<{ param: string; name: string; extra?: Record<string, undefined> }> = []
@@ -241,6 +292,15 @@ function goPage(p: number) {
                   <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('default_00348')" />
                 </div>
                 <input class="Search_jobs_submit yun_bg_color jobsSubmit" type="submit" :value="$t('common.search')" />
+              </div>
+              <div v-if="hotSearches?.length" class="jobs_tag">
+                {{ $t('wap_00385') }}：
+                <NuxtLink
+                  v-for="k in hotSearches"
+                  :key="k.keyword"
+                  :to="`/jobs?keyword=${encodeURIComponent(k.keyword)}`"
+                  class="jos_tag_a"
+                >{{ k.keyword }}</NuxtLink>
               </div>
             </div>
           </div>
@@ -431,14 +491,15 @@ function goPage(p: number) {
           <div class="job_left_sidebar">
             <p v-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
             <template v-else>
+              <JobCard v-for="job in bidList" :key="'bid-' + job.id" :job="job" variant="search" />
               <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-              <template v-if="!list.length">
+              <template v-if="!list.length && !bidList.length">
                 <EmptyState
                   :title="$t('default_00362')"
                   :hint="$t('common_02399')"
                 />
                 <JobCard
-                  v-for="job in recSide?.list || []"
+                  v-for="job in recVisible"
                   :key="'rec-' + job.id"
                   :job="job"
                   variant="search"
@@ -448,16 +509,22 @@ function goPage(p: number) {
             <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
           </div>
         </div>
-        <div v-if="(adsSide && adsSide.length) || (recSide?.list || []).length" class="yun_job_list_right">
+        <div v-if="(adsSide && adsSide.length) || recVisible.length" class="yun_job_list_right">
           <div v-if="adsSide?.length" class="yun_job_list_right_banner">
             <img v-for="(ad, i) in adsSide" :key="i" :src="ad.image_n" alt="" />
           </div>
-          <div v-if="(recSide?.list || []).length" class="job_recommendation">
+          <div v-if="recVisible.length" class="job_recommendation">
             <div class="job_recommendation_title">
               <span class="job_recommendation_span"><i class="job_recommendation_span_line" />{{ $t('default_00249') }}</span>
+              <a
+                v-if="(recSide?.list || []).length > 10"
+                href="javascript:;"
+                class="job_right_box_more png"
+                @click.prevent="exchangeRec"
+              >{{ $t('common_02400') }}</a>
             </div>
             <ul class="job_recommendation_list">
-              <li v-for="job in recSide?.list || []" :key="job.id">
+              <li v-for="job in recVisible" :key="job.id">
                 <NuxtLink :to="`/jobs/${job.id}`" class="job_recommendation_jobname">{{ job.name }}</NuxtLink>
                 <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="job_recommendation_Comname">{{ job.com_name }}</NuxtLink>
                 <div class="job_recommendation_msg">
@@ -548,11 +615,12 @@ function goPage(p: number) {
       </div>
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>
+        <JobCard v-for="job in bidList" :key="'bid-' + job.id" :job="job" variant="search" />
         <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-        <template v-if="!list.length">
+        <template v-if="!list.length && !bidList.length">
           <EmptyState :title="$t('home.no_job_data')" />
           <JobCard
-            v-for="job in recSide?.list || []"
+            v-for="job in recVisible"
             :key="'rec-' + job.id"
             :job="job"
             variant="search"

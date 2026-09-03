@@ -4,9 +4,41 @@
     <div class="yun_new_top">
       <div class="yun_new_cont">
         <div class="yun_new_left">{{ $t('wap_com_00102') }}：{{ phone || '—' }}</div>
-        <div class="yun_new_right">
+        <div class="yun_new_right" id="login_head_div">
+          <div
+            class="yun_topNav fr"
+            @mouseenter="navMore = true"
+            @mouseleave="navMore = false"
+          >
+            <a
+              class="yun_navMore"
+              :class="{ yun_webMorecurrent: navMore }"
+              href="javascript:;"
+            >{{ $t('common.website_nav') }}</a>
+            <div v-show="navMore" class="yun_webMoredown">
+              <div class="yun_top_nav_box">
+                <ul class="yun_top_nav_box_l">
+                  <li v-for="item in nav" :key="'map-' + String(item.id || item.to)">
+                    <NuxtLink :to="item.to">{{ item.label }}</NuxtLink>
+                  </li>
+                </ul>
+                <ul v-if="appNav.length || wxQr || wapQr" class="yun_top_nav_box_wx">
+                  <li v-for="item in appNav" :key="'app-' + String(item.id || item.to)">
+                    <NuxtLink :to="item.to">{{ item.label }}</NuxtLink>
+                  </li>
+                  <li v-if="wapQr">
+                    <img :src="wapQr" width="70" height="70" alt="" />
+                  </li>
+                  <li v-if="wxQr">
+                    <img :src="wxQr" width="70" height="70" alt="" />
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
           <span class="yun_new_right_we">{{ $t('common.welcome', { site: siteName }) }}</span>
           <LangSwitch />
+          <NuxtLink to="/" class="yun_new_right_wap">{{ $t('common.mobile_site') }}</NuxtLink>
           <span class="login_head_id">
             <template v-if="me">
               <NuxtLink :to="memberHome">{{ me.username }}</NuxtLink>
@@ -150,6 +182,7 @@ const {
   logoPc,
   logoH5,
   nav,
+  appNav,
   me,
   isHome,
   memberHome,
@@ -157,11 +190,14 @@ const {
   logout,
   navActive,
   hotSearches,
+  wxQr,
+  wapQr,
 } = useSiteChrome()
 
 type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
 const searchKind = ref<SearchKind>('job')
 const searchMenu = ref(false)
+const navMore = ref(false)
 const searchAction = computed(() => {
   if (searchKind.value === 'resume') return '/resumes'
   if (searchKind.value === 'tiny') return '/tiny'

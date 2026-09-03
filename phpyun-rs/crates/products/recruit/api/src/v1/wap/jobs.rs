@@ -126,6 +126,9 @@ pub struct JobListQuery {
     /// `cert=true` keeps jobs whose company has `yyzz_status=1` (PHP `cert`).
     #[serde(default)]
     pub cert: bool,
+    /// PHP `joblist bid=1` (`xsdate > now`).
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
+    pub bid: bool,
     /// PHP `order=lastdate|sdate`
     #[validate(length(max = 16))]
     pub order: Option<String>,
@@ -336,6 +339,7 @@ pub async fn list_jobs(
         urgent: q.urgent,
         rec: q.rec,
         cert: q.cert,
+        bid: q.bid,
         order: q.order.clone(),
         uid: q.uid,
         did: q.did,

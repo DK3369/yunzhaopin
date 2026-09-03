@@ -122,6 +122,7 @@ pub fn company_summary_from_dict(
             .as_deref()
             .map(|s| dicts.welfare_labels(s))
             .unwrap_or_default(),
+        open_jobs: Vec::new(),
     }
 }
 
@@ -136,6 +137,31 @@ pub async fn fill_job_nums(state: &AppState, list: &mut [CompanySummary]) {
     let map: std::collections::HashMap<u64, u64> = rows.into_iter().collect();
     for row in list {
         row.job_num = map.get(&row.uid).copied().unwrap_or(0);
+    }
+}
+
+/// Fill up to 3 open job names per company (PHP `hotjob` hover). Best-effort.
+pub async fn fill_open_jobs(state: &AppState, list: &mut [CompanySummary]) {
+    let uids: Vec<u64> = list.iter().map(|c| c.uid).collect();
+    let Ok(rows) =
+        phpyun_models::company::repo::list_open_job_briefs_by_uids(state.db.reader(), &uids).await
+    else {
+        return;
+    };
+    let mut map: std::collections::HashMap<u64, Vec<phpyun_models::company::view::CompanyOpenJob>> =
+        std::collections::HashMap::new();
+    for r in rows {
+        let bucket = map.entry(r.uid).or_default();
+        if bucket.len() >= 3 {
+            continue;
+        }
+        bucket.push(phpyun_models::company::view::CompanyOpenJob {
+            id: r.id,
+            name: r.name,
+        });
+    }
+    for row in list {
+        row.open_jobs = map.remove(&row.uid).unwrap_or_default();
     }
 }
 
