@@ -124,6 +124,9 @@ const { data: districts } = await useAsyncData(
 const { data: adsTop } = await useAsyncData('ads-507', () =>
   api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '507', limit: 1 }).catch(() => []),
 )
+const { data: adsH5 } = await useAsyncData('ads-504', () =>
+  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '504', limit: 1 }).catch(() => []),
+)
 const { data: adsSide } = await useAsyncData('ads-7', () =>
   api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '7', limit: 5 }).catch(() => []),
 )
@@ -602,6 +605,7 @@ function goPage(p: number) {
               { label: $t('home.experience_suffix'), param: 'exp', items: exps || [] },
               { label: $t('home.education_suffix'), param: 'edu', items: edus || [] },
               { label: $t('wap_com_00303'), param: 'sex', items: sexItems },
+              { label: $t('wap_com_00279'), param: 'report', items: reports || [] },
               { label: $t('wap_00326'), param: 'uptime', items: uptimeItems },
               { label: $t('admin_user_company_00373'), param: 'hy', items: industries || [] },
             ],
@@ -610,8 +614,8 @@ function goPage(p: number) {
       />
     </div>
     <div class="main_part" style="padding-top: 0.2rem">
-      <div v-if="adsTop?.length" class="jobzd_banner">
-        <img v-for="(ad, i) in adsTop" :key="i" :src="ad.image_n" alt="" style="width: 100%" />
+      <div v-if="adsH5?.length" class="jobzd_banner">
+        <img v-for="(ad, i) in adsH5" :key="i" :src="ad.image_n" alt="" style="width: 100%" />
       </div>
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>

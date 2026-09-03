@@ -114,20 +114,14 @@ pub async fn list_public(
     })
 }
 
-/// Public detail — must be online, approved, and not expired.
+/// Public detail — approved jobs still render when stopped or expired (PHP
+/// comapply stamp). Unreviewed / rejected remain hidden.
 pub async fn get_public(state: &AppState, id: u64) -> AppResult<Job> {
     let j = job_repo::find_by_id(state.db.reader(), id)
         .await?
         .ok_or(ApiError::business("job_not_found"))?;
-    // Status checks
-    if j.status == 2 {
-        return Err(ApiError::business("job_offline"));
-    }
     if j.state != 1 || j.r_status != 1 {
         return Err(ApiError::business("job_pending"));
-    }
-    if j.edate > 0 && j.edate <= clock::now_ts() {
-        return Err(ApiError::business("job_expired"));
     }
     Ok(j)
 }
@@ -157,10 +151,17 @@ pub struct JobDetailData {
     pub money: i32,
     pub content: String,
     pub linkjob: String,
+    /// PHP `$stop==1` / `$job.status==1` — not recruiting.
+    pub offline: bool,
+    /// `edate` in the past (still shown with a stamp).
+    pub expired: bool,
 }
 
 pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
     let job = get_public(state, id).await?;
+    let now = clock::now_ts();
+    let offline = job.status != 0;
+    let expired = job.edate > 0 && job.edate <= now;
     let db = state.db.reader();
 
     // Look up the company (JOIN-style call; user uid == company uid)
@@ -262,6 +263,8 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         money,
         content,
         linkjob,
+        offline,
+        expired,
     })
 }
 

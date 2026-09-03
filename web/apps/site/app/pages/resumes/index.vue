@@ -2,6 +2,21 @@
 import { catTree, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type CatNode } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
+const SALARY_PRESETS: Array<{ min: number; max?: number }> = [
+  { min: 2000, max: 4000 },
+  { min: 4000, max: 6000 },
+  { min: 6000, max: 8000 },
+  { min: 8000, max: 10000 },
+  { min: 10000 },
+]
+const AGE_PRESETS: Array<{ min: number; max?: number }> = [
+  { min: 16, max: 20 },
+  { min: 21, max: 30 },
+  { min: 31, max: 40 },
+  { min: 41, max: 50 },
+  { min: 50 },
+]
+
 const route = useRoute()
 const { t, locale } = useI18n()
 const page = computed(() => Number(route.query.page || 1))
@@ -23,6 +38,20 @@ const minSalary = computed(() => numQuery(route.query.min_salary))
 const maxSalary = computed(() => numQuery(route.query.max_salary))
 const minAge = computed(() => numQuery(route.query.min_age))
 const maxAge = computed(() => numQuery(route.query.max_age))
+const salaryPresetId = computed(() => numQuery(route.query.salary))
+const agePresetId = computed(() => numQuery(route.query.age))
+const salaryPresetBound = computed(() => {
+  const n = salaryPresetId.value
+  return n ? SALARY_PRESETS[n - 1] : undefined
+})
+const agePresetBound = computed(() => {
+  const n = agePresetId.value
+  return n ? AGE_PRESETS[n - 1] : undefined
+})
+const filterMinSalary = computed(() => salaryPresetBound.value?.min ?? minSalary.value)
+const filterMaxSalary = computed(() => salaryPresetBound.value?.max ?? maxSalary.value)
+const filterMinAge = computed(() => agePresetBound.value?.min ?? minAge.value)
+const filterMaxAge = computed(() => agePresetBound.value?.max ?? maxAge.value)
 const uptime = computed(() => numQuery(route.query.uptime))
 const integrity = computed(() => numQuery(route.query.integrity))
 const order = computed(() => String(route.query.order || ''))
@@ -52,14 +81,16 @@ const moreOpen = ref(
     minSalary.value ||
     maxSalary.value ||
     minAge.value ||
-    maxAge.value
+    maxAge.value ||
+    salaryPresetId.value ||
+    agePresetId.value
   ),
 )
 const api = useApi()
 
 const listKey = computed(
   () =>
-    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${minSalary.value}-${maxSalary.value}-${minAge.value}-${maxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
+    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${filterMinSalary.value}-${filterMaxSalary.value}-${filterMinAge.value}-${filterMaxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
 )
 
 const { data, error } = await useAsyncData(
@@ -82,10 +113,10 @@ const { data, error } = await useAsyncData(
       tag: tag.value,
       report: report.value,
       type: workType.value,
-      min_salary: minSalary.value,
-      max_salary: maxSalary.value,
-      min_age: minAge.value,
-      max_age: maxAge.value,
+      min_salary: filterMinSalary.value,
+      max_salary: filterMaxSalary.value,
+      min_age: filterMinAge.value,
+      max_age: filterMaxAge.value,
       uptime: uptime.value,
       integrity: integrity.value,
       order: order.value || undefined,
@@ -184,20 +215,24 @@ const integrityItems = computed<DictItem[]>(() => [
   { id: 3, name: `75%${t('common_01942')}` },
   { id: 4, name: `85%${t('common_01942')}` },
 ])
-const salaryPresets = computed(() => [
-  { min: 2000, max: 4000, label: '2000-4000' },
-  { min: 4000, max: 6000, label: '4000-6000' },
-  { min: 6000, max: 8000, label: '6000-8000' },
-  { min: 8000, max: 10000, label: '8000-10000' },
-  { min: 10000, max: undefined as number | undefined, label: `10000${t('common_01942')}` },
-])
-const agePresets = computed(() => [
-  { min: 16, max: 20, label: `16-20${t('home.age_suffix')}` },
-  { min: 21, max: 30, label: `21-30${t('home.age_suffix')}` },
-  { min: 31, max: 40, label: `31-40${t('home.age_suffix')}` },
-  { min: 41, max: 50, label: `41-50${t('home.age_suffix')}` },
-  { min: 50, max: undefined as number | undefined, label: `50${t('wap_com_00296')}` },
-])
+const salaryPresets = computed(() =>
+  SALARY_PRESETS.map((p) => ({
+    min: p.min,
+    max: p.max,
+    label: p.max ? `${p.min}-${p.max}` : `${p.min}${t('common_01942')}`,
+  })),
+)
+const agePresets = computed(() =>
+  AGE_PRESETS.map((p) => ({
+    min: p.min,
+    max: p.max,
+    label: p.max ? `${p.min}-${p.max}${t('home.age_suffix')}` : `50${t('wap_com_00296')}`,
+  })),
+)
+const salaryItems = computed<DictItem[]>(() =>
+  salaryPresets.value.map((p, i) => ({ id: i + 1, name: p.label })),
+)
+const ageItems = computed<DictItem[]>(() => agePresets.value.map((p, i) => ({ id: i + 1, name: p.label })))
 
 useSeoMeta({ title: t('default_00312') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
@@ -678,6 +713,10 @@ function recPhoto(row: Record<string, unknown>) {
             groups: [
               { label: $t('home.education_suffix'), param: 'education', items: edus || [] },
               { label: $t('home.experience_suffix'), param: 'exp', items: exps || [] },
+              { label: $t('wap_user_00016'), param: 'salary', items: salaryItems, extraClear: { min_salary: undefined, max_salary: undefined } },
+              { label: $t('wap_com_00284'), param: 'age', items: ageItems, extraClear: { min_age: undefined, max_age: undefined } },
+              { label: $t('member_user_00151'), param: 'integrity', items: integrityItems },
+              { label: $t('wap_user_00012'), param: 'type', items: jobTypes || [] },
               { label: $t('wap_com_00303'), param: 'sex', items: sexItems },
               { label: $t('admin_user_company_00373'), param: 'hy', items: industries || [] },
               { label: $t('wap_com_00279'), param: 'report', items: reports || [] },

@@ -525,6 +525,8 @@ pub async fn build_job_detail_value(
 
     // --- Assemble the response grouped by business concern ---
     Ok(json::json!({
+        "offline": d.offline,
+        "expired": d.expired,
         // Job main table (Job entity serialized directly; field names = original DB column names)
         "job": d.job,
 

@@ -27,6 +27,9 @@ function locate() {
     navigateTo({ path: '/map', query: { x: String(pos.coords.longitude), y: String(pos.coords.latitude) } })
   })
 }
+onMounted(() => {
+  if (!hasPoint.value) locate()
+})
 useSeoMeta({ title: t('ui.map') })
 </script>
 

@@ -25,7 +25,7 @@
             :key="g.param + item.id"
             class="h5-filter-item"
             :class="{ on: numQuery(route.query[g.param]) === item.id }"
-            :to="{ path: route.path, query: mergeQuery(route.query, { [g.param]: item.id }) }"
+            :to="{ path: route.path, query: mergeQuery(route.query, { [g.param]: item.id, ...(g.extraClear || {}) }) }"
             @click="open = ''"
           >
             {{ item.name }}

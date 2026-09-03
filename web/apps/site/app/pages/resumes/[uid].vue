@@ -36,6 +36,8 @@ const expectCity = computed(() => expectCities.value[0] || '')
 const expectSalary = computed(() => String(expect0.value.salary_n || ''))
 const { me } = useSiteChrome()
 const unlocked = computed(() => Number(row.value.m_status) === 1)
+const bodyOpen = computed(() => Number(row.value.resume_check ?? 1) === 1)
+const tj = computed(() => (row.value.tj || {}) as Record<string, unknown>)
 const photo = computed(() => mediaUrl(String(row.value.photo_n || row.value.photo || ''), PLACEHOLDER_LOGO))
 const sexLabel = computed(() => {
   const n = Number(row.value.sex)
@@ -71,6 +73,23 @@ async function download() {
   } catch {
     await navigateTo('/login')
   }
+}
+async function lookAll() {
+  const mode = Number(row.value.resume_open_check || 2)
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (mode === 3) {
+    actionMsg.value = t('wap_00322')
+    if (me.value.usertype === 2) await navigateTo('/com/jobs')
+    return
+  }
+  if (mode === 4) {
+    await download()
+    return
+  }
+  actionMsg.value = t('wap_00485')
 }
 async function invite() {
   if (!me.value) {
@@ -194,11 +213,12 @@ async function report() {
               <button v-else-if="me.usertype === 2" type="button" class="user_yqms" @click="download">{{ $t('resume_00029') }}</button>
               <p v-else class="muted">{{ $t('resume_00038') }}</p>
             </div>
-            <div v-if="row.description" class="yun_newedition_tit" style="margin-top: 16px">
+            <div v-if="bodyOpen && row.description" class="yun_newedition_tit" style="margin-top: 16px">
               <span class="yun_newedition_tit_s">{{ $t('wap_00456') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
-            <div v-if="row.description" v-html="String(row.description)" />
+            <div v-if="bodyOpen && row.description" v-html="String(row.description)" />
+            <template v-if="bodyOpen">
             <div v-if="works.length" class="yun_newedition_tit">
               <span class="yun_newedition_tit_s">{{ $t('wap_00457') }}</span>
               <i class="yun_newedition_tit_line" />
@@ -240,6 +260,16 @@ async function report() {
               <i class="yun_newedition_tit_line" />
             </div>
             <p v-if="skills.length">{{ skills.map((s) => s.name).join(' / ') }}</p>
+            </template>
+            <div v-else class="resume_bg" style="margin-top: 16px">
+              <p v-if="Number(tj.edu_num)" class="muted">{{ $t('wap_00459') }} {{ tj.edu_num }}</p>
+              <p v-if="Number(tj.work_num)" class="muted">{{ $t('wap_00457') }} {{ $t('wap_00467') }}{{ tj.work_num }}{{ $t('common_01887') }}</p>
+              <p v-if="Number(tj.project_num)" class="muted">{{ $t('wap_00465') }} {{ $t('wap_00443') }}{{ tj.project_num }}{{ $t('wap_00466') }}</p>
+              <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00458') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
+              <p v-if="Number(tj.skill_num)" class="muted">{{ $t('wap_00450') }}{{ tj.skill_num }}</p>
+              <p v-if="Number(tj.cert_num)" class="muted">{{ $t('wap_00454') }} {{ tj.cert_num }}</p>
+              <a href="javascript:;" class="resume_lookall_a" @click.prevent="lookAll">{{ $t('wap_01602') }}</a>
+            </div>
             <p style="margin-top: 16px">
               <button type="button" class="user_yqms" @click="download">{{ $t('resume_00029') }}</button>
               <button type="button" class="user_yqms" @click="invite">{{ $t('wap_user_00216') }}</button>
@@ -299,7 +329,7 @@ async function report() {
             {{ row.lastupdate_n }} {{ $t('wap_00225') }}
           </div>
         </div>
-        <div v-if="works.length" class="Preview_your_resume_experience">
+        <div v-if="bodyOpen && works.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
             <div class="Preview_your_resume_word">{{ $t('wap_00457') }}</div>
           </div>
@@ -308,7 +338,7 @@ async function report() {
             <div v-html="String(w.content || '')" />
           </div>
         </div>
-        <div v-if="edus.length" class="Preview_your_resume_education">
+        <div v-if="bodyOpen && edus.length" class="Preview_your_resume_education">
           <div class="Preview_your_resume_header">
             <div class="Preview_your_resume_word">{{ $t('home.education_suffix') }}</div>
           </div>
@@ -316,7 +346,7 @@ async function report() {
             {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
           </div>
         </div>
-        <div v-if="projects.length" class="Preview_your_resume_experience">
+        <div v-if="bodyOpen && projects.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
             <div class="Preview_your_resume_word">{{ $t('wap_00455') }}</div>
           </div>
@@ -324,17 +354,25 @@ async function report() {
             <strong>{{ p.name }}</strong> {{ p.role }} {{ p.sdate_n }} - {{ p.edate_n }}
           </div>
         </div>
-        <div v-if="trainings.length" class="Preview_your_resume_experience">
+        <div v-if="bodyOpen && trainings.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
             <div class="Preview_your_resume_word">{{ $t('wap_00458') }}</div>
           </div>
           <div v-for="tr in trainings" :key="'ht' + String(tr.id)">{{ tr.name }} {{ tr.sdate_n }}</div>
         </div>
-        <div v-if="certs.length" class="Preview_your_resume_experience">
+        <div v-if="bodyOpen && certs.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
             <div class="Preview_your_resume_word">{{ $t('wap_00454') }}</div>
           </div>
           <div v-for="c in certs" :key="'hc' + String(c.id)">{{ c.name }}</div>
+        </div>
+        <div v-if="!bodyOpen" class="Preview_your_resume_advantage">
+          <p v-if="Number(tj.edu_num)" class="muted">{{ $t('wap_00459') }} {{ tj.edu_num }}</p>
+          <p v-if="Number(tj.work_num)" class="muted">{{ $t('wap_00457') }} {{ $t('wap_00467') }}{{ tj.work_num }}{{ $t('common_01887') }}</p>
+          <p v-if="Number(tj.project_num)" class="muted">{{ $t('wap_00465') }} {{ $t('wap_00443') }}{{ tj.project_num }}{{ $t('wap_00466') }}</p>
+          <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00458') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
+          <p v-if="Number(tj.skill_num)" class="muted">{{ $t('wap_00450') }}{{ tj.skill_num }}</p>
+          <a href="javascript:;" class="resume_lookall_a" @click.prevent="lookAll">{{ $t('wap_01602') }}</a>
         </div>
         <div v-if="unlocked" class="new_user_touchbox">
           <div v-if="row.telphone" class="new_user_touch">{{ row.telphone }}</div>

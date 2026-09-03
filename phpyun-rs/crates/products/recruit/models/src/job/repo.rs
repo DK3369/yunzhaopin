@@ -367,6 +367,18 @@ pub async fn count_own(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `openResumeCheck` mode 3: `company_job` rows with `r_status=1 AND state=1`
+/// (上架 `status` is intentionally not required).
+pub async fn count_posted_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE uid = ? AND r_status = 1 AND state = 1",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub struct JobCreate<'a> {
     pub uid: u64,
     pub com_name: Option<&'a str>,

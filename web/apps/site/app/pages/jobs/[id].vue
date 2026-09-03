@@ -3,7 +3,7 @@ import { dictReqLabel, formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO,
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
-const { siteName, settings } = useSiteChrome()
+const { siteName, settings, me } = useSiteChrome()
 const id = Number(route.params.id)
 const api = useApi()
 const salaryType = computed(() => Number(settings.value.resume_salarytype || 1))
@@ -42,6 +42,49 @@ const msgList = computed(
     >,
 )
 const alreadyApplied = computed(() => Boolean(userContext.value.is_applied))
+const jobClosed = computed(() => {
+  const payload = (data.value || {}) as Record<string, unknown>
+  return Boolean(payload.offline || payload.expired) || Number(job.value.status) === 1
+})
+const comMessageOn = computed(() => String(settings.value.com_message || '') === '1')
+const askContent = ref('')
+const askCode = ref('')
+const askCaptcha = ref<{ cid: string; image: string } | null>(null)
+const askMsg = ref('')
+async function loadAskCaptcha() {
+  try {
+    askCaptcha.value = await api.post('/v1/wap/captcha')
+  } catch {
+    askCaptcha.value = null
+  }
+}
+async function postAsk() {
+  askMsg.value = ''
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (me.value.usertype !== 1) {
+    askMsg.value = t('wap_00256')
+    return
+  }
+  if (!askCaptcha.value) await loadAskCaptcha()
+  try {
+    await api.post('/v1/wap/jobs/messages/post', {
+      id,
+      content: askContent.value,
+      captcha_cid: askCaptcha.value?.cid,
+      authcode: askCode.value,
+    })
+    askContent.value = ''
+    askCode.value = ''
+    askMsg.value = t('common.confirm')
+    await loadAskCaptcha()
+  } catch (e: unknown) {
+    askMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    await loadAskCaptcha()
+  }
+}
 const favFromApi = computed(() => Boolean(userContext.value.is_favorited))
 const eduLabel = computed(() => dictReqLabel(String(dict.value.edu_n || dict.value.job_edu || job.value.edu_n || ''), t('home.education_suffix')))
 const expLabel = computed(() => dictReqLabel(String(dict.value.exp_n || dict.value.job_exp || job.value.exp_n || ''), t('home.experience_suffix')))
@@ -155,9 +198,14 @@ onMounted(async () => {
   } catch {
     /* guest */
   }
+  if (comMessageOn.value) await loadAskCaptcha()
 })
 async function apply() {
   applyMsg.value = ''
+  if (jobClosed.value) {
+    applyMsg.value = t('wap_com_00242')
+    return
+  }
   try {
     await api.post('/v1/mcenter/apply', { job_id: id })
     applyMsg.value = t('common.confirm')
@@ -302,6 +350,7 @@ useHead({
                 <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="toggleFav">{{
                   fav ? $t('wap_00378') : $t('wap_00379')
                 }}</a>
+                <template v-if="!jobClosed">
                 <a
                   v-if="alreadyApplied"
                   class="job_ceil_jobtd_ysq"
@@ -312,6 +361,7 @@ useHead({
                   class="job_ceil_jobtd"
                   @click.prevent="apply"
                 >{{ $t('wap_com_00235') }}</a>
+                </template>
               </div>
             </div>
           </div>
@@ -353,6 +403,12 @@ useHead({
               <p v-if="applyMsg" class="muted">{{ applyMsg }}</p>
             </div>
             <div class="job_details_topright">
+              <img
+                v-if="jobClosed"
+                src="/legacy/pc/images/stamp.png"
+                :alt="$t('wap_com_00242')"
+              />
+              <template v-else>
               <div class="job_details_top_operation">
                 <a href="javascript:;" class="job_details_top_operation_sc" @click.prevent="toggleFav">{{
                   fav ? $t('wap_00378') : $t('wap_00379')
@@ -375,6 +431,7 @@ useHead({
                   }}</a>
                 </div>
               </div>
+              </template>
             </div>
           </div>
           <div v-if="adsBanner?.length" class="yun_jobbanner">
@@ -573,6 +630,32 @@ useHead({
                 $t('common_01689')
               }} ></NuxtLink>
             </div>
+            <div v-if="comMessageOn" class="job_details_right_box">
+              <div class="job_details_tit">
+                <span class="job_details_tit_s">{{ $t('common_02375') }}</span>
+                <i class="job_details_tit_line" />
+              </div>
+              <p v-if="!msgList.length" class="job_details_comask_p">{{ $t('default_00213') }}</p>
+              <div v-for="m in msgList" :key="'pc' + String(m.id)" class="yun_newedition_asklist">
+                <div class="yun_newedition_showask">{{ m.content }}</div>
+                <div class="yun_newedition_showand">{{ m.reply || $t('wap_01553') }}</div>
+              </div>
+              <div class="job_hr_ly_box" style="padding-top: 10px">
+                <textarea v-model="askContent" class="comapply_Leave_fb_text" :placeholder="$t('default_00201')" />
+                <div class="affirm affirm_yz" style="display: flex; gap: 8px; align-items: center; margin-top: 8px">
+                  <input v-model="askCode" class="zx_yx_input" :placeholder="$t('wap_user_00143')" maxlength="4" />
+                  <img
+                    v-if="askCaptcha?.image"
+                    :src="askCaptcha.image"
+                    class="zx_yx_input_img"
+                    alt=""
+                    @click="loadAskCaptcha"
+                  />
+                  <button type="button" class="comapply_Leave_fb_sub" @click="postAsk">{{ $t('wap_00280') }}</button>
+                </div>
+                <p v-if="askMsg" class="muted">{{ askMsg }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -583,6 +666,9 @@ useHead({
         <div class="job_describe">
           <div class="job_describe_top">
             <div class="new_jobshowtop">
+              <div v-if="jobClosed" class="job_yxj">
+                <img src="/legacy/h5/images/stamp.png" :alt="$t('wap_com_00242')" />
+              </div>
               <div class="new_jobshowname">{{ job.name }}</div>
               <span class="new_jobshowxz">{{ salary }}</span>
             </div>
@@ -664,7 +750,7 @@ useHead({
             <span class="wxtip_bth" @click="report">{{ $t('wap_00283') }}</span>
           </div>
         </div>
-        <div class="company_questions">
+        <div v-if="comMessageOn" class="company_questions">
           <div class="company_questions_header">
             <div class="company_questions_header_left">{{ $t('wap_00271') }}</div>
           </div>
@@ -675,6 +761,24 @@ useHead({
             <div class="company_questions_body_top">
               <i class="company_questions_body_top_answer">{{ m.reply || $t('wap_01589') }}</i>
             </div>
+          </div>
+          <div v-if="!msgList.length" class="jobshow_tw_box">
+            <p class="muted">{{ $t('wap_01555') }}</p>
+          </div>
+          <div class="job_tcktextarea" style="padding: 0.24rem">
+            <textarea v-model="askContent" class="mt10" :placeholder="$t('default_00201')" />
+            <div class="job_tckyzmbox" style="display: flex; gap: 0.16rem; align-items: center; margin-top: 0.16rem">
+              <input v-model="askCode" :placeholder="$t('wap_user_00143')" maxlength="6" />
+              <img
+                v-if="askCaptcha?.image"
+                :src="askCaptcha.image"
+                alt=""
+                style="height: 0.8rem"
+                @click="loadAskCaptcha"
+              />
+            </div>
+            <button type="button" class="job_tckbth" @click="postAsk">{{ $t('wap_00280') }}</button>
+            <p v-if="askMsg" class="muted">{{ askMsg }}</p>
           </div>
         </div>
         <div class="recommend_post" style="margin-top: 0">
@@ -712,7 +816,7 @@ useHead({
           </div>
         </div>
       </div>
-      <div class="yun_czfoot">
+      <div v-if="!jobClosed" class="yun_czfoot">
         <div class="yun_czfootfixed">
           <div class="yun_czfoot_c">
             <div class="yun_czfoot_l">

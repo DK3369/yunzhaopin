@@ -164,3 +164,85 @@ pub async fn set_status(
     .await;
     Ok(())
 }
+
+/// PHP `$resumeCkeck`: 1 = full body, 2 = counts-only summary.
+pub struct ResumeOpenGate {
+    pub resume_check: i32,
+    /// Site config `resume_open_check` (1–4), for the front-end `showresdet` branch.
+    pub resume_open_check: i32,
+}
+
+/// PHP `resume.model.php::openResumeCheck`. Owner always sees the full body.
+pub async fn open_resume_check(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+    resume_uid: u64,
+) -> ResumeOpenGate {
+    let cfg = phpyun_models::site_setting::repo::find_many(state.db.reader(), &["resume_open_check"])
+        .await
+        .unwrap_or_default();
+    let mode = cfg
+        .get("resume_open_check")
+        .and_then(|s| s.trim().parse::<i32>().ok())
+        .filter(|n| (1..=4).contains(n))
+        .unwrap_or(2);
+
+    if user.is_some_and(|u| u.uid == resume_uid && u.usertype == 1) {
+        return ResumeOpenGate {
+            resume_check: 1,
+            resume_open_check: mode,
+        };
+    }
+
+    let full = match mode {
+        1 => true,
+        // PHP: `($uid && usertype==2) || usertype==3`
+        2 => user.is_some_and(|u| u.usertype == 2 || u.usertype == 3),
+        3 => match user {
+            Some(u) if u.usertype == 2 => {
+                phpyun_models::job::repo::count_posted_by_uid(state.db.reader(), u.uid)
+                    .await
+                    .unwrap_or(0)
+                    > 0
+            }
+            _ => false,
+        },
+        4 => downloaded_resume_body(state, user, resume_uid).await,
+        _ => false,
+    };
+
+    ResumeOpenGate {
+        resume_check: if full { 1 } else { 2 },
+        resume_open_check: mode,
+    }
+}
+
+async fn downloaded_resume_body(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+    resume_uid: u64,
+) -> bool {
+    let Some(u) = user else {
+        return false;
+    };
+    let db = state.db.reader();
+    if phpyun_models::resume_download::repo::already_downloaded(db, u.uid, resume_uid)
+        .await
+        .unwrap_or(false)
+    {
+        return true;
+    }
+    if u.usertype != 2 {
+        return false;
+    }
+    let vip_ok = match phpyun_models::company_statis::repo::find_admin(db, u.uid).await {
+        Ok(Some(st)) => st.vip_etime == 0 || st.vip_etime >= clock::now_ts(),
+        _ => false,
+    };
+    if !vip_ok {
+        return false;
+    }
+    phpyun_models::resume_download::repo::already_freedown(db, u.uid, resume_uid)
+        .await
+        .unwrap_or(false)
+}

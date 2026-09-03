@@ -602,6 +602,13 @@ pub struct ResumeDetail {
     pub r_status: i32,
     pub def_job: i32,
 
+    /// PHP `$resumeCkeck`: 1 = full experience body, 2 = summary only.
+    pub resume_check: i32,
+    /// Site config `resume_open_check` (1–4) for the front-end look-all branch.
+    pub resume_open_check: i32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tj: Option<ResumeBodyTj>,
+
     // ==== Timestamps ====
     pub lastupdate: i64,
     pub lastupdate_n: String,
@@ -617,6 +624,17 @@ pub struct ResumeDetail {
     pub trainings: Vec<ResumeTrainingItem>,
     pub certs: Vec<ResumeCertItem>,
     pub others: Vec<ResumeOtherItem>,
+}
+
+/// PHP `$tj` counts shown when `resume_check != 1`.
+#[derive(Debug, Serialize, ToSchema, Default)]
+pub struct ResumeBodyTj {
+    pub work_num: u64,
+    pub edu_num: u64,
+    pub project_num: u64,
+    pub training_num: u64,
+    pub skill_num: u64,
+    pub cert_num: u64,
 }
 
 /// PHP `com_search=1` guests and `sy_user_visit_resume=0` jobseekers cannot browse talent.
@@ -710,6 +728,8 @@ pub async fn resume_detail(
     }
     let m_status = resume_m_status(&state, user.as_ref(), uid).await;
     let unlocked = m_status == 1;
+    let gate = resume_service::open_resume_check(&state, user.as_ref(), uid).await;
+    let body_open = gate.resume_check == 1;
     // Fetch 8 child tables + dictionaries in parallel
     let (bundle_res, dicts) = tokio::join!(
         resume_children_service::get_full_bundle(&state, uid),
@@ -717,6 +737,18 @@ pub async fn resume_detail(
     );
     let (expects, edus, works, projects, skills, trainings, certs, others) = bundle_res?;
     let dicts = dicts?;
+    let tj = if body_open {
+        None
+    } else {
+        Some(ResumeBodyTj {
+            work_num: works.len() as u64,
+            edu_num: edus.len() as u64,
+            project_num: projects.len() as u64,
+            training_num: trainings.len() as u64,
+            skill_num: skills.len() as u64,
+            cert_num: certs.len() as u64,
+        })
+    };
     let display_name = match r.name.as_deref() {
         Some(n) if !n.is_empty() => {
             if unlocked {
@@ -749,7 +781,7 @@ pub async fn resume_detail(
         domicile: r.domicile,
         address: r.address,
 
-        description: r.description,
+        description: if body_open { r.description } else { None },
         tag: r.tag,
         label: r.label,
 
@@ -773,6 +805,10 @@ pub async fn resume_detail(
         r_status: r.r_status,
         def_job: r.def_job,
 
+        resume_check: gate.resume_check,
+        resume_open_check: gate.resume_open_check,
+        tj,
+
         lastupdate: r.lastupdate,
         lastupdate_n: fmt_dt(r.lastupdate),
         resumetime: r.resumetime,
@@ -782,31 +818,58 @@ pub async fn resume_detail(
             .into_iter()
             .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
             .collect::<AppResult<Vec<_>>>()?,
-        edus: edus
-            .into_iter()
-            .map(|e| crate::v1::wap::resumes::resume_edu_item_from_dict(e, &dicts))
-            .collect(),
-        works: works.into_iter().map(ResumeWorkItem::from).collect(),
-        projects: projects.into_iter().map(ResumeProjectItem::from).collect(),
-        skills: skills
-            .into_iter()
-            .map(|s| crate::v1::wap::resumes::resume_skill_item_from_dict(s, &dicts))
-            .collect(),
-        trainings: trainings
-            .into_iter()
-            .map(ResumeTrainingItem::from)
-            .collect(),
-        certs: certs.into_iter().map(ResumeCertItem::from).collect(),
-        others: others
-            .into_iter()
-            .map(|o| ResumeOtherItem {
-                id: o.id,
-                uid: r.uid,
-                eid: r.uid,
-                name: o.name,
-                content: o.content,
-            })
-            .collect(),
+        edus: if body_open {
+            edus.into_iter()
+                .map(|e| crate::v1::wap::resumes::resume_edu_item_from_dict(e, &dicts))
+                .collect()
+        } else {
+            Vec::new()
+        },
+        works: if body_open {
+            works.into_iter().map(ResumeWorkItem::from).collect()
+        } else {
+            Vec::new()
+        },
+        projects: if body_open {
+            projects.into_iter().map(ResumeProjectItem::from).collect()
+        } else {
+            Vec::new()
+        },
+        skills: if body_open {
+            skills
+                .into_iter()
+                .map(|s| crate::v1::wap::resumes::resume_skill_item_from_dict(s, &dicts))
+                .collect()
+        } else {
+            Vec::new()
+        },
+        trainings: if body_open {
+            trainings
+                .into_iter()
+                .map(ResumeTrainingItem::from)
+                .collect()
+        } else {
+            Vec::new()
+        },
+        certs: if body_open {
+            certs.into_iter().map(ResumeCertItem::from).collect()
+        } else {
+            Vec::new()
+        },
+        others: if body_open {
+            others
+                .into_iter()
+                .map(|o| ResumeOtherItem {
+                    id: o.id,
+                    uid: r.uid,
+                    eid: r.uid,
+                    name: o.name,
+                    content: o.content,
+                })
+                .collect()
+        } else {
+            Vec::new()
+        },
     }))
 }
 
