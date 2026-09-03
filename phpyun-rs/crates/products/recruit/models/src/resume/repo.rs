@@ -8,6 +8,7 @@ const FIELDS: &str = "\
     birthday, COALESCE(marriage, 0) AS marriage, \
     COALESCE(edu, 0) AS education, \
     telphone, telhome, email, photo, COALESCE(phototype, 0) AS phototype, \
+    COALESCE(photo_status, 0) AS photo_status, COALESCE(defphoto, 1) AS defphoto, \
     COALESCE(status, 0) AS status, COALESCE(r_status, 0) AS r_status, \
     COALESCE(def_job, 0) AS def_job, COALESCE(lastupdate, 0) AS lastupdate, \
     height, weight, nationality, living, domicile, homepage, address, \
@@ -47,6 +48,32 @@ pub async fn find_public(pool: &MySqlPool, uid: u64) -> Result<Option<Resume>, s
     );
     sqlx::query_as::<_, Resume>(&sql)
         .bind(uid)
+        .fetch_optional(pool)
+        .await
+}
+
+/// Employer view: public resumes plus `status=3` when this company has a `userid_job` row.
+pub async fn find_visible_for_employer(
+    pool: &MySqlPool,
+    uid: u64,
+    com_id: u64,
+) -> Result<Option<Resume>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_resume
+         WHERE uid = ? AND r_status = 1 AND (
+            status = 1
+            OR (
+                status = 3 AND EXISTS (
+                    SELECT 1 FROM phpyun_userid_job
+                    WHERE uid = ? AND com_id = ? AND isdel = 9 LIMIT 1
+                )
+            )
+         ) LIMIT 1"
+    );
+    sqlx::query_as::<_, Resume>(&sql)
+        .bind(uid)
+        .bind(uid)
+        .bind(com_id)
         .fetch_optional(pool)
         .await
 }

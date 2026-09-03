@@ -3,6 +3,7 @@
 //! Covers the core paths of PHPYun `wap/resume` + `mcenter/resume`: viewing, updating the master table, and toggling display status.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::extractors::USERTYPE_EMPLOYER;
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume::repo::ResumeFilter;
@@ -30,8 +31,22 @@ pub async fn list_public(
     })
 }
 
-/// Public resume detail — visible only when `status=1` and `r_status=1`.
-pub async fn get_public(state: &AppState, uid: u64) -> AppResult<Resume> {
+/// Public resume detail. Employers also see `status=3` when the seeker applied.
+pub async fn get_public(
+    state: &AppState,
+    uid: u64,
+    viewer: Option<&AuthenticatedUser>,
+) -> AppResult<Resume> {
+    if viewer.is_some_and(|u| u.uid == uid && u.usertype == 1) {
+        return resume_repo::find_by_uid(state.db.reader(), uid)
+            .await?
+            .ok_or_else(|| ApiError::business("resume_not_found"));
+    }
+    if let Some(u) = viewer.filter(|u| u.usertype == USERTYPE_EMPLOYER) {
+        return resume_repo::find_visible_for_employer(state.db.reader(), uid, u.uid)
+            .await?
+            .ok_or_else(|| ApiError::business("resume_not_found"));
+    }
     resume_repo::find_public(state.db.reader(), uid)
         .await?
         .ok_or_else(|| ApiError::business("resume_not_found"))

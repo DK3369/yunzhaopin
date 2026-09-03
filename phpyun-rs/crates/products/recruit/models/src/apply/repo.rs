@@ -299,6 +299,25 @@ pub async fn invite(pool: &MySqlPool, id: u64, com_id: u64, now: i64) -> Result<
     Ok(res.rows_affected())
 }
 
+/// PHP `addYqms`: mark any existing applications from this seeker as invited.
+pub async fn mark_invited_by_seeker(
+    pool: &MySqlPool,
+    com_id: u64,
+    uid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_job SET invited = 1, invite_time = ?, is_browse = 2 \
+         WHERE uid = ? AND com_id = ? AND isdel = 9",
+    )
+    .bind(now)
+    .bind(uid)
+    .bind(com_id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 /// Job ids in `job_ids` that this jobseeker has already applied to (`isdel=9`).
 pub async fn applied_job_ids(
     pool: &MySqlPool,
@@ -343,4 +362,71 @@ pub async fn invited_seeker_uids(
     qb.push(")");
     let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
     Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+/// Seekers among `uids` who have applied to this company (`phpyun_userid_job`).
+pub async fn applied_seeker_uids(
+    pool: &MySqlPool,
+    com_uid: u64,
+    uids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_userid_job WHERE com_id = ",
+    );
+    qb.push_bind(com_uid);
+    qb.push(" AND isdel = 9 AND uid IN (");
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+/// Unread applications (`is_browse=1`) used for company reply-rate `pre`.
+pub async fn count_unread_by_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job \
+         WHERE com_id = ? AND isdel = 9 AND is_browse = 1",
+    )
+    .bind(com_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
+}
+
+pub async fn count_userid_msg_by_fid_uid(
+    pool: &MySqlPool,
+    fid: u64,
+    uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+         WHERE fid = ? AND uid = ? AND isdel = 9",
+    )
+    .bind(fid)
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
+}
+
+pub async fn count_userid_msg_today(
+    pool: &MySqlPool,
+    fid: u64,
+    today_start: i64,
+) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+         WHERE fid = ? AND isdel = 9 AND datetime >= ?",
+    )
+    .bind(fid)
+    .bind(today_start)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }

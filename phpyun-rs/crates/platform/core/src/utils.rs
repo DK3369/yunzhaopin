@@ -91,13 +91,27 @@ pub fn mask_name_short(s: &str) -> String {
     }
 }
 
-/// Resume-name mask: keep first char, replace each subsequent with `*`. Used
-/// when `nametype != 1` to keep the family name visible while obscuring the
-/// rest.
-pub fn mask_name_resume(name: &str, nametype: i32) -> String {
-    if nametype == 1 {
-        return name.to_string();
-    }
+/// PHP `resume.model.php::setUsernameShow` inputs.
+#[derive(Clone, Copy)]
+pub struct ResumeNameOpts<'a> {
+    pub name: &'a str,
+    pub nametype: i32,
+    /// Default expect id (`def_job`) used for `NO.{eid}`.
+    pub eid: i32,
+    pub sex: i32,
+    /// Site `user_name`: 0/1 follow nametype, 2 = NO.eid, 3 = family+sex, 4 = full.
+    pub user_name: i32,
+    pub male_suffix: &'a str,
+    pub female_suffix: &'a str,
+}
+
+fn family_plus_sex(name: &str, sex: i32, male: &str, female: &str) -> String {
+    let first = name.chars().next().unwrap_or('*');
+    let suffix = if sex == 1 { male } else { female };
+    format!("{first}{suffix}")
+}
+
+fn stars_after_first(name: &str) -> String {
     let mut out = String::new();
     for (i, ch) in name.chars().enumerate() {
         if i == 0 {
@@ -110,6 +124,95 @@ pub fn mask_name_resume(name: &str, nametype: i32) -> String {
         "*".to_string()
     } else {
         out
+    }
+}
+
+fn nametype_display(opts: ResumeNameOpts<'_>) -> String {
+    let name = opts.name;
+    if name.is_empty() {
+        return String::new();
+    }
+    match opts.nametype {
+        1 => {
+            let digits: String = name.chars().filter(|c| c.is_ascii_digit()).collect();
+            if digits.len() >= 11 {
+                mask_tel(&digits)
+            } else {
+                name.to_string()
+            }
+        }
+        2 if opts.eid > 0 => format!("NO.{}", opts.eid),
+        3 => family_plus_sex(name, opts.sex, opts.male_suffix, opts.female_suffix),
+        2 => stars_after_first(name),
+        _ => name.to_string(),
+    }
+}
+
+/// PHP `setUsernameShow` — nametype 1/2/3 plus site `user_name` override.
+pub fn mask_resume_username(opts: ResumeNameOpts<'_>) -> String {
+    let name = opts.name;
+    if name.is_empty() {
+        return String::new();
+    }
+    let mode = if opts.user_name <= 0 { 1 } else { opts.user_name };
+    let shown = match mode {
+        2 if opts.eid > 0 => format!("NO.{}", opts.eid),
+        3 => family_plus_sex(name, opts.sex, opts.male_suffix, opts.female_suffix),
+        4 => name.to_string(),
+        _ => nametype_display(opts),
+    };
+    if shown.is_empty() {
+        name.to_string()
+    } else {
+        shown
+    }
+}
+
+/// Resume-name mask: nametype 1 keeps the full name (mobiles still masked);
+/// other types fall back to family + `*`. Prefer [`mask_resume_username`]
+/// when eid / site `user_name` are available.
+pub fn mask_name_resume(name: &str, nametype: i32) -> String {
+    mask_resume_username(ResumeNameOpts {
+        name,
+        nametype,
+        eid: 0,
+        sex: 0,
+        user_name: 1,
+        male_suffix: "",
+        female_suffix: "",
+    })
+}
+
+/// PHP `setResumePhotoShow` without leaking hidden photos.
+pub fn resume_photo_shown(
+    photo: Option<&str>,
+    phototype: i32,
+    photo_status: i32,
+    defphoto: i32,
+    sex: i32,
+    user_pic: i32,
+    male_default: &str,
+    female_default: &str,
+) -> String {
+    let photo = photo.unwrap_or("").trim();
+    let fallback = if sex == 1 || sex == 152 {
+        male_default
+    } else {
+        female_default
+    };
+    if defphoto == 2 && !photo.is_empty() {
+        return photo.to_string();
+    }
+    let allow_real = user_pic <= 1
+        && !photo.is_empty()
+        && photo_status == 0
+        && phototype != 1;
+    if allow_real {
+        photo.to_string()
+    } else if user_pic == 2 {
+        fallback.to_string()
+    } else {
+        fallback.to_string()
     }
 }
 
@@ -225,5 +328,53 @@ mod tests {
         assert_eq!(mask_name_resume("张三丰", 1), "张三丰");
         assert_eq!(mask_name_resume("张三丰", 2), "张**");
         assert_eq!(mask_name_resume("Alice", 2), "A****");
+        assert_eq!(
+            mask_resume_username(ResumeNameOpts {
+                name: "张三丰",
+                nametype: 2,
+                eid: 88,
+                sex: 1,
+                user_name: 1,
+                male_suffix: "先生",
+                female_suffix: "女士",
+            }),
+            "NO.88"
+        );
+        assert_eq!(
+            mask_resume_username(ResumeNameOpts {
+                name: "张三丰",
+                nametype: 3,
+                eid: 0,
+                sex: 1,
+                user_name: 1,
+                male_suffix: "先生",
+                female_suffix: "女士",
+            }),
+            "张先生"
+        );
+        assert_eq!(
+            mask_resume_username(ResumeNameOpts {
+                name: "13800138000",
+                nametype: 1,
+                eid: 0,
+                sex: 1,
+                user_name: 1,
+                male_suffix: "先生",
+                female_suffix: "女士",
+            }),
+            "138****8000"
+        );
+    }
+
+    #[test]
+    fn resume_photo_hides_unreviewed() {
+        assert_eq!(
+            resume_photo_shown(Some("a.jpg"), 1, 0, 1, 1, 1, "m.png", "f.png"),
+            "m.png"
+        );
+        assert_eq!(
+            resume_photo_shown(Some("a.jpg"), 0, 0, 1, 1, 1, "m.png", "f.png"),
+            "a.jpg"
+        );
     }
 }

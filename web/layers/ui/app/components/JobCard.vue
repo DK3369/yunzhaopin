@@ -8,10 +8,10 @@
     <div class="index_newjob_info nowrap">
       {{ city }}
       <template v-if="job.exp_n">
-        <i class="index_newjob_info_line">|</i>{{ job.exp_n }}
+        <i class="index_newjob_info_line">|</i>{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}
       </template>
       <template v-if="job.edu_n">
-        <i class="index_newjob_info_line">|</i>{{ job.edu_n }}
+        <i class="index_newjob_info_line">|</i>{{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}
       </template>
     </div>
     <div class="index_newjob_com nowrap">
@@ -19,8 +19,20 @@
       <div class="index_newjob_comname">
         <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`">{{ job.com_name }}</NuxtLink>
         <span v-else>{{ job.com_name }}</span>
+        <img
+          v-if="Number(job.yyzz_status) === 1"
+          src="/legacy/pc/images/disc_icon10.png"
+          alt=""
+          width="14"
+          height="14"
+        />
       </div>
-      <div class="index_newjob_cominfo">{{ job.job_hy || job.hy_n || '' }}</div>
+      <div class="index_newjob_cominfo">
+        {{ job.job_hy || job.hy_n || '' }}
+        <template v-if="job.mun_n">
+          <i class="index_newjob_info_line">|</i>{{ job.mun_n }}
+        </template>
+      </div>
     </div>
   </li>
   <NuxtLink v-if="variant === 'home'" class="site-h5" :to="`/jobs/${job.id}`" :title="job.name">
@@ -30,17 +42,22 @@
         <i class="table-card-salary">{{ salary }}</i>
       </div>
       <div class="table-card-require">
-        <i class="requir-area">{{ city }}</i>
+        <i class="requir-area">{{ cityH5 || city }}</i>
         <i v-if="job.edu_n" class="requir_area_parting_line" />
-        <i v-if="job.edu_n" class="requir-area">{{ job.edu_n }}</i>
+        <i v-if="job.edu_n" class="requir-area">{{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}</i>
         <i v-if="job.exp_n" class="requir_area_parting_line" />
-        <i v-if="job.exp_n" class="requir-area">{{ job.exp_n }}</i>
+        <i v-if="job.exp_n" class="requir-area">{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}</i>
+      </div>
+      <div v-if="welfare.length" class="welfare">
+        <span v-for="w in welfare.slice(0, 4)" :key="w" class="welfare_n">{{ w }}</span>
       </div>
       <div class="index_company">
         <i class="index_company-logo">
           <img :src="logo" alt="" style="width: 100%" />
         </i>
         <i class="index_company-name">{{ job.com_name }}</i>
+        <i v-if="job.istop" class="index_company-status">{{ $t('wap_user_00335') }}</i>
+        <div v-else-if="posted" class="zdnow">{{ posted }}</div>
       </div>
     </div>
   </NuxtLink>

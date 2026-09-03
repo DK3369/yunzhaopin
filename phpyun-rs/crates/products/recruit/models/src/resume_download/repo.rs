@@ -157,3 +157,55 @@ pub async fn unlocked_uids(
     }
     Ok(set)
 }
+
+pub async fn record_freedown(
+    pool: &MySqlPool,
+    com_id: u64,
+    uid: u64,
+    eid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_freedown_resume
+           (comid, uid, eid, downtime, type, usertype, status)
+           VALUES (?, ?, ?, ?, 0, 2, 0)"#,
+    )
+    .bind(com_id)
+    .bind(uid)
+    .bind(eid)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn count_today_freedown(
+    pool: &MySqlPool,
+    com_id: u64,
+    today_start: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_freedown_resume \
+         WHERE comid = ? AND usertype = 2 AND downtime >= ?",
+    )
+    .bind(com_id)
+    .bind(today_start)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_today_down(
+    pool: &MySqlPool,
+    com_id: u64,
+    today_start: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_down_resume WHERE comid = ? AND downtime >= ?",
+    )
+    .bind(com_id)
+    .bind(today_start)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

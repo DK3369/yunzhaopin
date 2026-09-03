@@ -347,6 +347,10 @@ pub struct CompanyDetail {
     pub welfare_n: Vec<String>,
     /// PHP `$invite_resume` (面试邀请数). Additive.
     pub invite_resume: u64,
+    /// Reply rate `(1 - unread/total)*100`.
+    pub pre: i32,
+    /// `source==6 && claim==0 && email`.
+    pub claimable: i32,
 
     /// Masked contact + `setCompanyLink` codes. Never includes plaintext tel/email.
     pub contact: CompanyPublicContact,
@@ -375,6 +379,8 @@ pub struct CompanyPublicContact {
     pub link_code: i32,
     pub link_msg: String,
     pub link_sub: i32,
+    pub prvlinktel: String,
+    pub prvtime: String,
 }
 
 /// Public company detail
@@ -406,6 +412,26 @@ pub async fn company_detail(
     let invite_resume = phpyun_models::company::repo::count_interview_invites(state.db.reader(), uid)
         .await
         .unwrap_or(0);
+    let apply_total = phpyun_models::apply::repo::count_by_com(
+        state.db.reader(),
+        uid,
+        phpyun_models::apply::repo::ApplyFilter::default(),
+    )
+    .await
+    .unwrap_or(0);
+    let apply_unread = phpyun_models::apply::repo::count_unread_by_company(state.db.reader(), uid)
+        .await
+        .unwrap_or(0);
+    let pre = if apply_total == 0 {
+        100
+    } else {
+        (((1.0 - (apply_unread as f64 / apply_total as f64)) * 100.0).round() as i32).clamp(0, 100)
+    };
+    let claimable = match phpyun_models::user::repo::claim_eligibility(state.db.reader(), uid).await
+    {
+        Ok(Some((6, 0, true))) => 1,
+        _ => 0,
+    };
     // Bump hit + expoure counters (fire-and-forget — page renders even if write fails).
     let pool = state.db.pool().clone();
     phpyun_core::background::spawn_best_effort("company.hits", async move {
@@ -527,8 +553,10 @@ pub async fn company_detail(
         userid_job,
         welfare_n,
         invite_resume,
+        pre,
+        claimable,
         contact: {
-            let ctc = job_service::resolve_company_contact(&state, uid, user.as_ref()).await?;
+            let ctc = job_service::resolve_company_contact(&state, uid, user.as_ref(), false).await?;
             CompanyPublicContact {
                 linkman: ctc.linkman,
                 linktel_n: ctc.linktel_n,
@@ -537,6 +565,8 @@ pub async fn company_detail(
                 link_code: ctc.link_code,
                 link_msg: ctc.link_msg,
                 link_sub: ctc.link_sub,
+                prvlinktel: ctc.prvlinktel,
+                prvtime: ctc.prvtime,
             }
         },
 
@@ -557,6 +587,16 @@ pub struct CompanyContactView {
     pub link_msg: String,
     pub link_sub: i32,
     pub revealed: bool,
+    pub prvlinktel: String,
+    pub prvtime: String,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema, IntoParams)]
+pub struct CompanyContactQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub uid: u64,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub isgetprv: Option<i32>,
 }
 
 /// Reveal company telephone when `setCompanyLink` yields code 1. Never returns email.
@@ -564,15 +604,16 @@ pub struct CompanyContactView {
     post,
     path = "/v1/wap/companies/contact",
     tag = "wap",
-    request_body = UidBody,
+    request_body = CompanyContactQuery,
     responses((status = 200, description = "ok", body = CompanyContactView))
 )]
 pub async fn company_contact(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<CompanyContactQuery>,
 ) -> AppResult<ApiResponse<CompanyContactView>> {
-    let c = job_service::resolve_company_contact(&state, b.uid, user.as_ref()).await?;
+    let isgetprv = b.isgetprv.unwrap_or(0) == 1;
+    let c = job_service::resolve_company_contact(&state, b.uid, user.as_ref(), isgetprv).await?;
     let plain = c.revealed && c.link_code == 1;
     Ok(ApiResponse::data(CompanyContactView {
         uid: b.uid,
@@ -594,6 +635,8 @@ pub async fn company_contact(
         link_msg: c.link_msg,
         link_sub: c.link_sub,
         revealed: plain,
+        prvlinktel: c.prvlinktel,
+        prvtime: c.prvtime,
     }))
 }
 

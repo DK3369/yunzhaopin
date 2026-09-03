@@ -25,8 +25,30 @@ const welfare = computed(() => {
 const { data: jobs } = await useAsyncData(
   () => `company-jobs-${locale.value}-${uid}`,
   () =>
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page: 1, page_size: 20, uid }).catch(() => ({ list: [] as JobLike[] })),
+    api
+      .get<{ list: JobLike[]; total?: number }>('/v1/wap/companies/jobs', {
+        uid,
+        page: 1,
+        page_size: 5,
+      })
+      .catch(() => ({ list: [] as JobLike[], total: 0 })),
 )
+const extraJobs = ref<JobLike[]>([])
+const jobPage = ref(1)
+const jobList = computed(() => [...(jobs.value?.list || []), ...extraJobs.value])
+const jobTotal = computed(() => Number(jobs.value?.total || jobList.value.length))
+async function loadMoreJobs() {
+  jobPage.value += 1
+  const r = await api.get<{ list: JobLike[]; total?: number }>('/v1/wap/companies/jobs', {
+    uid,
+    page: jobPage.value,
+    page_size: 5,
+  })
+  extraJobs.value = [...extraJobs.value, ...(r.list || [])]
+  if (r.total != null) {
+    /* keep first-page total */
+  }
+}
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const following = ref(false)
 const followMsg = ref('')
@@ -76,13 +98,27 @@ async function showTel() {
     return
   }
   try {
+    await api.post('/v1/wap/jobs/tel-click', { id: 0, com_id: uid }).catch(() => undefined)
     const r = await api.get<{
       linktel?: string
       linkphone?: string
       linkman?: string
       revealed?: boolean
       link_code?: number
-    }>('/v1/wap/companies/contact', { uid })
+      prvlinktel?: string
+      prvtime?: string
+      link_msg?: string
+    }>('/v1/wap/companies/contact', { uid, isgetprv: linkCode.value === 10 ? 1 : 0 })
+    const code = Number(r.link_code || 0)
+    if (code === 10 && r.prvlinktel) {
+      revealed.value = { linktel: r.prvlinktel, linkphone: r.prvlinktel, linkman: r.linkman }
+      if (r.prvtime) followMsg.value = r.prvtime
+      return
+    }
+    if (code === 11) {
+      followMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('ui.load_failed')
+      return
+    }
     if (r.revealed && (r.linktel || r.linkphone)) {
       revealed.value = { linktel: r.linktel, linkphone: r.linkphone, linkman: r.linkman }
     }
@@ -243,6 +279,8 @@ useHead({
                 <template v-if="company.sdate">{{ company.sdate }}</template>
                 <span v-if="moneyLabel" class="com_details_line">|</span>
                 <template v-if="moneyLabel">{{ moneyLabel }}</template>
+                <span v-if="company.pre != null" class="com_details_line">|</span>
+                <template v-if="company.pre != null">{{ company.pre }}% {{ $t('default_00227') }}</template>
               </div>
               <div class="com_details_data_box">
                 <div class="com_details_data_box_c">
@@ -270,6 +308,9 @@ useHead({
                 </a>
               </div>
               <p v-if="followMsg" class="muted">{{ followMsg }}</p>
+              <p v-if="Number(company.claimable) === 1">
+                <NuxtLink :to="`/claim?uid=${uid}`">{{ $t('ui.claim') }}</NuxtLink>
+              </p>
             </div>
           </div>
         </div>
@@ -316,7 +357,13 @@ useHead({
             <div class="firm_det_link">
               <span v-if="contact.linkman" class="firm_mes1">{{ $t('common_02051') }}：{{ contact.linkman }}</span>
               <span v-if="company.linkjob" class="firm_mes1">{{ $t('common_01637') }}：{{ company.linkjob }}</span>
-              <div v-if="linkCode === 10" class="firm_login_con">{{ linkMsg || $t('common_01934') }}</div>
+              <div v-if="linkCode === 10" class="firm_login_con">
+                {{ revealed?.linktel || linkMsg || $t('common_01934') }}
+                <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
+                  $t('default_00233')
+                }}</a>
+              </div>
+              <div v-else-if="linkCode === 11" class="firm_login_con">{{ linkMsg || $t('ui.load_failed') }}</div>
               <div v-else-if="linkCode === 9" class="firm_login_con">
                 {{ linkMsg || $t('common_02372') }}
               </div>
@@ -380,7 +427,9 @@ useHead({
               <i class="com_details_tit_line yun_bg_color" />
             </div>
             <ul class="black_newslist">
-              <li v-for="n in newsList" :key="String(n.id)">{{ n.title }}</li>
+              <li v-for="n in newsList" :key="String(n.id)">
+                <NuxtLink :to="`/companies/${uid}/news/${n.id}`">{{ n.title }}</NuxtLink>
+              </li>
             </ul>
           </div>
           <div v-if="productList.length" class="com_show_leftbox">
@@ -390,8 +439,10 @@ useHead({
             </div>
             <div class="com_show_image">
               <div v-for="p in productList" :key="String(p.id)" class="com_show_image_list">
-                <img :src="mediaUrl(String(p.cover_n || p.cover || ''), PLACEHOLDER_LOGO)" width="200" height="127" alt="" />
-                <p>{{ p.title }}</p>
+                <NuxtLink :to="`/companies/${uid}/products/${p.id}`">
+                  <img :src="mediaUrl(String(p.cover_n || p.cover || ''), PLACEHOLDER_LOGO)" width="200" height="127" alt="" />
+                  <p>{{ p.title }}</p>
+                </NuxtLink>
               </div>
             </div>
           </div>
@@ -401,8 +452,14 @@ useHead({
               <i class="com_details_tit_line yun_bg_color" />
             </div>
             <div id="company_job_list" class="comshow_job">
-              <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="firm" />
-              <div v-if="!(jobs?.list || []).length" class="firm_tips_no">{{ $t('home.no_recruiting_jobs') }}</div>
+              <JobCard v-for="job in jobList" :key="job.id" :job="job" variant="firm" />
+              <div v-if="!jobList.length" class="firm_tips_no">{{ $t('home.no_recruiting_jobs') }}</div>
+              <a
+                v-if="jobList.length < jobTotal"
+                href="javascript:;"
+                class="job_details_touch_tel_bth"
+                @click.prevent="loadMoreJobs"
+              >{{ $t('common.more') }}</a>
             </div>
           </div>
         </div>
@@ -434,6 +491,9 @@ useHead({
             <a href="javascript:;" class="com_details_opt_gz" @click.prevent="toggleFollow">
               {{ following ? $t('wap_js_00140') : $t('common_01949') }}
             </a>
+            <p v-if="Number(company.claimable) === 1">
+              <NuxtLink :to="`/claim?uid=${uid}`">{{ $t('ui.claim') }}</NuxtLink>
+            </p>
           </div>
         </div>
       </div>
@@ -443,7 +503,7 @@ useHead({
             <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ colorshow: tab !== 'about' }">{{
               $t('wap_00190')
             }}</NuxtLink>
-            <span class="phpyunjobn">{{ company.zp_num ?? jobs?.list?.length ?? 0 }}</span>
+            <span class="phpyunjobn">{{ company.zp_num ?? jobTotal }}</span>
           </li>
           <li>
             <NuxtLink :to="{ query: { tab: 'about' } }" :class="{ colorshow: tab === 'about' }">{{
@@ -477,7 +537,11 @@ useHead({
         <div class="job_describe_cengter_header">{{ $t('wap_00462') }}</div>
         <div class="newcom_add">
           <div v-if="contact.linkman">{{ contact.linkman }}</div>
-          <div v-if="linkCode === 10">{{ linkMsg || $t('common_01934') }}</div>
+          <div v-if="linkCode === 10">
+            {{ revealed?.linktel || linkMsg || $t('common_01934') }}
+            <a href="javascript:;" @click.prevent="showTel">{{ $t('default_00233') }}</a>
+          </div>
+          <div v-else-if="linkCode === 11">{{ linkMsg || $t('ui.load_failed') }}</div>
           <div v-else-if="linkCode === 9">
             {{ linkMsg || $t('common_02372') }}
           </div>
@@ -519,18 +583,23 @@ useHead({
         </div>
         <div v-if="newsList.length" class="job_describe_bottom">
           <div class="job_describe_cengter_header">{{ $t('company_00019') }}</div>
-          <div v-for="n in newsList" :key="String(n.id)">{{ n.title }}</div>
+          <div v-for="n in newsList" :key="String(n.id)">
+            <NuxtLink :to="`/companies/${uid}/news/${n.id}`">{{ n.title }}</NuxtLink>
+          </div>
         </div>
         <div v-if="productList.length" class="job_describe_bottom">
           <div class="job_describe_cengter_header">{{ $t('company_00020') }}</div>
-          <div v-for="p in productList" :key="String(p.id)">{{ p.title }}</div>
+          <div v-for="p in productList" :key="String(p.id)">
+            <NuxtLink :to="`/companies/${uid}/products/${p.id}`">{{ p.title }}</NuxtLink>
+          </div>
         </div>
         <div class="job_describe_cengter_header">{{ $t('wap_com_00168') }}</div>
         <div class="phpyunabout" v-html="String(company.content || '')" />
       </div>
       <div v-else id="company_job_list">
-        <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="com" />
-        <div v-if="!(jobs?.list || []).length" class="wap_member_no">{{ $t('home.no_recruiting_jobs') }}</div>
+        <JobCard v-for="job in jobList" :key="job.id" :job="job" variant="com" />
+        <div v-if="!jobList.length" class="wap_member_no">{{ $t('home.no_recruiting_jobs') }}</div>
+        <a v-if="jobList.length < jobTotal" href="javascript:;" @click.prevent="loadMoreJobs">{{ $t('common.more') }}</a>
       </div>
     </div>
   </article>

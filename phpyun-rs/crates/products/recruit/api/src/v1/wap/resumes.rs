@@ -7,7 +7,10 @@ use axum::{
 };
 use phpyun_core::dto::{EidBody, UidBody};
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::utils::{fmt_date, fmt_dt, mask_name_resume as mask_name, pic_n as pic_n_local};
+use phpyun_core::utils::{
+    fmt_date, fmt_dt, mask_name_resume as mask_name, mask_resume_username, pic_n as pic_n_local,
+    resume_photo_shown, ResumeNameOpts,
+};
 use phpyun_core::extractors::{MaybeUser, USERTYPE_EMPLOYER, USERTYPE_JOBSEEKER};
 use phpyun_core::{
     clock, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
@@ -214,23 +217,104 @@ pub struct ResumeSummary {
     pub is_top: bool,
 }
 
+struct ResumeShowCfg {
+    user_name: i32,
+    user_pic: i32,
+    male_icon: String,
+    female_icon: String,
+    male_suffix: String,
+    female_suffix: String,
+}
+
+fn cfg_i32(map: &std::collections::HashMap<String, String>, key: &str, default: i32) -> i32 {
+    map.get(key)
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(default)
+}
+
+async fn load_resume_show_cfg(state: &AppState) -> ResumeShowCfg {
+    let cfg = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &[
+            "user_name",
+            "user_pic",
+            "sy_member_icon",
+            "sy_member_iconv",
+        ],
+    )
+    .await
+    .unwrap_or_default();
+    let lang = current_lang();
+    ResumeShowCfg {
+        user_name: cfg_i32(&cfg, "user_name", 1),
+        user_pic: cfg_i32(&cfg, "user_pic", 1),
+        male_icon: cfg
+            .get("sy_member_icon")
+            .map(|s| s.trim().to_string())
+            .unwrap_or_default(),
+        female_icon: cfg
+            .get("sy_member_iconv")
+            .map(|s| s.trim().to_string())
+            .unwrap_or_default(),
+        male_suffix: t("wap_js_00169", lang),
+        female_suffix: t("admin_user_00341", lang),
+    }
+}
+
+fn resume_display_name(r: &phpyun_models::resume::entity::Resume, cfg: &ResumeShowCfg, unmask: bool) -> String {
+    match r.name.as_deref() {
+        Some(n) if !n.is_empty() => {
+            if unmask {
+                n.to_string()
+            } else {
+                mask_resume_username(ResumeNameOpts {
+                    name: n,
+                    nametype: r.nametype,
+                    eid: r.def_job,
+                    sex: r.sex,
+                    user_name: cfg.user_name,
+                    male_suffix: &cfg.male_suffix,
+                    female_suffix: &cfg.female_suffix,
+                })
+            }
+        }
+        _ => t("ui.resume.anonymous", current_lang()),
+    }
+}
+
+fn resume_photo_n(
+    state: &AppState,
+    r: &phpyun_models::resume::entity::Resume,
+    cfg: &ResumeShowCfg,
+) -> String {
+    let shown = resume_photo_shown(
+        r.photo.as_deref(),
+        r.phototype,
+        r.photo_status,
+        r.defphoto,
+        r.sex,
+        cfg.user_pic,
+        &cfg.male_icon,
+        &cfg.female_icon,
+    );
+    pic_n_local(state, Some(shown.as_str()))
+}
+
 fn age_from_birthday(b: &str) -> Option<u16> {
     let year: u16 = b.get(..4)?.parse().ok()?;
     Some(clock::now_year().saturating_sub(year))
 }
 
 impl ResumeSummary {
-    pub fn from_with_dict(
+    fn from_with_dict(
         r: phpyun_models::resume::entity::Resume,
         state: &AppState,
         dicts: &phpyun_services::dict_service::LocalizedDicts,
+        cfg: &ResumeShowCfg,
     ) -> Self {
-        let display_name = match r.name.as_deref() {
-            Some(n) if !n.is_empty() => mask_name(n, r.nametype),
-            _ => t("ui.resume.anonymous", current_lang()),
-        };
+        let display_name = resume_display_name(&r, cfg, false);
         let age = r.birthday.as_deref().and_then(age_from_birthday);
-        let photo_n = pic_n_local(state, r.photo.as_deref());
+        let photo_n = resume_photo_n(state, &r, cfg);
         Self {
             uid: r.uid,
             display_name,
@@ -395,10 +479,11 @@ pub async fn list_resumes(
     };
     let r = resume_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
+    let show_cfg = load_resume_show_cfg(&state).await;
     let mut list: Vec<ResumeSummary> = r
         .list
         .into_iter()
-        .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts))
+        .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts, &show_cfg))
         .collect();
     attach_expect_fields(&state, &dicts, &mut list).await;
     attach_employer_list_flags(&state, user.as_ref(), &mut list).await;
@@ -427,16 +512,18 @@ async fn attach_employer_list_flags(
     };
     let uids: Vec<u64> = list.iter().map(|row| row.uid).collect();
     let db = state.db.reader();
-    let (down, pool, invited) = tokio::join!(
+    let (down, pool, invited, applied) = tokio::join!(
         phpyun_models::resume_download::repo::unlocked_uids(db, u.uid, &uids),
         phpyun_models::talent_pool::repo::uids_in_pool(db, u.uid, &uids),
         phpyun_models::apply::repo::invited_seeker_uids(db, u.uid, &uids),
+        phpyun_models::apply::repo::applied_seeker_uids(db, u.uid, &uids),
     );
     let down = down.unwrap_or_default();
     let pool = pool.unwrap_or_default();
     let invited = invited.unwrap_or_default();
+    let applied = applied.unwrap_or_default();
     for row in list {
-        if down.contains(&row.uid) {
+        if down.contains(&row.uid) || applied.contains(&row.uid) {
             if let Some(n) = row.real_name.as_deref().filter(|s| !s.is_empty()) {
                 row.display_name = n.to_string();
             }
@@ -656,6 +743,7 @@ pub struct ResumeDetail {
 
     // ==== Pictures ====
     pub photo: Option<String>,
+    pub photo_n: String,
     /// Profile photo
     pub resume_photo: Option<String>,
 
@@ -696,6 +784,15 @@ pub struct ResumeDetail {
     pub others: Vec<ResumeOtherItem>,
     pub shows: Vec<ResumeShowItem>,
     pub docs: Vec<ResumeDocItem>,
+
+    /// PHP `$downresumes` remaining package downloads (employers only).
+    pub downresumes: i32,
+    /// Remaining free_look for today (employers only).
+    pub free_look: i32,
+    pub in_talentpool: bool,
+    pub invited: bool,
+    /// Site `sy_resume_visitors` (0 = unlimited).
+    pub visitor_max: i32,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -723,14 +820,15 @@ pub struct ResumeBodyTj {
     pub cert_num: u64,
 }
 
-/// PHP `com_search=1` guests and `sy_user_visit_resume=0` jobseekers cannot browse talent.
+/// PHP `com_search=1` guests, unapproved employers when `com_status_search=1`,
+/// and `sy_user_visit_resume=0` jobseekers cannot browse talent.
 async fn ensure_resume_browse(
     state: &AppState,
     user: Option<&AuthenticatedUser>,
 ) -> AppResult<()> {
     let cfg = phpyun_models::site_setting::repo::find_many(
         state.db.reader(),
-        &["com_search", "sy_user_visit_resume"],
+        &["com_search", "sy_user_visit_resume", "com_status_search"],
     )
     .await
     .unwrap_or_default();
@@ -739,11 +837,25 @@ async fn ensure_resume_browse(
         .get("sy_user_visit_resume")
         .map(|s| s.trim())
         .unwrap_or("1");
+    let com_status_search = cfg
+        .get("com_status_search")
+        .map(|s| s.trim())
+        .unwrap_or("0");
     if com_search == "1" && user.is_none() {
         return Err(ApiError::unauth());
     }
     if visit == "0" && user.is_some_and(|u| u.usertype == USERTYPE_JOBSEEKER) {
         return Err(ApiError::forbidden());
+    }
+    if com_status_search == "1" {
+        if let Some(u) = user.filter(|u| u.usertype == USERTYPE_EMPLOYER) {
+            let ok = phpyun_models::company::repo::find_by_uid(state.db.reader(), u.uid)
+                .await?
+                .is_some_and(|c| c.r_status == 1);
+            if !ok {
+                return Err(ApiError::forbidden());
+            }
+        }
     }
     Ok(())
 }
@@ -802,13 +914,16 @@ pub async fn resume_detail(
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<ResumeDetail>> {
     let uid = b.uid;
-    let r = resume_service::get_public(&state, uid).await?;
+    let r = resume_service::get_public(&state, uid, user.as_ref()).await?;
     ensure_resume_view(&state, user.as_ref(), uid).await?;
     let employer = user
         .as_ref()
         .is_some_and(|u| u.usertype == USERTYPE_EMPLOYER);
     if employer {
         if let Some(u) = user.as_ref() {
+            if phpyun_models::blacklist::repo::is_blocked(state.db.reader(), u.uid, uid).await? {
+                return Err(ApiError::business("blacklisted"));
+            }
             view_service::record_async(&state, u.uid, KIND_RESUME, uid);
         }
     }
@@ -844,17 +959,60 @@ pub async fn resume_detail(
             cert_num: certs.len() as u64,
         })
     };
-    let display_name = match r.name.as_deref() {
-        Some(n) if !n.is_empty() => {
-            if unlocked {
-                n.to_string()
-            } else {
-                mask_name(n, r.nametype)
-            }
+    let show_cfg = load_resume_show_cfg(&state).await;
+    let applied = if employer {
+        if let Some(u) = user.as_ref() {
+            phpyun_models::apply::repo::count_by_uid_to_company(state.db.reader(), uid, u.uid)
+                .await
+                .unwrap_or(0)
+                > 0
+        } else {
+            false
         }
-        _ => t("ui.resume.anonymous", current_lang()),
+    } else {
+        false
     };
+    let unmask_name = unlocked || applied;
+    let display_name = resume_display_name(&r, &show_cfg, unmask_name);
+    let photo_n = resume_photo_n(&state, &r, &show_cfg);
     let age = r.birthday.as_deref().and_then(age_from_birthday);
+    let (downresumes, free_look) = if employer {
+        if let Some(u) = user.as_ref() {
+            phpyun_services::resume_download_service::remaining_for(&state, u)
+                .await
+                .unwrap_or((0, 0))
+        } else {
+            (0, 0)
+        }
+    } else {
+        (0, 0)
+    };
+    let (in_talentpool, invited) = if employer {
+        if let Some(u) = user.as_ref() {
+            let db = state.db.reader();
+            let ids = [uid];
+            let (p, i) = tokio::join!(
+                phpyun_models::talent_pool::repo::uids_in_pool(db, u.uid, &ids),
+                phpyun_models::apply::repo::invited_seeker_uids(db, u.uid, &ids),
+            );
+            (
+                p.unwrap_or_default().contains(&uid),
+                i.unwrap_or_default().contains(&uid),
+            )
+        } else {
+            (false, false)
+        }
+    } else {
+        (false, false)
+    };
+    let visitor_max = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &["sy_resume_visitors"],
+    )
+    .await
+    .ok()
+    .and_then(|m| m.get("sy_resume_visitors")?.trim().parse().ok())
+    .unwrap_or(0);
     Ok(ApiResponse::data(ResumeDetail {
         uid: r.uid,
         display_name,
@@ -889,6 +1047,7 @@ pub async fn resume_detail(
         wxewm: if unlocked { r.wxewm } else { None },
 
         photo: r.photo,
+        photo_n,
         resume_photo: r.resume_photo,
 
         idcard_status: r.idcard_status,
@@ -991,6 +1150,11 @@ pub async fn resume_detail(
         } else {
             Vec::new()
         },
+        downresumes,
+        free_look,
+        in_talentpool,
+        invited,
+        visitor_max,
     }))
 }
 

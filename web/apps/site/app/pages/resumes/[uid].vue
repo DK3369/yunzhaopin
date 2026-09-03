@@ -5,6 +5,8 @@ const route = useRoute()
 const { t, locale } = useI18n()
 const uid = Number(route.params.uid)
 const api = useApi()
+const { me } = useSiteChrome()
+const visitorBlocked = ref(false)
 const { data, error, refresh } = await useAsyncData(
   () => `resume-${locale.value}-${uid}`,
   () => api.get('/v1/wap/resumes/detail', { uid }),
@@ -23,6 +25,10 @@ const shows = computed(() => (Array.isArray(row.value.shows) ? row.value.shows :
 const docs = computed(() => (Array.isArray(row.value.docs) ? row.value.docs : []) as Record<string, unknown>[])
 const tel = computed(() => String(row.value.telphone || ''))
 const reportOpen = ref(false)
+function errKey(e: unknown): string {
+  if (e && typeof e === 'object' && 'key' in e) return String((e as { key: unknown }).key || '')
+  return ''
+}
 function docIsFile(raw: unknown) {
   const s = String(raw || '')
   return Boolean(s) && !/<[a-z]/i.test(s)
@@ -43,11 +49,11 @@ const expectCities = computed(() =>
 const expectTitle = computed(() => expectJobs.value[0] || '')
 const expectCity = computed(() => expectCities.value[0] || '')
 const expectSalary = computed(() => String(expect0.value.salary_n || ''))
-const { me } = useSiteChrome()
 const unlocked = computed(() => Number(row.value.m_status) === 1)
 const bodyOpen = computed(() => Number(row.value.resume_check ?? 1) === 1)
 const tj = computed(() => (row.value.tj || {}) as Record<string, unknown>)
 const photo = computed(() => mediaUrl(String(row.value.photo_n || row.value.photo || ''), PLACEHOLDER_LOGO))
+const alreadyInvited = computed(() => Boolean(row.value.invited))
 const sexLabel = computed(() => {
   const n = Number(row.value.sex)
   if (n === 1) return t('common_02092')
@@ -62,25 +68,67 @@ const tags = computed(() => {
 })
 const fav = ref(false)
 const actionMsg = ref('')
+const yqmsOpen = ref(false)
+const yqmsJobs = ref<Array<Record<string, unknown>>>([])
+const yqmsTpls = ref<Array<Record<string, unknown>>>([])
+const yqms = reactive({
+  job_id: 0,
+  content: '',
+  address: '',
+  intertime: '',
+  linkman: '',
+  linktel: '',
+})
 useSeoMeta({ title: () => name.value || t('common.resume') })
 onMounted(async () => {
+  const max = Number(row.value.visitor_max || 0)
+  if (!me.value && max > 0 && import.meta.client) {
+    const key = 'phpyun_resume_visitors'
+    const n = Number(window.localStorage.getItem(key) || 0)
+    if (n >= max) {
+      visitorBlocked.value = true
+      return
+    }
+    window.localStorage.setItem(key, String(n + 1))
+  }
+  fav.value = Boolean(row.value.in_talentpool)
   try {
     const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
       kind: 3,
       target_id: uid,
     })
-    fav.value = Boolean(r.exists || r.favorited)
+    fav.value = Boolean(row.value.in_talentpool) || Boolean(r.exists || r.favorited)
   } catch {
     /* guest */
   }
 })
 async function download() {
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (me.value.usertype !== 2) {
+    actionMsg.value = t('resume_00038')
+    return
+  }
+  if (!unlocked.value) {
+    const pack = Number(row.value.downresumes || 0)
+    const free = Number(row.value.free_look || 0)
+    const ok = window.confirm(`${t('resume_00029')} (${pack}/${free})`)
+    if (!ok) return
+  }
   try {
     await api.post('/v1/mcenter/resume-downloads', { uid })
     actionMsg.value = t('common.confirm')
     await refresh()
-  } catch {
-    await navigateTo('/login')
+  } catch (e: unknown) {
+    if (errKey(e) === 'need_buy_down_resume' || errKey(e) === 'vip_day_limit') {
+      actionMsg.value = e.message
+      await navigateTo('/com/pay')
+      return
+    }
+    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    if (!me.value) await navigateTo('/login')
   }
 }
 async function lookAll() {
@@ -109,7 +157,56 @@ async function invite() {
     actionMsg.value = t('resume_00038')
     return
   }
-  await navigateTo('/com/interviews')
+  if (alreadyInvited.value) {
+    actionMsg.value = t('wap_00291')
+    return
+  }
+  yqmsOpen.value = true
+  try {
+    const jobs = await api.post<{ list?: Array<Record<string, unknown>> }>('/v1/mcenter/jobs/list', {
+      state: 1,
+      page: 1,
+      page_size: 50,
+    })
+    yqmsJobs.value = jobs.list || []
+    const tpls = await api.post<Array<Record<string, unknown>>>('/v1/mcenter/interview-templates/list', {})
+    yqmsTpls.value = Array.isArray(tpls) ? tpls : []
+    if (!yqms.job_id && yqmsJobs.value[0]) yqms.job_id = Number(yqmsJobs.value[0].id || 0)
+    const tpl = yqmsTpls.value[0]
+    if (tpl) applyTpl(tpl)
+  } catch (e: unknown) {
+    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
+}
+function applyTpl(tpl: Record<string, unknown>) {
+  yqms.content = String(tpl.content || '')
+  yqms.address = String(tpl.address || yqms.address)
+  yqms.linkman = String(tpl.linkman || yqms.linkman)
+  yqms.linktel = String(tpl.linktel || yqms.linktel)
+  if (tpl.intertime_n) yqms.intertime = String(tpl.intertime_n)
+}
+async function submitYqms() {
+  try {
+    await api.post('/v1/mcenter/company/yqms/create', {
+      seeker_uid: uid,
+      job_id: yqms.job_id,
+      content: yqms.content,
+      address: yqms.address,
+      intertime: yqms.intertime,
+      linkman: yqms.linkman,
+      linktel: yqms.linktel,
+    })
+    yqmsOpen.value = false
+    actionMsg.value = t('common.confirm')
+    await refresh()
+  } catch (e: unknown) {
+    if (errKey(e) === 'need_buy_invite' || errKey(e) === 'vip_day_limit') {
+      actionMsg.value = e.message
+      await navigateTo('/com/pay')
+      return
+    }
+    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
 }
 async function toggleFav() {
   const eid = Number(row.value.def_job || expect0.value.id || 0)
@@ -134,6 +231,11 @@ async function report() {
   <article v-if="error" class="site-inner">
     <h1>{{ $t('common.resume') }}</h1>
     <p class="muted">{{ $t('ui.load_failed') }}</p>
+  </article>
+  <article v-else-if="visitorBlocked" class="site-inner">
+    <h1>{{ $t('common.resume') }}</h1>
+    <p class="muted">{{ $t('wap_00376') }}</p>
+    <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
   </article>
   <article v-else>
     <div class="site-pc">
@@ -324,7 +426,8 @@ async function report() {
             </div>
             <p style="margin-top: 16px">
               <button type="button" class="user_yqms" @click="download">{{ $t('resume_00029') }}</button>
-              <button type="button" class="user_yqms" @click="invite">{{ $t('wap_user_00216') }}</button>
+              <button v-if="alreadyInvited" type="button" class="user_yqms" disabled>{{ $t('wap_00291') }}</button>
+              <button v-else type="button" class="user_yqms" @click="invite">{{ $t('wap_user_00216') }}</button>
               <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="toggleFav">{{
                 fav ? $t('wap_00378') : $t('wap_00379')
               }}</a>
@@ -500,6 +603,47 @@ async function report() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div
+      v-if="yqmsOpen"
+      class="firm_login"
+      style="position: fixed; inset: 0; z-index: 80; background: rgba(0, 0, 0, 0.45); display: flex; align-items: center; justify-content: center"
+      @click.self="yqmsOpen = false"
+    >
+      <div class="resume_body_card" style="width: min(520px, 92vw); max-height: 90vh; overflow: auto; background: #fff; padding: 16px">
+        <h3>{{ $t('wap_user_00216') }}</h3>
+        <p>
+          <label>{{ $t('wap_00190') }}</label>
+          <select v-model.number="yqms.job_id">
+            <option v-for="j in yqmsJobs" :key="String(j.id)" :value="Number(j.id)">{{ j.name }}</option>
+          </select>
+        </p>
+        <p v-if="yqmsTpls.length">
+          <label>{{ $t('ui.interview_tpl') }}</label>
+          <select @change="applyTpl(yqmsTpls[Number(($event.target as HTMLSelectElement).value)] || {})">
+            <option v-for="(tpl, idx) in yqmsTpls" :key="String(tpl.id)" :value="idx">{{ tpl.name }}</option>
+          </select>
+        </p>
+        <p>
+          <input v-model="yqms.intertime" type="datetime-local" />
+        </p>
+        <p>
+          <input v-model="yqms.linkman" :placeholder="$t('common_02051')" />
+        </p>
+        <p>
+          <input v-model="yqms.linktel" :placeholder="$t('common.phone')" />
+        </p>
+        <p>
+          <input v-model="yqms.address" :placeholder="$t('wap_00040')" />
+        </p>
+        <p>
+          <textarea v-model="yqms.content" rows="4" />
+        </p>
+        <p>
+          <button type="button" class="user_yqms" @click="submitYqms">{{ $t('common.confirm') }}</button>
+          <button type="button" class="user_yqms" @click="yqmsOpen = false">{{ $t('common.cancel') }}</button>
+        </p>
       </div>
     </div>
     <ReportSheet

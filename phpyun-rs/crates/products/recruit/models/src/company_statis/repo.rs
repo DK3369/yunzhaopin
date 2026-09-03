@@ -377,3 +377,35 @@ pub async fn extend_vip_days(
     tx.commit().await?;
     Ok(next)
 }
+
+pub async fn try_consume_down_resume(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET down_resume = down_resume - 1 \
+         WHERE uid = ? AND down_resume > 0",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected() > 0)
+}
+
+pub async fn try_consume_invite_resume(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET invite_resume = invite_resume - 1 \
+         WHERE uid = ? AND invite_resume > 0",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected() > 0)
+}
+
+pub async fn freelook_num(pool: &MySqlPool, rating_id: i32) -> Result<i32, sqlx::Error> {
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(freelook_num, 0) AS SIGNED) FROM phpyun_company_rating WHERE id = ? LIMIT 1",
+    )
+    .bind(rating_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}

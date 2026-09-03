@@ -63,6 +63,7 @@
 /v1/mcenter/company/products
 /v1/mcenter/company/products/list
 /v1/mcenter/company/products/update
+/v1/mcenter/company/yqms/create
 /v1/mcenter/dashboard
 /v1/mcenter/dashboard/year-report
 /v1/mcenter/entrust

@@ -15,16 +15,32 @@ type ArticleLike = {
 type FriendLink = { id: number; name: string; url: string; logo?: string; category?: string }
 
 const api = useApi()
-const { t } = useI18n()
+const { t, te } = useI18n()
 const { siteName, me, h5Nav, settings } = useSiteChrome()
 const resumeGate = computed(() => {
   const needLogin = String(settings.value.com_search || '') === '1' && !me.value
-  const seekerOff =
-    String(settings.value.sy_user_visit_resume ?? '1') === '0' && Number(me.value?.usertype) === 1
   if (needLogin) return 'login'
-  if (seekerOff) return 'seeker'
   return ''
 })
+const talentTip = ref('')
+function talentBlockedMsg() {
+  const changeOn = String(settings.value.sy_user_change || '') === '1'
+  const key = changeOn ? 'auth.apply_company_first' : 'auth.company_only_view'
+  if (te(key as never)) return t(key as never)
+  return changeOn ? t('wap_00032') : t('resume_00038')
+}
+function onTalentClick(e: Event, uid: unknown) {
+  talentTip.value = ''
+  if (String(settings.value.com_search || '') === '1' && !me.value) {
+    e.preventDefault()
+    navigateTo('/login')
+    return
+  }
+  if (Number(me.value?.usertype) === 1) {
+    e.preventDefault()
+    talentTip.value = talentBlockedMsg()
+  }
+}
 const h5NavPage = ref(0)
 const h5NavPages = computed(() => {
   const list = h5Nav.value || []
@@ -57,12 +73,16 @@ const { data: home, error } = await useAsyncData('home', async () => {
   return {
     ...h,
     rec_jobs: rec.list || [],
-    latest_jobs: [...bidList, ...(latest.list || []).filter((j) => !bidIds.has(j.id))],
+    latest_jobs: latest.list || [],
+    h5_latest_jobs: [...bidList, ...(latest.list || []).filter((j) => !bidIds.has(j.id))],
     urgent_jobs: urgent.list || [],
   }
 })
 const { data: cats } = await useAsyncData('job-cats', () =>
   api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
+)
+const { data: hotClass } = await useAsyncData('hot-job-class', () =>
+  api.get<CatNode[]>('/v1/wap/categories/recommended', { kind: 'job', limit: 20 }).catch(() => [] as CatNode[]),
 )
 const { data: adsPc } = await useAsyncData('ads-3', () =>
   api.get<Banner[]>('/v1/wap/ads', { slot: '3', limit: 5 }).catch(() => [] as Banner[]),
@@ -118,6 +138,10 @@ const hotJobs = computed(() => (home.value?.hot_jobs || []) as JobLike[])
 const latestJobList = computed(() => {
   const extra = (home.value as { latest_jobs?: JobLike[] } | null)?.latest_jobs || []
   return extra.length ? extra : hotJobs.value
+})
+const h5LatestJobList = computed(() => {
+  const extra = (home.value as { h5_latest_jobs?: JobLike[] } | null)?.h5_latest_jobs || []
+  return extra.length ? extra : latestJobList.value
 })
 const recJobList = computed(() => ((home.value as { rec_jobs?: JobLike[] } | null)?.rec_jobs || []) as JobLike[])
 const urgentList = computed(() => ((home.value as { urgent_jobs?: JobLike[] } | null)?.urgent_jobs || []) as JobLike[])
@@ -180,8 +204,26 @@ const h5Tab = ref<'latest' | 'urgent' | 'rec'>('latest')
 const h5JobList = computed(() => {
   if (h5Tab.value === 'urgent') return urgentList.value
   if (h5Tab.value === 'rec') return recJobList.value
-  return latestJobList.value
+  return h5LatestJobList.value
 })
+function hotClassHref(c: CatNode) {
+  const byId = new Map((cats.value || []).map((x) => [x.id, x]))
+  const parent = byId.get(c.parent_id)
+  const gp = parent ? byId.get(parent.parent_id) : undefined
+  const q = new URLSearchParams()
+  if (gp && parent) {
+    q.set('job1', String(gp.id))
+    q.set('job1_son', String(parent.id))
+    q.set('job_post', String(c.id))
+  } else if (parent && parent.parent_id === 0) {
+    q.set('job1', String(parent.id))
+    q.set('job1_son', String(c.id))
+  } else {
+    q.set('job1', String(c.id))
+  }
+  const s = q.toString()
+  return s ? `/jobs?${s}` : '/jobs'
+}
 const noticeItem = computed(() => announcements.value[noticeSlide.value] || announcements.value[0])
 
 let pcTimer: ReturnType<typeof setInterval> | undefined
@@ -460,9 +502,10 @@ useHead({
           </NuxtLink>
         </div>
         <div class="tjuser_list">
+          <p v-if="talentTip" class="muted" style="padding: 8px 0">{{ talentTip }}</p>
           <div v-if="resumeGate" class="firm_login" style="padding: 30px">
-            <p>{{ resumeGate === 'seeker' ? $t('resume_00038') : $t('wap_00376') }}</p>
-            <NuxtLink v-if="resumeGate === 'login'" to="/login">{{ $t('common.login') }}</NuxtLink>
+            <p>{{ $t('wap_00376') }}</p>
+            <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
           </div>
           <ul v-else>
             <li v-for="r in resumeList" :key="String(r.uid || r.id)">
@@ -470,7 +513,7 @@ useHead({
                 <img :src="mediaUrl(String(r.photo || r.photo_n || ''), PLACEHOLDER_LOGO)" width="80" height="80" alt="" />
               </div>
               <div class="tjuser_name">
-                <NuxtLink :to="`/resumes/${r.uid}`">{{ r.display_name || r.name || r.uname || $t('common_02430') }}</NuxtLink>
+                <NuxtLink :to="`/resumes/${r.uid}`" @click="onTalentClick($event, r.uid)">{{ r.display_name || r.name || r.uname || $t('common_02430') }}</NuxtLink>
               </div>
               <div class="tjuser_nameinfo">
                 {{ r.exp_n }}<i v-if="r.exp_n && (r.edu_n || r.education_n)" class="index_resume_userinfo_line">|</i>{{ r.edu_n || r.education_n }}
@@ -489,7 +532,7 @@ useHead({
           <ul>
             <li v-for="r in latestResumeList" :key="'n' + String(r.uid || r.id)">
               <div class="index_resume_user">
-                <NuxtLink :to="`/resumes/${r.uid}`" class="index_resume_username">
+                <NuxtLink :to="`/resumes/${r.uid}`" class="index_resume_username" @click="onTalentClick($event, r.uid)">
                   <img :src="mediaUrl(String(r.photo || r.photo_n || ''), PLACEHOLDER_LOGO)" width="30" height="30" alt="" />
                   {{ r.display_name || r.name || r.uname || $t('common_02430') }}
                 </NuxtLink>
@@ -677,7 +720,18 @@ useHead({
         </div>
       </div>
 
-      <div v-if="keywords.length" class="new_mq">
+      <div v-if="(hotClass || []).length" class="new_mq">
+        <i class="new_mq_name">{{ $t('home.hot_jobs') }}</i>
+        <NuxtLink class="new_mq_more" to="/jobs">{{ $t('common.more_arrow') }}</NuxtLink>
+        <div class="index_jobtagbox">
+          <div v-for="c in hotClass || []" :key="c.id" class="index_jobtaglist">
+            <NuxtLink :to="hotClassHref(c)">
+              <span class="index_jobtag_n">{{ c.name }}</span>
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="keywords.length" class="new_mq">
         <i class="new_mq_name">{{ $t('home.hot_jobs') }}</i>
         <NuxtLink class="new_mq_more" to="/jobs">{{ $t('common.more_arrow') }}</NuxtLink>
         <div class="index_jobtagbox">
@@ -691,7 +745,7 @@ useHead({
 
       <div class="new_mq">
         <i class="new_mq_name">{{ $t('home.famous_companies') }}</i>
-        <NuxtLink class="new_mq_more" to="/companies">{{ $t('common.more_arrow') }}</NuxtLink>
+        <NuxtLink class="new_mq_more" to="/companies?rec=1">{{ $t('common.more_arrow') }}</NuxtLink>
         <div class="new_mq_new_show">
           <CompanyCard v-for="c in companies" :key="c.uid" :company="c" />
           <p v-if="!companies.length" class="muted" style="padding: 0.3rem">{{ $t('common_02402') }}</p>

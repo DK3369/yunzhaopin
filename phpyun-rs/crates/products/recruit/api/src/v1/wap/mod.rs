@@ -143,6 +143,7 @@ pub fn get_allowed_paths() -> Vec<&'static str> {
     v.extend_from_slice(countries::GET_ALLOWED_PATHS);
     v.extend_from_slice(hot_searches::GET_ALLOWED_PATHS);
     v.extend_from_slice(descriptions::GET_ALLOWED_PATHS);
+    v.extend_from_slice(company_sub::GET_ALLOWED_PATHS);
     v
 }
 

@@ -41,10 +41,22 @@ const msgList = computed(
       Record<string, unknown>
     >,
 )
-const alreadyApplied = computed(() => Boolean(userContext.value.is_applied))
+const appliedLocal = ref(false)
+const alreadyApplied = computed(() => appliedLocal.value || Boolean(userContext.value.is_applied))
+const alreadyInvited = computed(() => Number(userContext.value.invite_job || 0) > 0)
 const jobClosed = computed(() => {
   const payload = (data.value || {}) as Record<string, unknown>
   return Boolean(payload.offline || payload.expired) || Number(job.value.status) === 1
+})
+const showSnum = computed(() => {
+  const snum = Number(formatted.value.snum || job.value.snum || 0)
+  const threshold = Number(settings.value.sy_sq_job_num || 0)
+  return snum > threshold
+})
+const applyCta = computed(() => {
+  if (alreadyApplied.value) return { kind: 'applied' as const, label: t('ui.already_applied') }
+  if (alreadyInvited.value) return { kind: 'invited' as const, label: t('wap_00291') }
+  return { kind: 'apply' as const, label: t('wap_com_00235') }
 })
 const comMessageOn = computed(() => String(settings.value.com_message || '') === '1')
 const askContent = ref('')
@@ -217,9 +229,34 @@ async function apply() {
   }
   try {
     await api.post('/v1/mcenter/apply', { job_id: id })
+    appliedLocal.value = true
     applyMsg.value = t('common.confirm')
   } catch (e: unknown) {
     applyMsg.value = e instanceof Error ? e.message : t('common.no')
+  }
+}
+async function shareJob() {
+  applyMsg.value = ''
+  try {
+    const r = await api.get<{
+      plain_text?: string
+      share_url?: string
+      job_name?: string
+    }>('/v1/wap/jobs/share-text', { id })
+    const text = String(r.plain_text || '')
+    const url = String(r.share_url || (import.meta.client ? window.location.href : ''))
+    if (import.meta.client && navigator.share) {
+      await navigator.share({ title: String(r.job_name || job.value.name || ''), text, url })
+      return
+    }
+    if (import.meta.client && navigator.clipboard && text) {
+      await navigator.clipboard.writeText(text)
+      applyMsg.value = t('common.confirm')
+      return
+    }
+    applyMsg.value = text || t('ui.load_failed')
+  } catch (e: unknown) {
+    applyMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
 }
 async function toggleFav() {
@@ -240,9 +277,20 @@ async function showTel() {
       link_code?: number
       link_msg?: string
       revealed?: boolean
-    }>('/v1/wap/jobs/contact', { id })
+      prvlinktel?: string
+      prvtime?: string
+    }>('/v1/wap/jobs/contact', { id, isgetprv: linkCode.value === 10 ? 1 : 0 })
     await api.post('/v1/wap/jobs/tel-click', { id }).catch(() => undefined)
     const code = Number(r.link_code || 0)
+    if (code === 10 && r.prvlinktel) {
+      revealed.value = { linktel: r.prvlinktel, linkphone: r.prvlinktel, linkman: r.linkman }
+      applyMsg.value = r.prvtime || ''
+      return
+    }
+    if (code === 11) {
+      applyMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('ui.load_failed')
+      return
+    }
     if (r.revealed && (r.linktel || r.linkphone)) {
       revealed.value = { linktel: r.linktel, linkphone: r.linkphone, linkman: r.linkman }
       return
@@ -356,15 +404,15 @@ useHead({
                 }}</a>
                 <template v-if="!jobClosed">
                 <a
-                  v-if="alreadyApplied"
+                  v-if="applyCta.kind !== 'apply'"
                   class="job_ceil_jobtd_ysq"
-                >{{ $t('wap_user_00357') }}</a>
+                >{{ applyCta.label }}</a>
                 <a
                   v-else
                   href="javascript:;"
                   class="job_ceil_jobtd"
                   @click.prevent="apply"
-                >{{ $t('wap_com_00235') }}</a>
+                >{{ applyCta.label }}</a>
                 </template>
               </div>
             </div>
@@ -418,15 +466,15 @@ useHead({
                   fav ? $t('wap_00378') : $t('wap_00379')
                 }}</a>
                 <a
-                  v-if="alreadyApplied"
+                  v-if="applyCta.kind !== 'apply'"
                   class="job_details_top_operation_ysq"
-                >{{ $t('default_00226') }}</a>
+                >{{ applyCta.label }}</a>
                 <a
                   v-else
                   href="javascript:;"
                   class="job_details_top_operation_sq"
                   @click.prevent="apply"
-                >{{ $t('wap_com_00235') }}</a>
+                >{{ applyCta.label }}</a>
               </div>
               <div class="job_details_top_extension">
                 <div class="job_details_top_extension_zl">
@@ -464,7 +512,7 @@ useHead({
                 <div v-if="loginDateN" class="job_details_touch_userlogintime">
                   {{ $t('default_00364') }}{{ loginDateN }}
                 </div>
-                <div v-if="applyStats.snum > 0" class="job_details_touch_userdata">
+                <div v-if="showSnum" class="job_details_touch_userdata">
                   <div class="job_details_touch_userdata_list">
                     <span class="job_details_touch_userdata_n">{{ applyStats.snum }}{{ $t('common_02052') }}</span>{{ $t('member_com_00152') }}
                   </div>
@@ -478,17 +526,30 @@ useHead({
                   </div>
                 </div>
               </div>
-              <div v-if="linkCode === 10" class="job_details_touch_tel">
-                <em class="job_details_touch_tel_tip">{{ linkMsg || $t('common_01934') }}</em>
+              <template v-if="!jobClosed">
+              <div v-if="linkCode === 10 || linkCode === 11" class="job_details_touch_tel">
+                <em class="job_details_touch_tel_tip">{{
+                  revealed?.linktel || linkMsg || (linkCode === 11 ? $t('ui.load_failed') : $t('common_01934'))
+                }}</em>
+                <a
+                  v-if="linkCode === 10"
+                  href="javascript:;"
+                  class="job_details_touch_tel_bth"
+                  @click.prevent="showTel"
+                >{{ $t('default_00233') }}</a>
               </div>
               <div v-else-if="linkCode === 9" class="job_details_touch_tel">
                 <em class="job_details_touch_tel_tip">{{ linkMsg || $t('common_02372') }}</em>
               </div>
               <div v-else-if="linkCode > 1 && linkCode < 6" class="job_details_touch_tel">
                 <em class="job_details_touch_tel_tip">{{ linkMsg }}</em>
-                <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="apply">{{
-                  $t('wap_com_00235')
-                }}</a>
+                <a
+                  v-if="applyCta.kind === 'apply'"
+                  href="javascript:;"
+                  class="job_details_touch_tel_bth"
+                  @click.prevent="apply"
+                >{{ applyCta.label }}</a>
+                <em v-else class="job_details_touch_tel_tip">{{ applyCta.label }}</em>
               </div>
               <div v-else class="job_details_touch_tel">
                 {{ $t('common.phone') }}：
@@ -503,9 +564,13 @@ useHead({
                 </template>
                 <template v-else-if="linkCode === 8">
                   <em class="job_details_touch_tel_tip">{{ $t('default_00204') }}</em>
-                  <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="apply">{{
-                    $t('wap_com_00235')
-                  }}</a>
+                  <a
+                    v-if="applyCta.kind === 'apply'"
+                    href="javascript:;"
+                    class="job_details_touch_tel_bth"
+                    @click.prevent="apply"
+                  >{{ applyCta.label }}</a>
+                  <em v-else class="job_details_touch_tel_tip">{{ applyCta.label }}</em>
                 </template>
                 <template v-else>
                   <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
@@ -514,6 +579,7 @@ useHead({
                   <span class="job_details_touch_tel_say">{{ $t('member_com_00024') }}{{ siteName }}{{ $t('wap_00240') }}</span>
                 </template>
               </div>
+              </template>
               <span v-if="comAddress" class="job_details_touch_add">
                 {{ $t('wap_js_00082') }}：{{ comAddress }}
                 <NuxtLink v-if="mapHref" :to="mapHref" class="job_details_touch_tel_bth">{{ $t('wap_00223') }}</NuxtLink>
@@ -690,6 +756,10 @@ useHead({
             <div class="newjob_show_sj">
               <span v-if="formatted.lastupdate_n">{{ $t('wap_00225') }} {{ formatted.lastupdate_n }}</span>
               <span v-if="hits">{{ $t('wap_user_00221') }} {{ hits }}</span>
+              <span v-if="showSnum">{{ $t('wap_01587') }} {{ applyStats.snum }}{{ $t('common_02052') }}</span>
+              <a href="javascript:;" @click.prevent="toggleFav">{{
+                fav ? $t('wap_00378') : $t('wap_00379')
+              }}</a>
             </div>
           </div>
           <div v-if="welfare.length" class="job_describe_bottom">
@@ -821,14 +891,23 @@ useHead({
               <NuxtLink to="/" class="yun_czfoot_s">
                 <div class="yun_czfoot_s_p yun_czfoot_hmicon">{{ $t('common.home') }}</div>
               </NuxtLink>
-              <a href="javascript:;" class="yun_czfoot_s" @click.prevent="toggleFav">
-                <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ $t('member_user_00103') }}</div>
+              <a href="javascript:;" class="yun_czfoot_s" @click.prevent="shareJob">
+                <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ te('common.share') ? $t('common.share') : $t('wap_com_00232') }}</div>
               </a>
             </div>
-            <a href="javascript:;" class="yun_czfoot_s" @click.prevent="apply">
-              <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{
-                alreadyApplied ? $t('ui.already_applied') : $t('wap_com_00235')
-              }}</div>
+            <a
+              v-if="applyCta.kind !== 'apply'"
+              class="yun_czfoot_s"
+            >
+              <div class="yun_czfoot_s_p yun_czfoot_ytdicon">{{ applyCta.label }}</div>
+            </a>
+            <a
+              v-else
+              href="javascript:;"
+              class="yun_czfoot_s"
+              @click.prevent="apply"
+            >
+              <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{ applyCta.label }}</div>
             </a>
             <a href="javascript:;" class="yun_czfoot_s" @click.prevent="showTel">
               <div class="yun_czfoot_s_p">{{ $t('common.phone') }}</div>
@@ -843,7 +922,12 @@ useHead({
           <a v-if="revealed?.linktel" :href="`tel:${revealed.linktel}`">{{ revealed.linktel }}</a>
           <a v-else-if="revealed?.linkphone" :href="`tel:${revealed.linkphone}`">{{ revealed.linkphone }}</a>
         </div>
-        <div v-else-if="linkCode === 10" class="new_jobshow_tel">{{ linkMsg || $t('common_01934') }}</div>
+        <div v-else-if="linkCode === 10 || linkCode === 11" class="new_jobshow_tel">
+          {{ revealed?.linktel || linkMsg || (linkCode === 11 ? $t('ui.load_failed') : $t('common_01934')) }}
+          <a v-if="linkCode === 10 && !revealed?.linktel" href="javascript:;" @click.prevent="showTel">{{
+            $t('default_00233')
+          }}</a>
+        </div>
         <div v-else-if="linkCode === 9" class="new_jobshow_tel">
           {{ linkMsg || $t('common_02372') }}
         </div>

@@ -31,7 +31,8 @@ pub struct SimilarBody {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct TelClickBodyFull {
-    #[validate(range(min = 1, max = 99_999_999))]
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub id: u64,
     #[serde(default = "default_source")]
     #[validate(range(min = 0, max = 99))]
@@ -511,7 +512,7 @@ pub async fn build_job_detail_value(
         let report_fut =
             phpyun_models::report::repo::count_job_report_context(db, u.uid, id, d.job.uid);
         let invite_fut =
-            phpyun_models::interview::repo::count_active_from_company_to_user(db, d.job.uid, u.uid);
+            phpyun_models::apply::repo::count_userid_msg_by_uid_job(db, u.uid, id);
         let (f, a, r, i) = tokio::join!(fav_fut, apply_fut, report_fut, invite_fut);
         (
             i32::from(f.unwrap_or(false)),
@@ -525,7 +526,7 @@ pub async fn build_job_detail_value(
         (0, 0, 0, 0)
     };
 
-    let contact = job_service::resolve_job_contact(state, id, user).await?;
+    let contact = job_service::resolve_job_contact(state, id, user, false).await?;
     let (snum, replied) = tokio::join!(
         phpyun_models::apply::repo::count_by_job(state.db.reader(), id),
         phpyun_models::apply::repo::count_replied_by_job(state.db.reader(), id),
@@ -950,6 +951,8 @@ pub struct JobContactView {
     pub link_msg: String,
     pub link_sub: i32,
     pub revealed: bool,
+    pub prvlinktel: String,
+    pub prvtime: String,
 }
 
 fn public_contact_json(c: &PublicJobContact, include_plain: bool) -> json::Value {
@@ -965,6 +968,8 @@ fn public_contact_json(c: &PublicJobContact, include_plain: bool) -> json::Value
         "link_msg": c.link_msg,
         "link_sub": c.link_sub,
         "revealed": plain,
+        "prvlinktel": c.prvlinktel,
+        "prvtime": c.prvtime,
     })
 }
 
@@ -985,7 +990,17 @@ fn contact_view(c: PublicJobContact, city_name: String) -> JobContactView {
         link_msg: c.link_msg,
         link_sub: c.link_sub,
         revealed: c.revealed,
+        prvlinktel: c.prvlinktel,
+        prvtime: c.prvtime,
     }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema, IntoParams)]
+pub struct JobContactQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub isgetprv: Option<i32>,
 }
 
 /// Resolve the contact info for a single job. Counterpart of PHP
@@ -996,7 +1011,7 @@ fn contact_view(c: PublicJobContact, city_name: String) -> JobContactView {
     post,
     path = "/v1/wap/jobs/contact",
     tag = "wap",
-    request_body = IdBody,
+    request_body = JobContactQuery,
     responses(
         (status = 200, description = "ok", body = JobContactView),
         (status = 404, description = "Job not found"),
@@ -1005,10 +1020,11 @@ fn contact_view(c: PublicJobContact, city_name: String) -> JobContactView {
 pub async fn job_contact(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<JobContactQuery>,
 ) -> AppResult<ApiResponse<JobContactView>> {
     let id = b.id;
-    let c = job_service::resolve_job_contact(&state, id, user.as_ref()).await?;
+    let isgetprv = b.isgetprv.unwrap_or(0) == 1;
+    let c = job_service::resolve_job_contact(&state, id, user.as_ref(), isgetprv).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let city_name = dicts.city(c.city_id).to_string();
     Ok(ApiResponse::data(contact_view(c, city_name)))

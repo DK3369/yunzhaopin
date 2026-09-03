@@ -30,9 +30,15 @@ pub struct Resume {
     pub email: Option<String>,
     /// Avatar (PHPYun uses the `photo` column)
     pub photo: Option<String>,
-    /// Avatar type: 0 = not verified / 1 = verified
+    /// Avatar type: 0 = public / 1 = hidden (PHP `phototype`)
     #[sqlx(default)]
     pub phototype: i32,
+    /// 0 = approved photo / non-zero = pending or rejected
+    #[sqlx(default)]
+    pub photo_status: i32,
+    /// 1 = use default gender art / 2 = force stored `photo`
+    #[sqlx(default)]
+    pub defphoto: i32,
     /// Resume display status: 1 = public / 2 = hidden / 3 = visible only to companies applied to
     #[sqlx(default)]
     pub status: i32,

@@ -64,6 +64,7 @@ pub mod usertype_change;
 pub mod views;
 pub mod vip;
 pub mod warnings;
+pub mod yqms;
 pub mod zph;
 
 use axum::Router;
@@ -90,6 +91,7 @@ pub fn router() -> Router<AppState> {
         .merge(fans::routes())
         .merge(views::routes())
         .merge(interviews::routes())
+        .merge(yqms::routes())
         .merge(messages::routes())
         .merge(resume_downloads::routes())
         .merge(feedback::routes())

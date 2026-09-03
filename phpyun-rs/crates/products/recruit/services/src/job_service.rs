@@ -292,6 +292,8 @@ pub struct PublicJobContact {
     pub link_msg: String,
     pub link_sub: i32,
     pub revealed: bool,
+    pub prvlinktel: String,
+    pub prvtime: String,
 }
 
 fn cfg_i32(map: &std::collections::HashMap<String, String>, key: &str, default: i32) -> i32 {
@@ -345,11 +347,12 @@ pub async fn resolve_job_contact(
     state: &AppState,
     job_id: u64,
     user: Option<&AuthenticatedUser>,
+    isgetprv: bool,
 ) -> AppResult<PublicJobContact> {
     let raw = job_repo::get_job_contact(state.db.reader(), job_id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("job_not_found"))?;
-    resolve_public_contact(state, raw, job_id, user).await
+    resolve_public_contact(state, raw, job_id, user, isgetprv).await
 }
 
 /// Company detail uses the same `setCompanyLink` gate, without a job overlay.
@@ -357,11 +360,12 @@ pub async fn resolve_company_contact(
     state: &AppState,
     com_uid: u64,
     user: Option<&AuthenticatedUser>,
+    isgetprv: bool,
 ) -> AppResult<PublicJobContact> {
     let raw = job_repo::get_company_contact(state.db.reader(), com_uid)
         .await?
         .ok_or_else(|| ApiError::param_invalid("company_not_found"))?;
-    resolve_public_contact(state, raw, 0, user).await
+    resolve_public_contact(state, raw, 0, user, isgetprv).await
 }
 
 async fn resolve_public_contact(
@@ -369,6 +373,7 @@ async fn resolve_public_contact(
     raw: phpyun_models::job::repo::JobContact,
     job_id: u64,
     user: Option<&AuthenticatedUser>,
+    isgetprv: bool,
 ) -> AppResult<PublicJobContact> {
 
     let cfg = setting_repo::find_many(
@@ -511,6 +516,25 @@ async fn resolve_public_contact(
         link_code = 1;
     }
 
+    let mut prvlinktel = String::new();
+    let mut prvtime = String::new();
+    if link_code == 10 && isgetprv {
+        let real = if !raw.linktel.trim().is_empty() {
+            raw.linktel.as_str()
+        } else {
+            raw.linkphone.as_str()
+        };
+        match crate::privacy_service::bind_middle_number(state, real, job_id, raw.com_uid).await {
+            Ok(bind) => {
+                prvlinktel = bind.number;
+                prvtime = bind.expire_n;
+            }
+            Err(_) => {
+                link_code = 11;
+            }
+        }
+    }
+
     let revealed = link_code == 1;
     // PHP unsets plaintext tel/phone when linkMsg is set; we never return email.
     Ok(PublicJobContact {
@@ -536,6 +560,8 @@ async fn resolve_public_contact(
         link_msg,
         link_sub,
         revealed,
+        prvlinktel,
+        prvtime,
     })
 }
 

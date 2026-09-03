@@ -245,6 +245,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::interviews::create,
         v1::mcenter::interviews::list_by_company,
         v1::mcenter::interviews::cancel,
+        v1::mcenter::yqms::create,
         // mcenter: messages
         v1::mcenter::messages::list,
         v1::mcenter::messages::mark_read,
@@ -728,6 +729,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::views::ViewItem,
             v1::mcenter::interviews::InterviewItem,
             v1::mcenter::interviews::CreateInterviewForm,
+            v1::mcenter::yqms::YqmsForm,
             v1::mcenter::messages::MessageItem,
             v1::mcenter::resume_downloads::DownloadForm,
             v1::mcenter::resume_downloads::DownloadItem,

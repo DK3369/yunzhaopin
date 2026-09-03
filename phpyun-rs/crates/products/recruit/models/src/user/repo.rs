@@ -821,6 +821,23 @@ pub async fn get_claim_code(pool: &MySqlPool, uid: u64) -> Result<Option<String>
     Ok(row.and_then(|(v,)| v))
 }
 
+/// PHP `$ComMember.source==6 && claim==0 && email!=''`.
+pub async fn claim_eligibility(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<(i32, i32, bool)>, sqlx::Error> {
+    let row: Option<(i32, i32, Option<String>)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(source,0) AS SIGNED), CAST(COALESCE(claim,0) AS SIGNED), email \
+         FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(source, claim, email)| {
+        (source, claim, email.as_deref().is_some_and(|s| !s.trim().is_empty()))
+    }))
+}
+
 /// Renames username (one-shot; only allowed for users who have never changed it / claim=0).
 /// On success → sets claim to 1 to prevent further changes. affected=0 means it's already been changed or the uid does not exist.
 pub async fn rename_username_once(
