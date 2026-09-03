@@ -23,7 +23,7 @@ PORT_RS=3003
 PORT_RS_METRICS=9091
 PORT_SITE=3001
 ADMIN_SOCK="${ADMIN_SOCK:-/var/tmp/phpyun-admin.sock}"
-RETIRED_WEB_PORTS=(3002 3004 3005)
+RETIRED_WEB_PORTS=(3002)
 
 CARGO_TMP="${CARGO_TMP:-/var/tmp/cargo-tmp}"
 NPM_TMP="${NPM_TMP:-/var/tmp/npm-tmp}"

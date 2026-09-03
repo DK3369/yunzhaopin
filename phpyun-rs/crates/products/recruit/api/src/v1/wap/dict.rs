@@ -32,6 +32,7 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/dict/job-types",
     "/v1/wap/dict/welfares",
     "/v1/wap/dict/reports",
+    "/v1/wap/dict/tags",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -55,6 +56,7 @@ pub fn routes() -> Router<AppState> {
         .route("/dict/job-types", get(job_types).post(job_types))
         .route("/dict/welfares", get(welfares).post(welfares))
         .route("/dict/reports", get(reports).post(reports))
+        .route("/dict/tags", get(tags).post(tags))
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -245,28 +247,59 @@ pub async fn salaries() -> AppResult<ApiResponse<Vec<DictItem>>> {
     Ok(ApiResponse::data(render(SALARIES, current_lang())))
 }
 
-/// Job types (full-time / part-time / internship / temporary / remote)
+/// Job types (full-time / part-time / internship / temporary / remote).
+/// `source=user` uses resume `user_type`.
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/job-types",
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn job_types() -> AppResult<ApiResponse<Vec<DictItem>>> {
+pub async fn job_types(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<DictSourceQuery>,
+) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    if q.source.as_deref() == Some("user") {
+        let dicts = dict_service::get(&state).await?;
+        let rows = dicts.userclass_by_variable("user_type");
+        if !rows.is_empty() {
+            return Ok(ApiResponse::data(named_items(rows)));
+        }
+    }
     Ok(ApiResponse::data(render(JOB_TYPES, current_lang())))
 }
 
-/// Salary cycle / report-time (PHP `$comdata.job_report`, `phpyun_comclass.variable=job_report`).
+/// Salary cycle / report-time. `source=user` uses resume `user_report`.
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/reports",
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn reports(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+pub async fn reports(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<DictSourceQuery>,
+) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    let rows = if q.source.as_deref() == Some("user") {
+        dicts.userclass_by_variable("user_report")
+    } else {
+        dicts.comclass_by_variable("job_report")
+    };
+    Ok(ApiResponse::data(named_items(rows)))
+}
+
+/// Resume person tags — PHP `$userdata.user_tag`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/tags",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn tags(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
     let dicts = dict_service::get(&state).await?;
     Ok(ApiResponse::data(named_items(
-        dicts.comclass_by_variable("job_report"),
+        dicts.userclass_by_variable("user_tag"),
     )))
 }
 

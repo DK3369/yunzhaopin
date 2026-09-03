@@ -193,6 +193,20 @@ pub fn de_loose_u64<'de, D: Deserializer<'de>>(d: D) -> Result<u64, D::Error> {
     u64::try_from(n).map_err(de::Error::custom)
 }
 
+/// Query/JSON flag: `true`/`1`/`"1"`/`"true"`/`"yes"`/`"on"` → true; empty/null/0 → false.
+pub fn de_loose_bool<'de, D: Deserializer<'de>>(d: D) -> Result<bool, D::Error> {
+    let v = Value::deserialize(d)?;
+    Ok(match v {
+        Value::Null => false,
+        Value::Bool(b) => b,
+        Value::Number(n) => n.as_i64().unwrap_or(0) != 0,
+        Value::String(s) => {
+            matches!(s.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on")
+        }
+        _ => false,
+    })
+}
+
 /// `Option<i32>` — `null` / missing / empty-string become `None`; otherwise
 /// same coercion as [`de_loose_i32`].
 pub fn de_loose_i32_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<i32>, D::Error> {
@@ -310,5 +324,25 @@ mod tests {
             serde_json::from_str::<LooseNumbers>(r#"{"usertype":"256","did":"4294967296"}"#)
                 .is_err()
         );
+    }
+
+    #[derive(Deserialize)]
+    struct LooseFlag {
+        #[serde(default, deserialize_with = "de_loose_bool")]
+        photo: bool,
+    }
+
+    #[test]
+    fn loose_bool_accepts_one_true_yes() {
+        for json in [r#"{"photo":true}"#, r#"{"photo":1}"#, r#"{"photo":"1"}"#, r#"{"photo":"true"}"#]
+        {
+            let got: LooseFlag = serde_json::from_str(json).expect(json);
+            assert!(got.photo, "input: {json}");
+        }
+        for json in [r#"{}"#, r#"{"photo":false}"#, r#"{"photo":0}"#, r#"{"photo":""}"#, r#"{"photo":"no"}"#]
+        {
+            let got: LooseFlag = serde_json::from_str(json).expect(json);
+            assert!(!got.photo, "input: {json}");
+        }
     }
 }

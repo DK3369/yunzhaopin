@@ -7,6 +7,10 @@ export function numQuery(q: unknown): number | undefined {
   return Number.isFinite(n) && n > 0 ? n : undefined
 }
 
+export function boolQuery(q: unknown): boolean {
+  return q === '1' || q === 'true' || q === true || q === 1
+}
+
 export function mergeQuery(
   query: LocationQuery,
   patch: Record<string, string | number | undefined | null>,

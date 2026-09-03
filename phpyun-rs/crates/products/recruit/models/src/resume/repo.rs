@@ -60,10 +60,30 @@ pub struct ResumeFilter<'a> {
     pub education: Option<i32>,
     pub exp: Option<i32>,
     pub job1: Option<i32>,
+    pub job1_son: Option<i32>,
+    pub job_post: Option<i32>,
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
+    pub three_city_id: Option<i32>,
     pub sex: Option<i32>,
     pub marriage: Option<i32>,
+    pub hy: Option<i32>,
+    pub report: Option<i32>,
+    pub r#type: Option<i32>,
+    pub tag: Option<i32>,
+    pub min_salary: Option<i32>,
+    pub max_salary: Option<i32>,
+    pub min_age: Option<i32>,
+    pub max_age: Option<i32>,
+    /// PHP `uptime`: 1 = today; otherwise last N days.
+    pub uptime: Option<i32>,
+    /// PHP integrity keys 1/2/3/4 → 55/65/75/85 on `phpyun_resume_expect.integrity`.
+    pub integrity: Option<i32>,
+    /// `lastdate` (default) or `ctime`.
+    pub order: Option<&'a str>,
+    pub photo: bool,
+    pub idcard: bool,
+    pub work: bool,
     pub did: u32,
     /// PHP `userlist recg=1` → `phpyun_resume_expect.rec_resume = 1`
     pub recg: bool,
@@ -88,7 +108,9 @@ pub async fn list_public(
     );
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
-    qb.push(" GROUP BY uid) ORDER BY lastupdate DESC LIMIT ");
+    qb.push(" GROUP BY uid) ");
+    push_order(&mut qb, f);
+    qb.push(" LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -103,6 +125,49 @@ pub async fn count_public(pool: &MySqlPool, f: &ResumeFilter<'_>) -> Result<u64,
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+fn push_order<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {
+    if f.order == Some("ctime") {
+        qb.push("ORDER BY resumetime DESC");
+    } else {
+        qb.push("ORDER BY lastupdate DESC");
+    }
+}
+
+fn integrity_floor(v: i32) -> i32 {
+    match v {
+        1 => 55,
+        2 => 65,
+        3 => 75,
+        4 => 85,
+        n if n >= 55 => n,
+        _ => 0,
+    }
+}
+
+fn push_job_class<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, v: i32) {
+    qb.push(" AND (FIND_IN_SET(");
+    qb.push_bind(v);
+    qb.push(", job_classid) OR job_classid = ");
+    qb.push_bind(v.to_string());
+    qb.push(")");
+}
+
+fn has_expect_filters(f: &ResumeFilter<'_>) -> bool {
+    f.job1.is_some()
+        || f.job1_son.is_some()
+        || f.job_post.is_some()
+        || f.province_id.is_some()
+        || f.city_id.is_some()
+        || f.three_city_id.is_some()
+        || f.hy.is_some()
+        || f.report.is_some()
+        || f.r#type.is_some()
+        || f.min_salary.is_some()
+        || f.max_salary.is_some()
+        || f.integrity.is_some()
+        || f.recg
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {
@@ -120,25 +185,6 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
         qb.push(" AND exp = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.job1 {
-        qb.push(
-            " AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE FIND_IN_SET(",
-        );
-        qb.push_bind(v);
-        qb.push(", job_classid) OR job_classid = ");
-        qb.push_bind(v.to_string());
-        qb.push(")");
-    }
-    if let Some(v) = f.province_id {
-        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE provinceid = ");
-        qb.push_bind(v);
-        qb.push(")");
-    }
-    if let Some(v) = f.city_id {
-        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE cityid = ");
-        qb.push_bind(v);
-        qb.push(")");
-    }
     if let Some(v) = f.sex {
         qb.push(" AND sex = ");
         qb.push_bind(v);
@@ -147,10 +193,90 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
         qb.push(" AND marriage = ");
         qb.push_bind(v);
     }
-    if f.recg {
-        qb.push(
-            " AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE COALESCE(rec_resume,0) = 1)",
-        );
+    if let Some(v) = f.tag {
+        qb.push(" AND FIND_IN_SET(");
+        qb.push_bind(v.to_string());
+        qb.push(", tag)");
+    }
+    if f.photo {
+        qb.push(" AND photo IS NOT NULL AND photo <> ''");
+    }
+    if f.idcard {
+        qb.push(" AND COALESCE(idcard_status, 0) = 1");
+    }
+    if f.work {
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_work)");
+    }
+    let year = i32::from(phpyun_core::clock::now_year());
+    if let Some(min_age) = f.min_age {
+        qb.push(" AND birthday IS NOT NULL AND birthday <> '' AND (");
+        qb.push_bind(year);
+        qb.push(" - CAST(LEFT(birthday, 4) AS SIGNED)) >= ");
+        qb.push_bind(min_age);
+    }
+    if let Some(max_age) = f.max_age {
+        qb.push(" AND birthday IS NOT NULL AND birthday <> '' AND (");
+        qb.push_bind(year);
+        qb.push(" - CAST(LEFT(birthday, 4) AS SIGNED)) <= ");
+        qb.push_bind(max_age);
+    }
+    if let Some(days) = f.uptime.filter(|d| *d > 0) {
+        let now = phpyun_core::clock::now_ts();
+        let since = if days == 1 {
+            now - (now % 86400)
+        } else {
+            now - i64::from(days) * 86400
+        };
+        qb.push(" AND lastupdate > ");
+        qb.push_bind(since);
+    }
+    if has_expect_filters(f) {
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE 1=1");
+        if let Some(v) = f.job_post.or(f.job1_son).or(f.job1) {
+            push_job_class(qb, v);
+        }
+        if let Some(v) = f.three_city_id {
+            qb.push(" AND three_cityid = ");
+            qb.push_bind(v);
+        } else if let Some(v) = f.city_id {
+            qb.push(" AND cityid = ");
+            qb.push_bind(v);
+        } else if let Some(v) = f.province_id {
+            qb.push(" AND provinceid = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = f.hy {
+            qb.push(" AND hy = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = f.report {
+            qb.push(" AND report = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = f.r#type {
+            qb.push(" AND `type` = ");
+            qb.push_bind(v);
+        }
+        if let Some(min) = f.min_salary {
+            qb.push(" AND (COALESCE(maxsalary, 0) = 0 OR maxsalary >= ");
+            qb.push_bind(min);
+            qb.push(")");
+        }
+        if let Some(max) = f.max_salary {
+            qb.push(" AND COALESCE(minsalary, 0) <= ");
+            qb.push_bind(max);
+        }
+        if let Some(v) = f.integrity {
+            let floor = integrity_floor(v);
+            if floor > 0 {
+                qb.push(" AND COALESCE(integrity, 0) >= ");
+                qb.push_bind(floor);
+            }
+        }
+        if f.recg {
+            qb.push(" AND COALESCE(rec_resume, 0) = 1");
+        }
+        qb.push(")");
     }
 }
 

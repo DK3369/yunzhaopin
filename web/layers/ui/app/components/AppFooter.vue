@@ -83,7 +83,7 @@
             <a v-if="perfor" href="/pages/jyxkz" target="_blank">ICP经营许可证: {{ perfor }}</a>
             <a v-if="hrlicense" href="/pages/rlzy" target="_blank">人力资源证: {{ hrlicense }}</a>
           </p>
-          <p>Powered by PHPYun.</p>
+          <p>Powered by OVSIX.</p>
         </div>
       </div>
     </div>

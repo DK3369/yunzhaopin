@@ -277,6 +277,7 @@
 /v1/wap/dict/job-categories
 /v1/wap/dict/job-types
 /v1/wap/dict/salaries
+/v1/wap/dict/tags
 /v1/wap/eval-papers
 /v1/wap/eval-papers/detail
 /v1/wap/eval-papers/messages/list

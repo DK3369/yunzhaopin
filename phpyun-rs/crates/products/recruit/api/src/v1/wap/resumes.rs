@@ -41,25 +41,83 @@ pub fn routes() -> Router<AppState> {
 pub struct ResumeListQuery {
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 99))]
+    #[serde(
+        default,
+        alias = "edu",
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
     pub education: Option<i32>,
-    #[validate(range(min = 0, max = 99))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub exp: Option<i32>,
-    #[validate(range(min = 0, max = 9_999_999))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub job1: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub job1_son: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub job_post: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub city_id: Option<i32>,
-    #[validate(range(min = 0, max = 9))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub three_city_id: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub sex: Option<i32>,
-    #[validate(range(min = 0, max = 9))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub marriage: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub hy: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub report: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt", rename = "type")]
+    pub r#type: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub tag: Option<i32>,
+    #[serde(
+        default,
+        alias = "minsalary",
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
+    pub min_salary: Option<i32>,
+    #[serde(
+        default,
+        alias = "maxsalary",
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
+    pub max_salary: Option<i32>,
+    #[serde(
+        default,
+        alias = "minage",
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
+    pub min_age: Option<i32>,
+    #[serde(
+        default,
+        alias = "maxage",
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
+    pub max_age: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub uptime: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub integrity: Option<i32>,
+    #[validate(length(max = 16))]
+    pub order: Option<String>,
+    #[serde(
+        default,
+        alias = "pic",
+        deserialize_with = "phpyun_core::date_parse::de_loose_bool"
+    )]
+    pub photo: bool,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
+    pub idcard: bool,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
+    pub work: bool,
     #[serde(default = "default_did")]
     #[validate(range(max = 9_999_999))]
     pub did: u32,
     /// PHP homepage `{yun:}userlist recg=1{/yun}` (recommended talent).
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
     pub recg: bool,
 }
 fn default_did() -> u32 {
@@ -281,10 +339,27 @@ pub async fn list_resumes(
         education: q.education,
         exp: q.exp,
         job1: q.job1,
+        job1_son: q.job1_son,
+        job_post: q.job_post,
         province_id: q.province_id,
         city_id: q.city_id,
+        three_city_id: q.three_city_id,
         sex: q.sex,
         marriage: q.marriage,
+        hy: q.hy,
+        report: q.report,
+        r#type: q.r#type,
+        tag: q.tag,
+        min_salary: q.min_salary,
+        max_salary: q.max_salary,
+        min_age: q.min_age,
+        max_age: q.max_age,
+        uptime: q.uptime,
+        integrity: q.integrity,
+        order: q.order.as_deref(),
+        photo: q.photo,
+        idcard: q.idcard,
+        work: q.work,
         did: q.did,
         recg: q.recg,
     };

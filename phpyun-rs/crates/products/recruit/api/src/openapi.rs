@@ -275,6 +275,7 @@ impl Modify for UniqueOperationId {
         v1::wap::dict::experiences,
         v1::wap::dict::salaries,
         v1::wap::dict::job_types,
+        v1::wap::dict::tags,
         // wap: articles
         v1::wap::articles::list_articles,
         v1::wap::articles::article_detail,
