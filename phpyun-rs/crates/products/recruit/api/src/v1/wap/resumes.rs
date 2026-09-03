@@ -129,11 +129,11 @@ fn default_did() -> u32 {
 ///
 /// Field grouping:
 /// - Identity basics: uid / display_name / sex / age / marriage / nationality
-/// - Residence: living / domicile / address
+/// - Residence: living / domicile (address never serialized on list)
 /// - Education / experience: education / education_n / exp / exp_n
 /// - Photos: photo / photo_n / has_photo / resume_photo / phototype
 /// - Verification badges: idcard_status / moblie_status / email_status
-/// - Contact: qq / wxewm / homepage / tag / label / retire
+/// - Contact: tag / label / retire (`qq` / `wxewm` / `homepage` never serialized)
 /// - Time: lastupdate / lastupdate_n / resumetime / login_date
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ResumeSummary {
@@ -144,6 +144,8 @@ pub struct ResumeSummary {
 
     pub sex: i32,
     pub age: Option<u16>,
+    /// Kept for age derivation only; PHP list cards never print birthday.
+    #[serde(skip_serializing)]
     pub birthday: Option<String>,
     pub marriage: i32,
     pub nationality: Option<String>,
@@ -151,6 +153,7 @@ pub struct ResumeSummary {
     pub weight: Option<String>,
     pub living: Option<String>,
     pub domicile: Option<String>,
+    #[serde(skip_serializing)]
     pub address: Option<String>,
 
     /// Dictionary translation: education name (dict resolve_comclass)
@@ -171,8 +174,11 @@ pub struct ResumeSummary {
     pub moblie_status: i32,
     pub email_status: i32,
 
+    #[serde(skip_serializing)]
     pub homepage: Option<String>,
+    #[serde(skip_serializing)]
     pub qq: Option<String>,
+    #[serde(skip_serializing)]
     pub wxewm: Option<String>,
     pub tag: Option<String>,
     pub label: Option<String>,
@@ -219,14 +225,14 @@ impl ResumeSummary {
             nametype: r.nametype,
             sex: r.sex,
             age,
-            birthday: r.birthday,
+            birthday: None,
             marriage: r.marriage,
             nationality: r.nationality,
             height: r.height,
             weight: r.weight,
             living: r.living,
             domicile: r.domicile,
-            address: r.address,
+            address: None,
             education_n: dicts.user_or_com(r.education).to_string(),
             education: r.education,
             exp_n: dicts.user_or_com(r.exp).to_string(),
@@ -239,9 +245,9 @@ impl ResumeSummary {
             idcard_status: r.idcard_status,
             moblie_status: r.moblie_status,
             email_status: r.email_status,
-            homepage: r.homepage,
-            qq: r.qq,
-            wxewm: r.wxewm,
+            homepage: None,
+            qq: None,
+            wxewm: None,
             tag: r.tag,
             label: r.label,
             retire: r.retire,
@@ -275,14 +281,14 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
             nametype: r.nametype,
             sex: r.sex,
             age,
-            birthday: r.birthday,
+            birthday: None,
             marriage: r.marriage,
             nationality: r.nationality,
             height: r.height,
             weight: r.weight,
             living: r.living,
             domicile: r.domicile,
-            address: r.address,
+            address: None,
             education_n: String::new(),
             education: r.education,
             exp_n: String::new(),
@@ -295,9 +301,9 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
             idcard_status: r.idcard_status,
             moblie_status: r.moblie_status,
             email_status: r.email_status,
-            homepage: r.homepage,
-            qq: r.qq,
-            wxewm: r.wxewm,
+            homepage: None,
+            qq: None,
+            wxewm: None,
             tag: r.tag,
             label: r.label,
             retire: r.retire,

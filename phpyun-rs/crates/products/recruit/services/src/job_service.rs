@@ -31,6 +31,10 @@ pub struct JobSearch {
     pub sex: Option<i32>,
     /// Salary cycle dict id (`report` — 月薪/年薪/时薪).
     pub report: Option<i32>,
+    /// Company nature dict id (`pr`).
+    pub pr: Option<i32>,
+    /// Company size dict id (`mun`).
+    pub mun: Option<i32>,
     /// Welfare DICT ID — service layer resolves to the name before sending
     /// to the repo (PHP stores welfare as a CSV of names, so the WHERE is a
     /// `LIKE '%<name>%'`).
@@ -92,6 +96,8 @@ pub async fn list_public(
         hy: search.hy,
         sex: search.sex,
         report: search.report,
+        pr: search.pr,
+        mun: search.mun,
         welfare: welfare_name.as_deref(),
         uptime: search.uptime,
         urgent: search.urgent,

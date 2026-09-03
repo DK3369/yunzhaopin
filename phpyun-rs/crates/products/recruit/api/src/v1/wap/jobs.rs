@@ -110,6 +110,12 @@ pub struct JobListQuery {
     /// Salary cycle dict id — 月薪/年薪/时薪 (PHP `report`).
     #[validate(range(min = 0, max = 99))]
     pub report: Option<i32>,
+    /// Company nature dict id (PHP `pr`).
+    #[validate(range(min = 0, max = 99_999))]
+    pub pr: Option<i32>,
+    /// Company size dict id (PHP `mun`).
+    #[validate(range(min = 0, max = 99_999))]
+    pub mun: Option<i32>,
     /// Welfare dict id (PHP `welfare`). Resolved to the dict name before
     /// running `welfare LIKE '%<name>%'` against the CSV-encoded column.
     #[validate(range(min = 0, max = 99_999))]
@@ -334,6 +340,8 @@ pub async fn list_jobs(
         hy: q.hy,
         sex: q.sex,
         report: q.report,
+        pr: q.pr,
+        mun: q.mun,
         welfare: q.welfare,
         uptime: q.uptime,
         urgent: q.urgent,

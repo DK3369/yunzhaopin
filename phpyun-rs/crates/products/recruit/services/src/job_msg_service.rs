@@ -21,6 +21,11 @@ pub struct CreateInput<'a> {
     pub content: &'a str,
 }
 
+pub struct CreateCompanyInput<'a> {
+    pub job_uid: u64,
+    pub content: &'a str,
+}
+
 /// Jobseeker leaves a public message about a job.
 /// Returns the new message id.
 pub async fn create(
@@ -85,6 +90,65 @@ pub async fn create(
     Ok(id)
 }
 
+/// Jobseeker leaves a public message on a company page (PHP `addMsg` with `job_uid`, no `jobid`).
+pub async fn create_for_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    input: CreateCompanyInput<'_>,
+) -> AppResult<u64> {
+    user.require_jobseeker()?;
+
+    let content = input.content.trim();
+    if content.is_empty() {
+        return Err(ApiError::param_invalid("content_empty"));
+    }
+    if content.chars().count() > 1000 {
+        return Err(ApiError::param_invalid("content_too_long"));
+    }
+
+    let pool = state.db.pool();
+    let reader = state.db.reader();
+
+    let com = phpyun_models::company::repo::find_by_uid(reader, input.job_uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("company_not_found"))?;
+    if com.r_status != 1 {
+        return Err(ApiError::param_invalid("company_not_verified"));
+    }
+    let job_uid = com.uid;
+    let com_name = com.name.clone().unwrap_or_default();
+
+    if job_uid == user.uid {
+        return Err(ApiError::param_invalid("self_message_forbidden"));
+    }
+
+    if phpyun_models::blacklist::repo::is_blocked(reader, job_uid, user.uid).await? {
+        return Err(ApiError::param_invalid("blocked_by_company"));
+    }
+
+    let username = match crate::user_service::get_profile(state, user.uid).await {
+        Ok(p) => p.username.clone(),
+        Err(_) => String::new(),
+    };
+
+    let id = msg_repo::insert(
+        pool,
+        msg_repo::InsertMsg {
+            uid: user.uid,
+            username: &username,
+            jobid: 0,
+            job_uid,
+            content,
+            com_name: &com_name,
+            job_name: "",
+            now: clock::now_ts(),
+        },
+    )
+    .await?;
+
+    Ok(id)
+}
+
 /// Anyone (auth optional) can read approved + answered messages for a job —
 /// this powers the public message panel on the job-detail page.
 pub async fn list_public(state: &AppState, jobid: u64, page: Pagination) -> AppResult<JobMsgPage> {
@@ -104,6 +168,29 @@ pub async fn list_public(state: &AppState, jobid: u64, page: Pagination) -> AppR
     let (list, total) = tokio::join!(
         msg_repo::list_public_for_job(reader, jobid, job_uid, page.offset, page.limit),
         msg_repo::count_public_for_job(reader, jobid, job_uid),
+    );
+    Ok(JobMsgPage {
+        list: list?,
+        total: total?,
+    })
+}
+
+/// Anyone can read approved + answered messages for a company page.
+pub async fn list_public_for_company(
+    state: &AppState,
+    job_uid: u64,
+    page: Pagination,
+) -> AppResult<JobMsgPage> {
+    if job_uid == 0 {
+        return Ok(JobMsgPage {
+            list: vec![],
+            total: 0,
+        });
+    }
+    let reader = state.db.reader();
+    let (list, total) = tokio::join!(
+        msg_repo::list_public_for_company(reader, job_uid, page.offset, page.limit),
+        msg_repo::count_public_for_company(reader, job_uid),
     );
     Ok(JobMsgPage {
         list: list?,

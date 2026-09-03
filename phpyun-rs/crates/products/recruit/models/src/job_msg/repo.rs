@@ -131,6 +131,44 @@ pub async fn count_public_for_job(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// Public answered Q&A for a company page (PHP company show: `job_uid`, status=1,
+/// `del_status=0`). Only rows that already have a reply are shown.
+pub async fn list_public_for_company(
+    pool: &MySqlPool,
+    job_uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<JobMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_msg \
+         WHERE job_uid = ? AND status = 1 \
+           AND reply IS NOT NULL AND reply != '' AND del_status = 0 \
+           AND `type` = ? \
+         ORDER BY datetime DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, JobMsg>(&sql)
+        .bind(job_uid)
+        .bind(MSG_TYPE_PUBLIC_QA)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_public_for_company(pool: &MySqlPool, job_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_msg \
+         WHERE job_uid = ? AND status = 1 \
+           AND reply IS NOT NULL AND reply != '' AND del_status = 0 \
+           AND `type` = ?",
+    )
+    .bind(job_uid)
+    .bind(MSG_TYPE_PUBLIC_QA)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// Employer-side list: include unanswered messages too.
 pub async fn list_for_employer(
     pool: &MySqlPool,

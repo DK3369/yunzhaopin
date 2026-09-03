@@ -18,6 +18,8 @@ const salaryId = computed(() => numQuery(route.query.salary))
 const hy = computed(() => numQuery(route.query.hy))
 const welfare = computed(() => numQuery(route.query.welfare))
 const report = computed(() => numQuery(route.query.report))
+const pr = computed(() => numQuery(route.query.pr))
+const mun = computed(() => numQuery(route.query.mun))
 const uptime = computed(() => numQuery(route.query.uptime))
 const sex = computed(() => numQuery(route.query.sex))
 const urgent = computed(() => route.query.urgent === '1')
@@ -38,7 +40,7 @@ const api = useApi()
 
 const { data, error } = await useAsyncData(
   () =>
-    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
+    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
   () =>
     api.get<{ list: JobLike[]; total: number }>('/v1/wap/jobs', {
       page: page.value,
@@ -55,6 +57,8 @@ const { data, error } = await useAsyncData(
       hy: hy.value,
       welfare: welfare.value,
       report: report.value,
+      pr: pr.value,
+      mun: mun.value,
       uptime: uptime.value,
       sex: sex.value,
       min_salary: salaryBound.value?.min_salary,
@@ -111,6 +115,14 @@ const { data: welfares } = await useAsyncData(
 const { data: reports } = await useAsyncData(
   () => `dict-report-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/reports').catch(() => [] as DictItem[]),
+)
+const { data: natures } = await useAsyncData(
+  () => `dict-pr-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/company-natures').catch(() => [] as DictItem[]),
+)
+const { data: sizes } = await useAsyncData(
+  () => `dict-mun-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
 )
 const { data: districts } = await useAsyncData(
   () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
@@ -178,7 +190,7 @@ function exchangeRec() {
 }
 const { data: bidJobs } = await useAsyncData(
   () =>
-    `jobs-bid-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}`,
+    `jobs-bid-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}`,
   () =>
     page.value > 1
       ? Promise.resolve({ list: [] as JobLike[] })
@@ -198,6 +210,8 @@ const { data: bidJobs } = await useAsyncData(
             hy: hy.value,
             welfare: welfare.value,
             report: report.value,
+            pr: pr.value,
+            mun: mun.value,
             uptime: uptime.value,
             sex: sex.value,
             min_salary: salaryBound.value?.min_salary,
@@ -254,6 +268,10 @@ const selected = computed(() => {
   if (welN) rows.push({ param: 'welfare', name: welN })
   const reportN = dictName(reports.value, report.value)
   if (reportN) rows.push({ param: 'report', name: `${t('wap_com_00279')}：${reportN}` })
+  const prN = dictName(natures.value, pr.value)
+  if (prN) rows.push({ param: 'pr', name: `${t('wap_com_00018')}：${prN}` })
+  const munN = dictName(sizes.value, mun.value)
+  if (munN) rows.push({ param: 'mun', name: `${t('wap_com_00019')}：${munN}` })
   const upN = dictName(uptimeItems.value, uptime.value)
   if (upN) rows.push({ param: 'uptime', name: `${t('wap_00326')}：${upN}` })
   const sexN = dictName(sexItems.value, sex.value)
@@ -606,6 +624,8 @@ function goPage(p: number) {
               { label: $t('home.education_suffix'), param: 'edu', items: edus || [] },
               { label: $t('wap_com_00303'), param: 'sex', items: sexItems },
               { label: $t('wap_com_00279'), param: 'report', items: reports || [] },
+              { label: $t('wap_com_00018'), param: 'pr', items: natures || [] },
+              { label: $t('wap_com_00019'), param: 'mun', items: sizes || [] },
               { label: $t('wap_00326'), param: 'uptime', items: uptimeItems },
               { label: $t('admin_user_company_00373'), param: 'hy', items: industries || [] },
             ],

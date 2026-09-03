@@ -10,7 +10,7 @@ use sqlx::{MySqlPool, QueryBuilder};
 /// public list (`smarty_internal_compile_joblist.php`):
 ///     hy, job1, job1_son, job_post, provinceid, cityid, three_cityid,
 ///     minsalary, maxsalary, edu, exp, sex, type, report, uptime,
-///     welfare, urgent, rec.
+///     welfare, pr, mun, urgent, rec.
 #[derive(Debug, Default, Clone)]
 pub struct JobFilter<'a> {
     pub keyword: Option<&'a str>,
@@ -33,6 +33,10 @@ pub struct JobFilter<'a> {
     pub sex: Option<i32>,
     /// Salary cycle dict id — 月/年/时 (`phpyun_company_job.report`).
     pub report: Option<i32>,
+    /// Company nature dict id (`phpyun_company_job.pr`). PHP `joblist pr=`.
+    pub pr: Option<i32>,
+    /// Company size dict id (`phpyun_company_job.mun`). PHP `joblist mun=`.
+    pub mun: Option<i32>,
     /// Welfare dict NAME, already resolved by the service layer from a
     /// welfare id. PHPYun does `welfare LIKE '%<name>%'` because the column
     /// stores a CSV of welfare names rather than ids.
@@ -237,6 +241,14 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
     }
     if let Some(v) = f.report {
         qb.push(" AND report = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.pr {
+        qb.push(" AND pr = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.mun {
+        qb.push(" AND mun = ");
         qb.push_bind(v);
     }
     if let Some(name) = f.welfare {

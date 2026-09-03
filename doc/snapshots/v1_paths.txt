@@ -248,6 +248,8 @@
 /v1/wap/companies/detail
 /v1/wap/companies/hot
 /v1/wap/companies/jobs
+/v1/wap/companies/messages
+/v1/wap/companies/messages/post
 /v1/wap/companies/news
 /v1/wap/companies/news/detail
 /v1/wap/companies/products

@@ -527,6 +527,8 @@ impl Modify for UniqueOperationId {
         v1::wap::job_messages::list,
         v1::wap::job_messages::create,
         v1::wap::job_messages::hide,
+        v1::wap::companies::list_company_messages,
+        v1::wap::companies::create_company_message,
         v1::mcenter::job_messages::list,
         v1::mcenter::job_messages::reply,
         v1::mcenter::job_messages::hide,
@@ -903,6 +905,7 @@ impl Modify for UniqueOperationId {
             // Round 3 schemas
             v1::wap::job_messages::JobMsgView,
             v1::wap::job_messages::CreateMessageForm,
+            v1::wap::companies::CompanyMessageForm,
             v1::mcenter::job_messages::EmployerMsgItem,
             v1::mcenter::job_messages::ReplyForm,
             v1::wap::oauth::CodeLoginForm,

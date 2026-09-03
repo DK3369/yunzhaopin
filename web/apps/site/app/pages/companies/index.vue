@@ -213,17 +213,8 @@ const list = computed(() => data.value?.list || [])
             grandItems: districts || [],
           },
           { key: 'hy', label: $t('admin_user_company_00373'), items: industries || [] },
-          {
-            key: 'more',
-            label: $t('wap_00238'),
-            kind: 'more',
-            items: [],
-            groups: [
-              { label: $t('wap_com_00018'), param: 'pr', items: natures || [] },
-              { label: $t('wap_com_00019'), param: 'mun', items: sizes || [] },
-              { label: $t('company_00007'), param: 'welfare', items: welfares || [] },
-            ],
-          },
+          { key: 'pr', label: $t('wap_com_00018'), items: natures || [] },
+          { key: 'mun', label: $t('wap_com_00019'), items: sizes || [] },
         ]"
       />
     </div>

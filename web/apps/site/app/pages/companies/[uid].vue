@@ -3,9 +3,11 @@ import { listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/s
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
+const { settings, me } = useSiteChrome()
 const uid = Number(route.params.uid)
 const tab = computed(() => String(route.query.tab || 'jobs'))
 const api = useApi()
+const comMessageOn = computed(() => String(settings.value.com_message || '') === '1')
 const { data, error } = await useAsyncData(
   () => `company-${locale.value}-${uid}`,
   () => api.get('/v1/wap/companies/detail', { uid }),
@@ -49,6 +51,18 @@ const linkMsg = computed(() => {
   return raw
 })
 async function showTel() {
+  if (linkCode.value === 6) {
+    await navigateTo('/login')
+    return
+  }
+  if (linkCode.value === 7) {
+    await navigateTo('/user/resume')
+    return
+  }
+  if (linkCode.value === 8) {
+    await goCompanyJobs()
+    return
+  }
   try {
     const r = await api.get<{
       linktel?: string
@@ -62,6 +76,14 @@ async function showTel() {
     }
   } catch {
     await navigateTo('/login')
+  }
+}
+async function goCompanyJobs() {
+  if (tab.value !== 'jobs') {
+    await navigateTo({ query: { ...route.query, tab: 'jobs' } })
+  }
+  if (import.meta.client) {
+    document.getElementById('company_job_list')?.scrollIntoView({ behavior: 'smooth' })
   }
 }
 const { data: news } = await useAsyncData(
@@ -84,6 +106,55 @@ const { data: products } = await useAsyncData(
 )
 const newsList = computed(() => news.value?.list || [])
 const productList = computed(() => products.value?.list || [])
+const { data: msgs } = await useAsyncData(
+  () => `company-msgs-${locale.value}-${uid}`,
+  () =>
+    api
+      .post<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies/messages', { uid })
+      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+)
+const msgList = computed(() => msgs.value?.list || [])
+const askContent = ref('')
+const askCode = ref('')
+const askCaptcha = ref<{ cid: string; image: string } | null>(null)
+const askMsg = ref('')
+async function loadAskCaptcha() {
+  try {
+    askCaptcha.value = await api.post('/v1/wap/captcha')
+  } catch {
+    askCaptcha.value = null
+  }
+}
+async function postAsk() {
+  askMsg.value = ''
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (me.value.usertype !== 1) {
+    askMsg.value = t('wap_00256')
+    return
+  }
+  if (!askCaptcha.value) await loadAskCaptcha()
+  try {
+    await api.post('/v1/wap/companies/messages/post', {
+      uid,
+      content: askContent.value,
+      captcha_cid: askCaptcha.value?.cid,
+      authcode: askCode.value,
+    })
+    askContent.value = ''
+    askCode.value = ''
+    askMsg.value = t('common.confirm')
+    await loadAskCaptcha()
+  } catch (e: unknown) {
+    askMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    await loadAskCaptcha()
+  }
+}
+onMounted(async () => {
+  if (comMessageOn.value) await loadAskCaptcha()
+})
 watch(
   () => company.value.isatn,
   (v) => {
@@ -248,12 +319,48 @@ useHead({
                 <template v-if="linkCode === 6">
                   <NuxtLink to="/login" class="firm_login_dl">{{ $t('common.login') }}</NuxtLink>
                 </template>
+                <template v-else-if="linkCode === 7">
+                  <em>{{ linkMsg || $t('default_00203') }}</em>
+                  <NuxtLink to="/user/resume" class="firm_login_dl">{{ $t('wap_user_00197') }}</NuxtLink>
+                </template>
+                <template v-else-if="linkCode === 8">
+                  <em>{{ $t('default_00204') }}</em>
+                  <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="goCompanyJobs">{{
+                    $t('wap_00190')
+                  }}</a>
+                </template>
                 <a v-else href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
                   $t('default_00233')
                 }}</a>
               </div>
               <span v-if="company.address" class="firm_mes1" style="width: 100%">{{ $t('wap_00040') }}：{{ company.address }}</span>
               <span v-if="company.website" class="firm_mes1">{{ $t('wap_com_00162') }}：{{ company.website }}</span>
+            </div>
+          </div>
+          <div v-if="comMessageOn" class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('wap_00271') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <p v-if="!msgList.length" class="job_details_comask_p">{{ $t('default_00213') }}</p>
+            <div v-for="m in msgList" :key="'pc' + String(m.id)" class="yun_newedition_asklist">
+              <div class="yun_newedition_showask">{{ m.content }}</div>
+              <div class="yun_newedition_showand">{{ m.reply || $t('wap_01553') }}</div>
+            </div>
+            <div class="job_hr_ly_box" style="padding-top: 10px">
+              <textarea v-model="askContent" class="comapply_Leave_fb_text" :placeholder="$t('default_00201')" />
+              <div class="affirm affirm_yz" style="display: flex; gap: 8px; align-items: center; margin-top: 8px">
+                <input v-model="askCode" class="zx_yx_input" :placeholder="$t('wap_user_00143')" maxlength="4" />
+                <img
+                  v-if="askCaptcha?.image"
+                  :src="askCaptcha.image"
+                  class="zx_yx_input_img"
+                  alt=""
+                  @click="loadAskCaptcha"
+                />
+                <button type="button" class="comapply_Leave_fb_sub" @click="postAsk">{{ $t('wap_00280') }}</button>
+              </div>
+              <p v-if="askMsg" class="muted">{{ askMsg }}</p>
             </div>
           </div>
           <div v-if="newsList.length" class="com_show_leftbox">
@@ -355,11 +462,51 @@ useHead({
         <div class="newcom_add">
           <div v-if="contact.linkman">{{ contact.linkman }}</div>
           <div v-if="linkCode === 10">{{ linkMsg || $t('common_01934') }}</div>
-          <div v-else-if="linkCode === 9">{{ linkMsg || $t('common_02372') }}</div>
+          <div v-else-if="linkCode === 9">
+            {{ linkMsg || $t('common_02372') }}
+            <img
+              v-if="company.comqcode"
+              :src="mediaUrl(String(company.comqcode), PLACEHOLDER_LOGO)"
+              width="88"
+              height="88"
+              alt=""
+            />
+          </div>
+          <div v-else-if="linkCode > 1 && linkCode < 6">{{ linkMsg }}</div>
           <div v-else>
             {{ $t('common.phone') }}：{{ telDisplay || '****' }}
-            <a href="javascript:;" @click.prevent="showTel">{{ $t('default_00233') }}</a>
+            <template v-if="linkCode === 6">
+              <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
+            </template>
+            <template v-else-if="linkCode === 7">
+              <NuxtLink to="/user/resume">{{ $t('wap_user_00197') }}</NuxtLink>
+            </template>
+            <template v-else-if="linkCode === 8">
+              <a href="javascript:;" @click.prevent="goCompanyJobs">{{ $t('wap_00190') }}</a>
+            </template>
+            <a v-else href="javascript:;" @click.prevent="showTel">{{ $t('default_00233') }}</a>
           </div>
+        </div>
+        <div v-if="comMessageOn" class="job_describe_bottom">
+          <div class="job_describe_cengter_header">{{ $t('wap_00271') }}</div>
+          <div v-for="m in msgList" :key="String(m.id)">
+            <p>{{ m.content }}</p>
+            <p class="muted">{{ m.reply || $t('wap_01589') }}</p>
+          </div>
+          <p v-if="!msgList.length" class="muted">{{ $t('wap_01555') }}</p>
+          <textarea v-model="askContent" class="mt10" :placeholder="$t('default_00201')" />
+          <div style="display: flex; gap: 0.16rem; align-items: center; margin-top: 0.16rem">
+            <input v-model="askCode" :placeholder="$t('wap_user_00143')" maxlength="6" />
+            <img
+              v-if="askCaptcha?.image"
+              :src="askCaptcha.image"
+              alt=""
+              style="height: 0.8rem"
+              @click="loadAskCaptcha"
+            />
+          </div>
+          <button type="button" class="job_tckbth" @click="postAsk">{{ $t('wap_00280') }}</button>
+          <p v-if="askMsg" class="muted">{{ askMsg }}</p>
         </div>
         <div v-if="newsList.length" class="job_describe_bottom">
           <div class="job_describe_cengter_header">{{ $t('company_00019') }}</div>

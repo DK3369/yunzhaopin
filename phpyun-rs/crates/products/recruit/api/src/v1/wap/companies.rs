@@ -1,14 +1,21 @@
 //! Public company browsing (mirrors PHPYun `wap/company::index_action` + `show_action`).
 
-use axum::{extract::State, routing::get, Router};
-use phpyun_core::dto::UidBody;
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
+use phpyun_core::dto::{CreatedId, UidBody};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
+    verify::{self, VerifyKind},
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, MaybeUser, Paged, Pagination,
+    ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
 use phpyun_services::hot_search_service;
+use phpyun_services::job_msg_service::{self, CreateCompanyInput};
 use phpyun_services::job_service;
 use phpyun_services::view_service::{self, KIND_COMPANY};
 use serde::{Deserialize, Serialize};
@@ -39,6 +46,8 @@ pub fn routes() -> Router<AppState> {
             "/companies/contact",
             get(company_contact).post(company_contact),
         )
+        .route("/companies/messages", post(list_company_messages))
+        .route("/companies/messages/post", post(create_company_message))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -705,4 +714,78 @@ pub async fn autocomplete(
         })
         .collect();
     Ok(ApiResponse::data(out))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct CompanyMessageForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub uid: u64,
+    #[validate(length(min = 1, max = 4000))]
+    pub content: String,
+    #[validate(length(min = 1, max = 64))]
+    pub captcha_cid: String,
+    #[validate(length(min = 1, max = 16))]
+    pub authcode: String,
+}
+
+/// Public answered Q&A for a company page (PHP company show `msgList`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/companies/messages",
+    tag = "wap",
+    request_body = UidBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_company_messages(
+    State(state): State<AppState>,
+    page: Pagination,
+    ValidatedJson(b): ValidatedJson<UidBody>,
+) -> AppResult<ApiResponse<Paged<super::job_messages::JobMsgView>>> {
+    let r = job_msg_service::list_public_for_company(&state, b.uid, page).await?;
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
+}
+
+/// Jobseeker leaves a public message on a company page — login + image captcha.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/companies/messages/post",
+    tag = "wap",
+    security(("bearer" = [])),
+    request_body = CompanyMessageForm,
+    responses(
+        (status = 200, description = "Created", body = CreatedId),
+        (status = 400, description = "Validation / captcha / blocked / company not found"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Only jobseekers may post messages"),
+    )
+)]
+pub async fn create_company_message(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<CompanyMessageForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
+    let code = f.authcode.to_uppercase();
+    if !verify::verify(
+        &state.redis,
+        VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &code,
+    )
+    .await?
+    {
+        return Err(ApiError::captcha());
+    }
+
+    let mid = job_msg_service::create_for_company(
+        &state,
+        &user,
+        CreateCompanyInput {
+            job_uid: f.uid,
+            content: &f.content,
+        },
+    )
+    .await?;
+    Ok(ApiResponse::data(CreatedId { id: mid }))
 }
