@@ -1,5 +1,6 @@
 use super::entity::ResumeDownload;
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
+use std::collections::HashSet;
 
 pub async fn record(
     pool: &MySqlPool,
@@ -109,4 +110,50 @@ pub async fn count_for_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Err
         .fetch_one(pool)
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// Uids among `uids` this company has downloaded or free-downloaded.
+pub async fn unlocked_uids(
+    pool: &MySqlPool,
+    com_id: u64,
+    uids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let mut down: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_down_resume WHERE comid = ",
+    );
+    down.push_bind(com_id);
+    down.push(" AND uid IN (");
+    {
+        let mut sep = down.separated(", ");
+        for id in uids {
+            sep.push_bind(*id);
+        }
+    }
+    down.push(")");
+    let mut set: HashSet<u64> = down
+        .build_query_as::<(u64,)>()
+        .fetch_all(pool)
+        .await?
+        .into_iter()
+        .map(|(id,)| id)
+        .collect();
+    let mut free: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_freedown_resume WHERE comid = ",
+    );
+    free.push_bind(com_id);
+    free.push(" AND uid IN (");
+    {
+        let mut sep = free.separated(", ");
+        for id in uids {
+            sep.push_bind(*id);
+        }
+    }
+    free.push(")");
+    for (id,) in free.build_query_as::<(u64,)>().fetch_all(pool).await? {
+        set.insert(id);
+    }
+    Ok(set)
 }

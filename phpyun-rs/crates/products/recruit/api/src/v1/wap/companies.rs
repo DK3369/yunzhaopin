@@ -126,6 +126,8 @@ pub fn company_summary_from_dict(
         job_num: 0,
         yyzz_status: c.yyzz_status,
         fact_status: c.fact_status,
+        ant_num: c.ant_num,
+        isatn: 0,
         welfare_n: c
             .welfare
             .as_deref()
@@ -149,19 +151,20 @@ pub async fn fill_job_nums(state: &AppState, list: &mut [CompanySummary]) {
     }
 }
 
-/// Fill up to 3 open job names per company (PHP `hotjob` hover). Best-effort.
-pub async fn fill_open_jobs(state: &AppState, list: &mut [CompanySummary]) {
+/// Fill up to `max_per` open job names per company. Best-effort.
+pub async fn fill_open_jobs(state: &AppState, list: &mut [CompanySummary], max_per: usize) {
     let uids: Vec<u64> = list.iter().map(|c| c.uid).collect();
     let Ok(rows) =
         phpyun_models::company::repo::list_open_job_briefs_by_uids(state.db.reader(), &uids).await
     else {
         return;
     };
+    let cap = max_per.max(1);
     let mut map: std::collections::HashMap<u64, Vec<phpyun_models::company::view::CompanyOpenJob>> =
         std::collections::HashMap::new();
     for r in rows {
         let bucket = map.entry(r.uid).or_default();
-        if bucket.len() >= 3 {
+        if bucket.len() >= cap {
             continue;
         }
         bucket.push(phpyun_models::company::view::CompanyOpenJob {
@@ -171,6 +174,24 @@ pub async fn fill_open_jobs(state: &AppState, list: &mut [CompanySummary]) {
     }
     for row in list {
         row.open_jobs = map.remove(&row.uid).unwrap_or_default();
+    }
+}
+
+async fn fill_isatn(
+    state: &AppState,
+    user: Option<&phpyun_core::AuthenticatedUser>,
+    list: &mut [CompanySummary],
+) {
+    let Some(u) = user.filter(|u| u.usertype == phpyun_core::extractors::USERTYPE_JOBSEEKER) else {
+        return;
+    };
+    let uids: Vec<u64> = list.iter().map(|c| c.uid).collect();
+    let Ok(set) = phpyun_models::atn::repo::followed_sc_uids(state.db.reader(), u.uid, &uids).await
+    else {
+        return;
+    };
+    for row in list {
+        row.isatn = i32::from(set.contains(&row.uid));
     }
 }
 
@@ -184,6 +205,7 @@ pub async fn fill_open_jobs(state: &AppState, list: &mut [CompanySummary]) {
 )]
 pub async fn list_companies(
     State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CompanyListQuery>,
 ) -> AppResult<ApiResponse<Paged<CompanySummary>>> {
@@ -211,6 +233,8 @@ pub async fn list_companies(
         .map(|c| crate::v1::wap::companies::company_summary_from_dict(c, &dicts))
         .collect();
     fill_job_nums(&state, &mut list).await;
+    fill_open_jobs(&state, &mut list, 10).await;
+    fill_isatn(&state, user.as_ref(), &mut list).await;
     Ok(ApiResponse::data(Paged::new(
         list,
         r.total,
@@ -314,6 +338,8 @@ pub struct CompanyDetail {
     // ---- Current-user context (0 when unauthenticated) ----
     /// Whether the current jobseeker follows this company (PHP `isatn`)
     pub isatn: i32,
+    /// Followers (PHP `ant_num`).
+    pub ant_num: i32,
     /// How many times the current jobseeker has applied to this company (PHP `userid_job`)
     pub userid_job: i32,
 
@@ -497,6 +523,7 @@ pub async fn company_detail(
         vip_active: c.vipetime > phpyun_core::clock::now_ts(),
 
         isatn,
+        ant_num: c.ant_num,
         userid_job,
         welfare_n,
         invite_resume,

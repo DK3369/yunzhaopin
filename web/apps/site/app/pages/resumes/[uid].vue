@@ -18,6 +18,15 @@ const projects = computed(() => (Array.isArray(row.value.projects) ? row.value.p
 const trainings = computed(() => (Array.isArray(row.value.trainings) ? row.value.trainings : []) as Record<string, unknown>[])
 const certs = computed(() => (Array.isArray(row.value.certs) ? row.value.certs : []) as Record<string, unknown>[])
 const expects = computed(() => (Array.isArray(row.value.expects) ? row.value.expects : []) as Record<string, unknown>[])
+const others = computed(() => (Array.isArray(row.value.others) ? row.value.others : []) as Record<string, unknown>[])
+const shows = computed(() => (Array.isArray(row.value.shows) ? row.value.shows : []) as Record<string, unknown>[])
+const docs = computed(() => (Array.isArray(row.value.docs) ? row.value.docs : []) as Record<string, unknown>[])
+const tel = computed(() => String(row.value.telphone || ''))
+const reportOpen = ref(false)
+function docIsFile(raw: unknown) {
+  const s = String(raw || '')
+  return Boolean(s) && !/<[a-z]/i.test(s)
+}
 const expect0 = computed(() => expects.value[0] || {})
 const expectJobs = computed(() =>
   expects.value
@@ -117,12 +126,7 @@ async function toggleFav() {
   }
 }
 async function report() {
-  try {
-    await api.post('/v1/mcenter/reports', { target_kind: 3, target_id: uid, reason_code: 'other', detail: '' })
-    actionMsg.value = t('common.confirm')
-  } catch {
-    await navigateTo('/login')
-  }
+  reportOpen.value = true
 }
 </script>
 
@@ -190,6 +194,18 @@ async function report() {
               <li v-if="expectSalary">
                 <span class="yun_newedition_yx_name">{{ $t('wap_user_00016') }}：</span>{{ expectSalary }}
               </li>
+              <li v-if="expect0.hy_n">
+                <span class="yun_newedition_yx_name">{{ $t('wap_user_00010') }}：</span>{{ expect0.hy_n }}
+              </li>
+              <li v-if="expect0.report_n">
+                <span class="yun_newedition_yx_name">{{ $t('wap_com_00279') }}：</span>{{ expect0.report_n }}
+              </li>
+              <li v-if="expect0.jobstatus_n">
+                <span class="yun_newedition_yx_name">{{ $t('wap_user_00017') }}：</span>{{ expect0.jobstatus_n }}
+              </li>
+              <li v-if="expect0.type_n">
+                <span class="yun_newedition_yx_name">{{ $t('wap_user_00012') }}：</span>{{ expect0.type_n }}
+              </li>
               <li v-if="expectCities.length" style="width: 100%">
                 <span class="yun_newedition_yx_name">{{ $t('member_user_00198') }}：</span>
                 <template v-for="c in expectCities" :key="c">{{ c }}&nbsp;</template>
@@ -256,10 +272,46 @@ async function report() {
             </div>
             <div v-for="c in certs" :key="'c' + String(c.id)" class="muted">{{ c.name }} {{ c.sdate_n }}</div>
             <div v-if="skills.length" class="yun_newedition_tit">
-              <span class="yun_newedition_tit_s">{{ $t('common.more') }}</span>
+              <span class="yun_newedition_tit_s">{{ $t('member_com_00027') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
-            <p v-if="skills.length">{{ skills.map((s) => s.name).join(' / ') }}</p>
+            <div v-if="skills.length" class="yun_newedition_skill">
+              <div v-for="s in skills" :key="'sk' + String(s.id)" class="yun_newedition_skilllist">
+                <div class="yun_newedition_skill_name">{{ s.name }}</div>
+                <div v-if="s.level_n" class="yun_newedition_skill_zt">{{ s.level_n }}</div>
+                <div v-if="s.years" class="yun_newedition_skill_time">{{ s.years }}{{ $t('common_02077') }}</div>
+              </div>
+            </div>
+            <div v-if="others.length" class="yun_newedition_tit">
+              <span class="yun_newedition_tit_s">{{ $t('wap_00493') }}</span>
+              <i class="yun_newedition_tit_line" />
+            </div>
+            <div v-for="o in others" :key="'o' + String(o.id)" class="muted">
+              <strong>{{ o.name }}</strong>
+              <div v-if="o.content" v-html="String(o.content)" />
+            </div>
+            <div v-if="shows.length" class="yun_newedition_tit">
+              <span class="yun_newedition_tit_s">{{ $t('wap_01601') }}</span>
+              <i class="yun_newedition_tit_line" />
+            </div>
+            <div v-if="shows.length" class="com_show_image">
+              <div v-for="s in shows" :key="'show' + String(s.id)" class="com_show_image_list">
+                <img :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)" width="210" height="153" :alt="String(s.title || '')" />
+              </div>
+            </div>
+            <div v-if="unlocked && docs.length" class="yun_newedition_tit">
+              <span class="yun_newedition_tit_s">{{ $t('wap_00495') }}</span>
+              <i class="yun_newedition_tit_line" />
+            </div>
+            <div v-for="d in docs" :key="'doc' + String(d.id)" class="yun_newedition_js">
+              <a
+                v-if="docIsFile(d.doc)"
+                :href="mediaUrl(String(d.doc))"
+                target="_blank"
+                rel="noopener"
+              >{{ d.doc }}</a>
+              <div v-else v-html="String(d.doc || '')" />
+            </div>
             </template>
             <div v-else class="resume_bg" style="margin-top: 16px">
               <p v-if="Number(tj.edu_num)" class="muted">{{ $t('wap_00459') }} {{ tj.edu_num }}</p>
@@ -323,7 +375,13 @@ async function report() {
               <span>{{ expectTitle }}</span>
               <span v-if="expectCity">· {{ expectCity }}</span>
             </div>
-            <div v-if="expectSalary" class="user_qwxz">{{ expectSalary }}</div>
+            <div class="user_qwxz" v-if="expectSalary || expect0.hy_n || expect0.report_n || expect0.jobstatus_n || expect0.type_n">
+              <span v-if="expectSalary">{{ expectSalary }}</span>
+              <span v-if="expect0.hy_n"> · {{ expect0.hy_n }}</span>
+              <span v-if="expect0.report_n"> · {{ expect0.report_n }}</span>
+              <span v-if="expect0.jobstatus_n"> · {{ expect0.jobstatus_n }}</span>
+              <span v-if="expect0.type_n"> · {{ expect0.type_n }}</span>
+            </div>
           </div>
           <div v-if="row.lastupdate_n" class="Preview_your_resume_category">
             {{ row.lastupdate_n }} {{ $t('wap_00225') }}
@@ -366,6 +424,52 @@ async function report() {
           </div>
           <div v-for="c in certs" :key="'hc' + String(c.id)">{{ c.name }}</div>
         </div>
+        <div v-if="bodyOpen && skills.length" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('member_com_00027') }}</div>
+          </div>
+          <div v-for="s in skills" :key="'hsk' + String(s.id)">
+            {{ s.name }}
+            <template v-if="s.level_n"> · {{ s.level_n }}</template>
+            <template v-if="s.years"> · {{ s.years }}{{ $t('common_02077') }}</template>
+          </div>
+        </div>
+        <div v-if="bodyOpen && others.length" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_00493') }}</div>
+          </div>
+          <div v-for="o in others" :key="'ho' + String(o.id)">
+            <div>{{ o.name }}</div>
+            <div v-if="o.content" v-html="String(o.content)" />
+          </div>
+        </div>
+        <div v-if="bodyOpen && shows.length" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_01601') }}</div>
+          </div>
+          <div class="business_album">
+            <img
+              v-for="s in shows"
+              :key="'hshow' + String(s.id)"
+              :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)"
+              :alt="String(s.title || '')"
+            />
+          </div>
+        </div>
+        <div v-if="unlocked && docs.length" class="Preview_your_resume_advantage">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_00495') }}</div>
+          </div>
+          <div v-for="d in docs" :key="'hdoc' + String(d.id)">
+            <a
+              v-if="docIsFile(d.doc)"
+              :href="mediaUrl(String(d.doc))"
+              target="_blank"
+              rel="noopener"
+            >{{ d.doc }}</a>
+            <div v-else v-html="String(d.doc || '')" />
+          </div>
+        </div>
         <div v-if="!bodyOpen" class="Preview_your_resume_advantage">
           <p v-if="Number(tj.edu_num)" class="muted">{{ $t('wap_00459') }} {{ tj.edu_num }}</p>
           <p v-if="Number(tj.work_num)" class="muted">{{ $t('wap_00457') }} {{ $t('wap_00467') }}{{ tj.work_num }}{{ $t('common_01887') }}</p>
@@ -386,6 +490,24 @@ async function report() {
         </div>
         <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
       </div>
+      <div class="yun_czfoot">
+        <div class="yun_czfootfixed">
+          <div class="yun_czfoot_r">
+            <div class="yun_czfoot_lt yun_czfoot_lt_td">
+              <a v-if="unlocked && tel" :href="`tel:${tel}`">{{ $t('wap_00279') }}</a>
+              <a v-else-if="me?.usertype === 2" href="javascript:;" @click.prevent="download">{{ $t('wap_00279') }}</a>
+              <NuxtLink v-else to="/login">{{ $t('wap_00279') }}</NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <ReportSheet
+      v-if="reportOpen"
+      :target-kind="3"
+      :target-id="uid"
+      @close="reportOpen = false"
+      @done="actionMsg = $t('common.confirm')"
+    />
   </article>
 </template>

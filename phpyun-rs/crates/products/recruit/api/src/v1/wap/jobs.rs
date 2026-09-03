@@ -8,6 +8,7 @@ use axum::{
 use phpyun_core::dto::{HitsResp, IdBody, UidBody};
 use phpyun_core::utils::fmt_ts;
 use phpyun_core::{
+    extractors::USERTYPE_JOBSEEKER,
     i18n::{current_lang, t, t_args},
     json, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson,
     ValidatedJsonOrQuery,
@@ -253,6 +254,26 @@ pub fn job_summary_from_dict_fav(
 
         jobhits: j.jobhits,
         is_favorited,
+        is_applied: false,
+        istop: j.xsdate > now,
+    }
+}
+
+pub async fn stamp_applied(
+    state: &AppState,
+    user: Option<&phpyun_core::AuthenticatedUser>,
+    jobs: &mut [JobSummary],
+) {
+    let Some(u) = user.filter(|u| u.usertype == USERTYPE_JOBSEEKER) else {
+        return;
+    };
+    let ids: Vec<u64> = jobs.iter().map(|j| j.id).collect();
+    let Ok(set) = phpyun_models::apply::repo::applied_job_ids(state.db.reader(), u.uid, &ids).await
+    else {
+        return;
+    };
+    for j in jobs {
+        j.is_applied = set.contains(&j.id);
     }
 }
 
@@ -372,6 +393,7 @@ pub async fn list_jobs(
             })
             .collect();
         attach_company_card_fields(&state, &dicts, &mut list).await;
+        stamp_applied(&state, user.as_ref(), &mut list).await;
         Paged::new(list, r.total, page.page, page.page_size)
     };
     Ok(ApiResponse::data(
@@ -661,6 +683,7 @@ pub async fn similar_jobs(
             })
             .collect();
         attach_company_card_fields(&state, &dicts, &mut out).await;
+        stamp_applied(&state, user.as_ref(), &mut out).await;
         out
     }))
 }
@@ -698,6 +721,7 @@ pub async fn same_company_jobs(
             })
             .collect();
         attach_company_card_fields(&state, &dicts, &mut out).await;
+        stamp_applied(&state, user.as_ref(), &mut out).await;
         out
     }))
 }
@@ -736,6 +760,7 @@ pub async fn company_jobs(
             })
             .collect();
         attach_company_card_fields(&state, &dicts, &mut list).await;
+        stamp_applied(&state, user.as_ref(), &mut list).await;
         Paged::new(list, r.total, page.page, page.page_size)
     }))
 }

@@ -44,6 +44,10 @@ pub struct CompanySummary {
     pub yyzz_status: i32,
     /// On-site verification (PHP `fact_status`).
     pub fact_status: i32,
+    /// Followers (PHP `ant_num`).
+    pub ant_num: i32,
+    /// Whether the current jobseeker follows this company (PHP `isatn`). 0 when guest.
+    pub isatn: i32,
     /// PHP `$com.welfare_n`.
     pub welfare_n: Vec<String>,
     /// Homepage famous-company hover (PHP `hotjob` 插件最多 3 条在招).

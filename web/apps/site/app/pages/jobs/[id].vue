@@ -147,6 +147,7 @@ const applyMsg = ref('')
 const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
 const ceilShow = ref(false)
 const h5LinkOpen = ref(false)
+const reportOpen = ref(false)
 watch(
   favFromApi,
   (v) => {
@@ -206,6 +207,14 @@ async function apply() {
     applyMsg.value = t('wap_com_00242')
     return
   }
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (me.value.usertype !== 1) {
+    applyMsg.value = t('wap_00256')
+    return
+  }
   try {
     await api.post('/v1/mcenter/apply', { job_id: id })
     applyMsg.value = t('common.confirm')
@@ -249,12 +258,7 @@ async function showTel() {
   }
 }
 async function report() {
-  try {
-    await api.post('/v1/mcenter/reports', { target_kind: 1, target_id: id, reason_code: 'other', detail: '' })
-    applyMsg.value = t('common.confirm')
-  } catch {
-    await navigateTo('/login')
-  }
+  reportOpen.value = true
 }
 const salary = computed(() =>
   formatSalary(
@@ -479,13 +483,6 @@ useHead({
               </div>
               <div v-else-if="linkCode === 9" class="job_details_touch_tel">
                 <em class="job_details_touch_tel_tip">{{ linkMsg || $t('common_02372') }}</em>
-                <img
-                  v-if="company.qcode || company.comqcode"
-                  :src="mediaUrl(String(company.qcode || company.comqcode || ''))"
-                  width="88"
-                  height="88"
-                  alt=""
-                />
               </div>
               <div v-else-if="linkCode > 1 && linkCode < 6" class="job_details_touch_tel">
                 <em class="job_details_touch_tel_tip">{{ linkMsg }}</em>
@@ -816,6 +813,7 @@ useHead({
           </div>
         </div>
       </div>
+      <p v-if="applyMsg" class="muted" style="padding: 0.24rem">{{ applyMsg }}</p>
       <div v-if="!jobClosed" class="yun_czfoot">
         <div class="yun_czfootfixed">
           <div class="yun_czfoot_c">
@@ -848,18 +846,18 @@ useHead({
         <div v-else-if="linkCode === 10" class="new_jobshow_tel">{{ linkMsg || $t('common_01934') }}</div>
         <div v-else-if="linkCode === 9" class="new_jobshow_tel">
           {{ linkMsg || $t('common_02372') }}
-          <img
-            v-if="company.qcode || company.comqcode"
-            :src="mediaUrl(String(company.qcode || company.comqcode || ''))"
-            width="88"
-            height="88"
-            alt=""
-          />
         </div>
         <div v-else class="new_jobshow_tel">{{ applyMsg || linkMsg || telDisplay }}</div>
         <a href="javascript:;" class="new_jobshow_telbth" @click.prevent="h5LinkOpen = false">{{ $t('common.close') }}</a>
       </div>
     </div>
+    <ReportSheet
+      v-if="reportOpen"
+      :target-kind="1"
+      :target-id="id"
+      @close="reportOpen = false"
+      @done="applyMsg = $t('common.confirm')"
+    />
   </div>
   <div v-else class="site-inner">
     <h1>{{ $t('common.job') }}</h1>

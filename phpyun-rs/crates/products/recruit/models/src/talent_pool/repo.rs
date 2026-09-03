@@ -4,6 +4,7 @@
 
 use super::entity::TalentPoolItem;
 use sqlx::{MySqlPool, QueryBuilder};
+use std::collections::HashSet;
 
 // All numeric columns on `phpyun_talent_pool` are NULL-allowed; entity uses
 // plain `u64 / i64`. COALESCE at the projection.
@@ -94,6 +95,29 @@ pub async fn count_by_com(pool: &MySqlPool, cuid: u64) -> Result<u64, sqlx::Erro
             .fetch_one(pool)
             .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// Seeker uids currently in this company's talent pool.
+pub async fn uids_in_pool(
+    pool: &MySqlPool,
+    cuid: u64,
+    uids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_talent_pool WHERE cuid = ",
+    );
+    qb.push_bind(cuid);
+    qb.push(" AND status != 2 AND uid IN (");
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
 }
 
 /// Soft delete: bulk UPDATE status=2; no physical DELETE.

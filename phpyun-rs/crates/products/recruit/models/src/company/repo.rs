@@ -35,6 +35,7 @@ const FIELDS: &str = "\
     COALESCE(addtime, 0) AS addtime, \
     COALESCE(login_date, 0) AS login_date, \
     COALESCE(fact_status, 0) AS fact_status, \
+    COALESCE(ant_num, 0) AS ant_num, \
     welfare, \
     COALESCE(did, 0) AS did";
 

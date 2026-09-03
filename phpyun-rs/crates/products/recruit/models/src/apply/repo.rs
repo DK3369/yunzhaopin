@@ -7,6 +7,7 @@
 
 use super::entity::Apply;
 use sqlx::{MySqlPool, QueryBuilder};
+use std::collections::HashSet;
 
 // PHP `phpyun_userid_job.invited / invite_time` are nullable int; entity
 // uses plain i32/i64. COALESCE so a NULL row can't trip sqlx.
@@ -296,4 +297,50 @@ pub async fn invite(pool: &MySqlPool, id: u64, com_id: u64, now: i64) -> Result<
     .execute(pool)
     .await?;
     Ok(res.rows_affected())
+}
+
+/// Job ids in `job_ids` that this jobseeker has already applied to (`isdel=9`).
+pub async fn applied_job_ids(
+    pool: &MySqlPool,
+    uid: u64,
+    job_ids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(job_id AS UNSIGNED) FROM phpyun_userid_job WHERE uid = ",
+    );
+    qb.push_bind(uid);
+    qb.push(" AND isdel = 9 AND job_id IN (");
+    let mut sep = qb.separated(", ");
+    for id in job_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+/// Seeker uids this company has already invited (`phpyun_userid_msg`).
+pub async fn invited_seeker_uids(
+    pool: &MySqlPool,
+    com_uid: u64,
+    uids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_userid_msg WHERE fid = ",
+    );
+    qb.push_bind(com_uid);
+    qb.push(" AND isdel = 9 AND uid IN (");
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
 }

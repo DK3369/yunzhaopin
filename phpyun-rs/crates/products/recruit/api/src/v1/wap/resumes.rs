@@ -120,6 +120,9 @@ pub struct ResumeListQuery {
     /// PHP homepage `{yun:}userlist recg=1{/yun}` (recommended talent).
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
     pub recg: bool,
+    /// PHP `userlist topdate=1`.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
+    pub top: bool,
 }
 fn default_did() -> u32 {
     0
@@ -200,6 +203,15 @@ pub struct ResumeSummary {
     pub login_date: i64,
     pub login_date_n: String,
     pub did: u64,
+    /// Real name kept for employer unmask after download; never serialized.
+    #[serde(skip_serializing)]
+    pub real_name: Option<String>,
+    /// PHP `in_array($id, $talentpool)`.
+    pub in_talentpool: bool,
+    /// PHP `in_array($uid, $useridmsg)`.
+    pub invited: bool,
+    /// PHP topdate sticky row.
+    pub is_top: bool,
 }
 
 fn age_from_birthday(b: &str) -> Option<u16> {
@@ -263,6 +275,10 @@ impl ResumeSummary {
             login_date_n: fmt_dt(r.login_date),
             login_date: r.login_date,
             did: r.did,
+            real_name: r.name.clone(),
+            in_talentpool: false,
+            invited: false,
+            is_top: false,
         }
     }
 }
@@ -319,6 +335,10 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
             login_date_n: fmt_dt(r.login_date),
             login_date: r.login_date,
             did: r.did,
+            real_name: r.name.clone(),
+            in_talentpool: false,
+            invited: false,
+            is_top: false,
         }
     }
 }
@@ -371,6 +391,7 @@ pub async fn list_resumes(
         work: q.work,
         did: q.did,
         recg: q.recg,
+        top: q.top,
     };
     let r = resume_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -380,6 +401,12 @@ pub async fn list_resumes(
         .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts))
         .collect();
     attach_expect_fields(&state, &dicts, &mut list).await;
+    attach_employer_list_flags(&state, user.as_ref(), &mut list).await;
+    if q.top {
+        for row in &mut list {
+            row.is_top = true;
+        }
+    }
     let mut seen = std::collections::HashSet::new();
     list.retain(|row| seen.insert(row.uid));
     Ok(ApiResponse::data(Paged::new(
@@ -388,6 +415,35 @@ pub async fn list_resumes(
         page.page,
         page.page_size,
     )))
+}
+
+async fn attach_employer_list_flags(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+    list: &mut [ResumeSummary],
+) {
+    let Some(u) = user.filter(|u| u.usertype == USERTYPE_EMPLOYER) else {
+        return;
+    };
+    let uids: Vec<u64> = list.iter().map(|row| row.uid).collect();
+    let db = state.db.reader();
+    let (down, pool, invited) = tokio::join!(
+        phpyun_models::resume_download::repo::unlocked_uids(db, u.uid, &uids),
+        phpyun_models::talent_pool::repo::uids_in_pool(db, u.uid, &uids),
+        phpyun_models::apply::repo::invited_seeker_uids(db, u.uid, &uids),
+    );
+    let down = down.unwrap_or_default();
+    let pool = pool.unwrap_or_default();
+    let invited = invited.unwrap_or_default();
+    for row in list {
+        if down.contains(&row.uid) {
+            if let Some(n) = row.real_name.as_deref().filter(|s| !s.is_empty()) {
+                row.display_name = n.to_string();
+            }
+        }
+        row.in_talentpool = pool.contains(&row.uid);
+        row.invited = invited.contains(&row.uid);
+    }
 }
 
 fn apply_expect(
@@ -487,12 +543,20 @@ pub fn resume_expect_item_from_dict(
         job_class_n: dicts.job(job_classid).to_string(),
         city_class_n: dicts.city(city_classid).to_string(),
         salary_n: dicts.user_or_com(e.salary).to_string(),
+        hy_n: dicts.industry(e.hy).to_string(),
+        report_n: dicts.user_or_com(e.report).to_string(),
+        type_n: dicts.user_or_com(e.r#type).to_string(),
+        jobstatus_n: dicts.user_or_com(e.jobstatus).to_string(),
         id: e.id,
         uid: e.uid,
         name: e.name,
         job_classid: e.job_classid,
         city_classid: e.city_classid,
         salary: e.salary,
+        hy: e.hy,
+        report: e.report,
+        r#type: e.r#type,
+        jobstatus: e.jobstatus,
         status: e.status,
         r_status: e.r_status,
         state: e.state,
@@ -630,6 +694,22 @@ pub struct ResumeDetail {
     pub trainings: Vec<ResumeTrainingItem>,
     pub certs: Vec<ResumeCertItem>,
     pub others: Vec<ResumeOtherItem>,
+    pub shows: Vec<ResumeShowItem>,
+    pub docs: Vec<ResumeDocItem>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ResumeShowItem {
+    pub id: u64,
+    pub title: String,
+    pub picurl: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ResumeDocItem {
+    pub id: u64,
+    pub eid: u64,
+    pub doc: String,
 }
 
 /// PHP `$tj` counts shown when `resume_check != 1`.
@@ -736,13 +816,22 @@ pub async fn resume_detail(
     let unlocked = m_status == 1;
     let gate = resume_service::open_resume_check(&state, user.as_ref(), uid).await;
     let body_open = gate.resume_check == 1;
-    // Fetch 8 child tables + dictionaries in parallel
-    let (bundle_res, dicts) = tokio::join!(
+    let db = state.db.reader();
+    let (bundle_res, dicts, shows_res, docs_res) = tokio::join!(
         resume_children_service::get_full_bundle(&state, uid),
         phpyun_services::dict_service::get(&state),
+        phpyun_models::gallery::repo::list_public_by_uid(
+            db,
+            phpyun_models::gallery::entity::GalleryKind::Resume,
+            uid,
+            20,
+        ),
+        phpyun_models::resume::doc::list_by_uid(db, uid),
     );
     let (expects, edus, works, projects, skills, trainings, certs, others) = bundle_res?;
     let dicts = dicts?;
+    let shows = shows_res.unwrap_or_default();
+    let docs = docs_res.unwrap_or_default();
     let tj = if body_open {
         None
     } else {
@@ -867,10 +956,36 @@ pub async fn resume_detail(
                 .into_iter()
                 .map(|o| ResumeOtherItem {
                     id: o.id,
-                    uid: r.uid,
-                    eid: r.uid,
+                    uid: o.uid,
+                    eid: o.eid,
                     name: o.name,
                     content: o.content,
+                })
+                .collect()
+        } else {
+            Vec::new()
+        },
+        shows: if body_open {
+            shows
+                .into_iter()
+                .map(|s| ResumeShowItem {
+                    id: s.id,
+                    title: s.title,
+                    picurl: s.picurl,
+                })
+                .collect()
+        } else {
+            Vec::new()
+        },
+        docs: if unlocked {
+            docs.into_iter()
+                .filter_map(|d| {
+                    let doc = d.doc.filter(|s| !s.trim().is_empty())?;
+                    Some(ResumeDocItem {
+                        id: d.id,
+                        eid: d.eid,
+                        doc,
+                    })
                 })
                 .collect()
         } else {

@@ -67,14 +67,18 @@ pub async fn search(
     )
     .await;
     Ok(ApiResponse::data(SearchData {
-        jobs: r
-            .jobs
-            .into_iter()
-            .map(|j| {
-                let fav = fav_set.contains(&j.id);
-                crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
-            })
-            .collect(),
+        jobs: {
+            let mut jobs: Vec<super::jobs::JobSummary> = r
+                .jobs
+                .into_iter()
+                .map(|j| {
+                    let fav = fav_set.contains(&j.id);
+                    crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
+                })
+                .collect();
+            crate::v1::wap::jobs::stamp_applied(&state, user.as_ref(), &mut jobs).await;
+            jobs
+        },
         companies: r
             .companies
             .into_iter()

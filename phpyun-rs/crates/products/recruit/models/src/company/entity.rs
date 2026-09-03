@@ -115,6 +115,9 @@ pub struct Company {
     // ---- Verification ----
     #[sqlx(default)]
     pub fact_status: i32,
+    /// Followers (PHP `ant_num`; historical typo, not `atn_num`).
+    #[sqlx(default)]
+    pub ant_num: i32,
 
     #[serde(default)]
     pub welfare: Option<String>,

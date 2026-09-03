@@ -1,4 +1,5 @@
 pub mod cert;
+pub mod doc;
 pub mod edu;
 pub mod entity;
 pub mod expect;

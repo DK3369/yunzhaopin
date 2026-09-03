@@ -3,6 +3,9 @@
     <div class="resume_newlist">
       <div class="resume_newlist_jobname">
         <NuxtLink :to="`/resumes/${row.uid}`" class="resume_newlist_job">{{ expectName }}</NuxtLink>
+        <span v-if="row.is_top" class="lookjob">{{ $t('wap_user_00335') }}</span>
+        <span v-if="row.in_talentpool" class="co_fav">{{ $t('wap_00378') }}</span>
+        <span v-if="row.invited" class="co_fav">{{ $t('wap_00291') }}</span>
         <img
           v-if="Number(row.idcard_status) === 1"
           src="/legacy/pc/images/sf.png"
@@ -67,7 +70,10 @@
     <div class="new_userlist_p">
       {{ $t('wap_00586') }} {{ expectName }}
       <template v-if="salaryName">，{{ salaryName }}</template>
-      <span v-if="row.lastupdate_n" class="yun_newedition_resume_zd">{{ row.lastupdate_n }}</span>
+      <span v-if="row.is_top" class="yun_newedition_resume_zd">{{ $t('wap_user_00335') }}</span>
+      <span v-if="row.in_talentpool" class="yun_newedition_resume_zd">{{ $t('wap_00378') }}</span>
+      <span v-if="row.invited" class="yun_newedition_resume_zd">{{ $t('wap_00291') }}</span>
+      <span v-else-if="row.lastupdate_n && !row.is_top" class="yun_newedition_resume_zd">{{ row.lastupdate_n }}</span>
     </div>
   </NuxtLink>
 </template>

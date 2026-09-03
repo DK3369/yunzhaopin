@@ -35,6 +35,18 @@ const contact = computed(
   () => (company.value.contact || {}) as Record<string, unknown>,
 )
 const linkCode = computed(() => Number(contact.value.link_code || 0))
+const mapHref = computed(() => {
+  const x = String(company.value.x || '')
+  const y = String(company.value.y || '')
+  if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`
+  return ''
+})
+const moneyLabel = computed(() => {
+  const n = Number(company.value.money || 0)
+  if (!n) return ''
+  const unit = Number(company.value.moneytype) === 1 ? t('wap_js_00004') : t('wap_js_00002')
+  return `${t('company_00023')}${n}${unit}`
+})
 const telDisplay = computed(
   () =>
     revealed.value?.linktel
@@ -229,6 +241,8 @@ useHead({
                 <span v-if="company.mun_n" class="com_details_line">|</span>{{ company.mun_n }}
                 <span v-if="company.sdate" class="com_details_line">|</span>
                 <template v-if="company.sdate">{{ company.sdate }}</template>
+                <span v-if="moneyLabel" class="com_details_line">|</span>
+                <template v-if="moneyLabel">{{ moneyLabel }}</template>
               </div>
               <div class="com_details_data_box">
                 <div class="com_details_data_box_c">
@@ -305,13 +319,6 @@ useHead({
               <div v-if="linkCode === 10" class="firm_login_con">{{ linkMsg || $t('common_01934') }}</div>
               <div v-else-if="linkCode === 9" class="firm_login_con">
                 {{ linkMsg || $t('common_02372') }}
-                <img
-                  v-if="company.comqcode"
-                  :src="mediaUrl(String(company.comqcode), PLACEHOLDER_LOGO)"
-                  width="88"
-                  height="88"
-                  alt=""
-                />
               </div>
               <div v-else-if="linkCode > 1 && linkCode < 6" class="firm_login_con">{{ linkMsg }}</div>
               <div v-else class="firm_mes1">
@@ -333,7 +340,11 @@ useHead({
                   $t('default_00233')
                 }}</a>
               </div>
-              <span v-if="company.address" class="firm_mes1" style="width: 100%">{{ $t('wap_00040') }}：{{ company.address }}</span>
+              <span v-if="company.address" class="firm_mes1" style="width: 100%">
+                {{ $t('wap_00040') }}：
+                <NuxtLink v-if="mapHref" :to="mapHref">{{ company.address }}</NuxtLink>
+                <template v-else>{{ company.address }}</template>
+              </span>
               <span v-if="company.website" class="firm_mes1">{{ $t('wap_com_00162') }}：{{ company.website }}</span>
             </div>
           </div>
@@ -415,7 +426,11 @@ useHead({
               <span>{{ company.hy_n }}</span>
             </div>
             <p v-if="company.zp_num != null" class="muted">{{ $t('wap_00185') }} {{ company.zp_num }}</p>
-            <p v-if="company.address" class="muted">{{ company.address }}</p>
+            <p v-if="moneyLabel" class="muted">{{ moneyLabel }}</p>
+            <p v-if="company.address" class="muted">
+              <NuxtLink v-if="mapHref" :to="mapHref">{{ company.address }}</NuxtLink>
+              <template v-else>{{ company.address }}</template>
+            </p>
             <a href="javascript:;" class="com_details_opt_gz" @click.prevent="toggleFollow">
               {{ following ? $t('wap_js_00140') : $t('common_01949') }}
             </a>
@@ -441,7 +456,8 @@ useHead({
         <div v-if="company.address" class="job_describe_bottom">
           <div class="job_describe_cengter_header">{{ $t('wap_00040') }}</div>
           <div class="newcom_add">
-            <div class="newcom_add_dz">{{ company.address }}</div>
+            <NuxtLink v-if="mapHref" :to="mapHref" class="newcom_add_dz">{{ company.address }}</NuxtLink>
+            <div v-else class="newcom_add_dz">{{ company.address }}</div>
           </div>
         </div>
         <div v-if="welfare.length" class="job_describe_bottom">
@@ -464,13 +480,6 @@ useHead({
           <div v-if="linkCode === 10">{{ linkMsg || $t('common_01934') }}</div>
           <div v-else-if="linkCode === 9">
             {{ linkMsg || $t('common_02372') }}
-            <img
-              v-if="company.comqcode"
-              :src="mediaUrl(String(company.comqcode), PLACEHOLDER_LOGO)"
-              width="88"
-              height="88"
-              alt=""
-            />
           </div>
           <div v-else-if="linkCode > 1 && linkCode < 6">{{ linkMsg }}</div>
           <div v-else>

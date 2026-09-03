@@ -4,7 +4,8 @@
 //! application layer via `find_one` before insert (matching `atn.model.php`).
 
 use super::entity::Atn;
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
+use std::collections::HashSet;
 
 // PHPYun's `phpyun_atn` declares every numeric column as **signed** `int(11)`,
 // but our entity uses unsigned `u64`/`u32` for cleaner downstream APIs. Cast
@@ -197,6 +198,28 @@ pub async fn list_followee_uids(pool: &MySqlPool, uid: u64) -> Result<Vec<u64>, 
         .into_iter()
         .map(|(v,)| phpyun_core::numeric::nonnegative_count(v))
         .collect())
+}
+
+/// Which of `sc_uids` the follower already follows.
+pub async fn followed_sc_uids(
+    pool: &MySqlPool,
+    uid: u64,
+    sc_uids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if sc_uids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT CAST(sc_uid AS UNSIGNED) FROM phpyun_atn WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND sc_uid IN (");
+    let mut sep = qb.separated(", ");
+    for id in sc_uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
 }
 
 /// Best-effort bump of `phpyun_company.ant_num` (note the historical typo —

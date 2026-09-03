@@ -94,21 +94,51 @@
         <div v-if="typeof company.job_num === 'number'" class="firm_qy_job_list">
           <div class="firm_qy_job_list_name">{{ $t('wap_00185') }}：</div>
           <div class="firm_qy_job_list_r">
-            <span v-if="company.job_num" class="firm_qy_job_tag">{{ company.job_num }}</span>
+            <template v-if="firmJobs.length">
+              <NuxtLink
+                v-for="job in firmJobs"
+                :key="job.id"
+                :to="`/jobs/${job.id}`"
+                class="firm_qy_job_tag"
+              >{{ job.name }}</NuxtLink>
+            </template>
+            <span v-else-if="company.job_num" class="firm_qy_job_tag">{{ company.job_num }}</span>
             <div v-else class="firm_qy_job_no">{{ $t('home.no_recruiting_jobs') }}</div>
           </div>
         </div>
       </div>
+      <div class="firm_gz_right">
+        <a
+          href="javascript:;"
+          class="crop-add-yb"
+          :class="{ company_att: following }"
+          @click.prevent="toggleFollow"
+        >{{ following ? $t('wap_js_00140') : `+ ${$t('common_01949')}` }}</a>
+        <span class="crop-add-yb_span">
+          <label><i class="crop-add-yb_i">{{ antNum }}</i>{{ $t('default_00112') }}</label>
+        </span>
+        <p v-if="followMsg" class="muted">{{ followMsg }}</p>
+      </div>
     </div>
   </div>
-  <NuxtLink v-if="variant === 'firm'" class="site-h5 job_list" :to="`/companies/${company.uid}`" :title="title">
-    <div class="com_list_box">
+  <div v-if="variant === 'firm'" class="com_list_box site-h5">
+    <NuxtLink class="job_list" :to="`/companies/${company.uid}`" :title="title">
+      <div v-if="Number(company.fact_status) === 1" class="ptyhybox" style="position: relative">
+        <div class="ptyhy"><i class="ptyhy_icon" />{{ $t('wap_00274') }}</div>
+      </div>
       <div class="com_list_t_box">
         <div class="com_list_logo_box">
           <img :src="logo" alt="" />
         </div>
-        <div class="com_list_box_c">
+        <div class="com_list_box_c" style="display: flex; align-items: center">
           <h3>{{ title }}</h3>
+          <img
+            v-if="Number(company.rec) === 1"
+            :src="'/legacy/h5/images/firm_icon.png'"
+            alt=""
+            style="width: 44px; height: 12px; margin-left: 0.1rem"
+          />
+          <i v-if="Number(company.yyzz_status) === 1" class="job_qy_rz_icon" />
         </div>
         <div class="com_list_box_js">
           <span v-if="company.city_one || company.city_two" class="com_list_box_js_n">
@@ -116,14 +146,22 @@
           </span>
           <span v-if="company.mun_n" class="com_list_box_js_n">{{ company.mun_n }}</span>
           <span v-if="company.pr_n" class="com_list_box_js_n">{{ company.pr_n }}</span>
-          <span v-if="typeof company.job_num === 'number'" class="com_list_box_js_n">{{ jobNumLabel }}{{ $t('home.job_openings') }}</span>
         </div>
         <div v-if="welfareTags.length" class="welfare">
           <span v-for="w in welfareTags" :key="w" class="welfare_n">{{ w }}</span>
         </div>
       </div>
-    </div>
-  </NuxtLink>
+    </NuxtLink>
+    <NuxtLink
+      v-if="Number(company.job_num) > 0"
+      :to="`/companies/${company.uid}?tab=jobs`"
+    >
+      <div class="com_list_box_joblist">
+        <span class="com_list_box_jobzs"><em class="com_list_box_jobncor">{{ jobNumLabel }}</em>{{ $t('wap_com_00094') }}</span>
+        <i class="com_list_box_jobzs_more" />
+      </div>
+    </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -133,7 +171,19 @@ const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' 
   variant: 'home',
 })
 const { t } = useI18n()
+const api = useApi()
+const { me } = useSiteChrome()
 const hover = ref(false)
+const followMsg = ref('')
+const following = ref(Number(props.company.isatn) === 1)
+const antNum = ref(Number(props.company.ant_num || 0))
+watch(
+  () => [props.company.isatn, props.company.ant_num],
+  () => {
+    following.value = Number(props.company.isatn) === 1
+    antNum.value = Number(props.company.ant_num || 0)
+  },
+)
 const title = computed(() => companyName(props.company, t('common.company')))
 const logo = computed(() => {
   if (props.variant === 'home') {
@@ -149,6 +199,7 @@ const jobNumLabel = computed(() => {
   return '0'
 })
 const openJobs = computed(() => (props.company.open_jobs || []).slice(0, 3))
+const firmJobs = computed(() => (props.company.open_jobs || []).slice(0, 10))
 const showMoreJobs = computed(() => Number(props.company.job_num || 0) > openJobs.value.length)
 const welfareTags = computed(() => {
   const w = props.company.welfare_n
@@ -156,4 +207,28 @@ const welfareTags = computed(() => {
   if (typeof w === 'string' && w) return w.split(/[,，]/).map((s) => s.trim()).filter(Boolean).slice(0, 6)
   return [] as string[]
 })
+async function toggleFollow() {
+  followMsg.value = ''
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (me.value.usertype !== 1) {
+    followMsg.value = t('wap_00030')
+    return
+  }
+  try {
+    const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
+      target_kind: 2,
+      target_uid: props.company.uid,
+    })
+    const next = Boolean(r.following)
+    if (next !== following.value) {
+      antNum.value = Math.max(0, antNum.value + (next ? 1 : -1))
+    }
+    following.value = next
+  } catch (e: unknown) {
+    followMsg.value = e instanceof Error ? e.message : t('common.no')
+  }
+}
 </script>

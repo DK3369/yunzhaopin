@@ -46,15 +46,18 @@ const { data: home, error } = await useAsyncData('home', async () => {
     featured_articles?: ArticleLike[]
     hot_articles?: ArticleLike[]
   }
-  const [rec, latest, urgent] = await Promise.all([
+  const [rec, latest, urgent, bid] = await Promise.all([
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
     api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { bid: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
   ])
+  const bidList = bid.list || []
+  const bidIds = new Set(bidList.map((j) => j.id))
   return {
     ...h,
     rec_jobs: rec.list || [],
-    latest_jobs: latest.list || [],
+    latest_jobs: [...bidList, ...(latest.list || []).filter((j) => !bidIds.has(j.id))],
     urgent_jobs: urgent.list || [],
   }
 })
@@ -706,6 +709,7 @@ useHead({
           <button type="button" :class="{ on: h5Tab === 'latest' }" @click="h5Tab = 'latest'">{{ $t('common.latest') }}</button>
           <button type="button" :class="{ on: h5Tab === 'urgent' }" @click="h5Tab = 'urgent'">{{ $t('wap_00222') }}</button>
           <button type="button" :class="{ on: h5Tab === 'rec' }" @click="h5Tab = 'rec'">{{ $t('wap_com_00251') }}</button>
+          <NuxtLink to="/map">{{ $t('wap_00223') }}</NuxtLink>
         </div>
         <JobCard v-for="job in h5JobList" :key="h5Tab + job.id" :job="job" />
         <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_jobs') }}</p>

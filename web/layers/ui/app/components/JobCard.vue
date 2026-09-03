@@ -56,6 +56,7 @@
     <div class="yunjoblist_new">
       <div class="yunjoblist_newname">
         <NuxtLink :to="`/jobs/${job.id}`" class="yunjoblist_newname_a" :title="job.name">{{ job.name }}</NuxtLink>
+        <span v-if="job.istop" class="lookjob">{{ $t('wap_user_00335') }}</span>
         <i v-if="job.newtime" class="job_newicon">{{ $t('common_02081') }}</i>
         <img v-if="job.is_urgent" src="/legacy/pc/images/jobjp.png" alt="" class="co_zzjp png" />
         <img v-if="job.is_rec" src="/legacy/pc/images/jobtj.png" alt="" class="co_zzjp png" />
@@ -195,6 +196,7 @@
       <div class="tab_card_top">
         <div class="tab_card_job">
           <i class="tab_card_job_name">{{ job.name }}</i>
+          <i v-if="job.istop" class="tab_card_new">{{ $t('wap_user_00335') }}</i>
           <i v-if="job.newtime" class="tab_card_new">new</i>
         </div>
         <i class="tab_card_pay">{{ salary }}</i>
@@ -208,6 +210,10 @@
         <template v-if="job.edu_n">
           <i class="newjob_info_line" />
           <span>{{ dictReqLabel(String(job.edu_n), $t('home.education_suffix')) }}</span>
+        </template>
+        <template v-if="job.distance_km != null">
+          <i class="newjob_info_line" />
+          <span>{{ Number(job.distance_km).toFixed(1) }} km</span>
         </template>
         <span class="newjob_fw">
           <img v-if="job.is_rec" src="/legacy/h5/images/icon_recommend.png" alt="" />

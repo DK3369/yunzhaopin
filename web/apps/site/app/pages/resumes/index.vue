@@ -88,6 +88,39 @@ const moreOpen = ref(
 )
 const api = useApi()
 
+function resumeListParams(extra: Record<string, unknown> = {}) {
+  return {
+    page: page.value,
+    page_size: 20,
+    keyword: keyword.value || undefined,
+    education: education.value,
+    exp: exp.value,
+    job1: job1.value,
+    job1_son: job1Son.value,
+    job_post: jobPost.value,
+    province_id: provinceId.value,
+    city_id: cityId.value,
+    three_city_id: threeCityId.value,
+    sex: sex.value,
+    hy: hy.value,
+    tag: tag.value,
+    report: report.value,
+    type: workType.value,
+    min_salary: filterMinSalary.value,
+    max_salary: filterMaxSalary.value,
+    min_age: filterMinAge.value,
+    max_age: filterMaxAge.value,
+    uptime: uptime.value,
+    integrity: integrity.value,
+    order: order.value || undefined,
+    photo: photo.value ? true : undefined,
+    idcard: idcard.value ? true : undefined,
+    work: work.value ? true : undefined,
+    recg: recg.value ? true : undefined,
+    ...extra,
+  }
+}
+
 const listKey = computed(
   () =>
     `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${filterMinSalary.value}-${filterMaxSalary.value}-${filterMinAge.value}-${filterMaxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
@@ -96,35 +129,19 @@ const listKey = computed(
 const { data, error } = await useAsyncData(
   () => listKey.value,
   () =>
-    api.get<{ list: Array<Record<string, unknown>>; total: number }>('/v1/wap/resumes', {
-      page: page.value,
-      page_size: 20,
-      keyword: keyword.value || undefined,
-      education: education.value,
-      exp: exp.value,
-      job1: job1.value,
-      job1_son: job1Son.value,
-      job_post: jobPost.value,
-      province_id: provinceId.value,
-      city_id: cityId.value,
-      three_city_id: threeCityId.value,
-      sex: sex.value,
-      hy: hy.value,
-      tag: tag.value,
-      report: report.value,
-      type: workType.value,
-      min_salary: filterMinSalary.value,
-      max_salary: filterMaxSalary.value,
-      min_age: filterMinAge.value,
-      max_age: filterMaxAge.value,
-      uptime: uptime.value,
-      integrity: integrity.value,
-      order: order.value || undefined,
-      photo: photo.value ? true : undefined,
-      idcard: idcard.value ? true : undefined,
-      work: work.value ? true : undefined,
-      recg: recg.value ? true : undefined,
-    }),
+    api.get<{ list: Array<Record<string, unknown>>; total: number }>('/v1/wap/resumes', resumeListParams()),
+)
+
+const { data: topResumes } = await useAsyncData(
+  () => `resumes-top-${listKey.value}`,
+  () =>
+    page.value > 1
+      ? Promise.resolve({ list: [] as Array<Record<string, unknown>> })
+      : api
+          .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', {
+            ...resumeListParams({ page: 1, page_size: 5, recg: undefined, top: true }),
+          })
+          .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
 )
 
 const { data: cats } = await useAsyncData(
@@ -236,7 +253,12 @@ const ageItems = computed<DictItem[]>(() => agePresets.value.map((p, i) => ({ id
 
 useSeoMeta({ title: t('default_00312') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
-const list = computed(() => data.value?.list || [])
+const topList = computed(() => (page.value > 1 ? [] : topResumes.value?.list || []).slice(0, 5))
+const list = computed(() => {
+  const raw = data.value?.list || []
+  const ids = new Set(topList.value.map((r) => String(r.uid)))
+  return raw.filter((r) => !ids.has(String(r.uid)))
+})
 const dictName = (items: DictItem[] | null | undefined, id?: number) =>
   items?.find((x) => x.id === id)?.name || ''
 const jobLabel = computed(() => {
@@ -612,8 +634,9 @@ function recPhoto(row: Record<string, unknown>) {
           </div>
           <p v-else-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
           <template v-else>
+            <ResumeCard v-for="r in topList" :key="'top-' + String(r.uid)" :row="r" />
             <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
-            <EmptyState v-if="!list.length" />
+            <EmptyState v-if="!list.length && !topList.length" />
           </template>
           <Pager v-if="!resumeGate" :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
         </div>
@@ -733,8 +756,9 @@ function recPhoto(row: Record<string, unknown>) {
     </div>
     <p v-else-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
     <template v-else>
+      <ResumeCard v-for="r in topList" :key="'htop-' + String(r.uid)" :row="r" />
       <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
-      <EmptyState v-if="!list.length" />
+      <EmptyState v-if="!list.length && !topList.length" />
     </template>
     <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
   </section>

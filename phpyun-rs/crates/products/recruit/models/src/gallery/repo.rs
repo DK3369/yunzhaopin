@@ -46,6 +46,26 @@ pub async fn count_by_uid(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// Public gallery rows (`status=0`), matching PHP company_show / resume_show lists.
+pub async fn list_public_by_uid(
+    pool: &MySqlPool,
+    kind: GalleryKind,
+    uid: u64,
+    limit: u64,
+) -> Result<Vec<GalleryItem>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM {} \
+         WHERE uid = ? AND status = 0 AND COALESCE(deleted,0)=0 \
+         ORDER BY sort DESC, id DESC LIMIT ?",
+        kind.table()
+    );
+    sqlx::query_as::<_, GalleryItem>(&sql)
+        .bind(uid)
+        .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
+        .fetch_all(pool)
+        .await
+}
+
 pub async fn find_by_id(
     pool: &MySqlPool,
     kind: GalleryKind,

@@ -87,6 +87,8 @@ pub struct ResumeFilter<'a> {
     pub did: u32,
     /// PHP `userlist recg=1` → `phpyun_resume_expect.rec_resume = 1`
     pub recg: bool,
+    /// PHP `userlist topdate=1`: default expect `top=1 AND topdate>now`.
+    pub top: bool,
 }
 
 pub async fn list_public(
@@ -277,6 +279,13 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
             qb.push(" AND COALESCE(rec_resume, 0) = 1");
         }
         qb.push(")");
+    }
+    if f.top {
+        qb.push(
+            " AND COALESCE(def_job, 0) > 0 AND def_job IN (\
+             SELECT id FROM phpyun_resume_expect \
+             WHERE COALESCE(top, 0) = 1 AND COALESCE(topdate, 0) > UNIX_TIMESTAMP())",
+        );
     }
 }
 

@@ -110,6 +110,10 @@ pub struct JobSummary {
     /// Whether the *current* user has favorited this job. Always `false` for
     /// unauthenticated requests / non-favorite contexts.
     pub is_favorited: bool,
+    /// Whether the current jobseeker has applied (`phpyun_userid_job`).
+    pub is_applied: bool,
+    /// PHP `istop`: `xsdate > now`.
+    pub istop: bool,
 }
 
 /// Legacy / non-i18n constructor: leaves dictionary-translated fields empty
@@ -174,6 +178,8 @@ impl From<Job> for JobSummary {
 
             jobhits: j.jobhits,
             is_favorited: false,
+            is_applied: false,
+            istop: false,
         }
     }
 }
