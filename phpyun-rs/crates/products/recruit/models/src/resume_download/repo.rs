@@ -36,6 +36,21 @@ pub async fn already_downloaded(
     Ok(row.is_some())
 }
 
+/// PHP `freedown_resume` — free-quota unlock still counts as `m_status=1`.
+pub async fn already_freedown(
+    pool: &MySqlPool,
+    com_id: u64,
+    uid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> =
+        sqlx::query_as("SELECT id FROM phpyun_freedown_resume WHERE comid = ? AND uid = ? LIMIT 1")
+            .bind(com_id)
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.is_some())
+}
+
 /// Company viewing the resumes they have downloaded
 pub async fn list_for_company(
     pool: &MySqlPool,

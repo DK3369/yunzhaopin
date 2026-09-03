@@ -492,6 +492,32 @@ pub async fn build_job_detail_value(
     };
 
     let contact = job_service::resolve_job_contact(state, id, user).await?;
+    let (snum, replied) = tokio::join!(
+        phpyun_models::apply::repo::count_by_job(state.db.reader(), id),
+        phpyun_models::apply::repo::count_replied_by_job(state.db.reader(), id),
+    );
+    let snum = snum.unwrap_or(d.job.snum.max(0) as u64);
+    let replied = replied.unwrap_or(0);
+    let pre = if snum == 0 {
+        0
+    } else {
+        ((replied * 100) / snum) as i32
+    };
+    let operatime_n = {
+        let ts = d.job.operatime;
+        if ts <= 0 {
+            String::new()
+        } else {
+            let delta = now.saturating_sub(ts);
+            if delta < 3600 {
+                t("company_00029", current_lang())
+            } else if delta < 86400 {
+                format!("{}{}", delta / 3600, t("wap_js_00128", current_lang()))
+            } else {
+                format!("{}{}", delta / 86400, t("admin_user_00175", current_lang()))
+            }
+        }
+    };
 
     // --- Assemble the response grouped by business concern ---
     Ok(json::json!({
@@ -546,6 +572,7 @@ pub async fn build_job_detail_value(
             "type_n": dicts.comclass(d.job.r#type).to_string(),
             "mun_n": dicts.comclass(d.com_mun).to_string(),
             "pr_n": dicts.comclass(d.com_pr).to_string(),
+            "report_n": dicts.comclass(d.job.report).to_string(),
         },
 
         // Currently logged-in user context (all 0 when not logged in)
@@ -570,6 +597,9 @@ pub async fn build_job_detail_value(
             "sdate_n": fmt_ts(d.job.sdate, "%Y-%m-%d %H:%M"),
             "lastupdate_n": fmt_ts(d.job.lastupdate, "%Y-%m-%d %H:%M"),
             "salary": (d.job.minsalary + d.job.maxsalary) / 2,
+            "snum": snum,
+            "pre": pre,
+            "operatime_n": operatime_n,
         },
     }))
 }

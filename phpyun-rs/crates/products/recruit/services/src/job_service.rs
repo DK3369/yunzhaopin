@@ -337,6 +337,27 @@ pub async fn resolve_job_contact(
     let raw = job_repo::get_job_contact(state.db.reader(), job_id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("job_not_found"))?;
+    resolve_public_contact(state, raw, job_id, user).await
+}
+
+/// Company detail uses the same `setCompanyLink` gate, without a job overlay.
+pub async fn resolve_company_contact(
+    state: &AppState,
+    com_uid: u64,
+    user: Option<&AuthenticatedUser>,
+) -> AppResult<PublicJobContact> {
+    let raw = job_repo::get_company_contact(state.db.reader(), com_uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("company_not_found"))?;
+    resolve_public_contact(state, raw, 0, user).await
+}
+
+async fn resolve_public_contact(
+    state: &AppState,
+    raw: phpyun_models::job::repo::JobContact,
+    job_id: u64,
+    user: Option<&AuthenticatedUser>,
+) -> AppResult<PublicJobContact> {
 
     let cfg = setting_repo::find_many(
         state.db.reader(),
@@ -373,7 +394,7 @@ pub async fn resolve_job_contact(
     } else if raw.infostatus == 2 {
         link_msg = hidden_tip.clone();
         link_code = 2;
-    } else if raw.is_link == 3 {
+    } else if job_id > 0 && raw.is_link == 3 {
         link_msg = hidden_tip.clone();
         link_code = 3;
     } else if cfg_csv_has(&cfg, "com_link_no", raw.rating) {
@@ -422,19 +443,30 @@ pub async fn resolve_job_contact(
                     link_msg = "common_01411".to_string();
                     link_code = 6;
                 } else if let Some(uid) = uid {
-                    let (sq, ms) = tokio::join!(
-                        phpyun_models::apply::repo::count_active_by_uid_job(
+                    let applied = if job_id > 0 {
+                        let (sq, ms) = tokio::join!(
+                            phpyun_models::apply::repo::count_active_by_uid_job(
+                                state.db.reader(),
+                                uid,
+                                job_id,
+                            ),
+                            phpyun_models::apply::repo::count_userid_msg_by_uid_job(
+                                state.db.reader(),
+                                uid,
+                                job_id,
+                            ),
+                        );
+                        sq.unwrap_or(0) > 0 || ms.unwrap_or(0) > 0
+                    } else {
+                        phpyun_models::apply::repo::count_by_uid_to_company(
                             state.db.reader(),
                             uid,
-                            job_id,
-                        ),
-                        phpyun_models::apply::repo::count_userid_msg_by_uid_job(
-                            state.db.reader(),
-                            uid,
-                            job_id,
-                        ),
-                    );
-                    let applied = sq.unwrap_or(0) > 0 || ms.unwrap_or(0) > 0;
+                            raw.com_uid,
+                        )
+                        .await
+                        .unwrap_or(0)
+                            > 0
+                    };
                     if applied {
                         if cfg_i32(&cfg, "sy_comprivacy_open", 0) == 1
                             && !cfg_csv_has(&cfg, "sy_privacy_rating", raw.rating)

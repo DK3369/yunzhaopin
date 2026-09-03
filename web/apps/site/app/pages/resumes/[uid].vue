@@ -5,7 +5,7 @@ const route = useRoute()
 const { t, locale } = useI18n()
 const uid = Number(route.params.uid)
 const api = useApi()
-const { data, error } = await useAsyncData(
+const { data, error, refresh } = await useAsyncData(
   () => `resume-${locale.value}-${uid}`,
   () => api.get('/v1/wap/resumes/detail', { uid }),
 )
@@ -14,6 +14,9 @@ const name = computed(() => String(row.value.display_name || row.value.name || r
 const works = computed(() => (Array.isArray(row.value.works) ? row.value.works : []) as Record<string, unknown>[])
 const edus = computed(() => (Array.isArray(row.value.edus) ? row.value.edus : []) as Record<string, unknown>[])
 const skills = computed(() => (Array.isArray(row.value.skills) ? row.value.skills : []) as Record<string, unknown>[])
+const projects = computed(() => (Array.isArray(row.value.projects) ? row.value.projects : []) as Record<string, unknown>[])
+const trainings = computed(() => (Array.isArray(row.value.trainings) ? row.value.trainings : []) as Record<string, unknown>[])
+const certs = computed(() => (Array.isArray(row.value.certs) ? row.value.certs : []) as Record<string, unknown>[])
 const expects = computed(() => (Array.isArray(row.value.expects) ? row.value.expects : []) as Record<string, unknown>[])
 const expect0 = computed(() => expects.value[0] || {})
 const expectJobs = computed(() =>
@@ -31,7 +34,8 @@ const expectCities = computed(() =>
 const expectTitle = computed(() => expectJobs.value[0] || '')
 const expectCity = computed(() => expectCities.value[0] || '')
 const expectSalary = computed(() => String(expect0.value.salary_n || ''))
-const hasContact = computed(() => Boolean(row.value.telphone || row.value.email))
+const { me } = useSiteChrome()
+const unlocked = computed(() => Number(row.value.m_status) === 1)
 const photo = computed(() => mediaUrl(String(row.value.photo_n || row.value.photo || ''), PLACEHOLDER_LOGO))
 const sexLabel = computed(() => {
   const n = Number(row.value.sex)
@@ -63,9 +67,21 @@ async function download() {
   try {
     await api.post('/v1/mcenter/resume-downloads', { uid })
     actionMsg.value = t('common.confirm')
+    await refresh()
   } catch {
     await navigateTo('/login')
   }
+}
+async function invite() {
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (me.value.usertype !== 2) {
+    actionMsg.value = t('resume_00038')
+    return
+  }
+  await navigateTo('/com/interviews')
 }
 async function toggleFav() {
   const eid = Number(row.value.def_job || expect0.value.id || 0)
@@ -160,16 +176,24 @@ async function report() {
                 <template v-for="c in expectCities" :key="c">{{ c }}&nbsp;</template>
               </li>
             </ul>
-            <div v-if="hasContact">
+            <div v-if="unlocked">
               <div class="yun_newedition_tit">
                 <span class="yun_newedition_tit_s">{{ $t('wap_00462') }}</span>
                 <i class="yun_newedition_tit_line" />
               </div>
-              <div class="tcktouch_box_p">
-                {{ $t('member_user_00163') }}：<span class="tcktouch_box_p_sj">{{ row.telphone || row.email }}</span>
+              <div class="tcktouch_box_tip">{{ $t('member_com_00024') }}</div>
+              <div v-if="row.telphone" class="tcktouch_box_p">
+                {{ $t('member_user_00163') }}：<span class="tcktouch_box_p_sj">{{ row.telphone }}</span>
               </div>
+              <div v-if="row.email" class="tcktouch_box_p">{{ $t('member_user_00282') }}：{{ row.email }}</div>
+              <div v-if="row.qq" class="tcktouch_box_p">Q Q：{{ row.qq }}</div>
             </div>
-            <p v-else class="muted">{{ $t('ui.login_company') }}</p>
+            <div v-else class="firm_login" style="margin: 12px 0">
+              <p class="muted">{{ $t('wap_00376') }}</p>
+              <NuxtLink v-if="!me" to="/login" class="firm_login_dl">{{ $t('common.login') }}</NuxtLink>
+              <button v-else-if="me.usertype === 2" type="button" class="user_yqms" @click="download">{{ $t('resume_00029') }}</button>
+              <p v-else class="muted">{{ $t('resume_00038') }}</p>
+            </div>
             <div v-if="row.description" class="yun_newedition_tit" style="margin-top: 16px">
               <span class="yun_newedition_tit_s">{{ $t('wap_00456') }}</span>
               <i class="yun_newedition_tit_line" />
@@ -190,6 +214,27 @@ async function report() {
             <div v-for="e in edus" :key="String(e.id)" class="muted">
               {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
             </div>
+            <div v-if="projects.length" class="yun_newedition_tit">
+              <span class="yun_newedition_tit_s">{{ $t('wap_00455') }}</span>
+              <i class="yun_newedition_tit_line" />
+            </div>
+            <div v-for="p in projects" :key="'p' + String(p.id)" class="muted">
+              <strong>{{ p.name }}</strong> {{ p.role }} {{ p.sdate_n }} - {{ p.edate_n }}
+              <div v-html="String(p.content || '')" />
+            </div>
+            <div v-if="trainings.length" class="yun_newedition_tit">
+              <span class="yun_newedition_tit_s">{{ $t('wap_00458') }}</span>
+              <i class="yun_newedition_tit_line" />
+            </div>
+            <div v-for="tr in trainings" :key="'t' + String(tr.id)" class="muted">
+              {{ tr.name }} {{ tr.sdate_n }} - {{ tr.edate_n }}
+              <div v-html="String(tr.content || '')" />
+            </div>
+            <div v-if="certs.length" class="yun_newedition_tit">
+              <span class="yun_newedition_tit_s">{{ $t('wap_00454') }}</span>
+              <i class="yun_newedition_tit_line" />
+            </div>
+            <div v-for="c in certs" :key="'c' + String(c.id)" class="muted">{{ c.name }} {{ c.sdate_n }}</div>
             <div v-if="skills.length" class="yun_newedition_tit">
               <span class="yun_newedition_tit_s">{{ $t('common.more') }}</span>
               <i class="yun_newedition_tit_line" />
@@ -197,6 +242,7 @@ async function report() {
             <p v-if="skills.length">{{ skills.map((s) => s.name).join(' / ') }}</p>
             <p style="margin-top: 16px">
               <button type="button" class="user_yqms" @click="download">{{ $t('resume_00029') }}</button>
+              <button type="button" class="user_yqms" @click="invite">{{ $t('wap_user_00216') }}</button>
               <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="toggleFav">{{
                 fav ? $t('wap_00378') : $t('wap_00379')
               }}</a>
@@ -270,12 +316,37 @@ async function report() {
             {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
           </div>
         </div>
-        <div class="resume_body_card">
-          <p v-if="hasContact">{{ row.telphone || row.email }}</p>
-          <p v-else class="muted">{{ $t('ui.login_company') }}</p>
-          <button type="button" class="job_ceil_jobtd" @click="download">{{ $t('wap_com_00235') }}</button>
-          <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
+        <div v-if="projects.length" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_00455') }}</div>
+          </div>
+          <div v-for="p in projects" :key="'hp' + String(p.id)">
+            <strong>{{ p.name }}</strong> {{ p.role }} {{ p.sdate_n }} - {{ p.edate_n }}
+          </div>
         </div>
+        <div v-if="trainings.length" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_00458') }}</div>
+          </div>
+          <div v-for="tr in trainings" :key="'ht' + String(tr.id)">{{ tr.name }} {{ tr.sdate_n }}</div>
+        </div>
+        <div v-if="certs.length" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_00454') }}</div>
+          </div>
+          <div v-for="c in certs" :key="'hc' + String(c.id)">{{ c.name }}</div>
+        </div>
+        <div v-if="unlocked" class="new_user_touchbox">
+          <div v-if="row.telphone" class="new_user_touch">{{ row.telphone }}</div>
+          <div v-if="row.email" class="new_user_touch">{{ row.email }}</div>
+          <div v-if="row.qq" class="new_user_touch">{{ row.qq }}</div>
+        </div>
+        <div v-else class="resume_body_card">
+          <p class="muted">{{ me?.usertype === 2 ? $t('resume_00029') : $t('wap_00376') }}</p>
+          <button v-if="me?.usertype === 2" type="button" class="job_ceil_jobtd" @click="download">{{ $t('resume_00029') }}</button>
+          <NuxtLink v-else to="/login" class="job_ceil_jobtd">{{ $t('common.login') }}</NuxtLink>
+        </div>
+        <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
       </div>
     </div>
   </article>

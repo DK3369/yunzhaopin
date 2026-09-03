@@ -8,9 +8,10 @@ use axum::{
 use phpyun_core::dto::{EidBody, UidBody};
 use phpyun_core::i18n::{current_lang, t};
 use phpyun_core::utils::{fmt_date, fmt_dt, mask_name_resume as mask_name, pic_n as pic_n_local};
-use phpyun_core::extractors::{MaybeUser, USERTYPE_EMPLOYER};
+use phpyun_core::extractors::{MaybeUser, USERTYPE_EMPLOYER, USERTYPE_JOBSEEKER};
 use phpyun_core::{
-    clock, ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+    clock, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
@@ -328,9 +329,11 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
 )]
 pub async fn list_resumes(
     State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ResumeListQuery>,
 ) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
+    ensure_resume_browse(&state, user.as_ref()).await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
     }
@@ -566,11 +569,19 @@ pub struct ResumeDetail {
     pub label: Option<String>,
 
     // ==== Contacts (visibility depends on permissions) ====
+    /// PHP `$Info.m_status`: 1 = self or company that already downloaded.
+    pub m_status: i32,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub telphone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub telhome: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub homepage: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub qq: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub wxewm: Option<String>,
 
     // ==== Pictures ====
@@ -608,8 +619,69 @@ pub struct ResumeDetail {
     pub others: Vec<ResumeOtherItem>,
 }
 
-/// Public resume detail — guests may read the body; contact fields are
-/// returned only for employer accounts. Download / talent-pool stay on mcenter.
+/// PHP `com_search=1` guests and `sy_user_visit_resume=0` jobseekers cannot browse talent.
+async fn ensure_resume_browse(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+) -> AppResult<()> {
+    let cfg = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &["com_search", "sy_user_visit_resume"],
+    )
+    .await
+    .unwrap_or_default();
+    let com_search = cfg.get("com_search").map(|s| s.trim()).unwrap_or("0");
+    let visit = cfg
+        .get("sy_user_visit_resume")
+        .map(|s| s.trim())
+        .unwrap_or("1");
+    if com_search == "1" && user.is_none() {
+        return Err(ApiError::unauth());
+    }
+    if visit == "0" && user.is_some_and(|u| u.usertype == USERTYPE_JOBSEEKER) {
+        return Err(ApiError::forbidden());
+    }
+    Ok(())
+}
+
+async fn ensure_resume_view(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+    resume_uid: u64,
+) -> AppResult<()> {
+    if user.is_some_and(|u| u.uid == resume_uid && u.usertype == USERTYPE_JOBSEEKER) {
+        return Ok(());
+    }
+    ensure_resume_browse(state, user).await
+}
+
+/// PHP `resume.model.php`: `m_status=1` only for the owner or a company with a download row.
+async fn resume_m_status(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+    resume_uid: u64,
+) -> i32 {
+    let Some(u) = user else {
+        return 0;
+    };
+    if u.usertype == USERTYPE_JOBSEEKER && u.uid == resume_uid {
+        return 1;
+    }
+    if u.usertype == USERTYPE_EMPLOYER {
+        let db = state.db.reader();
+        let (down, free) = tokio::join!(
+            phpyun_models::resume_download::repo::already_downloaded(db, u.uid, resume_uid),
+            phpyun_models::resume_download::repo::already_freedown(db, u.uid, resume_uid),
+        );
+        if down.unwrap_or(false) || free.unwrap_or(false) {
+            return 1;
+        }
+    }
+    0
+}
+
+/// Public resume detail — guests may read the body; contact fields follow
+/// PHP `m_status` (self or downloaded), not merely “logged-in employer”.
 #[utoipa::path(
     post,
     path = "/v1/wap/resumes/detail",
@@ -627,6 +699,7 @@ pub async fn resume_detail(
 ) -> AppResult<ApiResponse<ResumeDetail>> {
     let uid = b.uid;
     let r = resume_service::get_public(&state, uid).await?;
+    ensure_resume_view(&state, user.as_ref(), uid).await?;
     let employer = user
         .as_ref()
         .is_some_and(|u| u.usertype == USERTYPE_EMPLOYER);
@@ -635,6 +708,8 @@ pub async fn resume_detail(
             view_service::record_async(&state, u.uid, KIND_RESUME, uid);
         }
     }
+    let m_status = resume_m_status(&state, user.as_ref(), uid).await;
+    let unlocked = m_status == 1;
     // Fetch 8 child tables + dictionaries in parallel
     let (bundle_res, dicts) = tokio::join!(
         resume_children_service::get_full_bundle(&state, uid),
@@ -643,7 +718,13 @@ pub async fn resume_detail(
     let (expects, edus, works, projects, skills, trainings, certs, others) = bundle_res?;
     let dicts = dicts?;
     let display_name = match r.name.as_deref() {
-        Some(n) if !n.is_empty() => mask_name(n, r.nametype),
+        Some(n) if !n.is_empty() => {
+            if unlocked {
+                n.to_string()
+            } else {
+                mask_name(n, r.nametype)
+            }
+        }
         _ => t("ui.resume.anonymous", current_lang()),
     };
     let age = r.birthday.as_deref().and_then(age_from_birthday);
@@ -672,12 +753,13 @@ pub async fn resume_detail(
         tag: r.tag,
         label: r.label,
 
-        telphone: if employer { r.telphone } else { None },
-        telhome: if employer { r.telhome } else { None },
-        email: if employer { r.email } else { None },
-        homepage: r.homepage,
-        qq: if employer { r.qq } else { None },
-        wxewm: if employer { r.wxewm } else { None },
+        m_status,
+        telphone: if unlocked { r.telphone } else { None },
+        telhome: if unlocked { r.telhome } else { None },
+        email: if unlocked { r.email } else { None },
+        homepage: if unlocked { r.homepage } else { None },
+        qq: if unlocked { r.qq } else { None },
+        wxewm: if unlocked { r.wxewm } else { None },
 
         photo: r.photo,
         resume_photo: r.resume_photo,

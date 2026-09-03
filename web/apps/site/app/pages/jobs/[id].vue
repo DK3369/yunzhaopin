@@ -66,6 +66,7 @@ const yqItems = computed(() => {
   if (zpNum > 0) out.push({ label: t('wap_com_00333'), value: String(zpNum) })
   else if (dict.value.number_n) out.push({ label: t('wap_com_00333'), value: String(dict.value.number_n) })
   if (dict.value.report_n) out.push({ label: t('wap_com_00279'), value: String(dict.value.report_n) })
+  if (Number(job.value.is_graduate) === 1) out.push({ label: t('wap_com_00280'), value: t('common.yes') })
   if (dict.value.age_n) out.push({ label: t('wap_com_00284'), value: String(dict.value.age_n) })
   if (sexSwitch.value && dict.value.sex_n) out.push({ label: t('wap_com_00332'), value: String(dict.value.sex_n) })
   if (dict.value.marriage_n) out.push({ label: t('default_00366'), value: String(dict.value.marriage_n) })
@@ -86,6 +87,9 @@ const contactInfo = computed(
 )
 const { data: adsBanner } = await useAsyncData('ads-509', () =>
   api.get<Array<{ image_n?: string }>>('/v1/wap/ads', { slot: '509', limit: 1 }).catch(() => []),
+)
+const { data: adsH5 } = await useAsyncData('ads-512', () =>
+  api.get<Array<{ image_n?: string; image?: string; link?: string }>>('/v1/wap/ads', { slot: '512', limit: 1 }).catch(() => []),
 )
 const { data: similar } = await useAsyncData(
   () => `job-similar-${locale.value}-${id}`,
@@ -114,6 +118,17 @@ const telDisplay = computed(
     || String(contactInfo.value.linktel_n || contactInfo.value.linkphone_n || ''),
 )
 const linkCode = computed(() => Number(contactInfo.value.link_code || 0))
+const applyStats = computed(() => ({
+  snum: Number(formatted.value.snum || job.value.snum || 0),
+  pre: Number(formatted.value.pre || 0),
+  operatime: String(formatted.value.operatime_n || ''),
+}))
+const mapHref = computed(() => {
+  const x = String(contactInfo.value.x || company.value.x || job.value.x || '')
+  const y = String(contactInfo.value.y || company.value.y || job.value.y || '')
+  if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`
+  return ''
+})
 const linkMsg = computed(() => {
   const raw = String(contactInfo.value.link_msg || '')
   if (!raw) return ''
@@ -388,18 +403,37 @@ useHead({
                 <div v-if="loginDateN" class="job_details_touch_userlogintime">
                   {{ $t('default_00364') }}{{ loginDateN }}
                 </div>
+                <div v-if="applyStats.snum > 0" class="job_details_touch_userdata">
+                  <div class="job_details_touch_userdata_list">
+                    <span class="job_details_touch_userdata_n">{{ applyStats.snum }}{{ $t('common_02052') }}</span>{{ $t('member_com_00152') }}
+                  </div>
+                  <div class="job_details_touch_userdata_list">
+                    <i class="job_details_touch_userdata_list_line" />
+                    <span class="job_details_touch_userdata_n">{{ applyStats.pre }}%</span>{{ $t('default_00227') }}
+                  </div>
+                  <div v-if="applyStats.operatime" class="job_details_touch_userdata_list">
+                    <i class="job_details_touch_userdata_list_line" />
+                    <span class="job_details_touch_userdata_n">{{ applyStats.operatime }}</span>{{ $t('default_00224') }}
+                  </div>
+                </div>
               </div>
-              <div v-if="linkCode > 1 && linkCode < 6" class="job_details_touch_tel">
+              <div v-if="linkCode === 10" class="job_details_touch_tel">
+                <em class="job_details_touch_tel_tip">{{ linkMsg || $t('common_01934') }}</em>
+              </div>
+              <div v-else-if="linkCode === 9" class="job_details_touch_tel">
+                <em class="job_details_touch_tel_tip">{{ linkMsg || $t('common_02372') }}</em>
+                <img
+                  v-if="company.qcode || company.comqcode"
+                  :src="mediaUrl(String(company.qcode || company.comqcode || ''))"
+                  width="88"
+                  height="88"
+                  alt=""
+                />
+              </div>
+              <div v-else-if="linkCode > 1 && linkCode < 6" class="job_details_touch_tel">
                 <em class="job_details_touch_tel_tip">{{ linkMsg }}</em>
                 <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="apply">{{
                   $t('wap_com_00235')
-                }}</a>
-              </div>
-              <div v-else-if="linkCode === 9" class="job_details_touch_tel">
-                {{ $t('common.phone') }}：
-                <span class="job_details_touch_tel_n">{{ telDisplay || '****' }}</span>
-                <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
-                  $t('common_02372')
                 }}</a>
               </div>
               <div v-else class="job_details_touch_tel">
@@ -426,7 +460,10 @@ useHead({
                   <span class="job_details_touch_tel_say">{{ $t('member_com_00024') }}{{ siteName }}{{ $t('wap_00240') }}</span>
                 </template>
               </div>
-              <span v-if="comAddress" class="job_details_touch_add">{{ $t('wap_js_00082') }}：{{ comAddress }}</span>
+              <span v-if="comAddress" class="job_details_touch_add">
+                {{ $t('wap_js_00082') }}：{{ comAddress }}
+                <NuxtLink v-if="mapHref" :to="mapHref" class="job_details_touch_tel_bth">{{ $t('wap_00223') }}</NuxtLink>
+              </span>
             </div>
             <div class="job_details_tit" style="margin-top: 20px">
               <span class="job_details_tit_s">{{ $t('wap_com_00289') }}</span>
@@ -590,6 +627,11 @@ useHead({
             <div class="newjob_js" v-html="String(job.description || job.content || '')" />
           </div>
         </div>
+        <div v-if="adsH5?.length" class="jobshow_ad">
+          <a v-for="(ad, i) in adsH5" :key="'512-' + i" :href="ad.link || undefined">
+            <img v-if="ad.image_n || ad.image" :src="ad.image_n || ad.image" alt="" style="width: 100%" />
+          </a>
+        </div>
         <div v-if="job.uid" class="corporate_information">
           <div class="corporate_information_header">{{ $t('wap_00270') }}</div>
           <NuxtLink :to="`/companies/${job.uid}`">
@@ -698,6 +740,17 @@ useHead({
           <div>{{ revealed?.linkman || contactInfo.linkman }}</div>
           <a v-if="revealed?.linktel" :href="`tel:${revealed.linktel}`">{{ revealed.linktel }}</a>
           <a v-else-if="revealed?.linkphone" :href="`tel:${revealed.linkphone}`">{{ revealed.linkphone }}</a>
+        </div>
+        <div v-else-if="linkCode === 10" class="new_jobshow_tel">{{ linkMsg || $t('common_01934') }}</div>
+        <div v-else-if="linkCode === 9" class="new_jobshow_tel">
+          {{ linkMsg || $t('common_02372') }}
+          <img
+            v-if="company.qcode || company.comqcode"
+            :src="mediaUrl(String(company.qcode || company.comqcode || ''))"
+            width="88"
+            height="88"
+            alt=""
+          />
         </div>
         <div v-else class="new_jobshow_tel">{{ applyMsg || linkMsg || telDisplay }}</div>
         <a href="javascript:;" class="new_jobshow_telbth" @click.prevent="h5LinkOpen = false">{{ $t('common.close') }}</a>

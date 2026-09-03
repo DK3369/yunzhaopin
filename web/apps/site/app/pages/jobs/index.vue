@@ -432,11 +432,18 @@ function goPage(p: number) {
             <p v-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
             <template v-else>
               <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-              <EmptyState
-                v-if="!list.length"
-                :title="$t('default_00362')"
-                :hint="$t('common_02399')"
-              />
+              <template v-if="!list.length">
+                <EmptyState
+                  :title="$t('default_00362')"
+                  :hint="$t('common_02399')"
+                />
+                <JobCard
+                  v-for="job in recSide?.list || []"
+                  :key="'rec-' + job.id"
+                  :job="job"
+                  variant="search"
+                />
+              </template>
             </template>
             <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
           </div>
@@ -497,9 +504,41 @@ function goPage(p: number) {
       <H5FilterBar
         :all-label="$t('common.all')"
         :tabs="[
-          { key: 'province_id', label: $t('common_02110'), current: cityLabel, items: provinces || [] },
-          { key: 'job1', label: $t('wap_00576'), current: jobLabel, items: jobItems },
-          { key: 'edu', label: $t('wap_00238'), current: dictName(edus, edu), items: edus || [] },
+          {
+            key: 'province_id',
+            label: $t('common_02110'),
+            current: cityLabel,
+            items: provinces || [],
+            childKey: 'city_id',
+            childItems: cities || [],
+            grandKey: 'three_city_id',
+            grandItems: districts || [],
+          },
+          {
+            key: 'job1',
+            label: $t('wap_00576'),
+            current: jobLabel,
+            items: jobItems,
+            childKey: 'job1_son',
+            childItems: job2Items,
+            grandKey: 'job_post',
+            grandItems: job3Items,
+          },
+          {
+            key: 'more',
+            label: $t('wap_00238'),
+            kind: 'more',
+            items: [],
+            groups: [
+              { label: $t('wap_user_00016'), param: 'salary', items: salaries || [] },
+              { label: $t('company_00007'), param: 'welfare', items: welfares || [] },
+              { label: $t('home.experience_suffix'), param: 'exp', items: exps || [] },
+              { label: $t('home.education_suffix'), param: 'edu', items: edus || [] },
+              { label: $t('wap_com_00303'), param: 'sex', items: sexItems },
+              { label: $t('wap_00326'), param: 'uptime', items: uptimeItems },
+              { label: $t('admin_user_company_00373'), param: 'hy', items: industries || [] },
+            ],
+          },
         ]"
       />
     </div>
@@ -510,7 +549,15 @@ function goPage(p: number) {
       <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
       <template v-else>
         <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-        <EmptyState v-if="!list.length" :title="$t('home.no_job_data')" />
+        <template v-if="!list.length">
+          <EmptyState :title="$t('home.no_job_data')" />
+          <JobCard
+            v-for="job in recSide?.list || []"
+            :key="'rec-' + job.id"
+            :job="job"
+            variant="search"
+          />
+        </template>
       </template>
       <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
     </div>

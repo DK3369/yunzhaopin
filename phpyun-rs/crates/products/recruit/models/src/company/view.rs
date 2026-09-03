@@ -42,4 +42,8 @@ pub struct CompanySummary {
     pub job_num: u64,
     /// Business-license verified (`yyzz_status=1`). Additive.
     pub yyzz_status: i32,
+    /// On-site verification (PHP `fact_status`).
+    pub fact_status: i32,
+    /// PHP `$com.welfare_n`.
+    pub welfare_n: Vec<String>,
 }

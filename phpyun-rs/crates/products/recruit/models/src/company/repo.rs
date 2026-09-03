@@ -58,6 +58,8 @@ pub struct CompanyFilter<'a> {
     pub pr: Option<i32>,
     /// Staff-count dict id — 50人以下/50-200/… (`mun`).
     pub mun: Option<i32>,
+    /// Welfare dict id (`FIND_IN_SET` against CSV `welfare`).
+    pub welfare: Option<i32>,
     /// `cert=true` keeps only companies whose business license has been
     /// verified (`yyzz_status = 1`).
     pub cert: bool,
@@ -133,6 +135,11 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
     if let Some(v) = f.mun {
         qb.push(" AND mun = ");
         qb.push_bind(v);
+    }
+    if let Some(v) = f.welfare {
+        qb.push(" AND FIND_IN_SET(");
+        qb.push_bind(v);
+        qb.push(", welfare)");
     }
     if f.cert {
         qb.push(" AND yyzz_status = 1");

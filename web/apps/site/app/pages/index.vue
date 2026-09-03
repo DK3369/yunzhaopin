@@ -16,7 +16,15 @@ type FriendLink = { id: number; name: string; url: string; logo?: string; catego
 
 const api = useApi()
 const { t } = useI18n()
-const { siteName, me, h5Nav } = useSiteChrome()
+const { siteName, me, h5Nav, settings } = useSiteChrome()
+const resumeGate = computed(() => {
+  const needLogin = String(settings.value.com_search || '') === '1' && !me.value
+  const seekerOff =
+    String(settings.value.sy_user_visit_resume ?? '1') === '0' && Number(me.value?.usertype) === 1
+  if (needLogin) return 'login'
+  if (seekerOff) return 'seeker'
+  return ''
+})
 const h5NavPage = ref(0)
 const h5NavPages = computed(() => {
   const list = h5Nav.value || []
@@ -39,9 +47,9 @@ const { data: home, error } = await useAsyncData('home', async () => {
     hot_articles?: ArticleLike[]
   }
   const [rec, latest, urgent] = await Promise.all([
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
   ])
   return {
     ...h,
@@ -60,7 +68,7 @@ const { data: adsH5 } = await useAsyncData('ads-50', () =>
   api.get<Banner[]>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => [] as Banner[]),
 )
 const { data: adsMid } = await useAsyncData('ads-mid', async () => {
-  const [slot13, slot14, slot15, slot72, slot73, slot92, slot503] = await Promise.all([
+  const [slot13, slot14, slot15, slot72, slot73, slot92, slot503, slot506, slot502, slot10, slot11] = await Promise.all([
     api.get<Banner[]>('/v1/wap/ads', { slot: '13', limit: 3 }).catch(() => [] as Banner[]),
     api.get<Banner[]>('/v1/wap/ads', { slot: '14', limit: 3 }).catch(() => [] as Banner[]),
     api.get<Banner[]>('/v1/wap/ads', { slot: '15', limit: 3 }).catch(() => [] as Banner[]),
@@ -68,6 +76,10 @@ const { data: adsMid } = await useAsyncData('ads-mid', async () => {
     api.get<Banner[]>('/v1/wap/ads', { slot: '73', limit: 1 }).catch(() => [] as Banner[]),
     api.get<Banner[]>('/v1/wap/ads', { slot: '92', limit: 5 }).catch(() => [] as Banner[]),
     api.get<Banner[]>('/v1/wap/ads', { slot: '503', limit: 3 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '506', limit: 1 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '502', limit: 1 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '10', limit: 1 }).catch(() => [] as Banner[]),
+    api.get<Banner[]>('/v1/wap/ads', { slot: '11', limit: 1 }).catch(() => [] as Banner[]),
   ])
   return {
     slot13: slot13 || [],
@@ -77,6 +89,10 @@ const { data: adsMid } = await useAsyncData('ads-mid', async () => {
     slot73: slot73 || [],
     slot92: slot92 || [],
     slot503: slot503 || [],
+    slot506: slot506 || [],
+    slot502: slot502 || [],
+    slot10: slot10 || [],
+    slot11: slot11 || [],
   }
 })
 const { data: friendLinks } = await useAsyncData('home-links', () =>
@@ -116,6 +132,25 @@ const ads72 = computed(() => (adsMid.value?.slot72 || []).filter((b) => b.image_
 const ads73 = computed(() => (adsMid.value?.slot73 || []).filter((b) => b.image_n || b.image || b.pic_content))
 const ads92 = computed(() => (adsMid.value?.slot92 || []).filter((b) => b.image_n || b.image || b.pic_content))
 const ads503 = computed(() => (adsMid.value?.slot503 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const adsPopupPc = computed(() => (adsMid.value?.slot506 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const adsPopupH5 = computed(() => (adsMid.value?.slot502 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const adsFooter = computed(() => (adsMid.value?.slot10 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const adsCouplet = computed(() => (adsMid.value?.slot11 || []).filter((b) => b.image_n || b.image || b.pic_content))
+const popupPc = ref(false)
+const popupH5 = ref(false)
+onMounted(() => {
+  if (adsPopupPc.value.length && !sessionStorage.getItem('ad506')) popupPc.value = true
+  if (adsPopupH5.value.length && !sessionStorage.getItem('ad502')) popupH5.value = true
+})
+function closePopup(kind: 'pc' | 'h5') {
+  if (kind === 'pc') {
+    popupPc.value = false
+    sessionStorage.setItem('ad506', '1')
+  } else {
+    popupH5.value = false
+    sessionStorage.setItem('ad502', '1')
+  }
+}
 const hasMidAds = computed(() => mid13.value.length + mid14.value.length + mid15.value.length > 0)
 const linkList = computed(() => (Array.isArray(friendLinks.value) ? friendLinks.value : []) as FriendLink[])
 const linkPics = computed(() => linkList.value.filter((l) => String(l.category) === '2' && (l.logo || '').trim()))
@@ -186,6 +221,15 @@ useHead({
 <template>
   <!-- ========== PC 首页，对齐 default/index/index.htm ========== -->
   <div class="site-pc">
+    <div v-if="popupPc && adsPopupPc.length" class="yhq_tip" style="display: block">
+      <div class="tcbanner" id="adContent">
+        <a v-for="(ad, i) in adsPopupPc" :key="'506-' + i" :href="adHref(ad) || undefined">
+          <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+        </a>
+      </div>
+      <span class="tcbanner_gb" @click="closePopup('pc')">{{ $t('common.close') }}</span>
+      <div class="yhq_tip_bg" style="display: block" @click="closePopup('pc')" />
+    </div>
     <p v-if="error" class="w1200 muted" style="padding: 12px 0">{{ $t('ui.home_unavailable') }}</p>
     <div v-if="ads73.length" class="index_zs_banner index_zs_banner2">
       <a v-for="(ad, i) in ads73" :key="'73-' + i" :href="adHref(ad) || '/jobs'">
@@ -400,7 +444,11 @@ useHead({
           </NuxtLink>
         </div>
         <div class="tjuser_list">
-          <ul>
+          <div v-if="resumeGate" class="firm_login" style="padding: 30px">
+            <p>{{ resumeGate === 'seeker' ? $t('resume_00038') : $t('wap_00376') }}</p>
+            <NuxtLink v-if="resumeGate === 'login'" to="/login">{{ $t('common.login') }}</NuxtLink>
+          </div>
+          <ul v-else>
             <li v-for="r in resumeList" :key="String(r.uid || r.id)">
               <div class="tjuser_photo">
                 <img :src="mediaUrl(String(r.photo || r.photo_n || ''), PLACEHOLDER_LOGO)" width="80" height="80" alt="" />
@@ -416,10 +464,10 @@ useHead({
               </div>
             </li>
           </ul>
-          <p v-if="resumeError" class="muted" style="padding: 20px">{{
+          <p v-if="!resumeGate && resumeError" class="muted" style="padding: 20px">{{
             listFailMsg(resumeError, $t('ui.rate_limit'), $t('ui.load_failed'))
           }}</p>
-          <p v-else-if="!resumeList.length" class="muted" style="padding: 20px">{{ $t('ui.no_public_resumes') }}</p>
+          <p v-else-if="!resumeGate && !resumeList.length" class="muted" style="padding: 20px">{{ $t('ui.no_public_resumes') }}</p>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/resumes">{{ $t('common.view_more') }}</NuxtLink></div>
       </div>
@@ -490,10 +538,29 @@ useHead({
         </div>
       </div>
     </div>
+    <div v-if="adsFooter.length" class="yun_footer_ad">
+      <a v-for="(ad, i) in adsFooter" :key="'10-' + i" :href="adHref(ad) || undefined">
+        <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+      </a>
+    </div>
+    <div v-if="adsCouplet.length" class="yun_couplet">
+      <a v-for="(ad, i) in adsCouplet" :key="'11-' + i" :href="adHref(ad) || undefined">
+        <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+      </a>
+    </div>
   </div>
 
   <!-- ========== H5 首页，对齐 wap/index.htm ========== -->
   <div class="site-h5">
+    <div v-if="popupH5 && adsPopupH5.length" class="yhq_tip" style="display: block">
+      <div class="tcbanner">
+        <a v-for="(ad, i) in adsPopupH5" :key="'502-' + i" :href="adHref(ad) || undefined">
+          <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
+        </a>
+      </div>
+      <span class="tcbanner_gb" @click="closePopup('h5')">{{ $t('common.close') }}</span>
+      <div class="yhq_tip_bg" style="display: block" @click="closePopup('h5')" />
+    </div>
     <div class="index_body">
       <div class="banner">
         <div v-if="h5Banners.length" class="roll">

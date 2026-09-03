@@ -54,6 +54,10 @@
             class="png"
             width="16"
           />
+          <span v-if="Number(company.fact_status) === 1" class="firm_qy_list_s">{{ $t('wap_00274') }}</span>
+        </div>
+        <div v-if="welfareTags.length" class="welfare">
+          <span v-for="w in welfareTags" :key="w" class="welfare_n">{{ w }}</span>
         </div>
         <div v-if="typeof company.job_num === 'number'" class="firm_qy_job_list">
           <div class="firm_qy_job_list_name">{{ $t('wap_00185') }}：</div>
@@ -80,6 +84,10 @@
           </span>
           <span v-if="company.mun_n" class="com_list_box_js_n">{{ company.mun_n }}</span>
           <span v-if="company.pr_n" class="com_list_box_js_n">{{ company.pr_n }}</span>
+          <span v-if="typeof company.job_num === 'number'" class="com_list_box_js_n">{{ jobNumLabel }}{{ $t('home.job_openings') }}</span>
+        </div>
+        <div v-if="welfareTags.length" class="welfare">
+          <span v-for="w in welfareTags" :key="w" class="welfare_n">{{ w }}</span>
         </div>
       </div>
     </div>
@@ -106,5 +114,11 @@ const logo = computed(() => {
 const jobNumLabel = computed(() => {
   if (typeof props.company.job_num === 'number') return String(props.company.job_num)
   return '0'
+})
+const welfareTags = computed(() => {
+  const w = props.company.welfare_n
+  if (Array.isArray(w)) return w.map(String).filter(Boolean).slice(0, 6)
+  if (typeof w === 'string' && w) return w.split(/[,，]/).map((s) => s.trim()).filter(Boolean).slice(0, 6)
+  return [] as string[]
 })
 </script>

@@ -181,6 +181,7 @@ impl Modify for UniqueOperationId {
         // wap public: companies
         v1::wap::companies::list_companies,
         v1::wap::companies::company_detail,
+        v1::wap::companies::company_contact,
         // wap public: resumes (employer only)
         v1::wap::resumes::list_resumes,
         v1::wap::resumes::resume_detail,
@@ -276,6 +277,8 @@ impl Modify for UniqueOperationId {
         v1::wap::dict::salaries,
         v1::wap::dict::job_types,
         v1::wap::dict::tags,
+        v1::wap::dict::company_natures,
+        v1::wap::dict::company_sizes,
         // wap: articles
         v1::wap::articles::list_articles,
         v1::wap::articles::article_detail,
@@ -917,6 +920,8 @@ impl Modify for UniqueOperationId {
             v1::wap::qna::TopAnswererItem,
             v1::wap::site::SubSiteView,
             v1::wap::jobs::JobContactView,
+            v1::wap::companies::CompanyContactView,
+            v1::wap::companies::CompanyPublicContact,
             v1::wap::resumes::ResumeHitsResp,
             v1::wap::resumes::DefaultExpectResp,
             v1::wap::companies::CompanyAutoItem,

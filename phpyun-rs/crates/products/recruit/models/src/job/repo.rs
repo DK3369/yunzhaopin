@@ -80,7 +80,9 @@ const FIELDS: &str = "id, uid, name, com_name, \
     com_logo, COALESCE(jobhits, 0) AS jobhits, COALESCE(snum, 0) AS snum, \
     COALESCE(xsdate, 0) AS xsdate, COALESCE(jobexpoure, 0) AS jobexpoure, \
     COALESCE(statusbody, '') AS statusbody, COALESCE(rating, 0) AS rating, \
-    COALESCE(source, 0) AS source";
+    COALESCE(source, 0) AS source, \
+    COALESCE(report, 0) AS report, COALESCE(is_graduate, 0) AS is_graduate, \
+    COALESCE(operatime, 0) AS operatime";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_company_job WHERE id = ? LIMIT 1");
@@ -1324,4 +1326,50 @@ pub async fn get_job_contact(
     resolved.com_uid = com_uid;
     resolved.is_link = is_link;
     Ok(Some(resolved))
+}
+
+/// Company-page contact (no per-job `is_link` overlay).
+pub async fn get_company_contact(
+    pool: &MySqlPool,
+    com_uid: u64,
+) -> Result<Option<JobContact>, sqlx::Error> {
+    let default_row: Option<CompanyContactRow> = sqlx::query_as(
+        "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
+                COALESCE(linkmail, ''), COALESCE(address, ''), COALESCE(cityid, 0), \
+                COALESCE(x, ''), COALESCE(y, ''), \
+                COALESCE(infostatus, 1), COALESCE(rating, 0), COALESCE(not_disturb, '') \
+           FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(com_uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(default_row.map(
+        |(
+            linkman,
+            linktel,
+            linkphone,
+            linkmail,
+            address,
+            cityid,
+            x,
+            y,
+            infostatus,
+            rating,
+            not_disturb,
+        )| JobContact {
+            com_uid,
+            is_link: 1,
+            rating,
+            infostatus,
+            not_disturb,
+            linkman,
+            linktel,
+            linkphone,
+            linkmail,
+            address,
+            cityid,
+            x,
+            y,
+        },
+    ))
 }

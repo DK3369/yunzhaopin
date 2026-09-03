@@ -101,19 +101,25 @@
             </div>
             <div class="wap_footer_name">{{ $t('common.home') }}</div>
           </NuxtLink>
-          <NuxtLink class="wap_footernav" to="/jobs">
+          <NuxtLink v-if="!isCompany" class="wap_footernav" to="/jobs">
             <div class="wap_footericon">
               <img :src="tabIcon('job')" alt="" style="width: 100%" />
             </div>
             <div class="wap_footer_name">{{ $t('common.job') }}</div>
           </NuxtLink>
-          <NuxtLink class="wap_footernav" :to="me ? (me.usertype === 2 ? '/com/jobs/new' : '/user/resume') : '/login'">
+          <NuxtLink v-else class="wap_footernav" to="/resumes">
+            <div class="wap_footericon">
+              <img :src="tabIcon('resume')" alt="" style="width: 100%" />
+            </div>
+            <div class="wap_footer_name">{{ $t('common.resume') }}</div>
+          </NuxtLink>
+          <NuxtLink class="wap_footernav" :to="me ? (isCompany ? '/com/jobs/new' : '/user/resume') : '/login'">
             <div class="wap_footer_fb">
               <img src="/legacy/h5/images/home_icon_release_default.png" alt="" style="width: 100%" />
             </div>
-            <div class="wap_footer_name">{{ me?.usertype === 2 ? $t('common.publish_job') : me ? $t('common.publish_resume') : $t('common.publish') }}</div>
+            <div class="wap_footer_name">{{ isCompany ? $t('common.publish_job') : me ? $t('common.publish_resume') : $t('common.publish') }}</div>
           </NuxtLink>
-          <NuxtLink class="wap_footernav" :to="me ? memberHome : '/login'">
+          <NuxtLink class="wap_footernav" :to="me ? messageTo : '/login'">
             <div class="wap_footericon">
               <img :src="tabIcon('news')" alt="" style="width: 100%" />
             </div>
@@ -134,19 +140,26 @@
 <script setup lang="ts">
 const route = useRoute()
 const { siteName, phone, worktime, copyright, record, email, address, me, memberHome, footerNav, wxQr, wapQr, perfor, hrlicense, secord } = useSiteChrome()
+const isCompany = computed(() => Number(me.value?.usertype) === 2)
+const messageTo = computed(() => (isCompany.value ? '/com/messages' : '/user/messages'))
 
-function tabIcon(kind: 'home' | 'job' | 'news' | 'me') {
+function tabIcon(kind: 'home' | 'job' | 'resume' | 'news' | 'me') {
   const on =
     kind === 'home'
       ? route.path === '/'
       : kind === 'job'
         ? route.path.startsWith('/jobs')
-        : kind === 'me'
-          ? route.path.startsWith('/user') || route.path.startsWith('/com') || route.path === '/login'
-          : false
+        : kind === 'resume'
+          ? route.path.startsWith('/resumes')
+          : kind === 'news'
+            ? route.path.endsWith('/messages')
+            : kind === 'me'
+              ? route.path.startsWith('/user') || route.path.startsWith('/com') || route.path === '/login'
+              : false
   const map = {
     home: on ? 'tab_icon_home_s.png' : 'tab_icon_home_n.png',
     job: on ? 'tab_icon_position_s.png' : 'tab_icon_position_n.png',
+    resume: on ? 'tab_icon_jl_n.png' : 'tab_icon_jl.png',
     news: on ? 'tab_icon_news_s.png' : 'tab_icon_news_n.png',
     me: on ? 'tab_icon_me_s.png' : 'tab_icon_me_n.png',
   }

@@ -418,6 +418,82 @@ html {
 .h5-filter-item.on {
   color: #2778f8;
 }
+.h5-filter-group {
+  padding: 0.12rem 0 0.2rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+.h5-filter-group-label {
+  font-size: 0.26rem;
+  color: #999;
+  padding: 0.16rem 0 0.08rem;
+}
+.yhq_tip {
+  display: none;
+}
+.tcbanner {
+  width: 100%;
+  text-align: center;
+  position: fixed;
+  z-index: 1002;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tcbanner img {
+  max-width: 90vw;
+  max-height: 80vh;
+}
+.tcbanner_gb {
+  padding: 3px 10px;
+  text-align: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  position: fixed;
+  top: 100px;
+  right: 50px;
+  display: inline-block;
+  z-index: 1002;
+  cursor: pointer;
+}
+.yhq_tip_bg {
+  background: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1001;
+}
+.yun_footer_ad {
+  width: 1200px;
+  margin: 0 auto 16px;
+  text-align: center;
+}
+.yun_footer_ad img,
+.yun_couplet img {
+  max-width: 100%;
+  display: block;
+}
+.yun_couplet {
+  position: fixed;
+  right: 12px;
+  top: 180px;
+  z-index: 30;
+}
+@media (max-width: 1199px) {
+  .tcbanner_gb {
+    top: 24px;
+    right: 16px;
+  }
+  .yun_footer_ad,
+  .yun_couplet {
+    display: none;
+  }
+}
 
 @media (min-width: 1200px) {
   .member-shell {
@@ -508,5 +584,19 @@ html {
     width: auto;
     min-width: 0;
   }
+}
+
+.job_bottomcont {
+  position: relative;
+}
+.yunjoblist_wxqr {
+  position: absolute;
+  right: 0;
+  bottom: 36px;
+  z-index: 5;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 

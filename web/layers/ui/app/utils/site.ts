@@ -55,6 +55,8 @@ export type JobLike = {
   sex_n?: string
   is_favorited?: boolean
   is_applied?: boolean
+  wxurl?: string | null
+  purl?: string | null
 }
 
 export type CompanyLike = {
@@ -73,6 +75,8 @@ export type CompanyLike = {
   hits?: number
   job_num?: number
   yyzz_status?: number
+  fact_status?: number
+  welfare_n?: string[] | string
   rating?: number
   rating_name?: string | null
 }

@@ -125,7 +125,15 @@
           </div>
         </div>
         <div class="job_bottomcont">
-          <a href="javascript:;" class="yunjoblist_newwxbth">{{ $t('common_02398') }}</a>
+          <a
+            v-if="wxQr"
+            href="javascript:;"
+            class="yunjoblist_newwxbth"
+            @click.prevent="wxOpen = !wxOpen"
+          >{{ $t('common_02398') }}</a>
+          <div v-if="wxOpen && wxQr" class="yunjoblist_wxqr">
+            <img :src="wxQr" width="110" height="110" alt="" />
+          </div>
         </div>
         <span v-if="timeInfo.text" class="yunjoblist_new_time">
           <span v-if="timeInfo.hot" style="color: red">{{ timeInfo.text }}</span>
@@ -239,6 +247,11 @@ const props = withDefaults(
 const { t } = useI18n()
 const { settings } = useSiteChrome()
 const expanded = ref(true)
+const wxOpen = ref(false)
+const wxQr = computed(() => {
+  const raw = props.job.wxurl || props.job.purl || ''
+  return raw ? mediaUrl(raw) : ''
+})
 const salaryType = computed(() => Number(settings.value.resume_salarytype || 1))
 const salary = computed(() =>
   formatSalary(props.job, t('common.negotiable'), salaryType.value, t('common_01943')),

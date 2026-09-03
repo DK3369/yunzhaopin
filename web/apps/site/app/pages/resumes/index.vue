@@ -29,6 +29,16 @@ const order = computed(() => String(route.query.order || ''))
 const photo = computed(() => boolQuery(route.query.photo) || boolQuery(route.query.pic))
 const idcard = computed(() => boolQuery(route.query.idcard))
 const work = computed(() => boolQuery(route.query.work))
+const recg = computed(() => boolQuery(route.query.recg))
+const { settings, me } = useSiteChrome()
+const resumeGate = computed(() => {
+  const needLogin = String(settings.value.com_search || '') === '1' && !me.value
+  const seekerOff =
+    String(settings.value.sy_user_visit_resume ?? '1') === '0' && Number(me.value?.usertype) === 1
+  if (needLogin) return 'login'
+  if (seekerOff) return 'seeker'
+  return ''
+})
 const moreOpen = ref(
   !!(
     education.value ||
@@ -49,7 +59,7 @@ const api = useApi()
 
 const listKey = computed(
   () =>
-    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${minSalary.value}-${maxSalary.value}-${minAge.value}-${maxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}`,
+    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${minSalary.value}-${maxSalary.value}-${minAge.value}-${maxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
 )
 
 const { data, error } = await useAsyncData(
@@ -82,6 +92,7 @@ const { data, error } = await useAsyncData(
       photo: photo.value ? true : undefined,
       idcard: idcard.value ? true : undefined,
       work: work.value ? true : undefined,
+      recg: recg.value ? true : undefined,
     }),
 )
 
@@ -560,12 +571,16 @@ function recPhoto(row: Record<string, unknown>) {
           </div>
         </div>
         <div class="user_left_sidebar">
-          <p v-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
+          <div v-if="resumeGate" class="firm_login" style="padding: 40px 20px">
+            <p>{{ resumeGate === 'login' ? $t('wap_00376') : $t('resume_00038') }}</p>
+            <NuxtLink v-if="resumeGate === 'login'" to="/login" class="firm_login_dl">{{ $t('common.login') }}</NuxtLink>
+          </div>
+          <p v-else-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
           <template v-else>
             <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
             <EmptyState v-if="!list.length" />
           </template>
-          <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
+          <Pager v-if="!resumeGate" :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
         </div>
         <div v-if="(adsSide && adsSide.length) || (recSide?.list || []).length" class="yun_job_list_right">
           <div v-if="adsSide?.length" class="yun_job_list_right_banner">
@@ -620,21 +635,64 @@ function recPhoto(row: Record<string, unknown>) {
     <div class="job_header_nav resumeAdeFlex">
       <div class="job_header_nav_left category">
         <ul>
-          <li class="active">
-            <NuxtLink to="/resumes">{{ $t('common.latest') }}</NuxtLink>
+          <li :class="{ active: !recg }">
+            <NuxtLink :to="{ path: '/resumes', query: mergeQuery(route.query, { recg: undefined }) }">{{
+              $t('common.latest')
+            }}</NuxtLink>
+          </li>
+          <li :class="{ active: recg }">
+            <NuxtLink :to="{ path: '/resumes', query: mergeQuery(route.query, { recg: '1' }) }">{{
+              $t('common.recommended')
+            }}</NuxtLink>
           </li>
         </ul>
       </div>
       <H5FilterBar
         :all-label="$t('common.all')"
         :tabs="[
-          { key: 'province_id', label: $t('common_02110'), current: cityLabel, items: provinces || [] },
-          { key: 'job1', label: $t('wap_com_00021'), current: jobLabel, items: jobItems },
-          { key: 'education', label: $t('wap_00238'), current: dictName(edus, education), items: edus || [] },
+          {
+            key: 'province_id',
+            label: $t('common_02110'),
+            current: cityLabel,
+            items: provinces || [],
+            childKey: 'city_id',
+            childItems: cities || [],
+            grandKey: 'three_city_id',
+            grandItems: districts || [],
+          },
+          {
+            key: 'job1',
+            label: $t('wap_com_00021'),
+            current: jobLabel,
+            items: jobItems,
+            childKey: 'job1_son',
+            childItems: job2Items,
+            grandKey: 'job_post',
+            grandItems: job3Items,
+          },
+          {
+            key: 'more',
+            label: $t('wap_00238'),
+            kind: 'more',
+            items: [],
+            groups: [
+              { label: $t('home.education_suffix'), param: 'education', items: edus || [] },
+              { label: $t('home.experience_suffix'), param: 'exp', items: exps || [] },
+              { label: $t('wap_com_00303'), param: 'sex', items: sexItems },
+              { label: $t('admin_user_company_00373'), param: 'hy', items: industries || [] },
+              { label: $t('wap_com_00279'), param: 'report', items: reports || [] },
+              { label: $t('wap_00326'), param: 'uptime', items: uptimeItems },
+              { label: $t('common.more'), param: 'tag', items: tags || [] },
+            ],
+          },
         ]"
       />
     </div>
-    <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
+    <div v-if="resumeGate" class="firm_login" style="padding: 0.4rem">
+      <p>{{ resumeGate === 'login' ? $t('wap_00376') : $t('resume_00038') }}</p>
+      <NuxtLink v-if="resumeGate === 'login'" to="/login">{{ $t('common.login') }}</NuxtLink>
+    </div>
+    <p v-else-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
     <template v-else>
       <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
       <EmptyState v-if="!list.length" />

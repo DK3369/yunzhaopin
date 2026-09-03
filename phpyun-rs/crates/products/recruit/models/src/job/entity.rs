@@ -133,4 +133,13 @@ pub struct Job {
     /// PHP `source`
     #[sqlx(default)]
     pub source: i32,
+    /// Salary cycle dict id (`report`).
+    #[sqlx(default)]
+    pub report: i32,
+    /// Fresh-graduate flag.
+    #[sqlx(default)]
+    pub is_graduate: i32,
+    /// Last resume-process unix time (PHP `operatime`).
+    #[sqlx(default)]
+    pub operatime: i64,
 }

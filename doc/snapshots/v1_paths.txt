@@ -244,6 +244,7 @@
 /v1/wap/claim
 /v1/wap/companies
 /v1/wap/companies/autocomplete
+/v1/wap/companies/contact
 /v1/wap/companies/detail
 /v1/wap/companies/hot
 /v1/wap/companies/jobs
@@ -271,6 +272,8 @@
 /v1/wap/descriptions/get
 /v1/wap/dict/cities
 /v1/wap/dict/cities/by-province
+/v1/wap/dict/company-natures
+/v1/wap/dict/company-sizes
 /v1/wap/dict/educations
 /v1/wap/dict/experiences
 /v1/wap/dict/industries

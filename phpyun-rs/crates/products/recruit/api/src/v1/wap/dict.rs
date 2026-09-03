@@ -33,6 +33,8 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/dict/welfares",
     "/v1/wap/dict/reports",
     "/v1/wap/dict/tags",
+    "/v1/wap/dict/company-natures",
+    "/v1/wap/dict/company-sizes",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -57,6 +59,11 @@ pub fn routes() -> Router<AppState> {
         .route("/dict/welfares", get(welfares).post(welfares))
         .route("/dict/reports", get(reports).post(reports))
         .route("/dict/tags", get(tags).post(tags))
+        .route(
+            "/dict/company-natures",
+            get(company_natures).post(company_natures),
+        )
+        .route("/dict/company-sizes", get(company_sizes).post(company_sizes))
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -300,6 +307,34 @@ pub async fn tags(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<Di
     let dicts = dict_service::get(&state).await?;
     Ok(ApiResponse::data(named_items(
         dicts.userclass_by_variable("user_tag"),
+    )))
+}
+
+/// Company nature — PHP `$comclass_name` `job_pr` (国企/民营/…).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/company-natures",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn company_natures(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(named_items(
+        dicts.comclass_by_variable("job_pr"),
+    )))
+}
+
+/// Company size — PHP `job_mun`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/company-sizes",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn company_sizes(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(named_items(
+        dicts.comclass_by_variable("job_mun"),
     )))
 }
 

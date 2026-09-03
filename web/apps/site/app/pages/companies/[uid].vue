@@ -2,7 +2,7 @@
 import { listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 
 const route = useRoute()
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const uid = Number(route.params.uid)
 const tab = computed(() => String(route.query.tab || 'jobs'))
 const api = useApi()
@@ -28,6 +28,62 @@ const { data: jobs } = await useAsyncData(
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const following = ref(false)
 const followMsg = ref('')
+const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
+const contact = computed(
+  () => (company.value.contact || {}) as Record<string, unknown>,
+)
+const linkCode = computed(() => Number(contact.value.link_code || 0))
+const telDisplay = computed(
+  () =>
+    revealed.value?.linktel
+    || revealed.value?.linkphone
+    || String(contact.value.linktel_n || contact.value.linkphone_n || ''),
+)
+const linkMsg = computed(() => {
+  const raw = String(contact.value.link_msg || '')
+  if (!raw) return ''
+  if (/^[a-z][a-z0-9_]*_\d+$/i.test(raw) || /^[a-z][a-z0-9_.]+$/i.test(raw)) {
+    const key = raw as never
+    return te(key) ? t(key) : raw
+  }
+  return raw
+})
+async function showTel() {
+  try {
+    const r = await api.get<{
+      linktel?: string
+      linkphone?: string
+      linkman?: string
+      revealed?: boolean
+      link_code?: number
+    }>('/v1/wap/companies/contact', { uid })
+    if (r.revealed && (r.linktel || r.linkphone)) {
+      revealed.value = { linktel: r.linktel, linkphone: r.linkphone, linkman: r.linkman }
+    }
+  } catch {
+    await navigateTo('/login')
+  }
+}
+const { data: news } = await useAsyncData(
+  () => `company-news-${locale.value}-${uid}`,
+  () =>
+    api
+      .post<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies/news', { uid, page: 1, page_size: 8 })
+      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+)
+const { data: products } = await useAsyncData(
+  () => `company-products-${locale.value}-${uid}`,
+  () =>
+    api
+      .post<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies/products', {
+        uid,
+        page: 1,
+        page_size: 8,
+      })
+      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+)
+const newsList = computed(() => news.value?.list || [])
+const productList = computed(() => products.value?.list || [])
 watch(
   () => company.value.isatn,
   (v) => {
@@ -169,6 +225,60 @@ useHead({
           </div>
           <div class="com_show_leftbox">
             <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('wap_00462') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <div class="firm_det_link">
+              <span v-if="contact.linkman" class="firm_mes1">{{ $t('common_02051') }}：{{ contact.linkman }}</span>
+              <span v-if="company.linkjob" class="firm_mes1">{{ $t('common_01637') }}：{{ company.linkjob }}</span>
+              <div v-if="linkCode === 10" class="firm_login_con">{{ linkMsg || $t('common_01934') }}</div>
+              <div v-else-if="linkCode === 9" class="firm_login_con">
+                {{ linkMsg || $t('common_02372') }}
+                <img
+                  v-if="company.comqcode"
+                  :src="mediaUrl(String(company.comqcode), PLACEHOLDER_LOGO)"
+                  width="88"
+                  height="88"
+                  alt=""
+                />
+              </div>
+              <div v-else-if="linkCode > 1 && linkCode < 6" class="firm_login_con">{{ linkMsg }}</div>
+              <div v-else class="firm_mes1">
+                {{ $t('common.phone') }}：{{ telDisplay || '****' }}
+                <template v-if="linkCode === 6">
+                  <NuxtLink to="/login" class="firm_login_dl">{{ $t('common.login') }}</NuxtLink>
+                </template>
+                <a v-else href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
+                  $t('default_00233')
+                }}</a>
+              </div>
+              <span v-if="company.address" class="firm_mes1" style="width: 100%">{{ $t('wap_00040') }}：{{ company.address }}</span>
+              <span v-if="company.website" class="firm_mes1">{{ $t('wap_com_00162') }}：{{ company.website }}</span>
+            </div>
+          </div>
+          <div v-if="newsList.length" class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('company_00019') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <ul class="black_newslist">
+              <li v-for="n in newsList" :key="String(n.id)">{{ n.title }}</li>
+            </ul>
+          </div>
+          <div v-if="productList.length" class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('company_00020') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <div class="com_show_image">
+              <div v-for="p in productList" :key="String(p.id)" class="com_show_image_list">
+                <img :src="mediaUrl(String(p.cover_n || p.cover || ''), PLACEHOLDER_LOGO)" width="200" height="127" alt="" />
+                <p>{{ p.title }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="com_show_leftbox">
+            <div class="com_details_tit">
               <span class="com_details_tit_s">{{ $t('wap_00190') }}</span>
               <i class="com_details_tit_line yun_bg_color" />
             </div>
@@ -240,6 +350,24 @@ useHead({
           <div class="business_album">
             <img v-for="s in shows" :key="String(s.id)" :src="mediaUrl(String(s.picurl || ''), PLACEHOLDER_LOGO)" alt="" />
           </div>
+        </div>
+        <div class="job_describe_cengter_header">{{ $t('wap_00462') }}</div>
+        <div class="newcom_add">
+          <div v-if="contact.linkman">{{ contact.linkman }}</div>
+          <div v-if="linkCode === 10">{{ linkMsg || $t('common_01934') }}</div>
+          <div v-else-if="linkCode === 9">{{ linkMsg || $t('common_02372') }}</div>
+          <div v-else>
+            {{ $t('common.phone') }}：{{ telDisplay || '****' }}
+            <a href="javascript:;" @click.prevent="showTel">{{ $t('default_00233') }}</a>
+          </div>
+        </div>
+        <div v-if="newsList.length" class="job_describe_bottom">
+          <div class="job_describe_cengter_header">{{ $t('company_00019') }}</div>
+          <div v-for="n in newsList" :key="String(n.id)">{{ n.title }}</div>
+        </div>
+        <div v-if="productList.length" class="job_describe_bottom">
+          <div class="job_describe_cengter_header">{{ $t('company_00020') }}</div>
+          <div v-for="p in productList" :key="String(p.id)">{{ p.title }}</div>
         </div>
         <div class="job_describe_cengter_header">{{ $t('wap_com_00168') }}</div>
         <div class="phpyunabout" v-html="String(company.content || '')" />

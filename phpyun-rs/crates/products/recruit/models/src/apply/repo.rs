@@ -164,6 +164,29 @@ pub async fn count_by_uid_to_company(
     Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
+/// PHP `getSqJobNum` for one job (`isdel=9`).
+pub async fn count_by_job(pool: &MySqlPool, job_id: u64) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job WHERE job_id = ? AND isdel = 9",
+    )
+    .bind(job_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
+}
+
+/// PHP `is_browse > 1` treated as replied / processed.
+pub async fn count_replied_by_job(pool: &MySqlPool, job_id: u64) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job \
+         WHERE job_id = ? AND isdel = 9 AND COALESCE(is_browse, 0) > 1",
+    )
+    .bind(job_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
+}
+
 /// Company side: transition application to any is_browse enum value
 /// (1=unread / 0=viewed / 3=interviewed / 4=unsuitable / 7=hired).
 /// Constrained by com_id so only the job owner may change it.

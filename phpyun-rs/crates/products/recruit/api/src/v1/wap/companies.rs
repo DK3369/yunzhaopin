@@ -9,6 +9,7 @@ use phpyun_core::{
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
 use phpyun_services::hot_search_service;
+use phpyun_services::job_service;
 use phpyun_services::view_service::{self, KIND_COMPANY};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -19,6 +20,7 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/companies/hot",
     "/v1/wap/companies/autocomplete",
     "/v1/wap/companies/detail",
+    "/v1/wap/companies/contact",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -32,6 +34,10 @@ pub fn routes() -> Router<AppState> {
         .route(
             "/companies/detail",
             get(company_detail).post(company_detail),
+        )
+        .route(
+            "/companies/contact",
+            get(company_contact).post(company_contact),
         )
 }
 
@@ -55,6 +61,9 @@ pub struct CompanyListQuery {
     /// Staff-count dict id — 50人以下/50-200/… (PHP `mun`).
     #[validate(range(min = 0, max = 99))]
     pub mun: Option<i32>,
+    /// Welfare dict id (FIND_IN_SET on `phpyun_company.welfare`).
+    #[validate(range(min = 0, max = 9_999_999))]
+    pub welfare: Option<i32>,
     /// `cert=true` keeps only companies with a verified business license
     /// (`yyzz_status = 1`).
     #[serde(default)]
@@ -107,6 +116,12 @@ pub fn company_summary_from_dict(
         rating_name: c.rating_name,
         job_num: 0,
         yyzz_status: c.yyzz_status,
+        fact_status: c.fact_status,
+        welfare_n: c
+            .welfare
+            .as_deref()
+            .map(|s| dicts.welfare_labels(s))
+            .unwrap_or_default(),
     }
 }
 
@@ -148,6 +163,7 @@ pub async fn list_companies(
         hy: q.hy,
         pr: q.pr,
         mun: q.mun,
+        welfare: q.welfare,
         cert: q.cert,
         rec: q.rec,
         did: q.did,
@@ -271,6 +287,9 @@ pub struct CompanyDetail {
     /// PHP `$invite_resume` (面试邀请数). Additive.
     pub invite_resume: u64,
 
+    /// Masked contact + `setCompanyLink` codes. Never includes plaintext tel/email.
+    pub contact: CompanyPublicContact,
+
     // ---- Company showcase items (PHP `show[]` from `phpyun_company_show`) ----
     pub show: Vec<CompanyShowItem>,
 }
@@ -283,6 +302,18 @@ pub struct CompanyShowItem {
     pub body: String,
     pub sort: i32,
     pub ctime: i64,
+}
+
+/// Public company contact — same codes as job `setCompanyLink`, no email.
+#[derive(Debug, Serialize, ToSchema, Default)]
+pub struct CompanyPublicContact {
+    pub linkman: String,
+    pub linktel_n: String,
+    pub linkphone_n: String,
+    pub address: String,
+    pub link_code: i32,
+    pub link_msg: String,
+    pub link_sub: i32,
 }
 
 /// Public company detail
@@ -434,8 +465,73 @@ pub async fn company_detail(
         userid_job,
         welfare_n,
         invite_resume,
+        contact: {
+            let ctc = job_service::resolve_company_contact(&state, uid, user.as_ref()).await?;
+            CompanyPublicContact {
+                linkman: ctc.linkman,
+                linktel_n: ctc.linktel_n,
+                linkphone_n: ctc.linkphone_n,
+                address: ctc.address,
+                link_code: ctc.link_code,
+                link_msg: ctc.link_msg,
+                link_sub: ctc.link_sub,
+            }
+        },
 
         show: show_items,
+    }))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CompanyContactView {
+    pub uid: u64,
+    pub linkman: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub linktel_n: String,
+    pub linkphone_n: String,
+    pub address: String,
+    pub link_code: i32,
+    pub link_msg: String,
+    pub link_sub: i32,
+    pub revealed: bool,
+}
+
+/// Reveal company telephone when `setCompanyLink` yields code 1. Never returns email.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/companies/contact",
+    tag = "wap",
+    request_body = UidBody,
+    responses((status = 200, description = "ok", body = CompanyContactView))
+)]
+pub async fn company_contact(
+    State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
+) -> AppResult<ApiResponse<CompanyContactView>> {
+    let c = job_service::resolve_company_contact(&state, b.uid, user.as_ref()).await?;
+    let plain = c.revealed && c.link_code == 1;
+    Ok(ApiResponse::data(CompanyContactView {
+        uid: b.uid,
+        linkman: c.linkman,
+        linktel: if plain {
+            c.linktel
+        } else {
+            String::new()
+        },
+        linkphone: if plain {
+            c.linkphone
+        } else {
+            String::new()
+        },
+        linktel_n: c.linktel_n,
+        linkphone_n: c.linkphone_n,
+        address: c.address,
+        link_code: c.link_code,
+        link_msg: c.link_msg,
+        link_sub: c.link_sub,
+        revealed: plain,
     }))
 }
 
