@@ -21,15 +21,18 @@ const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
-  <NewsListShell :title="$t('common_06524')" :error="error" :error-text="failMsg" :count="list.length">
-    <SimpleCard v-for="row in list" :key="row.id" :to="`/redeem/${row.id}`" :title="row.name" :meta="String(row.integral || '')" />
-    <template #pager>
-      <Pager
-        :page="page"
-        :page-size="20"
-        :total="data?.total || 0"
-        @update:page="(p) => navigateTo({ query: { page: p } })"
-      />
-    </template>
-  </NewsListShell>
+  <section>
+    <p><NuxtLink to="/redeem/orders">{{ $t('common.more') }}</NuxtLink></p>
+    <NewsListShell :title="$t('common_06524')" :error="error" :error-text="failMsg" :count="list.length">
+      <SimpleCard v-for="row in list" :key="row.id" :to="`/redeem/${row.id}`" :title="row.name" :meta="String(row.integral || '')" />
+      <template #pager>
+        <Pager
+          :page="page"
+          :page-size="20"
+          :total="data?.total || 0"
+          @update:page="(p) => navigateTo({ query: { page: p } })"
+        />
+      </template>
+    </NewsListShell>
+  </section>
 </template>

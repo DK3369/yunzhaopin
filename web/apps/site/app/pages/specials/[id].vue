@@ -11,7 +11,10 @@ const api = useApi()
 const { me } = useSiteChrome()
 const hy = computed(() => Number(route.query.hy || 0) || 0)
 const { data } = await useAsyncData(`special-${id}`, () => api.get('/v1/wap/specials/detail', { id }))
-const isGl = computed(() => String(data.value?.tpl || '').includes('gl'))
+const isGl = computed(() => {
+  const tpl = String(data.value?.tpl || '').toLowerCase()
+  return ['gl', 'famous', 'senior'].some((k) => tpl.includes(k))
+})
 const { data: companies } = await useAsyncData(
   () => `special-com-${id}-${hy.value}`,
   () =>

@@ -44,7 +44,7 @@ useHead({ link: [{ rel: 'canonical', href: `/redeem/${id}` }] })
       <input v-model="form.password" type="password" required :placeholder="$t('wap_01273')" />
       <input v-model="form.linkman" required :placeholder="$t('wap_01619')" />
       <input v-model="form.linktel" required />
-      <input v-model.number="form.provinceid" type="number" :placeholder="$t('ui.province')" />
+      <input v-model.number="form.provinceid" type="number" :placeholder="$t('ui.province_id')" />
       <input v-model.number="form.cityid" type="number" :placeholder="$t('ui.city_id')" />
       <input v-model.number="form.three_cityid" type="number" />
       <input v-model="form.address" />
