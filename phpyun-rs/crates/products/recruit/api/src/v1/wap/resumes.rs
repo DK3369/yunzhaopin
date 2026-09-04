@@ -2,6 +2,7 @@
 
 use axum::{
     extract::State,
+    http::{header, HeaderMap},
     routing::{get, post},
     Router,
 };
@@ -793,6 +794,9 @@ pub struct ResumeDetail {
     pub invited: bool,
     /// Site `sy_resume_visitors` (0 = unlimited).
     pub visitor_max: i32,
+    /// Guest exceeded daily view cap (PHP `resumevisitors` cookie).
+    #[serde(default)]
+    pub visitor_blocked: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -860,6 +864,21 @@ async fn ensure_resume_browse(
     Ok(())
 }
 
+fn cookie_count(headers: &HeaderMap, name: &str) -> i64 {
+    headers
+        .get(header::COOKIE)
+        .and_then(|v| v.to_str().ok())
+        .and_then(|cookies| {
+            cookies.split(';').find_map(|c| {
+                let c = c.trim();
+                let prefix = format!("{name}=");
+                c.strip_prefix(&prefix)
+                    .and_then(|v| v.trim().parse::<i64>().ok())
+            })
+        })
+        .unwrap_or(0)
+}
+
 async fn ensure_resume_view(
     state: &AppState,
     user: Option<&AuthenticatedUser>,
@@ -911,6 +930,7 @@ async fn resume_m_status(
 pub async fn resume_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<ResumeDetail>> {
     let uid = b.uid;
@@ -1013,6 +1033,9 @@ pub async fn resume_detail(
     .ok()
     .and_then(|m| m.get("sy_resume_visitors")?.trim().parse().ok())
     .unwrap_or(0);
+    let visitor_blocked = user.is_none()
+        && visitor_max > 0
+        && cookie_count(&headers, "resumevisitors") >= i64::from(visitor_max);
     Ok(ApiResponse::data(ResumeDetail {
         uid: r.uid,
         display_name,
@@ -1155,6 +1178,7 @@ pub async fn resume_detail(
         in_talentpool,
         invited,
         visitor_max,
+        visitor_blocked,
     }))
 }
 

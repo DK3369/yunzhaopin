@@ -28,12 +28,16 @@ fn cfg_trim<'a>(map: &'a std::collections::HashMap<String, String>, key: &str) -
     map.get(key).map(|s| s.trim()).unwrap_or("")
 }
 
-/// Bind a middle number. `url` empty → fail. `url`/`key` = `mock` → local stub.
+/// Bind a middle number (AXB). `number_a` = enterprise, `number_b` = seeker when
+/// `bind_type == 2`. Unconfigured → `common_00332` via caller.
 pub async fn bind_middle_number(
     state: &AppState,
-    real_tel: &str,
+    number_a: &str,
+    number_b: &str,
     job_id: u64,
     com_uid: u64,
+    seeker_uid: u64,
+    bind_type: i32,
 ) -> AppResult<PrivacyBind> {
     let cfg = phpyun_models::site_setting::repo::find_many(
         state.db.reader(),
@@ -51,29 +55,33 @@ pub async fn bind_middle_number(
         });
     }
     if url.is_empty() || key.is_empty() {
-        return Err(ApiError::business("privacy_unavailable"));
+        return Err(ApiError::business("common_00332"));
     }
-    let tel = real_tel.trim();
-    if tel.is_empty() {
-        return Err(ApiError::business("privacy_unavailable"));
+    let a = number_a.trim();
+    if a.is_empty() {
+        return Err(ApiError::business("common_00332"));
     }
     let body = serde_json::json!({
-        "tel": tel,
+        "NumberA": a,
+        "NumberB": number_b.trim(),
+        "tel": a,
         "job_id": job_id,
         "com_uid": com_uid,
+        "uid": seeker_uid,
+        "type": bind_type,
         "key": key,
     });
     let resp: UpstreamBind = state
         .http
         .post_json(url, &body)
         .await
-        .map_err(|_| ApiError::business("privacy_unavailable"))?;
+        .map_err(|_| ApiError::business("common_00332"))?;
     let number = [resp.number, resp.tel, resp.prvlinktel]
         .into_iter()
         .find(|s| !s.trim().is_empty())
         .unwrap_or_default();
     if number.trim().is_empty() {
-        return Err(ApiError::business("privacy_unavailable"));
+        return Err(ApiError::business("common_00332"));
     }
     let expire_n = if !resp.expire_n.trim().is_empty() {
         resp.expire_n

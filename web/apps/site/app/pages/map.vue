@@ -14,6 +14,7 @@ type NearJob = {
 
 const route = useRoute()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 const x = computed(() => String(route.query.x || ''))
 const y = computed(() => String(route.query.y || ''))
 const hasPoint = computed(() => x.value !== '' && y.value !== '')
@@ -55,7 +56,14 @@ function locate() {
   )
 }
 onMounted(() => {
-  if (!hasPoint.value) locate()
+  if (hasPoint.value) return
+  const mx = String(settings.value.map_x || '').trim()
+  const my = String(settings.value.map_y || '').trim()
+  if (mx && my) {
+    navigateTo({ path: '/map', query: { x: mx, y: my } })
+    return
+  }
+  locate()
 })
 useSeoMeta({ title: t('wap_00223') })
 </script>
@@ -66,8 +74,8 @@ useSeoMeta({ title: t('wap_00223') })
     <p v-if="!hasPoint || locFail">
       <button type="button" @click="locate">{{ $t('wap_00223') }}</button>
     </p>
-    <p v-else-if="error" class="muted">{{ $t('home.no_job_data') }}</p>
-    <p v-else-if="!list.length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
+    <p v-else-if="error" class="muted">{{ $t('common_02402') }}</p>
+    <p v-else-if="!list.length" class="muted">{{ $t('common_02402') }}</p>
     <div v-else>
       <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
     </div>

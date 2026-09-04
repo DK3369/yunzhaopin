@@ -7,6 +7,7 @@ use chrono::Timelike;
 use phpyun_core::utils::mask_contact;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
+use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 
 /// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
@@ -524,13 +525,39 @@ async fn resolve_public_contact(
         } else {
             raw.linkphone.as_str()
         };
-        match crate::privacy_service::bind_middle_number(state, real, job_id, raw.com_uid).await {
+        let seeker_tel = if usertype == 1 {
+            if let Some(u) = user {
+                resume_repo::find_by_uid(state.db.reader(), u.uid)
+                    .await
+                    .ok()
+                    .flatten()
+                    .and_then(|r| r.telphone)
+                    .unwrap_or_default()
+            } else {
+                String::new()
+            }
+        } else {
+            String::new()
+        };
+        let seeker_uid = uid.unwrap_or(0);
+        match crate::privacy_service::bind_middle_number(
+            state,
+            real,
+            &seeker_tel,
+            job_id,
+            raw.com_uid,
+            seeker_uid,
+            2,
+        )
+        .await
+        {
             Ok(bind) => {
                 prvlinktel = bind.number;
                 prvtime = bind.expire_n;
             }
             Err(_) => {
                 link_code = 11;
+                link_msg = "common_00332".to_string();
             }
         }
     }

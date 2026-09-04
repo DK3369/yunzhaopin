@@ -74,7 +74,7 @@ const { data: welfares } = await useAsyncData(
   () => api.get<DictItem[]>('/v1/wap/dict/welfares').catch(() => [] as DictItem[]),
 )
 useSeoMeta({ title: t('home.famous_companies') })
-const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
 const list = computed(() => data.value?.list || [])
 </script>
 
@@ -101,7 +101,7 @@ const list = computed(() => data.value?.list || [])
           </li>
           <li :class="{ firmsearch_h1_box_cur: cert }">
             <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { cert: '1' }) }">{{
-              $t('ui.verified_license')
+              $t('wap_00288')
             }}</NuxtLink>
             <i class="firmsearch_h1_box_list_icon" />
           </li>

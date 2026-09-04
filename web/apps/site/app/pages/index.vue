@@ -25,8 +25,6 @@ const resumeGate = computed(() => {
 const talentTip = ref('')
 function talentBlockedMsg() {
   const changeOn = String(settings.value.sy_user_change || '') === '1'
-  const key = changeOn ? 'auth.apply_company_first' : 'auth.company_only_view'
-  if (te(key as never)) return t(key as never)
   return changeOn ? t('wap_00032') : t('resume_00038')
 }
 function onTalentClick(e: Event, uid: unknown) {
@@ -288,7 +286,7 @@ useHead({
       <span class="tcbanner_gb" @click="closePopup('pc')">{{ $t('common.close') }}</span>
       <div class="yhq_tip_bg" style="display: block" @click="closePopup('pc')" />
     </div>
-    <p v-if="error" class="w1200 muted" style="padding: 12px 0">{{ $t('ui.home_unavailable') }}</p>
+    <p v-if="error" class="w1200 muted" style="padding: 12px 0">{{ $t('common_00376') }}</p>
     <div v-if="ads73.length" class="index_zs_banner index_zs_banner2">
       <a v-for="(ad, i) in ads73" :key="'73-' + i" :href="adHref(ad) || '/jobs'">
         <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
@@ -365,11 +363,11 @@ useHead({
                     <img :src="mediaUrl(job.com_logo, PLACEHOLDER_LOGO)" alt="" />
                   </div>
                   <div class="yunheader_60jpbane">{{ job.name }}</div>
-                  <div class="yunheader_60jpxz">{{ formatSalary(job, $t('common.negotiable'), $t('ui.yuan')) }}</div>
+                  <div class="yunheader_60jpxz">{{ formatSalary(job, $t('common.negotiable'), $t('common_02056')) }}</div>
                 </NuxtLink>
                 <div class="yunheader_60jpcom">{{ job.com_name }}</div>
               </div>
-              <p v-if="!urgentList.length" class="muted" style="padding: 16px 8px">{{ $t('ui.no_jobs') }}</p>
+              <p v-if="!urgentList.length" class="muted" style="padding: 16px 8px">{{ $t('common_02402') }}</p>
             </div>
           </div>
 
@@ -466,7 +464,7 @@ useHead({
           <ul>
             <JobCard v-for="job in recJobList" :key="'r' + job.id" :job="job" />
           </ul>
-          <p v-if="!recJobList.length" class="muted" style="padding: 20px">{{ $t('ui.no_jobs') }}</p>
+          <p v-if="!recJobList.length" class="muted" style="padding: 20px">{{ $t('common_02402') }}</p>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/jobs">{{ $t('common.view_more') }}</NuxtLink></div>
 
@@ -479,7 +477,7 @@ useHead({
           <ul>
             <JobCard v-for="job in latestJobList" :key="'n' + job.id" :job="job" />
           </ul>
-          <p v-if="!latestJobList.length" class="muted" style="padding: 20px">{{ $t('ui.no_jobs') }}</p>
+          <p v-if="!latestJobList.length" class="muted" style="padding: 20px">{{ $t('common_02402') }}</p>
         </div>
         <div class="yunheader_60lookmore"><NuxtLink to="/jobs">{{ $t('common.view_more') }}</NuxtLink></div>
       </div>
@@ -524,9 +522,9 @@ useHead({
             </li>
           </ul>
           <p v-if="!resumeGate && resumeError" class="muted" style="padding: 20px">{{
-            listFailMsg(resumeError, $t('ui.rate_limit'), $t('ui.load_failed'))
+            listFailMsg(resumeError, $t('common_00376'), $t('common_00376'))
           }}</p>
-          <p v-else-if="!resumeGate && !resumeList.length" class="muted" style="padding: 20px">{{ $t('ui.no_public_resumes') }}</p>
+          <p v-else-if="!resumeGate && !resumeList.length" class="muted" style="padding: 20px">{{ $t('wap_00497') }}</p>
         </div>
         <div v-if="!resumeGate && latestResumeList.length" class="index_resume_user_list index_zw_item">
           <ul>
@@ -766,7 +764,7 @@ useHead({
           <NuxtLink to="/map">{{ $t('wap_00223') }}</NuxtLink>
         </div>
         <JobCard v-for="job in h5JobList" :key="h5Tab + job.id" :job="job" />
-        <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('ui.no_jobs') }}</p>
+        <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('common_02402') }}</p>
         <div class="yunheader_60lookmore" style="text-align: center; padding: 0.3rem 0 0.6rem">
           <NuxtLink to="/jobs">{{ $t('wap_00518') }}</NuxtLink>
         </div>

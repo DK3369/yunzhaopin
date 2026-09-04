@@ -73,6 +73,7 @@ pub mod company_cert_service;
 pub mod company_content_service;
 pub mod company_hr_service;
 pub mod company_service;
+pub mod company_vip_day_service;
 pub mod company_sub_service;
 pub mod company_tpl_service;
 pub mod contact_cert_service;

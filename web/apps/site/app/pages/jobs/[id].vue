@@ -288,7 +288,7 @@ async function showTel() {
       return
     }
     if (code === 11) {
-      applyMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('ui.load_failed')
+      applyMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('common_00332')
       return
     }
     if (r.revealed && (r.linktel || r.linkphone)) {
@@ -529,7 +529,7 @@ useHead({
               <template v-if="!jobClosed">
               <div v-if="linkCode === 10 || linkCode === 11" class="job_details_touch_tel">
                 <em class="job_details_touch_tel_tip">{{
-                  revealed?.linktel || linkMsg || (linkCode === 11 ? $t('ui.load_failed') : $t('common_01934'))
+                  revealed?.linktel || linkMsg || (linkCode === 11 ? $t('common_00332') : $t('common_01934'))
                 }}</em>
                 <a
                   v-if="linkCode === 10"
@@ -923,7 +923,7 @@ useHead({
           <a v-else-if="revealed?.linkphone" :href="`tel:${revealed.linkphone}`">{{ revealed.linkphone }}</a>
         </div>
         <div v-else-if="linkCode === 10 || linkCode === 11" class="new_jobshow_tel">
-          {{ revealed?.linktel || linkMsg || (linkCode === 11 ? $t('ui.load_failed') : $t('common_01934')) }}
+          {{ revealed?.linktel || linkMsg || (linkCode === 11 ? $t('common_00332') : $t('common_01934')) }}
           <a v-if="linkCode === 10 && !revealed?.linktel" href="javascript:;" @click.prevent="showTel">{{
             $t('default_00233')
           }}</a>
@@ -945,6 +945,6 @@ useHead({
   </div>
   <div v-else class="site-inner">
     <h1>{{ $t('common.job') }}</h1>
-    <p class="muted">{{ error ? $t('ui.load_failed') : $t('home.no_recruiting_jobs') }}</p>
+    <p class="muted">{{ error ? $t('common_00376') : $t('default_00033') }}</p>
   </div>
 </template>

@@ -2,7 +2,7 @@
 import { mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
 
 const route = useRoute()
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const uid = Number(route.params.uid)
 const api = useApi()
 const { me } = useSiteChrome()
@@ -78,18 +78,57 @@ const yqms = reactive({
   intertime: '',
   linkman: '',
   linktel: '',
+  save_yqmb: false,
+  ymid: 0,
+  mappic: '',
 })
+function readVisitorCookie() {
+  if (!import.meta.client) return 0
+  const hit = document.cookie
+    .split(';')
+    .map((x) => x.trim())
+    .find((x) => x.startsWith('resumevisitors='))
+  if (!hit) return 0
+  return Number(hit.split('=')[1]) || 0
+}
+function bumpVisitorCookie() {
+  if (!import.meta.client) return
+  const n = readVisitorCookie() + 1
+  const tomorrow = new Date()
+  tomorrow.setHours(24, 0, 0, 0)
+  document.cookie = `resumevisitors=${n}; path=/; expires=${tomorrow.toUTCString()}; SameSite=Lax`
+}
+type DownloadResult = {
+  status: number
+  private_phone?: string
+  msg_key?: string
+  jifen?: number
+  price?: number
+}
+function payConfirmText(res: DownloadResult) {
+  if (res.jifen) {
+    return `${t('common_00697')}${res.jifen}${t('common_01935')}?`
+  }
+  if (res.price) {
+    return `${t('common_00696')}${res.price}${t('common_00757')}?`
+  }
+  return te((res.msg_key || 'common_00696') as never)
+    ? t((res.msg_key || 'common_00696') as never)
+    : t('common_00696')
+}
 useSeoMeta({ title: () => name.value || t('common.resume') })
 onMounted(async () => {
+  if (Boolean(row.value.visitor_blocked)) {
+    visitorBlocked.value = true
+    return
+  }
   const max = Number(row.value.visitor_max || 0)
   if (!me.value && max > 0 && import.meta.client) {
-    const key = 'phpyun_resume_visitors'
-    const n = Number(window.localStorage.getItem(key) || 0)
-    if (n >= max) {
+    if (readVisitorCookie() >= max) {
       visitorBlocked.value = true
       return
     }
-    window.localStorage.setItem(key, String(n + 1))
+    bumpVisitorCookie()
   }
   fav.value = Boolean(row.value.in_talentpool)
   try {
@@ -102,7 +141,7 @@ onMounted(async () => {
     /* guest */
   }
 })
-async function download() {
+async function download(confirm = false) {
   if (!me.value) {
     await navigateTo('/login')
     return
@@ -111,23 +150,29 @@ async function download() {
     actionMsg.value = t('resume_00038')
     return
   }
-  if (!unlocked.value) {
+  if (!unlocked.value && !confirm) {
     const pack = Number(row.value.downresumes || 0)
     const free = Number(row.value.free_look || 0)
     const ok = window.confirm(`${t('resume_00029')} (${pack}/${free})`)
     if (!ok) return
   }
   try {
-    await api.post('/v1/mcenter/resume-downloads', { uid })
-    actionMsg.value = t('common.confirm')
+    const res = await api.post<DownloadResult>('/v1/mcenter/resume-downloads', { uid, confirm })
+    if (res.status === 2) {
+      if (window.confirm(payConfirmText(res))) {
+        await download(true)
+      }
+      return
+    }
+    actionMsg.value = res.private_phone || t('common.confirm')
     await refresh()
   } catch (e: unknown) {
-    if (errKey(e) === 'need_buy_down_resume' || errKey(e) === 'vip_day_limit') {
-      actionMsg.value = e.message
+    if (errKey(e) === 'need_buy_down_resume' || errKey(e) === 'vip_day_limit' || errKey(e) === 'integral_insufficient') {
+      actionMsg.value = e instanceof Error ? e.message : t('common_00376')
       await navigateTo('/com/pay')
       return
     }
-    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    actionMsg.value = e instanceof Error ? e.message : t('common_00376')
     if (!me.value) await navigateTo('/login')
   }
 }
@@ -175,19 +220,42 @@ async function invite() {
     const tpl = yqmsTpls.value[0]
     if (tpl) applyTpl(tpl)
   } catch (e: unknown) {
-    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    actionMsg.value = e instanceof Error ? e.message : t('common_00376')
   }
 }
 function applyTpl(tpl: Record<string, unknown>) {
+  yqms.ymid = Number(tpl.id || 0)
   yqms.content = String(tpl.content || '')
   yqms.address = String(tpl.address || yqms.address)
   yqms.linkman = String(tpl.linkman || yqms.linkman)
   yqms.linktel = String(tpl.linktel || yqms.linktel)
   if (tpl.intertime_n) yqms.intertime = String(tpl.intertime_n)
 }
-async function submitYqms() {
+type YqmsResult = {
+  status: number
+  id?: number
+  msg_key?: string
+  jifen?: number
+  price?: number
+}
+function payConfirmTextYqms(res: YqmsResult) {
+  if (res.jifen) {
+    return `${t('common_00697')}${res.jifen}${t('common_01935')}?`
+  }
+  if (res.price) {
+    return `${t('common_00696')}${res.price}${t('common_00757')}?`
+  }
+  return te((res.msg_key || 'common_00696') as never)
+    ? t((res.msg_key || 'common_00696') as never)
+    : t('common_00696')
+}
+async function submitYqms(confirm = false) {
+  if (!yqms.intertime.trim()) {
+    actionMsg.value = t('member_com_00681')
+    return
+  }
   try {
-    await api.post('/v1/mcenter/company/yqms/create', {
+    const res = await api.post<YqmsResult>('/v1/mcenter/company/yqms/create', {
       seeker_uid: uid,
       job_id: yqms.job_id,
       content: yqms.content,
@@ -195,17 +263,27 @@ async function submitYqms() {
       intertime: yqms.intertime,
       linkman: yqms.linkman,
       linktel: yqms.linktel,
+      save_yqmb: yqms.save_yqmb,
+      ymid: yqms.ymid,
+      mappic: yqms.mappic,
+      confirm,
     })
+    if (res.status === 2) {
+      if (window.confirm(payConfirmTextYqms(res))) {
+        await submitYqms(true)
+      }
+      return
+    }
     yqmsOpen.value = false
     actionMsg.value = t('common.confirm')
     await refresh()
   } catch (e: unknown) {
-    if (errKey(e) === 'need_buy_invite' || errKey(e) === 'vip_day_limit') {
-      actionMsg.value = e.message
+    if (errKey(e) === 'need_buy_invite' || errKey(e) === 'vip_day_limit' || errKey(e) === 'integral_insufficient') {
+      actionMsg.value = e instanceof Error ? e.message : t('common_00376')
       await navigateTo('/com/pay')
       return
     }
-    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    actionMsg.value = e instanceof Error ? e.message : t('common_00376')
   }
 }
 async function toggleFav() {
@@ -230,11 +308,11 @@ async function report() {
 <template>
   <article v-if="error" class="site-inner">
     <h1>{{ $t('common.resume') }}</h1>
-    <p class="muted">{{ $t('ui.load_failed') }}</p>
+    <p class="muted">{{ $t('common_00376') }}</p>
   </article>
   <article v-else-if="visitorBlocked" class="site-inner">
     <h1>{{ $t('common.resume') }}</h1>
-    <p class="muted">{{ $t('wap_00376') }}</p>
+    <p class="muted">{{ $t('wap_00424') }}{{ row.visitor_max }}{{ $t('wap_00422') }}</p>
     <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
   </article>
   <article v-else>
@@ -620,7 +698,7 @@ async function report() {
           </select>
         </p>
         <p v-if="yqmsTpls.length">
-          <label>{{ $t('ui.interview_tpl') }}</label>
+          <label>{{ $t('member_com_00268') }}</label>
           <select @change="applyTpl(yqmsTpls[Number(($event.target as HTMLSelectElement).value)] || {})">
             <option v-for="(tpl, idx) in yqmsTpls" :key="String(tpl.id)" :value="idx">{{ tpl.name }}</option>
           </select>
@@ -639,6 +717,9 @@ async function report() {
         </p>
         <p>
           <textarea v-model="yqms.content" rows="4" />
+        </p>
+        <p>
+          <label><input v-model="yqms.save_yqmb" type="checkbox" /> {{ $t('member_com_00512') }}</label>
         </p>
         <p>
           <button type="button" class="user_yqms" @click="submitYqms">{{ $t('common.confirm') }}</button>

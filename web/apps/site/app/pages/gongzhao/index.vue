@@ -13,13 +13,13 @@ const { data, error } = await useAsyncData(
       page_size: 20,
     }),
 )
-useSeoMeta({ title: t('ui.gongzhao') })
-const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+useSeoMeta({ title: t('default_00134') })
+const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
 const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
-  <NewsListShell :title="$t('ui.gongzhao')" :error="error" :error-text="failMsg" :count="list.length">
+  <NewsListShell :title="$t('default_00134')" :error="error" :error-text="failMsg" :count="list.length">
     <SimpleCard v-for="row in list" :key="row.id" :to="`/gongzhao/${row.id}`" :title="row.title" :meta="row.start_at_n" />
     <template #pager>
       <Pager

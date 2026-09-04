@@ -49,7 +49,7 @@ async function loadMoreJobs() {
     /* keep first-page total */
   }
 }
-const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
 const following = ref(false)
 const followMsg = ref('')
 const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
@@ -116,7 +116,7 @@ async function showTel() {
       return
     }
     if (code === 11) {
-      followMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('ui.load_failed')
+      followMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('common_00332')
       return
     }
     if (r.revealed && (r.linktel || r.linkphone)) {
@@ -196,7 +196,7 @@ async function postAsk() {
     askMsg.value = t('common.confirm')
     await loadAskCaptcha()
   } catch (e: unknown) {
-    askMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    askMsg.value = e instanceof Error ? e.message : t('common_00376')
     await loadAskCaptcha()
   }
 }
@@ -280,7 +280,7 @@ useHead({
                 <span v-if="moneyLabel" class="com_details_line">|</span>
                 <template v-if="moneyLabel">{{ moneyLabel }}</template>
                 <span v-if="company.pre != null" class="com_details_line">|</span>
-                <template v-if="company.pre != null">{{ company.pre }}% {{ $t('default_00227') }}</template>
+                <template v-if="company.pre != null">{{ company.pre }}% {{ $t('company_00006') }}</template>
               </div>
               <div class="com_details_data_box">
                 <div class="com_details_data_box_c">
@@ -292,6 +292,11 @@ useHead({
                   <div class="com_details_data">
                     <div class="com_details_data_n">{{ company.invite_resume ?? 0 }}</div>
                     <div class="com_details_dataname">{{ $t('company_00009') }}</div>
+                    <i class="com_details_data_line" />
+                  </div>
+                  <div v-if="company.pre != null" class="com_details_data">
+                    <div class="com_details_data_n">{{ company.pre }}%</div>
+                    <div class="com_details_dataname">{{ $t('company_00006') }}</div>
                     <i class="com_details_data_line" />
                   </div>
                   <div class="com_details_data">
@@ -309,7 +314,7 @@ useHead({
               </div>
               <p v-if="followMsg" class="muted">{{ followMsg }}</p>
               <p v-if="Number(company.claimable) === 1">
-                <NuxtLink :to="`/claim?uid=${uid}`">{{ $t('ui.claim') }}</NuxtLink>
+                <NuxtLink :to="`/claim?uid=${uid}`">{{ $t('resume_00011') }}</NuxtLink>
               </p>
             </div>
           </div>
@@ -363,7 +368,7 @@ useHead({
                   $t('default_00233')
                 }}</a>
               </div>
-              <div v-else-if="linkCode === 11" class="firm_login_con">{{ linkMsg || $t('ui.load_failed') }}</div>
+              <div v-else-if="linkCode === 11" class="firm_login_con">{{ linkMsg || $t('common_00332') }}</div>
               <div v-else-if="linkCode === 9" class="firm_login_con">
                 {{ linkMsg || $t('common_02372') }}
               </div>
@@ -453,7 +458,7 @@ useHead({
             </div>
             <div id="company_job_list" class="comshow_job">
               <JobCard v-for="job in jobList" :key="job.id" :job="job" variant="firm" />
-              <div v-if="!jobList.length" class="firm_tips_no">{{ $t('home.no_recruiting_jobs') }}</div>
+              <div v-if="!jobList.length" class="firm_tips_no">{{ $t('common_02402') }}</div>
               <a
                 v-if="jobList.length < jobTotal"
                 href="javascript:;"
@@ -482,6 +487,26 @@ useHead({
               <span v-if="company.pr_n">{{ company.pr_n }} ·</span>
               <span>{{ company.hy_n }}</span>
             </div>
+            <div class="com_details_data_box">
+              <div class="com_details_data_box_c">
+                <div class="com_details_data">
+                  <div class="com_details_data_n">{{ company.zp_num ?? jobs?.list?.length ?? 0 }}</div>
+                  <div class="com_details_dataname">{{ $t('wap_00190') }}</div>
+                </div>
+                <div class="com_details_data">
+                  <div class="com_details_data_n">{{ company.invite_resume ?? 0 }}</div>
+                  <div class="com_details_dataname">{{ $t('company_00009') }}</div>
+                </div>
+                <div v-if="company.pre != null" class="com_details_data">
+                  <div class="com_details_data_n">{{ company.pre }}%</div>
+                  <div class="com_details_dataname">{{ $t('company_00006') }}</div>
+                </div>
+                <div class="com_details_data">
+                  <div class="com_details_data_n">{{ company.login_date_n || $t('admin_user_00139') }}</div>
+                  <div class="com_details_dataname">{{ $t('admin_yunying_00131') }}</div>
+                </div>
+              </div>
+            </div>
             <p v-if="company.zp_num != null" class="muted">{{ $t('wap_00185') }} {{ company.zp_num }}</p>
             <p v-if="moneyLabel" class="muted">{{ moneyLabel }}</p>
             <p v-if="company.address" class="muted">
@@ -492,7 +517,7 @@ useHead({
               {{ following ? $t('wap_js_00140') : $t('common_01949') }}
             </a>
             <p v-if="Number(company.claimable) === 1">
-              <NuxtLink :to="`/claim?uid=${uid}`">{{ $t('ui.claim') }}</NuxtLink>
+              <NuxtLink :to="`/claim?uid=${uid}`">{{ $t('resume_00011') }}</NuxtLink>
             </p>
           </div>
         </div>
@@ -541,7 +566,7 @@ useHead({
             {{ revealed?.linktel || linkMsg || $t('common_01934') }}
             <a href="javascript:;" @click.prevent="showTel">{{ $t('default_00233') }}</a>
           </div>
-          <div v-else-if="linkCode === 11">{{ linkMsg || $t('ui.load_failed') }}</div>
+          <div v-else-if="linkCode === 11">{{ linkMsg || $t('common_00332') }}</div>
           <div v-else-if="linkCode === 9">
             {{ linkMsg || $t('common_02372') }}
           </div>
@@ -605,6 +630,6 @@ useHead({
   </article>
   <article v-else class="site-inner">
     <h1>{{ $t('common.company') }}</h1>
-    <p class="muted">{{ error ? failMsg : $t('ui.no_data') }}</p>
+    <p class="muted">{{ error ? failMsg : $t('wap_js_00113') }}</p>
   </article>
 </template>

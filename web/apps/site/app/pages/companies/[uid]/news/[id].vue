@@ -21,7 +21,7 @@ useSeoMeta({
       <NuxtLink :to="`/companies/${uid}`">{{ $t('common.company') }}</NuxtLink>
     </p>
     <h1>{{ row.title || $t('company_00019') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ $t('common_00376') }}</p>
     <p v-if="row.summary" class="muted">{{ row.summary }}</p>
     <div v-if="row.body" v-html="String(row.body)" />
   </article>

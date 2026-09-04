@@ -23,7 +23,7 @@ useSeoMeta({
       <NuxtLink :to="`/companies/${uid}`">{{ $t('common.company') }}</NuxtLink>
     </p>
     <h1>{{ row.title || $t('company_00020') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ $t('common_00376') }}</p>
     <img
       v-if="row.cover_n || row.cover"
       :src="mediaUrl(String(row.cover_n || row.cover || ''), PLACEHOLDER_LOGO)"

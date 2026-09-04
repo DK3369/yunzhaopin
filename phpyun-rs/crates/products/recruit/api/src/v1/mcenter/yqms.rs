@@ -1,11 +1,10 @@
 //! PHP `addYqms` from a public resume — writes `userid_msg`, no `apply_id`.
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::CreatedId;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
 };
-use phpyun_services::yqms_service::{self, YqmsInput};
+use phpyun_services::yqms_service::{self, YqmsInput, YqmsResult};
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
@@ -37,6 +36,16 @@ pub struct YqmsForm {
     #[serde(default)]
     #[validate(length(max = 32))]
     pub latitude: String,
+    #[serde(default)]
+    #[validate(length(max = 255))]
+    pub mappic: String,
+    #[serde(default)]
+    pub save_yqmb: bool,
+    #[serde(default)]
+    pub ymid: u64,
+    /// PHP second-step confirm for integral/cash single purchase.
+    #[serde(default)]
+    pub confirm: bool,
 }
 
 #[utoipa::path(
@@ -45,15 +54,20 @@ pub struct YqmsForm {
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = YqmsForm,
-    responses((status = 200, description = "ok", body = CreatedId))
+    responses((status = 200, description = "ok"))
 )]
 pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<YqmsForm>,
-) -> AppResult<ApiResponse<CreatedId>> {
-    let id = yqms_service::create_from_resume(
+) -> AppResult<ApiResponse<YqmsResult>> {
+    let mappic = if f.mappic.trim().is_empty() {
+        None
+    } else {
+        Some(f.mappic.as_str())
+    };
+    let result = yqms_service::create_from_resume(
         &state,
         &user,
         YqmsInput {
@@ -66,9 +80,13 @@ pub async fn create(
             linktel: &f.linktel,
             longitude: &f.longitude,
             latitude: &f.latitude,
+            mappic,
+            save_yqmb: f.save_yqmb,
+            ymid: f.ymid,
         },
+        f.confirm,
         &ip,
     )
     .await?;
-    Ok(ApiResponse::data(CreatedId { id }))
+    Ok(ApiResponse::data(result))
 }

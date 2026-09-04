@@ -4,12 +4,11 @@
 //! - `GET /v1/mcenter/resume-downloads/inbox` — job seeker views who has downloaded their resume
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::json;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::resume_download_service;
+use phpyun_services::resume_download_service::{self, DownloadResult};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -25,6 +24,9 @@ pub fn routes() -> Router<AppState> {
 pub struct DownloadForm {
     #[validate(range(min = 1, max = 99_999_999))]
     pub uid: u64,
+    /// PHP second-step confirm for integral/cash single purchase.
+    #[serde(default)]
+    pub confirm: bool,
 }
 
 /// Company downloads a resume
@@ -41,9 +43,10 @@ pub async fn download(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<DownloadForm>,
-) -> AppResult<ApiResponse<json::Value>> {
-    resume_download_service::download(&state, &user, f.uid, &ip).await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+) -> AppResult<ApiResponse<DownloadResult>> {
+    let data =
+        resume_download_service::download(&state, &user, f.uid, f.confirm, &ip).await?;
+    Ok(ApiResponse::data(data))
 }
 
 #[derive(Debug, Serialize, ToSchema)]

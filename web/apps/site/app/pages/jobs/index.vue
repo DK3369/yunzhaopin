@@ -282,7 +282,7 @@ const selected = computed(() => {
 
 useSeoMeta({ title: keyword.value ? `${keyword.value} - ${t('common.job')}` : t('default_00246') })
 
-const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
 
 function goPage(p: number) {
   return navigateTo({ query: { ...route.query, page: p } })
@@ -642,7 +642,7 @@ function goPage(p: number) {
         <JobCard v-for="job in bidList" :key="'bid-' + job.id" :job="job" variant="search" />
         <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
         <template v-if="!list.length && !bidList.length">
-          <EmptyState :title="$t('home.no_job_data')" />
+          <EmptyState :title="$t('default_00033')" />
           <JobCard
             v-for="job in recVisible"
             :key="'rec-' + job.id"
