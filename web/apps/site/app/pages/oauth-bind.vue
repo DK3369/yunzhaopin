@@ -27,6 +27,10 @@ onMounted(() => {
 })
 
 async function afterLogin(me: { uid: number; usertype: number }) {
+  if (me.usertype === 0) {
+    await navigateTo('/utype')
+    return
+  }
   await navigateTo(me.usertype === 2 ? '/com' : '/user')
 }
 
@@ -102,7 +106,7 @@ useSeoMeta({ title: t('ui.bind_account') })
     <form v-if="tab === 'reg'" class="form" @submit.prevent="submitReg">
       <select v-model.number="usertype">
         <option :value="1">{{ $t('wap_00686') }}</option>
-        <option :value="2">{{ $t('ui.hire') }}</option>
+        <option :value="2">{{ $t('wap_00688') }}</option>
       </select>
       <input v-model="mobile" :placeholder="$t('wap_01619')" autocomplete="tel" />
       <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />

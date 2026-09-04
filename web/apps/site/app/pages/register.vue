@@ -52,8 +52,13 @@ async function submit() {
         ...form,
         email: form.regway === 3 ? form.email : undefined,
         moblie_code: form.regway === 2 ? form.moblie_code : '',
+        referrer_uid: Number(useRoute().query.uid || 0) || 0,
       },
     })
+    if (me.usertype === 0) {
+      await navigateTo('/utype')
+      return
+    }
     await navigateTo(me.usertype === 2 ? '/com' : '/user')
   } catch (e: unknown) {
     const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
@@ -105,7 +110,7 @@ useSeoMeta({ title: t('common.register') })
             <div class="login_box_list">
               <select v-model.number="form.usertype" class="login_box_bth">
                 <option :value="1">{{ $t('wap_00686') }}</option>
-                <option :value="2">{{ $t('ui.hire') }}</option>
+                <option :value="2">{{ $t('wap_00688') }}</option>
               </select>
             </div>
             <div class="login_box_list">
@@ -165,7 +170,7 @@ useSeoMeta({ title: t('common.register') })
           <div class="login_textbox">
             <select v-model.number="form.usertype">
               <option :value="1">{{ $t('wap_00686') }}</option>
-              <option :value="2">{{ $t('ui.hire') }}</option>
+              <option :value="2">{{ $t('wap_00688') }}</option>
             </select>
           </div>
           <div class="login_textbox">

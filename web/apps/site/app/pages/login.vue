@@ -67,6 +67,10 @@ onMounted(async () => {
 
 async function afterLogin(me: { uid: number; usertype: number }) {
   const next = String(useRoute().query.next || '')
+  if (me.usertype === 0) {
+    await navigateTo({ path: '/utype', query: next.startsWith('/') && !next.startsWith('//') ? { next } : {} })
+    return
+  }
   if (next.startsWith('/') && !next.startsWith('//')) {
     await navigateTo(next)
     return
