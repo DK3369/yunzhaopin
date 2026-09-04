@@ -103,9 +103,11 @@ pub async fn list_public(
     qb.push(" AND (edate = 0 OR edate > ");
     qb.push_bind(now);
     qb.push(")");
-    qb.push(" AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push(" AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f, now);
     qb.push(" ORDER BY rec_time DESC, lastupdate DESC LIMIT ");
     qb.push_bind(limit);
@@ -125,9 +127,11 @@ pub async fn count_public(
     qb.push(" AND (edate = 0 OR edate > ");
     qb.push_bind(now);
     qb.push(")");
-    qb.push(" AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push(" AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))

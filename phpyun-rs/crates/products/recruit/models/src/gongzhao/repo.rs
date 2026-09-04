@@ -42,9 +42,9 @@ pub async fn list(
          AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())"
     ));
     if did > 0 {
-        qb.push(" AND (? = 0 OR did = ? OR did = -1) ");
+        qb.push(" AND (did = ");
         qb.push_bind(did);
-        qb.push_bind(did);
+        qb.push(" OR did = -1) ");
     }
     if let Some(t) = tag {
         qb.push(" AND keyword = ");
@@ -64,9 +64,9 @@ pub async fn count(pool: &MySqlPool, tag: Option<&str>, did: u32) -> Result<u64,
          AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())"
     ));
     if did > 0 {
-        qb.push(" AND (? = 0 OR did = ? OR did = -1) ");
+        qb.push(" AND (did = ");
         qb.push_bind(did);
-        qb.push_bind(did);
+        qb.push(" OR did = -1) ");
     }
     if let Some(t) = tag {
         qb.push(" AND keyword = ");

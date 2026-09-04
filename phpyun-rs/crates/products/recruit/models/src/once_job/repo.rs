@@ -62,9 +62,11 @@ pub async fn list_public(
     qb.push(FIELDS);
     qb.push(" FROM phpyun_once_job WHERE status = 1 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
-    qb.push(") AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push(") AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f);
     qb.push(" ORDER BY ctime DESC LIMIT ");
     qb.push_bind(limit);
@@ -78,9 +80,11 @@ pub async fn count_public(pool: &MySqlPool, f: &Filter<'_>, now: i64) -> Result<
         "SELECT COUNT(*) FROM phpyun_once_job WHERE status = 1 AND (edate = 0 OR edate > ",
     );
     qb.push_bind(now);
-    qb.push(") AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push(") AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -456,6 +460,59 @@ pub async fn list_pending_once_orders(
         .bind(offset)
         .fetch_all(pool)
         .await
+}
+
+pub async fn list_pending_once_orders_by_fast(
+    pool: &MySqlPool,
+    fast: &str,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<OnceOrder>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ORDER_FIELDS} FROM phpyun_company_order \
+         WHERE fast = ? AND type = ? AND order_state = 1 \
+         ORDER BY order_time DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, OnceOrder>(&sql)
+        .bind(fast)
+        .bind(ONCE_ORDER_TYPE)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_pending_once_orders_by_fast(
+    pool: &MySqlPool,
+    fast: &str,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_order \
+         WHERE fast = ? AND type = ? AND order_state = 1",
+    )
+    .bind(fast)
+    .bind(ONCE_ORDER_TYPE)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn cancel_pending_once_order_by_fast(
+    pool: &MySqlPool,
+    fast: &str,
+    id: u64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_order \
+            SET order_state = 3 \
+          WHERE id = ? AND fast = ? AND type = ? AND order_state = 1",
+    )
+    .bind(id)
+    .bind(fast)
+    .bind(ONCE_ORDER_TYPE)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn count_pending_once_orders(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {

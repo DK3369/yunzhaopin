@@ -154,9 +154,11 @@ pub async fn list_public(
 ) -> Result<Vec<Job>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f, now);
     match f.order {
         Some("sdate") => {
@@ -182,10 +184,12 @@ pub async fn count_public(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ",
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (",
     );
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))

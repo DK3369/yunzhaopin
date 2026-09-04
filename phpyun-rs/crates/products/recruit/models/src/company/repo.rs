@@ -86,9 +86,11 @@ pub async fn list_public(
 ) -> Result<Vec<Company>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_company WHERE r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push(" FROM phpyun_company WHERE r_status = 1 AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f, now);
     if f.order == Some("lastupdate") {
         qb.push(" ORDER BY lastupdate DESC LIMIT ");
@@ -107,9 +109,11 @@ pub async fn count_public(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ");
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1 AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
     qb.push_bind(f.did);
+    qb.push(") ");
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
