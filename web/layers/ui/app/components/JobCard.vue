@@ -277,7 +277,10 @@ const wxQr = computed(() => {
 })
 const salaryType = computed(() => Number(settings.value.resume_salarytype || 1))
 const salary = computed(() =>
-  formatSalary(props.job, t('common.negotiable'), salaryType.value, t('common_01943')),
+  formatSalary(props.job, t('common.negotiable'), salaryType.value, t('common_01943'), {
+    yuan: t('common.salary_yuan'),
+    qian: t('common.salary_thousand'),
+  }),
 )
 const city = computed(() => {
   const one = props.job.job_city_one || ''

@@ -235,18 +235,24 @@ pub async fn get_legal_page(
 ) -> AppResult<ApiResponse<DescDetail>> {
     let slug = b.slug;
     phpyun_core::validators::ensure_path_token(&slug)?;
-    let name = match slug.as_str() {
-        "about" => "关于我们",
-        "contact" => "联系我们",
-        "privacy" => "隐私政策",
-        "protocol" => "注册协议",
+    let names: &[&str] = match slug.as_str() {
+        "about" => &["关于我们", "About Us", "About"],
+        "contact" => &["联系我们", "Contact Us", "Contact"],
+        "privacy" => &["隐私政策", "Privacy Policy", "Privacy"],
+        "protocol" => &["注册协议", "Registration Agreement", "Terms"],
         _ => {
             return Err(phpyun_core::ApiError::param_invalid(format!(
                 "slug: {slug}"
             )))
         }
     };
-    let row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
+    let mut row = None;
+    for name in names {
+        row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
+        if row.is_some() {
+            break;
+        }
+    }
     let d = row.ok_or_else(|| phpyun_core::ApiError::param_invalid("description_not_found"))?;
     Ok(ApiResponse::data(d.into()))
 }

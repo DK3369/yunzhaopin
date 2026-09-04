@@ -26,7 +26,21 @@ export function mapWebLocale(raw?: string | null): WebLocale | null {
 }
 
 export function rustLangFor(locale: WebLocale): string {
-  return locale === 'en' ? 'en' : 'zh-CN'
+  if (locale === 'en') return 'en'
+  // UI pack is Simplified Chinese only; Traditional browsers still get zh UI
+  // strings, but the API can return zh-TW dictionary names.
+  if (import.meta.client) {
+    try {
+      const raw = localStorage.getItem(COOKIE) || ''
+      if (/tw|hk|mo|hant/i.test(raw)) return 'zh-TW'
+    } catch {
+      /* ignore */
+    }
+    if (typeof navigator !== 'undefined' && /tw|hk|mo|hant/i.test(navigator.language)) {
+      return 'zh-TW'
+    }
+  }
+  return 'zh-CN'
 }
 
 function readCookie(name: string): string {

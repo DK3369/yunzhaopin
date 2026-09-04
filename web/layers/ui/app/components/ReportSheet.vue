@@ -77,7 +77,7 @@ async function submit() {
       captcha_cid: captcha.value?.cid,
       captcha_input: captchaInput.value,
     })
-    msg.value = t('common.confirm')
+    msg.value = t('common.success')
     emit('done')
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('common_00888')

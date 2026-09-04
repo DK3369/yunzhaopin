@@ -274,12 +274,15 @@ export function formatSalary(
   negotiable = '',
   salaryType = 1,
   plus = '',
+  units?: { yuan?: string; qian?: string },
 ): string {
   const min = Number(job.min_salary ?? job.minsalary ?? 0)
   const max = Number(job.max_salary ?? job.maxsalary ?? 0)
   if (!min && !max) return negotiable
   const type = Number(salaryType) || 1
-  const unit = type === 2 ? '千' : type === 3 ? 'K' : type === 4 ? 'k' : '元'
+  const yuan = units?.yuan || '元'
+  const qian = units?.qian || '千'
+  const unit = type === 2 ? qian : type === 3 ? 'K' : type === 4 ? 'k' : yuan
   const n = (v: number) => (type === 1 ? String(v) : String(Math.floor((v / 1000) * 10) / 10))
   if (min && max) {
     if (max < 2000) return type === 1 ? `2000${unit}${plus}` : `2${unit}${plus}`
@@ -296,6 +299,7 @@ export function dictReqLabel(name: string, suffix = ''): string {
   const nCjk = /[\u4e00-\u9fff]/.test(n)
   const sCjk = /[\u4e00-\u9fff]/.test(s)
   if (nCjk !== sCjk) return n
+  if (!nCjk && !sCjk) return `${n} ${s.trim()}`
   return `${n}${s}`
 }
 

@@ -91,7 +91,7 @@ async function postAsk() {
     })
     askContent.value = ''
     askCode.value = ''
-    askMsg.value = t('common.confirm')
+    askMsg.value = t('common.success')
     await loadAskCaptcha()
   } catch (e: unknown) {
     askMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
@@ -231,7 +231,7 @@ async function apply() {
   try {
     await api.post('/v1/mcenter/apply', { job_id: id })
     appliedLocal.value = true
-    applyMsg.value = t('common.confirm')
+    applyMsg.value = t('common.success')
   } catch (e: unknown) {
     applyMsg.value = e instanceof Error ? e.message : t('common.no')
   }
@@ -252,7 +252,7 @@ async function shareJob() {
     }
     if (import.meta.client && navigator.clipboard && text) {
       await navigator.clipboard.writeText(text)
-      applyMsg.value = t('common.confirm')
+      applyMsg.value = t('common.success')
       return
     }
     applyMsg.value = text || t('ui.load_failed')
@@ -320,6 +320,7 @@ const salary = computed(() =>
     t('common.negotiable'),
     salaryType.value,
     t('common_01943'),
+    { yuan: t('common.salary_yuan'), qian: t('common.salary_thousand') },
   ),
 )
 const welfare = computed(() => {
@@ -627,7 +628,7 @@ useHead({
                     </div>
                   </div>
                   <div class="job_details_com_otherjob_c">
-                    <div class="job_details_com_otherjob_xz">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943')) }}</div>
+                    <div class="job_details_com_otherjob_xz">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943'), { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
                     <div class="job_details_com_otherjob_city">{{ row.job_city_one }} - {{ row.job_city_two }}</div>
                   </div>
                   <div class="job_details_com_otherjob_r">
@@ -651,7 +652,7 @@ useHead({
                   <div class="job_details_likejobname">
                     <NuxtLink :to="`/jobs/${row.id}`" :title="row.name">{{ row.name }}</NuxtLink>
                   </div>
-                  <div class="job_details_likejobxz">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943')) }}</div>
+                  <div class="job_details_likejobxz">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943'), { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
                   <div class="job_details_likecomname">
                     <NuxtLink v-if="row.uid" :to="`/companies/${row.uid}`">{{ row.com_name }}</NuxtLink>
                   </div>
@@ -866,7 +867,7 @@ useHead({
               <NuxtLink :to="`/jobs/${row.id}`" :title="row.name">
                 <div class="recommend_post_card_top">
                   <div class="recommend_post_card_name">{{ row.name }}</div>
-                  <div class="recommend_post_card_money">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943')) }}</div>
+                  <div class="recommend_post_card_money">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943'), { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
                 </div>
                 <div class="newjob_info">
                   <span>{{ row.job_city_one }}{{ row.job_city_two ? `-${row.job_city_two}` : '' }}</span>
@@ -961,7 +962,7 @@ useHead({
       :target-kind="1"
       :target-id="id"
       @close="reportOpen = false"
-      @done="applyMsg = $t('common.confirm')"
+      @done="applyMsg = $t('common.success')"
     />
   </div>
   <div v-else class="site-inner">

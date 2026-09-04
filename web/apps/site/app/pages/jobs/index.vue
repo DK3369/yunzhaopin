@@ -571,7 +571,7 @@ function goPage(p: number) {
                 <NuxtLink :to="`/jobs/${job.id}`" class="job_recommendation_jobname">{{ job.name }}</NuxtLink>
                 <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="job_recommendation_Comname">{{ job.com_name }}</NuxtLink>
                 <div class="job_recommendation_msg">
-                  <span><em class="job_right_box_list_c">{{ formatSalary(job, $t('common.negotiable'), Number(settings.resume_salarytype || 1), $t('common_01943')) }}</em></span>
+                  <span><em class="job_right_box_list_c">{{ formatSalary(job, $t('common.negotiable'), Number(settings.resume_salarytype || 1), $t('common_01943'), { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</em></span>
                 </div>
               </li>
             </ul>

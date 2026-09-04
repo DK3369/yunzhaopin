@@ -5,6 +5,7 @@
 //! package `down_resume` decrement, time-VIP daily cap, integral/cash single
 //! purchase when quota exhausted, and contact payload on success.
 
+use phpyun_core::i18n::{current_lang, t, t_args};
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::utils::mask_contact;
 use phpyun_core::ApiError;
@@ -143,16 +144,20 @@ async fn resume_day_price(state: &AppState, eid: u64, integral: bool) -> AppResu
 fn build_contact_html(state: &AppState, r: &Resume, site_name: &str) -> (String, String) {
     let tel = r.telphone.as_deref().unwrap_or("").trim();
     let email = r.email.as_deref().unwrap_or("").trim();
+    let lang = current_lang();
+    let tip = t_args("resume_contact_tip", lang, &[("site", site_name)]);
+    let mobile_l = t("resume_contact_mobile", lang);
+    let email_l = t("resume_contact_email", lang);
     let mut pc = format!(
-        "<div class=\"tcktouch_box\"><div class=\"tcktouch_box_tip\">联系我时请说是在{site_name}上看到的</div>"
+        "<div class=\"tcktouch_box\"><div class=\"tcktouch_box_tip\">{tip}</div>"
     );
     if !tel.is_empty() {
         pc.push_str(&format!(
-            "<div class=\"tcktouch_box_p\">手机：<span class=\"tcktouch_box_p_sj\">{tel}</span></div>"
+            "<div class=\"tcktouch_box_p\">{mobile_l}：<span class=\"tcktouch_box_p_sj\">{tel}</span></div>"
         ));
     }
     if !email.is_empty() {
-        pc.push_str(&format!("<div class=\"tcktouch_box_p\">邮箱：{email}</div>"));
+        pc.push_str(&format!("<div class=\"tcktouch_box_p\">{email_l}：{email}</div>"));
     }
     pc.push_str("</div>");
 

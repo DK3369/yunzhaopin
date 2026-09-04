@@ -374,7 +374,7 @@ useHead({
                     <img :src="mediaUrl(job.com_logo, PLACEHOLDER_LOGO)" alt="" />
                   </div>
                   <div class="yunheader_60jpbane">{{ job.name }}</div>
-                  <div class="yunheader_60jpxz">{{ formatSalary(job, $t('common.negotiable'), $t('common_02056')) }}</div>
+                  <div class="yunheader_60jpxz">{{ formatSalary(job, $t('common.negotiable'), $t('common_02056'), '', { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
                 </NuxtLink>
                 <div class="yunheader_60jpcom">{{ job.com_name }}</div>
               </div>

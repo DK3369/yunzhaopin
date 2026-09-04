@@ -34,7 +34,7 @@ async function postAnswer() {
   try {
     await api.post('/v1/mcenter/questions/answers', { id, content: answerText.value })
     answerText.value = ''
-    askMsg.value = t('common.confirm')
+    askMsg.value = t('common.success')
     await refresh()
     await refreshAnswers()
   } catch (e: unknown) {
@@ -72,7 +72,7 @@ useHead({ link: [{ rel: 'canonical', href: `/questions/${id}` }] })
       <div v-html="String(a.content || '')" />
       <p class="muted">
         {{ a.nickname }} · {{ a.support_count || 0 }}
-        <a href="javascript:;" @click.prevent="supportAnswer(Number(a.id))">{{ $t('common.confirm') }}</a>
+        <a href="javascript:;" @click.prevent="supportAnswer(Number(a.id))">{{ $t('common.like') }}</a>
       </p>
     </div>
     <form class="form" @submit.prevent="postAnswer">

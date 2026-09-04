@@ -423,7 +423,7 @@ async function report() {
               <p v-else class="muted">{{ $t('resume_00038') }}</p>
             </div>
             <div v-if="bodyOpen && row.description" class="yun_newedition_tit" style="margin-top: 16px">
-              <span class="yun_newedition_tit_s">{{ $t('wap_00456') }}</span>
+              <span class="yun_newedition_tit_s">{{ $t('wap_00463') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
             <div v-if="bodyOpen && row.description" v-html="String(row.description)" />
@@ -437,14 +437,14 @@ async function report() {
               <div v-html="String(w.content || '')" />
             </div>
             <div v-if="edus.length" class="yun_newedition_tit">
-              <span class="yun_newedition_tit_s">{{ $t('home.education_suffix') }}</span>
+              <span class="yun_newedition_tit_s">{{ $t('wap_00459') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
             <div v-for="e in edus" :key="String(e.id)" class="muted">
               {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
             </div>
             <div v-if="projects.length" class="yun_newedition_tit">
-              <span class="yun_newedition_tit_s">{{ $t('wap_00455') }}</span>
+              <span class="yun_newedition_tit_s">{{ $t('wap_00465') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
             <div v-for="p in projects" :key="'p' + String(p.id)" class="muted">
@@ -452,7 +452,7 @@ async function report() {
               <div v-html="String(p.content || '')" />
             </div>
             <div v-if="trainings.length" class="yun_newedition_tit">
-              <span class="yun_newedition_tit_s">{{ $t('wap_00458') }}</span>
+              <span class="yun_newedition_tit_s">{{ $t('wap_00455') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
             <div v-for="tr in trainings" :key="'t' + String(tr.id)" class="muted">
@@ -581,6 +581,12 @@ async function report() {
             {{ row.lastupdate_n }} {{ $t('wap_00225') }}
           </div>
         </div>
+        <div v-if="bodyOpen && row.description" class="Preview_your_resume_experience">
+          <div class="Preview_your_resume_header">
+            <div class="Preview_your_resume_word">{{ $t('wap_00463') }}</div>
+          </div>
+          <div v-html="String(row.description)" />
+        </div>
         <div v-if="bodyOpen && works.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
             <div class="Preview_your_resume_word">{{ $t('wap_00457') }}</div>
@@ -592,7 +598,7 @@ async function report() {
         </div>
         <div v-if="bodyOpen && edus.length" class="Preview_your_resume_education">
           <div class="Preview_your_resume_header">
-            <div class="Preview_your_resume_word">{{ $t('home.education_suffix') }}</div>
+            <div class="Preview_your_resume_word">{{ $t('wap_00459') }}</div>
           </div>
           <div v-for="e in edus" :key="String(e.id)">
             {{ e.name }} {{ e.specialty }} {{ e.education_n }} {{ e.sdate_n }} - {{ e.edate_n }}
@@ -600,7 +606,7 @@ async function report() {
         </div>
         <div v-if="bodyOpen && projects.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
-            <div class="Preview_your_resume_word">{{ $t('wap_00455') }}</div>
+            <div class="Preview_your_resume_word">{{ $t('wap_00465') }}</div>
           </div>
           <div v-for="p in projects" :key="'hp' + String(p.id)">
             <strong>{{ p.name }}</strong> {{ p.role }} {{ p.sdate_n }} - {{ p.edate_n }}
@@ -608,7 +614,7 @@ async function report() {
         </div>
         <div v-if="bodyOpen && trainings.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
-            <div class="Preview_your_resume_word">{{ $t('wap_00458') }}</div>
+            <div class="Preview_your_resume_word">{{ $t('wap_00455') }}</div>
           </div>
           <div v-for="tr in trainings" :key="'ht' + String(tr.id)">{{ tr.name }} {{ tr.sdate_n }}</div>
         </div>
