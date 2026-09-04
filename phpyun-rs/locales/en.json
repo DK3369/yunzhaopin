@@ -59,6 +59,7 @@
   "resume_not_open": "You cannot view this resume yet",
   "module_closed": "This section is closed",
   "resume_contact_tip": "Please mention you found me on %{site}",
+  "site_name_fallback": "this site",
   "resume_contact_mobile": "Mobile",
   "resume_contact_email": "Email",
   "mobile_dup": "Mobile number is already in use",

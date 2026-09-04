@@ -16,7 +16,7 @@ async function submit() {
   msg.value = ''
   try {
     await api.post('/v1/wap/friend-links/apply', { ...form })
-    msg.value = t('common.confirm')
+    msg.value = t('common.success')
     form.name = ''
     form.url = ''
     await loadCaptcha()

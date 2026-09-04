@@ -177,7 +177,7 @@ async function download(confirm = false) {
       }
       return
     }
-    actionMsg.value = res.private_phone || t('common.confirm')
+    actionMsg.value = res.private_phone || t('common.success')
     await refresh()
   } catch (e: unknown) {
     if (errKey(e) === 'need_buy_down_resume' || errKey(e) === 'vip_day_limit' || errKey(e) === 'integral_insufficient') {
@@ -288,7 +288,7 @@ async function submitYqms(confirm = false) {
       return
     }
     yqmsOpen.value = false
-    actionMsg.value = t('common.confirm')
+    actionMsg.value = t('common.success')
     await refresh()
   } catch (e: unknown) {
     if (errKey(e) === 'need_buy_invite' || errKey(e) === 'vip_day_limit' || errKey(e) === 'integral_insufficient') {
@@ -460,7 +460,7 @@ async function report() {
               <div v-html="String(tr.content || '')" />
             </div>
             <div v-if="certs.length" class="yun_newedition_tit">
-              <span class="yun_newedition_tit_s">{{ $t('wap_00454') }}</span>
+              <span class="yun_newedition_tit_s">{{ $t('wap_user_00090') }}</span>
               <i class="yun_newedition_tit_line" />
             </div>
             <div v-for="c in certs" :key="'c' + String(c.id)" class="muted">{{ c.name }} {{ c.sdate_n }}</div>
@@ -512,7 +512,7 @@ async function report() {
               <p v-if="Number(tj.project_num)" class="muted">{{ $t('wap_00465') }} {{ $t('wap_00443') }}{{ tj.project_num }}{{ $t('wap_00466') }}</p>
               <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00458') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
               <p v-if="Number(tj.skill_num)" class="muted">{{ $t('wap_00450') }}{{ tj.skill_num }}</p>
-              <p v-if="Number(tj.cert_num)" class="muted">{{ $t('wap_00454') }} {{ tj.cert_num }}</p>
+              <p v-if="Number(tj.cert_num)" class="muted">{{ $t('wap_user_00090') }} {{ tj.cert_num }}</p>
               <a href="javascript:;" class="resume_lookall_a" @click.prevent="lookAll">{{ $t('wap_01602') }}</a>
             </div>
             <p style="margin-top: 16px">
@@ -620,13 +620,13 @@ async function report() {
         </div>
         <div v-if="bodyOpen && certs.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
-            <div class="Preview_your_resume_word">{{ $t('wap_00454') }}</div>
+            <div class="Preview_your_resume_word">{{ $t('wap_user_00090') }}</div>
           </div>
           <div v-for="c in certs" :key="'hc' + String(c.id)">{{ c.name }}</div>
         </div>
         <div v-if="bodyOpen && skills.length" class="Preview_your_resume_experience">
           <div class="Preview_your_resume_header">
-            <div class="Preview_your_resume_word">{{ $t('member_com_00027') }}</div>
+            <div class="Preview_your_resume_word">{{ $t('wap_00461') }}</div>
           </div>
           <div v-for="s in skills" :key="'hsk' + String(s.id)">
             {{ s.name }}
@@ -751,7 +751,7 @@ async function report() {
       :target-kind="3"
       :target-id="Number(row.def_job || expect0.id || 0)"
       @close="reportOpen = false"
-      @done="actionMsg = $t('common.confirm')"
+      @done="actionMsg = $t('common.success')"
     />
   </article>
 </template>

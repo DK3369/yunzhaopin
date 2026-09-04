@@ -280,8 +280,8 @@ export function formatSalary(
   const max = Number(job.max_salary ?? job.maxsalary ?? 0)
   if (!min && !max) return negotiable
   const type = Number(salaryType) || 1
-  const yuan = units?.yuan || '元'
-  const qian = units?.qian || '千'
+  const yuan = units?.yuan || ''
+  const qian = units?.qian || ''
   const unit = type === 2 ? qian : type === 3 ? 'K' : type === 4 ? 'k' : yuan
   const n = (v: number) => (type === 1 ? String(v) : String(Math.floor((v / 1000) * 10) / 10))
   if (min && max) {

@@ -193,7 +193,7 @@ async function postAsk() {
     })
     askContent.value = ''
     askCode.value = ''
-    askMsg.value = t('common.confirm')
+    askMsg.value = t('common.success')
     await loadAskCaptcha()
   } catch (e: unknown) {
     askMsg.value = e instanceof Error ? e.message : t('common_00888')

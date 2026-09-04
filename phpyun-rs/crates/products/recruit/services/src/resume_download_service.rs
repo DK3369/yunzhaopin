@@ -181,7 +181,7 @@ async fn contact_payload(
 ) -> AppResult<(Option<String>, Option<String>, Option<String>, Option<String>)> {
     let site_name = read_setting_str(state, "sy_webname").await;
     let site_name = if site_name.trim().is_empty() {
-        "本站".to_string()
+        t("site_name_fallback", current_lang())
     } else {
         site_name
     };

@@ -13,7 +13,7 @@ async function download() {
       await navigateTo(url, { external: true })
       return
     }
-    msg.value = t('common.confirm')
+    msg.value = t('common.success')
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('common_00888')
   }

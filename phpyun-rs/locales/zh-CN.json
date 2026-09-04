@@ -53,6 +53,7 @@
   "resume_not_open": "暂无权限查看该简历",
   "module_closed": "该栏目已关闭",
   "resume_contact_tip": "联系我时请说是在%{site}上看到的",
+  "site_name_fallback": "本站",
   "resume_contact_mobile": "手机",
   "resume_contact_email": "邮箱",
   "mobile_dup": "手机号已被占用",
