@@ -113,6 +113,21 @@ pub async fn find_default_id_by_uid(
     Ok(row.map(|(id,)| phpyun_core::numeric::nonnegative_count(id)))
 }
 
+pub async fn find_default_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<Expect>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_resume_expect \
+         WHERE uid = ? \
+         ORDER BY COALESCE(defaults, 0) DESC, lastupdate DESC, id DESC LIMIT 1"
+    );
+    sqlx::query_as::<_, Expect>(&sql)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await
+}
+
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Expect>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_resume_expect WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, Expect>(&sql)

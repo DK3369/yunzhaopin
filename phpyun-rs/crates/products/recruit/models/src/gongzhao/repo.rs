@@ -32,42 +32,47 @@ const FIELDS: &str = "\
 pub async fn list(
     pool: &MySqlPool,
     tag: Option<&str>,
+    did: u32,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Gongzhao>, sqlx::Error> {
-    let sql = match tag {
-        Some(_) => format!(
-            "SELECT {FIELDS} FROM phpyun_gongzhao WHERE keyword = ? AND {PREDICATE} \
-             ORDER BY id DESC LIMIT ? OFFSET ?"
-        ),
-        None => format!(
-            "SELECT {FIELDS} FROM phpyun_gongzhao WHERE {PREDICATE} \
-             ORDER BY id DESC LIMIT ? OFFSET ?"
-        ),
-    };
-    let q = sqlx::query_as::<_, Gongzhao>(&sql);
-    match tag {
-        Some(t) => q.bind(t).bind(limit).bind(offset).fetch_all(pool).await,
-        None => q.bind(limit).bind(offset).fetch_all(pool).await,
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT {FIELDS} FROM phpyun_gongzhao WHERE {PREDICATE} \
+         AND (startime = 0 OR startime <= UNIX_TIMESTAMP()) \
+         AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())"
+    ));
+    if did > 0 {
+        qb.push(" AND (? = 0 OR did = ? OR did = -1) ");
+        qb.push_bind(did);
+        qb.push_bind(did);
     }
+    if let Some(t) = tag {
+        qb.push(" AND keyword = ");
+        qb.push_bind(t);
+    }
+    qb.push(" ORDER BY rec DESC, startime DESC, datetime DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<Gongzhao>().fetch_all(pool).await
 }
 
-pub async fn count(pool: &MySqlPool, tag: Option<&str>) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = match tag {
-        Some(t) => {
-            sqlx::query_as(&format!(
-                "SELECT COUNT(*) FROM phpyun_gongzhao WHERE keyword = ? AND {PREDICATE}"
-            ))
-                .bind(t)
-                .fetch_one(pool)
-                .await?
-        }
-        None => {
-            sqlx::query_as(&format!("SELECT COUNT(*) FROM phpyun_gongzhao WHERE {PREDICATE}"))
-                .fetch_one(pool)
-                .await?
-        }
-    };
+pub async fn count(pool: &MySqlPool, tag: Option<&str>, did: u32) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT COUNT(*) FROM phpyun_gongzhao WHERE {PREDICATE} \
+         AND (startime = 0 OR startime <= UNIX_TIMESTAMP()) \
+         AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())"
+    ));
+    if did > 0 {
+        qb.push(" AND (? = 0 OR did = ? OR did = -1) ");
+        qb.push_bind(did);
+        qb.push_bind(did);
+    }
+    if let Some(t) = tag {
+        qb.push(" AND keyword = ");
+        qb.push_bind(t);
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

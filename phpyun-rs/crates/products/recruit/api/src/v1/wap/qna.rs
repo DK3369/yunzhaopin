@@ -45,6 +45,16 @@ pub fn routes() -> Router<AppState> {
         )
 }
 
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
+pub struct AnswersQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    /// `support` → ORDER BY support DESC; default add_time ASC.
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub orderby: Option<String>,
+}
+
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct QListQuery {
     #[validate(length(max = 100))]
@@ -358,7 +368,7 @@ pub async fn question_detail(
 
     // Dict + top 5 answers in parallel
     let dicts_fut = phpyun_services::dict_service::get(&state);
-    let top_fut = phpyun_models::qna::repo::list_answers(state.db.reader(), id, 0, 5);
+    let top_fut = phpyun_models::qna::repo::list_answers(state.db.reader(), id, 0, 5, false);
     let (dicts_res, top_raw) = tokio::join!(dicts_fut, top_fut);
     let dicts = dicts_res?;
     let top_raw = top_raw.unwrap_or_default();
@@ -466,17 +476,18 @@ pub async fn question_detail(
 #[utoipa::path(post,
     path = "/v1/wap/questions/answers",
     tag = "wap",
-    request_body = IdBody,
+    request_body = AnswersQuery,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_answers(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<AnswersQuery>,
 ) -> AppResult<ApiResponse<Paged<AnswerItem>>> {
     let id = b.id;
-    let r = qna_service::list_answers(&state, id, page).await?;
+    let order_support = b.orderby.as_deref() == Some("support");
+    let r = qna_service::list_answers(&state, id, page, order_support).await?;
     let viewer_uid = user.as_ref().map(|u| u.uid);
     let mut atn_uids = std::collections::HashSet::<u64>::new();
     if let Some(uid) = viewer_uid {

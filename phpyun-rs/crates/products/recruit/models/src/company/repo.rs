@@ -62,6 +62,8 @@ pub struct CompanyFilter<'a> {
     pub mun: Option<i32>,
     /// Welfare dict id (`FIND_IN_SET` against CSV `welfare`).
     pub welfare: Option<i32>,
+    /// PHP comlist uses the dict **name** in FIND_IN_SET, not the numeric id.
+    pub welfare_name: Option<&'a str>,
     /// `cert=true` keeps only companies whose business license has been
     /// verified (`yyzz_status = 1`).
     pub cert: bool,
@@ -71,6 +73,8 @@ pub struct CompanyFilter<'a> {
     pub did: u32,
     /// PHP `comlist uptime` days.
     pub uptime: Option<i32>,
+    /// PHP `order=lastupdate`.
+    pub order: Option<&'a str>,
 }
 
 pub async fn list_public(
@@ -82,10 +86,15 @@ pub async fn list_public(
 ) -> Result<Vec<Company>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_company WHERE r_status = 1 AND did = ");
+    qb.push(" FROM phpyun_company WHERE r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
-    qb.push(" ORDER BY jobtime DESC, hits DESC LIMIT ");
+    if f.order == Some("lastupdate") {
+        qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    } else {
+        qb.push(" ORDER BY jobtime DESC, hits DESC LIMIT ");
+    }
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -98,7 +107,8 @@ pub async fn count_public(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1 AND did = ");
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
@@ -146,7 +156,11 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
         qb.push(" AND mun = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.welfare {
+    if let Some(name) = f.welfare_name.filter(|s| !s.is_empty()) {
+        qb.push(" AND FIND_IN_SET(");
+        qb.push_bind(name);
+        qb.push(", welfare)");
+    } else if let Some(v) = f.welfare {
         qb.push(" AND FIND_IN_SET(");
         qb.push_bind(v);
         qb.push(", welfare)");
@@ -494,6 +508,7 @@ pub async fn count_open_jobs(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Er
     let row: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_company_job \
          WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1 \
+           AND COALESCE(is_depower, 2) = 2 \
            AND (edate = 0 OR edate > UNIX_TIMESTAMP())",
     )
     .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
@@ -504,7 +519,7 @@ pub async fn count_open_jobs(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Er
 
 /// PHP `$invite_resume`: interview invitations this company has sent.
 pub async fn count_interview_invites(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_userid_msg WHERE fid = ?")
+    let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_userid_msg WHERE fid = ? AND isdel = 9")
         .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
         .fetch_one(pool)
         .await?;

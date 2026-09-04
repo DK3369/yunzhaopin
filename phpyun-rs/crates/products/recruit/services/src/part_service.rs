@@ -60,7 +60,13 @@ pub async fn list_public(
         min_salary: search.min_salary,
         max_salary: search.max_salary,
         rec: search.rec,
-        did: if search.did == 0 { 1 } else { search.did },
+        did: search.did,
+        uptime: crate::site_gate_service::default_uptime_days(
+            state,
+            None,
+            "sy_datacycle_job",
+        )
+        .await,
     };
     let (total, list) = tokio::join!(
         part_repo::count_public(state.db.reader(), &filter, now),

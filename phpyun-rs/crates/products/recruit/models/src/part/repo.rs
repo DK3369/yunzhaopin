@@ -25,6 +25,7 @@ pub struct PartFilter<'a> {
     /// `rec_time > now`).
     pub rec: bool,
     pub did: u32,
+    pub uptime: Option<i32>,
 }
 
 // Every nullable int column on `phpyun_partjob` is COALESCE'd to a default
@@ -97,12 +98,13 @@ pub async fn list_public(
 ) -> Result<Vec<PartJob>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_partjob WHERE state = 1 AND status = 0 AND r_status = 1");
+    qb.push(" FROM phpyun_partjob WHERE state = 1 AND status = 0 AND r_status <> 2");
     // edate=0 means recruiting indefinitely (PHPYun semantics).
     qb.push(" AND (edate = 0 OR edate > ");
     qb.push_bind(now);
     qb.push(")");
-    qb.push(" AND did = ");
+    qb.push(" AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     qb.push(" ORDER BY rec_time DESC, lastupdate DESC LIMIT ");
@@ -118,12 +120,13 @@ pub async fn count_public(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_partjob WHERE state = 1 AND status = 0 AND r_status = 1",
+        "SELECT COUNT(*) FROM phpyun_partjob WHERE state = 1 AND status = 0 AND r_status <> 2",
     );
     qb.push(" AND (edate = 0 OR edate > ");
     qb.push_bind(now);
     qb.push(")");
-    qb.push(" AND did = ");
+    qb.push(" AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
@@ -138,16 +141,31 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, 
         }
     }
     if let Some(v) = f.province_id {
-        qb.push(" AND provinceid = ");
+        qb.push(" AND (provinceid = ");
         qb.push_bind(v);
+        qb.push(" OR cityid = ");
+        qb.push_bind(v);
+        qb.push(" OR three_cityid = ");
+        qb.push_bind(v);
+        qb.push(")");
     }
     if let Some(v) = f.city_id {
-        qb.push(" AND cityid = ");
+        qb.push(" AND (provinceid = ");
         qb.push_bind(v);
+        qb.push(" OR cityid = ");
+        qb.push_bind(v);
+        qb.push(" OR three_cityid = ");
+        qb.push_bind(v);
+        qb.push(")");
     }
     if let Some(v) = f.three_city_id {
-        qb.push(" AND three_cityid = ");
+        qb.push(" AND (provinceid = ");
         qb.push_bind(v);
+        qb.push(" OR cityid = ");
+        qb.push_bind(v);
+        qb.push(" OR three_cityid = ");
+        qb.push_bind(v);
+        qb.push(")");
     }
     if let Some(v) = f.part_type {
         qb.push(" AND `type` = ");
@@ -173,6 +191,15 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, 
         // PHP partlist: `rec_time > time()` (strictly future-dated promo).
         qb.push(" AND rec_time > ");
         qb.push_bind(now);
+    }
+    if let Some(days) = f.uptime.filter(|d| *d > 0) {
+        let threshold = if days == 1 {
+            now - now.rem_euclid(86_400)
+        } else {
+            now - i64::from(days) * 86_400
+        };
+        qb.push(" AND lastupdate > ");
+        qb.push_bind(threshold);
     }
 }
 

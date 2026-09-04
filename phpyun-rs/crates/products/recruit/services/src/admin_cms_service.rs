@@ -565,8 +565,8 @@ pub async fn delete_fair_space(state: &AppState, actor: &AuthenticatedUser, id: 
 
 pub async fn list_gongzhao(state: &AppState, page: Pagination) -> AppResult<Paged<Gongzhao>> {
     let db = state.db.reader();
-    let list = gongzhao_repo::list(db, None, page.offset, page.limit).await?;
-    let total = gongzhao_repo::count(db, None).await?;
+    let list = gongzhao_repo::list(db, None, 0, page.offset, page.limit).await?;
+    let total = gongzhao_repo::count(db, None, 0).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 

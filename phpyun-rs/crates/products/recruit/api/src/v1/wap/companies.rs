@@ -87,6 +87,9 @@ pub struct CompanyListQuery {
     pub did: u32,
     #[validate(range(min = 0, max = 3650))]
     pub uptime: Option<i32>,
+    /// PHP `order=lastupdate`.
+    #[validate(length(max = 32))]
+    pub order: Option<String>,
 }
 fn default_did() -> u32 {
     0
@@ -222,6 +225,15 @@ pub async fn list_companies(
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
     }
+    let dicts_early = phpyun_services::dict_service::get(&state).await?;
+    let welfare_name = q.welfare.filter(|id| *id > 0).and_then(|id| {
+        let n = dicts_early.comclass(id);
+        if n.is_empty() {
+            None
+        } else {
+            Some(n.to_string())
+        }
+    });
     let filter = CompanyFilter {
         keyword: q.keyword.as_deref(),
         province_id: q.province_id,
@@ -230,7 +242,8 @@ pub async fn list_companies(
         hy: q.hy,
         pr: q.pr,
         mun: q.mun,
-        welfare: q.welfare,
+        welfare: None,
+        welfare_name: welfare_name.as_deref(),
         cert: q.cert,
         rec: q.rec,
         did: q.did,
@@ -243,9 +256,10 @@ pub async fn list_companies(
             )
             .await
         },
+        order: q.order.as_deref(),
     };
     let r = company_service::list_public(&state, &filter, page).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let dicts = dicts_early;
     let mut list: Vec<CompanySummary> = r
         .list
         .into_iter()

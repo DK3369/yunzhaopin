@@ -45,7 +45,7 @@ pub async fn list_public(
         three_city_id: search.three_city_id,
         exp: search.exp,
         sex: search.sex,
-        did: if search.did == 0 { 1 } else { search.did },
+        did: search.did,
     };
     let (total, list) = tokio::join!(
         tiny_repo::count_public(state.db.reader(), &filter),
@@ -180,7 +180,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
         status: input.default_status,
         login_ip: &input.login_ip,
         now,
-        did: if input.did == 0 { 1 } else { input.did },
+        did: input.did,
     };
     let id = tiny_repo::create(state.db.pool(), &create).await?;
 

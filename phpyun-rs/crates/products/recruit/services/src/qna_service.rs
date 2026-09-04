@@ -88,9 +88,10 @@ pub async fn list_answers(
     state: &AppState,
     question_id: u64,
     page: Pagination,
+    order_support: bool,
 ) -> AppResult<Paged<Answer>> {
     let db = state.db.reader();
-    let list = qna_repo::list_answers(db, question_id, page.offset, page.limit).await?;
+    let list = qna_repo::list_answers(db, question_id, page.offset, page.limit, order_support).await?;
     let total = qna_repo::count_answers(db, question_id).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -156,19 +157,22 @@ pub async fn list_attended(
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
+async fn support_once(state: &AppState, uid: u64, kind: i32, target_id: u64) -> AppResult<bool> {
+    let key = format!("qna:support:{kind}:{target_id}:{uid}");
+    if state.redis.exists(&key).await {
+        return Ok(false);
+    }
+    qna_repo::toggle_support(state.db.pool(), uid, kind, target_id, clock::now_ts()).await?;
+    let _ = state.redis.set_ex(&key, "1", 86400 * 90).await;
+    Ok(true)
+}
+
 pub async fn toggle_support_question(
     state: &AppState,
     user: &AuthenticatedUser,
     question_id: u64,
 ) -> AppResult<bool> {
-    Ok(qna_repo::toggle_support(
-        state.db.pool(),
-        user.uid,
-        SUPPORT_KIND_QUESTION,
-        question_id,
-        clock::now_ts(),
-    )
-    .await?)
+    support_once(state, user.uid, SUPPORT_KIND_QUESTION, question_id).await
 }
 
 pub async fn toggle_support_answer(
@@ -176,14 +180,7 @@ pub async fn toggle_support_answer(
     user: &AuthenticatedUser,
     answer_id: u64,
 ) -> AppResult<bool> {
-    Ok(qna_repo::toggle_support(
-        state.db.pool(),
-        user.uid,
-        SUPPORT_KIND_ANSWER,
-        answer_id,
-        clock::now_ts(),
-    )
-    .await?)
+    support_once(state, user.uid, SUPPORT_KIND_ANSWER, answer_id).await
 }
 
 pub async fn list_my_questions(

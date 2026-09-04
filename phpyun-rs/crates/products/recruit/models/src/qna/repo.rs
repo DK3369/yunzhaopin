@@ -307,11 +307,17 @@ pub async fn list_answers(
     question_id: u64,
     offset: u64,
     limit: u64,
+    order_support: bool,
 ) -> Result<Vec<Answer>, sqlx::Error> {
+    let order = if order_support {
+        "support DESC, add_time ASC"
+    } else {
+        "add_time ASC"
+    };
     let sql = format!(
         "SELECT {A_FIELDS} FROM phpyun_answer \
-         WHERE qid = ? \
-         ORDER BY support DESC, add_time ASC \
+         WHERE qid = ? AND status = 1 \
+         ORDER BY {order} \
          LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Answer>(&sql)
@@ -323,7 +329,7 @@ pub async fn list_answers(
 }
 
 pub async fn count_answers(pool: &MySqlPool, question_id: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_answer WHERE qid = ?")
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_answer WHERE qid = ? AND status = 1")
         .bind(question_id)
         .fetch_one(pool)
         .await?;
@@ -381,7 +387,7 @@ pub async fn mark_answer_accepted(
     answer_id: u64,
     _question_id: u64,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("UPDATE phpyun_answer SET status = 1 WHERE id = ?")
+    let res = sqlx::query("UPDATE phpyun_answer SET id = id WHERE id = ? AND status = 1")
         .bind(answer_id)
         .execute(pool)
         .await?;
@@ -455,6 +461,18 @@ pub async fn toggle_attention(
         sqlx::query("INSERT INTO phpyun_attention (uid, type, ids) VALUES (?, 1, ?)")
             .bind(uid)
             .bind(&csv)
+            .execute(pool)
+            .await?;
+    }
+    let delta: i32 = if was_present { -1 } else { 1 };
+    if delta > 0 {
+        sqlx::query("UPDATE phpyun_question SET atnnum = atnnum + 1 WHERE id = ?")
+            .bind(question_id)
+            .execute(pool)
+            .await?;
+    } else {
+        sqlx::query("UPDATE phpyun_question SET atnnum = GREATEST(atnnum - 1, 0) WHERE id = ?")
+            .bind(question_id)
             .execute(pool)
             .await?;
     }
@@ -857,7 +875,7 @@ pub async fn hotweek_questions(
     let sql = format!(
         "SELECT {Q_FIELDS} FROM phpyun_question \
          WHERE state IN (0,1) AND add_time >= ? AND {PREDICATE} \
-         ORDER BY (COALESCE(atnnum,0) + COALESCE(answer_num,0) + COALESCE(visit,0)/3) DESC, id DESC \
+         ORDER BY COALESCE(answer_num,0) DESC, id DESC \
          LIMIT ?"
     );
     sqlx::query_as::<_, Question>(&sql)

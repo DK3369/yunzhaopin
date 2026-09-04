@@ -62,7 +62,8 @@ pub async fn list_public(
     qb.push(FIELDS);
     qb.push(" FROM phpyun_once_job WHERE status = 1 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
-    qb.push(") AND did = ");
+    qb.push(") AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
     qb.push(" ORDER BY ctime DESC LIMIT ");
@@ -77,7 +78,8 @@ pub async fn count_public(pool: &MySqlPool, f: &Filter<'_>, now: i64) -> Result<
         "SELECT COUNT(*) FROM phpyun_once_job WHERE status = 1 AND (edate = 0 OR edate > ",
     );
     qb.push_bind(now);
-    qb.push(") AND did = ");
+    qb.push(") AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;

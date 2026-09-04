@@ -6,12 +6,13 @@ use phpyun_models::gongzhao::{entity::Gongzhao, repo as gz_repo};
 pub async fn list(
     state: &AppState,
     tag: Option<&str>,
+    did: u32,
     page: Pagination,
 ) -> AppResult<Paged<Gongzhao>> {
     let db = state.db.reader();
     let (list, total) = tokio::join!(
-        gz_repo::list(db, tag, page.offset, page.limit),
-        gz_repo::count(db, tag),
+        gz_repo::list(db, tag, did, page.offset, page.limit),
+        gz_repo::count(db, tag, did),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }

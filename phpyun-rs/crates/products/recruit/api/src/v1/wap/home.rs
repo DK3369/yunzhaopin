@@ -246,9 +246,6 @@ pub async fn aggregate(
 ) -> AppResult<ApiResponse<AggregateData>> {
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();
-    let _ = q.did; // current dictionaries / friend links are fetched site-wide; sub-site isolation will come in the next round
-
-    // 5 parallel queries: ads / nav / hot_keys / announcements / friend_links
     let slot = q.slot.unwrap_or_default();
     let slot_ref: Option<&str> = if slot.is_empty() { None } else { Some(&slot) };
     let ads_fut = async {
@@ -259,7 +256,7 @@ pub async fn aggregate(
     };
     let nav_fut = phpyun_models::nav_menu::repo::list_public(db, &q.nav);
     let hot_fut = phpyun_models::hot_search::repo::top(db, &q.hot_scope, q.hot_limit);
-    let ann_fut = phpyun_models::announcement::repo::list_published(db, 0, 5);
+    let ann_fut = phpyun_models::announcement::repo::list_published(db, q.did, 0, 5);
     let links_fut = phpyun_models::friend_link::repo::list_active(db, None);
 
     let (ads, nav, hots, anns, links) = tokio::join!(ads_fut, nav_fut, hot_fut, ann_fut, links_fut);

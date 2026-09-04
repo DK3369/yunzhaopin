@@ -21,6 +21,9 @@ pub fn routes() -> Router<AppState> {
 pub struct ListQuery {
     #[validate(length(max = 100))]
     pub tag: Option<String>,
+    #[serde(default)]
+    #[validate(range(max = 9_999_999))]
+    pub did: u32,
 }
 
 /// Joint recruitment list item -- all 11 columns of phpyun_gongzhao + CDN URL + formatted timestamps + tag array.
@@ -177,7 +180,7 @@ pub async fn list(
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<GzSummary>>> {
-    let r = gongzhao_service::list(&state, q.tag.as_deref(), page).await?;
+    let r = gongzhao_service::list(&state, q.tag.as_deref(), q.did, page).await?;
     Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()

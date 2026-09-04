@@ -999,6 +999,18 @@ pub async fn resume_detail(
                 return Err(ApiError::business("blacklisted"));
             }
             view_service::record_async(&state, u.uid, KIND_RESUME, uid);
+            let eid = if r.def_job > 0 {
+                u64::try_from(r.def_job).unwrap_or(0)
+            } else {
+                0
+            };
+            resume_service::browse_resume_async(
+                &state,
+                u,
+                uid,
+                eid,
+                crate::v1::wap::client_ip(&headers),
+            );
         }
     }
     let m_status = resume_m_status(&state, user.as_ref(), uid).await;

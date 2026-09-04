@@ -45,7 +45,7 @@ pub async fn list_public(
         three_city_id: search.three_city_id,
         exp: search.exp,
         edu: search.edu,
-        did: if search.did == 0 { 1 } else { search.did },
+        did: search.did,
     };
     let (total, list) = tokio::join!(
         once_repo::count_public(state.db.reader(), &filter, now),

@@ -29,28 +29,47 @@ const PUBLISHED_WHERE: &str = " (startime = 0 OR startime <= UNIX_TIMESTAMP()) \
 
 pub async fn list_published(
     pool: &MySqlPool,
+    did: u32,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Announcement>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
-         WHERE {PUBLISHED_WHERE} AND {PREDICATE} ORDER BY datetime DESC, id DESC LIMIT ? OFFSET ?"
-    );
-    sqlx::query_as::<_, Announcement>(&sql)
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(pool)
-        .await
+    let sql = if did > 0 {
+        format!(
+            "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
+             WHERE {PUBLISHED_WHERE} AND (did = ? OR did = -1) AND {PREDICATE} \
+             ORDER BY startime DESC, datetime DESC, id DESC LIMIT ? OFFSET ?"
+        )
+    } else {
+        format!(
+            "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement \
+             WHERE {PUBLISHED_WHERE} AND (did = -1 OR did = 0 OR did = '' OR did IS NULL) AND {PREDICATE} \
+             ORDER BY startime DESC, datetime DESC, id DESC LIMIT ? OFFSET ?"
+        )
+    };
+    let q = sqlx::query_as::<_, Announcement>(&sql);
+    if did > 0 {
+        q.bind(did).bind(limit).bind(offset).fetch_all(pool).await
+    } else {
+        q.bind(limit).bind(offset).fetch_all(pool).await
+    }
 }
 
-pub async fn count_published(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let sql = format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PUBLISHED_WHERE} AND {PREDICATE}");
-    let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
+pub async fn count_published(pool: &MySqlPool, did: u32) -> Result<u64, sqlx::Error> {
+    let sql = if did > 0 {
+        format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PUBLISHED_WHERE} AND (did = ? OR did = -1) AND {PREDICATE}")
+    } else {
+        format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PUBLISHED_WHERE} AND (did = -1 OR did = 0 OR did = '' OR did IS NULL) AND {PREDICATE}")
+    };
+    let (n,): (i64,) = if did > 0 {
+        sqlx::query_as(&sql).bind(did).fetch_one(pool).await?
+    } else {
+        sqlx::query_as(&sql).fetch_one(pool).await?
+    };
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Announcement>, sqlx::Error> {
-    let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement WHERE id = ? AND {PREDICATE}");
+    let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement WHERE id = ? AND {PUBLISHED_WHERE} AND {PREDICATE}");
     sqlx::query_as::<_, Announcement>(&sql)
         .bind(id)
         .fetch_optional(pool)

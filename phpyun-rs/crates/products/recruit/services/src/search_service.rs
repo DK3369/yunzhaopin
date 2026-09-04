@@ -30,7 +30,7 @@ pub async fn global_search(
 ) -> AppResult<SearchResult> {
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();
-    let did = if did == 0 { 1 } else { did };
+    let did = did;
     let kw_trim = keyword.trim();
     if kw_trim.is_empty() {
         return Ok(SearchResult::default());

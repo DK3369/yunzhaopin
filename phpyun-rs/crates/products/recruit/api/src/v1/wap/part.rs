@@ -315,12 +315,6 @@ pub async fn part_detail(
     let infostatus = company.as_ref().map(|c| c.infostatus).unwrap_or(1);
     let link = part_service::resolve_part_link(&state, &j, user.as_ref(), rating, infostatus).await;
 
-    // Hits +1 (fire-and-forget)
-    let pool = state.db.pool().clone();
-    phpyun_core::background::spawn_best_effort("part.hits", async move {
-        let _ = phpyun_models::part::repo::incr_hits(&pool, id).await;
-    });
-
     let (
         com_logo,
         com_shortname,

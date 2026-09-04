@@ -104,20 +104,23 @@ pub async fn count_public(pool: &MySqlPool, f: &ArticleFilter<'_>) -> Result<u64
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
-/// PHP convention (`app/controller/wap/article.class.php:29-32`):
-/// - main site (did=0): no scope filter — articles from any did show up.
-/// - subsite (did>0): match either this subsite's did OR did=-1
-///   (which PHP treats as "publish to all sites").
+/// PHP `smarty_internal_compile_article.php`:
+/// - main site: `(did=-1 OR did=0 OR did='')`
+/// - subsite: `(did = this OR did=-1)`
 fn push_did_scope<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, did: u32) {
     if did > 0 {
         qb.push(" AND (n.did = ");
         qb.push_bind(did);
         qb.push(" OR n.did = -1)");
+    } else {
+        qb.push(" AND (n.did = -1 OR n.did = 0 OR n.did = '' OR n.did IS NULL)");
     }
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a>) {
     qb.push(" AND COALESCE(n.deleted,0)=0");
+    qb.push(" AND (n.starttime = 0 OR n.starttime IS NULL OR n.starttime <= UNIX_TIMESTAMP())");
+    qb.push(" AND (n.endtime = 0 OR n.endtime IS NULL OR n.endtime > UNIX_TIMESTAMP())");
     if let Some(c) = f.category {
         if !c.is_empty() {
             qb.push(" AND n.nid = ");
@@ -672,27 +675,22 @@ pub async fn neighbors(
     nid: i32,
     published_at: i64,
 ) -> Result<(Option<Neighbor>, Option<Neighbor>), sqlx::Error> {
+    let _ = published_at;
     let prev_sql = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
          FROM phpyun_news_base \
-         WHERE COALESCE(deleted,0)=0 AND nid = ? \
-           AND (datetime < ? OR (datetime = ? AND id < ?)) \
-         ORDER BY datetime DESC, id DESC LIMIT 1";
+         WHERE COALESCE(deleted,0)=0 AND nid = ? AND id < ? \
+         ORDER BY id DESC LIMIT 1";
     let next_sql = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
          FROM phpyun_news_base \
-         WHERE COALESCE(deleted,0)=0 AND nid = ? \
-           AND (datetime > ? OR (datetime = ? AND id > ?)) \
-         ORDER BY datetime ASC, id ASC LIMIT 1";
+         WHERE COALESCE(deleted,0)=0 AND nid = ? AND id > ? \
+         ORDER BY id ASC LIMIT 1";
     let prev = sqlx::query_as::<_, Neighbor>(prev_sql)
         .bind(nid)
-        .bind(published_at)
-        .bind(published_at)
         .bind(id)
         .fetch_optional(pool)
         .await?;
     let next = sqlx::query_as::<_, Neighbor>(next_sql)
         .bind(nid)
-        .bind(published_at)
-        .bind(published_at)
         .bind(id)
         .fetch_optional(pool)
         .await?;
@@ -716,6 +714,8 @@ pub async fn related(
         let sql = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
              FROM phpyun_news_base \
              WHERE COALESCE(deleted,0)=0 AND nid = ? AND id <> ? \
+               AND (starttime = 0 OR starttime IS NULL OR starttime <= UNIX_TIMESTAMP()) \
+               AND (endtime = 0 OR endtime IS NULL OR endtime > UNIX_TIMESTAMP()) \
              ORDER BY datetime DESC LIMIT ?";
         return sqlx::query_as::<_, Neighbor>(sql)
             .bind(nid)
@@ -731,6 +731,8 @@ pub async fn related(
     qb.push_bind(nid);
     qb.push(" AND id <> ");
     qb.push_bind(id);
+    qb.push(" AND (starttime = 0 OR starttime IS NULL OR starttime <= UNIX_TIMESTAMP())");
+    qb.push(" AND (endtime = 0 OR endtime IS NULL OR endtime > UNIX_TIMESTAMP())");
     qb.push(" AND (");
     let mut first = true;
     for p in parts {

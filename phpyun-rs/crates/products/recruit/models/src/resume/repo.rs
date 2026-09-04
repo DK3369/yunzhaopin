@@ -134,13 +134,19 @@ pub async fn list_public(
     // not raw table copies).
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ");
+    qb.push(" FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND (");
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
+    qb.push_bind(f.did);
+    qb.push(")");
     push_filters(&mut qb, f);
     qb.push(
-        " AND (uid, lastupdate) IN (SELECT uid, MAX(lastupdate) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ",
+        " AND (uid, lastupdate) IN (SELECT uid, MAX(lastupdate) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND (",
     );
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
+    qb.push_bind(f.did);
+    qb.push(")");
     push_filters(&mut qb, f);
     qb.push(" GROUP BY uid) ");
     push_order(&mut qb, f);
@@ -153,9 +159,12 @@ pub async fn list_public(
 
 pub async fn count_public(pool: &MySqlPool, f: &ResumeFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(DISTINCT uid) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ",
+        "SELECT COUNT(DISTINCT uid) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND (",
     );
     qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
+    qb.push_bind(f.did);
+    qb.push(")");
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -187,22 +196,8 @@ fn integrity_floor(v: i32) -> i32 {
     }
 }
 
-fn push_job_class<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, v: i32) {
-    qb.push(" AND (FIND_IN_SET(");
-    qb.push_bind(v);
-    qb.push(", job_classid) OR job_classid = ");
-    qb.push_bind(v.to_string());
-    qb.push(")");
-}
-
 fn has_expect_filters(f: &ResumeFilter<'_>) -> bool {
-    f.job1.is_some()
-        || f.job1_son.is_some()
-        || f.job_post.is_some()
-        || f.province_id.is_some()
-        || f.city_id.is_some()
-        || f.three_city_id.is_some()
-        || f.hy.is_some()
+    f.hy.is_some()
         || f.report.is_some()
         || f.r#type.is_some()
         || f.min_salary.is_some()
@@ -320,19 +315,6 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
     }
     if has_expect_filters(f) {
         qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_expect WHERE 1=1");
-        if let Some(v) = f.job_post.or(f.job1_son).or(f.job1) {
-            push_job_class(qb, v);
-        }
-        if let Some(v) = f.three_city_id {
-            qb.push(" AND three_cityid = ");
-            qb.push_bind(v);
-        } else if let Some(v) = f.city_id {
-            qb.push(" AND cityid = ");
-            qb.push_bind(v);
-        } else if let Some(v) = f.province_id {
-            qb.push(" AND provinceid = ");
-            qb.push_bind(v);
-        }
         if let Some(v) = f.hy {
             qb.push(" AND hy = ");
             qb.push_bind(v);
@@ -366,6 +348,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
         }
         qb.push(")");
     }
+    push_city_job_class(qb, f);
     if f.top {
         qb.push(
             " AND COALESCE(def_job, 0) > 0 AND def_job IN (\
@@ -373,6 +356,149 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
              WHERE COALESCE(top, 0) = 1 AND COALESCE(topdate, 0) > UNIX_TIMESTAMP())",
         );
     }
+}
+
+fn push_city_job_class<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {
+    let city_col = if f.three_city_id.is_some() {
+        Some("three_cityid")
+    } else if f.city_id.is_some() {
+        Some("cityid")
+    } else if f.province_id.is_some() {
+        Some("provinceid")
+    } else {
+        None
+    };
+    let city_val = f.three_city_id.or(f.city_id).or(f.province_id);
+    let job_col = if f.job_post.is_some() {
+        Some("job_post")
+    } else if f.job1_son.is_some() {
+        Some("job1_son")
+    } else if f.job1.is_some() {
+        Some("job1")
+    } else {
+        None
+    };
+    let job_val = f.job_post.or(f.job1_son).or(f.job1);
+    if city_col.is_none() && job_col.is_none() {
+        return;
+    }
+    qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_city_job_class WHERE 1=1");
+    if let (Some(col), Some(v)) = (city_col, city_val) {
+        qb.push(" AND `");
+        qb.push(col);
+        qb.push("` = ");
+        qb.push_bind(v);
+    }
+    if let (Some(col), Some(v)) = (job_col, job_val) {
+        qb.push(" AND `");
+        qb.push(col);
+        qb.push("` = ");
+        qb.push_bind(v);
+    }
+    let num_col = match (city_col, job_col) {
+        (Some(c), Some(j)) => format!("{c}_{j}_num"),
+        (Some(c), None) => format!("{c}_num"),
+        (None, Some(j)) => format!("{j}_num"),
+        (None, None) => unreachable!(),
+    };
+    qb.push(" AND `");
+    qb.push(num_col);
+    qb.push("` = 1)");
+}
+
+/// PHP first-page `ORDER BY rand() limit 5` for currently topped expects.
+pub async fn list_top_random(
+    pool: &MySqlPool,
+    f: &ResumeFilter<'_>,
+    limit: u64,
+) -> Result<Vec<Resume>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(FIELDS);
+    qb.push(" FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND (");
+    qb.push_bind(f.did);
+    qb.push(" = 0 OR COALESCE(did, 0) = ");
+    qb.push_bind(f.did);
+    qb.push(")");
+    push_filters(&mut qb, f);
+    qb.push(
+        " AND COALESCE(def_job, 0) > 0 AND def_job IN (\
+         SELECT id FROM phpyun_resume_expect \
+         WHERE COALESCE(top, 0) = 1 AND COALESCE(topdate, 0) > UNIX_TIMESTAMP())",
+    );
+    qb.push(" ORDER BY RAND() LIMIT ");
+    qb.push_bind(limit);
+    qb.build_query_as::<Resume>().fetch_all(pool).await
+}
+
+/// PHP `lookresume.model.php::browseResume`.
+pub async fn find_look_resume(
+    pool: &MySqlPool,
+    com_id: u64,
+    eid: u64,
+    usertype: i32,
+) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM phpyun_look_resume \
+         WHERE com_id = ? AND resume_id = ? AND usertype = ? LIMIT 1",
+    )
+    .bind(com_id)
+    .bind(eid)
+    .bind(usertype)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(id,)| phpyun_core::numeric::nonnegative_count(id)))
+}
+
+pub async fn touch_look_resume(pool: &MySqlPool, id: u64, now: i64) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_look_resume SET datetime = ? WHERE id = ?")
+        .bind(now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn insert_look_resume(
+    pool: &MySqlPool,
+    resume_uid: u64,
+    eid: u64,
+    com_id: u64,
+    did: u32,
+    usertype: i32,
+    now: i64,
+    ip: &str,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "INSERT INTO phpyun_look_resume \
+         (uid, resume_id, com_id, did, usertype, datetime, ip, status, com_status) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0)",
+    )
+    .bind(resume_uid)
+    .bind(eid)
+    .bind(com_id)
+    .bind(did)
+    .bind(usertype)
+    .bind(now)
+    .bind(ip)
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+pub async fn mark_userid_job_browsed(
+    pool: &MySqlPool,
+    com_id: u64,
+    eid: u64,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "UPDATE phpyun_userid_job SET is_browse = 2 \
+         WHERE com_id = ? AND eid = ? AND isdel = 9 AND is_browse = 1",
+    )
+    .bind(com_id)
+    .bind(eid)
+    .execute(pool)
+    .await?;
+    Ok(())
 }
 
 /// SELECT-then-INSERT guard for `phpyun_resume`. PHPYun's schema only

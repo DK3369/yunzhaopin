@@ -5,7 +5,7 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::extractors::USERTYPE_EMPLOYER;
 use phpyun_core::ApiError;
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{background, clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_models::resume::{entity::Resume, repo as resume_repo};
 
@@ -21,14 +21,29 @@ pub async fn list_public(
     filter: &ResumeFilter<'_>,
     page: Pagination,
 ) -> AppResult<ResumePage> {
-    let (total, list) = tokio::join!(
-        resume_repo::count_public(state.db.reader(), filter),
-        resume_repo::list_public(state.db.reader(), filter, page.offset, page.limit),
+    let db = state.db.reader();
+    let (total, list, tops) = tokio::join!(
+        resume_repo::count_public(db, filter),
+        resume_repo::list_public(db, filter, page.offset, page.limit),
+        async {
+            if page.page <= 1 && !filter.top {
+                resume_repo::list_top_random(db, filter, 5).await
+            } else {
+                Ok(Vec::new())
+            }
+        },
     );
-    Ok(ResumePage {
-        total: total?,
-        list: list?,
-    })
+    let total = total?;
+    let mut list = list?;
+    let tops = tops?;
+    if !tops.is_empty() {
+        let top_uids: std::collections::HashSet<u64> = tops.iter().map(|r| r.uid).collect();
+        list.retain(|r| !top_uids.contains(&r.uid));
+        let mut merged = tops;
+        merged.extend(list);
+        list = merged;
+    }
+    Ok(ResumePage { total, list })
 }
 
 /// Public resume detail. Employers also see `status=3` when the seeker applied.
@@ -37,19 +52,91 @@ pub async fn get_public(
     uid: u64,
     viewer: Option<&AuthenticatedUser>,
 ) -> AppResult<Resume> {
-    if viewer.is_some_and(|u| u.uid == uid && u.usertype == 1) {
-        return resume_repo::find_by_uid(state.db.reader(), uid)
+    let owner = viewer.is_some_and(|u| u.uid == uid && u.usertype == 1);
+    let resume = if owner {
+        resume_repo::find_by_uid(state.db.reader(), uid)
             .await?
-            .ok_or_else(|| ApiError::business("resume_not_found"));
-    }
-    if let Some(u) = viewer.filter(|u| u.usertype == USERTYPE_EMPLOYER) {
-        return resume_repo::find_visible_for_employer(state.db.reader(), uid, u.uid)
+            .ok_or_else(|| ApiError::business("resume_not_found"))?
+    } else if let Some(u) = viewer.filter(|u| u.usertype == USERTYPE_EMPLOYER) {
+        resume_repo::find_visible_for_employer(state.db.reader(), uid, u.uid)
             .await?
-            .ok_or_else(|| ApiError::business("resume_not_found"));
+            .ok_or_else(|| ApiError::business("resume_not_found"))?
+    } else {
+        resume_repo::find_public(state.db.reader(), uid)
+            .await?
+            .ok_or_else(|| ApiError::business("resume_not_found"))?
+    };
+    if !owner {
+        if let Some(expect) =
+            phpyun_models::resume::expect::find_default_by_uid(state.db.reader(), uid).await?
+        {
+            if expect.state == 0 {
+                return Err(ApiError::business("resume_unavailable"));
+            }
+            if expect.r_status == 2 {
+                return Err(ApiError::business("resume_hidden"));
+            }
+            if expect.state == 3 {
+                return Err(ApiError::business("resume_bad_status"));
+            }
+        }
     }
-    resume_repo::find_public(state.db.reader(), uid)
-        .await?
-        .ok_or_else(|| ApiError::business("resume_not_found"))
+    Ok(resume)
+}
+
+/// PHP `lookresume.model.php::browseResume` — company/hunter viewing a resume.
+pub fn browse_resume_async(
+    state: &AppState,
+    viewer: &AuthenticatedUser,
+    resume_uid: u64,
+    eid: u64,
+    ip: String,
+) {
+    if viewer.uid == resume_uid {
+        return;
+    }
+    if viewer.usertype != 2 && viewer.usertype != 3 {
+        return;
+    }
+    let pool = state.db.pool().clone();
+    let com_id = viewer.uid;
+    let usertype = i32::from(viewer.usertype);
+    let did = viewer.did;
+    let mut eid = eid;
+    background::spawn_best_effort("look_resume.browse", async move {
+        if eid == 0 {
+            eid = phpyun_models::resume::expect::find_default_id_by_uid(&pool, resume_uid)
+                .await
+                .ok()
+                .flatten()
+                .unwrap_or(0);
+        }
+        if eid == 0 {
+            return;
+        }
+        if usertype == 2 {
+            let name_ok = phpyun_models::company::repo::find_by_uid(&pool, com_id)
+                .await
+                .ok()
+                .flatten()
+                .and_then(|c| c.name)
+                .filter(|n| !n.trim().is_empty())
+                .is_some();
+            if !name_ok {
+                return;
+            }
+        }
+        let now = clock::now_ts();
+        if let Ok(Some(id)) = resume_repo::find_look_resume(&pool, com_id, eid, usertype).await {
+            let _ = resume_repo::touch_look_resume(&pool, id, now).await;
+        } else {
+            let _ = resume_repo::insert_look_resume(
+                &pool, resume_uid, eid, com_id, did, usertype, now, &ip,
+            )
+            .await;
+        }
+        let _ = resume_repo::mark_userid_job_browsed(&pool, com_id, eid).await;
+    });
 }
 
 pub struct ResumeUpdateInput<'a> {

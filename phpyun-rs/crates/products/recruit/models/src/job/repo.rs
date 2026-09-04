@@ -154,7 +154,8 @@ pub async fn list_public(
 ) -> Result<Vec<Job>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND did = ");
+    qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ");
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     match f.order {
@@ -165,7 +166,7 @@ pub async fn list_public(
             qb.push(" ORDER BY lastupdate DESC LIMIT ");
         }
         _ => {
-            qb.push(" ORDER BY rec DESC, rec_time DESC, lastupdate DESC LIMIT ");
+            qb.push(" ORDER BY lastupdate DESC LIMIT ");
         }
     }
     qb.push_bind(limit);
@@ -181,8 +182,9 @@ pub async fn count_public(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND did = ",
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (? = 0 OR COALESCE(did, 0) = ?) ",
     );
+    qb.push_bind(f.did);
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
@@ -281,8 +283,11 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
         qb.push_bind(max);
         qb.push(")");
     } else if let Some(min) = f.min_salary {
-        qb.push(" AND minsalary >= ");
+        qb.push(" AND (minsalary >= ");
         qb.push_bind(min);
+        qb.push(" OR maxsalary >= ");
+        qb.push_bind(min);
+        qb.push(")");
     } else if let Some(max) = f.max_salary {
         qb.push(" AND minsalary <= ");
         qb.push_bind(max);
@@ -1107,7 +1112,7 @@ pub async fn list_by_company_public(
     // edate semantics in PHPYun: 0 = no expiration set (treated as active),
     // > now = active, otherwise expired. PHP's company-detail page does not
     // filter by edate at all, so include both cases.
-    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND (edate = 0 OR edate > ");
+    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND COALESCE(is_depower, 2) = 2 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
     qb.push(") ORDER BY rec DESC, lastupdate DESC LIMIT ");
     qb.push_bind(limit);
@@ -1123,7 +1128,7 @@ pub async fn count_by_company_public(
 ) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_company_job
-         WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1
+         WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1 AND COALESCE(is_depower, 2) = 2
            AND (edate = 0 OR edate > ?)",
     )
     .bind(com_uid)

@@ -136,6 +136,10 @@ onMounted(async () => {
     bumpVisitorCookie()
   }
   fav.value = Boolean(row.value.in_talentpool)
+  const eid = Number(expect0.value.id || row.value.def_job || 0)
+  if (eid > 0) {
+    api.post('/v1/wap/resumes/expects/hits', { eid }).catch(() => {})
+  }
   try {
     const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
       kind: 3,

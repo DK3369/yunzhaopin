@@ -122,7 +122,7 @@ pub fn request_user_agent(headers: &HeaderMap) -> String {
         .to_string()
 }
 
-fn client_ip(headers: &HeaderMap) -> String {
+pub(crate) fn client_ip(headers: &HeaderMap) -> String {
     if let Some(xff) = headers
         .get("x-forwarded-for")
         .and_then(|v| v.to_str().ok())

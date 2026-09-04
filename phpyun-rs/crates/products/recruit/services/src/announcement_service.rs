@@ -5,8 +5,8 @@ use phpyun_models::announcement::{entity::Announcement, repo as ann_repo};
 
 pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Announcement>> {
     let db = state.db.reader();
-    let list = ann_repo::list_published(db, page.offset, page.limit).await?;
-    let total = ann_repo::count_published(db).await?;
+    let list = ann_repo::list_published(db, 0, page.offset, page.limit).await?;
+    let total = ann_repo::count_published(db, 0).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
