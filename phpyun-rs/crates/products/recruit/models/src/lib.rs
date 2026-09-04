@@ -82,6 +82,7 @@ pub mod soft_delete;
 pub mod special;
 pub mod stats;
 pub mod talent_pool;
+pub mod temporary_resume;
 pub mod tiny;
 pub mod user;
 pub mod user_session;

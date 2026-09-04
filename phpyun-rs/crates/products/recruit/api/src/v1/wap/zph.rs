@@ -11,6 +11,7 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/zph/detail",
     "/v1/wap/zph/companies",
     "/v1/wap/zph/jobs",
+    "/v1/wap/zph/spaces",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -19,6 +20,7 @@ pub fn routes() -> Router<AppState> {
         .route("/zph/detail", get(detail).post(detail))
         .route("/zph/companies", get(list_companies).post(list_companies))
         .route("/zph/jobs", get(list_jobs).post(list_jobs))
+        .route("/zph/spaces", get(list_spaces).post(list_spaces))
 }
 
 /// Job-fair list item -- mirrors all phpyun_zhaopinhui columns + city name + CDN URL + formatted timestamps.
@@ -505,6 +507,39 @@ pub async fn list_jobs(
         .filter_map(|jid| by_id.remove(&jid))
         .map(|j| crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, false))
         .collect();
-
     Ok(ApiResponse::data(items))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ZphSpaceItem {
+    pub id: u64,
+    pub name: String,
+    pub price: i32,
+    pub keyid: i64,
+    pub taken: bool,
+}
+
+/// Public booth list for a fair (PHP `zph_reserve` picker).
+#[utoipa::path(post,
+    path = "/v1/wap/zph/spaces",
+    tag = "wap",
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_spaces(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
+) -> AppResult<ApiResponse<Vec<ZphSpaceItem>>> {
+    let rows = zph_service::list_public_spaces(&state, b.id).await?;
+    Ok(ApiResponse::data(
+        rows.into_iter()
+            .map(|r| ZphSpaceItem {
+                id: r.space.id,
+                name: r.space.name,
+                price: r.space.price,
+                keyid: r.space.keyid,
+                taken: r.taken,
+            })
+            .collect(),
+    ))
 }

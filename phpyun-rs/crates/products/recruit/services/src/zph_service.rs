@@ -4,10 +4,11 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged
 use phpyun_models::{
     job::repo as job_repo,
     zph::{
-        entity::{Zph, ZphCompany, ZphReservation},
+        entity::{Zph, ZphCompany, ZphReservation, ZphSpace},
         repo as zph_repo,
     },
 };
+use std::collections::HashSet;
 
 pub use phpyun_models::job::repo::OwnJobBrief;
 
@@ -26,6 +27,39 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Zph> {
         return Err(ApiError::business("zph_closed"));
     }
     Ok(z)
+}
+
+pub struct PublicSpace {
+    pub space: ZphSpace,
+    pub taken: bool,
+}
+
+/// Booth picker for the public fair page: leaf spaces (or parents if no children)
+/// plus which bids are already reserved for this fair.
+pub async fn list_public_spaces(state: &AppState, zid: u64) -> AppResult<Vec<PublicSpace>> {
+    let _ = get_detail(state, zid).await?;
+    let db = state.db.reader();
+    let parents = zph_repo::list_spaces(db, None, None).await?;
+    let mut booths: Vec<ZphSpace> = Vec::new();
+    for p in &parents {
+        let kids = zph_repo::space_children(db, p.id as i64).await?;
+        if kids.is_empty() {
+            booths.push(p.clone());
+        } else {
+            booths.extend(kids);
+        }
+    }
+    let taken: HashSet<i32> = zph_repo::taken_bids(db, zid).await?.into_iter().collect();
+    Ok(booths
+        .into_iter()
+        .map(|space| {
+            let id_i = i32::try_from(space.id).unwrap_or(0);
+            PublicSpace {
+                taken: taken.contains(&id_i),
+                space,
+            }
+        })
+        .collect())
 }
 
 pub async fn list_companies(

@@ -203,6 +203,13 @@ pub struct PartDetail {
     pub content: Option<String>,
     /// Part-time category id (PHPYun `partjob.type`)
     pub part_type: i32,
+    pub part_type_n: String,
+    pub salary_type_n: String,
+    pub billing_cycle_n: String,
+    pub sex_n: String,
+    pub province_name: String,
+    pub city_name: String,
+    pub three_city_name: String,
 
     // ---- Address ----
     pub province_id: i32,
@@ -316,6 +323,14 @@ pub async fn part_detail(
     let rating = company.as_ref().map(|c| c.rating).unwrap_or(0);
     let infostatus = company.as_ref().map(|c| c.infostatus).unwrap_or(1);
     let link = part_service::resolve_part_link(&state, &j, user.as_ref(), rating, infostatus).await;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let part_type_n = dicts.part(j.r#type).to_string();
+    let salary_type_n = dicts.part(j.salary_type).to_string();
+    let billing_cycle_n = dicts.part(j.billing_cycle).to_string();
+    let sex_n = dicts.userclass(j.sex).to_string();
+    let province_name = dicts.city(j.provinceid).to_string();
+    let city_name = dicts.city(j.cityid).to_string();
+    let three_city_name = dicts.city(j.three_cityid).to_string();
 
     let (
         com_logo,
@@ -351,6 +366,13 @@ pub async fn part_detail(
         name: j.name,
         content: j.content,
         part_type: j.r#type,
+        part_type_n,
+        salary_type_n,
+        billing_cycle_n,
+        sex_n,
+        province_name,
+        city_name,
+        three_city_name,
 
         province_id: j.provinceid,
         city_id: j.cityid,

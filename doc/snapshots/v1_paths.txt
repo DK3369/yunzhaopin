@@ -316,6 +316,7 @@
 /v1/wap/jobs/share-text
 /v1/wap/jobs/similar
 /v1/wap/jobs/tel-click
+/v1/wap/jobs/temporary-apply
 /v1/wap/legal
 /v1/wap/login
 /v1/wap/login/email
@@ -339,6 +340,7 @@
 /v1/wap/oauth/weibo/code-login
 /v1/wap/once-jobs
 /v1/wap/once-jobs/delete
+/v1/wap/once-jobs/gears
 /v1/wap/once-jobs/list
 /v1/wap/once-jobs/pay
 /v1/wap/once-jobs/refresh
@@ -414,3 +416,4 @@
 /v1/wap/zph/companies
 /v1/wap/zph/detail
 /v1/wap/zph/jobs
+/v1/wap/zph/spaces

@@ -102,6 +102,7 @@ fn default_did() -> u32 {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct RegisterData {
     pub uid: u64,
+    pub usertype: u8,
     pub access_token: String,
     pub access_exp: i64,
     pub refresh_token: String,
@@ -168,6 +169,7 @@ pub async fn register(
 
     Ok(ApiResponse::data(RegisterData {
         uid: r.uid,
+        usertype: f.usertype,
         access_token: r.access,
         access_exp: r.access_exp,
         refresh_token: r.refresh,

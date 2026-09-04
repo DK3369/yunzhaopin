@@ -7,8 +7,9 @@ use axum::{
 };
 use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
 use phpyun_core::utils::{mask_name_short as mask_name, mask_tel};
+use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{
-    json, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    json, ApiError, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
     ValidatedJsonOrQuery,
 };
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
@@ -16,13 +17,18 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/once-jobs/list", "/v1/wap/once-jobs/show"];
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/once-jobs/list",
+    "/v1/wap/once-jobs/show",
+    "/v1/wap/once-jobs/gears",
+];
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/once-jobs", post(create))
         .route("/once-jobs/list", get(list).post(list))
         .route("/once-jobs/show", get(show).post(show))
+        .route("/once-jobs/gears", get(list_gears).post(list_gears))
         .route("/once-jobs/update", post(update))
         .route("/once-jobs/delete", post(soft_delete))
         .route("/once-jobs/verify", post(verify))
@@ -177,7 +183,8 @@ pub async fn show(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpsertBody {
-    #[validate(range(min = 1, max = 99_999_999))]
+    #[serde(default)]
+    #[validate(range(max = 99_999_999))]
     pub id: u64,
 
     #[validate(length(min = 1, max = 200))]
@@ -190,8 +197,10 @@ pub struct UpsertBody {
     pub linktel: String,
     #[validate(length(min = 6, max = 64))]
     pub password: String,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub province_id: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub city_id: i32,
     #[serde(default)]
@@ -229,9 +238,64 @@ pub struct UpsertBody {
     #[serde(default = "default_did")]
     #[validate(range(max = 999))]
     pub did: u32,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub captcha_cid: String,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub authcode: String,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub moblie_code: String,
 }
 fn default_status() -> i32 {
     1
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct OnceGear {
+    pub id: u64,
+    pub days: i32,
+    pub price: f64,
+}
+
+#[utoipa::path(get, path = "/v1/wap/once-jobs/gears", tag = "wap", responses((status = 200, description = "ok")))]
+pub async fn list_gears(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<Vec<OnceGear>>> {
+    let rows = once_service::list_gears(&state).await?;
+    Ok(ApiResponse::data(
+        rows.into_iter()
+            .map(|g| OnceGear {
+                id: g.id,
+                days: g.days,
+                price: g.price,
+            })
+            .collect(),
+    ))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct OnceOwned {
+    pub ok: bool,
+    pub id: u64,
+    pub title: String,
+    pub companyname: String,
+    pub linkman: String,
+    pub linktel: String,
+    pub province_id: i32,
+    pub city_id: i32,
+    pub three_city_id: i32,
+    pub address: String,
+    pub salary: i32,
+    pub salary_text: String,
+    pub mans: String,
+    pub require: Option<String>,
+    pub pic: Option<String>,
+    pub yyzz: Option<String>,
+    pub status: i32,
+    pub pay: i32,
+    pub edate: i64,
 }
 
 async fn upsert_common(
@@ -240,6 +304,32 @@ async fn upsert_common(
     id: Option<u64>,
     b: UpsertBody,
 ) -> AppResult<UpsertCreated> {
+    if id.is_none() {
+        if b.captcha_cid.is_empty() || b.authcode.is_empty() {
+            return Err(ApiError::captcha());
+        }
+        if !verify::verify(
+            &state.redis,
+            VerifyKind::ImageCaptcha,
+            &b.captcha_cid,
+            &b.authcode.to_uppercase(),
+        )
+        .await?
+        {
+            return Err(ApiError::captcha());
+        }
+        if !b.moblie_code.is_empty()
+            && !verify::verify(
+                &state.redis,
+                VerifyKind::SmsOnceJob,
+                &b.linktel,
+                &b.moblie_code,
+            )
+            .await?
+        {
+            return Err(ApiError::param_invalid("moblie_code"));
+        }
+    }
     let (today_by_ip, today_total) = once_service::usage_today(state, ip).await?;
     let input = UpsertInput {
         id,
@@ -294,6 +384,9 @@ pub async fn update(
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<UpsertBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
+    if b.id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
     let id = b.id;
     let r = upsert_common(&state, &ip, Some(id), b).await?;
     Ok(ApiResponse::data(
@@ -320,10 +413,30 @@ pub async fn soft_delete(
 pub async fn verify(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdPasswordBody>,
-) -> AppResult<ApiResponse<json::Value>> {
+) -> AppResult<ApiResponse<OnceOwned>> {
     let id = b.id;
-    once_service::manage(&state, id, &b.password, ManageOp::Verify).await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+    let j = once_service::verify_owned(&state, id, &b.password).await?;
+    Ok(ApiResponse::data(OnceOwned {
+        ok: true,
+        id: j.id,
+        title: j.title,
+        companyname: j.companyname,
+        linkman: j.linkman,
+        linktel: j.linktel,
+        province_id: j.provinceid,
+        city_id: j.cityid,
+        three_city_id: j.three_cityid,
+        address: j.address,
+        salary: j.salary,
+        salary_text: j.salary_text,
+        mans: j.mans,
+        require: j.require,
+        pic: j.pic,
+        yyzz: j.yyzz,
+        status: j.status,
+        pay: j.pay,
+        edate: j.edate,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/wap/once-jobs/refresh", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]

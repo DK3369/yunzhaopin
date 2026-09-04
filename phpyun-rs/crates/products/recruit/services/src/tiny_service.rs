@@ -70,6 +70,14 @@ pub async fn show(state: &AppState, id: u64) -> AppResult<TinyResume> {
     Ok(item)
 }
 
+/// Password-gated row so the poster can edit / see the full mobile.
+pub async fn verify_owned(state: &AppState, id: u64, password: &str) -> AppResult<TinyResume> {
+    manage(state, id, password, ManageOp::Verify).await?;
+    tiny_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or(ApiError::business("tiny_not_found"))
+}
+
 // ==================== Create / Edit ====================
 
 #[derive(Debug, Clone)]

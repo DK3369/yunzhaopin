@@ -20,6 +20,9 @@ useSeoMeta({ title: t('wap_00160') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const list = computed(() => data.value?.list || [])
 const { me } = useSiteChrome()
+const { data: hotweek } = await useAsyncData('questions-hotweek', () =>
+  api.get<Array<{ id: number; title: string }>>('/v1/wap/qna/hotweek', { limit: 10 }).catch(() => []),
+)
 const askTitle = ref('')
 const askContent = ref('')
 const askMsg = ref('')
@@ -33,7 +36,7 @@ async function ask() {
     await api.post('/v1/mcenter/questions', { title: askTitle.value, content: askContent.value, category_id: categoryId.value || 0 })
     askTitle.value = ''
     askContent.value = ''
-    askMsg.value = t('common_00887')
+    askMsg.value = t('common.success')
     await refreshNuxtData()
   } catch (e: unknown) {
     askMsg.value = errKey(e) === 'unauth' ? t('wap_00032') : t(errKey(e) || 'common_00888')
@@ -42,27 +45,33 @@ async function ask() {
 </script>
 
 <template>
-  <NewsListShell :title="$t('wap_00160')" :error="error" :error-text="failMsg" :count="list.length">
+  <section>
+    <p v-if="(hotweek || []).length">
+      {{ $t('common.hot') }}
+      <NuxtLink v-for="h in hotweek || []" :key="h.id" :to="`/questions/${h.id}`">{{ h.title }}</NuxtLink>
+    </p>
     <form class="yun_bth_box" @submit.prevent="ask">
       <input v-model="askTitle" :placeholder="$t('wap_00160')" />
       <textarea v-model="askContent" rows="3" />
       <button type="submit">{{ $t('common.submit') }}</button>
       <p v-if="askMsg">{{ askMsg }}</p>
     </form>
-    <SimpleCard
-      v-for="row in list"
-      :key="row.id"
-      :to="`/questions/${row.id}`"
-      :title="row.title"
-      :meta="`${row.catname || ''} · ${row.answer_count || 0}`"
-    />
-    <template #pager>
-      <Pager
-        :page="page"
-        :page-size="20"
-        :total="data?.total || 0"
-        @update:page="(p) => navigateTo({ query: { page: p } })"
+    <NewsListShell :title="$t('wap_00160')" :error="error" :error-text="failMsg" :count="list.length">
+      <SimpleCard
+        v-for="row in list"
+        :key="row.id"
+        :to="`/questions/${row.id}`"
+        :title="row.title"
+        :meta="`${row.catname || ''} · ${row.answer_count || 0}`"
       />
-    </template>
-  </NewsListShell>
+      <template #pager>
+        <Pager
+          :page="page"
+          :page-size="20"
+          :total="data?.total || 0"
+          @update:page="(p) => navigateTo({ query: { page: p } })"
+        />
+      </template>
+    </NewsListShell>
+  </section>
 </template>

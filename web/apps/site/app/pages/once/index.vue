@@ -21,19 +21,22 @@ const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
-  <NewsListShell :title="$t('wap_js_00130')" :error="error" :error-text="failMsg" :count="list.length">
+  <section>
     <form class="form" method="get" action="/once">
       <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
-    <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.title || row.companyname" :meta="row.mans || row.number" />
-    <template #pager>
-      <Pager
-        :page="page"
-        :page-size="20"
-        :total="data?.total || 0"
-        @update:page="(p) => navigateTo({ query: { page: p } })"
-      />
-    </template>
-  </NewsListShell>
+    <p><NuxtLink to="/once/add">{{ $t('common.publish') }}</NuxtLink></p>
+    <NewsListShell :title="$t('wap_js_00130')" :error="error" :error-text="failMsg" :count="list.length">
+      <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.title || row.companyname" :meta="row.mans || row.number" />
+      <template #pager>
+        <Pager
+          :page="page"
+          :page-size="20"
+          :total="data?.total || 0"
+          @update:page="(p) => navigateTo({ query: { page: p } })"
+        />
+      </template>
+    </NewsListShell>
+  </section>
 </template>

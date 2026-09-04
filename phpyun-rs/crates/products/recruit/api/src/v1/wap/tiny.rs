@@ -195,8 +195,10 @@ pub struct UpsertBody {
     pub mobile: String,
     #[validate(length(min = 6, max = 64))]
     pub password: String,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub province_id: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub city_id: i32,
     #[serde(default)]
@@ -370,6 +372,22 @@ pub async fn soft_delete(
 
 // ==================== verify / refresh / delete ====================
 
+#[derive(Debug, Serialize, ToSchema)]
+pub struct TinyOwned {
+    pub ok: bool,
+    pub id: u64,
+    pub username: String,
+    pub sex: i32,
+    pub exp: i32,
+    pub job: String,
+    pub mobile: String,
+    pub province_id: i32,
+    pub city_id: i32,
+    pub three_city_id: i32,
+    pub production: Option<String>,
+    pub status: i32,
+}
+
 #[utoipa::path(post,
     path = "/v1/wap/tiny-resumes/verify",
     tag = "wap",
@@ -379,10 +397,23 @@ pub async fn soft_delete(
 pub async fn verify(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdPasswordBody>,
-) -> AppResult<ApiResponse<json::Value>> {
+) -> AppResult<ApiResponse<TinyOwned>> {
     let id = b.id;
-    tiny_service::manage(&state, id, &b.password, ManageOp::Verify).await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+    let t = tiny_service::verify_owned(&state, id, &b.password).await?;
+    Ok(ApiResponse::data(TinyOwned {
+        ok: true,
+        id: t.id,
+        username: t.username,
+        sex: t.sex,
+        exp: t.exp,
+        job: t.job,
+        mobile: t.mobile,
+        province_id: t.provinceid,
+        city_id: t.cityid,
+        three_city_id: t.three_cityid,
+        production: t.production,
+        status: t.status,
+    }))
 }
 
 #[utoipa::path(post,

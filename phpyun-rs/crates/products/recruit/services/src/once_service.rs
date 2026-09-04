@@ -78,6 +78,18 @@ pub async fn show(state: &AppState, id: u64) -> AppResult<OnceJob> {
     Ok(item)
 }
 
+pub async fn list_gears(state: &AppState) -> AppResult<Vec<once_repo::PriceGearRow>> {
+    Ok(once_repo::list_price_gears(state.db.reader()).await?)
+}
+
+/// Password-gated row for the poster's manage / pay UI (includes unpaid).
+pub async fn verify_owned(state: &AppState, id: u64, password: &str) -> AppResult<OnceJob> {
+    manage(state, id, password, ManageOp::Verify).await?;
+    once_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("tiny_not_found"))
+}
+
 // ==================== Create / edit ====================
 
 #[derive(Debug, Clone)]

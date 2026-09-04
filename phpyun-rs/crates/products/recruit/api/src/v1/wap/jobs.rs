@@ -9,10 +9,10 @@ use axum::{
 use phpyun_core::dto::{HitsResp, IdBody, UidBody};
 use phpyun_core::utils::fmt_ts;
 use phpyun_core::{
-    extractors::USERTYPE_JOBSEEKER,
+    extractors::{AuthenticatedUser, USERTYPE_JOBSEEKER},
     i18n::{current_lang, t, t_args},
-    json, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson,
-    ValidatedJsonOrQuery,
+    json, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination,
+    ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_services::hot_search_service;
 use phpyun_services::job_service::{self, JobSearch, PublicJobContact};
@@ -67,6 +67,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/share-text", get(share_text).post(share_text))
         .route("/jobs/hits", post(bump_jobhits))
         .route("/jobs/contact", get(job_contact).post(job_contact))
+        .route("/jobs/temporary-apply", post(temporary_apply))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -1036,4 +1037,130 @@ pub async fn job_contact(
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let city_name = dicts.city(c.city_id).to_string();
     Ok(ApiResponse::data(contact_view(c, city_name)))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct TemporaryApplyForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub job_id: u64,
+    #[validate(length(min = 1, max = 20))]
+    pub uname: String,
+    #[validate(range(min = 1, max = 3))]
+    pub sex: i32,
+    #[serde(default)]
+    #[validate(length(max = 20))]
+    pub birthday: String,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
+    pub edu: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
+    pub exp: i32,
+    #[validate(length(min = 11, max = 15))]
+    pub telphone: String,
+    #[validate(custom(function = "phpyun_core::validators::strong_password"))]
+    pub password: String,
+    #[validate(length(min = 4, max = 32))]
+    pub captcha_cid: String,
+    #[validate(length(min = 4, max = 8))]
+    pub checkcode: String,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub moblie_code: String,
+}
+
+/// Guest quick-apply: snapshot into `phpyun_temporary_resume`, then register + apply
+/// (PHP `wap/ajax::temporaryresume` / `fastToudi`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/jobs/temporary-apply",
+    tag = "wap",
+    request_body = TemporaryApplyForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn temporary_apply(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: HeaderMap,
+    ValidatedJson(f): ValidatedJson<TemporaryApplyForm>,
+) -> AppResult<ApiResponse<crate::v1::wap::register::RegisterData>> {
+    let job = phpyun_services::job_service::get_public(&state, f.job_id, None).await?;
+    let job_classid = if job.job_post > 0 {
+        job.job_post.to_string()
+    } else if job.job1_son > 0 {
+        job.job1_son.to_string()
+    } else {
+        job.job1.to_string()
+    };
+    let city_classid = if job.three_cityid > 0 {
+        job.three_cityid.to_string()
+    } else if job.cityid > 0 {
+        job.cityid.to_string()
+    } else {
+        job.provinceid.to_string()
+    };
+    let rid = i32::try_from(job.id).unwrap_or(0);
+    let _ = phpyun_services::temporary_resume_service::insert_snapshot(
+        &state,
+        phpyun_services::temporary_resume_service::Snapshot {
+            name: &job.name,
+            uname: &f.uname,
+            edu: f.edu,
+            sex: f.sex,
+            exp: f.exp,
+            telphone: &f.telphone,
+            birthday: &f.birthday,
+            hy: job.hy,
+            job_classid: &job_classid,
+            city_classid: &city_classid,
+            provinceid: job.provinceid,
+            cityid: job.cityid,
+            three_cityid: job.three_cityid,
+            minsalary: job.minsalary,
+            maxsalary: job.maxsalary,
+            rid,
+        },
+    )
+    .await?;
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = phpyun_services::registration_service::register(
+        &state,
+        phpyun_services::registration_service::RegisterInput {
+            username: &f.telphone,
+            password: &f.password,
+            mobile: &f.telphone,
+            email: None,
+            captcha_cid: &f.captcha_cid,
+            captcha_input: &f.checkcode,
+            sms_code: &f.moblie_code,
+            usertype: 1,
+            regway: 2,
+            did: 0,
+            client_ip: &ip,
+            user_agent: &ua,
+            referrer_uid: 0,
+        },
+    )
+    .await?;
+    let user = AuthenticatedUser {
+        uid: r.uid,
+        usertype: 1,
+        did: 0,
+        jti: String::new(),
+        iat: 0,
+        exp: r.access_exp,
+    };
+    phpyun_services::apply_service::apply_to_job(&state, &user, f.job_id, &ip).await?;
+    Ok(ApiResponse::data(crate::v1::wap::register::RegisterData {
+        uid: r.uid,
+        usertype: 1,
+        access_token: r.access,
+        access_exp: r.access_exp,
+        refresh_token: r.refresh,
+        refresh_exp: r.refresh_exp,
+    }))
 }

@@ -144,6 +144,7 @@ pub mod sms_service;
 pub mod special_service;
 pub mod stats_service;
 pub mod talent_pool_service;
+pub mod temporary_resume_service;
 pub mod tiny_service;
 pub mod transfer_service;
 pub mod user_service;
