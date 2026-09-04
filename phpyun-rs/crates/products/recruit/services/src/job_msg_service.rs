@@ -217,6 +217,26 @@ pub async fn list_for_employer(
     })
 }
 
+/// PHP `member/user/commsg` — jobseeker's own job Q&A threads.
+pub async fn list_for_seeker(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<JobMsgPage> {
+    user.require_jobseeker()?;
+    let reader = state.db.reader();
+    let (list, total) = tokio::join!(
+        msg_repo::list_for_seeker(reader, user.uid, page.offset, page.limit),
+        msg_repo::count_for_seeker(reader, user.uid),
+    );
+    let out = JobMsgPage {
+        list: list?,
+        total: total?,
+    };
+    let _ = msg_repo::mark_user_reminded(state.db.pool(), user.uid).await;
+    Ok(out)
+}
+
 /// Employer answers a message they own.
 pub async fn employer_reply(
     state: &AppState,

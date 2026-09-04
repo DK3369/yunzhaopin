@@ -69,13 +69,34 @@ const APPLY_FIELDS: &str = "id, \
     COALESCE(jobid, 0) AS jobid, \
     COALESCE(comid, 0) AS comid, \
     COALESCE(ctime, 0) AS ctime, \
-    COALESCE(status, 0) AS status";
+    COALESCE(status, 0) AS status, \
+    CAST('' AS CHAR) AS job_name, \
+    CAST('' AS CHAR) AS com_name";
+
+const APPLY_LIST_FIELDS: &str = "a.id, \
+    COALESCE(a.uid, 0) AS uid, \
+    COALESCE(a.jobid, 0) AS jobid, \
+    COALESCE(a.comid, 0) AS comid, \
+    COALESCE(a.ctime, 0) AS ctime, \
+    COALESCE(a.status, 0) AS status, \
+    COALESCE(j.name, '') AS job_name, \
+    COALESCE(j.com_name, '') AS com_name";
 
 const COLLECT_FIELDS: &str = "id, \
     COALESCE(uid, 0) AS uid, \
     COALESCE(jobid, 0) AS jobid, \
     COALESCE(comid, 0) AS comid, \
-    COALESCE(ctime, 0) AS ctime";
+    COALESCE(ctime, 0) AS ctime, \
+    CAST('' AS CHAR) AS job_name, \
+    CAST('' AS CHAR) AS com_name";
+
+const COLLECT_LIST_FIELDS: &str = "a.id, \
+    COALESCE(a.uid, 0) AS uid, \
+    COALESCE(a.jobid, 0) AS jobid, \
+    COALESCE(a.comid, 0) AS comid, \
+    COALESCE(a.ctime, 0) AS ctime, \
+    COALESCE(j.name, '') AS job_name, \
+    COALESCE(j.com_name, '') AS com_name";
 
 // ==================== partjob queries ====================
 
@@ -429,7 +450,9 @@ pub async fn list_applies_by_uid(
     limit: u64,
 ) -> Result<Vec<PartApply>, sqlx::Error> {
     sqlx::query_as::<_, PartApply>(
-        &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"),
+        &format!("SELECT {APPLY_LIST_FIELDS} FROM phpyun_part_apply a \
+         LEFT JOIN phpyun_partjob j ON j.id = a.jobid \
+         WHERE a.uid = ? ORDER BY a.ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(uid)
     .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
@@ -453,7 +476,9 @@ pub async fn list_applies_by_com(
     limit: u64,
 ) -> Result<Vec<PartApply>, sqlx::Error> {
     sqlx::query_as::<_, PartApply>(
-        &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE comid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"),
+        &format!("SELECT {APPLY_LIST_FIELDS} FROM phpyun_part_apply a \
+         LEFT JOIN phpyun_partjob j ON j.id = a.jobid \
+         WHERE a.comid = ? ORDER BY a.ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(com_uid)
     .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
@@ -556,8 +581,9 @@ pub async fn list_collects_by_uid(
     limit: u64,
 ) -> Result<Vec<PartCollect>, sqlx::Error> {
     sqlx::query_as::<_, PartCollect>(&format!(
-        "SELECT {COLLECT_FIELDS} FROM phpyun_part_collect \
-         WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"
+        "SELECT {COLLECT_LIST_FIELDS} FROM phpyun_part_collect a \
+         LEFT JOIN phpyun_partjob j ON j.id = a.jobid \
+         WHERE a.uid = ? ORDER BY a.ctime DESC LIMIT ? OFFSET ?"
     ))
     .bind(uid)
     .bind(phpyun_core::numeric::checked_db_i64(

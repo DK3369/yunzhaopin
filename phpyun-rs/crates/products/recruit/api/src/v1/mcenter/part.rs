@@ -61,6 +61,8 @@ pub struct MyPartApplyItem {
     /// Company review status: 1 unviewed / 2 viewed / 3 contacted
     pub status: i32,
     pub status_n: String,
+    pub job_name: String,
+    pub com_name: String,
 }
 
 impl From<phpyun_models::part::entity::PartApply> for MyPartApplyItem {
@@ -74,6 +76,8 @@ impl From<phpyun_models::part::entity::PartApply> for MyPartApplyItem {
             ctime: a.ctime,
             status_n: part_apply_status_name(a.status).to_string(),
             status: a.status,
+            job_name: a.job_name,
+            com_name: a.com_name,
         }
     }
 }
@@ -87,6 +91,8 @@ pub struct MyPartCollectItem {
     pub com_id: u64,
     pub ctime: i64,
     pub ctime_n: String,
+    pub job_name: String,
+    pub com_name: String,
 }
 
 impl From<phpyun_models::part::entity::PartCollect> for MyPartCollectItem {
@@ -98,6 +104,8 @@ impl From<phpyun_models::part::entity::PartCollect> for MyPartCollectItem {
             com_id: c.comid,
             ctime_n: fmt_dt(c.ctime),
             ctime: c.ctime,
+            job_name: c.job_name,
+            com_name: c.com_name,
         }
     }
 }

@@ -50,6 +50,7 @@ pub mod job;
 pub mod job_msg;
 pub mod job_tellog;
 pub mod look_job;
+pub mod look_resume;
 pub mod member_log;
 pub mod member_logout;
 pub mod member_statis;

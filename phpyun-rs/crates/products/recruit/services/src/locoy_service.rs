@@ -385,6 +385,16 @@ async fn ingest_user(state: &AppState, post: &HashMap<String, String>) -> AppRes
                         Some(p)
                     }
                 },
+                exp: None,
+                living: None,
+                domicile: None,
+                height: None,
+                weight: None,
+                address: None,
+                description: None,
+                qq: None,
+                idcard: None,
+                idcard_pic: None,
             },
             now,
         )

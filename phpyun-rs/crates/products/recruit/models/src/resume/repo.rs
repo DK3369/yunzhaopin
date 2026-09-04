@@ -591,6 +591,16 @@ pub struct ResumeUpdate<'a> {
     pub telphone: Option<&'a str>,
     pub email: Option<&'a str>,
     pub photo: Option<&'a str>,
+    pub exp: Option<i32>,
+    pub living: Option<&'a str>,
+    pub domicile: Option<&'a str>,
+    pub height: Option<&'a str>,
+    pub weight: Option<&'a str>,
+    pub address: Option<&'a str>,
+    pub description: Option<&'a str>,
+    pub qq: Option<&'a str>,
+    pub idcard: Option<&'a str>,
+    pub idcard_pic: Option<&'a str>,
 }
 
 /// Update the resume main table — only non-None fields are changed.
@@ -612,6 +622,17 @@ pub async fn update(
             telphone   = COALESCE(?, telphone),
             email      = COALESCE(?, email),
             photo      = COALESCE(?, photo),
+            exp        = COALESCE(?, exp),
+            living     = COALESCE(?, living),
+            domicile   = COALESCE(?, domicile),
+            height     = COALESCE(?, height),
+            weight     = COALESCE(?, weight),
+            address    = COALESCE(?, address),
+            description = COALESCE(?, description),
+            qq         = COALESCE(?, qq),
+            idcard     = COALESCE(?, idcard),
+            idcard_pic = COALESCE(?, idcard_pic),
+            idcard_status = CASE WHEN ? IS NOT NULL OR ? IS NOT NULL THEN 0 ELSE idcard_status END,
             lastupdate = ?
            WHERE uid = ?"#,
     )
@@ -624,6 +645,18 @@ pub async fn update(
     .bind(u.telphone)
     .bind(u.email)
     .bind(u.photo)
+    .bind(u.exp)
+    .bind(u.living)
+    .bind(u.domicile)
+    .bind(u.height)
+    .bind(u.weight)
+    .bind(u.address)
+    .bind(u.description)
+    .bind(u.qq)
+    .bind(u.idcard)
+    .bind(u.idcard_pic)
+    .bind(u.idcard)
+    .bind(u.idcard_pic)
     .bind(now)
     .bind(uid)
     .execute(pool)

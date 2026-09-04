@@ -75,6 +75,10 @@ pub struct PartApply {
     /// PHPYun status code: 1 = unread / 2 = viewed / 3 = contacted
     #[serde(default)]
     pub status: i32,
+    #[sqlx(default)]
+    pub job_name: String,
+    #[sqlx(default)]
+    pub com_name: String,
 }
 
 /// Part-time favorite (`phpyun_part_collect`)
@@ -85,4 +89,8 @@ pub struct PartCollect {
     pub jobid: u64,
     pub comid: u64,
     pub ctime: i64,
+    #[sqlx(default)]
+    pub job_name: String,
+    #[sqlx(default)]
+    pub com_name: String,
 }

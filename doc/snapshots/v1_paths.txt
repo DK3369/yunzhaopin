@@ -108,6 +108,7 @@
 /v1/mcenter/invite-reg
 /v1/mcenter/job-messages
 /v1/mcenter/job-messages/hide
+/v1/mcenter/job-messages/mine
 /v1/mcenter/job-messages/reply
 /v1/mcenter/jobs
 /v1/mcenter/jobs/batch/close
@@ -119,7 +120,11 @@
 /v1/mcenter/jobs/refresh
 /v1/mcenter/jobs/status
 /v1/mcenter/jobs/update
+/v1/mcenter/look-jobs/delete
 /v1/mcenter/look-jobs/list
+/v1/mcenter/look-jobs/mine
+/v1/mcenter/look-resumes/delete
+/v1/mcenter/look-resumes/list
 /v1/mcenter/messages
 /v1/mcenter/messages/delete
 /v1/mcenter/messages/read
@@ -238,6 +243,10 @@
 /v1/mcenter/warnings
 /v1/mcenter/warnings/read
 /v1/mcenter/warnings/unread-count
+/v1/mcenter/yqms/accept
+/v1/mcenter/yqms/delete
+/v1/mcenter/yqms/list
+/v1/mcenter/yqms/reject
 /v1/mcenter/zph/com-status
 /v1/mcenter/zph/my-reservation
 /v1/mcenter/zph/reserve

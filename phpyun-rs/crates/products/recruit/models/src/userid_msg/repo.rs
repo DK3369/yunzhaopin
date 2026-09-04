@@ -1,6 +1,17 @@
 //! `phpyun_userid_msg` — PHP `job.model.php::addYqms` interview invitations.
 
+use super::entity::UseridMsg;
 use sqlx::MySqlPool;
+
+const FIELDS: &str = "id, COALESCE(uid,0) AS uid, COALESCE(title,'') AS title, \
+    COALESCE(content,'') AS content, COALESCE(fid,0) AS fid, COALESCE(fname,'') AS fname, \
+    COALESCE(`type`,0) AS `type`, CAST(COALESCE(datetime,0) AS SIGNED) AS datetime, \
+    COALESCE(is_browse,0) AS is_browse, COALESCE(address,'') AS address, \
+    COALESCE(intertime,'') AS intertime, COALESCE(linkman,'') AS linkman, \
+    COALESCE(linktel,'') AS linktel, COALESCE(jobid,0) AS jobid, \
+    COALESCE(jobname,'') AS jobname, COALESCE(did,0) AS did, \
+    COALESCE(x,'') AS x, COALESCE(y,'') AS y, COALESCE(mappic,'') AS mappic, \
+    COALESCE(isdel,9) AS isdel, COALESCE(remark,'') AS remark";
 
 pub struct UseridMsgCreate<'a> {
     pub uid: u64,
@@ -47,4 +58,91 @@ pub async fn insert(pool: &MySqlPool, c: UseridMsgCreate<'_>) -> Result<u64, sql
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
+}
+
+/// PHP `member/user/invite`: `uid = me AND type <> 1 AND isdel = 9`.
+pub async fn list_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<UseridMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_userid_msg \
+         WHERE uid = ? AND COALESCE(`type`,0) <> 1 AND COALESCE(isdel,9) = 9 \
+         ORDER BY id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, UseridMsg>(&sql)
+        .bind(uid)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            limit,
+            "pagination.limit",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            offset,
+            "pagination.offset",
+        )?)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+         WHERE uid = ? AND COALESCE(`type`,0) <> 1 AND COALESCE(isdel,9) = 9",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn find_by_id_uid(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+) -> Result<Option<UseridMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_userid_msg \
+         WHERE id = ? AND uid = ? AND COALESCE(isdel,9) = 9 LIMIT 1"
+    );
+    sqlx::query_as::<_, UseridMsg>(&sql)
+        .bind(id)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await
+}
+
+/// PHP `job.model.php::setYqms` — `is_browse` 3=agree / 4=reject.
+pub async fn set_browse(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    browse: i32,
+    remark: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_msg SET is_browse = ?, remark = ? \
+         WHERE id = ? AND uid = ? AND COALESCE(isdel,9) = 9",
+    )
+    .bind(browse)
+    .bind(remark)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `delYqms` for usertype=1: `isdel = 1`.
+pub async fn hide_by_uid(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_msg SET isdel = 1 \
+         WHERE id = ? AND uid = ? AND COALESCE(isdel,9) = 9",
+    )
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }

@@ -3,7 +3,7 @@
 //! require an existing `apply_id`.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::apply::repo as apply_repo;
 use phpyun_models::blacklist::repo as bl_repo;
 use phpyun_models::company::repo as company_repo;
@@ -365,4 +365,65 @@ pub async fn create_from_resume(
     }
 
     Err(ApiError::business("need_buy_invite"))
+}
+
+pub struct YqmsPage {
+    pub list: Vec<phpyun_models::userid_msg::entity::UseridMsg>,
+    pub total: u64,
+}
+
+/// PHP `member/user/invite` list.
+pub async fn list_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<YqmsPage> {
+    user.require_jobseeker()?;
+    let (total, list) = tokio::join!(
+        msg_repo::count_by_uid(state.db.reader(), user.uid),
+        msg_repo::list_by_uid(state.db.reader(), user.uid, page.offset, page.limit),
+    );
+    Ok(YqmsPage {
+        total: total?,
+        list: list?,
+    })
+}
+
+/// PHP `setYqms`: browse 3 agree / 4 reject.
+pub async fn respond(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+    browse: i32,
+    remark: &str,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_jobseeker()?;
+    if browse != 3 && browse != 4 {
+        return Err(ApiError::param_invalid("browse"));
+    }
+    let n = msg_repo::set_browse(state.db.pool(), id, user.uid, browse, remark).await?;
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("yqms.respond", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("userid_msg:{id}:{browse}")),
+    )
+    .await;
+    Ok(())
+}
+
+pub async fn hide_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<u64> {
+    user.require_jobseeker()?;
+    let n = msg_repo::hide_by_uid(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    Ok(n)
 }

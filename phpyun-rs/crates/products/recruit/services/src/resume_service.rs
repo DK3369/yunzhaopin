@@ -149,6 +149,16 @@ pub struct ResumeUpdateInput<'a> {
     pub telphone: Option<&'a str>,
     pub email: Option<&'a str>,
     pub photo: Option<&'a str>,
+    pub exp: Option<i32>,
+    pub living: Option<&'a str>,
+    pub domicile: Option<&'a str>,
+    pub height: Option<&'a str>,
+    pub weight: Option<&'a str>,
+    pub address: Option<&'a str>,
+    pub description: Option<&'a str>,
+    pub qq: Option<&'a str>,
+    pub idcard: Option<&'a str>,
+    pub idcard_pic: Option<&'a str>,
 }
 
 /// Fetch the jobseeker's own resume. If the resume row does not exist (legacy data / new signup), create an empty row automatically.
@@ -186,6 +196,16 @@ pub async fn update_mine(
             telphone: input.telphone,
             email: input.email,
             photo: input.photo,
+            exp: input.exp,
+            living: input.living,
+            domicile: input.domicile,
+            height: input.height,
+            weight: input.weight,
+            address: input.address,
+            description: input.description,
+            qq: input.qq,
+            idcard: input.idcard,
+            idcard_pic: input.idcard_pic,
         },
         clock::now_ts(),
     )
@@ -347,4 +367,44 @@ async fn downloaded_resume_body(
     phpyun_models::resume_download::repo::already_freedown(db, u.uid, resume_uid)
         .await
         .unwrap_or(false)
+}
+
+pub struct LookResumePage {
+    pub list: Vec<phpyun_models::look_resume::LookResume>,
+    pub total: u64,
+}
+
+/// PHP `member/user/look` — companies who viewed my resume.
+pub async fn list_look_resumes(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<LookResumePage> {
+    user.require_jobseeker()?;
+    let (total, list) = tokio::join!(
+        phpyun_models::look_resume::count_by_resume_uid(state.db.reader(), user.uid),
+        phpyun_models::look_resume::list_by_resume_uid(
+            state.db.reader(),
+            user.uid,
+            page.offset,
+            page.limit
+        ),
+    );
+    Ok(LookResumePage {
+        total: total?,
+        list: list?,
+    })
+}
+
+pub async fn hide_look_resume(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<u64> {
+    user.require_jobseeker()?;
+    let n = phpyun_models::look_resume::hide_by_uid(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    Ok(n)
 }

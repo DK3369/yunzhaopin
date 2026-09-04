@@ -9,8 +9,6 @@ use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::interview::repo as interview_repo;
 use phpyun_models::message::repo as message_repo;
 use phpyun_models::sign_in::repo as sign_repo;
-use phpyun_models::view::entity::{KIND_JOB as VK_JOB, KIND_RESUME as VK_RESUME};
-use phpyun_models::view::repo as view_repo;
 
 #[derive(Debug, Default)]
 pub struct DashboardCounts {
@@ -49,19 +47,17 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
 
     // PHPYun only stores job favorites (`phpyun_fav_job`); company / resume
     // favorites have no backing table, so the dashboard total is just job-fav count.
-    let (messages, applies, interviews, fav_job, views_job, views_res, bal, sign) = tokio::join!(
+    let (messages, applies, interviews, fav_job, looks, bal, sign) = tokio::join!(
         message_repo::count(db, uid, None, true),
         apply_repo::count_by_uid(db, uid, None),
-        interview_repo::count_for_user(db, uid),
+        phpyun_models::userid_msg::repo::count_by_uid(db, uid),
         collect_repo::count_by_user(db, uid),
-        view_repo::count_by_viewer(db, uid, VK_JOB),
-        view_repo::count_by_viewer(db, uid, VK_RESUME),
+        phpyun_models::look_resume::count_by_resume_uid(db, uid),
         integral_repo::get_balance(db, uid),
         sign_repo::get_user_sign(db, uid),
     );
 
     let fav_total = fav_job.unwrap_or(0);
-    let view_total = views_job.unwrap_or(0) + views_res.unwrap_or(0);
 
     Ok(DashboardCounts {
         unread_messages: messages.unwrap_or(0),
@@ -69,7 +65,7 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
         apply_count: applies.unwrap_or(0),
         interview_count: interviews.unwrap_or(0),
         favorite_count: fav_total,
-        view_count: view_total,
+        view_count: looks.unwrap_or(0),
         integral_balance: bal.map(|b| b.balance).unwrap_or(0),
         signday: sign.map(|s| s.signday).unwrap_or(0),
     })

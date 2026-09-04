@@ -28,6 +28,7 @@ pub mod invite;
 pub mod job_messages;
 pub mod jobs;
 pub mod look_jobs;
+pub mod look_resumes;
 pub mod messages;
 pub mod oauth_bindings;
 pub mod once_orders;
@@ -92,6 +93,7 @@ pub fn router() -> Router<AppState> {
         .merge(company::routes())
         .merge(jobs::routes())
         .merge(look_jobs::routes())
+        .merge(look_resumes::routes())
         .merge(job_messages::routes())
         .merge(apply::routes())
         .merge(applications::routes())

@@ -214,6 +214,54 @@ pub async fn count_for_employer(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `member/user/commsg` — messages this jobseeker posted.
+pub async fn list_for_seeker(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<JobMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_msg \
+         WHERE uid = ? AND COALESCE(del_status,0) = 0 \
+         ORDER BY datetime DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, JobMsg>(&sql)
+        .bind(uid)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            limit,
+            "pagination.limit",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            offset,
+            "pagination.offset",
+        )?)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_for_seeker(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_msg WHERE uid = ? AND COALESCE(del_status,0) = 0",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `upInfo(user_remind_status=0 → 1)` after the seeker opens commsg.
+pub async fn mark_user_reminded(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_msg SET user_remind_status = 1 \
+         WHERE uid = ? AND COALESCE(user_remind_status,0) = 0",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn employer_reply(
     pool: &MySqlPool,
     id: u64,

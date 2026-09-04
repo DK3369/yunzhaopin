@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isUnauthErr, mediaUrl } from '~/utils/site'
+import type { DictItem } from '~/utils/query'
 
 type ChildRow = {
   id: number
@@ -50,6 +51,12 @@ const { data: languages, refresh: refreshLanguages } = await useAsyncData('my-la
 const { data: shows, refresh: refreshShows } = await useAsyncData('my-resume-gallery', () =>
   api.post('/v1/mcenter/galleries/list', { kind: 'resume', page: 1, page_size: 20 }).catch(() => ({ list: [] })),
 )
+const { data: eduDict } = await useAsyncData('resume-edu-dict', () =>
+  api.get<DictItem[]>('/v1/wap/dict/educations', { source: 'user' }).catch(() => [] as DictItem[]),
+)
+const { data: expDict } = await useAsyncData('resume-exp-dict', () =>
+  api.get<DictItem[]>('/v1/wap/dict/experiences', { source: 'user' }).catch(() => [] as DictItem[]),
+)
 const form = reactive({
   name: '',
   sex: 1,
@@ -57,6 +64,16 @@ const form = reactive({
   telphone: '',
   email: '',
   photo: '',
+  education: 0,
+  exp: 0,
+  living: '',
+  domicile: '',
+  height: '',
+  weight: '',
+  address: '',
+  description: '',
+  qq: '',
+  marriage: 0,
 })
 watch(
   data,
@@ -68,6 +85,16 @@ watch(
     form.telphone = String(row.telphone || '')
     form.email = String(row.email || '')
     form.photo = String(row.photo || '')
+    form.education = Number(row.education || 0)
+    form.exp = Number(row.exp || 0)
+    form.living = String(row.living || '')
+    form.domicile = String(row.domicile || '')
+    form.height = String(row.height || '')
+    form.weight = String(row.weight || '')
+    form.address = String(row.address || '')
+    form.description = String(row.description || '')
+    form.qq = String(row.qq || '')
+    form.marriage = Number(row.marriage || 0)
   },
   { immediate: true },
 )
@@ -256,8 +283,23 @@ useSeoMeta({ title: t('wap_user_00204') })
         <option :value="2">{{ $t('common_02069') }}</option>
       </select>
       <input v-model="form.birthday" :placeholder="$t('ui.birthday')" />
+      <select v-model.number="form.education">
+        <option :value="0">{{ $t('wap_00459') }}</option>
+        <option v-for="d in eduDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
+      </select>
+      <select v-model.number="form.exp">
+        <option :value="0">{{ $t('wap_00457') }}</option>
+        <option v-for="d in expDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
+      </select>
+      <input v-model="form.living" :placeholder="$t('wap_user_00242')" />
+      <input v-model="form.domicile" :placeholder="$t('member_user_00158')" />
+      <input v-model="form.height" :placeholder="$t('member_user_00165')" />
+      <input v-model="form.weight" :placeholder="$t('member_user_00160')" />
       <input v-model="form.telphone" :placeholder="$t('common.phone')" />
       <input v-model="form.email" :placeholder="$t('member_user_00282')" />
+      <input v-model="form.address" :placeholder="$t('wap_user_00243')" />
+      <input v-model="form.qq" placeholder="QQ" />
+      <textarea v-model="form.description" rows="4" :placeholder="$t('wap_user_00102')" />
       <button type="submit">{{ $t('ui.save_resume') }}</button>
       <button type="button" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
     </form>

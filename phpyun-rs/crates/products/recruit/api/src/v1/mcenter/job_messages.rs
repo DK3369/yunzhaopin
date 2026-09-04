@@ -19,6 +19,7 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/job-messages", post(list))
+        .route("/job-messages/mine", post(list_mine))
         .route("/job-messages/reply", post(reply))
         .route("/job-messages/hide", post(hide))
 }
@@ -60,6 +61,37 @@ impl From<phpyun_models::job_msg::entity::JobMsg> for EmployerMsgItem {
     }
 }
 
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SeekerMsgItem {
+    pub id: u64,
+    pub job_id: u64,
+    pub job_uid: u64,
+    pub job_name: String,
+    pub com_name: String,
+    pub content: String,
+    pub reply: String,
+    pub status: i32,
+    pub datetime: i64,
+    pub datetime_n: String,
+}
+
+impl From<phpyun_models::job_msg::entity::JobMsg> for SeekerMsgItem {
+    fn from(m: phpyun_models::job_msg::entity::JobMsg) -> Self {
+        Self {
+            id: m.id,
+            job_id: m.jobid.unwrap_or(0),
+            job_uid: m.job_uid.unwrap_or(0),
+            job_name: m.job_name.unwrap_or_default(),
+            com_name: m.com_name.unwrap_or_default(),
+            content: m.content.unwrap_or_default(),
+            reply: m.reply.unwrap_or_default(),
+            status: m.status,
+            datetime_n: fmt_dt(m.datetime),
+            datetime: m.datetime,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// `true` keeps only messages that have not yet been replied to (badge view).
@@ -86,6 +118,25 @@ pub async fn list(
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<EmployerMsgItem>>> {
     let r = job_msg_service::list_for_employer(&state, &user, q.only_unanswered, page).await?;
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
+}
+
+/// PHP `member/user/commsg` — jobseeker Q&A list.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/job-messages/mine",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_mine(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<ApiResponse<Paged<SeekerMsgItem>>> {
+    let r = job_msg_service::list_for_seeker(&state, &user, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))
