@@ -83,30 +83,49 @@ useSeoMeta({ title: kw.value ? `${kw.value} - ${t('common.search')}` : t('common
       </p>
     </div>
     <template v-else>
-      <h2>{{ $t('common.job') }}</h2>
-      <p v-if="!(data?.jobs || []).length" class="muted">{{ $t('default_00033') }}</p>
-      <div class="stack">
-        <JobCard v-for="job in data?.jobs || []" :key="job.id" :job="job" />
-      </div>
-      <h2>{{ $t('common.company') }}</h2>
-      <p v-if="!(data?.companies || []).length" class="muted">{{ $t('wap_00590') }}</p>
-      <div class="stack">
-        <CompanyCard v-for="c in data?.companies || []" :key="c.uid" :company="c" />
-      </div>
-      <h2>{{ $t('common.resume') }}</h2>
-      <p v-if="!(resumeData?.list || []).length" class="muted">{{ $t('wap_com_00315') }}</p>
-      <div class="stack">
-        <NuxtLink
-          v-for="r in resumeData?.list || []"
-          :key="r.uid"
-          :to="`/resumes/${r.uid}`"
-        >
-          {{ r.display_name || r.name || r.uname || $t('common_02430') }}
-        </NuxtLink>
-      </div>
-      <p>
-        <NuxtLink :to="`/resumes?keyword=${encodeURIComponent(kw)}`">{{ $t('common.view_more') }}</NuxtLink>
-      </p>
+      <template v-if="scope === 'all' || scope === 'job'">
+        <h2>{{ $t('common.job') }}</h2>
+        <p v-if="!(data?.jobs || []).length" class="muted">{{ $t('default_00033') }}</p>
+        <div class="stack">
+          <JobCard v-for="job in data?.jobs || []" :key="job.id" :job="job" />
+        </div>
+      </template>
+      <template v-if="scope === 'all' || scope === 'company'">
+        <h2>{{ $t('common.company') }}</h2>
+        <p v-if="!(data?.companies || []).length" class="muted">{{ $t('wap_00590') }}</p>
+        <div class="stack">
+          <CompanyCard v-for="c in data?.companies || []" :key="c.uid" :company="c" />
+        </div>
+      </template>
+      <template v-if="scope === 'all' || scope === 'article'">
+        <h2>{{ $t('common.article') }}</h2>
+        <p v-if="!(data?.articles || []).length" class="muted">{{ $t('common_02409') }}</p>
+        <div class="stack">
+          <SimpleCard
+            v-for="a in data?.articles || []"
+            :key="a.id"
+            :to="`/articles/${a.id}`"
+            :title="a.title_all || a.title"
+            :meta="a.datetime_n || a.category"
+          />
+        </div>
+      </template>
+      <template v-if="scope === 'all' || scope === 'resume'">
+        <h2>{{ $t('common.resume') }}</h2>
+        <p v-if="!(resumeData?.list || []).length" class="muted">{{ $t('wap_com_00315') }}</p>
+        <div class="stack">
+          <NuxtLink
+            v-for="r in resumeData?.list || []"
+            :key="r.uid"
+            :to="`/resumes/${r.uid}`"
+          >
+            {{ r.display_name || r.name || r.uname || $t('common_02430') }}
+          </NuxtLink>
+        </div>
+        <p>
+          <NuxtLink :to="`/resumes?keyword=${encodeURIComponent(kw)}`">{{ $t('common.view_more') }}</NuxtLink>
+        </p>
+      </template>
     </template>
   </section>
 </template>
