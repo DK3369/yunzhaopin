@@ -78,12 +78,13 @@ async function remove() {
 async function pay() {
   msg.value = ''
   try {
-    const r = await api.post<{ order_id?: string; state?: number }>('/v1/wap/once-jobs/pay', {
+    const r = await api.post<{ order_id?: string; state?: number; fast?: string }>('/v1/wap/once-jobs/pay', {
       id,
       password: password.value,
       paytype: paytype.value,
       oncepricegear: gearId.value,
     })
+    if (r.fast) localStorage.setItem('once_fast', r.fast)
     msg.value = Number(r.state) === 2 ? t('common.success') : String(r.order_id || t('common.success'))
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('common_00888')

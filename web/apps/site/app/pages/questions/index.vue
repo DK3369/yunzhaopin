@@ -46,6 +46,9 @@ async function ask() {
 
 <template>
   <section>
+    <p>
+      <NuxtLink to="/questions/topics">{{ $t('wap_user_00223') }}</NuxtLink>
+    </p>
     <p v-if="(hotweek || []).length">
       {{ $t('common.hot') }}
       <NuxtLink v-for="h in hotweek || []" :key="h.id" :to="`/questions/${h.id}`">{{ h.title }}</NuxtLink>

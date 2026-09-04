@@ -428,6 +428,42 @@ pub async fn list_my_pending_orders(
     })
 }
 
+/// Guest paylog keyed by the PHP `fast` cookie (not a logged-in employer).
+pub async fn list_guest_paylog(
+    state: &AppState,
+    fast: &str,
+    page: Pagination,
+) -> AppResult<PendingOrdersPage> {
+    let fast = fast.trim();
+    if fast.is_empty() {
+        return Ok(PendingOrdersPage {
+            list: Vec::new(),
+            total: 0,
+        });
+    }
+    let pool = state.db.reader();
+    let (list, total) = tokio::join!(
+        once_repo::list_pending_once_orders_by_fast(pool, fast, page.offset, page.limit),
+        once_repo::count_pending_once_orders_by_fast(pool, fast),
+    );
+    Ok(PendingOrdersPage {
+        list: list?,
+        total: total?,
+    })
+}
+
+pub async fn cancel_guest_paylog(state: &AppState, fast: &str, order_id: u64) -> AppResult<()> {
+    let fast = fast.trim();
+    if fast.is_empty() {
+        return Err(ApiError::param_invalid("order_not_cancellable"));
+    }
+    let n = once_repo::cancel_pending_once_order_by_fast(state.db.pool(), fast, order_id).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("order_not_cancellable"));
+    }
+    Ok(())
+}
+
 pub async fn cancel_pending_order(
     state: &AppState,
     user: &phpyun_core::AuthenticatedUser,

@@ -91,7 +91,10 @@ useHead({ link: [{ rel: 'canonical', href: `/fairs/${id}` }] })
     </p>
     <div v-if="tab === 'companies'">
       <p v-if="!(companies?.list || []).length" class="muted">{{ $t('wap_00590') }}</p>
-      <CompanyCard v-for="c in companies?.list || []" :key="c.uid" :company="c" />
+      <div v-for="c in companies?.list || []" :key="c.uid">
+        <p v-if="c.booth_name" class="muted">{{ c.booth_name }}</p>
+        <CompanyCard :company="c" />
+      </div>
     </div>
     <div v-else-if="tab === 'jobs'">
       <p v-if="!(jobs || []).length" class="muted">{{ $t('default_00033') }}</p>

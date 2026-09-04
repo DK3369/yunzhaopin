@@ -78,6 +78,13 @@ pub struct ZphCompany {
     pub sort: i32,
     pub status: i32,
     pub created_at: i64,
+    /// Exhibition hall / area / booth ids (`phpyun_zhaopinhui_com.sid/cid/bid`).
+    #[sqlx(default)]
+    pub sid: i32,
+    #[sqlx(default)]
+    pub cid: i32,
+    #[sqlx(default)]
+    pub bid: i32,
 }
 
 /// PHP `phpyun_zhaopinhui_space` (`zph_space`).

@@ -115,7 +115,10 @@ const ZC_FIELDS: &str = "\
     CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
     CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
     CAST(COALESCE(status, 0) AS SIGNED) AS status, \
-    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at";
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at, \
+    CAST(COALESCE(sid, 0) AS SIGNED) AS sid, \
+    CAST(COALESCE(cid, 0) AS SIGNED) AS cid, \
+    CAST(COALESCE(bid, 0) AS SIGNED) AS bid";
 
 pub async fn list_companies(
     pool: &MySqlPool,
@@ -865,6 +868,29 @@ pub async fn reserved_parent_pairs(
     );
     let mut first = true;
     for id in reserved_ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn list_spaces_by_ids(
+    pool: &MySqlPool,
+    ids: &[i32],
+) -> Result<Vec<ZphSpace>, sqlx::Error> {
+    let ids: Vec<i32> = ids.iter().copied().filter(|id| *id > 0).collect();
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = sqlx::QueryBuilder::new(format!(
+        "SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE id IN ("
+    ));
+    let mut first = true;
+    for id in &ids {
         if !first {
             qb.push(",");
         }

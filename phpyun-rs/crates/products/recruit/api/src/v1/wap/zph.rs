@@ -356,6 +356,11 @@ pub struct ZphCompanyItem {
     pub status: i32,
     pub created_at: i64,
     pub created_at_n: String,
+    pub sid: i32,
+    pub cid: i32,
+    pub bid: i32,
+    /// PHP `zph_com.htm`: `sidname-cidname-bidname`
+    pub booth_name: String,
     // ---- Key columns from JOIN phpyun_company ----
     pub com_name: Option<String>,
     pub com_logo: Option<String>,
@@ -395,6 +400,19 @@ pub async fn list_companies(
         .unwrap_or_default();
     let com_map: std::collections::HashMap<u64, _> =
         cards.into_iter().map(|c| (c.uid, c)).collect();
+    let mut space_ids: Vec<i32> = Vec::new();
+    for c in &r.list {
+        space_ids.push(c.sid);
+        space_ids.push(c.cid);
+        space_ids.push(c.bid);
+    }
+    let spaces = phpyun_models::zph::repo::list_spaces_by_ids(state.db.reader(), &space_ids)
+        .await
+        .unwrap_or_default();
+    let space_map: std::collections::HashMap<i32, String> = spaces
+        .into_iter()
+        .map(|s| (i32::try_from(s.id).unwrap_or(0), s.name))
+        .collect();
 
     let items: Vec<ZphCompanyItem> = r
         .list
@@ -409,6 +427,12 @@ pub async fn list_companies(
             let prov = card.map(|x| x.provinceid).unwrap_or(0);
             let city = card.map(|x| x.cityid).unwrap_or(0);
             let logo_full = pic_n(&state, com_logo.as_deref().unwrap_or(""));
+            let booth_name = [c.sid, c.cid, c.bid]
+                .into_iter()
+                .filter(|id| *id > 0)
+                .filter_map(|id| space_map.get(&id).cloned())
+                .collect::<Vec<_>>()
+                .join("-");
             ZphCompanyItem {
                 id: c.id,
                 zid: c.zid,
@@ -417,6 +441,10 @@ pub async fn list_companies(
                 status: c.status,
                 created_at_n: fmt_dt(c.created_at),
                 created_at: c.created_at,
+                sid: c.sid,
+                cid: c.cid,
+                bid: c.bid,
+                booth_name,
                 com_name,
                 com_logo_n: logo_full,
                 com_logo,

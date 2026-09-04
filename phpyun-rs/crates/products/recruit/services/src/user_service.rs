@@ -163,6 +163,52 @@ pub async fn login(
     })
 }
 
+/// Issue a session for an already-identified member (WeChat scan-to-login).
+pub async fn login_by_uid(
+    state: &AppState,
+    uid: u64,
+    ctx: LoginContext<'_>,
+) -> AppResult<LoginResult> {
+    let user: Member = user_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(ApiError::bad_credentials)?;
+    if user.status == 2 {
+        return Err(ApiError::locked());
+    }
+    let (usertype, did) = auth_identity(&user)?;
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
+    let _ = user_session_service::record_login(
+        state,
+        LoginRecord {
+            uid: user.uid,
+            usertype,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: ctx.ip,
+            ua: ctx.ua,
+        },
+    )
+    .await;
+    auth_event("login_success", None);
+    Ok(LoginResult {
+        access,
+        refresh,
+        uid: user.uid,
+        usertype,
+        access_exp,
+        refresh_exp,
+    })
+}
+
 /// Admin simulate-login: issue a member JWT without password (PHP 模拟登录).
 pub async fn impersonate(
     state: &AppState,

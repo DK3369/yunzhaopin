@@ -85,6 +85,7 @@ export type CompanyLike = {
   rating?: number
   rating_name?: string | null
   open_jobs?: Array<{ id: number; name: string }>
+  booth_name?: string
 }
 
 const MODULE_PATH: Record<string, string> = {
@@ -266,6 +267,12 @@ export function listFailMsg(err: unknown, rateLimit: string, fallback: string): 
   const status = e.statusCode || e.status || 0
   if (key === 'rate_limit' || status === 429) return e.data?.msg || rateLimit
   return e.data?.msg || e.message || fallback
+}
+
+export function memberFailMsg(err: unknown, loginText: string, failText: string, rateLimit: string): string {
+  if (!err) return ''
+  if (isUnauthErr(err)) return loginText
+  return listFailMsg(err, rateLimit, failText)
 }
 
 /** PHP `salaryUnit($minsalary, $maxsalary)` — `resume_salarytype` 1=元 / 2=千 / 3=K / 4=k. */

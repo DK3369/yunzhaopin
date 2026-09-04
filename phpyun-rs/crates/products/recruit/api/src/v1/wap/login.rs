@@ -19,7 +19,7 @@ use phpyun_core::validators;
 use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::user_service::{self, LoginContext};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
@@ -29,6 +29,8 @@ pub fn routes() -> Router<AppState> {
         .route("/login/sms", post(login_sms))
         .route("/login/email/code", post(send_email_code))
         .route("/login/email", post(login_email))
+        .route("/login/wx-qr", post(wx_qr))
+        .route("/login/wx-status", post(wx_status))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -274,4 +276,70 @@ fn ua_from(headers: &HeaderMap) -> String {
         .and_then(|v| v.to_str().ok())
         .unwrap_or("")
         .to_string()
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct WxQrData {
+    pub login_id: String,
+    pub show_url: String,
+    pub expire_seconds: u64,
+}
+
+/// PC scan-to-login QR (PHP `login::wxlogin_action` / `applyWxQrcode`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/wx-qr",
+    tag = "auth",
+    responses((status = 200, description = "ok", body = WxQrData))
+)]
+pub async fn wx_qr(State(state): State<AppState>) -> AppResult<ApiResponse<WxQrData>> {
+    let r = phpyun_services::wx_login_service::create_qr(&state).await?;
+    Ok(ApiResponse::data(WxQrData {
+        login_id: r.login_id,
+        show_url: r.show_url,
+        expire_seconds: r.expire_seconds,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct WxStatusForm {
+    #[validate(length(min = 4, max = 32))]
+    pub login_id: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct WxStatusData {
+    pub status: String,
+    pub uid: Option<u64>,
+    pub usertype: Option<u8>,
+    pub access_token: Option<String>,
+}
+
+/// Poll PC WeChat scan-to-login (PHP `login::getwxloginstatus_action`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/wx-status",
+    tag = "auth",
+    request_body = WxStatusForm,
+    responses((status = 200, description = "ok", body = WxStatusData))
+)]
+pub async fn wx_status(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: HeaderMap,
+    ValidatedJson(form): ValidatedJson<WxStatusForm>,
+) -> AppResult<ApiResponse<WxStatusData>> {
+    let ua = ua_from(&headers);
+    let r = phpyun_services::wx_login_service::poll_status(
+        &state,
+        &form.login_id,
+        LoginContext { ip: &ip, ua: &ua },
+    )
+    .await?;
+    Ok(ApiResponse::data(WxStatusData {
+        status: r.status,
+        uid: r.uid,
+        usertype: r.usertype,
+        access_token: r.access_token,
+    }))
 }

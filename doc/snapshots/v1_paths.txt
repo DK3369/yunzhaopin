@@ -322,6 +322,8 @@
 /v1/wap/login/email
 /v1/wap/login/email/code
 /v1/wap/login/sms
+/v1/wap/login/wx-qr
+/v1/wap/login/wx-status
 /v1/wap/logout
 /v1/wap/map/companies
 /v1/wap/map/jobs
@@ -343,6 +345,7 @@
 /v1/wap/once-jobs/gears
 /v1/wap/once-jobs/list
 /v1/wap/once-jobs/pay
+/v1/wap/once-jobs/paylog
 /v1/wap/once-jobs/refresh
 /v1/wap/once-jobs/show
 /v1/wap/once-jobs/update

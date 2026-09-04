@@ -13,6 +13,9 @@ const { data: captcha } = await useAsyncData('login-captcha', () =>
 const authcode = ref('')
 const err = ref('')
 const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
+const wxQr = ref<{ login_id: string; show_url: string } | null>(null)
+const wxQrHint = ref('')
+let wxPoll: ReturnType<typeof setInterval> | null = null
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
 
 async function loadCaptcha() {
@@ -50,6 +53,29 @@ onMounted(async () => {
     }
   }
   if (!captcha.value) await loadCaptcha()
+  try {
+    wxQr.value = await $fetch('/api/auth/login-wx-qr', { method: 'POST' })
+    if (wxQr.value?.login_id) {
+      wxPoll = setInterval(async () => {
+        try {
+          const st = await $fetch<{ status: string; uid?: number; usertype?: number }>(
+            '/api/auth/login-wx-status',
+            { method: 'POST', body: { login_id: wxQr.value?.login_id } },
+          )
+          if (st.status === 'ok' && st.uid) {
+            if (wxPoll) clearInterval(wxPoll)
+            await afterLogin({ uid: st.uid, usertype: Number(st.usertype || 0) })
+          } else if (st.status === 'unbound') {
+            wxQrHint.value = t('common.register')
+          }
+        } catch {
+          /* keep polling until expire */
+        }
+      }, 2000)
+    }
+  } catch {
+    wxQr.value = null
+  }
   const redirect_uri = `${siteUrl}/login`
   for (const [name, path, key] of [
     ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
@@ -124,6 +150,9 @@ async function submitSms() {
   }
 }
 useSeoMeta({ title: t('common.login') })
+onUnmounted(() => {
+  if (wxPoll) clearInterval(wxPoll)
+})
 </script>
 
 <template>
@@ -151,7 +180,7 @@ useSeoMeta({ title: t('common.login') })
                   {{ $t('common.login') }}<i class="login_box_h_icon" />
                 </li>
                 <li :class="{ login_box_h_list_cur: tab === 'sms' }" @click="tab = 'sms'">
-                  {{ $t('ui.sms_login') }}
+                  {{ $t('wap_00648') }}
                 </li>
               </ul>
             </div>
@@ -177,11 +206,16 @@ useSeoMeta({ title: t('common.login') })
                 <p v-if="err" class="muted" style="padding: 8px 0">{{ err }}</p>
                 <div class="login_box_fw">
                   <span class="fl">{{ $t('common.register') }} <NuxtLink to="/register">{{ $t('common.register') }}</NuxtLink></span>
-                  <NuxtLink to="/forgetpw" class="fr">{{ $t('ui.forget_pw') }}</NuxtLink>
+                  <NuxtLink to="/forgetpw" class="fr">{{ $t('wap_00680') }}</NuxtLink>
                 </div>
                 <p v-if="oauth.length" style="padding: 12px 0">
                   <a v-for="o in oauth" :key="o.name" :href="o.path" style="margin-right: 12px" @click="sessionStorage.setItem('oauth_provider', o.provider)">{{ o.name }}</a>
                 </p>
+                <div v-if="wxQr?.show_url" style="padding: 12px 0; text-align: center">
+                  <p class="muted">{{ $t('common_02228') }}</p>
+                  <img :src="wxQr.show_url" alt="" width="160" height="160" />
+                  <p v-if="wxQrHint" class="muted">{{ wxQrHint }}</p>
+                </div>
               </div>
             </form>
             <form v-else class="login_t_box" @submit.prevent="submitSms">

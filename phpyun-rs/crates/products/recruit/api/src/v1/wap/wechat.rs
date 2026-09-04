@@ -101,6 +101,7 @@ pub async fn receive(
         event = ?msg.event,
         "wechat inbound"
     );
+    phpyun_services::wx_login_service::on_oa_event(&state, &msg).await;
 
     // If the operator configured a fixed welcome message, use that; otherwise pull i18n `wechat.welcome_default` in the system default language.
     let welcome_default = t("wechat.welcome_default", Lang::ZhCN);

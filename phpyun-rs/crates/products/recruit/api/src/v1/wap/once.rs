@@ -34,6 +34,7 @@ pub fn routes() -> Router<AppState> {
         .route("/once-jobs/verify", post(verify))
         .route("/once-jobs/refresh", post(refresh))
         .route("/once-jobs/pay", post(pay))
+        .route("/once-jobs/paylog", post(paylog))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -522,4 +523,53 @@ pub async fn pay(
         state: r.state,
         fast: r.fast,
     }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PaylogForm {
+    #[validate(length(max = 32))]
+    pub fast: String,
+    /// When set, cancel that pending order (PHP `delpaylog_action`).
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub id: u64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PaylogItem {
+    pub id: u64,
+    pub order_id: String,
+    pub order_price: f64,
+    pub order_time: i64,
+    pub once_id: Option<i32>,
+}
+
+/// Guest pending once-orders by `fast` cookie (PHP `wap/once::paylog_action`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/once-jobs/paylog",
+    tag = "wap",
+    request_body = PaylogForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn paylog(
+    State(state): State<AppState>,
+    page: Pagination,
+    ValidatedJson(f): ValidatedJson<PaylogForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    if f.id > 0 {
+        once_service::cancel_guest_paylog(&state, &f.fast, f.id).await?;
+        return Ok(ApiResponse::data(json::json!({ "ok": true })));
+    }
+    let r = once_service::list_guest_paylog(&state, &f.fast, page).await?;
+    Ok(ApiResponse::data(json::json!({
+        "list": r.list.into_iter().map(|o| PaylogItem {
+            id: o.id,
+            order_id: o.order_id,
+            order_price: o.order_price,
+            order_time: o.order_time,
+            once_id: o.once_id,
+        }).collect::<Vec<_>>(),
+        "total": r.total,
+    })))
 }

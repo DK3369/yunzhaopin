@@ -205,6 +205,8 @@
     "user_not_found": "用户不存在",
     "wechat_appid_missing": "微信 AppID 未配置",
     "wechat_appsecret_missing": "微信 AppSecret 未配置",
+    "wechat_not_configured": "微信登录未配置",
+    "wxlogin_expired": "微信扫码已过期，请刷新二维码",
     "zph_not_found": "招聘会不存在",
     "zph_unavailable": "招聘会不可用",
     "comment_empty": "评论内容不能为空",

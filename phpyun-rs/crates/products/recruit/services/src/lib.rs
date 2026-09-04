@@ -155,5 +155,6 @@ pub mod vip_service;
 pub mod warning_service;
 pub mod wechat_api_service;
 pub mod wechat_service;
+pub mod wx_login_service;
 pub mod yqms_service;
 pub mod zph_service;

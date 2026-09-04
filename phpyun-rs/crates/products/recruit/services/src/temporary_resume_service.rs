@@ -1,6 +1,7 @@
 //! Guest quick-apply snapshot into `phpyun_temporary_resume`.
 
-use phpyun_core::{ApiError, AppResult, AppState};
+use phpyun_core::{clock, ApiError, AppResult, AppState};
+use phpyun_models::resume::{expect, repo as resume_repo};
 use phpyun_models::temporary_resume::repo as temp_repo;
 
 pub struct Snapshot<'a> {
@@ -48,4 +49,64 @@ pub async fn insert_snapshot(state: &AppState, row: Snapshot<'_>) -> AppResult<u
         },
     )
     .await?)
+}
+
+/// PHP `fastToudi` after register: write resume basics + a job expectation.
+pub async fn after_register(
+    state: &AppState,
+    uid: u64,
+    uname: &str,
+    sex: i32,
+    birthday: &str,
+    edu: i32,
+    telphone: &str,
+    expect_name: &str,
+    job_classid: i64,
+    city_classid: i64,
+    salary: i32,
+    hy: i32,
+) -> AppResult<()> {
+    let pool = state.db.pool();
+    let now = clock::now_ts();
+    resume_repo::ensure_uid_only(pool, uid).await?;
+    let birthday = birthday.trim();
+    resume_repo::update(
+        pool,
+        uid,
+        resume_repo::ResumeUpdate {
+            name: Some(uname),
+            nametype: None,
+            sex: Some(sex),
+            birthday: if birthday.is_empty() {
+                None
+            } else {
+                Some(birthday)
+            },
+            marriage: None,
+            education: Some(edu),
+            telphone: Some(telphone),
+            email: None,
+            photo: None,
+        },
+        now,
+    )
+    .await?;
+    let input = expect::ExpectInput {
+        name: Some(expect_name),
+        job_classid,
+        city_classid,
+        salary,
+        minsalary: salary,
+        maxsalary: None,
+        r#type: 0,
+        report: 0,
+        jobstatus: 0,
+        hy,
+    };
+    if let Some(eid) = expect::find_default_id_by_uid(pool, uid).await? {
+        let _ = expect::update(pool, eid, uid, &input, now).await?;
+    } else {
+        let _ = expect::create(pool, uid, &input, now).await?;
+    }
+    Ok(())
 }

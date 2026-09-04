@@ -1154,6 +1154,26 @@ pub async fn temporary_apply(
         iat: 0,
         exp: r.access_exp,
     };
+    let job_cid: i64 = job_classid.parse().unwrap_or(0);
+    let city_cid: i64 = city_classid.parse().unwrap_or(0);
+    if let Err(e) = phpyun_services::temporary_resume_service::after_register(
+        &state,
+        r.uid,
+        &f.uname,
+        f.sex,
+        &f.birthday,
+        f.edu,
+        &f.telphone,
+        &job.name,
+        job_cid,
+        city_cid,
+        job.minsalary,
+        job.hy,
+    )
+    .await
+    {
+        tracing::warn!(uid = r.uid, error = %e, "temporary-apply resume/expect write failed");
+    }
     phpyun_services::apply_service::apply_to_job(&state, &user, f.job_id, &ip).await?;
     Ok(ApiResponse::data(crate::v1::wap::register::RegisterData {
         uid: r.uid,
