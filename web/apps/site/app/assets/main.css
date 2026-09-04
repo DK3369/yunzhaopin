@@ -20,6 +20,16 @@ html {
   display: none;
 }
 
+html.force-pc {
+  font-size: 16px;
+}
+html.force-pc .site-pc {
+  display: block;
+}
+html.force-pc .site-h5 {
+  display: none !important;
+}
+
 @media (min-width: 1200px) {
   .site-pc {
     display: block;

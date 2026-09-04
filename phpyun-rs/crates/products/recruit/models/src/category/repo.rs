@@ -826,3 +826,25 @@ pub async fn job_dup_pinyin(
     .fetch_all(pool)
     .await
 }
+
+/// `phpyun_city_class.id` → `(id, letter, name)` for sub-site grouping.
+pub async fn city_meta_by_ids(
+    pool: &MySqlPool,
+    ids: &[i32],
+) -> Result<Vec<(i32, String, String)>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(id AS SIGNED), COALESCE(letter,''), COALESCE(name,'') \
+         FROM phpyun_city_class WHERE id IN (",
+    );
+    {
+        let mut sep = qb.separated(",");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}

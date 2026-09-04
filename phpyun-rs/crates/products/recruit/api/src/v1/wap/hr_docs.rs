@@ -107,6 +107,7 @@ pub async fn list(
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HrQuery>,
 ) -> AppResult<ApiResponse<Paged<HrSummary>>> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_hr_web").await?;
     let r = hr_doc_service::list(&state, q.cid, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
@@ -124,6 +125,7 @@ pub async fn detail(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<HrDetail>> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_hr_web").await?;
     let id = b.id;
     let d = hr_doc_service::get(&state, id).await?;
     Ok(ApiResponse::data(HrDetail::from(d)))

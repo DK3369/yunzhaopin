@@ -96,3 +96,11 @@ pub async fn ensure_list_login(
     }
     Err(ApiError::unauth())
 }
+
+/// PHP `sy_{module}_web == 2` closes the column.
+pub async fn ensure_module_on(state: &AppState, key: &str) -> AppResult<()> {
+    if setting(state, key).await.trim() == "2" {
+        return Err(ApiError::business("module_closed"));
+    }
+    Ok(())
+}

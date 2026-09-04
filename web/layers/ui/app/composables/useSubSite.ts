@@ -6,6 +6,12 @@ type SubSiteRow = {
   three_city_id?: number | null
   hy?: number | null
   fz_type?: number
+  web_name?: string | null
+  web_title?: string | null
+  web_logo?: string | null
+  mode?: number
+  domain?: string
+  indexdir?: string | null
 }
 
 export function useSubSite() {
@@ -16,6 +22,9 @@ export function useSubSite() {
   const hyclass = useCookie('hyclass', { path: '/', maxAge: 60 * 60 * 24 * 30 })
   const fzType = useCookie('fz_type', { path: '/', maxAge: 60 * 60 * 24 * 30 })
   const gotocity = useCookie('gotocity', { path: '/', maxAge: 60 * 60 * 24 * 30 })
+  const syWebname = useCookie('sy_webname', { path: '/', maxAge: 60 * 60 * 24 * 30 })
+  const syWebtitle = useCookie('sy_webtitle', { path: '/', maxAge: 60 * 60 * 24 * 30 })
+  const syLogo = useCookie('sy_logo', { path: '/', maxAge: 60 * 60 * 24 * 30 })
 
   const didNum = computed(() => Number(did.value || 0) || 0)
 
@@ -42,6 +51,9 @@ export function useSubSite() {
     hyclass.value = row.hy ? String(row.hy) : ''
     fzType.value = row.fz_type ? String(row.fz_type) : ''
     gotocity.value = '1'
+    syWebname.value = row.web_name ? String(row.web_name) : ''
+    syWebtitle.value = row.web_title ? String(row.web_title) : ''
+    syLogo.value = row.web_logo ? String(row.web_logo) : ''
   }
 
   function clearSite() {
@@ -52,7 +64,10 @@ export function useSubSite() {
     hyclass.value = ''
     fzType.value = ''
     gotocity.value = '1'
+    syWebname.value = ''
+    syWebtitle.value = ''
+    syLogo.value = ''
   }
 
-  return { did, didNum, gotocity, applyToQuery, saveSite, clearSite }
+  return { did, didNum, gotocity, applyToQuery, saveSite, clearSite, syWebname, syWebtitle, syLogo }
 }

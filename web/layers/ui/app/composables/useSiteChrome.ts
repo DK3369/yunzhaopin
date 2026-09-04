@@ -16,6 +16,7 @@ export function useSiteChrome() {
   const route = useRoute()
   const runtime = useRuntimeConfig()
   const { t, te } = useI18n()
+  const { syWebname, syWebtitle, syLogo } = useSubSite()
 
   const { data: settingRows } = useAsyncData(
     'site-settings',
@@ -33,20 +34,23 @@ export function useSiteChrome() {
   })
 
   const siteName = computed(() => {
+    const fromSub = String(syWebname.value || '').trim()
+    if (fromSub) return fromSub
     const fromSetting = String(settings.value.sy_webname || '').trim()
     if (fromSetting) return fromSetting
     const fromEnv = String(runtime.public.siteName || '').trim()
     if (fromEnv && fromEnv !== '招聘') return fromEnv
     return ''
   })
+  const siteTitle = computed(() => String(syWebtitle.value || '').trim() || String(settings.value.sy_webtitle || '').trim())
   const phone = computed(() => String(settings.value.sy_freewebtel || '').trim())
   const worktime = computed(() => settings.value.sy_worktime || '')
   const copyright = computed(() => settings.value.sy_webcopyright || '')
   const record = computed(() => settings.value.sy_webrecord || '')
   const email = computed(() => settings.value.sy_webemail || '')
   const address = computed(() => settings.value.sy_webadd || '')
-  const logoPc = computed(() => mediaUrl(settings.value.sy_logo))
-  const logoH5 = computed(() => mediaUrl(settings.value.sy_wap_logo || settings.value.sy_logo))
+  const logoPc = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_logo))
+  const logoH5 = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_wap_logo || settings.value.sy_logo))
 
   const { data: navRaw } = useAsyncData(
     'site-nav-1',
@@ -268,6 +272,7 @@ export function useSiteChrome() {
   return {
     settings,
     siteName,
+    siteTitle,
     phone,
     worktime,
     copyright,

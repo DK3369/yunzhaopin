@@ -103,6 +103,7 @@ pub async fn list(
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<TinyListItem>>> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_tiny_web").await?;
     let search = TinySearch {
         keyword: q.keyword,
         province_id: q.province_id,
@@ -152,6 +153,7 @@ pub async fn show(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<TinyDetail>> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_tiny_web").await?;
     let id = b.id;
     let t = tiny_service::show(&state, id).await?;
     Ok(ApiResponse::data(TinyDetail {

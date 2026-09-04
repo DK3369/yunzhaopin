@@ -56,6 +56,10 @@ watch(h5NavPages, (pages) => {
 const { data: home, error } = await useAsyncData('home', async () => {
   const h = (await api.get('/v1/wap/home', applyToQuery({}))) as {
     hot_jobs?: JobLike[]
+    rec_jobs?: JobLike[]
+    latest_jobs?: JobLike[]
+    urgent_jobs?: JobLike[]
+    bid_jobs?: JobLike[]
     rec_companies?: CompanyLike[]
     announcements?: unknown[]
     hot_keywords?: unknown[]
@@ -63,20 +67,15 @@ const { data: home, error } = await useAsyncData('home', async () => {
     featured_articles?: ArticleLike[]
     hot_articles?: ArticleLike[]
   }
-  const [rec, latest, urgent, bid] = await Promise.all([
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ rec: true, page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ urgent: true, page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ bid: true, page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
-  ])
-  const bidList = bid.list || []
+  const bidList = h.bid_jobs || []
   const bidIds = new Set(bidList.map((j) => j.id))
+  const latest = h.latest_jobs || []
   return {
     ...h,
-    rec_jobs: rec.list || [],
-    latest_jobs: latest.list || [],
-    h5_latest_jobs: [...bidList, ...(latest.list || []).filter((j) => !bidIds.has(j.id))],
-    urgent_jobs: urgent.list || [],
+    rec_jobs: h.rec_jobs || [],
+    latest_jobs: latest,
+    h5_latest_jobs: [...bidList, ...latest.filter((j) => !bidIds.has(j.id))],
+    urgent_jobs: h.urgent_jobs || [],
   }
 })
 const { data: cats } = await useAsyncData('job-cats', () =>

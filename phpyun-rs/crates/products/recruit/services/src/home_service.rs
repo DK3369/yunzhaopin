@@ -25,6 +25,10 @@ use std::sync::Arc;
 pub struct HomePayload {
     pub announcements: Vec<Announcement>,
     pub hot_jobs: Vec<Job>,
+    pub rec_jobs: Vec<Job>,
+    pub latest_jobs: Vec<Job>,
+    pub urgent_jobs: Vec<Job>,
+    pub bid_jobs: Vec<Job>,
     pub rec_companies: Vec<Company>,
     pub rec_hot_pics: HashMap<u64, String>,
     pub new_articles: Vec<Article>,
@@ -94,9 +98,32 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
             } else {
                 None
             };
-            let (ann_r, jobs_r, hot_com_r, art_r, feat_r, hot_art_r, hot_r) = tokio::join!(
+            let rec_filter = JobFilter {
+                did,
+                rec: true,
+                ..Default::default()
+            };
+            let latest_filter = JobFilter {
+                did,
+                ..Default::default()
+            };
+            let urgent_filter = JobFilter {
+                did,
+                urgent: true,
+                ..Default::default()
+            };
+            let bid_filter = JobFilter {
+                did,
+                bid: true,
+                ..Default::default()
+            };
+            let (ann_r, jobs_r, rec_jobs_r, latest_jobs_r, urgent_jobs_r, bid_jobs_r, hot_com_r, art_r, feat_r, hot_art_r, hot_r) = tokio::join!(
                 ann_repo::list_published(db, did, 0, 5),
                 job_repo::list_public(db, &job_filter, 0, 8, now),
+                job_repo::list_public(db, &rec_filter, 0, 32, now),
+                job_repo::list_public(db, &latest_filter, 0, 32, now),
+                job_repo::list_public(db, &urgent_filter, 0, 32, now),
+                job_repo::list_public(db, &bid_filter, 0, 32, now),
                 company_repo::list_hot(db, sort_mode, 12, now, site.as_ref()),
                 article_repo::list_public(db, &art_filter, 0, 14),
                 article_repo::list_public(db, &feat_filter, 0, 2),
@@ -128,6 +155,10 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
             Ok(HomePayload {
                 announcements: ann_r.unwrap_or_default(),
                 hot_jobs: jobs_r.unwrap_or_default(),
+                rec_jobs: rec_jobs_r.unwrap_or_default(),
+                latest_jobs: latest_jobs_r.unwrap_or_default(),
+                urgent_jobs: urgent_jobs_r.unwrap_or_default(),
+                bid_jobs: bid_jobs_r.unwrap_or_default(),
                 rec_companies,
                 rec_hot_pics,
                 new_articles: art_r.unwrap_or_default(),

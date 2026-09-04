@@ -30,7 +30,10 @@ const blockHtml = computed(() => {
 })
 
 useHead({
-  htmlAttrs: { lang: () => (locale.value === 'en' ? 'en' : 'zh-CN') },
+  htmlAttrs: {
+    lang: () => (locale.value === 'en' ? 'en' : 'zh-CN'),
+    class: () => (String(settings.value.sy_wap_web || '') === '2' ? 'force-pc' : ''),
+  },
   bodyAttrs: {
     class: () => (/^\/jobs\/\d+/.test(route.path) ? 'comapply_bg' : 'body_bg'),
   },

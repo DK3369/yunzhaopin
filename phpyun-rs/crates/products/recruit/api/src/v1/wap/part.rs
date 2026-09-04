@@ -152,6 +152,7 @@ pub async fn list_parts(
         &crate::v1::wap::request_user_agent(&headers),
     )
     .await?;
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_part_web").await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());
         if let Some(u) = user.as_ref() {
@@ -297,6 +298,7 @@ pub async fn part_detail(
     MaybeUser(user): MaybeUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<PartDetail>> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_part_web").await?;
     let id = b.id;
     let j = part_service::get_public(&state, id).await?;
     let now = phpyun_core::clock::now_ts();

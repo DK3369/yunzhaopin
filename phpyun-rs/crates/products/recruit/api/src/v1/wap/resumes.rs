@@ -441,16 +441,9 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
 pub async fn list_resumes(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ResumeListQuery>,
 ) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
-    phpyun_services::site_gate_service::ensure_list_login(
-        &state,
-        user.as_ref(),
-        &crate::v1::wap::request_user_agent(&headers),
-    )
-    .await?;
     ensure_resume_browse(&state, user.as_ref()).await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());

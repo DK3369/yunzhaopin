@@ -60,6 +60,10 @@ pub struct HomeData {
     pub announcements: Vec<AnnouncementSummary>,
     /// Reuses `wap::jobs::JobSummary` (30+ dictionary-translated fields)
     pub hot_jobs: Vec<super::jobs::JobSummary>,
+    pub rec_jobs: Vec<super::jobs::JobSummary>,
+    pub latest_jobs: Vec<super::jobs::JobSummary>,
+    pub urgent_jobs: Vec<super::jobs::JobSummary>,
+    pub bid_jobs: Vec<super::jobs::JobSummary>,
     /// Reuses `wap::companies::CompanySummary` (famous companies from `phpyun_hotjob`)
     pub rec_companies: Vec<super::companies::CompanySummary>,
     /// Reuses `wap::articles::ArticleSummary` (27 fields, includes category name / CDN URL / formatted time)
@@ -103,6 +107,26 @@ pub async fn home(
             .collect(),
         hot_jobs: p
             .hot_jobs
+            .into_iter()
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+            .collect(),
+        rec_jobs: p
+            .rec_jobs
+            .into_iter()
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+            .collect(),
+        latest_jobs: p
+            .latest_jobs
+            .into_iter()
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+            .collect(),
+        urgent_jobs: p
+            .urgent_jobs
+            .into_iter()
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+            .collect(),
+        bid_jobs: p
+            .bid_jobs
             .into_iter()
             .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),

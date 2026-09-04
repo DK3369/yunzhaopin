@@ -81,6 +81,8 @@ pub struct SubSiteView {
     pub style: Option<String>,
     pub web_title: Option<String>,
     pub web_logo: Option<String>,
+    /// Site display name (`phpyun_domain.title`; PHP cookie `sy_webname`).
+    pub web_name: Option<String>,
     /// 1 = subdomain mode, 2 = sub-directory mode
     pub mode: i32,
     pub indexdir: Option<String>,
@@ -88,6 +90,14 @@ pub struct SubSiteView {
 
 impl From<phpyun_models::domain::entity::DomainSite> for SubSiteView {
     fn from(d: phpyun_models::domain::entity::DomainSite) -> Self {
+        let web_name = {
+            let t = d.title.trim();
+            if t.is_empty() {
+                None
+            } else {
+                Some(t.to_string())
+            }
+        };
         Self {
             id: d.id,
             title: d.title,
@@ -100,6 +110,7 @@ impl From<phpyun_models::domain::entity::DomainSite> for SubSiteView {
             style: d.style,
             web_title: d.web_title,
             web_logo: d.web_logo,
+            web_name,
             mode: d.mode,
             indexdir: d.indexdir,
         }
@@ -117,19 +128,32 @@ pub struct SubSitesQuery {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct SubSiteGroup {
     pub letter: String,
-    pub list: Vec<SubSiteView>,
+    pub list: Vec<SubSiteCityItem>,
 }
 
-fn site_letter(title: &str) -> String {
-    let ch = title.chars().next().unwrap_or('#');
-    if ch.is_ascii_alphabetic() {
-        ch.to_ascii_uppercase().to_string()
-    } else {
-        "#".into()
-    }
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SubSiteCityItem {
+    pub id: i32,
+    pub name: String,
+    pub letter: String,
+    pub site: SubSiteView,
 }
 
-/// List configured sub-sites grouped A-Z (PHP `wap/site::cache_action`).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SubSitesPayload {
+    pub city_groups: Vec<SubSiteGroup>,
+    pub hy: Vec<SubSiteView>,
+}
+
+fn site_city_id(d: &phpyun_models::domain::entity::DomainSite) -> i32 {
+    d.three_city_id
+        .filter(|v| *v > 0)
+        .or(d.city_id.filter(|v| *v > 0))
+        .or(d.province.filter(|v| *v > 0))
+        .unwrap_or(0)
+}
+
+/// List configured sub-sites: city groups by `city_class.letter`, industry sites as `hy`.
 #[utoipa::path(
     post,
     path = "/v1/wap/site/sub-sites",
@@ -140,25 +164,65 @@ fn site_letter(title: &str) -> String {
 pub async fn list_sub_sites(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<SubSitesQuery>,
-) -> AppResult<ApiResponse<Vec<SubSiteGroup>>> {
+) -> AppResult<ApiResponse<SubSitesPayload>> {
+    use phpyun_models::category::repo as cat_repo;
     use phpyun_models::domain::repo as domain_repo;
     let rows = match q.fz_type {
         Some(t) => domain_repo::list_by_fz_type(state.db.reader(), t).await?,
         None => domain_repo::list_all(state.db.reader()).await?,
     };
-    let mut map: std::collections::BTreeMap<String, Vec<SubSiteView>> =
-        std::collections::BTreeMap::new();
+    let mut city_sites: Vec<(i32, SubSiteView)> = Vec::new();
+    let mut hy = Vec::new();
     for r in rows {
-        let view = SubSiteView::from(r);
-        map.entry(site_letter(&view.title))
-            .or_default()
-            .push(view);
+        if r.fz_type == 2 {
+            hy.push(SubSiteView::from(r));
+            continue;
+        }
+        if r.fz_type == 1 {
+            let cid = site_city_id(&r);
+            if cid > 0 {
+                city_sites.push((cid, SubSiteView::from(r)));
+            }
+        }
     }
-    Ok(ApiResponse::data(
-        map.into_iter()
+    let ids: Vec<i32> = city_sites.iter().map(|(id, _)| *id).collect();
+    let meta = cat_repo::city_meta_by_ids(state.db.reader(), &ids)
+        .await
+        .unwrap_or_default();
+    let mut letter_of: std::collections::HashMap<i32, (String, String)> =
+        std::collections::HashMap::new();
+    for (id, letter, name) in meta {
+        letter_of.insert(id, (letter, name));
+    }
+    let mut map: std::collections::BTreeMap<String, Vec<SubSiteCityItem>> =
+        std::collections::BTreeMap::new();
+    for (cid, site) in city_sites {
+        let (letter, name) = letter_of
+            .get(&cid)
+            .cloned()
+            .unwrap_or_else(|| ("#".into(), site.title.clone()));
+        let letter = {
+            let t = letter.trim();
+            if t.is_empty() {
+                "#".to_string()
+            } else {
+                t.to_ascii_uppercase()
+            }
+        };
+        map.entry(letter.clone()).or_default().push(SubSiteCityItem {
+            id: cid,
+            name,
+            letter,
+            site,
+        });
+    }
+    Ok(ApiResponse::data(SubSitesPayload {
+        city_groups: map
+            .into_iter()
             .map(|(letter, list)| SubSiteGroup { letter, list })
             .collect(),
-    ))
+        hy,
+    }))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
