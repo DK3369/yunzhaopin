@@ -510,7 +510,7 @@ async function report() {
               <p v-if="Number(tj.edu_num)" class="muted">{{ $t('wap_00459') }} {{ tj.edu_num }}</p>
               <p v-if="Number(tj.work_num)" class="muted">{{ $t('wap_00457') }} {{ $t('wap_00467') }}{{ tj.work_num }}{{ $t('common_01887') }}</p>
               <p v-if="Number(tj.project_num)" class="muted">{{ $t('wap_00465') }} {{ $t('wap_00443') }}{{ tj.project_num }}{{ $t('wap_00466') }}</p>
-              <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00458') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
+              <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00455') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
               <p v-if="Number(tj.skill_num)" class="muted">{{ $t('wap_00450') }}{{ tj.skill_num }}</p>
               <p v-if="Number(tj.cert_num)" class="muted">{{ $t('wap_user_00090') }} {{ tj.cert_num }}</p>
               <a href="javascript:;" class="resume_lookall_a" @click.prevent="lookAll">{{ $t('wap_01602') }}</a>
@@ -674,7 +674,7 @@ async function report() {
           <p v-if="Number(tj.edu_num)" class="muted">{{ $t('wap_00459') }} {{ tj.edu_num }}</p>
           <p v-if="Number(tj.work_num)" class="muted">{{ $t('wap_00457') }} {{ $t('wap_00467') }}{{ tj.work_num }}{{ $t('common_01887') }}</p>
           <p v-if="Number(tj.project_num)" class="muted">{{ $t('wap_00465') }} {{ $t('wap_00443') }}{{ tj.project_num }}{{ $t('wap_00466') }}</p>
-          <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00458') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
+          <p v-if="Number(tj.training_num)" class="muted">{{ $t('wap_00455') }} {{ $t('wap_00467') }}{{ tj.training_num }}</p>
           <p v-if="Number(tj.skill_num)" class="muted">{{ $t('wap_00450') }}{{ tj.skill_num }}</p>
           <a href="javascript:;" class="resume_lookall_a" @click.prevent="lookAll">{{ $t('wap_01602') }}</a>
         </div>

@@ -76,8 +76,8 @@ useHead({ link: [{ rel: 'canonical', href: `/tiny/${id}` }] })
     <form v-if="owned" class="form" @submit.prevent="save">
       <input v-model="edit.username" required />
       <select v-model.number="edit.sex">
-        <option :value="1">{{ $t('ui.male') }}</option>
-        <option :value="2">{{ $t('ui.female') }}</option>
+        <option :value="1">{{ $t('common_02092') }}</option>
+        <option :value="2">{{ $t('common_02069') }}</option>
       </select>
       <input v-model="edit.job" required />
       <input v-model="edit.mobile" required />

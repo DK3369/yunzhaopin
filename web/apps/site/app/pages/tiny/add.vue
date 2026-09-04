@@ -62,8 +62,8 @@ useSeoMeta({ title: t('default_00331') })
     <form class="form" @submit.prevent="submit">
       <input v-model="form.username" :placeholder="$t('admin_user_00140')" required />
       <select v-model.number="form.sex">
-        <option :value="1">{{ $t('ui.male') }}</option>
-        <option :value="2">{{ $t('ui.female') }}</option>
+        <option :value="1">{{ $t('common_02092') }}</option>
+        <option :value="2">{{ $t('common_02069') }}</option>
       </select>
       <input v-model="form.job" :placeholder="$t('common.job')" required />
       <input v-model="form.mobile" :placeholder="$t('wap_01619')" required />
