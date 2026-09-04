@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('resume-outbox', () =>
@@ -28,7 +30,7 @@ useSeoMeta({ title: t('ui.outbox') })
 <template>
   <section>
     <h1>{{ $t('ui.outbox') }}</h1>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="send">
       <input v-model.number="form.resume_id" type="number" placeholder="resume_id" />
       <input v-model="form.email" :placeholder="$t('ui.email_addr')" />

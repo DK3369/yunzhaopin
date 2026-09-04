@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { userItems } = useMemberNav()
@@ -33,6 +34,9 @@ const links = [
   { to: '/user/expects', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/user/resume-tpls', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/user/privacy', icon: '/legacy/h5/images/sz.png' },
+  { to: '/user/blacklist', icon: '/legacy/h5/images/sz.png' },
+  { to: '/user/looks', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/user/account', icon: '/legacy/h5/images/sz.png' },
   { to: '/user/password', icon: '/legacy/h5/images/sz.png' },
   { to: '/user/binding', icon: '/legacy/h5/images/sz.png' },
   { to: '/user/integral', icon: '/legacy/h5/images/financial_management.png' },
@@ -47,7 +51,7 @@ function labelOf(to: string) {
 <template>
   <section v-if="error" class="site-inner">
     <h1>{{ $t('member_user_00183') }}</h1>
-    <p class="muted">{{ $t('wap_00376') }}</p>
+    <p class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
   <div v-else>

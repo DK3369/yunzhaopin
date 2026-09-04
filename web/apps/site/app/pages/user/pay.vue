@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data: packs, error } = await useAsyncData('user-vip-packs', () =>
@@ -13,17 +15,11 @@ async function buy(code: string) {
   msg.value = ''
   try {
     const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: 'alipay' })
-    const orderNo = created?.order_no
     if (created?.pay_url) {
       window.location.href = created.pay_url
       return
     }
-    if (orderNo && created?.channel === 'stub') {
-      await api.post('/v1/mcenter/vip/orders/mock-paid', { order_no: orderNo })
-      msg.value = `${orderNo} ${t('ui.mock_paid')}`
-    } else if (orderNo) {
-      msg.value = orderNo
-    }
+    msg.value = created?.msg || created?.order_no || t('ui.load_failed')
     await refresh()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
@@ -36,12 +32,12 @@ useSeoMeta({ title: t('ui.pay') })
   <section>
     <h1>{{ $t('ui.pay') }}</h1>
     <p class="muted">{{ $t('ui.pay_hint') }}</p>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <div class="stack">
       <article v-for="p in packages" :key="p.code" class="job-card">
         <h3>{{ p.name }}</h3>
         <p class="muted">{{ p.price_yuan }} {{ $t('ui.yuan') }} / {{ p.duration_days }} {{ $t('ui.days') }}</p>
-        <button type="button" @click="buy(p.code)">{{ $t('ui.buy_mock') }}</button>
+        <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
       </article>
     </div>
     <h2>{{ $t('ui.orders') }}</h2>

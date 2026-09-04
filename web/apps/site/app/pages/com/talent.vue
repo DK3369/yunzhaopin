@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data: pool, error, refresh } = await useAsyncData('talent-pool', () =>
@@ -24,7 +26,7 @@ useSeoMeta({ title: t('ui.talent_pool') })
 <template>
   <section>
     <h1>{{ $t('ui.talent_pool') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
     <h2>{{ $t('ui.public_resumes') }}</h2>
     <p v-if="!(publicResumes?.list || []).length" class="muted">{{ $t('ui.no_public_resume') }}</p>
     <div class="stack">

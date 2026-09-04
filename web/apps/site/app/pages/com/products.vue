@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-products', () =>
@@ -24,7 +26,7 @@ useSeoMeta({ title: t('ui.com_products') })
 <template>
   <section>
     <h1>{{ $t('ui.com_products') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="add">
       <input v-model="form.title" :placeholder="$t('ui.title')" />
       <input v-model="form.cover" :placeholder="$t('ui.image')" />

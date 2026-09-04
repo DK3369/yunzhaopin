@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('interview-tpls', () =>
@@ -30,7 +32,7 @@ useSeoMeta({ title: t('ui.interview_tpl') })
 <template>
   <section>
     <h1>{{ $t('ui.interview_tpl') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="create">
       <input v-model="form.name" :placeholder="$t('ui.name')" />
       <textarea v-model="form.content" rows="4" :placeholder="$t('ui.content')" />

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('privacy-resume', () =>
@@ -30,7 +31,7 @@ useSeoMeta({ title: t('ui.privacy') })
 <template>
   <section>
     <h1>{{ $t('ui.privacy') }}</h1>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="save">
       <p class="muted">{{ $t('ui.privacy_hint') }}</p>
       <select v-model.number="status">
@@ -40,6 +41,7 @@ useSeoMeta({ title: t('ui.privacy') })
       </select>
       <button type="submit">{{ $t('common.save') }}</button>
     </form>
+    <p><NuxtLink to="/user/blacklist">{{ $t('member_user_00044') }}</NuxtLink></p>
     <p v-if="msg">{{ msg }}</p>
   </section>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { comItems } = useMemberNav()
@@ -23,6 +24,7 @@ async function logout() {
 
 const links = [
   { to: '/com/profile', icon: '/legacy/h5/images/company.png' },
+  { to: '/com/gallery', icon: '/legacy/h5/images/company.png' },
   { to: '/com/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
   { to: '/com/jobs/new', icon: '/legacy/h5/images/job_add.png' },
   { to: '/com/applications', icon: '/legacy/h5/images/Please_resume.png' },
@@ -47,7 +49,7 @@ function labelOf(to: string) {
 <template>
   <section v-if="error" class="site-inner">
     <h1>{{ $t('member_com_00290') }}</h1>
-    <p class="muted">{{ $t('wap_00376') }}</p>
+    <p class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
   <div v-else>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data: packs } = await useAsyncData('vip-packs', () => api.post('/v1/mcenter/vip/packages', {}))
@@ -10,14 +12,12 @@ const packages = computed(() => (Array.isArray(packs.value) ? packs.value : pack
 async function buy(code: string) {
   msg.value = ''
   try {
-    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: 'stub' })
-    const orderNo = created?.order_no
-    if (orderNo) {
-      await api.post('/v1/mcenter/vip/orders/mock-paid', { order_no: orderNo })
-      msg.value = `${orderNo} ${t('ui.mock_paid')}`
-    } else {
-      msg.value = t('ui.submitted')
+    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: 'alipay' })
+    if (created?.pay_url) {
+      window.location.href = created.pay_url
+      return
     }
+    msg.value = created?.msg || created?.order_no || t('ui.load_failed')
     await refresh()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
@@ -29,14 +29,14 @@ useSeoMeta({ title: t('ui.orders') })
 <template>
   <section>
     <h1>{{ $t('ui.orders') }}</h1>
-    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
     <h2>{{ $t('ui.buyable') }}</h2>
     <p v-if="!packages.length" class="muted">{{ $t('ui.no_packages') }}</p>
     <div class="stack">
       <article v-for="p in packages" :key="p.code" class="job-card">
         <h3>{{ p.name }}</h3>
         <p class="muted">{{ p.price_yuan }} {{ $t('ui.yuan') }} / {{ p.duration_days }} {{ $t('ui.days') }}</p>
-        <button type="button" @click="buy(p.code)">{{ $t('ui.buy_mock') }}</button>
+        <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
       </article>
     </div>
     <h2>{{ $t('ui.my_orders') }}</h2>

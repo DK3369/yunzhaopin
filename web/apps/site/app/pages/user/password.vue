@@ -7,9 +7,9 @@ async function submit() {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/password', { ...form })
-    msg.value = t('common.confirm')
+    msg.value = t('common.success')
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('common.no')
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
 useSeoMeta({ title: t('member_user_00226') })
@@ -18,8 +18,8 @@ useSeoMeta({ title: t('member_user_00226') })
 <template>
   <MemberPanel :title="$t('member_user_00226')">
     <form class="form" @submit.prevent="submit">
-      <input v-model="form.old_password" type="password" :placeholder="$t('ui.old_password')" />
-      <input v-model="form.new_password" type="password" :placeholder="$t('ui.new_password')" />
+      <input v-model="form.old_password" type="password" :placeholder="$t('wap_01097')" />
+      <input v-model="form.new_password" type="password" :placeholder="$t('wap_01099')" />
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg" class="muted">{{ msg }}</p>

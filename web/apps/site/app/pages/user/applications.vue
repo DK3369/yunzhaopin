@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error } = await useAsyncData('my-apps', () =>
@@ -11,7 +13,7 @@ useSeoMeta({ title: t('ui.applications') })
 <template>
   <section>
     <h1>{{ $t('ui.applications') }}</h1>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
     <div v-else class="stack">
       <article v-for="row in list" :key="row.id" class="job-card">

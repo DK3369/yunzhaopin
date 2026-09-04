@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data: bal, error } = await useAsyncData('integral-bal', () =>
@@ -13,7 +15,7 @@ useSeoMeta({ title: t('ui.my_integral') })
 <template>
   <section>
     <h1>{{ $t('ui.my_integral') }}</h1>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else>{{ $t('ui.balance') }} {{ bal?.balance ?? 0 }}</p>
     <h2>{{ $t('ui.flow') }}</h2>
     <p v-if="!(hist?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>

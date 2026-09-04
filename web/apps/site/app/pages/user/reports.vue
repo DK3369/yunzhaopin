@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('my-reports', () =>
@@ -22,7 +24,7 @@ useSeoMeta({ title: t('ui.my_reports') })
 <template>
   <section>
     <h1>{{ $t('ui.my_reports') }}</h1>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="submit">
       <select v-model.number="form.target_kind">
         <option :value="1">{{ $t('common.job') }}</option>

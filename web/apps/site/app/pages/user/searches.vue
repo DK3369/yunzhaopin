@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isUnauthErr } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('saved-searches', () =>
@@ -31,7 +33,7 @@ useSeoMeta({ title: t('ui.searcher') })
 <template>
   <section>
     <h1>{{ $t('ui.searcher') }}</h1>
-    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="create">
       <input v-model="form.name" :placeholder="$t('ui.name')" />
       <input v-model="form.kind" placeholder="kind" />
