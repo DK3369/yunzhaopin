@@ -13,6 +13,15 @@ pub struct Apply {
     pub com_id: u64,
     /// Resume id (in PHPYun, eid equals the job seeker's uid)
     pub eid: u64,
+    /// Copied from `phpyun_company_job.name` at apply time.
+    #[sqlx(default)]
+    pub job_name: String,
+    /// Copied from `phpyun_company.name` at apply time.
+    #[sqlx(default)]
+    pub com_name: String,
+    /// JOIN `phpyun_resume.name`; empty when the list query does not load it.
+    #[sqlx(default)]
+    pub uname: String,
     pub datetime: i64,
     /// Whether the company has viewed: 1 = not viewed (default) / 0 = viewed
     /// (PHPYun inverted logic)

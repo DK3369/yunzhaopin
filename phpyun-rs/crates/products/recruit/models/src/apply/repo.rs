@@ -7,7 +7,7 @@
 
 use super::entity::Apply;
 use sqlx::{MySqlPool, QueryBuilder};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 // PHP `phpyun_userid_job.invited / invite_time` are nullable int; entity
 // uses plain i32/i64. COALESCE so a NULL row can't trip sqlx.
@@ -16,6 +16,8 @@ const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
      CAST(job_id AS UNSIGNED) AS job_id, \
      CAST(com_id AS UNSIGNED) AS com_id, \
      CAST(eid AS UNSIGNED) AS eid, \
+     COALESCE(job_name, '') AS job_name, \
+     COALESCE(com_name, '') AS com_name, \
      CAST(datetime AS SIGNED) AS datetime, is_browse, \
      COALESCE(invited, 0) AS invited, \
      COALESCE(invite_time, 0) AS invite_time, \
@@ -267,6 +269,26 @@ pub async fn list_by_com(
     qb.push(" OFFSET ");
     qb.push_bind(offset);
     qb.build_query_as::<Apply>().fetch_all(pool).await
+}
+
+/// Resume display names for application list rows (`phpyun_resume.uid`).
+pub async fn resume_names_by_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<HashMap<u64, String>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(HashMap::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(name, '') AS name FROM phpyun_resume WHERE uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    sep.push_unseparated(")");
+    let rows: Vec<(u64, String)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().collect())
 }
 
 pub async fn count_by_com(

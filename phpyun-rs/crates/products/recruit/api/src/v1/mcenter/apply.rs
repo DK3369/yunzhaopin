@@ -67,6 +67,8 @@ pub struct MyApplySummary {
     pub job_id: u64,
     pub com_id: u64,
     pub eid: u64,
+    pub job_name: String,
+    pub com_name: String,
     pub datetime: i64,
     pub datetime_n: String,
     /// 1 unviewed / 0 viewed / 3 interviewed / 4 not suitable / 7 hired
@@ -89,6 +91,8 @@ impl From<phpyun_models::apply::entity::Apply> for MyApplySummary {
             job_id: a.job_id,
             com_id: a.com_id,
             eid: a.eid,
+            job_name: a.job_name,
+            com_name: a.com_name,
             datetime_n: fmt_dt(a.datetime),
             datetime: a.datetime,
             employer_viewed: a.is_browse == 0,

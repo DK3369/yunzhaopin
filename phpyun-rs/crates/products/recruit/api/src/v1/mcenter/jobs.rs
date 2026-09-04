@@ -240,6 +240,7 @@ pub struct JobCountsView {
     /// Closed (state=2)
     pub closed: u64,
     pub total: u64,
+    pub breakjob_num: i32,
 }
 
 /// My jobs grouped by state (used for job management tab badges)
@@ -260,6 +261,7 @@ pub async fn counts_by_state(
         pending: c.pending,
         closed: c.closed,
         total: c.online + c.pending + c.closed,
+        breakjob_num: c.breakjob_num,
     }))
 }
 

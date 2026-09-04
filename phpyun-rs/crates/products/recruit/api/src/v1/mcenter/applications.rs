@@ -42,6 +42,8 @@ pub struct ApplicantSummary {
     pub com_id: u64,
     /// Resume id (in PHPYun, eid equals the job seeker's uid)
     pub eid: u64,
+    pub job_name: String,
+    pub uname: String,
     pub datetime: i64,
     pub datetime_n: String,
     /// 1 unviewed / 0 viewed / 3 interviewed / 4 not suitable / 7 hired etc. (PHP polysemous status)
@@ -68,6 +70,8 @@ impl From<phpyun_models::apply::entity::Apply> for ApplicantSummary {
             job_id: a.job_id,
             com_id: a.com_id,
             eid: a.eid,
+            job_name: a.job_name,
+            uname: a.uname,
             datetime_n: fmt_dt(a.datetime),
             datetime: a.datetime,
             unread: a.is_browse == 1,

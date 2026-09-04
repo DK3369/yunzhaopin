@@ -4,10 +4,18 @@ import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-apps', () =>
-  api.post<{ list: Array<{ id: number; uid: number; job_id: number; datetime_n?: string; is_browse?: number; eid?: number }> }>(
-    '/v1/mcenter/applications',
-    { page: 1, page_size: 20 },
-  ),
+  api.post<{
+    list: Array<{
+      id: number
+      uid: number
+      job_id: number
+      datetime_n?: string
+      is_browse?: number
+      eid?: number
+      job_name?: string
+      uname?: string
+    }>
+  }>('/v1/mcenter/applications', { page: 1, page_size: 20 }),
 )
 const list = computed(() => data.value?.list || [])
 const invite = reactive({
@@ -24,6 +32,11 @@ const msg = ref('')
 function pick(row: { uid: number; job_id: number }) {
   invite.seeker_uid = row.uid
   invite.job_id = row.job_id
+}
+async function openResume(row: { id: number; uid: number; eid?: number }) {
+  await api.post('/v1/mcenter/applications/browse', { id: row.id }).catch(() => null)
+  await refresh()
+  await navigateTo(`/resumes/${row.eid || row.uid}`)
 }
 async function setState(id: number, state: number) {
   msg.value = ''
@@ -85,8 +98,11 @@ useSeoMeta({ title: t('wap_com_00420') })
     <p v-else-if="!list.length" class="muted">{{ $t('wap_00129') }}</p>
     <div class="stack">
       <article v-for="row in list" :key="row.id" class="job-card">
-        <h3>#{{ row.id }} · {{ $t('common.resume') }} {{ row.uid }}</h3>
-        <p class="muted">{{ $t('common.job') }} {{ row.job_id }} · {{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</p>
+        <h3>
+          <a href="#" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a>
+          · {{ row.job_name || row.job_id }}
+        </h3>
+        <p class="muted">{{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</p>
         <button type="button" @click="pick(row)">{{ $t('wap_com_00046') }}</button>
         <button type="button" @click="setState(row.id, 0)">{{ $t('wap_com_00427') }}</button>
         <button type="button" @click="setState(row.id, 4)">{{ $t('wap_user_00167') }}</button>
@@ -96,8 +112,7 @@ useSeoMeta({ title: t('wap_com_00420') })
     </div>
     <h2>{{ $t('wap_com_00046') }}</h2>
     <form class="form" @submit.prevent="sendInvite">
-      <input v-model.number="invite.seeker_uid" type="number" :placeholder="$t('common.resume')" required />
-      <input v-model.number="invite.job_id" type="number" :placeholder="$t('common.job')" required />
+      <p v-if="invite.seeker_uid" class="muted">{{ invite.seeker_uid }} · {{ invite.job_id }}</p>
       <input v-model="invite.intertime" type="datetime-local" required />
       <input v-model="invite.address" :placeholder="$t('wap_00040')" required />
       <input v-model="invite.linkman" :placeholder="$t('common_02051')" />

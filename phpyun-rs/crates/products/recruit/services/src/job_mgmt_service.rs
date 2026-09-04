@@ -5,8 +5,11 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_models::company::repo as company_repo;
+use phpyun_models::company_cert::repo as company_cert_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::{entity::Job, repo as job_repo};
+use phpyun_models::site_setting::repo as setting_repo;
 
 // ==================== Create ====================
 
@@ -31,6 +34,63 @@ pub struct CreateJobInput<'a> {
     pub edate: i64,
 }
 
+async fn setting_on(state: &AppState, key: &str) -> bool {
+    match setting_repo::find(state.db.reader(), key).await {
+        Ok(Some(row)) => row.value.trim() == "1",
+        _ => false,
+    }
+}
+
+/// PHP `member/com/model/jobadd.class.php::index_action` publish gates.
+async fn ensure_can_publish(state: &AppState, user: &AuthenticatedUser) -> AppResult<()> {
+    let company = company_repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("member_com_00692"))?;
+    let name_ok = company
+        .name
+        .as_deref()
+        .map(|s| !s.trim().is_empty())
+        .unwrap_or(false);
+    let tel_ok = company
+        .linktel
+        .as_deref()
+        .map(|s| !s.trim().is_empty())
+        .unwrap_or(false)
+        || company
+            .linkphone
+            .as_deref()
+            .map(|s| !s.trim().is_empty())
+            .unwrap_or(false);
+    if !name_ok || company.provinceid == 0 || !tel_ok {
+        return Err(ApiError::business("member_com_00692"));
+    }
+    if setting_on(state, "com_enforce_emailcert").await && company.email_status != 1 {
+        return Err(ApiError::business("wap_com_00186"));
+    }
+    if setting_on(state, "com_enforce_mobilecert").await && company.moblie_status != 1 {
+        return Err(ApiError::business("member_com_00071"));
+    }
+    if setting_on(state, "com_enforce_licensecert").await && company.yyzz_status != 1 {
+        let cert = company_cert_repo::find(state.db.reader(), user.uid).await?;
+        let deny = match cert {
+            None => true,
+            Some(c) if c.status == 2 => true,
+            _ => false,
+        };
+        if deny {
+            return Err(ApiError::business("member_com_00187"));
+        }
+    }
+    if setting_on(state, "com_enforce_setposition").await {
+        let x = company.x.as_deref().unwrap_or("").trim();
+        let y = company.y.as_deref().unwrap_or("").trim();
+        if x.is_empty() || y.is_empty() {
+            return Err(ApiError::business("member_com_00694"));
+        }
+    }
+    Ok(())
+}
+
 pub async fn create(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -39,8 +99,9 @@ pub async fn create(
     client_ip: &str,
 ) -> AppResult<u64> {
     user.require_employer()?;
+    ensure_can_publish(state, user).await?;
     let now = clock::now_ts();
-    let looked_up = phpyun_models::company::repo::find_by_uid(state.db.reader(), user.uid)
+    let looked_up = company_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
         .and_then(|c| c.name)
         .unwrap_or_default();
@@ -415,6 +476,7 @@ pub struct JobStateCounts {
     pub online: u64,
     pub pending: u64,
     pub closed: u64,
+    pub breakjob_num: i32,
 }
 
 pub async fn counts_by_state(
@@ -423,14 +485,16 @@ pub async fn counts_by_state(
 ) -> AppResult<JobStateCounts> {
     user.require_employer()?;
     let db = state.db.reader();
-    let (a, b, c) = tokio::join!(
+    let (a, b, c, st) = tokio::join!(
         job_repo::count_own(db, user.uid, Some(0)),
         job_repo::count_own(db, user.uid, Some(1)),
         job_repo::count_own(db, user.uid, Some(2)),
+        statis_repo::find_admin(db, user.uid),
     );
     Ok(JobStateCounts {
         online: a?,
         pending: b?,
         closed: c?,
+        breakjob_num: st?.map(|s| s.breakjob_num).unwrap_or(0),
     })
 }

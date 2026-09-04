@@ -6,6 +6,9 @@ const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-jobs', () =>
   api.post('/v1/mcenter/jobs/list', { page: 1, page_size: 20 }),
 )
+const { data: counts } = await useAsyncData('com-job-counts', () =>
+  api.post<{ total: number; online: number; breakjob_num?: number }>('/v1/mcenter/jobs/counts', {}).catch(() => null),
+)
 const list = computed(() => (data.value?.list || []) as Array<{ id: number; name?: string; state?: number; status?: number }>)
 const msg = ref('')
 function jobPhase(job: { state?: number; status?: number }) {
@@ -41,6 +44,7 @@ useSeoMeta({ title: t('wap_com_00106') })
 <template>
   <MemberPanel :title="$t('wap_com_00106')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p><NuxtLink to="/com/jobs/new">{{ $t('wap_00322') }}</NuxtLink></p>
+    <p v-if="counts" class="muted">{{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }}</p>
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <article v-for="job in list" :key="job.id" class="look_resume_list">
       <h3>{{ job.name }}</h3>

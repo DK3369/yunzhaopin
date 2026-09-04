@@ -159,9 +159,17 @@ pub async fn list_for_company(
         apply_repo::count_by_com(state.db.reader(), user.uid, filter),
         apply_repo::list_by_com(state.db.reader(), user.uid, filter, page.offset, page.limit),
     );
+    let mut list = list?;
+    let uids: Vec<u64> = list.iter().map(|a| a.uid).collect();
+    let names = apply_repo::resume_names_by_uids(state.db.reader(), &uids).await?;
+    for row in &mut list {
+        if let Some(n) = names.get(&row.uid) {
+            row.uname = n.clone();
+        }
+    }
     Ok(ApplyPage {
         total: total?,
-        list: list?,
+        list,
     })
 }
 
