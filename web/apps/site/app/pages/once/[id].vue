@@ -90,7 +90,7 @@ async function pay() {
     msg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
-useSeoMeta({ title: () => String(data.value?.title || data.value?.companyname || t('ui.once')) })
+useSeoMeta({ title: () => String(data.value?.title || data.value?.companyname || t('wap_js_00130')) })
 useHead({ link: [{ rel: 'canonical', href: `/once/${id}` }] })
 </script>
 
@@ -99,7 +99,7 @@ useHead({ link: [{ rel: 'canonical', href: `/once/${id}` }] })
     <h1>{{ data?.title || data?.companyname || $t('wap_00630') }}</h1>
     <p v-if="data?.companyname" class="muted">{{ data.companyname }}</p>
     <p v-if="data?.address" class="muted">{{ data.address }}</p>
-    <p v-if="data?.linkman_masked" class="muted">{{ $t('ui.linkman') }} {{ data.linkman_masked }} · {{ data.linktel_masked }}</p>
+    <p v-if="data?.linkman_masked" class="muted">{{ $t('wap_01431') }} {{ data.linkman_masked }} · {{ data.linktel_masked }}</p>
     <p v-if="data?.require">{{ data.require }}</p>
     <p v-else-if="!data && error" class="muted">{{ $t('wap_00630') }}</p>
     <form class="form" @submit.prevent="verify">

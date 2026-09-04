@@ -29,13 +29,13 @@ useSeoMeta({ title: t('ui.orders') })
 <template>
   <section>
     <h1>{{ $t('ui.orders') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <h2>{{ $t('ui.buyable') }}</h2>
     <p v-if="!packages.length" class="muted">{{ $t('ui.no_packages') }}</p>
     <div class="stack">
       <article v-for="p in packages" :key="p.code" class="job-card">
         <h3>{{ p.name }}</h3>
-        <p class="muted">{{ p.price_yuan }} {{ $t('ui.yuan') }} / {{ p.duration_days }} {{ $t('ui.days') }}</p>
+        <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
         <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
       </article>
     </div>
@@ -44,7 +44,7 @@ useSeoMeta({ title: t('ui.orders') })
     <div class="stack">
       <article v-for="o in orders?.list || []" :key="o.order_no" class="job-card">
         <h3>{{ o.order_no }}</h3>
-        <p class="muted">{{ o.package_code }} · {{ o.status_n }} · {{ o.amount_yuan }} {{ $t('ui.yuan') }}</p>
+        <p class="muted">{{ o.package_code }} · {{ o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>

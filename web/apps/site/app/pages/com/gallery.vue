@@ -45,7 +45,7 @@ useSeoMeta({ title: t('wap_user_00157') })
 <template>
   <section>
     <h1>{{ $t('wap_user_00157') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent>
       <input v-model="title" />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onFile" />

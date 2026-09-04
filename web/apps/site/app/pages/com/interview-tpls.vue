@@ -32,12 +32,12 @@ useSeoMeta({ title: t('ui.interview_tpl') })
 <template>
   <section>
     <h1>{{ $t('ui.interview_tpl') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="create">
-      <input v-model="form.name" :placeholder="$t('ui.name')" />
-      <textarea v-model="form.content" rows="4" :placeholder="$t('ui.content')" />
+      <input v-model="form.name" :placeholder="$t('wap_00529')" />
+      <textarea v-model="form.content" rows="4" :placeholder="$t('wap_user_00102')" />
       <input v-model="form.address" :placeholder="$t('ui.interview_place')" />
-      <input v-model="form.linkman" :placeholder="$t('ui.linkman')" />
+      <input v-model="form.linkman" :placeholder="$t('wap_01431')" />
       <input v-model="form.linktel" :placeholder="$t('ui.linkphone')" />
       <button type="submit">{{ $t('ui.add') }}</button>
     </form>

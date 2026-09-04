@@ -37,7 +37,7 @@ useHead({ link: [{ rel: 'canonical', href: `/redeem/${id}` }] })
 <template>
   <article>
     <h1>{{ data?.name || $t('wap_00611') }}</h1>
-    <p v-if="data?.integral" class="muted">{{ data.integral }} {{ $t('ui.integral') }} · {{ $t('ui.stock') }} {{ data.remaining }}</p>
+    <p v-if="data?.integral" class="muted">{{ data.integral }} {{ $t('wap_user_00008') }} · {{ $t('admin_yunying_00118') }} {{ data.remaining }}</p>
     <div v-if="data?.content" v-html="data.content" />
     <p v-else-if="!data?.name" class="muted">{{ $t('wap_00611') }}</p>
     <form v-if="data?.name" class="form" @submit.prevent="submit">

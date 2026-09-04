@@ -58,7 +58,7 @@ async function remove() {
     msg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
-useSeoMeta({ title: () => String(data.value?.username || t('ui.tiny')) })
+useSeoMeta({ title: () => String(data.value?.username || t('wap_js_00066')) })
 useHead({ link: [{ rel: 'canonical', href: `/tiny/${id}` }] })
 </script>
 

@@ -35,7 +35,7 @@ useSeoMeta({ title: t('ui.privacy') })
     <form v-else class="form" @submit.prevent="save">
       <p class="muted">{{ $t('ui.privacy_hint') }}</p>
       <select v-model.number="status">
-        <option :value="1">{{ $t('ui.open') }}</option>
+        <option :value="1">{{ $t('wap_js_00005') }}</option>
         <option :value="2">{{ $t('ui.hidden') }}</option>
         <option :value="3">{{ $t('ui.company_only_visible') }}</option>
       </select>

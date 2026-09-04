@@ -9,12 +9,12 @@ const { data: applies, error } = await useAsyncData('my-part-applies', () =>
 const { data: collects } = await useAsyncData('my-part-collects', () =>
   api.post('/v1/mcenter/my-part-collects/list', { page: 1, page_size: 20 }),
 )
-useSeoMeta({ title: t('ui.part_fav') })
+useSeoMeta({ title: t('wap_user_00303') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.part_fav') }}</h1>
+    <h1>{{ $t('wap_user_00303') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <h2>{{ $t('ui.apply') }}</h2>
     <p v-if="!(applies?.list || []).length" class="muted">{{ $t('ui.no_apply') }}</p>
@@ -24,7 +24,7 @@ useSeoMeta({ title: t('ui.part_fav') })
         <p class="muted">status {{ row.status }} · {{ row.ctime_n }}</p>
       </article>
     </div>
-    <h2>{{ $t('ui.my_fav') }}</h2>
+    <h2>{{ $t('member_user_00103') }}</h2>
     <p v-if="!(collects?.list || []).length" class="muted">{{ $t('ui.no_fav') }}</p>
     <div class="stack">
       <article v-for="row in collects?.list || []" :key="row.id" class="job-card">

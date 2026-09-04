@@ -13,12 +13,12 @@ async function remove(targetId: number) {
   await api.post('/v1/mcenter/favorites/remove', { kind: kind.value, target_id: targetId })
   refresh()
 }
-useSeoMeta({ title: t('ui.my_fav') })
+useSeoMeta({ title: t('member_user_00103') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.my_fav') }}</h1>
+    <h1>{{ $t('member_user_00103') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p>
       <button type="button" @click="kind = 1">{{ $t('common.job') }}</button>

@@ -19,7 +19,7 @@ useSeoMeta({ title: t('ui.applications') })
       <article v-for="row in list" :key="row.id" class="job-card">
         <h3>{{ $t('common.job') }} #{{ row.job_id }}</h3>
         <p class="muted">{{ row.datetime_n }}</p>
-        <NuxtLink :to="`/jobs/${row.job_id}`">{{ $t('ui.view') }}</NuxtLink>
+        <NuxtLink :to="`/jobs/${row.job_id}`">{{ $t('wap_com_00427') }}</NuxtLink>
       </article>
     </div>
   </section>

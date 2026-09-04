@@ -83,6 +83,7 @@
             <a v-if="perfor" href="/pages/jyxkz" target="_blank">{{ $t('admin_01020') }} {{ perfor }}</a>
             <a v-if="hrlicense" href="/pages/rlzy" target="_blank">{{ $t('admin_system_00321') }} {{ hrlicense }}</a>
           </p>
+          <p><LangSwitch /></p>
           <p>Powered by OVSIX.</p>
         </div>
       </div>
@@ -92,6 +93,7 @@
 
   <!-- H5 底栏，对齐原版 wap/footer.htm -->
   <div class="site-h5">
+    <p class="muted" style="text-align: center; padding: 0.16rem 0 1.2rem"><LangSwitch /></p>
     <div class="wap_footer">
       <div class="wap_footerfixd">
         <div class="wap_footerbox">

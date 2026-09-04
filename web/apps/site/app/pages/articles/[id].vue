@@ -47,7 +47,7 @@ useHead({
       <NuxtLink v-if="next?.id" :to="`/articles/${next.id}`">{{ $t('default_00327') }} {{ next.title }}</NuxtLink>
     </p>
     <div v-if="related.length">
-      <h2>{{ $t('ui.related') }}</h2>
+      <h2>{{ $t('wap_01474') }}</h2>
       <SimpleCard v-for="row in related" :key="row.id" :to="`/articles/${row.id}`" :title="row.title" />
     </div>
   </article>

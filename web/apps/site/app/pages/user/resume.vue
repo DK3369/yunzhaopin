@@ -115,22 +115,22 @@ async function saveSkill() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: t('ui.my_resume') })
+useSeoMeta({ title: t('wap_user_00204') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.my_resume') }}</h1>
+    <h1>{{ $t('wap_user_00204') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="saveResume">
-      <input v-model="form.name" :placeholder="$t('ui.fullname')" />
+      <input v-model="form.name" :placeholder="$t('wap_00529')" />
       <select v-model.number="form.sex">
         <option :value="1">{{ $t('common_02092') }}</option>
         <option :value="2">{{ $t('common_02069') }}</option>
       </select>
       <input v-model="form.birthday" :placeholder="$t('ui.birthday')" />
       <input v-model="form.telphone" :placeholder="$t('common.phone')" />
-      <input v-model="form.email" :placeholder="$t('ui.email_addr')" />
+      <input v-model="form.email" :placeholder="$t('member_user_00282')" />
       <button type="submit">{{ $t('ui.save_resume') }}</button>
       <button type="button" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
     </form>
@@ -144,20 +144,20 @@ useSeoMeta({ title: t('ui.my_resume') })
       <input v-model.number="expectForm.salary" type="number" :placeholder="$t('ui.expect_salary')" />
       <button type="submit">{{ $t('ui.add_expect') }}</button>
     </form>
-    <h2>{{ $t('ui.work_exp') }}</h2>
+    <h2>{{ $t('wap_00457') }}</h2>
     <p v-if="!(Array.isArray(works) ? works : []).length" class="muted">{{ $t('ui.no_work') }}</p>
     <ul>
       <li v-for="row in Array.isArray(works) ? works : []" :key="row.id">{{ row.name }} {{ row.title }}</li>
     </ul>
     <form class="form" @submit.prevent="saveWork">
       <input v-model="workForm.name" :placeholder="$t('common.company')" />
-      <input v-model="workForm.title" :placeholder="$t('ui.job_name')" />
+      <input v-model="workForm.title" :placeholder="$t('wap_com_00288')" />
       <input v-model="workForm.department" placeholder="department" />
       <input v-model="workForm.sdate_n" placeholder="sdate YYYY-MM" />
       <input v-model="workForm.edate_n" placeholder="edate YYYY-MM" />
       <button type="submit">{{ $t('ui.add_work') }}</button>
     </form>
-    <h2>{{ $t('ui.edu_exp') }}</h2>
+    <h2>{{ $t('wap_00459') }}</h2>
     <p v-if="!(Array.isArray(edus) ? edus : []).length" class="muted">{{ $t('ui.no_edu') }}</p>
     <ul>
       <li v-for="row in Array.isArray(edus) ? edus : []" :key="row.id">{{ row.name }} {{ row.specialty }}</li>
@@ -175,7 +175,7 @@ useSeoMeta({ title: t('ui.my_resume') })
       <li v-for="row in Array.isArray(projects) ? projects : []" :key="row.id">{{ row.name }} {{ row.role }}</li>
     </ul>
     <form class="form" @submit.prevent="saveProject">
-      <input v-model="projectForm.name" :placeholder="$t('ui.job_name')" />
+      <input v-model="projectForm.name" :placeholder="$t('wap_com_00288')" />
       <input v-model="projectForm.role" />
       <input v-model="projectForm.sdate_n" placeholder="sdate YYYY-MM" />
       <input v-model="projectForm.edate_n" placeholder="edate YYYY-MM" />

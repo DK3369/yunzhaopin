@@ -28,7 +28,7 @@ useSeoMeta({ title: t('ui.com_banner') })
 <template>
   <section>
     <h1>{{ $t('ui.com_banner') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="add">
       <input v-model="form.pic" :placeholder="$t('ui.image')" />
       <input v-model="form.link" :placeholder="$t('ui.link')" />

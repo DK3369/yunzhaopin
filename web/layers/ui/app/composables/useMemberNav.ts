@@ -21,15 +21,15 @@ export function useMemberNav() {
     { to: '/user/integral', label: t('wap_user_00008') },
     { to: '/user/pay', label: t('common_01946') },
     { to: '/user/outbox', label: t('member_user_00188') },
-    { to: '/user/parts', label: t('ui.part') },
+    { to: '/user/parts', label: t('wap_user_00220') },
     { to: '/advice', label: t('wap_user_00203') },
   ])
   const comItems = computed(() => [
     { to: '/com', label: t('member_com_00290') },
     { to: '/com/jobs', label: t('wap_com_00106') },
-    { to: '/com/jobs/new', label: t('common.publish_job') },
-    { to: '/com/applications', label: t('ui.received_resumes') },
-    { to: '/com/talent', label: t('ui.talent_pool') },
+    { to: '/com/jobs/new', label: t('wap_00322') },
+    { to: '/com/applications', label: t('member_com_00454') },
+    { to: '/com/talent', label: t('member_com_00597') },
     { to: '/com/cert', label: t('member_user_00235') },
     { to: '/com/messages', label: t('common.message') },
     { to: '/com/downloads', label: t('wap_00451') },
@@ -40,7 +40,7 @@ export function useMemberNav() {
     { to: '/com/gallery', label: t('wap_user_00157') },
     { to: '/com/orders', label: t('common_02029') },
     { to: '/com/pay', label: t('common_01946') },
-    { to: '/com/stats', label: t('ui.stats') },
+    { to: '/com/stats', label: t('admin_tool_00224') },
     { to: '/com/password', label: t('member_user_00226') },
     { to: '/advice', label: t('wap_user_00203') },
   ])

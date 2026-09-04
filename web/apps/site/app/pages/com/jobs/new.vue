@@ -55,21 +55,21 @@ async function submit() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: t('ui.publish_job') })
+useSeoMeta({ title: t('wap_00322') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.publish_job') }}</h1>
+    <h1>{{ $t('wap_00322') }}</h1>
     <form class="form" @submit.prevent="submit">
-      <input v-model="form.name" :placeholder="$t('ui.job_name')" required />
+      <input v-model="form.name" :placeholder="$t('wap_com_00288')" required />
       <input v-model.number="form.provinceid" type="number" :placeholder="$t('ui.province_id')" />
       <input v-model.number="form.cityid" type="number" :placeholder="$t('ui.city_id')" />
       <input v-model.number="form.minsalary" type="number" :placeholder="$t('ui.min_salary')" />
       <input v-model.number="form.maxsalary" type="number" :placeholder="$t('ui.max_salary')" />
       <select v-model.number="form.type">
         <option :value="57">{{ $t('ui.fulltime') }}</option>
-        <option :value="58">{{ $t('ui.parttime') }}</option>
+        <option :value="58">{{ $t('wap_user_00220') }}</option>
         <option :value="59">{{ $t('ui.intern') }}</option>
         <option :value="60">{{ $t('ui.temporary') }}</option>
       </select>

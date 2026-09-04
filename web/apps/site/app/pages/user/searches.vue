@@ -35,7 +35,7 @@ useSeoMeta({ title: t('ui.searcher') })
     <h1>{{ $t('ui.searcher') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="create">
-      <input v-model="form.name" :placeholder="$t('ui.name')" />
+      <input v-model="form.name" :placeholder="$t('wap_00529')" />
       <input v-model="form.kind" placeholder="kind" />
       <textarea v-model="form.params" rows="3" placeholder='{"keyword":""}' />
       <label><input v-model="form.notify" type="checkbox" /> {{ $t('ui.notify') }}</label>

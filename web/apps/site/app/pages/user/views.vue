@@ -6,12 +6,12 @@ const { t } = useI18n()
 const { data, error } = await useAsyncData('profile-views', () =>
   api.post('/v1/mcenter/profile-views', { kind: 3, page: 1, page_size: 20 }),
 )
-useSeoMeta({ title: t('ui.who_viewed_me') })
+useSeoMeta({ title: t('wap_user_00276') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.who_viewed_me') }}</h1>
+    <h1>{{ $t('wap_user_00276') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_who_viewed') }}</p>
     <div v-else class="stack">

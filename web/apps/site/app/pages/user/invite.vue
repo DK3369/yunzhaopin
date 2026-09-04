@@ -19,8 +19,8 @@ useSeoMeta({ title: t('ui.invite_reg') })
   <section>
     <h1>{{ $t('ui.invite_reg') }}</h1>
     <form class="form" @submit.prevent="send">
-      <input v-model="form.email" type="email" :placeholder="$t('ui.email_addr')" required />
-      <textarea v-model="form.content" rows="4" :placeholder="$t('ui.content')" />
+      <input v-model="form.email" type="email" :placeholder="$t('member_user_00282')" required />
+      <textarea v-model="form.content" rows="4" :placeholder="$t('wap_user_00102')" />
       <button type="submit">{{ $t('ui.send_invite_reg') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>

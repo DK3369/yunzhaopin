@@ -33,9 +33,9 @@ useSeoMeta({ title: t('ui.outbox') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="send">
       <input v-model.number="form.resume_id" type="number" placeholder="resume_id" />
-      <input v-model="form.email" :placeholder="$t('ui.email_addr')" />
-      <input v-model="form.com_name" :placeholder="$t('ui.company_name')" />
-      <input v-model="form.job_name" :placeholder="$t('ui.job_name')" />
+      <input v-model="form.email" :placeholder="$t('member_user_00282')" />
+      <input v-model="form.com_name" :placeholder="$t('wap_com_00157')" />
+      <input v-model="form.job_name" :placeholder="$t('wap_com_00288')" />
       <input v-model="form.resume_name" :placeholder="$t('common.resume')" />
       <button type="submit">{{ $t('ui.send') }}</button>
     </form>

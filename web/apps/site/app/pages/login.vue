@@ -189,15 +189,15 @@ onUnmounted(() => {
                 <div class="login_normal_box">
                   <div class="login_box_list">
                     <i class="login_box_icon login_box_username" />
-                    <input v-model="username" class="login_box_bth placeholder loginname" autocomplete="username" :placeholder="$t('ui.username')" />
+                    <input v-model="username" class="login_box_bth placeholder loginname" autocomplete="username" :placeholder="$t('admin_user_00140')" />
                   </div>
                   <div class="login_box_list">
                     <i class="login_box_icon loginpwd" />
-                    <input v-model="password" type="password" class="login_box_bth placeholder loginname" autocomplete="current-password" :placeholder="$t('ui.password')" />
+                    <input v-model="password" type="password" class="login_box_bth placeholder loginname" autocomplete="current-password" :placeholder="$t('wap_user_00371')" />
                   </div>
                   <div v-if="captcha?.image" class="login_box_list">
                     <img :src="captcha.image" alt="" @click="loadCaptcha" />
-                    <input v-model="authcode" class="login_box_bth" :placeholder="$t('ui.captcha_ph')" />
+                    <input v-model="authcode" class="login_box_bth" :placeholder="$t('wap_00110')" />
                   </div>
                 </div>
                 <div class="login_box_cz">
@@ -227,7 +227,7 @@ onUnmounted(() => {
                 <input v-model="authcode" class="login_box_bth" />
               </div>
               <div class="login_box_list">
-                <input v-model="smsCode" class="login_box_bth" :placeholder="$t('ui.sms_code')" />
+                <input v-model="smsCode" class="login_box_bth" :placeholder="$t('wap_01371')" />
                 <button type="button" @click="sendSms">{{ $t('common.submit') }}</button>
               </div>
               <div class="login_box_cz">
@@ -271,7 +271,7 @@ onUnmounted(() => {
           </div>
           <div v-if="captcha?.image" class="login_textbox" style="display: flex; gap: 0.16rem; align-items: center">
             <img :src="captcha.image" alt="" style="height: 0.8rem" @click="loadCaptcha" />
-            <input v-model="authcode" :placeholder="$t('ui.captcha_ph')" />
+            <input v-model="authcode" :placeholder="$t('wap_00110')" />
           </div>
         </div>
         <p v-if="err" class="muted">{{ err }}</p>
@@ -283,7 +283,7 @@ onUnmounted(() => {
       </form>
       <form v-else @submit.prevent="submitSms">
         <div class="login_textbox"><input v-model="mobile" :placeholder="$t('common.phone')" /></div>
-        <div class="login_textbox"><input v-model="smsCode" :placeholder="$t('ui.sms_code')" /><button type="button" @click="sendSms">{{ $t('common.submit') }}</button></div>
+        <div class="login_textbox"><input v-model="smsCode" :placeholder="$t('wap_01371')" /><button type="button" @click="sendSms">{{ $t('common.submit') }}</button></div>
         <p v-if="err" class="muted">{{ err }}</p>
         <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0">
           {{ $t('common.login') }}

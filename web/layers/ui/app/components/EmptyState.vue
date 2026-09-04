@@ -31,7 +31,7 @@ const base = String(useRuntimeConfig().app.baseURL || '/')
 const isAdmin = base === '/admin/' || base.startsWith('/admin')
 const pcSrc = isAdmin ? '/admin/php-admin/images/notip.png' : '/legacy/pc/images/notip.png'
 const h5Src = isAdmin ? pcSrc : '/legacy/h5/images/home_emptygraph.png'
-const titleText = computed(() => props.title || t('ui.no_data'))
+const titleText = computed(() => props.title || t('wap_js_00113'))
 </script>
 
 <style scoped>

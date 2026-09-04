@@ -23,7 +23,7 @@ useSeoMeta({ title: t('ui.com_tpl') })
 <template>
   <section>
     <h1>{{ $t('ui.com_tpl') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <p v-if="msg">{{ msg }}</p>
     <div class="stack">
       <article v-for="row in data || []" :key="row.id">

@@ -36,7 +36,7 @@ useSeoMeta({ title: t('ui.pay') })
     <div class="stack">
       <article v-for="p in packages" :key="p.code" class="job-card">
         <h3>{{ p.name }}</h3>
-        <p class="muted">{{ p.price_yuan }} {{ $t('ui.yuan') }} / {{ p.duration_days }} {{ $t('ui.days') }}</p>
+        <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
         <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
       </article>
     </div>
@@ -45,7 +45,7 @@ useSeoMeta({ title: t('ui.pay') })
     <div class="stack">
       <article v-for="o in orders?.list || []" :key="o.order_no" class="job-card">
         <h3>{{ o.order_no }}</h3>
-        <p class="muted">{{ o.status_n }} · {{ o.amount_yuan }} {{ $t('ui.yuan') }}</p>
+        <p class="muted">{{ o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>

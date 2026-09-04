@@ -58,13 +58,13 @@ useSeoMeta({ title: t('member_com_00378') })
 <template>
   <section>
     <h1>{{ $t('member_com_00378') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="save">
-      <input v-model="form.name" :placeholder="$t('ui.company_name')" />
+      <input v-model="form.name" :placeholder="$t('wap_com_00157')" />
       <input v-model="form.shortname" :placeholder="$t('ui.shortname')" />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onLogo" />
       <textarea v-model="form.content" :placeholder="$t('ui.desc')" rows="6" />
-      <input v-model="form.linkman" :placeholder="$t('ui.linkman')" />
+      <input v-model="form.linkman" :placeholder="$t('wap_01431')" />
       <input v-model="form.linkphone" :placeholder="$t('ui.linkphone')" />
       <button type="submit">{{ $t('common.save') }}</button>
       <p v-if="msg">{{ msg }}</p>

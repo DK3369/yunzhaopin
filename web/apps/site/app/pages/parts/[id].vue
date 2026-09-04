@@ -59,7 +59,7 @@ const cityLine = computed(() =>
   [row.value.province_name, row.value.city_name, row.value.three_city_name].map((v) => String(v || '')).filter(Boolean).join('-'),
 )
 const tel = computed(() => String(row.value.linktel || row.value.linktel_n || ''))
-useSeoMeta({ title: () => String(row.value.name || t('ui.part')) })
+useSeoMeta({ title: () => String(row.value.name || t('wap_user_00220')) })
 useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
 </script>
 

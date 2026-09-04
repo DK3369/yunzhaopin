@@ -49,7 +49,7 @@ function labelOf(to: string) {
 <template>
   <section v-if="error" class="site-inner">
     <h1>{{ $t('member_com_00290') }}</h1>
-    <p class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
   <div v-else>

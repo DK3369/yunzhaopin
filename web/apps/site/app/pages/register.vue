@@ -92,7 +92,7 @@ useSeoMeta({ title: t('common.register') })
               <select v-model.number="form.regway" class="login_box_bth">
                 <option :value="1">{{ $t('admin_user_00140') }}</option>
                 <option :value="2">{{ $t('wap_01619') }}</option>
-                <option :value="3">{{ $t('ui.email_addr') }}</option>
+                <option :value="3">{{ $t('member_user_00282') }}</option>
               </select>
             </div>
             <div v-if="form.regway === 1" class="login_box_list">
@@ -102,7 +102,7 @@ useSeoMeta({ title: t('common.register') })
               <input v-model="form.moblie" class="login_box_bth" :placeholder="$t('wap_01619')" />
             </div>
             <div v-if="form.regway === 3" class="login_box_list">
-              <input v-model="form.email" class="login_box_bth" :placeholder="$t('ui.email_addr')" />
+              <input v-model="form.email" class="login_box_bth" :placeholder="$t('member_user_00282')" />
             </div>
             <div class="login_box_list">
               <input v-model="form.password" type="password" class="login_box_bth" :placeholder="$t('wap_user_00371')" />
@@ -152,7 +152,7 @@ useSeoMeta({ title: t('common.register') })
             <select v-model.number="form.regway">
               <option :value="1">{{ $t('admin_user_00140') }}</option>
               <option :value="2">{{ $t('wap_01619') }}</option>
-              <option :value="3">{{ $t('ui.email_addr') }}</option>
+              <option :value="3">{{ $t('member_user_00282') }}</option>
             </select>
           </div>
           <div v-if="form.regway === 1" class="login_textbox">
@@ -162,7 +162,7 @@ useSeoMeta({ title: t('common.register') })
             <input v-model="form.moblie" :placeholder="$t('wap_01619')" />
           </div>
           <div v-if="form.regway === 3" class="login_textbox">
-            <input v-model="form.email" :placeholder="$t('ui.email_addr')" />
+            <input v-model="form.email" :placeholder="$t('member_user_00282')" />
           </div>
           <div class="login_textbox">
             <input v-model="form.password" type="password" :placeholder="$t('wap_user_00371')" />

@@ -62,7 +62,7 @@ async function resetPw() {
         password: form.password,
       })
     }
-    msg.value = t('ui.password_reset_ok')
+    msg.value = t('common_01549')
     await navigateTo('/login')
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.reset_failed')
@@ -77,13 +77,13 @@ useSeoMeta({ title: t('wap_js_00123') })
     <h1>{{ $t('wap_js_00123') }}</h1>
     <p>
       <button type="button" @click="channel = 'sms'">{{ $t('wap_01619') }}</button>
-      <button type="button" @click="channel = 'email'">{{ $t('ui.email_addr') }}</button>
+      <button type="button" @click="channel = 'email'">{{ $t('member_user_00282') }}</button>
     </p>
     <form class="form" @submit.prevent="resetPw">
       <input v-if="channel === 'sms'" v-model="form.moblie" :placeholder="$t('wap_01619')" autocomplete="tel" />
-      <input v-else v-model="form.email" :placeholder="$t('ui.email_addr')" autocomplete="email" />
+      <input v-else v-model="form.email" :placeholder="$t('member_user_00282')" autocomplete="email" />
       <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />
-      <input v-model="form.authcode" :placeholder="$t('ui.image_captcha')" />
+      <input v-model="form.authcode" :placeholder="$t('wap_00110')" />
       <button v-if="channel === 'sms'" type="button" @click="sendSms">{{ $t('admin_user_00166') }}</button>
       <button v-else type="button" @click="sendEmail">{{ $t('admin_user_00166') }}</button>
       <input v-if="channel === 'sms'" v-model="form.moblie_code" :placeholder="$t('wap_01371')" />

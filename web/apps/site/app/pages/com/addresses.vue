@@ -35,9 +35,9 @@ useSeoMeta({ title: t('ui.map_addr') })
 <template>
   <section>
     <h1>{{ $t('ui.map_addr') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="create">
-      <input v-model="form.link_man" :placeholder="$t('ui.linkman')" />
+      <input v-model="form.link_man" :placeholder="$t('wap_01431')" />
       <input v-model="form.link_moblie" :placeholder="$t('common.phone')" />
       <input v-model="form.link_address" :placeholder="$t('ui.map_addr')" />
       <input v-model="form.x" :placeholder="$t('ui.lng')" />

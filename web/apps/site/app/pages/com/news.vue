@@ -26,9 +26,9 @@ useSeoMeta({ title: t('ui.com_news') })
 <template>
   <section>
     <h1>{{ $t('ui.com_news') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="add">
-      <input v-model="form.title" :placeholder="$t('ui.title')" />
+      <input v-model="form.title" :placeholder="$t('wap_user_00103')" />
       <textarea v-model="form.body" :placeholder="$t('ui.body')" rows="4" />
       <button type="submit">{{ $t('common.publish') }}</button>
       <p v-if="msg">{{ msg }}</p>

@@ -57,17 +57,17 @@ useSeoMeta({ title: t('wap_00389') })
     <ul v-else class="stack">
       <li v-for="p in data?.providers || []" :key="p">
         {{ p }}
-        <button type="button" @click="unbind(p)">{{ $t('ui.unbind') }}</button>
+        <button type="button" @click="unbind(p)">{{ $t('wap_js_00065') }}</button>
       </li>
     </ul>
     <form class="form" @submit.prevent="bindMobile">
       <input v-model="mobile" :placeholder="$t('common.phone')" />
       <button type="button" @click="sendMobile">{{ $t('common.submit') }}</button>
-      <input v-model="mobileCode" :placeholder="$t('ui.sms_code')" />
+      <input v-model="mobileCode" :placeholder="$t('wap_01371')" />
       <button type="submit">{{ $t('common.save') }}</button>
     </form>
     <form class="form" @submit.prevent="sendEmail">
-      <input v-model="email" :placeholder="$t('ui.email_addr')" />
+      <input v-model="email" :placeholder="$t('member_user_00282')" />
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>

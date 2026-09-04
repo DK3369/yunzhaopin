@@ -36,7 +36,7 @@ useSeoMeta({ title: t('ui.com_parts') })
 <template>
   <section>
     <h1>{{ $t('ui.com_parts') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('ui.please_login_com') : $t('ui.load_failed') }}</p>
+    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <h2>{{ $t('ui.published') }}</h2>
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_parts') }}</p>
     <div class="stack">
