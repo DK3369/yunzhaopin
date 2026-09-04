@@ -28,6 +28,7 @@ const links = [
   { to: '/com/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
   { to: '/com/jobs/new', icon: '/legacy/h5/images/job_add.png' },
   { to: '/com/applications', icon: '/legacy/h5/images/Please_resume.png' },
+  { to: '/com/looks', icon: '/legacy/h5/images/icon_communication.png' },
   { to: '/com/talent', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/com/cert', icon: '/legacy/h5/images/company.png' },
   { to: '/com/messages', icon: '/legacy/h5/images/icon_communication.png' },

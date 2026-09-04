@@ -4,7 +4,7 @@ import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-apps', () =>
-  api.post<{ list: Array<{ id: number; uid: number; job_id: number; datetime_n?: string }> }>(
+  api.post<{ list: Array<{ id: number; uid: number; job_id: number; datetime_n?: string; is_browse?: number; eid?: number }> }>(
     '/v1/mcenter/applications',
     { page: 1, page_size: 20 },
   ),
@@ -24,6 +24,24 @@ const msg = ref('')
 function pick(row: { uid: number; job_id: number }) {
   invite.seeker_uid = row.uid
   invite.job_id = row.job_id
+}
+async function setState(id: number, state: number) {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/applications/state', { id, state })
+    msg.value = t('common.success')
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('common_00888')
+  }
+}
+function browseLabel(state?: number) {
+  if (state === 1) return t('wap_00129')
+  if (state === 0) return t('wap_com_00427')
+  if (state === 3) return t('wap_com_00046')
+  if (state === 4) return t('wap_user_00167')
+  if (state === 7) return t('common.yes')
+  return String(state ?? '')
 }
 async function sendInvite(confirm = false) {
   msg.value = ''
@@ -68,8 +86,12 @@ useSeoMeta({ title: t('wap_com_00420') })
     <div class="stack">
       <article v-for="row in list" :key="row.id" class="job-card">
         <h3>#{{ row.id }} · {{ $t('common.resume') }} {{ row.uid }}</h3>
-        <p class="muted">{{ $t('common.job') }} {{ row.job_id }} · {{ row.datetime_n }}</p>
+        <p class="muted">{{ $t('common.job') }} {{ row.job_id }} · {{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</p>
         <button type="button" @click="pick(row)">{{ $t('wap_com_00046') }}</button>
+        <button type="button" @click="setState(row.id, 0)">{{ $t('wap_com_00427') }}</button>
+        <button type="button" @click="setState(row.id, 4)">{{ $t('wap_user_00167') }}</button>
+        <button type="button" @click="setState(row.id, 3)">{{ $t('wap_com_00046') }}</button>
+        <button type="button" @click="setState(row.id, 7)">{{ $t('common.yes') }}</button>
       </article>
     </div>
     <h2>{{ $t('wap_com_00046') }}</h2>

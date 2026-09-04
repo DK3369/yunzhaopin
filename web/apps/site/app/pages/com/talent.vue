@@ -10,10 +10,15 @@ const { data: publicResumes } = await useAsyncData('talent-search', () =>
   api.get('/v1/wap/resumes', { page: 1, page_size: 20 }),
 )
 const msg = ref('')
-async function add(uid: number) {
+async function add(row: { uid: number; eid?: number; def_job?: number }) {
   msg.value = ''
+  const eid = Number(row.eid || row.def_job || 0)
+  if (!eid) {
+    msg.value = t('ui.failed')
+    return
+  }
   try {
-    await api.post('/v1/mcenter/talent-pool', { eid: uid, seeker_uid: uid })
+    await api.post('/v1/mcenter/talent-pool', { eid, seeker_uid: row.uid })
     msg.value = t('ui.add_to_talent')
     await refresh()
   } catch (e: unknown) {
@@ -34,7 +39,7 @@ useSeoMeta({ title: t('member_com_00597') })
         <h3>{{ r.display_name || r.name }}</h3>
         <p class="muted">{{ r.education_n }} · {{ r.exp_n }}</p>
         <NuxtLink :to="`/resumes/${r.uid}`">{{ $t('wap_com_00427') }}</NuxtLink>
-        <button type="button" @click="add(r.uid)">{{ $t('ui.add_to_talent') }}</button>
+        <button type="button" @click="add(r)">{{ $t('ui.add_to_talent') }}</button>
       </article>
     </div>
     <h2>{{ $t('ui.favorited') }}</h2>

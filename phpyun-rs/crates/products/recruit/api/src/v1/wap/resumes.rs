@@ -194,6 +194,8 @@ pub struct ResumeSummary {
     pub status: i32,
     pub r_status: i32,
     pub def_job: i32,
+    /// Default expect id; talent-pool `eid`.
+    pub eid: u64,
     /// Default expect job title (PHP list `$user.name`). Additive.
     pub expect_name: String,
     /// Default expect city display name. Additive.
@@ -351,6 +353,7 @@ impl ResumeSummary {
             status: r.status,
             r_status: r.r_status,
             def_job: r.def_job,
+            eid: u64::try_from(r.def_job.max(0)).unwrap_or(0),
             expect_name: String::new(),
             expect_city_n: String::new(),
             expect_salary_n: String::new(),
@@ -411,6 +414,7 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
             status: r.status,
             r_status: r.r_status,
             def_job: r.def_job,
+            eid: u64::try_from(r.def_job.max(0)).unwrap_or(0),
             expect_name: String::new(),
             expect_city_n: String::new(),
             expect_salary_n: String::new(),

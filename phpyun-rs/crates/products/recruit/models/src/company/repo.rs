@@ -370,6 +370,8 @@ pub struct CompanyUpdate<'a> {
     pub linkjob: Option<&'a str>,
     pub linkphone: Option<&'a str>,
     pub linkmail: Option<&'a str>,
+    pub x: Option<&'a str>,
+    pub y: Option<&'a str>,
 }
 
 pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<(), sqlx::Error> {
@@ -386,7 +388,9 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<
             linkman      = COALESCE(?, linkman),
             linkjob      = COALESCE(?, linkjob),
             linkphone    = COALESCE(?, linkphone),
-            linkmail     = COALESCE(?, linkmail)
+            linkmail     = COALESCE(?, linkmail),
+            x            = COALESCE(?, x),
+            y            = COALESCE(?, y)
            WHERE uid = ?"#,
     )
     .bind(u.name)
@@ -401,6 +405,8 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<
     .bind(u.linkjob)
     .bind(u.linkphone)
     .bind(u.linkmail)
+    .bind(u.x)
+    .bind(u.y)
     .bind(uid)
     .execute(pool)
     .await?;

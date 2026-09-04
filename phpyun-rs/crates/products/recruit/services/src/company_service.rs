@@ -41,6 +41,8 @@ pub struct CompanyUpdateInput<'a> {
     pub linkjob: Option<&'a str>,
     pub linkphone: Option<&'a str>,
     pub linkmail: Option<&'a str>,
+    pub x: Option<&'a str>,
+    pub y: Option<&'a str>,
 }
 
 /// Company reads its own profile; if no row exists, calls ensure_row first.
@@ -112,6 +114,8 @@ pub async fn update_mine(
             linkjob: input.linkjob,
             linkphone: input.linkphone,
             linkmail: input.linkmail,
+            x: input.x,
+            y: input.y,
         },
     )
     .await?;

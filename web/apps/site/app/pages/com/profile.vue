@@ -13,6 +13,8 @@ const form = reactive({
   linkman: '',
   linkphone: '',
   logo: '',
+  x: '',
+  y: '',
 })
 watch(
   data,
@@ -24,6 +26,8 @@ watch(
     form.linkman = String(row.linkman || '')
     form.linkphone = String(row.linkphone || '')
     form.logo = String(row.logo || '')
+    form.x = String(row.x || '')
+    form.y = String(row.y || '')
   },
   { immediate: true },
 )
@@ -66,6 +70,8 @@ useSeoMeta({ title: t('member_com_00378') })
       <textarea v-model="form.content" :placeholder="$t('ui.desc')" rows="6" />
       <input v-model="form.linkman" :placeholder="$t('wap_01431')" />
       <input v-model="form.linkphone" :placeholder="$t('ui.linkphone')" />
+      <input v-model="form.x" placeholder="x" />
+      <input v-model="form.y" placeholder="y" />
       <button type="submit">{{ $t('common.save') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
