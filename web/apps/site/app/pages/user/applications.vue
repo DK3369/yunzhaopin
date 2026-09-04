@@ -18,17 +18,17 @@ async function withdraw(id: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: t('ui.applications') })
+useSeoMeta({ title: t('wap_user_00270') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.applications') }}</h1>
+    <h1>{{ $t('wap_user_00270') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
     <div v-else class="stack">
       <article v-for="row in list" :key="row.id" class="job-card">
-        <h3>{{ $t('common.job') }} #{{ row.job_id }}</h3>
+        <h3>{{ row.job_name || row.com_name || $t('common.job') }} #{{ row.job_id }}</h3>
         <p class="muted">{{ row.datetime_n }}</p>
         <NuxtLink :to="`/jobs/${row.job_id}`">{{ $t('wap_com_00427') }}</NuxtLink>
         <button v-if="!row.quxiao" type="button" @click="withdraw(row.id)">{{ $t('common.cancel') }}</button>

@@ -44,6 +44,9 @@ const { data: certs, refresh: refreshCerts } = await useAsyncData('my-certs', ()
 const { data: others, refresh: refreshOthers } = await useAsyncData('my-others', () =>
   api.post('/v1/mcenter/resume/others/list', {}).catch(() => []),
 )
+const { data: languages, refresh: refreshLanguages } = await useAsyncData('my-languages', () =>
+  api.post('/v1/mcenter/resume/languages/list', {}).catch(() => []),
+)
 const { data: shows, refresh: refreshShows } = await useAsyncData('my-resume-gallery', () =>
   api.post('/v1/mcenter/galleries/list', { kind: 'resume', page: 1, page_size: 20 }).catch(() => ({ list: [] })),
 )
@@ -76,6 +79,7 @@ const skillForm = reactive({ id: 0, name: '', level: 0, years: 0 })
 const trainingForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', title: '', content: '' })
 const certForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', title: '', content: '' })
 const otherForm = reactive({ id: 0, name: '', content: '' })
+const languageForm = reactive({ id: 0, name: '', level: 0 })
 const galleryTitle = ref('')
 const msg = ref('')
 
@@ -231,6 +235,11 @@ function fillOther(row: ChildRow) {
   otherForm.name = String(row.name || '')
   otherForm.content = String(row.content || '')
 }
+function fillLanguage(row: ChildRow) {
+  languageForm.id = row.id
+  languageForm.name = String(row.name || '')
+  languageForm.level = Number(row.level || 0)
+}
 useSeoMeta({ title: t('wap_user_00204') })
 </script>
 
@@ -373,6 +382,20 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model="otherForm.name" :placeholder="$t('member_user_00076')" />
       <textarea v-model="otherForm.content" rows="3" />
       <button type="submit">{{ otherForm.id ? $t('common.save') : $t('member_user_00076') }}</button>
+    </form>
+    <h2>{{ $t('wap_com_00292') }}</h2>
+    <p v-if="!(Array.isArray(languages) ? languages : []).length" class="muted">{{ $t('ui.no_items') }}</p>
+    <ul>
+      <li v-for="row in Array.isArray(languages) ? languages : []" :key="row.id">
+        {{ row.name }}
+        <button type="button" @click="fillLanguage(row)">{{ $t('common.edit') }}</button>
+        <button type="button" @click="delChild('languages', row, refreshLanguages)">{{ $t('common.delete') }}</button>
+      </li>
+    </ul>
+    <form class="form" @submit.prevent="saveChild('languages', { ...languageForm }, refreshLanguages)">
+      <input v-model="languageForm.name" required />
+      <input v-model.number="languageForm.level" type="number" />
+      <button type="submit">{{ languageForm.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
     <h2>{{ $t('wap_user_00157') }}</h2>
     <form class="form" @submit.prevent>

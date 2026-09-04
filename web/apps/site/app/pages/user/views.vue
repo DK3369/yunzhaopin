@@ -16,7 +16,11 @@ useSeoMeta({ title: t('wap_user_00276') })
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_who_viewed') }}</p>
     <div v-else class="stack">
       <article v-for="row in data?.list || []" :key="row.id" class="job-card">
-        <h3>viewer_uid {{ row.viewer_uid }}</h3>
+        <h3>
+          <NuxtLink v-if="row.kind === 3" :to="`/companies/${row.viewer_uid}`">{{ row.kind_n }} {{ row.viewer_uid }}</NuxtLink>
+          <NuxtLink v-else-if="row.kind === 2" :to="`/resumes/${row.viewer_uid}`">{{ row.kind_n }} {{ row.viewer_uid }}</NuxtLink>
+          <span v-else>{{ row.kind_n }} {{ row.viewer_uid }}</span>
+        </h3>
         <p class="muted">kind {{ row.kind }} · {{ row.datetime_n }}</p>
       </article>
     </div>

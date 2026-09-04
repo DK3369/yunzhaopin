@@ -28,7 +28,7 @@ useSeoMeta({ title: t('member_user_00103') })
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_fav') }}</p>
     <div class="stack">
       <article v-for="row in data?.list || []" :key="row.target_id" class="job-card">
-        <h3>#{{ row.target_id }}</h3>
+        <h3>{{ row.detail?.name || row.detail?.com_name || row.detail?.display_name || row.target_id }}</h3>
         <button type="button" @click="remove(row.target_id)">{{ $t('ui.unfav') }}</button>
       </article>
     </div>

@@ -14,7 +14,7 @@ useSeoMeta({ title: t('common.message') })
 <template>
   <MemberPanel :title="$t('common.message')" :error="error" :empty="!error && !(data?.list || []).length">
     <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
-      <p>{{ row.content || row.title }}</p>
+      <p>{{ row.title || row.content || row.id }}</p>
       <p class="muted">{{ row.datetime_n }}</p>
       <button type="button" @click="read(row.id)">{{ $t('common.confirm') }}</button>
     </article>
