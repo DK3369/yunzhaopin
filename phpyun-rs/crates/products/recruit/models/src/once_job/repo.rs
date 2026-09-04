@@ -424,6 +424,33 @@ pub async fn insert_once_order(pool: &MySqlPool, o: OrderInsert<'_>) -> Result<u
     Ok(res.last_insert_id())
 }
 
+pub async fn find_order_by_order_id(
+    pool: &MySqlPool,
+    order_id: &str,
+) -> Result<Option<OnceOrder>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ORDER_FIELDS} FROM phpyun_company_order \
+         WHERE order_id = ? AND type = ? LIMIT 1"
+    );
+    sqlx::query_as::<_, OnceOrder>(&sql)
+        .bind(order_id)
+        .bind(ONCE_ORDER_TYPE)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn mark_order_paid(pool: &MySqlPool, order_id: &str) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_order SET order_state = 2 \
+         WHERE order_id = ? AND type = ? AND order_state = 1",
+    )
+    .bind(order_id)
+    .bind(ONCE_ORDER_TYPE)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 /// Drop any pre-existing pending orders for the same once_job — matches PHP
 /// `payOnce` which clears stale orders before creating a new one.
 pub async fn delete_pending_orders_for_once(

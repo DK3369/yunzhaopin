@@ -13,6 +13,7 @@ use phpyun_core::{
     ValidatedJsonOrQuery,
 };
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
+use phpyun_services::payment_notify_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -484,12 +485,13 @@ pub struct PayCreated {
     /// 1 = pending payment (call the gateway), 2 = already paid (free gear).
     pub state: i32,
     pub fast: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pay_url: Option<String>,
 }
 
 /// Create a payment order for a one-off shop posting — counterpart of PHP
-/// `wap/once::getOrder_action`. The downstream gateway redirect (alipay /
-/// wxpay) is **not** performed here; the front-end uses `order_id` + the
-/// existing `/v1/wap/pay-callback/*` endpoints to drive the gateway.
+/// `wap/once::getOrder_action`. Paid gears return Alipay `pay_url` (same
+/// page-sign as VIP). Notify `/callback/alipay` marks the once order paid.
 #[utoipa::path(post,
     path = "/v1/wap/once-jobs/pay",
     tag = "wap",
@@ -505,6 +507,13 @@ pub async fn pay(
 ) -> AppResult<ApiResponse<PayCreated>> {
     let id = f.id;
     let did = phpyun_core::numeric::checked_param(f.did, "once.did")?;
+    let (_days, price) = once_service::gear_quote(&state, f.oncepricegear).await?;
+    if price > 0.0 {
+        if f.paytype != "alipay" {
+            return Err(ApiError::param_invalid("pay_not_configured"));
+        }
+        payment_notify_service::ensure_alipay_page(&state).await?;
+    }
     let r = once_service::create_pay_order(
         &state,
         once_service::PayInput {
@@ -516,12 +525,28 @@ pub async fn pay(
         },
     )
     .await?;
+    let pay_url = if r.state == 1 {
+        let cents = (r.price * 100.0).round().clamp(0.0, i32::MAX as f64) as i32;
+        Some(
+            payment_notify_service::build_alipay_page_url(
+                &state,
+                &r.order_id,
+                &r.order_id,
+                cents,
+                Some(&format!("/once/{id}")),
+            )
+            .await?,
+        )
+    } else {
+        None
+    };
     Ok(ApiResponse::data(PayCreated {
         order_id: r.order_id,
         price: r.price,
         days: r.days,
         state: r.state,
         fast: r.fast,
+        pay_url,
     }))
 }
 

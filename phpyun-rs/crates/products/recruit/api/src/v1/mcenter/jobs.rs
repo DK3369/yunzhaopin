@@ -269,7 +269,7 @@ pub async fn counts_by_state(
 pub struct SetStatusForm {
     #[validate(range(min = 1, max = 99_999_999))]
     pub id: u64,
-    /// 0 = online, 2 = closed
+    /// 0 = recruiting, 1 = unlisted (PHP `company_job.status`; legacy 2 is accepted as 1)
     #[validate(range(min = 0, max = 9))]
     pub status: i32,
 }

@@ -5,6 +5,7 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::{entity::Job, repo as job_repo};
 
 // ==================== Create ====================
@@ -159,6 +160,10 @@ pub async fn update(
 
 // ==================== List/unlist ====================
 
+fn is_vip(vip_etime: i64, now: i64) -> bool {
+    vip_etime == 0 || vip_etime >= now
+}
+
 pub async fn set_status(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -167,8 +172,29 @@ pub async fn set_status(
     client_ip: &str,
 ) -> AppResult<()> {
     user.require_employer()?;
-    if !matches!(status, 0 | 2) {
-        return Err(ApiError::business("job_not_found")); // coarse error mapping
+    // PHP `status`: 0 recruiting / 1 unlisted. Map legacy client `2` to unlisted.
+    let status = match status {
+        0 => 0,
+        1 | 2 => 1,
+        _ => return Err(ApiError::business("job_not_found")),
+    };
+    let job = job_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    if status == 0 {
+        if job.state != 1 {
+            return Err(ApiError::business("job_pending"));
+        }
+        let now = clock::now_ts();
+        let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
+        let vip_ok = st
+            .as_ref()
+            .map(|s| is_vip(s.vip_etime, now))
+            .unwrap_or(false);
+        if !vip_ok {
+            return Err(ApiError::business("zph_need_vip"));
+        }
     }
     let affected = job_repo::set_status(state.db.pool(), id, user.uid, status).await?;
     if affected == 0 {
@@ -185,6 +211,26 @@ pub async fn set_status(
     Ok(())
 }
 
+async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppResult<()> {
+    let now = clock::now_ts();
+    let st = statis_repo::find_admin(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("zph_need_vip"))?;
+    if !is_vip(st.vip_etime, now) {
+        return Err(ApiError::business("zph_need_vip"));
+    }
+    if st.rating_type == 2 {
+        return Ok(());
+    }
+    if st.rating_type == 1 {
+        if !statis_repo::try_consume_breakjob(state.db.pool(), uid, n).await? {
+            return Err(ApiError::business("job_refresh_quota"));
+        }
+        return Ok(());
+    }
+    Err(ApiError::business("job_refresh_quota"))
+}
+
 // ==================== Refresh ====================
 
 pub async fn refresh(
@@ -194,6 +240,11 @@ pub async fn refresh(
     client_ip: &str,
 ) -> AppResult<()> {
     user.require_employer()?;
+    let _owned = job_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    consume_refresh_quota(state, user.uid, 1).await?;
     let affected = job_repo::refresh(state.db.pool(), id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::business("job_not_found"));
@@ -250,6 +301,7 @@ pub async fn batch_refresh(
             affected: 0,
         });
     }
+    consume_refresh_quota(state, user.uid, i32::try_from(ids.len()).unwrap_or(i32::MAX)).await?;
     let now = clock::now_ts();
     let mut total: u64 = 0;
     for id in ids {
@@ -283,7 +335,7 @@ pub async fn batch_close(
     }
     let mut total: u64 = 0;
     for id in ids {
-        total += job_repo::set_status(state.db.pool(), *id, user.uid, 2).await?;
+        total += job_repo::set_status(state.db.pool(), *id, user.uid, 1).await?;
     }
     let _ = audit::emit(
         state,

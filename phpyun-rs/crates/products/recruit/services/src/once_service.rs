@@ -308,6 +308,42 @@ pub async fn usage_today(state: &AppState, login_ip: &str) -> AppResult<(u64, u6
     Ok((by_ip?, total?))
 }
 
+pub async fn gear_quote(state: &AppState, gear_id: i32) -> AppResult<(i32, f64)> {
+    if gear_id == 0 {
+        return Err(ApiError::param_invalid("oncepricegear"));
+    }
+    once_repo::find_price_gear(state.db.reader(), gear_id)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("gear_not_found"))
+}
+
+pub async fn mark_paid(state: &AppState, order_no: &str) -> AppResult<()> {
+    let Some(order) = once_repo::find_order_by_order_id(state.db.reader(), order_no).await? else {
+        return Err(ApiError::param_invalid("order_not_found"));
+    };
+    if order.order_state == 2 {
+        return Ok(());
+    }
+    if order.order_state != 1 {
+        return Err(ApiError::param_invalid("order_not_pending"));
+    }
+    let n = once_repo::mark_order_paid(state.db.pool(), order_no).await?;
+    if n == 0 {
+        return Ok(());
+    }
+    if let Some(oid) = order.once_id {
+        if oid > 0 {
+            let _ = once_repo::mark_once_paid(state.db.pool(), oid as u64).await;
+        }
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("once.order_paid", Actor::anonymous()).target(order_no),
+    )
+    .await;
+    Ok(())
+}
+
 // ==================== Pay flow ====================
 
 pub struct PayResult {

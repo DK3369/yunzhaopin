@@ -7,7 +7,7 @@
 //!   whole flow together: the gateway is configured with a fixed token, passed in
 //!   the `X-Pay-Token` header, and the server does a simple comparison.
 //!
-//! On success, call `vip_service::mark_paid` to reuse the existing mark-paid + activate-VIP + emit-event flow.
+//! On success, call `payment_notify_service::settle_paid` (VIP or once-job).
 
 use axum::{
     extract::State,
@@ -16,7 +16,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{dto::OkResp, ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
-use phpyun_services::vip_service;
+use phpyun_services::payment_notify_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
@@ -72,7 +72,7 @@ pub async fn callback(
     }
 
     // 3. Mark as paid
-    vip_service::mark_paid(&state, &f.order_no, &f.pay_tx_id).await?;
+    payment_notify_service::settle_paid(&state, &f.order_no, &f.pay_tx_id).await?;
     Ok(ApiResponse::data(OkResp { ok: true }))
 }
 

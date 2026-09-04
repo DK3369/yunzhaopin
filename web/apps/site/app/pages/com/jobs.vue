@@ -6,8 +6,15 @@ const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-jobs', () =>
   api.post('/v1/mcenter/jobs/list', { page: 1, page_size: 20 }),
 )
-const list = computed(() => data.value?.list || [])
+const list = computed(() => (data.value?.list || []) as Array<{ id: number; name?: string; state?: number; status?: number }>)
 const msg = ref('')
+function jobPhase(job: { state?: number; status?: number }) {
+  if (Number(job.status) === 1) return t('wap_com_00242')
+  if (Number(job.state) === 0) return t('wap_user_00006')
+  if (Number(job.state) === 3) return t('wap_user_00167')
+  if (Number(job.state) === 1) return t('wap_com_00243')
+  return t('member_user_00181')
+}
 async function refreshJob(id: number) {
   msg.value = ''
   try {
@@ -37,12 +44,12 @@ useSeoMeta({ title: t('wap_com_00106') })
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <article v-for="job in list" :key="job.id" class="look_resume_list">
       <h3>{{ job.name }}</h3>
-      <p class="muted">{{ $t('ui.status') }} {{ job.state }}</p>
+      <p class="muted">{{ $t('member_user_00181') }} {{ jobPhase(job) }}</p>
       <p>
         <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
         <button type="button" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</button>
-        <button type="button" @click="setStatus(job.id, 0)">{{ $t('wap_js_00005') }}</button>
-        <button type="button" @click="setStatus(job.id, 2)">{{ $t('common.close') }}</button>
+        <button type="button" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</button>
+        <button type="button" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</button>
       </p>
     </article>
     <p v-if="msg">{{ msg }}</p>

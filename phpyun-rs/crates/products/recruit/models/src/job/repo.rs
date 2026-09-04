@@ -845,7 +845,8 @@ pub async fn update(
     Ok(res.rows_affected())
 }
 
-/// Change status: 0 = published / 2 = delisted. Only the publisher may change.
+/// Change listing flag: 0 = recruiting / 1 = unlisted (PHP `company_job.status`).
+/// Only the publisher may change.
 pub async fn set_status(
     pool: &MySqlPool,
     id: u64,

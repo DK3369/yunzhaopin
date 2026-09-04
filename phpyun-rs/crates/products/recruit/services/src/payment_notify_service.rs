@@ -1,15 +1,18 @@
 //! Gateway notify verification for Alipay (MD5) and WeChat Pay v2 (XML+MD5).
 //!
-//! After a signature check, payment success is handed to [`vip_service::mark_paid`].
-//! These providers POST form/XML, not our JSON envelope.
+//! After a signature check, payment success is handed to [`settle_paid`]
+//! (VIP packages or once-job orders in `phpyun_company_order`).
 
 use std::collections::BTreeMap;
 
 use md5::{Digest, Md5};
 use phpyun_core::{ApiError, AppResult, AppState};
 
+use crate::once_service;
 use crate::site_setting_service;
 use crate::vip_service;
+use phpyun_models::once_job::repo as once_repo;
+use phpyun_models::vip::repo as vip_repo;
 
 fn md5_hex_lower(bytes: &[u8]) -> String {
     let mut hasher = Md5::new();
@@ -170,6 +173,7 @@ pub async fn build_alipay_page_url(
     order_no: &str,
     subject: &str,
     amount_cents: i32,
+    return_path: Option<&str>,
 ) -> AppResult<String> {
     let key = alipay_key(state)
         .await
@@ -196,7 +200,16 @@ pub async fn build_alipay_page_url(
     params.insert("_input_charset".into(), "utf-8".into());
     params.insert("payment_type".into(), "1".into());
     params.insert("notify_url".into(), format!("{base}/callback/alipay"));
-    params.insert("return_url".into(), format!("{base}/user/pay"));
+    params.insert(
+        "return_url".into(),
+        format!(
+            "{base}{}",
+            return_path
+                .map(str::trim)
+                .filter(|s| s.starts_with('/'))
+                .unwrap_or("/user/pay")
+        ),
+    );
     params.insert("seller_email".into(), seller);
     params.insert("out_trade_no".into(), order_no.to_string());
     params.insert("subject".into(), if subject.is_empty() { order_no.to_string() } else { subject.to_string() });
@@ -247,8 +260,25 @@ pub async fn handle_alipay(
         .get("trade_no")
         .map(String::as_str)
         .unwrap_or(order_no);
-    vip_service::mark_paid(state, order_no, tx).await?;
+    settle_paid(state, order_no, tx).await?;
     Ok("success")
+}
+
+/// Mark VIP or once-job order paid after the gateway signature has been verified.
+pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
+    if vip_repo::find_order_by_no(state.db.reader(), order_no)
+        .await?
+        .is_some()
+    {
+        return vip_service::mark_paid(state, order_no, pay_tx_id).await;
+    }
+    if once_repo::find_order_by_order_id(state.db.reader(), order_no)
+        .await?
+        .is_some()
+    {
+        return once_service::mark_paid(state, order_no).await;
+    }
+    Err(ApiError::param_invalid("order_not_found"))
 }
 
 pub async fn handle_wechat_pay(state: &AppState, xml: &str) -> AppResult<&'static str> {
@@ -270,7 +300,7 @@ pub async fn handle_wechat_pay(state: &AppState, xml: &str) -> AppResult<&'stati
         .filter(|s| !s.is_empty())
         .ok_or_else(|| ApiError::param_invalid("out_trade_no"))?;
     let tx = xml_tag(xml, "transaction_id").unwrap_or_else(|| order_no.clone());
-    vip_service::mark_paid(state, &order_no, &tx).await?;
+    settle_paid(state, &order_no, &tx).await?;
     Ok("success")
 }
 

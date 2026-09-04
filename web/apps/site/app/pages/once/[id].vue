@@ -78,14 +78,21 @@ async function remove() {
 async function pay() {
   msg.value = ''
   try {
-    const r = await api.post<{ order_id?: string; state?: number; fast?: string }>('/v1/wap/once-jobs/pay', {
+    const r = await api.post<{ order_id?: string; state?: number; fast?: string; pay_url?: string; msg?: string }>('/v1/wap/once-jobs/pay', {
       id,
       password: password.value,
       paytype: paytype.value,
       oncepricegear: gearId.value,
     })
-    if (r.fast) localStorage.setItem('once_fast', r.fast)
-    msg.value = Number(r.state) === 2 ? t('common.success') : String(r.order_id || t('common.success'))
+    if (r.fast) {
+      localStorage.setItem('once_fast', r.fast)
+      document.cookie = `fast=${encodeURIComponent(r.fast)};path=/;max-age=${60 * 60 * 24 * 30}`
+    }
+    if (r.pay_url) {
+      window.location.assign(r.pay_url)
+      return
+    }
+    msg.value = Number(r.state) === 2 ? t('common.success') : String(r.msg || r.order_id || t('common.success'))
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('common_00888')
   }

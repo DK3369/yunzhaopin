@@ -242,6 +242,8 @@ pub fn job_summary_from_dict_fav(
         welfare_n,
         yyzz_status: 0,
         fact_status: 0,
+        state: j.state,
+        status: j.status,
 
         rec: j.rec,
         urgent: j.urgent,

@@ -86,6 +86,10 @@ pub struct JobSummary {
     pub yyzz_status: i32,
     /// On-site verified (PHP `fact_status`). Additive.
     pub fact_status: i32,
+    /// Review: 0 pending / 1 approved / 3 rejected (PHP `state`).
+    pub state: i32,
+    /// Listing: 0 recruiting / 1 unlisted (PHP `status`).
+    pub status: i32,
 
     // Promotion status (computed from rec_time / urgent_time vs. now)
     pub rec: i32,
@@ -163,6 +167,8 @@ impl From<Job> for JobSummary {
             welfare_n: Vec::new(),
             yyzz_status: 0,
             fact_status: 0,
+            state: j.state,
+            status: j.status,
 
             rec: j.rec,
             urgent: j.urgent,
