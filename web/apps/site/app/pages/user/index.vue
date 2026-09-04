@@ -71,21 +71,21 @@ function labelOf(to: string) {
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/applications">
               <i class="yun_m_index_date_icon2" />
-              <div class="yun_m_index_datename">{{ $t('wap_user_00270') }}</div>
+              <div class="yun_m_index_datename">{{ $t('member_user_00149') }}</div>
               <div class="yun_m_index_date_n">{{ dash?.apply_count ?? 0 }}</div>
             </NuxtLink>
           </div>
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/favorites">
               <i class="yun_m_index_date_icon3" />
-              <div class="yun_m_index_datename">{{ $t('member_user_00103') }}</div>
+              <div class="yun_m_index_datename">{{ $t('default_00101') }}</div>
               <div class="yun_m_index_date_n">{{ dash?.favorite_count ?? 0 }}</div>
             </NuxtLink>
           </div>
           <div class="yun_m_index_date_list yun_m_index_date_list_end">
             <NuxtLink to="/user/follows">
               <i class="yun_m_index_date_icon4" />
-              <div class="yun_m_index_datename">{{ $t('wap_00385') }}</div>
+              <div class="yun_m_index_datename">{{ $t('wap_01142') }}</div>
               <div class="yun_m_index_date_n">{{ follows?.total ?? 0 }}</div>
             </NuxtLink>
           </div>

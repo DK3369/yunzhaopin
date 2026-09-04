@@ -3,7 +3,7 @@
   <div class="site-pc">
     <div class="yun_new_top">
       <div class="yun_new_cont">
-        <div class="yun_new_left">{{ $t('wap_com_00102') }}：{{ phone || '—' }}</div>
+        <div class="yun_new_left">{{ $t('common.phone') }}：{{ phone || '—' }}</div>
         <div class="yun_new_right" id="login_head_div">
           <div
             class="yun_topNav fr"

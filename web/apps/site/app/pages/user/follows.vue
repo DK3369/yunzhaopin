@@ -11,11 +11,11 @@ async function toggle(row: { target_uid?: number; uid?: number; target_kind?: nu
   })
   refresh()
 }
-useSeoMeta({ title: t('wap_00385') })
+useSeoMeta({ title: t('wap_01142') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('wap_00385')" :error="error" :empty="!error && !(data?.list || []).length">
+  <MemberPanel :title="$t('wap_01142')" :error="error" :empty="!error && !(data?.list || []).length">
     <article v-for="row in data?.list || []" :key="row.target_uid || row.uid" class="look_resume_list">
       <p>{{ row.name || row.com_name || row.target_uid }}</p>
       <button type="button" @click="toggle(row)">{{ $t('common.delete') }}</button>

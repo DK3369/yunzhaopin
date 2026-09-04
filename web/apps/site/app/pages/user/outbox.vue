@@ -24,12 +24,12 @@ async function send() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: t('ui.outbox') })
+useSeoMeta({ title: t('member_user_00188') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('ui.outbox') }}</h1>
+    <h1>{{ $t('member_user_00188') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="send">
       <input v-model.number="form.resume_id" type="number" placeholder="resume_id" />

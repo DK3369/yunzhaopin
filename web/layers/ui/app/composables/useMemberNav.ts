@@ -30,6 +30,7 @@ export function useMemberNav() {
     { to: '/com/jobs/new', label: t('wap_00322') },
     { to: '/com/applications', label: t('member_com_00454') },
     { to: '/com/looks', label: t('member_com_00007') },
+    { to: '/com/fans', label: t('wap_com_00407') },
     { to: '/com/talent', label: t('member_com_00597') },
     { to: '/com/cert', label: t('member_user_00235') },
     { to: '/com/messages', label: t('common.message') },

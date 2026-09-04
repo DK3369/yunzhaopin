@@ -9,12 +9,14 @@ const { data: dash } = await useAsyncData('com-dash', () =>
     .post<{
       applies_received: number
       applies_unread: number
-      resume_downloads: number
     }>('/v1/mcenter/com-dashboard', {})
     .catch(() => null),
 )
-const { data: jobCounts } = await useAsyncData('com-job-counts', () =>
-  api.post<{ total: number; online: number }>('/v1/mcenter/jobs/counts', {}).catch(() => ({ total: 0, online: 0 })),
+const { data: fans } = await useAsyncData('com-fans-n', () =>
+  api.post<{ total: number }>('/v1/mcenter/fans', { page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
+)
+const { data: looks } = await useAsyncData('com-looks-n', () =>
+  api.post<{ total: number }>('/v1/mcenter/look-jobs/list', { page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
 )
 useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
@@ -29,6 +31,7 @@ const links = [
   { to: '/com/jobs/new', icon: '/legacy/h5/images/job_add.png' },
   { to: '/com/applications', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/com/looks', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/com/fans', icon: '/legacy/h5/images/icon_communication.png' },
   { to: '/com/talent', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/com/cert', icon: '/legacy/h5/images/company.png' },
   { to: '/com/messages', icon: '/legacy/h5/images/icon_communication.png' },
@@ -60,7 +63,7 @@ function labelOf(to: string) {
           <li class="membRighTops_mr">
             <NuxtLink to="/com/applications" class="membRiTopText">
               <div class="membRiTopInfo">
-                <span>{{ $t('wap_com_00105') }}</span>
+                <span>{{ $t('member_com_00152') }}</span>
               </div>
               <div class="membRiTopNum">
                 <span>{{ dash?.applies_received ?? 0 }}</span>
@@ -71,22 +74,22 @@ function labelOf(to: string) {
             </NuxtLink>
           </li>
           <li class="membRighTops_mr">
-            <NuxtLink to="/com/jobs" class="membRiTopText">
+            <NuxtLink to="/com/fans" class="membRiTopText">
               <div class="membRiTopInfo">
-                <span>{{ $t('wap_com_00106') }}</span>
+                <span>{{ $t('wap_com_00407') }}</span>
               </div>
               <div class="membRiTopNum">
-                <span>{{ jobCounts?.online ?? jobCounts?.total ?? 0 }}</span>
+                <span>{{ fans?.total ?? 0 }}</span>
               </div>
             </NuxtLink>
           </li>
           <li class="membRighTops_mr">
-            <NuxtLink to="/com/talent" class="membRiTopText">
+            <NuxtLink to="/com/looks" class="membRiTopText">
               <div class="membRiTopInfo">
-                <span>{{ $t('wap_00576') }}</span>
+                <span>{{ $t('wap_user_00276') }}</span>
               </div>
               <div class="membRiTopNum">
-                <span>{{ dash?.resume_downloads ?? 0 }}</span>
+                <span>{{ looks?.total ?? 0 }}</span>
               </div>
             </NuxtLink>
           </li>
