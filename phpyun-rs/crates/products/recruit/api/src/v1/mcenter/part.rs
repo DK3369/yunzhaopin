@@ -6,13 +6,13 @@
 //! `member/com/model/part.class.php` / `partok.class.php`.
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::IdsBody;
+use phpyun_core::dto::{CreatedId, IdsBody, IdBody};
 use phpyun_core::json;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::part_service;
+use phpyun_services::part_service::{self, MemberPartInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -27,6 +27,10 @@ pub fn routes() -> Router<AppState> {
         // Company view
         .route("/com-parts", post(com_delete_parts))
         .route("/com-parts/list", post(com_parts))
+        .route("/com-parts/create", post(com_create_part))
+        .route("/com-parts/update", post(com_update_part))
+        .route("/com-parts/refresh", post(com_refresh_part))
+        .route("/com-parts/status", post(com_set_part_status))
         .route("/com-part-applications", post(com_applies))
         .route(
             "/com-part-applications/status",
@@ -110,6 +114,98 @@ pub struct ApplyStatusBody {
     /// 1 unviewed / 2 viewed / 3 contacted
     #[validate(range(min = 1, max = 3))]
     pub status: i32,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ComPartForm {
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub id: u64,
+    #[validate(length(min = 1, max = 80))]
+    pub name: String,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub r#type: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub provinceid: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub cityid: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub three_cityid: i32,
+    #[validate(length(max = 200))]
+    pub address: Option<String>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 9999))]
+    pub number: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 3))]
+    pub sex: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 1_000_000))]
+    pub salary: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub salary_type: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub billing_cycle: i32,
+    #[validate(length(max = 200))]
+    pub worktime: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_ts")]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
+    pub sdate: i64,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_ts")]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
+    pub edate: i64,
+    #[validate(length(max = 10000))]
+    pub content: Option<String>,
+    #[validate(length(max = 50))]
+    pub linkman: Option<String>,
+    #[validate(length(max = 20))]
+    pub linktel: Option<String>,
+    #[validate(length(max = 32))]
+    pub x: Option<String>,
+    #[validate(length(max = 32))]
+    pub y: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_ts")]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
+    pub deadline: i64,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ComPartStatusBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[validate(range(min = 0, max = 2))]
+    pub status: i32,
+}
+
+fn part_input(f: &ComPartForm) -> MemberPartInput<'_> {
+    MemberPartInput {
+        name: &f.name,
+        r#type: f.r#type,
+        provinceid: f.provinceid,
+        cityid: f.cityid,
+        three_cityid: f.three_cityid,
+        address: f.address.as_deref().unwrap_or(""),
+        number: f.number,
+        sex: f.sex,
+        salary: f.salary,
+        salary_type: f.salary_type,
+        billing_cycle: f.billing_cycle,
+        worktime: f.worktime.as_deref().unwrap_or(""),
+        sdate: f.sdate,
+        edate: f.edate,
+        content: f.content.as_deref().unwrap_or(""),
+        linkman: f.linkman.as_deref().unwrap_or(""),
+        linktel: f.linktel.as_deref().unwrap_or(""),
+        x: f.x.as_deref().unwrap_or(""),
+        y: f.y.as_deref().unwrap_or(""),
+        deadline: f.deadline,
+    }
 }
 
 // ==================== Job Seeker ====================
@@ -227,6 +323,81 @@ pub async fn com_delete_parts(
 ) -> AppResult<ApiResponse<json::Value>> {
     let n = part_service::delete_com_parts(&state, &user, &b.ids).await?;
     Ok(ApiResponse::data(json::json!({ "deleted": n })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-parts/create",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ComPartForm,
+    responses((status = 200, description = "ok", body = CreatedId))
+)]
+pub async fn com_create_part(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<ComPartForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
+    let id = part_service::create_com_part(&state, &user, part_input(&f), &ip).await?;
+    Ok(ApiResponse::data(CreatedId { id }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-parts/update",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ComPartForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn com_update_part(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<ComPartForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    if f.id == 0 {
+        return Err(phpyun_core::ApiError::param_invalid("id"));
+    }
+    part_service::update_com_part(&state, &user, f.id, part_input(&f), &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-parts/refresh",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn com_refresh_part(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    part_service::refresh_com_part(&state, &user, b.id, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-parts/status",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ComPartStatusBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn com_set_part_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(b): ValidatedJson<ComPartStatusBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    part_service::set_com_part_status(&state, &user, b.id, b.status, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true, "status": b.status })))
 }
 
 #[utoipa::path(

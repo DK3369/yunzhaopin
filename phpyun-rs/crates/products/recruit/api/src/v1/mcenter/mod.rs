@@ -27,6 +27,7 @@ pub mod interviews;
 pub mod invite;
 pub mod job_messages;
 pub mod jobs;
+pub mod look_jobs;
 pub mod messages;
 pub mod oauth_bindings;
 pub mod once_orders;
@@ -41,17 +42,20 @@ pub mod referrals;
 pub mod remarks;
 pub mod reports;
 pub mod resume;
+pub mod resume_cert;
 pub mod resume_downloads;
 pub mod resume_edu;
 pub mod resume_expect;
 pub mod resume_language;
 pub mod resume_out;
+pub mod resume_other;
 pub mod resume_project;
 pub mod resume_score;
 pub mod resume_share;
 pub mod resume_skill;
 pub mod resume_timeline;
 pub mod resume_tpl;
+pub mod resume_training;
 pub mod resume_work;
 pub mod saved_searches;
 pub mod search_history;
@@ -82,8 +86,12 @@ pub fn router() -> Router<AppState> {
         .merge(resume_project::routes())
         .merge(resume_skill::routes())
         .merge(resume_language::routes())
+        .merge(resume_training::routes())
+        .merge(resume_cert::routes())
+        .merge(resume_other::routes())
         .merge(company::routes())
         .merge(jobs::routes())
+        .merge(look_jobs::routes())
         .merge(job_messages::routes())
         .merge(apply::routes())
         .merge(applications::routes())

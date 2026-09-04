@@ -399,6 +399,38 @@ pub async fn try_consume_down_resume(pool: &MySqlPool, uid: u64) -> Result<bool,
     Ok(res.rows_affected() > 0)
 }
 
+pub async fn try_consume_breakpart(pool: &MySqlPool, uid: u64, n: i32) -> Result<bool, sqlx::Error> {
+    if n <= 0 {
+        return Ok(true);
+    }
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET breakpart_num = breakpart_num - ? \
+         WHERE uid = ? AND breakpart_num >= ?",
+    )
+    .bind(n)
+    .bind(uid)
+    .bind(n)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected() > 0)
+}
+
+pub async fn try_consume_breakjob(pool: &MySqlPool, uid: u64, n: i32) -> Result<bool, sqlx::Error> {
+    if n <= 0 {
+        return Ok(true);
+    }
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET breakjob_num = breakjob_num - ? \
+         WHERE uid = ? AND breakjob_num >= ?",
+    )
+    .bind(n)
+    .bind(uid)
+    .bind(n)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected() > 0)
+}
+
 pub async fn try_consume_invite_resume(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_company_statis SET invite_resume = invite_resume - 1 \

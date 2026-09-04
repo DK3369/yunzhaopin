@@ -28,6 +28,7 @@
 //! mcenter_service        ──> user_service             (member-center user lookups)
 //! contact_cert_service   ──> sms_service              (verification SMS)
 //! search_service         ──> hot_search_service       (record hot keywords)
+//! payment_notify_service ──> vip_service, once_service (gateway settle)
 //! ```
 //!
 //! Everything else is a **leaf**: services orchestrate `phpyun_models::*::repo`
@@ -107,6 +108,7 @@ pub mod member_logout_service;
 pub mod message_service;
 pub mod nav_menu_service;
 pub mod locoy_service;
+pub mod look_job_service;
 pub mod oauth_service;
 pub mod payment_notify_service;
 pub mod once_service;

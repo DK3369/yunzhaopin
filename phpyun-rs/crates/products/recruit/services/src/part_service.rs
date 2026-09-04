@@ -452,3 +452,212 @@ pub async fn update_com_apply_status(
     let n = part_repo::update_apply_status(state.db.pool(), apply_id, user.uid, status).await?;
     Ok(n)
 }
+
+pub struct MemberPartInput<'a> {
+    pub name: &'a str,
+    pub r#type: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: &'a str,
+    pub number: i32,
+    pub sex: i32,
+    pub salary: i32,
+    pub salary_type: i32,
+    pub billing_cycle: i32,
+    pub worktime: &'a str,
+    pub sdate: i64,
+    pub edate: i64,
+    pub content: &'a str,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub deadline: i64,
+}
+
+fn is_vip(vip_etime: i64, now: i64) -> bool {
+    vip_etime == 0 || vip_etime >= now
+}
+
+async fn consume_part_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppResult<()> {
+    let now = clock::now_ts();
+    let st = phpyun_models::company_statis::repo::find_admin(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("zph_need_vip"))?;
+    if !is_vip(st.vip_etime, now) {
+        return Err(ApiError::business("zph_need_vip"));
+    }
+    if st.rating_type == 2 {
+        return Ok(());
+    }
+    if st.rating_type == 1 {
+        if !phpyun_models::company_statis::repo::try_consume_breakpart(state.db.pool(), uid, n)
+            .await?
+        {
+            return Err(ApiError::business("part_refresh_quota"));
+        }
+        return Ok(());
+    }
+    Err(ApiError::business("part_refresh_quota"))
+}
+
+fn write_from_input<'a>(input: &'a MemberPartInput<'a>) -> part_repo::MemberPartWrite<'a> {
+    part_repo::MemberPartWrite {
+        name: input.name,
+        r#type: input.r#type,
+        provinceid: input.provinceid,
+        cityid: input.cityid,
+        three_cityid: input.three_cityid,
+        address: input.address,
+        number: input.number,
+        sex: input.sex,
+        salary: input.salary,
+        salary_type: input.salary_type,
+        billing_cycle: input.billing_cycle,
+        worktime: input.worktime,
+        sdate: input.sdate,
+        edate: input.edate,
+        content: input.content,
+        linkman: input.linkman,
+        linktel: input.linktel,
+        x: input.x,
+        y: input.y,
+        deadline: input.deadline,
+    }
+}
+
+pub async fn create_com_part(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    input: MemberPartInput<'_>,
+    client_ip: &str,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    let now = clock::now_ts();
+    let looked_up = phpyun_models::company::repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .and_then(|c| c.name)
+        .unwrap_or_default();
+    let id = part_repo::locoy_create(
+        state.db.pool(),
+        &part_repo::LocoyPartCreate {
+            uid: user.uid,
+            name: input.name,
+            com_name: looked_up.as_str(),
+            r#type: input.r#type,
+            provinceid: input.provinceid,
+            cityid: input.cityid,
+            three_cityid: input.three_cityid,
+            address: input.address,
+            number: input.number,
+            sex: input.sex,
+            salary: input.salary,
+            salary_type: input.salary_type,
+            billing_cycle: input.billing_cycle,
+            worktime: input.worktime,
+            sdate: input.sdate,
+            edate: input.edate,
+            content: input.content,
+            linkman: input.linkman,
+            linktel: input.linktel,
+            state: 0,
+            x: input.x,
+            y: input.y,
+            deadline: input.deadline,
+            now,
+            did: user.did,
+        },
+    )
+    .await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("part.create", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("part:{id}")),
+    )
+    .await;
+    Ok(id)
+}
+
+pub async fn update_com_part(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+    input: MemberPartInput<'_>,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_employer()?;
+    let now = clock::now_ts();
+    let n = part_repo::update_for_com(state.db.pool(), id, user.uid, &write_from_input(&input), now)
+        .await?;
+    if n == 0 {
+        return Err(ApiError::business("job_not_found"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("part.update", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("part:{id}")),
+    )
+    .await;
+    Ok(())
+}
+
+pub async fn set_com_part_status(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+    status: i32,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_employer()?;
+    let status = match status {
+        0 => 0,
+        1 | 2 => 1,
+        _ => return Err(ApiError::param_invalid("status")),
+    };
+    let job = part_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    if status == 0 && job.state != 1 {
+        return Err(ApiError::business("job_pending"));
+    }
+    let n = part_repo::set_status_for_com(state.db.pool(), id, user.uid, status).await?;
+    if n == 0 {
+        return Err(ApiError::business("job_not_found"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("part.status_change", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("part:{id}"))
+            .meta(&serde_json::json!({ "status": status })),
+    )
+    .await;
+    Ok(())
+}
+
+pub async fn refresh_com_part(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_employer()?;
+    let _job = part_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    consume_part_refresh_quota(state, user.uid, 1).await?;
+    let now = clock::now_ts();
+    let n = part_repo::refresh_for_com(state.db.pool(), id, user.uid, now).await?;
+    if n == 0 {
+        return Err(ApiError::business("job_not_found"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("part.refresh", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("part:{id}")),
+    )
+    .await;
+    Ok(())
+}

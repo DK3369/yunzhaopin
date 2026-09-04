@@ -26,7 +26,11 @@
 /v1/mcenter/com-part-applications
 /v1/mcenter/com-part-applications/status
 /v1/mcenter/com-parts
+/v1/mcenter/com-parts/create
 /v1/mcenter/com-parts/list
+/v1/mcenter/com-parts/refresh
+/v1/mcenter/com-parts/status
+/v1/mcenter/com-parts/update
 /v1/mcenter/comments/delete
 /v1/mcenter/company
 /v1/mcenter/company-addresses
@@ -115,6 +119,7 @@
 /v1/mcenter/jobs/refresh
 /v1/mcenter/jobs/status
 /v1/mcenter/jobs/update
+/v1/mcenter/look-jobs/list
 /v1/mcenter/messages
 /v1/mcenter/messages/delete
 /v1/mcenter/messages/read
@@ -175,6 +180,9 @@
 /v1/mcenter/resume-tpls
 /v1/mcenter/resume-tpls/apply
 /v1/mcenter/resume-tpls/buy
+/v1/mcenter/resume/certs
+/v1/mcenter/resume/certs/list
+/v1/mcenter/resume/certs/update
 /v1/mcenter/resume/completion
 /v1/mcenter/resume/edus
 /v1/mcenter/resume/edus/list
@@ -186,6 +194,9 @@
 /v1/mcenter/resume/languages/list
 /v1/mcenter/resume/languages/update
 /v1/mcenter/resume/list
+/v1/mcenter/resume/others
+/v1/mcenter/resume/others/list
+/v1/mcenter/resume/others/update
 /v1/mcenter/resume/projects
 /v1/mcenter/resume/projects/list
 /v1/mcenter/resume/projects/update
@@ -195,6 +206,9 @@
 /v1/mcenter/resume/skills/update
 /v1/mcenter/resume/status
 /v1/mcenter/resume/timeline
+/v1/mcenter/resume/trainings
+/v1/mcenter/resume/trainings/list
+/v1/mcenter/resume/trainings/update
 /v1/mcenter/resume/works
 /v1/mcenter/resume/works/list
 /v1/mcenter/resume/works/update

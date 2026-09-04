@@ -856,3 +856,101 @@ pub async fn refresh_lastupdate(pool: &MySqlPool, ids: &[u64], now: i64) -> Resu
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }
+
+pub struct MemberPartWrite<'a> {
+    pub name: &'a str,
+    pub r#type: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: &'a str,
+    pub number: i32,
+    pub sex: i32,
+    pub salary: i32,
+    pub salary_type: i32,
+    pub billing_cycle: i32,
+    pub worktime: &'a str,
+    pub sdate: i64,
+    pub edate: i64,
+    pub content: &'a str,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub deadline: i64,
+}
+
+pub async fn update_for_com(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    w: &MemberPartWrite<'_>,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_partjob SET name=?, `type`=?, sdate=?, edate=?, worktime=?, number=?, sex=?, \
+         salary=?, salary_type=?, billing_cycle=?, provinceid=?, cityid=?, three_cityid=?, address=?, \
+         x=?, y=?, content=?, deadline=?, linkman=?, linktel=?, lastupdate=? \
+         WHERE id=? AND uid=?",
+    )
+    .bind(w.name)
+    .bind(w.r#type)
+    .bind(w.sdate)
+    .bind(w.edate)
+    .bind(w.worktime)
+    .bind(w.number)
+    .bind(w.sex)
+    .bind(w.salary)
+    .bind(w.salary_type)
+    .bind(w.billing_cycle)
+    .bind(w.provinceid)
+    .bind(w.cityid)
+    .bind(w.three_cityid)
+    .bind(w.address)
+    .bind(w.x)
+    .bind(w.y)
+    .bind(w.content)
+    .bind(w.deadline)
+    .bind(w.linkman)
+    .bind(w.linktel)
+    .bind(now)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_status_for_com(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_partjob SET status = ? WHERE id = ? AND uid = ?")
+        .bind(status)
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn refresh_for_com(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_partjob SET lastupdate = ?, upstatus_time = ?, \
+         upstatus_count = upstatus_count + 1 WHERE id = ? AND uid = ?",
+    )
+    .bind(now)
+    .bind(now)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}

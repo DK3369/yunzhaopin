@@ -679,6 +679,309 @@ pub mod language_svc {
     }
 }
 
+// ==================== Training ====================
+
+pub mod training_svc {
+    use super::*;
+
+    pub async fn list(
+        state: &AppState,
+        user: &AuthenticatedUser,
+    ) -> AppResult<Vec<training::Training>> {
+        user.require_jobseeker()?;
+        Ok(training::list_by_uid(state.db.reader(), user.uid).await?)
+    }
+
+    pub async fn create(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        input: training::TrainingInput<'_>,
+        client_ip: &str,
+    ) -> AppResult<u64> {
+        user.require_jobseeker()?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = training::create(state.db.pool(), user.uid, eid, &input).await?;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Training,
+            ChildOp::Create,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.training_add", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("training:{id}")),
+        )
+        .await;
+        Ok(id)
+    }
+
+    pub async fn update(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        input: training::TrainingInput<'_>,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Training, id, user.uid)
+            .await?
+            .ok_or(ApiError::business("resume_not_found"))?;
+        let affected = training::update(pool, id, user.uid, &input).await?;
+        if affected == 0 {
+            return Err(ApiError::business("resume_not_found"));
+        }
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Training,
+            ChildOp::Update,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new(
+                "resume.training_update",
+                Actor::uid(user.uid).with_ip(client_ip),
+            )
+            .target(format!("training:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+
+    pub async fn delete(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Training, id, user.uid)
+            .await?
+            .ok_or(ApiError::business("resume_not_found"))?;
+        let affected = training::delete(pool, id, user.uid).await?;
+        if affected == 0 {
+            return Err(ApiError::business("resume_not_found"));
+        }
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Training,
+            ChildOp::Delete,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new(
+                "resume.training_delete",
+                Actor::uid(user.uid).with_ip(client_ip),
+            )
+            .target(format!("training:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+}
+
+// ==================== Certificates ====================
+
+pub mod cert_svc {
+    use super::*;
+
+    pub async fn list(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<cert::Cert>> {
+        user.require_jobseeker()?;
+        Ok(cert::list_by_uid(state.db.reader(), user.uid).await?)
+    }
+
+    pub async fn create(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        input: cert::CertInput<'_>,
+        client_ip: &str,
+    ) -> AppResult<u64> {
+        user.require_jobseeker()?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = cert::create(state.db.pool(), user.uid, eid, &input).await?;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Cert,
+            ChildOp::Create,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.cert_add", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("cert:{id}")),
+        )
+        .await;
+        Ok(id)
+    }
+
+    pub async fn update(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        input: cert::CertInput<'_>,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Cert, id, user.uid)
+            .await?
+            .ok_or(ApiError::business("resume_not_found"))?;
+        let affected = cert::update(pool, id, user.uid, &input).await?;
+        if affected == 0 {
+            return Err(ApiError::business("resume_not_found"));
+        }
+        super::after_child(state, user.uid, eid, user_resume::Section::Cert, ChildOp::Update)
+            .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.cert_update", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("cert:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+
+    pub async fn delete(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Cert, id, user.uid)
+            .await?
+            .ok_or(ApiError::business("resume_not_found"))?;
+        let affected = cert::delete(pool, id, user.uid).await?;
+        if affected == 0 {
+            return Err(ApiError::business("resume_not_found"));
+        }
+        super::after_child(state, user.uid, eid, user_resume::Section::Cert, ChildOp::Delete)
+            .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.cert_delete", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("cert:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+}
+
+// ==================== Other ====================
+
+pub mod other_svc {
+    use super::*;
+
+    pub async fn list(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<other::Other>> {
+        user.require_jobseeker()?;
+        Ok(other::list_by_uid(state.db.reader(), user.uid).await?)
+    }
+
+    pub async fn create(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        input: other::OtherInput<'_>,
+        client_ip: &str,
+    ) -> AppResult<u64> {
+        user.require_jobseeker()?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = other::create(state.db.pool(), user.uid, eid, &input).await?;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Other,
+            ChildOp::Create,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.other_add", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("other:{id}")),
+        )
+        .await;
+        Ok(id)
+    }
+
+    pub async fn update(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        input: other::OtherInput<'_>,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Other, id, user.uid)
+            .await?
+            .ok_or(ApiError::business("resume_not_found"))?;
+        let affected = other::update(pool, id, user.uid, &input).await?;
+        if affected == 0 {
+            return Err(ApiError::business("resume_not_found"));
+        }
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Other,
+            ChildOp::Update,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.other_update", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("other:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+
+    pub async fn delete(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Other, id, user.uid)
+            .await?
+            .ok_or(ApiError::business("resume_not_found"))?;
+        let affected = other::delete(pool, id, user.uid).await?;
+        if affected == 0 {
+            return Err(ApiError::business("resume_not_found"));
+        }
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Other,
+            ChildOp::Delete,
+        )
+        .await;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.other_delete", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("other:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+}
+
 // ==================== Public reads (for companies viewing a resume) ====================
 
 /// One-shot fetch of the three primary sub-tables for a uid — used by the resume detail page

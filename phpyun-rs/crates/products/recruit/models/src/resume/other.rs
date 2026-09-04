@@ -67,3 +67,12 @@ pub async fn update(
     .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_resume_other WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}

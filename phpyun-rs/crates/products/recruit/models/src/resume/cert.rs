@@ -33,3 +33,64 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Cert>, sqlx::
         .fetch_all(pool)
         .await
 }
+
+pub struct CertInput<'a> {
+    pub name: &'a str,
+    pub sdate: i64,
+    pub edate: i64,
+    pub title: Option<&'a str>,
+    pub content: Option<&'a str>,
+}
+
+pub async fn create(
+    pool: &MySqlPool,
+    uid: u64,
+    eid: u64,
+    input: &CertInput<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_resume_cert (uid, eid, name, sdate, edate, title, content) \
+         VALUES (?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(uid)
+    .bind(eid)
+    .bind(input.name)
+    .bind(input.sdate)
+    .bind(input.edate)
+    .bind(input.title)
+    .bind(input.content)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn update(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    input: &CertInput<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume_cert SET name = ?, sdate = ?, edate = ?, title = ?, content = ? \
+         WHERE id = ? AND uid = ?",
+    )
+    .bind(input.name)
+    .bind(input.sdate)
+    .bind(input.edate)
+    .bind(input.title)
+    .bind(input.content)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_resume_cert WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
