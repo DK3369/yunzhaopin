@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { listFailMsg } from '~/utils/site'
+import type { DictItem } from '~/utils/query'
 
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
 const keyword = computed(() => String(route.query.keyword || ''))
-const { t } = useI18n()
+const provinceId = computed(() => Number(route.query.province_id || 0) || undefined)
+const cityId = computed(() => Number(route.query.city_id || 0) || undefined)
+const threeCityId = computed(() => Number(route.query.three_city_id || 0) || undefined)
+const partType = computed(() => Number(route.query.part_type || 0) || undefined)
+const billingCycle = computed(() => Number(route.query.billing_cycle || 0) || undefined)
+const { t, locale } = useI18n()
 const api = useApi()
 const { applyToQuery } = useSubSite()
 const { data, error } = await useAsyncData(
-  () => `parts-${page.value}-${keyword.value}`,
+  () =>
+    `parts-${page.value}-${keyword.value}-${provinceId.value || 0}-${cityId.value || 0}-${threeCityId.value || 0}-${partType.value || 0}-${billingCycle.value || 0}`,
   () =>
     api.get<{ list: Array<{ id: number; name: string; com_name?: string; city_name?: string }>; total: number }>(
       '/v1/wap/parts',
@@ -16,10 +23,42 @@ const { data, error } = await useAsyncData(
         page: page.value,
         page_size: 20,
         keyword: keyword.value || undefined,
-        part_type: Number(route.query.part_type || 0) || undefined,
+        province_id: provinceId.value,
+        city_id: cityId.value,
+        three_city_id: threeCityId.value,
+        part_type: partType.value,
+        billing_cycle: billingCycle.value,
       }),
     ),
 )
+const { data: provinces } = await useAsyncData(
+  () => `dict-city-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
+)
+const { data: cities } = await useAsyncData(
+  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
+  () =>
+    provinceId.value
+      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value }).catch(() => [] as DictItem[])
+      : Promise.resolve([] as DictItem[]),
+)
+const { data: districts } = await useAsyncData(
+  () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
+  () =>
+    cityId.value
+      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: cityId.value }).catch(() => [] as DictItem[])
+      : Promise.resolve([] as DictItem[]),
+)
+const { data: partTypes } = await useAsyncData(
+  () => `cat-part-${locale.value}`,
+  () => api.get<Array<{ id: number; name: string; parent_id?: number }>>('/v1/wap/categories', { kind: 'part' }).catch(() => []),
+)
+const typeItems = computed(() =>
+  (partTypes.value || [])
+    .filter((c) => !c.parent_id)
+    .map((c) => ({ id: c.id, name: c.name })),
+)
+const cycleItems = computed(() => (partTypes.value || []).filter((c) => Number(c.parent_id) > 0).map((c) => ({ id: c.id, name: c.name })))
 useSeoMeta({ title: t('wap_com_00311') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 useListLoginGate(error)
@@ -32,6 +71,50 @@ const list = computed(() => data.value?.list || [])
       <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
+    <FilterRow
+      :label="$t('member_com_00378')"
+      param="province_id"
+      :items="provinces || []"
+      :current="provinceId"
+      path="/parts"
+      :all-label="$t('common.all')"
+    />
+    <FilterRow
+      v-if="provinceId && (cities || []).length"
+      :label="$t('common_02110')"
+      param="city_id"
+      :items="cities || []"
+      :current="cityId"
+      path="/parts"
+      :all-label="$t('common.all')"
+    />
+    <FilterRow
+      v-if="cityId && (districts || []).length"
+      :label="$t('member_com_00378')"
+      param="three_city_id"
+      :items="districts || []"
+      :current="threeCityId"
+      path="/parts"
+      :all-label="$t('common.all')"
+    />
+    <FilterRow
+      v-if="typeItems.length"
+      :label="$t('wap_com_00311')"
+      param="part_type"
+      :items="typeItems"
+      :current="partType"
+      path="/parts"
+      :all-label="$t('common.all')"
+    />
+    <FilterRow
+      v-if="cycleItems.length"
+      :label="$t('wap_user_00220')"
+      param="billing_cycle"
+      :items="cycleItems"
+      :current="billingCycle"
+      path="/parts"
+      :all-label="$t('common.all')"
+    />
     <SimpleCard
       v-for="row in list"
       :key="row.id"
@@ -49,4 +132,3 @@ const list = computed(() => data.value?.list || [])
     </template>
   </NewsListShell>
 </template>
-

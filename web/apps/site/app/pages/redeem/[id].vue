@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { DictItem } from '~/utils/query'
+
 const id = Number(useRoute().params.id)
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { me } = useSiteChrome()
 const api = useApi()
 const { data } = await useAsyncData(`reward-${id}`, () =>
@@ -16,6 +18,39 @@ const form = reactive({
   three_cityid: 0,
   num: 1,
 })
+const { data: provinces } = await useAsyncData(
+  () => `dict-city-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
+)
+const { data: cities, refresh: refreshCities } = await useAsyncData(
+  () => `dict-city-child-${locale.value}-${form.provinceid}`,
+  () =>
+    form.provinceid
+      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: form.provinceid }).catch(() => [] as DictItem[])
+      : Promise.resolve([] as DictItem[]),
+)
+const { data: districts, refresh: refreshDistricts } = await useAsyncData(
+  () => `dict-city-dist-${locale.value}-${form.cityid}`,
+  () =>
+    form.cityid
+      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: form.cityid }).catch(() => [] as DictItem[])
+      : Promise.resolve([] as DictItem[]),
+)
+watch(
+  () => form.provinceid,
+  () => {
+    form.cityid = 0
+    form.three_cityid = 0
+    refreshCities()
+  },
+)
+watch(
+  () => form.cityid,
+  () => {
+    form.three_cityid = 0
+    refreshDistricts()
+  },
+)
 const msg = ref('')
 async function submit() {
   msg.value = ''
@@ -44,9 +79,18 @@ useHead({ link: [{ rel: 'canonical', href: `/redeem/${id}` }] })
       <input v-model="form.password" type="password" required :placeholder="$t('wap_01273')" />
       <input v-model="form.linkman" required :placeholder="$t('wap_01619')" />
       <input v-model="form.linktel" required />
-      <input v-model.number="form.provinceid" type="number" :placeholder="$t('ui.province_id')" />
-      <input v-model.number="form.cityid" type="number" :placeholder="$t('ui.city_id')" />
-      <input v-model.number="form.three_cityid" type="number" />
+      <select v-model.number="form.provinceid">
+        <option :value="0">{{ $t('common.all') }}</option>
+        <option v-for="p in provinces || []" :key="p.id" :value="p.id">{{ p.name }}</option>
+      </select>
+      <select v-model.number="form.cityid">
+        <option :value="0">{{ $t('common.all') }}</option>
+        <option v-for="c in cities || []" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
+      <select v-if="(districts || []).length" v-model.number="form.three_cityid">
+        <option :value="0">{{ $t('common.all') }}</option>
+        <option v-for="d in districts || []" :key="d.id" :value="d.id">{{ d.name }}</option>
+      </select>
       <input v-model="form.address" />
       <input v-model.number="form.num" type="number" min="1" />
       <button type="submit">{{ $t('common.submit') }}</button>

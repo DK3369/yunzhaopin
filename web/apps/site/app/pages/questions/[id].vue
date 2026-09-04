@@ -113,6 +113,52 @@ async function supportAnswer(aid: number) {
     askMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
+async function deleteQuestion() {
+  askMsg.value = ''
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  try {
+    await api.post('/v1/mcenter/questions/delete', { id })
+    await navigateTo('/questions')
+  } catch (e: unknown) {
+    askMsg.value = e instanceof Error ? e.message : t('common_00888')
+  }
+}
+const reportReason = ref('spam')
+const reportDetail = ref('')
+const captcha = ref<{ cid: string; image: string } | null>(null)
+const captchaInput = ref('')
+async function loadCaptcha() {
+  captcha.value = await api.post('/v1/wap/captcha')
+  captchaInput.value = ''
+}
+async function reportQuestion() {
+  askMsg.value = ''
+  if (!me.value) {
+    await navigateTo('/login')
+    return
+  }
+  if (!captcha.value) await loadCaptcha()
+  try {
+    await api.post('/v1/mcenter/reports', {
+      target_kind: 6,
+      target_id: id,
+      reason_code: reportReason.value,
+      detail: reportDetail.value,
+      captcha_cid: captcha.value?.cid || '',
+      captcha_input: captchaInput.value,
+    })
+    askMsg.value = t('common.success')
+    reportDetail.value = ''
+    await loadCaptcha()
+  } catch (e: unknown) {
+    askMsg.value = e instanceof Error ? e.message : t('common_00888')
+    await loadCaptcha()
+  }
+}
+const isOwner = computed(() => Number(me.value?.uid || 0) === Number(row.value.uid || 0))
 useSeoMeta({
   title: () => String(row.value.title || t('ui.qa')),
   description: () => seoJoin([row.value.content, row.value.title]),
@@ -128,7 +174,15 @@ useHead({ link: [{ rel: 'canonical', href: `/questions/${id}` }] })
     <p v-else-if="!row.title" class="muted">{{ $t('wap_00630') }}</p>
     <p>
       <a href="javascript:;" @click.prevent="toggleFollow">{{ following ? $t('wap_js_00140') : $t('wap_00164') }}</a>
+      <a v-if="isOwner" href="javascript:;" @click.prevent="deleteQuestion"> {{ $t('common.delete') }}</a>
     </p>
+    <form class="form" @submit.prevent="reportQuestion">
+      <input v-model="reportReason" :placeholder="$t('ui.detail')" />
+      <textarea v-model="reportDetail" rows="2" />
+      <img v-if="captcha?.image" :src="captcha.image" alt="" @click="loadCaptcha" />
+      <input v-model="captchaInput" :placeholder="$t('wap_00110')" @focus="!captcha && loadCaptcha()" />
+      <button type="submit">{{ $t('wap_com_00350') }}</button>
+    </form>
     <h2>{{ $t('ui.qa') }}</h2>
     <p v-if="!allAnswers.length" class="muted">{{ $t('common_02409') }}</p>
     <div v-for="a in allAnswers" :key="Number(a.id)" class="stack">

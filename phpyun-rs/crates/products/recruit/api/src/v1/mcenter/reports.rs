@@ -19,8 +19,8 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ReportForm {
-    /// 1=job / 2=company / 3=resume / 4=article / 5=user
-    #[validate(range(min = 1, max = 5))]
+    /// 1=job / 2=company / 3=resume / 4=article / 5=user / 6=question
+    #[validate(range(min = 1, max = 6))]
     pub target_kind: i32,
     #[validate(range(min = 1, max = 99_999_999))]
     pub target_id: u64,
@@ -80,6 +80,7 @@ fn report_kind_name(k: i32) -> &'static str {
         3 => "resume",
         4 => "article",
         5 => "user",
+        6 => "question",
         _ => "unknown",
     }
 }

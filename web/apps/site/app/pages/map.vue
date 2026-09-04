@@ -29,6 +29,8 @@ const tab = computed(() => String(route.query.tab || 'jobs'))
 const page = computed(() => Number(route.query.page || 1))
 const hasPoint = computed(() => x.value !== '' && y.value !== '')
 const locFail = ref(false)
+const xInput = ref(String(route.query.x || ''))
+const yInput = ref(String(route.query.y || ''))
 const api = useApi()
 const { data, error } = await useAsyncData(
   () => `map-${tab.value}-${x.value}-${y.value}-${page.value}`,
@@ -112,16 +114,23 @@ useSeoMeta({ title: t('default_00139') })
     <p v-if="!hasPoint || locFail">
       <button type="button" @click="locate">{{ $t('common_05774') }}</button>
     </p>
-    <p v-else-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
-    <template v-else-if="tab === 'companies'">
-      <p v-if="!companies.length" class="muted">{{ $t('wap_00590') }}</p>
-      <CompanyCard v-for="c in companies" :key="c.uid" :company="c" />
-    </template>
-    <template v-else>
-      <p v-if="!list.length" class="muted">{{ $t('wap_00606') }}</p>
-      <div v-else>
-        <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
-      </div>
+    <form class="form" @submit.prevent="navigateTo({ path: '/map', query: { ...route.query, x: xInput, y: yInput, page: 1 } })">
+      <input v-model="xInput" placeholder="x" />
+      <input v-model="yInput" placeholder="y" />
+      <button type="submit">{{ $t('common.search') }}</button>
+    </form>
+    <template v-if="hasPoint && !locFail">
+      <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
+      <template v-else-if="tab === 'companies'">
+        <p v-if="!companies.length" class="muted">{{ $t('wap_00590') }}</p>
+        <CompanyCard v-for="c in companies" :key="c.uid" :company="c" />
+      </template>
+      <template v-else>
+        <p v-if="!list.length" class="muted">{{ $t('wap_00606') }}</p>
+        <div v-else>
+          <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
+        </div>
+      </template>
     </template>
     <Pager
       :page="page"

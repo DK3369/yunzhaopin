@@ -25,3 +25,4 @@ pub const KIND_COMPANY: i32 = 2;
 pub const KIND_RESUME: i32 = 3;
 pub const KIND_ARTICLE: i32 = 4;
 pub const KIND_USER: i32 = 5;
+pub const KIND_QUESTION: i32 = 6;

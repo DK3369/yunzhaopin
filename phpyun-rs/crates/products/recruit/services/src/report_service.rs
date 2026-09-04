@@ -5,7 +5,9 @@ use phpyun_core::{
     clock, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser, Pagination,
 };
 use phpyun_models::report::{
-    entity::{Report, KIND_ARTICLE, KIND_COMPANY, KIND_JOB, KIND_RESUME, KIND_USER},
+    entity::{
+        Report, KIND_ARTICLE, KIND_COMPANY, KIND_JOB, KIND_QUESTION, KIND_RESUME, KIND_USER,
+    },
     repo as report_repo,
 };
 use std::time::Duration;
@@ -28,14 +30,17 @@ pub async fn submit(
     input: ReportInput<'_>,
     client_ip: &str,
 ) -> AppResult<u64> {
-    if input.target_kind == KIND_RESUME {
+    if input.target_kind == KIND_QUESTION {
+        // Logged-in users may report a question (PHP myquestion report).
+    } else if input.target_kind == KIND_RESUME {
         user.require_employer()?;
         return submit_resume_report(state, user, input, client_ip).await;
+    } else {
+        user.require_jobseeker()?;
     }
-    user.require_jobseeker()?;
     if !matches!(
         input.target_kind,
-        KIND_JOB | KIND_COMPANY | KIND_RESUME | KIND_ARTICLE | KIND_USER
+        KIND_JOB | KIND_COMPANY | KIND_RESUME | KIND_ARTICLE | KIND_USER | KIND_QUESTION
     ) {
         return Err(ApiError::param_invalid(format!(
             "target_kind={}",

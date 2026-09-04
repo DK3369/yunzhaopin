@@ -32,6 +32,7 @@ useSeoMeta({ title: t('ui.my_reports') })
         <option :value="3">{{ $t('common.resume') }}</option>
         <option :value="4">{{ $t('common.article') }}</option>
         <option :value="5">{{ $t('ui.user_kind') }}</option>
+        <option :value="6">{{ $t('wap_00160') }}</option>
       </select>
       <input v-model.number="form.target_id" type="number" placeholder="target_id" />
       <input v-model="form.reason_code" placeholder="reason_code" />
