@@ -10,8 +10,8 @@ useSeoMeta({ title: () => String(data.value?.title || t('ui.announcements')) })
 
 <template>
   <article>
-    <h1>{{ data?.title || $t('home.no_job_data') }}</h1>
+    <h1>{{ data?.title || $t('ui.announcements') }}</h1>
     <div v-if="data?.content || data?.body" v-html="data?.content || data?.body" />
-    <p v-else class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else class="muted">{{ $t('wap_00129') }}</p>
   </article>
 </template>

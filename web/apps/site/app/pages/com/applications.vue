@@ -49,10 +49,10 @@ async function sendInvite(confirm = false) {
       }
       return
     }
-    msg.value = t('common.confirm')
+    msg.value = t('wap_00291')
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('common_00376')
+    msg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
 useSeoMeta({ title: t('wap_com_00420') })

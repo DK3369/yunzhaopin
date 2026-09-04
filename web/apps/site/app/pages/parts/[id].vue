@@ -9,9 +9,9 @@ useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
 
 <template>
   <article>
-    <h1>{{ data?.name || $t('home.no_job_data') }}</h1>
+    <h1>{{ data?.name || $t('member_com_00477') }}</h1>
     <p v-if="data?.com_name || data?.address" class="muted">{{ data.com_name }} {{ data.address }}</p>
     <div v-if="data?.content" v-html="data.content" />
-    <p v-else-if="!data?.name" class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else-if="!data?.name" class="muted">{{ $t('member_com_00477') }}</p>
   </article>
 </template>

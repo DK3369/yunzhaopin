@@ -65,17 +65,17 @@ onMounted(() => {
   }
   locate()
 })
-useSeoMeta({ title: t('wap_00223') })
+useSeoMeta({ title: t('default_00139') })
 </script>
 
 <template>
   <section>
-    <h1>{{ $t('wap_00223') }}</h1>
+    <h1>{{ $t('default_00139') }}</h1>
     <p v-if="!hasPoint || locFail">
-      <button type="button" @click="locate">{{ $t('wap_00223') }}</button>
+      <button type="button" @click="locate">{{ $t('common_05774') }}</button>
     </p>
-    <p v-else-if="error" class="muted">{{ $t('common_02402') }}</p>
-    <p v-else-if="!list.length" class="muted">{{ $t('common_02402') }}</p>
+    <p v-else-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
+    <p v-else-if="!list.length" class="muted">{{ $t('wap_00606') }}</p>
     <div v-else>
       <JobCard v-for="job in list" :key="job.id" :job="job" variant="search" />
     </div>

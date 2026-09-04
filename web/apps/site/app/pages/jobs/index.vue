@@ -282,7 +282,7 @@ const selected = computed(() => {
 
 useSeoMeta({ title: keyword.value ? `${keyword.value} - ${t('common.job')}` : t('default_00246') })
 
-const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 
 function goPage(p: number) {
   return navigateTo({ query: { ...route.query, page: p } })

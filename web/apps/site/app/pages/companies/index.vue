@@ -74,7 +74,7 @@ const { data: welfares } = await useAsyncData(
   () => api.get<DictItem[]>('/v1/wap/dict/welfares').catch(() => [] as DictItem[]),
 )
 useSeoMeta({ title: t('home.famous_companies') })
-const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const list = computed(() => data.value?.list || [])
 </script>
 

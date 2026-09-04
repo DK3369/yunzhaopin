@@ -39,7 +39,7 @@ onMounted(async () => {
       return
     } catch (e: unknown) {
       const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-      err.value = ex.data?.statusMessage || ex.statusMessage || t('common.no')
+      err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
     }
   }
   if (!captcha.value) await loadCaptcha()
@@ -76,7 +76,7 @@ async function submitPass() {
     await afterLogin(me)
   } catch (e: unknown) {
     const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common.no')
+    err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
     loadCaptcha()
   }
 }
@@ -90,7 +90,7 @@ async function sendSms() {
       authcode: authcode.value,
     })
   } catch (e: unknown) {
-    err.value = e instanceof Error ? e.message : t('common.no')
+    err.value = e instanceof Error ? e.message : t('common_00888')
     loadCaptcha()
   }
 }
@@ -104,7 +104,7 @@ async function submitSms() {
     await afterLogin(me)
   } catch (e: unknown) {
     const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common.no')
+    err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
   }
 }
 useSeoMeta({ title: t('common.login') })

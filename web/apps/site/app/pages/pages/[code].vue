@@ -21,6 +21,6 @@ useHead({ link: [{ rel: 'canonical', href: `/pages/${code}` }] })
   <article>
     <h1>{{ data?.title || $t('ui.page_missing') }}</h1>
     <div v-if="data?.content" v-html="data.content" />
-    <p v-else class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else class="muted">{{ $t('common_02409') }}</p>
   </article>
 </template>

@@ -9,9 +9,9 @@ useHead({ link: [{ rel: 'canonical', href: `/once/${id}` }] })
 
 <template>
   <article>
-    <h1>{{ data?.companyname || $t('home.no_job_data') }}</h1>
+    <h1>{{ data?.companyname || $t('wap_00630') }}</h1>
     <p v-if="data?.linkman_masked" class="muted">{{ $t('ui.linkman') }} {{ data.linkman_masked }} · {{ data.linktel_masked }}</p>
     <p v-if="data?.require">{{ data.require }}</p>
-    <p v-else-if="!data?.companyname" class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else-if="!data?.companyname" class="muted">{{ $t('wap_00630') }}</p>
   </article>
 </template>

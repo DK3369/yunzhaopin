@@ -38,20 +38,20 @@ useSeoMeta({ title: kw.value ? `${kw.value} - ${t('common.search')}` : t('common
       <input name="kw" :value="kw" :placeholder="$t('common.search')" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
-    <p v-if="!kw" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-if="!kw" class="muted">{{ $t('default_00348') }}</p>
     <template v-else>
       <h2>{{ $t('common.job') }}</h2>
-      <p v-if="!(data?.jobs || []).length" class="muted">{{ $t('common_02402') }}</p>
+      <p v-if="!(data?.jobs || []).length" class="muted">{{ $t('default_00033') }}</p>
       <div class="stack">
         <JobCard v-for="job in data?.jobs || []" :key="job.id" :job="job" />
       </div>
       <h2>{{ $t('common.company') }}</h2>
-      <p v-if="!(data?.companies || []).length" class="muted">{{ $t('common_02402') }}</p>
+      <p v-if="!(data?.companies || []).length" class="muted">{{ $t('wap_00590') }}</p>
       <div class="stack">
         <CompanyCard v-for="c in data?.companies || []" :key="c.uid" :company="c" />
       </div>
       <h2>{{ $t('common.resume') }}</h2>
-      <p v-if="!(resumeData?.list || []).length" class="muted">{{ $t('common_02402') }}</p>
+      <p v-if="!(resumeData?.list || []).length" class="muted">{{ $t('wap_com_00315') }}</p>
       <div class="stack">
         <NuxtLink
           v-for="r in resumeData?.list || []"

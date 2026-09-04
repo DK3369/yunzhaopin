@@ -49,7 +49,7 @@ async function loadMoreJobs() {
     /* keep first-page total */
   }
 }
-const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const following = ref(false)
 const followMsg = ref('')
 const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
@@ -196,7 +196,7 @@ async function postAsk() {
     askMsg.value = t('common.confirm')
     await loadAskCaptcha()
   } catch (e: unknown) {
-    askMsg.value = e instanceof Error ? e.message : t('common_00376')
+    askMsg.value = e instanceof Error ? e.message : t('common_00888')
     await loadAskCaptcha()
   }
 }
@@ -458,7 +458,7 @@ useHead({
             </div>
             <div id="company_job_list" class="comshow_job">
               <JobCard v-for="job in jobList" :key="job.id" :job="job" variant="firm" />
-              <div v-if="!jobList.length" class="firm_tips_no">{{ $t('common_02402') }}</div>
+              <div v-if="!jobList.length" class="firm_tips_no">{{ $t('default_00033') }}</div>
               <a
                 v-if="jobList.length < jobTotal"
                 href="javascript:;"

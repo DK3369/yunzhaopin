@@ -892,7 +892,7 @@ useHead({
                 <div class="yun_czfoot_s_p yun_czfoot_hmicon">{{ $t('common.home') }}</div>
               </NuxtLink>
               <a href="javascript:;" class="yun_czfoot_s" @click.prevent="shareJob">
-                <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ te('common.share') ? $t('common.share') : $t('wap_com_00232') }}</div>
+                <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ $t('common.share') }}</div>
               </a>
             </div>
             <a
@@ -945,6 +945,6 @@ useHead({
   </div>
   <div v-else class="site-inner">
     <h1>{{ $t('common.job') }}</h1>
-    <p class="muted">{{ error ? $t('common_00376') : $t('default_00033') }}</p>
+    <p class="muted">{{ error ? $t('ui.load_failed') : $t('default_00033') }}</p>
   </div>
 </template>

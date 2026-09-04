@@ -168,11 +168,11 @@ async function download(confirm = false) {
     await refresh()
   } catch (e: unknown) {
     if (errKey(e) === 'need_buy_down_resume' || errKey(e) === 'vip_day_limit' || errKey(e) === 'integral_insufficient') {
-      actionMsg.value = e instanceof Error ? e.message : t('common_00376')
+      actionMsg.value = e instanceof Error ? e.message : t('common_00888')
       await navigateTo('/com/pay')
       return
     }
-    actionMsg.value = e instanceof Error ? e.message : t('common_00376')
+    actionMsg.value = e instanceof Error ? e.message : t('common_00888')
     if (!me.value) await navigateTo('/login')
   }
 }
@@ -220,7 +220,7 @@ async function invite() {
     const tpl = yqmsTpls.value[0]
     if (tpl) applyTpl(tpl)
   } catch (e: unknown) {
-    actionMsg.value = e instanceof Error ? e.message : t('common_00376')
+    actionMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
 function applyTpl(tpl: Record<string, unknown>) {
@@ -279,11 +279,11 @@ async function submitYqms(confirm = false) {
     await refresh()
   } catch (e: unknown) {
     if (errKey(e) === 'need_buy_invite' || errKey(e) === 'vip_day_limit' || errKey(e) === 'integral_insufficient') {
-      actionMsg.value = e instanceof Error ? e.message : t('common_00376')
+      actionMsg.value = e instanceof Error ? e.message : t('common_00888')
       await navigateTo('/com/pay')
       return
     }
-    actionMsg.value = e instanceof Error ? e.message : t('common_00376')
+    actionMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
 async function toggleFav() {
@@ -308,7 +308,7 @@ async function report() {
 <template>
   <article v-if="error" class="site-inner">
     <h1>{{ $t('common.resume') }}</h1>
-    <p class="muted">{{ $t('common_00376') }}</p>
+    <p class="muted">{{ $t('ui.load_failed') }}</p>
   </article>
   <article v-else-if="visitorBlocked" class="site-inner">
     <h1>{{ $t('common.resume') }}</h1>

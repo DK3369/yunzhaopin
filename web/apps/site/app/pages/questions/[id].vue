@@ -14,6 +14,6 @@ useHead({ link: [{ rel: 'canonical', href: `/questions/${id}` }] })
     <h1>{{ data?.title || $t('ui.no_questions') }}</h1>
     <p v-if="data?.catname" class="muted">{{ data.catname }} · {{ data.nickname }}</p>
     <div v-if="data?.content" v-html="data.content" />
-    <p v-else-if="!data?.title" class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else-if="!data?.title" class="muted">{{ $t('wap_00630') }}</p>
   </article>
 </template>

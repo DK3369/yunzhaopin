@@ -7,23 +7,23 @@ const msg = ref('')
 async function reserve() {
   try {
     await api.post('/v1/mcenter/zph/reserve', { ...form })
-    msg.value = t('common.confirm')
+    msg.value = t('wap_user_00264')
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('common.no')
+    msg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
-useSeoMeta({ title: t('wap_00223') })
+useSeoMeta({ title: t('wap_00558') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('wap_00223')" :error="error" :empty="!error && !(Array.isArray(data?.list) ? data.list.length : false)">
+  <MemberPanel :title="$t('wap_00558')" :error="error" :empty="!error && !(Array.isArray(data?.list) ? data.list.length : false)">
     <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
       <h3>{{ row.title || row.name || row.id }}</h3>
       <p class="muted">{{ row.start_at_n || row.datetime_n }}</p>
     </article>
     <form class="form" @submit.prevent="reserve">
       <input v-model.number="form.id" placeholder="id" />
-      <input v-model="form.name" :placeholder="$t('common.confirm')" />
+      <input v-model="form.name" :placeholder="$t('admin_00429')" />
       <input v-model="form.moblie" :placeholder="$t('common.phone')" />
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>

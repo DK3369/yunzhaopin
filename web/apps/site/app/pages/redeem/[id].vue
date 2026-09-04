@@ -11,9 +11,9 @@ useHead({ link: [{ rel: 'canonical', href: `/redeem/${id}` }] })
 
 <template>
   <article>
-    <h1>{{ data?.name || $t('home.no_job_data') }}</h1>
+    <h1>{{ data?.name || $t('wap_00611') }}</h1>
     <p v-if="data?.integral" class="muted">{{ data.integral }} {{ $t('ui.integral') }} · {{ $t('ui.stock') }} {{ data.remaining }}</p>
     <div v-if="data?.content" v-html="data.content" />
-    <p v-else-if="!data?.name" class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else-if="!data?.name" class="muted">{{ $t('wap_00611') }}</p>
   </article>
 </template>

@@ -252,7 +252,7 @@ const salaryItems = computed<DictItem[]>(() =>
 const ageItems = computed<DictItem[]>(() => agePresets.value.map((p, i) => ({ id: i + 1, name: p.label })))
 
 useSeoMeta({ title: t('default_00312') })
-const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const topList = computed(() => (page.value > 1 ? [] : topResumes.value?.list || []).slice(0, 5))
 const list = computed(() => {
   const raw = data.value?.list || []

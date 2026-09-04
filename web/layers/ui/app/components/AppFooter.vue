@@ -80,8 +80,8 @@
             {{ $t('wap_js_00082') }}：{{ address }} <span v-if="email">EMAIL：{{ email }}</span>
           </p>
           <p v-if="perfor || hrlicense">
-            <a v-if="perfor" href="/pages/jyxkz" target="_blank">ICP经营许可证: {{ perfor }}</a>
-            <a v-if="hrlicense" href="/pages/rlzy" target="_blank">人力资源证: {{ hrlicense }}</a>
+            <a v-if="perfor" href="/pages/jyxkz" target="_blank">{{ $t('admin_01020') }} {{ perfor }}</a>
+            <a v-if="hrlicense" href="/pages/rlzy" target="_blank">{{ $t('admin_system_00321') }} {{ hrlicense }}</a>
           </p>
           <p>Powered by OVSIX.</p>
         </div>

@@ -34,6 +34,6 @@ useHead({
   <article>
     <h1>{{ article.title || $t('ui.article_missing') }}</h1>
     <div v-if="article.content || article.body" v-html="String(article.content || article.body)" />
-    <p v-else class="muted">{{ $t('home.no_job_data') }}</p>
+    <p v-else class="muted">{{ $t('common_02409') }}</p>
   </article>
 </template>

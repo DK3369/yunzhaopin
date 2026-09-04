@@ -228,7 +228,7 @@ async function toggleFollow() {
     }
     following.value = next
   } catch (e: unknown) {
-    followMsg.value = e instanceof Error ? e.message : t('common.no')
+    followMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
 </script>

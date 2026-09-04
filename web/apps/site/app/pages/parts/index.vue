@@ -14,7 +14,7 @@ const { data, error } = await useAsyncData(
     }),
 )
 useSeoMeta({ title: t('wap_com_00311') })
-const failMsg = computed(() => listFailMsg(error.value, t('common_00376'), t('common_00376')))
+const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const list = computed(() => data.value?.list || [])
 </script>
 
