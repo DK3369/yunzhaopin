@@ -3,11 +3,18 @@
 use phpyun_core::{background, ApiError, AppResult, AppState, Paged, Pagination};
 use phpyun_models::hr_doc::{entity::HrDoc, repo as hr_repo};
 
-pub async fn list(state: &AppState, cid: Option<u64>, page: Pagination) -> AppResult<Paged<HrDoc>> {
+pub async fn list(
+    state: &AppState,
+    cid: Option<u64>,
+    keyword: Option<&str>,
+    order: Option<&str>,
+    page: Pagination,
+) -> AppResult<Paged<HrDoc>> {
     let db = state.db.reader();
+    let order_hits = matches!(order, Some("hits") | Some("downnum"));
     let (list, total) = tokio::join!(
-        hr_repo::list_public(db, cid, page.offset, page.limit),
-        hr_repo::count_public(db, cid),
+        hr_repo::list_public(db, cid, keyword, order_hits, page.offset, page.limit),
+        hr_repo::count_public(db, cid, keyword),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }

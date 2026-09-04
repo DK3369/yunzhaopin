@@ -15,11 +15,12 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/hr-docs", "/v1/wap/hr-docs/detail"];
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/hr-docs", "/v1/wap/hr-docs/detail", "/v1/wap/hr-docs/classes"];
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/hr-docs", get(list).post(list))
+        .route("/hr-docs/classes", get(classes).post(classes))
         .route("/hr-docs/detail", get(detail).post(detail))
         .route("/hr-docs/download", post(track_download))
 }
@@ -28,6 +29,13 @@ pub fn routes() -> Router<AppState> {
 pub struct HrQuery {
     #[validate(range(min = 1, max = 99_999_999))]
     pub cid: Option<u64>,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub keyword: Option<String>,
+    /// `hits` = download ranking (PHP hr index 下载排行).
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub order: Option<String>,
 }
 
 /// HR document list item -- all 9 columns of phpyun_hr_doc + body excerpt + formatted timestamps.
@@ -108,7 +116,7 @@ pub async fn list(
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HrQuery>,
 ) -> AppResult<ApiResponse<Paged<HrSummary>>> {
     phpyun_services::site_gate_service::ensure_module_on(&state, "sy_hr_web").await?;
-    let r = hr_doc_service::list(&state, q.cid, page).await?;
+    let r = hr_doc_service::list(&state, q.cid, q.keyword.as_deref(), q.order.as_deref(), page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))
@@ -167,4 +175,27 @@ pub async fn track_download(
         raw_url: d.url,
         hits: d.hits,
     }))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct HrClassItem {
+    pub id: u64,
+    pub name: String,
+}
+
+/// HR toolbox categories (PHP `hr/index.htm` class tabs).
+#[utoipa::path(post, path = "/v1/wap/hr-docs/classes", tag = "wap", responses((status = 200, description = "ok")))]
+pub async fn classes(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<Vec<HrClassItem>>> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_hr_web").await?;
+    let rows = phpyun_models::hr_doc::repo::list_classes(state.db.reader()).await?;
+    Ok(ApiResponse::data(
+        rows.into_iter()
+            .map(|c| HrClassItem {
+                id: c.id,
+                name: c.name,
+            })
+            .collect(),
+    ))
 }

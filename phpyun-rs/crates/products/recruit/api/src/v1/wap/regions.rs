@@ -204,12 +204,75 @@ pub struct CityDomainResp {
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
     pub hy: Option<i32>,
+    pub mode: Option<i32>,
+    pub indexdir: Option<String>,
+    pub fz_type: Option<i32>,
+    pub web_name: Option<String>,
+    pub web_title: Option<String>,
+    pub web_logo: Option<String>,
 }
 
 /// Resolve a `(lng, lat)` to the configured sub-site domain — counterpart of
 /// PHP `wap/index::getCityDomain_action`.
 ///
 /// PHP `wap/index::getCityDomain_action`. `sy_web_site!=1` returns `error: 2`.
+fn city_domain_disabled() -> CityDomainResp {
+    CityDomainResp {
+        error: 2,
+        domain: None,
+        city: None,
+        did: None,
+        province: None,
+        city_id: None,
+        three_city_id: None,
+        hy: None,
+        mode: None,
+        indexdir: None,
+        fz_type: None,
+        web_name: None,
+        web_title: None,
+        web_logo: None,
+    }
+}
+
+fn city_domain_from(d: phpyun_models::domain::entity::DomainSite) -> CityDomainResp {
+    CityDomainResp {
+        error: 1,
+        domain: Some(d.domain),
+        city: Some(d.title.clone()),
+        did: Some(d.id),
+        province: d.province,
+        city_id: d.city_id,
+        three_city_id: d.three_city_id,
+        hy: d.hy,
+        mode: Some(d.mode),
+        indexdir: d.indexdir,
+        fz_type: Some(d.fz_type),
+        web_name: Some(d.title),
+        web_title: d.web_title,
+        web_logo: d.web_logo,
+    }
+}
+
+fn city_domain_miss() -> CityDomainResp {
+    CityDomainResp {
+        error: 0,
+        domain: None,
+        city: None,
+        did: None,
+        province: None,
+        city_id: None,
+        three_city_id: None,
+        hy: None,
+        mode: None,
+        indexdir: None,
+        fz_type: None,
+        web_name: None,
+        web_title: None,
+        web_logo: None,
+    }
+}
+
 #[utoipa::path(
     post,
     path = "/v1/wap/regions/city-domain",
@@ -222,50 +285,49 @@ pub async fn city_domain(
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CityDomainQuery>,
 ) -> AppResult<ApiResponse<CityDomainResp>> {
     let enabled = phpyun_services::site_gate_service::setting_i32(&state, "sy_web_site").await == 1;
-    if !enabled {
-        return Ok(ApiResponse::data(CityDomainResp {
-            error: 2,
-            domain: None,
-            city: None,
-            did: None,
-            province: None,
-            city_id: None,
-            three_city_id: None,
-            hy: None,
-        }));
+    let gotocity = phpyun_services::site_gate_service::setting_i32(&state, "sy_gotocity").await == 1;
+    if !enabled || !gotocity {
+        return Ok(ApiResponse::data(city_domain_disabled()));
+    }
+    let province_id = q.province_id.unwrap_or(0);
+    let mut city_id = q.city_id.unwrap_or(0);
+    let three_city_id = q.three_city_id.unwrap_or(0);
+    if province_id == 0 && city_id == 0 && three_city_id == 0 {
+        if let (Some(x), Some(y)) = (q.x, q.y) {
+            let near = phpyun_models::geo::repo::list_companies_near(
+                state.db.reader(),
+                phpyun_models::geo::repo::NearQuery {
+                    x,
+                    y,
+                    radius_km: 50.0,
+                    now: phpyun_core::clock::now_ts(),
+                    limit: 1,
+                    offset: 0,
+                    did: 0,
+                    min_lastupdate: 0,
+                },
+            )
+            .await
+            .unwrap_or_default();
+            if let Some(c) = near.first() {
+                city_id = c.cityid;
+            }
+        }
     }
     let row = if q.hy.unwrap_or(0) > 0 {
         phpyun_models::domain::repo::find_for_hy(state.db.reader(), q.hy.unwrap_or(0)).await?
     } else {
         phpyun_models::domain::repo::find_for_city(
             state.db.reader(),
-            q.province_id.unwrap_or(0),
-            q.city_id.unwrap_or(0),
-            q.three_city_id.unwrap_or(0),
+            province_id,
+            city_id,
+            three_city_id,
         )
         .await?
     };
     Ok(ApiResponse::data(match row {
-        Some(d) => CityDomainResp {
-            error: 1,
-            domain: Some(d.domain),
-            city: Some(d.title),
-            did: Some(d.id),
-            province: d.province,
-            city_id: d.city_id,
-            three_city_id: d.three_city_id,
-            hy: d.hy,
-        },
-        None => CityDomainResp {
-            error: 0,
-            domain: None,
-            city: None,
-            did: None,
-            province: None,
-            city_id: None,
-            three_city_id: None,
-            hy: None,
-        },
+        Some(d) => city_domain_from(d),
+        None => city_domain_miss(),
     }))
 }
 

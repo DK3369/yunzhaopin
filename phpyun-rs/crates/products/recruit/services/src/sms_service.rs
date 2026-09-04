@@ -18,6 +18,8 @@ pub enum SmsScene {
     OnceJob,
     /// Anonymous tiny-resume posting (PHP `wap/tiny::sendmsg`).
     TinyResume,
+    /// Opinion feedback (PHP `sy_advice_mobilecode`).
+    Advice,
 }
 
 impl SmsScene {
@@ -29,6 +31,7 @@ impl SmsScene {
             Self::MobileChange => VerifyKind::SmsMobileChange,
             Self::OnceJob => VerifyKind::SmsOnceJob,
             Self::TinyResume => VerifyKind::SmsTinyResume,
+            Self::Advice => VerifyKind::SmsAdvice,
         }
     }
 
@@ -40,6 +43,7 @@ impl SmsScene {
             Self::MobileChange => SmsTemplate::MobileChange,
             Self::OnceJob => SmsTemplate::OnceJob,
             Self::TinyResume => SmsTemplate::TinyResume,
+            Self::Advice => SmsTemplate::LoginVerify,
         }
     }
 
@@ -51,6 +55,7 @@ impl SmsScene {
             Self::MobileChange => "sms_mobile_change",
             Self::OnceJob => "sms_once",
             Self::TinyResume => "sms_tiny",
+            Self::Advice => "sms_advice",
         }
     }
 }

@@ -3,7 +3,7 @@
 //! Request parameters:
 //! - `username`    -- username / mobile / email (PHPYun supports any of the three)
 //! - `password`    -- password
-//! - `authcode`    -- image captcha (**mandatory in PHP**; here it is opt-in: only verified together with `captcha_cid`)
+//! - `authcode`    -- image captcha (**mandatory**, PHP `wap/login::mlogin`)
 //! - `captcha_cid` -- image captcha cid (specific to phpyun-rs; PHP uses session)
 //!
 //! Note: SMS dynamic-code login (PHP's `act_login=1 + moblie + dynamiccode`) is not yet implemented; scheduled for the next round.
@@ -39,8 +39,7 @@ pub struct LoginForm {
     #[validate(length(min = 6, max = 128, message = "validation.password.length"))]
     pub password: String,
 
-    /// Image captcha (PHP field name `authcode`) -- optional.
-    /// Only verified when paired with `captcha_cid`; if neither or only one is supplied, verification is skipped (aligned with PHPYun `wap/login::mlogin` behavior).
+    /// Image captcha (PHP field name `authcode`). Mandatory on password login.
     #[serde(default)]
     #[validate(length(max = 500))]
     pub authcode: Option<String>,
@@ -70,14 +69,20 @@ pub async fn mlogin(
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginForm>,
 ) -> AppResult<ApiResponse<AuthTokenData>> {
-    // Opt-in verification: only verify when cid + authcode are supplied together (aligned with PHP mlogin behavior).
-    if let (Some(cid), Some(code)) = (form.captcha_cid.as_deref(), form.authcode.as_deref()) {
-        if !cid.is_empty() && !code.is_empty() {
-            let code_up = code.to_uppercase();
-            if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
-                return Err(ApiError::captcha());
-            }
-        }
+    // Mandatory image captcha (PHP `wap/login::mlogin`).
+    let cid = form
+        .captcha_cid
+        .as_deref()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(ApiError::captcha)?;
+    let code = form
+        .authcode
+        .as_deref()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(ApiError::captcha)?;
+    let code_up = code.to_uppercase();
+    if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
+        return Err(ApiError::captcha());
     }
 
     let ua = ua_from(&headers);
@@ -171,8 +176,27 @@ pub async fn send_email_code(
     State(state): State<AppState>,
     ValidatedJson(form): ValidatedJson<EmailCodeSendForm>,
 ) -> AppResult<phpyun_core::ApiResponse> {
-    // TEMP: image-captcha verification intentionally disabled. Email-based
-    // per-minute and per-hour rate limits remain enforced in the service.
+    // Mandatory image captcha (same scheme as password login).
+    let cid = form
+        .captcha_cid
+        .as_deref()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(ApiError::captcha)?;
+    let code = form
+        .authcode
+        .as_deref()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(ApiError::captcha)?;
+    if !verify::verify(
+        &state.redis,
+        VerifyKind::ImageCaptcha,
+        cid,
+        &code.to_uppercase(),
+    )
+    .await?
+    {
+        return Err(ApiError::captcha());
+    }
     user_service::send_email_login_code(&state, &form.email).await?;
     Ok(phpyun_core::ApiResponse::message("sent"))
 }

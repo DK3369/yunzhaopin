@@ -37,7 +37,7 @@ const { data, error } = await useAsyncData(
     const q = applyToQuery({
       x: Number(x.value),
       y: Number(y.value),
-      radius_km: 20,
+      radius_km: tab.value === 'companies' ? 20 : 200,
       limit: 10,
       page: page.value,
     })

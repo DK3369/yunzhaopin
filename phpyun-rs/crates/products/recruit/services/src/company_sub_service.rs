@@ -26,8 +26,14 @@ pub async fn list_products(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn get_product(state: &AppState, com_uid: u64, id: u64) -> AppResult<CompanyProduct> {
-    sub_repo::find_product_public(state.db.reader(), com_uid, id)
+pub async fn get_product(
+    state: &AppState,
+    com_uid: u64,
+    id: u64,
+    viewer_uid: Option<u64>,
+) -> AppResult<CompanyProduct> {
+    let owner = viewer_uid == Some(com_uid);
+    sub_repo::find_product(state.db.reader(), com_uid, id, owner)
         .await?
         .ok_or_else(|| ApiError::param_invalid("product_not_found"))
 }
@@ -129,8 +135,14 @@ pub async fn list_news(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn get_news(state: &AppState, com_uid: u64, id: u64) -> AppResult<CompanyNews> {
-    let n = sub_repo::find_news_public(state.db.reader(), com_uid, id)
+pub async fn get_news(
+    state: &AppState,
+    com_uid: u64,
+    id: u64,
+    viewer_uid: Option<u64>,
+) -> AppResult<CompanyNews> {
+    let owner = viewer_uid == Some(com_uid);
+    let n = sub_repo::find_news(state.db.reader(), com_uid, id, owner)
         .await?
         .ok_or_else(|| ApiError::param_invalid("news_not_found"))?;
     // hits +1 asynchronously

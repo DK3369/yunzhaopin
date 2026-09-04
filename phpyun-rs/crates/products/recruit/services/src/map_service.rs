@@ -1,11 +1,12 @@
 //! Map-based search (aligned with PHPYun `wap/map`).
 //!
-//! Longitude/latitude as `x` and `y`; radius capped at 50km to prevent full-table scans.
+//! Longitude/latitude as `x` and `y`; radius capped at 200km.
+//! PHP job list has no circular `HAVING`; company list uses `distance < 20`.
 
 use phpyun_core::{clock, ApiError, AppResult, AppState};
 use phpyun_models::geo::repo::{self as geo_repo, CompanyNear, JobNear, NearQuery};
 
-const MAX_RADIUS_KM: f64 = 50.0;
+const MAX_RADIUS_KM: f64 = 200.0;
 const DEFAULT_LIMIT: u64 = 10;
 
 fn validate(x: f64, y: f64, radius_km: f64) -> AppResult<()> {

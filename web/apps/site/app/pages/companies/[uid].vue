@@ -253,7 +253,7 @@ useHead({
 </script>
 
 <template>
-  <article v-if="company.name" :class="{ comtpl_dark: String(settings.sy_wap_comtpl || '') === '1' }">
+  <article v-if="company.name" :class="['com-skin-' + String(company.skin || 'default'), { comtpl_dark: String(settings.sy_wap_comtpl || '') === '1' }]">
     <div class="site-pc">
       <div class="com_details_top">
         <div class="w1200">
@@ -638,3 +638,19 @@ useHead({
     <p class="muted">{{ error ? failMsg : $t('wap_js_00113') }}</p>
   </article>
 </template>
+
+<style scoped>
+.com-skin-blue .com_details_top,
+.com-skin-blue .top_card {
+  background: linear-gradient(180deg, #2d6cdf 0%, #1e4fa8 100%);
+}
+.com-skin-green .com_details_top,
+.com-skin-green .top_card {
+  background: linear-gradient(180deg, #1a9e5c 0%, #0e7a44 100%);
+}
+.com-skin-white .com_details_top,
+.com-skin-white .top_card {
+  background: #f5f5f5;
+  color: #333;
+}
+</style>

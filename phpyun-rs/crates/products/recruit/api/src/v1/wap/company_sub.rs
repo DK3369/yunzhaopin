@@ -8,7 +8,7 @@ use axum::{
 use phpyun_core::dto::{UidBody, UidIdBody};
 use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
 };
 use phpyun_services::company_sub_service;
 use serde::Serialize;
@@ -228,9 +228,10 @@ pub async fn list_products(
     responses((status = 200, description = "ok", body = ProductDetail), (status = 404)))]
 pub async fn product_detail(
     State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidIdBody>,
 ) -> AppResult<ApiResponse<ProductDetail>> {
-    let p = company_sub_service::get_product(&state, b.uid, b.id).await?;
+    let p = company_sub_service::get_product(&state, b.uid, b.id, user.as_ref().map(|u| u.uid)).await?;
     Ok(ApiResponse::data(ProductDetail::from_with_ctx(p, &state)))
 }
 
@@ -253,8 +254,9 @@ pub async fn list_news(
     responses((status = 200, description = "ok", body = NewsDetail), (status = 404)))]
 pub async fn news_detail(
     State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidIdBody>,
 ) -> AppResult<ApiResponse<NewsDetail>> {
-    let n = company_sub_service::get_news(&state, b.uid, b.id).await?;
+    let n = company_sub_service::get_news(&state, b.uid, b.id, user.as_ref().map(|u| u.uid)).await?;
     Ok(ApiResponse::data(NewsDetail::from(n)))
 }

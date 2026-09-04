@@ -24,7 +24,8 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct RegisterForm {
-    #[validate(custom(function = "validators::username"))]
+    #[serde(default)]
+    #[validate(length(max = 64))]
     pub username: String,
 
     #[validate(custom(function = "validators::strong_password"))]
@@ -38,8 +39,8 @@ pub struct RegisterForm {
     #[serde(default)]
     pub moblie: String,
 
-    #[validate(email)]
     #[serde(default)]
+    #[validate(length(max = 128))]
     pub email: Option<String>,
 
     /// Image captcha cid (returned by GET /v1/wap/captcha; PHPYun uses session, we use Redis)
@@ -130,13 +131,28 @@ pub async fn register(
         .and_then(|v| v.to_str().ok())
         .unwrap_or("")
         .to_string();
+    let username = if !f.username.trim().is_empty() {
+        f.username.trim().to_string()
+    } else if f.regway == 2 && !f.moblie.is_empty() {
+        f.moblie.clone()
+    } else if f.regway == 3 {
+        f.email.clone().unwrap_or_default()
+    } else {
+        return Err(phpyun_core::ApiError::param_invalid("username"));
+    };
+    if f.regway == 2 && f.moblie.is_empty() {
+        return Err(phpyun_core::ApiError::param_invalid("moblie"));
+    }
+    if f.regway == 3 && f.email.as_deref().unwrap_or("").is_empty() {
+        return Err(phpyun_core::ApiError::param_invalid("email"));
+    }
     let r = registration_service::register(
         &state,
         RegisterInput {
-            username: &f.username,
+            username: &username,
             password: &f.password,
             mobile: &f.moblie,
-            email: f.email.as_deref(),
+            email: f.email.as_deref().filter(|s| !s.is_empty()),
             captcha_cid: &f.captcha_cid,
             captcha_input: &f.checkcode,
             sms_code: &f.moblie_code,

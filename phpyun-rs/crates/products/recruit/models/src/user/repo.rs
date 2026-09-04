@@ -37,14 +37,17 @@ const FIELDS: &str = "\
 /// Returns None for unmapped providers to avoid SQL against empty columns.
 fn oauth_column_for(provider: &str) -> Option<&'static str> {
     match provider {
-        // Mainstream domestic providers (natively supported by PHPYun)
-        "qq" => Some("qqid"),
-        "weibo" | "sina" => Some("sinaid"),
-        "wechat" | "weixin" => Some("unionid"), // On the Rust side, WeChat accounts are keyed by unionid
-        "wechat_mp" | "wxopenid" => Some("wxopenid"), // Official Account / Mini Program openid
-        "baidu" => Some("bdopenid"),
+        // Mainstream domestic providers (natively supported by PHPYun).
+        // Accept both the provider name and the physical column so
+        // `find_by_oauth_id("wxid", …)` / `bind_oauth_id("qqid", …)` work.
+        "qq" | "qqid" => Some("qqid"),
+        "weibo" | "sina" | "sinaid" => Some("sinaid"),
+        "wechat" | "weixin" | "wxid" => Some("wxid"),
+        "unionid" => Some("unionid"),
+        "wechat_mp" | "wxopenid" => Some("wxopenid"),
+        "baidu" | "bdopenid" => Some("bdopenid"),
         // Overseas providers (PHPYun has no column; we keep the interface but return None, so upstream gets "bind failed")
-        "google" | "facebook" | "apple" => None,
+        "google" | "facebook" | "apple" | "google_id" | "fb_id" | "apple_sub" => None,
         _ => None,
     }
 }

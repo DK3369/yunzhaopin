@@ -97,6 +97,7 @@ pub async fn set_display(pool: &MySqlPool, id: u64, display: i32) -> Result<u64,
 pub async fn list_company_uids(
     pool: &MySqlPool,
     sid: u64,
+    hy: i32,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<SpecialCompany>, sqlx::Error> {
@@ -104,33 +105,56 @@ pub async fn list_company_uids(
     // Rust field created_at ← time
     sqlx::query_as::<_, SpecialCompany>(
         r#"SELECT
-             CAST(id AS UNSIGNED) AS id,
-             CAST(COALESCE(sid, 0) AS UNSIGNED) AS sid,
-             CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid,
-             CAST(COALESCE(sort, 0) AS SIGNED) AS sort,
-             CAST(COALESCE(status, 0) AS SIGNED) AS status,
-             CAST(COALESCE(`time`, 0) AS SIGNED) AS created_at
-           FROM phpyun_special_com
-           WHERE sid = ? AND status = 1 AND COALESCE(deleted,0)=0
-           ORDER BY sort DESC, `time` ASC
+             CAST(sc.id AS UNSIGNED) AS id,
+             CAST(COALESCE(sc.sid, 0) AS UNSIGNED) AS sid,
+             CAST(COALESCE(sc.uid, 0) AS UNSIGNED) AS uid,
+             CAST(COALESCE(sc.sort, 0) AS SIGNED) AS sort,
+             CAST(COALESCE(sc.status, 0) AS SIGNED) AS status,
+             CAST(COALESCE(sc.`time`, 0) AS SIGNED) AS created_at
+           FROM phpyun_special_com sc
+           LEFT JOIN phpyun_company c ON c.uid = sc.uid
+           WHERE sc.sid = ? AND sc.status = 1 AND COALESCE(sc.deleted,0)=0
+             AND (? = 0 OR COALESCE(c.hy, 0) = ?)
+           ORDER BY COALESCE(sc.famous, 0) DESC, sc.sort DESC, sc.`time` ASC
            LIMIT ? OFFSET ?"#,
     )
     .bind(sid)
+    .bind(hy)
+    .bind(hy)
     .bind(limit)
     .bind(offset)
     .fetch_all(pool)
     .await
 }
 
-pub async fn count_companies(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Error> {
+pub async fn count_companies(pool: &MySqlPool, sid: u64, hy: i32) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
         sqlx::query_as(
-            "SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 1 AND COALESCE(deleted,0)=0",
+            "SELECT COUNT(*) FROM phpyun_special_com sc
+             LEFT JOIN phpyun_company c ON c.uid = sc.uid
+             WHERE sc.sid = ? AND sc.status = 1 AND COALESCE(sc.deleted,0)=0
+               AND (? = 0 OR COALESCE(c.hy, 0) = ?)",
         )
             .bind(sid)
+            .bind(hy)
+            .bind(hy)
             .fetch_one(pool)
             .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn list_industries(pool: &MySqlPool, sid: u64) -> Result<Vec<i32>, sqlx::Error> {
+    let rows: Vec<(i32,)> = sqlx::query_as(
+        "SELECT DISTINCT CAST(COALESCE(c.hy, 0) AS SIGNED)
+         FROM phpyun_special_com sc
+         INNER JOIN phpyun_company c ON c.uid = sc.uid
+         WHERE sc.sid = ? AND sc.status = 1 AND COALESCE(sc.deleted,0)=0 AND c.hy > 0
+         ORDER BY c.hy ASC",
+    )
+    .bind(sid)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(h,)| h).collect())
 }
 
 /// List of company uids in the special event (flattened to Vec<u64>, used for job queries).

@@ -25,46 +25,49 @@ const FIELDS: &str = "id, \
 pub async fn list_public(
     pool: &MySqlPool,
     cid: Option<u64>,
+    keyword: Option<&str>,
+    order_hits: bool,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<HrDoc>, sqlx::Error> {
-    let sql = match cid {
-        Some(_) => format!(
-            "SELECT {FIELDS} FROM phpyun_toolbox_doc \
-             WHERE is_show = 1 AND cid = ? AND {PREDICATE} \
-             ORDER BY id DESC LIMIT ? OFFSET ?"
-        ),
-        None => format!(
-            "SELECT {FIELDS} FROM phpyun_toolbox_doc \
-             WHERE is_show = 1 AND {PREDICATE} \
-             ORDER BY id DESC LIMIT ? OFFSET ?"
-        ),
-    };
-    let q = sqlx::query_as::<_, HrDoc>(&sql);
-    match cid {
-        Some(c) => q.bind(c).bind(limit).bind(offset).fetch_all(pool).await,
-        None => q.bind(limit).bind(offset).fetch_all(pool).await,
+    let mut qb = QueryBuilder::new(format!("SELECT {FIELDS} FROM phpyun_toolbox_doc WHERE is_show = 1 AND {PREDICATE}"));
+    if let Some(c) = cid.filter(|v| *v > 0) {
+        qb.push(" AND cid = ");
+        qb.push_bind(c);
     }
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if order_hits {
+        qb.push(" ORDER BY downnum DESC, id DESC");
+    } else {
+        qb.push(" ORDER BY id DESC");
+    }
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<HrDoc>().fetch_all(pool).await
 }
 
-pub async fn count_public(pool: &MySqlPool, cid: Option<u64>) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = match cid {
-        Some(c) => {
-            sqlx::query_as(&format!(
-                "SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND cid = ? AND {PREDICATE}"
-            ))
-                .bind(c)
-                .fetch_one(pool)
-                .await?
-        }
-        None => {
-            sqlx::query_as(&format!(
-                "SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND {PREDICATE}"
-            ))
-                .fetch_one(pool)
-                .await?
-        }
-    };
+pub async fn count_public(
+    pool: &MySqlPool,
+    cid: Option<u64>,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!(
+        "SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND {PREDICATE}"
+    ));
+    if let Some(c) = cid.filter(|v| *v > 0) {
+        qb.push(" AND cid = ");
+        qb.push_bind(c);
+    }
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

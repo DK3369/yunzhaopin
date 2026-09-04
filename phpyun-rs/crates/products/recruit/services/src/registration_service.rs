@@ -48,6 +48,15 @@ pub struct RegisterResult {
 
 pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<RegisterResult> {
     crate::site_gate_service::ensure_registration_open(state).await?;
+    phpyun_core::rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:ip:{}:register", input.client_ip),
+        phpyun_core::rate_limit::LimitRule {
+            max: 5,
+            window: std::time::Duration::from_secs(3600),
+        },
+    )
+    .await?;
     // 1. Image captcha (case-insensitive: stored uppercase, input is upper-cased before compare)
     let captcha_input_upper = input.captcha_input.to_uppercase();
     if !verify::verify(
@@ -186,6 +195,10 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
         crate::referral_service::record_on_signup(state, input.referrer_uid, uid).await;
     }
 
+    if input.usertype == 2 {
+        let _ = apply_default_company_rating(state, uid).await;
+    }
+
     Ok(RegisterResult {
         uid,
         access,
@@ -193,6 +206,54 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
         access_exp,
         refresh_exp,
     })
+}
+
+/// PHP `rating.model.php::fetchRatingInfo` — seed `phpyun_company_statis`
+/// (and company VIP columns) from the site's default `com_rating` package.
+pub async fn apply_default_company_rating(state: &AppState, uid: u64) -> AppResult<()> {
+    let rating_id = crate::site_gate_service::setting_i32(state, "com_rating").await;
+    if rating_id <= 0 {
+        phpyun_models::company_statis::repo::ensure_row(state.db.pool(), uid).await?;
+        return Ok(());
+    }
+    let pkg = phpyun_models::admin_gap::repo::find_rating_package(
+        state.db.reader(),
+        rating_id as u64,
+    )
+    .await?;
+    let Some(pkg) = pkg else {
+        phpyun_models::company_statis::repo::ensure_row(state.db.pool(), uid).await?;
+        return Ok(());
+    };
+    let now = clock::now_ts();
+    let vip_etime = if pkg.service_time > 0 {
+        now.saturating_add(i64::from(pkg.service_time).saturating_mul(86400))
+    } else {
+        0
+    };
+    let integral: i64 = pkg.integral_buy.trim().parse().unwrap_or(0);
+    let _ = phpyun_models::company_statis::repo::insert_admin_created(
+        state.db.pool(),
+        uid,
+        rating_id,
+        &pkg.name,
+        pkg.r#type,
+        pkg.job_num,
+        pkg.resume,
+        pkg.breakjob_num,
+        pkg.interview,
+        pkg.zph_num,
+        pkg.top_num,
+        pkg.urgent_num,
+        pkg.rec_num,
+        integral,
+        now,
+        vip_etime,
+    )
+    .await;
+    company_repo::set_rating_and_vip(state.db.pool(), uid, rating_id, &pkg.name, now, vip_etime)
+        .await?;
+    Ok(())
 }
 
 /// 16-character salt (PHPYun's salt is 6 chars; we bump to 16; argon2 accepts any length)

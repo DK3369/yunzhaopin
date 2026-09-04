@@ -14,6 +14,8 @@ await applyQueryLang()
 watch(() => route.query.lang, () => applyQueryLang())
 const siteUrl = String(useRuntimeConfig().public.siteUrl || 'http://127.0.0.1:3001').replace(/\/$/, '')
 const { isHome, isAuth, isMember, settings } = useSiteChrome()
+const { saveSite, gotocity } = useSubSite()
+const api = useApi()
 const { userItems, comItems } = useMemberNav()
 const memberItems = computed(() => (route.path.startsWith('/com') ? comItems.value : userItems.value))
 const siteClosed = computed(() => String(settings.value.sy_web_online || '') === '2')
@@ -55,6 +57,74 @@ const mainClass = computed(() => {
   if (isHome.value || isAuth.value || isMember.value) return ''
   if (route.path.startsWith('/jobs') || route.path.startsWith('/companies') || route.path.startsWith('/resumes')) return ''
   return 'site-inner'
+})
+
+onMounted(() => {
+  if (String(settings.value.sy_web_site || '') !== '1') return
+  if (String(settings.value.sy_gotocity || '') !== '1') return
+  if (gotocity.value) return
+  if (!navigator.geolocation) {
+    gotocity.value = '1'
+    return
+  }
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      try {
+        const row = await api.post<{
+          error?: number
+          city?: string
+          did?: number
+          domain?: string
+          mode?: number
+          indexdir?: string
+          province?: number
+          city_id?: number
+          three_city_id?: number
+          hy?: number
+          fz_type?: number
+          web_name?: string
+          web_title?: string
+          web_logo?: string
+        }>('/v1/wap/regions/city-domain', {
+          x: pos.coords.longitude,
+          y: pos.coords.latitude,
+        })
+        gotocity.value = '1'
+        if (!row || Number(row.error) !== 1 || !row.did) return
+        const ok = window.confirm(t('ui.goto_city', { city: row.city || '' }))
+        if (!ok) return
+        saveSite({
+          did: row.did,
+          province: row.province,
+          city_id: row.city_id,
+          three_city_id: row.three_city_id,
+          hy: row.hy,
+          fz_type: row.fz_type,
+          web_name: row.web_name,
+          web_title: row.web_title,
+          web_logo: row.web_logo,
+          mode: row.mode,
+          domain: row.domain,
+          indexdir: row.indexdir,
+        })
+        const mode = Number(row.mode || 0)
+        if (mode === 1 && row.domain) {
+          const host = String(row.domain).replace(/^https?:\/\//, '')
+          window.location.href = `${window.location.protocol}//${host}`
+          return
+        }
+        if (mode === 2 && row.indexdir) {
+          const dir = String(row.indexdir).replace(/^\/+|\/+$/g, '')
+          if (dir) await navigateTo(`/${dir}/`)
+        }
+      } catch {
+        gotocity.value = '1'
+      }
+    },
+    () => {
+      gotocity.value = '1'
+    },
+  )
 })
 </script>
 

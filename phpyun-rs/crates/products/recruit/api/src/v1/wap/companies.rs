@@ -388,6 +388,9 @@ pub struct CompanyDetail {
     /// Masked contact + `setCompanyLink` codes. Never includes plaintext tel/email.
     pub contact: CompanyPublicContact,
 
+    /// PHP `comtpl` skin url (`blue` / `green` / `white` / `default`).
+    pub skin: String,
+
     // ---- Company showcase items (PHP `show[]` from `phpyun_company_show`) ----
     pub show: Vec<CompanyShowItem>,
 }
@@ -513,6 +516,15 @@ pub async fn company_detail(
         (0, 0)
     };
 
+    let skin = phpyun_models::company_tpl::repo::fetch_applied_tpl(state.db.reader(), uid)
+        .await
+        .unwrap_or_default();
+    let skin = if skin.is_empty() || skin == "default" {
+        "default".to_string()
+    } else {
+        skin
+    };
+
     Ok(ApiResponse::data(CompanyDetail {
         uid: c.uid,
         name: c.name,
@@ -604,6 +616,7 @@ pub async fn company_detail(
         },
 
         show: show_items,
+        skin,
     }))
 }
 

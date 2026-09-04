@@ -5,15 +5,23 @@
 //! 2. The server calls `state.oauth.verify(kind, id_token)` to extract sub / email / name
 //! 3. Look up the member by sub:
 //!    - **Exists**: issue tokens, log the user in directly, and return success
-//!    - **Does not exist**: current policy returns an `oauth_not_bound` error so the client can
-//!      take the "bind to an existing account / quick register" path; auto-registration (configured
-//!      via `auto_register: true`) can be added later.
+//!    - **Does not exist**: stash `{provider, sub}` in Redis under a short-lived
+//!      ticket and return `need_bind` so the client can bind an existing account
+//!      or run fast-reg (PHP `wap/qqconnect` bind page).
 
+use phpyun_auth::argon2_hash_async;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::metrics::auth_event;
-use phpyun_core::{ApiError, AppResult, AppState, ProviderKind};
+use phpyun_core::verify::{self, VerifyKind};
+use phpyun_core::{clock, ApiError, AppResult, AppState, ProviderKind};
+use phpyun_models::company::repo as company_repo;
+use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::user::{entity::Member, repo as user_repo};
+use uuid::Uuid;
+
+const PENDING_PREFIX: &str = "oauth:pending:";
+const PENDING_TTL_SECS: u64 = 600;
 
 fn auth_identity(user: &Member) -> AppResult<(u8, u32)> {
     Ok((
@@ -34,6 +42,64 @@ pub struct OAuthLoginResult {
     pub provider_sub: String,
     pub email_from_provider: Option<String>,
     pub name_from_provider: Option<String>,
+    /// When true the client should send the user to `/oauth-bind?ticket=`.
+    pub need_bind: bool,
+    pub ticket: String,
+    pub provider: String,
+}
+
+async fn pending_not_bound(
+    state: &AppState,
+    provider: &str,
+    sub: &str,
+) -> AppResult<OAuthLoginResult> {
+    auth_event("oauth_not_bound", None);
+    let ticket = Uuid::now_v7().simple().to_string();
+    let payload = format!("{provider}\t{sub}");
+    state
+        .redis
+        .set_ex(
+            &format!("{PENDING_PREFIX}{ticket}"),
+            &payload,
+            PENDING_TTL_SECS,
+        )
+        .await?;
+    Ok(OAuthLoginResult {
+        uid: 0,
+        usertype: 0,
+        access: String::new(),
+        refresh: String::new(),
+        access_exp: 0,
+        refresh_exp: 0,
+        provider_sub: sub.to_string(),
+        email_from_provider: None,
+        name_from_provider: None,
+        need_bind: true,
+        ticket,
+        provider: provider.to_string(),
+    })
+}
+
+async fn load_pending(state: &AppState, ticket: &str) -> AppResult<(String, String)> {
+    let raw = state
+        .redis
+        .get_str(&format!("{PENDING_PREFIX}{ticket}"))
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("oauth_ticket_expired"))?;
+    let mut parts = raw.splitn(2, '\t');
+    let provider = parts
+        .next()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(|| ApiError::param_invalid("oauth_ticket_expired"))?;
+    let sub = parts
+        .next()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(|| ApiError::param_invalid("oauth_ticket_expired"))?;
+    Ok((provider.to_string(), sub.to_string()))
+}
+
+async fn consume_pending(state: &AppState, ticket: &str) {
+    let _ = state.redis.del(&format!("{PENDING_PREFIX}{ticket}")).await;
 }
 
 pub async fn login_with_oauth(
@@ -52,12 +118,7 @@ pub async fn login_with_oauth(
             .await?;
 
     let Some(user) = member else {
-        auth_event("oauth_not_bound", Some(provider.as_str()));
-        return Err(ApiError::param_invalid(format!(
-            "oauth_not_bound:{}:{}",
-            provider.as_str(),
-            identity.sub
-        )));
+        return pending_not_bound(state, provider.as_str(), &identity.sub).await;
     };
 
     if user.status == 2 {
@@ -110,6 +171,9 @@ pub async fn login_with_oauth(
         provider_sub: identity.sub,
         email_from_provider: identity.email,
         name_from_provider: identity.name,
+        need_bind: false,
+        ticket: String::new(),
+        provider: provider.as_str().to_string(),
     })
 }
 
@@ -170,10 +234,7 @@ pub async fn login_with_wechat_code(
     // 2) Look up the member by openid
     let member = user_repo::find_by_oauth_id(state.db.reader(), "wxid", &openid).await?;
     let Some(user) = member else {
-        auth_event("oauth_not_bound", Some("wechat"));
-        return Err(ApiError::param_invalid(format!(
-            "oauth_not_bound:wechat:{openid}"
-        )));
+        return pending_not_bound(state, "wechat", &openid).await;
     };
 
     if user.status == 2 {
@@ -225,6 +286,9 @@ pub async fn login_with_wechat_code(
         provider_sub: openid,
         email_from_provider: resp.unionid, // reuse the email field to pass back the unionid for the client to retain
         name_from_provider: None,
+        need_bind: false,
+        ticket: String::new(),
+        provider: "wechat".to_string(),
     })
 }
 
@@ -325,10 +389,7 @@ pub async fn login_with_qq_code(
     // 3) Look up bound member by qqid
     let member = user_repo::find_by_oauth_id(state.db.reader(), "qqid", &openid).await?;
     let Some(user) = member else {
-        auth_event("oauth_not_bound", Some("qq"));
-        return Err(ApiError::param_invalid(format!(
-            "oauth_not_bound:qq:{openid}"
-        )));
+        return pending_not_bound(state, "qq", &openid).await;
     };
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
@@ -378,6 +439,9 @@ pub async fn login_with_qq_code(
         provider_sub: openid,
         email_from_provider: me.unionid,
         name_from_provider: None,
+        need_bind: false,
+        ticket: String::new(),
+        provider: "qq".to_string(),
     })
 }
 
@@ -461,10 +525,7 @@ pub async fn login_with_weibo_code(
     // Look up the bound member by sinaid
     let member = user_repo::find_by_oauth_id(state.db.reader(), "sinaid", &uid_str).await?;
     let Some(user) = member else {
-        auth_event("oauth_not_bound", Some("weibo"));
-        return Err(ApiError::param_invalid(format!(
-            "oauth_not_bound:weibo:{uid_str}"
-        )));
+        return pending_not_bound(state, "weibo", &uid_str).await;
     };
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
@@ -514,6 +575,9 @@ pub async fn login_with_weibo_code(
         provider_sub: uid_str,
         email_from_provider: resp.access_token,
         name_from_provider: None,
+        need_bind: false,
+        ticket: String::new(),
+        provider: "weibo".to_string(),
     })
 }
 
@@ -557,7 +621,7 @@ pub async fn bind_oauth(
 
     // This sub must not already be bound to a different user
     if let Some(other) =
-        user_repo::find_by_oauth_id(state.db.reader(), provider.member_column(), &identity.sub)
+        user_repo::find_by_oauth_id(state.db.reader(), provider.as_str(), &identity.sub)
             .await?
     {
         if other.uid != uid {
@@ -568,7 +632,7 @@ pub async fn bind_oauth(
     user_repo::bind_oauth_id(
         state.db.pool(),
         uid,
-        provider.member_column(),
+        provider.as_str(),
         &identity.sub,
     )
     .await?;
@@ -584,7 +648,135 @@ pub async fn bind_oauth(
     Ok(())
 }
 
-/// Mini-program login: `wx.login` code → `jscode2session` → openid → JWT.
+/// Bind a pending third-party identity (from Redis ticket) to the logged-in uid.
+pub async fn bind_pending(
+    state: &AppState,
+    uid: u64,
+    ticket: &str,
+    client_ip: &str,
+) -> AppResult<()> {
+    let (provider, sub) = load_pending(state, ticket).await?;
+    if let Some(other) = user_repo::find_by_oauth_id(state.db.reader(), &provider, &sub).await? {
+        if other.uid != uid {
+            return Err(ApiError::param_invalid("oauth_sub_bound_elsewhere"));
+        }
+    }
+    user_repo::bind_oauth_id(state.db.pool(), uid, &provider, &sub).await?;
+    consume_pending(state, ticket).await;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("user.oauth_bind", Actor::uid(uid).with_ip(client_ip))
+            .target(format!("uid:{uid}"))
+            .meta(&serde_json::json!({ "provider": provider, "via": "pending" })),
+    )
+    .await;
+    Ok(())
+}
+
+/// Fast-register from a pending OAuth ticket + verified mobile (PHP `fastReg`).
+pub async fn fast_reg(
+    state: &AppState,
+    ticket: &str,
+    mobile: &str,
+    sms_code: &str,
+    password: &str,
+    usertype: u8,
+    did: u32,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    crate::site_gate_service::ensure_registration_open(state).await?;
+    let (provider, sub) = load_pending(state, ticket).await?;
+    if !verify::verify(&state.redis, VerifyKind::SmsRegister, mobile, sms_code).await? {
+        return Err(ApiError::param_invalid("sms_code"));
+    }
+    let writer = state.db.pool();
+    if user_repo::exists_mobile(writer, mobile).await? {
+        return Err(ApiError::param_invalid("mobile_taken"));
+    }
+    let mut username = mobile.to_string();
+    if user_repo::exists_username(writer, &username).await? {
+        username = format!("u{}{}", mobile, Uuid::now_v7().simple());
+        username.truncate(20);
+    }
+    let salt: String = Uuid::now_v7().simple().to_string().chars().take(16).collect();
+    let password_hash = argon2_hash_async(format!("{password}{salt}")).await?;
+    let now = clock::now_ts();
+    let username_c = username.clone();
+    let hash_c = password_hash.clone();
+    let salt_c = salt.clone();
+    let mobile_c = mobile.to_string();
+    let ip_c = client_ip.to_string();
+    let uid = state
+        .db
+        .with_tx(|tx| {
+            Box::pin(async move {
+                let uid = user_repo::create_member(
+                    &mut **tx,
+                    &username_c,
+                    &hash_c,
+                    &salt_c,
+                    Some(&mobile_c),
+                    None,
+                    usertype,
+                    did,
+                    &ip_c,
+                    now,
+                )
+                .await?;
+                match usertype {
+                    1 => resume_repo::ensure_row_in_tx(&mut **tx, uid, did, now).await?,
+                    2 => company_repo::ensure_row(&mut **tx, uid, did).await?,
+                    _ => {}
+                }
+                Ok::<u64, ApiError>(uid)
+            })
+        })
+        .await?;
+    if usertype == 2 {
+        let _ = crate::registration_service::apply_default_company_rating(state, uid).await;
+    }
+    user_repo::bind_oauth_id(writer, uid, &provider, &sub).await?;
+    consume_pending(state, ticket).await;
+
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(&state.config, uid, usertype, did)?;
+    let _ = crate::user_session_service::record_login(
+        state,
+        crate::user_session_service::LoginRecord {
+            uid,
+            usertype,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: client_ip,
+            ua: user_agent,
+        },
+    )
+    .await;
+    auth_event("oauth_fast_reg", None);
+    Ok(OAuthLoginResult {
+        uid,
+        usertype,
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        provider_sub: sub,
+        email_from_provider: None,
+        name_from_provider: None,
+        need_bind: false,
+        ticket: String::new(),
+        provider,
+    })
+}
 /// Additive endpoint; OA `code-login` is unchanged.
 pub async fn login_with_wechat_js_code(
     state: &AppState,
@@ -637,10 +829,7 @@ pub async fn login_with_wechat_js_code(
 
     let member = user_repo::find_by_oauth_id(state.db.reader(), "wxid", &openid).await?;
     let Some(user) = member else {
-        auth_event("oauth_not_bound", Some("wechat_mini"));
-        return Err(ApiError::param_invalid(format!(
-            "oauth_not_bound:wechat:{openid}"
-        )));
+        return pending_not_bound(state, "wechat", &openid).await;
     };
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
@@ -683,6 +872,9 @@ pub async fn login_with_wechat_js_code(
         provider_sub: openid,
         email_from_provider: None,
         name_from_provider: None,
+        need_bind: false,
+        ticket: String::new(),
+        provider: "wechat".to_string(),
     })
 }
 

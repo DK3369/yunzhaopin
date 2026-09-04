@@ -20,6 +20,7 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/specials",
     "/v1/wap/specials/detail",
     "/v1/wap/specials/companies",
+    "/v1/wap/specials/industries",
     "/v1/wap/specials/jobs",
 ];
 
@@ -28,6 +29,7 @@ pub fn routes() -> Router<AppState> {
         .route("/specials", get(list).post(list))
         .route("/specials/detail", get(detail).post(detail))
         .route("/specials/companies", get(companies).post(companies))
+        .route("/specials/industries", get(industries).post(industries))
         .route("/specials/jobs", get(jobs).post(jobs))
         .route("/specials/apply", post(apply))
 }
@@ -208,20 +210,29 @@ pub async fn detail(
     Ok(ApiResponse::data(SpecialDetail::from_with_ctx(s, &state)))
 }
 
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct SpecialCompaniesQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub hy: i32,
+}
+
 /// Participating companies (phpyun_special_company JOIN phpyun_company)
 #[utoipa::path(post,
     path = "/v1/wap/specials/companies",
     tag = "wap",
-    request_body = IdBody,
+    params(SpecialCompaniesQuery),
     responses((status = 200, description = "ok"))
 )]
 pub async fn companies(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<SpecialCompaniesQuery>,
 ) -> AppResult<ApiResponse<Paged<SpecialCompanyItem>>> {
     let id = b.id;
-    let r = special_service::list_companies(&state, id, page).await?;
+    let r = special_service::list_companies(&state, id, b.hy, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let uids: Vec<u64> = r.list.iter().map(|c| c.uid).collect();
     let cards = phpyun_models::company::repo::list_cards_by_uids(state.db.reader(), &uids)
@@ -272,6 +283,35 @@ pub async fn companies(
         page.page,
         page.page_size,
     )))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SpecialIndustryItem {
+    pub hy: i32,
+    pub hy_n: String,
+}
+
+/// Distinct industries of companies in a special (PHP `getSpecialHy` / gl tabs).
+#[utoipa::path(post,
+    path = "/v1/wap/specials/industries",
+    tag = "wap",
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn industries(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
+) -> AppResult<ApiResponse<Vec<SpecialIndustryItem>>> {
+    let ids = special_service::list_industries(&state, b.id).await?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    Ok(ApiResponse::data(
+        ids.into_iter()
+            .map(|hy| SpecialIndustryItem {
+                hy,
+                hy_n: dicts.industry(hy).to_string(),
+            })
+            .collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]

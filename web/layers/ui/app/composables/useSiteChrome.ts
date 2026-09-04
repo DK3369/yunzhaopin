@@ -207,7 +207,7 @@ export function useSiteChrome() {
 
   const isHome = computed(() => route.path === '/')
   const isAuth = computed(() =>
-    ['/login', '/register', '/forgetpw'].includes(route.path),
+    ['/login', '/register', '/forgetpw', '/oauth-bind'].includes(route.path),
   )
   const isMember = computed(
     () => route.path.startsWith('/user') || route.path.startsWith('/com'),

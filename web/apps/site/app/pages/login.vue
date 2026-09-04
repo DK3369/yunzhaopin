@@ -30,11 +30,18 @@ onMounted(async () => {
     const stored = sessionStorage.getItem('oauth_provider') || ''
     const provider = stored || (typeof q.provider === 'string' ? q.provider : 'wechat')
     try {
-      const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/oauth-login', {
-        method: 'POST',
-        body: { provider, code, state },
-      })
+      const me = await $fetch<{ uid: number; usertype: number; need_bind?: boolean; ticket?: string }>(
+        '/api/auth/oauth-login',
+        {
+          method: 'POST',
+          body: { provider, code, state },
+        },
+      )
       sessionStorage.removeItem('oauth_provider')
+      if (me.need_bind && me.ticket) {
+        await navigateTo({ path: '/oauth-bind', query: { ticket: me.ticket } })
+        return
+      }
       await afterLogin(me)
       return
     } catch (e: unknown) {
@@ -74,7 +81,7 @@ async function submitPass() {
       body: {
         username: username.value,
         password: password.value,
-        authcode: authcode.value || undefined,
+        authcode: authcode.value,
         captcha_cid: captcha.value?.cid,
       },
     })

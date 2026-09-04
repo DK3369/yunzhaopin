@@ -26,6 +26,7 @@ const list = computed(() => data.value?.list || [])
       <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
+    <p><NuxtLink to="/tiny/add">{{ $t('common.publish') }}</NuxtLink></p>
     <SimpleCard v-for="row in list" :key="row.id" :to="`/tiny/${row.id}`" :title="row.username" :meta="row.job" />
     <template #pager>
       <Pager

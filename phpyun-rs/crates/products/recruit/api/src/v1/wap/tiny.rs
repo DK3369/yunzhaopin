@@ -16,8 +16,9 @@ use axum::{
 };
 use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
 use phpyun_core::utils::mask_tel as mask_mobile;
+use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{
-    json, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    json, ApiError, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
     ValidatedJsonOrQuery,
 };
 use phpyun_services::tiny_service::{self, ManageOp, TinySearch, UpsertInput};
@@ -178,7 +179,8 @@ pub async fn show(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpsertBody {
-    #[validate(range(min = 1, max = 99_999_999))]
+    #[serde(default)]
+    #[validate(range(max = 99_999_999))]
     pub id: u64,
 
     #[validate(length(min = 1, max = 64))]
@@ -217,6 +219,15 @@ pub struct UpsertBody {
     #[serde(default = "default_did")]
     #[validate(range(max = 999))]
     pub did: u32,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub captcha_cid: String,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub authcode: String,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub moblie_code: String,
 }
 fn default_status() -> i32 {
     1
@@ -228,6 +239,50 @@ async fn upsert_common(
     id: Option<u64>,
     b: UpsertBody,
 ) -> AppResult<UpsertCreated> {
+    phpyun_services::site_gate_service::ensure_module_on(&state, "sy_tiny_web").await?;
+    if id.is_none() {
+        if b.captcha_cid.is_empty() || b.authcode.is_empty() {
+            return Err(ApiError::captcha());
+        }
+        if !verify::verify(
+            &state.redis,
+            VerifyKind::ImageCaptcha,
+            &b.captcha_cid,
+            &b.authcode.to_uppercase(),
+        )
+        .await?
+        {
+            return Err(ApiError::captcha());
+        }
+        if !b.moblie_code.is_empty()
+            && !verify::verify(
+                &state.redis,
+                VerifyKind::SmsTinyResume,
+                &b.mobile,
+                &b.moblie_code,
+            )
+            .await?
+        {
+            return Err(ApiError::param_invalid("moblie_code"));
+        }
+    }
+    let daily_total_limit = if b.daily_total_limit > 0 {
+        b.daily_total_limit
+    } else {
+        phpyun_services::site_gate_service::setting_i32(&state, "sy_tiny_totalnum")
+            .await
+            .max(0) as u64
+    };
+    let daily_ip_limit = if b.daily_ip_limit > 0 {
+        b.daily_ip_limit
+    } else {
+        phpyun_services::site_gate_service::setting_i32(&state, "sy_tiny")
+            .await
+            .max(0) as u64
+    };
+    let mut b = b;
+    b.daily_total_limit = daily_total_limit;
+    b.daily_ip_limit = daily_ip_limit;
     let (today_by_ip, today_total) = tiny_service::usage_today(state, ip).await?;
     let input = UpsertInput {
         id,

@@ -69,6 +69,7 @@ pub async fn send(
         // `verify::verify(SmsOnceJob | SmsTinyResume)`.
         "once" | "once_job" => SmsScene::OnceJob,
         "tiny" | "tiny_resume" => SmsScene::TinyResume,
+        "advice" => SmsScene::Advice,
         _ => return Err(ApiError::param_invalid("scene")),
     };
     sms_service::send_sms_code(&state, &f.moblie, scene).await?;

@@ -56,10 +56,26 @@ pub async fn find_product_public(
     com_uid: u64,
     id: u64,
 ) -> Result<Option<CompanyProduct>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {P_FIELDS} FROM phpyun_company_product \
-         WHERE id = ? AND uid = ? AND status = 1"
-    );
+    find_product(pool, com_uid, id, false).await
+}
+
+pub async fn find_product(
+    pool: &MySqlPool,
+    com_uid: u64,
+    id: u64,
+    include_draft: bool,
+) -> Result<Option<CompanyProduct>, sqlx::Error> {
+    let sql = if include_draft {
+        format!(
+            "SELECT {P_FIELDS} FROM phpyun_company_product \
+             WHERE id = ? AND uid = ? AND status != 2"
+        )
+    } else {
+        format!(
+            "SELECT {P_FIELDS} FROM phpyun_company_product \
+             WHERE id = ? AND uid = ? AND status = 1"
+        )
+    };
     sqlx::query_as::<_, CompanyProduct>(&sql)
         .bind(id)
         .bind(com_uid)
@@ -217,10 +233,26 @@ pub async fn find_news_public(
     com_uid: u64,
     id: u64,
 ) -> Result<Option<CompanyNews>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {N_FIELDS} FROM phpyun_company_news \
-         WHERE id = ? AND uid = ? AND status = 1"
-    );
+    find_news(pool, com_uid, id, false).await
+}
+
+pub async fn find_news(
+    pool: &MySqlPool,
+    com_uid: u64,
+    id: u64,
+    include_draft: bool,
+) -> Result<Option<CompanyNews>, sqlx::Error> {
+    let sql = if include_draft {
+        format!(
+            "SELECT {N_FIELDS} FROM phpyun_company_news \
+             WHERE id = ? AND uid = ? AND status != 2"
+        )
+    } else {
+        format!(
+            "SELECT {N_FIELDS} FROM phpyun_company_news \
+             WHERE id = ? AND uid = ? AND status = 1"
+        )
+    };
     sqlx::query_as::<_, CompanyNews>(&sql)
         .bind(id)
         .bind(com_uid)

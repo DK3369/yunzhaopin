@@ -1,6 +1,6 @@
 //! Map search (aligned with PHPYun `wap/map`). Public.
 //!
-//! Query: `x`, `y` required (decimal degrees), `radius_km` default 5 / max 50, `limit` default 50 / max 200.
+//! Query: `x`, `y` required (decimal degrees), `radius_km` default 50 / max 200, `limit` default 50 / max 200.
 //!
 //! NearJob / NearCompany fields align with the PHP map list page: full original-table columns + dict
 //! translation (city / province) + CDN URL (logo / company logo) + distance conversion (km / m) + time
@@ -39,7 +39,7 @@ pub struct GeoQuery {
     pub did: u32,
 }
 fn default_radius() -> f64 {
-    20.0
+    50.0
 }
 fn default_limit() -> u64 {
     map_service::default_limit()

@@ -300,6 +300,7 @@
 /v1/wap/home/aggregate
 /v1/wap/hot-searches
 /v1/wap/hr-docs
+/v1/wap/hr-docs/classes
 /v1/wap/hr-docs/detail
 /v1/wap/hr-docs/download
 /v1/wap/integral/items
@@ -326,6 +327,8 @@
 /v1/wap/me
 /v1/wap/nav
 /v1/wap/oauth/bind
+/v1/wap/oauth/bind-pending
+/v1/wap/oauth/fast-reg
 /v1/wap/oauth/login
 /v1/wap/oauth/qq/authorize-url
 /v1/wap/oauth/qq/code-login
@@ -390,6 +393,7 @@
 /v1/wap/specials/apply
 /v1/wap/specials/companies
 /v1/wap/specials/detail
+/v1/wap/specials/industries
 /v1/wap/specials/jobs
 /v1/wap/stats/overview
 /v1/wap/tiny-resumes

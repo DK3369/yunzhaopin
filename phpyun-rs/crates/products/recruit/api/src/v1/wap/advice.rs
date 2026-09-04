@@ -25,6 +25,9 @@ pub struct AdviceForm {
     #[validate(length(max = 20))]
     #[serde(default)]
     pub username: String,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub moblie_code: String,
     #[validate(length(min = 1, max = 64))]
     pub captcha_cid: String,
     #[validate(length(min = 1, max = 16))]
@@ -54,6 +57,21 @@ pub async fn submit(
     .await?
     .then_some(())
     .ok_or_else(phpyun_core::ApiError::captcha)?;
+    let need_sms = phpyun_services::site_gate_service::setting_i32(&state, "sy_advice_mobilecode").await == 1;
+    if need_sms {
+        if f.moblie.is_empty() || f.moblie_code.is_empty() {
+            return Err(phpyun_core::ApiError::param_invalid("moblie_code"));
+        }
+        phpyun_core::verify::verify(
+            &state.redis,
+            phpyun_core::verify::VerifyKind::SmsAdvice,
+            &f.moblie,
+            &f.moblie_code,
+        )
+        .await?
+        .then_some(())
+        .ok_or_else(|| phpyun_core::ApiError::param_invalid("moblie_code"))?;
+    }
     let id = feedback_service::submit(
         &state,
         user.as_ref(),

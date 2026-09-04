@@ -48,6 +48,16 @@ pub async fn fetch_purchased_urls(
     Ok(row.and_then(|(s,)| s))
 }
 
+pub async fn fetch_applied_tpl(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(comtpl, '') FROM phpyun_member_statis WHERE uid = ? AND usertype = 2 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).unwrap_or_default())
+}
+
 pub async fn set_applied_tpl(pool: &MySqlPool, uid: u64, url: &str) -> Result<u64, sqlx::Error> {
     let res =
         sqlx::query("UPDATE phpyun_member_statis SET comtpl = ? WHERE uid = ? AND usertype = 2")

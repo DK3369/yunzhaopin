@@ -34,14 +34,19 @@ pub async fn get(state: &AppState, id: u64) -> AppResult<Special> {
 pub async fn list_companies(
     state: &AppState,
     sid: u64,
+    hy: i32,
     page: Pagination,
 ) -> AppResult<Paged<SpecialCompany>> {
     let db = state.db.reader();
     let (list, total) = tokio::join!(
-        special_repo::list_company_uids(db, sid, page.offset, page.limit),
-        special_repo::count_companies(db, sid),
+        special_repo::list_company_uids(db, sid, hy, page.offset, page.limit),
+        special_repo::count_companies(db, sid, hy),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
+}
+
+pub async fn list_industries(state: &AppState, sid: u64) -> AppResult<Vec<i32>> {
+    Ok(special_repo::list_industries(state.db.reader(), sid).await?)
 }
 
 /// Jobs posted by companies within the special event (aggregated).

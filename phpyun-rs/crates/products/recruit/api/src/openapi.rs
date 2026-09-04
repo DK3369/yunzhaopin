@@ -166,6 +166,8 @@ impl Modify for UniqueOperationId {
         v1::wap::captcha::issue,
         v1::wap::oauth::oauth_login,
         v1::wap::oauth::oauth_bind,
+        v1::wap::oauth::oauth_bind_pending,
+        v1::wap::oauth::oauth_fast_reg,
         // upload
         v1::wap::upload::upload_avatar,
         v1::wap::upload::upload_company_logo,
@@ -399,6 +401,7 @@ impl Modify for UniqueOperationId {
         v1::wap::specials::list,
         v1::wap::specials::detail,
         v1::wap::specials::companies,
+        v1::wap::specials::industries,
         v1::wap::specials::jobs,
         // wap: parts (public part-time)
         v1::wap::part::list_parts,
@@ -458,6 +461,7 @@ impl Modify for UniqueOperationId {
         v1::wap::nav::list,
         v1::wap::hr_docs::list,
         v1::wap::hr_docs::detail,
+        v1::wap::hr_docs::classes,
         // remove merged into update (status:2 soft delete)
         // mcenter: company HR multi-account
         v1::mcenter::company_hr::list_codes,
@@ -684,6 +688,9 @@ impl Modify for UniqueOperationId {
             v1::wap::sms::SmsSendForm,
             v1::wap::captcha::CaptchaData,
             v1::wap::oauth::OAuthLoginForm,
+            v1::wap::oauth::OAuthLoginData,
+            v1::wap::oauth::OAuthTicketForm,
+            v1::wap::oauth::OAuthFastRegForm,
             phpyun_core::dto::OkResp,
             v1::wap::upload::UploadResult,
             v1::mcenter::profile::ProfileData,

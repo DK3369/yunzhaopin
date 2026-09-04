@@ -87,11 +87,9 @@ pub async fn list_jobs_near(
         FROM phpyun_company_job
         WHERE state = 1 AND status = 0 AND r_status = 1
           AND COALESCE(is_depower, 2) = 2
-          AND (edate = 0 OR edate > ?)
           AND (? <= 0 OR lastupdate > ?)
           AND (? = 0 OR COALESCE(did, 0) = ?)
           AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
-        HAVING distance <= ?
         ORDER BY distance ASC
         LIMIT ? OFFSET ?
     "#;
@@ -99,7 +97,6 @@ pub async fn list_jobs_near(
         .bind(q.y)
         .bind(q.y)
         .bind(q.x)
-        .bind(q.now)
         .bind(q.min_lastupdate)
         .bind(q.min_lastupdate)
         .bind(q.did)
@@ -108,7 +105,6 @@ pub async fn list_jobs_near(
         .bind(xmax)
         .bind(ymin)
         .bind(ymax)
-        .bind(q.radius_km)
         .bind(q.limit)
         .bind(q.offset)
         .fetch_all(pool)
@@ -130,18 +126,15 @@ pub async fn count_jobs_near(pool: &MySqlPool, q: NearQuery) -> Result<u64, sqlx
             FROM phpyun_company_job
             WHERE state = 1 AND status = 0 AND r_status = 1
               AND COALESCE(is_depower, 2) = 2
-              AND (edate = 0 OR edate > ?)
               AND (? <= 0 OR lastupdate > ?)
               AND (? = 0 OR COALESCE(did, 0) = ?)
               AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
-            HAVING distance <= ?
         ) t
     "#;
     let n: i64 = sqlx::query_scalar(sql)
         .bind(q.y)
         .bind(q.y)
         .bind(q.x)
-        .bind(q.now)
         .bind(q.min_lastupdate)
         .bind(q.min_lastupdate)
         .bind(q.did)
@@ -150,7 +143,6 @@ pub async fn count_jobs_near(pool: &MySqlPool, q: NearQuery) -> Result<u64, sqlx
         .bind(xmax)
         .bind(ymin)
         .bind(ymax)
-        .bind(q.radius_km)
         .fetch_one(pool)
         .await?;
     Ok(n.max(0) as u64)

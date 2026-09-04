@@ -1155,6 +1155,27 @@ pub async fn set_rating(
     Ok(res.rows_affected())
 }
 
+pub async fn set_rating_and_vip(
+    pool: &MySqlPool,
+    uid: u64,
+    rating: i32,
+    rating_name: &str,
+    vipstime: i64,
+    vipetime: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company SET rating = ?, rating_name = ?, vipstime = ?, vipetime = ? WHERE uid = ?",
+    )
+    .bind(rating)
+    .bind(rating_name)
+    .bind(vipstime)
+    .bind(vipetime)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn set_r_status(pool: &MySqlPool, uid: u64, r_status: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_company SET r_status = ? WHERE uid = ?")
         .bind(r_status)
