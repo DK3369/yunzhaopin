@@ -40,6 +40,10 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<Article> {
     Ok(a)
 }
 
+pub async fn list_groups(state: &AppState) -> AppResult<Vec<phpyun_models::article::entity::NewsGroup>> {
+    Ok(article_repo::list_groups(state.db.reader()).await?)
+}
+
 pub async fn neighbors_and_related(
     state: &AppState,
     a: &Article,

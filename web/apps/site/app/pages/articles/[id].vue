@@ -7,6 +7,9 @@ const api = useApi()
 const { data } = await useAsyncData(`article-${id}`, () =>
   api.get('/v1/wap/articles/detail', { id }),
 )
+onMounted(() => {
+  api.post('/v1/wap/articles/hits', { id }).catch(() => null)
+})
 const article = computed(() => (data.value || {}) as Record<string, unknown>)
 const prev = computed(() => (article.value.prev || null) as { id?: number; title?: string } | null)
 const next = computed(() => (article.value.next || null) as { id?: number; title?: string } | null)

@@ -250,6 +250,7 @@
 /v1/wap/app-version
 /v1/wap/articles
 /v1/wap/articles/detail
+/v1/wap/articles/groups
 /v1/wap/articles/hits
 /v1/wap/captcha
 /v1/wap/categories

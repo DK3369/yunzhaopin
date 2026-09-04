@@ -296,6 +296,7 @@ impl Modify for UniqueOperationId {
         // wap: articles
         v1::wap::articles::list_articles,
         v1::wap::articles::article_detail,
+        v1::wap::articles::list_groups,
         // mcenter: feedback / reports
         v1::mcenter::feedback::list_mine,
         v1::mcenter::feedback::submit,
@@ -781,6 +782,7 @@ impl Modify for UniqueOperationId {
             v1::wap::dict::DictItem,
             v1::wap::articles::ArticleSummary,
             v1::wap::articles::ArticleDetail,
+            v1::wap::articles::ArticleGroupItem,
             v1::mcenter::feedback::FeedbackForm,
             v1::mcenter::feedback::FeedbackItem,
             v1::mcenter::reports::ReportForm,

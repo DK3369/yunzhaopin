@@ -16,12 +16,17 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/articles", "/v1/wap/articles/detail"];
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/articles",
+    "/v1/wap/articles/detail",
+    "/v1/wap/articles/groups",
+];
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/articles", get(list_articles).post(list_articles))
         .route("/articles/detail", get(article_detail).post(article_detail))
+        .route("/articles/groups", get(list_groups).post(list_groups))
         .route("/articles/hits", post(bump_hits))
 }
 
@@ -226,6 +231,35 @@ impl ArticleDetail {
             related: Vec::new(),
         }
     }
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ArticleGroupItem {
+    pub id: u64,
+    pub name: String,
+    pub parent_id: i32,
+}
+
+/// Public news categories (`phpyun_news_group`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/articles/groups",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_groups(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<Vec<ArticleGroupItem>>> {
+    let list = article_service::list_groups(&state).await?;
+    Ok(ApiResponse::data(
+        list.into_iter()
+            .map(|g| ArticleGroupItem {
+                id: g.id,
+                name: g.name,
+                parent_id: g.keyid,
+            })
+            .collect(),
+    ))
 }
 
 /// Public article list
