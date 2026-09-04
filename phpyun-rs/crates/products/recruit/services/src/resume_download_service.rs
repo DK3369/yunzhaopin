@@ -317,6 +317,7 @@ pub async fn download(
     state: &AppState,
     user: &AuthenticatedUser,
     target_uid: u64,
+    eid: Option<u64>,
     confirm: bool,
     client_ip: &str,
 ) -> AppResult<DownloadResult> {
@@ -344,12 +345,24 @@ pub async fn download(
 
     let now = clock::now_ts();
     let today = today_start_ts(now);
-    let eid = u64::try_from(r.def_job.max(0)).unwrap_or(0);
+    let default_eid = u64::try_from(r.def_job.max(0)).unwrap_or(0);
+    let eid = match eid.filter(|e| *e > 0) {
+        Some(e) => {
+            let exp = phpyun_models::resume::expect::find_by_id(state.db.reader(), e)
+                .await?
+                .ok_or_else(|| ApiError::param_invalid("eid"))?;
+            if exp.uid != target_uid {
+                return Err(ApiError::param_invalid("eid"));
+            }
+            e
+        }
+        None => default_eid,
+    };
 
-    let already = download_repo::already_downloaded(state.db.reader(), user.uid, target_uid)
+    let already = download_repo::already_downloaded_eid(state.db.reader(), user.uid, eid)
         .await
         .unwrap_or(false);
-    let already_free = download_repo::already_freedown(state.db.reader(), user.uid, target_uid)
+    let already_free = download_repo::already_freedown_eid(state.db.reader(), user.uid, eid)
         .await
         .unwrap_or(false);
     if already {
@@ -372,15 +385,29 @@ pub async fn download(
     let server_open = single_can.split(',').any(|s| s.trim() == "downresume");
     let com_integral = parse_integral(&statis.integral);
 
+    let lietou = read_setting_i64(state, "com_lietou_job").await;
+    if lietou == 1 && is_vip(statis.vip_etime, now) {
+        let n = phpyun_models::job::repo::count_online_by_uid(state.db.reader(), user.uid)
+            .await
+            .unwrap_or(0);
+        if n == 0 {
+            return Err(ApiError::business("need_post_job"));
+        }
+    }
+
+    let price_yuan_early = resume_day_price(state, eid, false).await?;
+    if price_yuan_early == 0 && statis.down_resume == 0 {
+        return record_and_finish(state, user, &r, eid, now, false, client_ip, 2).await;
+    }
+
     if is_vip(statis.vip_etime, now) {
-        let applied = phpyun_models::apply::repo::count_by_uid_to_company(
+        let applied = phpyun_models::apply::repo::exists_by_com_eid(
             state.db.reader(),
-            target_uid,
             user.uid,
+            eid,
         )
         .await
-        .unwrap_or(0)
-            > 0;
+        .unwrap_or(false);
         let freelook = statis_repo::freelook_num(state.db.reader(), statis.rating)
             .await
             .unwrap_or(0);

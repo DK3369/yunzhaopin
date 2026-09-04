@@ -869,7 +869,7 @@ pub async fn update_username_and_password(
         "UPDATE phpyun_member \
          SET username = ?, salt = ?, password = ?, claim = 1, \
              appeal = NULL, appealtime = ?, appealstate = 1 \
-         WHERE uid = ?",
+         WHERE uid = ? AND (claim = 0 OR claim IS NULL)",
     )
     .bind(username)
     .bind(salt)

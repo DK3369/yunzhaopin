@@ -1,41 +1,33 @@
 use super::entity::OnceJob;
 use sqlx::{MySqlPool, QueryBuilder};
 
-// SELECT projection mapping the real `phpyun_once_job` columns onto the
-// Rust `OnceJob` entity shape. The PHP table predates the Rust port and uses
-// a different column set:
+// Real `phpyun_once_job` columns (PHP):
+//   id, title, mans, require, companyname, phone, hits, linkman,
+//   provinceid, cityid, three_cityid, address, ctime, status,
+//   password, qq, email, edate, login_ip, did, sxtime, sxnumber,
+//   pic, salary (varchar), pay, yyzz
 //
-//   PHP   : id, title, mans, require, companyname, phone, hits, linkman,
-//           provinceid, cityid, three_cityid, address, ctime, status,
-//           password, qq, email, edate, login_ip, did, sxtime, sxnumber,
-//           pic, salary (varchar), pay, yyzz
-//   Rust  : id, companyname, linkman, linktel, provinceid, cityid,
-//           three_cityid, number, type, salary (i32), exp, edu, require,
-//           pic, yyzz, password, login_ip, status, ctime, edate, did, hits
-//
-// Field-by-field translation:
-//   - linktel  ← phone               (PHP has no `linktel`)
-//   - number   ← 0                   (PHP `mans` is free-text: not safely an int)
-//   - type     ← 0                   (no equivalent column)
-//   - salary   ← CAST(salary AS SIGNED) on the varchar column
-//   - exp / edu ← 0                  (no equivalent columns)
-//
-// The 0-projected fields lose data fidelity but keep public read endpoints
-// from 5xx'ing on column-not-found. Writers for once-jobs aren't currently
-// exercised against this table from the Rust port.
+// Public entity aliases:
+//   linktel ← phone; number ← CAST(mans); type/exp/edu ← 0 (no columns).
 const FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
+    COALESCE(title, '') AS title, \
     companyname, \
     linkman, \
     COALESCE(phone, '') AS linktel, \
     provinceid, cityid, three_cityid, \
-    CAST(0 AS SIGNED) AS number, \
+    COALESCE(address, '') AS address, \
+    COALESCE(mans, '') AS mans, \
+    CAST(COALESCE(NULLIF(mans, ''), '0') AS SIGNED) AS number, \
     CAST(0 AS SIGNED) AS `type`, \
     CAST(COALESCE(NULLIF(salary, ''), '0') AS SIGNED) AS salary, \
+    COALESCE(salary, '') AS salary_text, \
     CAST(0 AS SIGNED) AS exp, \
     CAST(0 AS SIGNED) AS edu, \
     `require`, pic, yyzz, password, login_ip, \
-    status, ctime, \
+    status, \
+    CAST(COALESCE(pay, 0) AS SIGNED) AS pay, \
+    ctime, \
     COALESCE(edate, 0) AS edate, \
     COALESCE(did, 0) AS did, \
     COALESCE(hits, 0) AS hits";
@@ -95,7 +87,9 @@ pub async fn count_public(pool: &MySqlPool, f: &Filter<'_>, now: i64) -> Result<
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &Filter<'a>) {
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
-            qb.push(" AND (companyname LIKE ");
+            qb.push(" AND (title LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR companyname LIKE ");
             qb.push_bind(format!("%{kw}%"));
             qb.push(" OR `require` LIKE ");
             qb.push_bind(format!("%{kw}%"));
@@ -114,14 +108,8 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &Filter<'a>) {
         qb.push(" AND three_cityid = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.exp {
-        qb.push(" AND exp = ");
-        qb.push_bind(v);
-    }
-    if let Some(v) = f.edu {
-        qb.push(" AND edu = ");
-        qb.push_bind(v);
-    }
+    // PHP table has no exp/edu columns; keyword/city filters only.
+    let _ = (f.exp, f.edu);
 }
 
 pub async fn count_today_by_ip(
@@ -147,23 +135,23 @@ pub async fn count_today_total(pool: &MySqlPool, since_ts: i64) -> Result<u64, s
 }
 
 pub struct Create<'a> {
+    pub title: &'a str,
     pub companyname: &'a str,
     pub linkman: &'a str,
-    pub linktel: &'a str,
+    pub phone: &'a str,
     pub provinceid: i32,
     pub cityid: i32,
     pub three_cityid: i32,
-    pub number: i32,
-    pub job_type: i32,
-    pub salary: i32,
-    pub exp: i32,
-    pub edu: i32,
+    pub address: &'a str,
+    pub mans: &'a str,
+    pub salary: &'a str,
     pub require: &'a str,
     pub pic: &'a str,
     pub yyzz: &'a str,
     pub password_md5: &'a str,
     pub login_ip: &'a str,
     pub status: i32,
+    pub pay: i32,
     pub edate: i64,
     pub did: u32,
     pub now: i64,
@@ -172,28 +160,28 @@ pub struct Create<'a> {
 pub async fn create(pool: &MySqlPool, c: &Create<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_once_job
-           (companyname, linkman, linktel, provinceid, cityid, three_cityid, number,
-            `type`, salary, exp, edu, `require`, pic, yyzz, password, login_ip,
-            status, ctime, edate, did)
+           (title, companyname, linkman, phone, provinceid, cityid, three_cityid,
+            address, mans, salary, `require`, pic, yyzz, password, login_ip,
+            status, pay, ctime, edate, did)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
+    .bind(c.title)
     .bind(c.companyname)
     .bind(c.linkman)
-    .bind(c.linktel)
+    .bind(c.phone)
     .bind(c.provinceid)
     .bind(c.cityid)
     .bind(c.three_cityid)
-    .bind(c.number)
-    .bind(c.job_type)
+    .bind(c.address)
+    .bind(c.mans)
     .bind(c.salary)
-    .bind(c.exp)
-    .bind(c.edu)
     .bind(c.require)
     .bind(c.pic)
     .bind(c.yyzz)
     .bind(c.password_md5)
     .bind(c.login_ip)
     .bind(c.status)
+    .bind(c.pay)
     .bind(c.now)
     .bind(c.edate)
     .bind(c.did)
@@ -203,17 +191,16 @@ pub async fn create(pool: &MySqlPool, c: &Create<'_>) -> Result<u64, sqlx::Error
 }
 
 pub struct Update<'a> {
+    pub title: &'a str,
     pub companyname: &'a str,
     pub linkman: &'a str,
-    pub linktel: &'a str,
+    pub phone: &'a str,
     pub provinceid: i32,
     pub cityid: i32,
     pub three_cityid: i32,
-    pub number: i32,
-    pub job_type: i32,
-    pub salary: i32,
-    pub exp: i32,
-    pub edu: i32,
+    pub address: &'a str,
+    pub mans: &'a str,
+    pub salary: &'a str,
     pub require: &'a str,
 }
 
@@ -225,22 +212,20 @@ pub async fn update_with_password_check(
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_once_job SET
-           companyname = ?, linkman = ?, linktel = ?, provinceid = ?, cityid = ?,
-           three_cityid = ?, number = ?, `type` = ?, salary = ?, exp = ?, edu = ?,
-           `require` = ?
+           title = ?, companyname = ?, linkman = ?, phone = ?, provinceid = ?, cityid = ?,
+           three_cityid = ?, address = ?, mans = ?, salary = ?, `require` = ?
          WHERE id = ? AND password = ?",
     )
+    .bind(u.title)
     .bind(u.companyname)
     .bind(u.linkman)
-    .bind(u.linktel)
+    .bind(u.phone)
     .bind(u.provinceid)
     .bind(u.cityid)
     .bind(u.three_cityid)
-    .bind(u.number)
-    .bind(u.job_type)
+    .bind(u.address)
+    .bind(u.mans)
     .bind(u.salary)
-    .bind(u.exp)
-    .bind(u.edu)
     .bind(u.require)
     .bind(id)
     .bind(password_md5)

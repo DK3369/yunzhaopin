@@ -156,3 +156,14 @@ pub async fn count_pending(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
+
+/// PHP claim code: `company_cert.check2` where `type=6`.
+pub async fn find_claim_code(pool: &MySqlPool, uid: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(Option<String>,)> = sqlx::query_as(
+        "SELECT check2 FROM phpyun_company_cert WHERE uid = ? AND type = 6 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.and_then(|(v,)| v.filter(|s| !s.trim().is_empty())))
+}

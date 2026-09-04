@@ -41,9 +41,10 @@ const msg = ref('')
 const captcha = ref<{ cid: string; image: string } | null>(null)
 const captchaInput = ref('')
 const { me } = useSiteChrome()
+const needUsertype = computed(() => (props.targetKind === 3 ? 2 : 1))
 
 onMounted(async () => {
-  if (!me.value || Number(me.value.usertype) !== 1) {
+  if (!me.value || Number(me.value.usertype) !== needUsertype.value) {
     await navigateTo('/login')
     return
   }

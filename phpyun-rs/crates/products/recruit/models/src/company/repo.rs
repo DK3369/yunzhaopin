@@ -25,6 +25,7 @@ const FIELDS: &str = "\
     COALESCE(moblie_status, 0) AS moblie_status, \
     COALESCE(email_status, 0) AS email_status, \
     COALESCE(yyzz_status, 0) AS yyzz_status, \
+    COALESCE(infostatus, 1) AS infostatus, \
     COALESCE(rating, 0) AS rating, \
     rating_name, \
     COALESCE(vipstime, 0) AS vipstime, \

@@ -10,6 +10,12 @@ pub struct EvalPaper {
     pub visits: u32,
     pub status: i32,
     pub created_at: i64,
+    #[serde(default)]
+    pub fromscore_raw: String,
+    #[serde(default)]
+    pub toscore_raw: String,
+    #[serde(default)]
+    pub comment_raw: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]

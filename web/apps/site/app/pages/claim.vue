@@ -10,6 +10,25 @@ const form = reactive({
   cpassword: '',
 })
 const msg = ref('')
+const ready = ref(false)
+const { data: checked, error: checkError } = await useAsyncData(
+  () => `claim-check-${form.uid}-${form.code}`,
+  async () => {
+    if (!form.uid || !form.code) {
+      throw new Error(t('wap_00171'))
+    }
+    return api.get<{ ok: boolean }>('/v1/wap/claim/check', { uid: form.uid, code: form.code })
+  },
+)
+watchEffect(() => {
+  if (checkError.value) {
+    msg.value = checkError.value instanceof Error ? checkError.value.message : t('wap_00171')
+    ready.value = false
+  } else if (checked.value?.ok) {
+    ready.value = true
+    msg.value = ''
+  }
+})
 function validate() {
   if (!form.username.trim()) {
     msg.value = t('wap_01454')
@@ -50,7 +69,7 @@ useSeoMeta({ title: t('resume_00011') })
 <template>
   <section class="password_box">
     <h1>{{ $t('resume_00011') }}</h1>
-    <form class="form account" @submit.prevent="submit">
+    <form v-if="ready" class="form account" @submit.prevent="submit">
       <input type="hidden" :value="form.uid" />
       <input type="hidden" :value="form.code" />
       <div class="J_validate_group">

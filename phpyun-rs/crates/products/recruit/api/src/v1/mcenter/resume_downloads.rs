@@ -24,6 +24,10 @@ pub fn routes() -> Router<AppState> {
 pub struct DownloadForm {
     #[validate(range(min = 1, max = 99_999_999))]
     pub uid: u64,
+    /// Resume expect id; PHP `downResume` keys off `eid`.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub eid: Option<u64>,
     /// PHP second-step confirm for integral/cash single purchase.
     #[serde(default)]
     pub confirm: bool,
@@ -45,7 +49,7 @@ pub async fn download(
     ValidatedJson(f): ValidatedJson<DownloadForm>,
 ) -> AppResult<ApiResponse<DownloadResult>> {
     let data =
-        resume_download_service::download(&state, &user, f.uid, f.confirm, &ip).await?;
+        resume_download_service::download(&state, &user, f.uid, f.eid, f.confirm, &ip).await?;
     Ok(ApiResponse::data(data))
 }
 

@@ -65,6 +65,11 @@ pub async fn show(state: &AppState, id: u64) -> AppResult<OnceJob> {
     if item.status < 1 {
         return Err(ApiError::business("once_not_approved"));
     }
+    // PHP wap/once::show_action: unpaid (`pay=1`) listings are hidden unless
+    // the poster is coming from the pay flow.
+    if item.pay == 1 {
+        return Err(ApiError::business("once_unpaid"));
+    }
 
     let pool = state.db.pool().clone();
     tokio::spawn(async move {
@@ -78,6 +83,7 @@ pub async fn show(state: &AppState, id: u64) -> AppResult<OnceJob> {
 #[derive(Debug, Clone)]
 pub struct UpsertInput {
     pub id: Option<u64>,
+    pub title: String,
     pub companyname: String,
     pub linkman: String,
     pub linktel: String,
@@ -85,17 +91,17 @@ pub struct UpsertInput {
     pub provinceid: i32,
     pub cityid: i32,
     pub three_cityid: i32,
-    pub number: i32,
-    pub job_type: i32,
-    pub salary: i32,
-    pub exp: i32,
-    pub edu: i32,
+    pub address: String,
+    pub mans: String,
+    pub salary: String,
     pub require: String,
     pub pic: String,
     pub yyzz: String,
     /// Default status (matches PHP `user_wjl`; 0 = pending review / 1 = approved)
     pub default_status: i32,
-    pub valid_days: i64,
+    /// PHP `oncepricegear` id; required on create. `edate` is derived from
+    /// `phpyun_once_price_gear.days`, not from a client-supplied day count.
+    pub oncepricegear: i32,
     pub today_by_ip: u64,
     pub today_total: u64,
     /// `sy_once_totalnum` (0 = unlimited)
@@ -125,17 +131,16 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
             return Err(ApiError::param_invalid("password_required"));
         }
         let upd = once_repo::Update {
+            title: &input.title,
             companyname: &input.companyname,
             linkman: &input.linkman,
-            linktel: &input.linktel,
+            phone: &input.linktel,
             provinceid: input.provinceid,
             cityid: input.cityid,
             three_cityid: input.three_cityid,
-            number: input.number,
-            job_type: input.job_type,
-            salary: input.salary,
-            exp: input.exp,
-            edu: input.edu,
+            address: &input.address,
+            mans: &input.mans,
+            salary: &input.salary,
             require: &input.require,
         };
         let n = once_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;
@@ -165,33 +170,41 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
     if pwd_md5.is_empty() {
         return Err(ApiError::param_invalid("password_required"));
     }
+    if input.oncepricegear <= 0 {
+        return Err(ApiError::param_invalid("oncepricegear"));
+    }
+    let (days, price) = once_repo::find_price_gear(state.db.reader(), input.oncepricegear)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("gear_not_found"))?;
 
     let now = clock::now_ts();
-    let edate = if input.valid_days > 0 {
-        now + input.valid_days * 86400
+    let edate = if days > 0 {
+        now + i64::from(days) * 86400
     } else {
         0
     };
+    // PHP: paid gear (`once_price>0`) → pay=1 (must checkout); otherwise pay=2.
+    let pay = if price > 0.0 { 1 } else { 2 };
     let create = once_repo::Create {
+        title: &input.title,
         companyname: &input.companyname,
         linkman: &input.linkman,
-        linktel: &input.linktel,
+        phone: &input.linktel,
         provinceid: input.provinceid,
         cityid: input.cityid,
         three_cityid: input.three_cityid,
-        number: input.number,
-        job_type: input.job_type,
-        salary: input.salary,
-        exp: input.exp,
-        edu: input.edu,
+        address: &input.address,
+        mans: &input.mans,
+        salary: &input.salary,
         require: &input.require,
         pic: &input.pic,
         yyzz: &input.yyzz,
         password_md5: &pwd_md5,
         login_ip: &input.login_ip,
         status: input.default_status,
+        pay,
         edate,
-        did: if input.did == 0 { 1 } else { input.did },
+        did: input.did,
         now,
     };
     let id = once_repo::create(state.db.pool(), &create).await?;
@@ -208,6 +221,9 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 }
 
 fn validate_fields(input: &UpsertInput) -> AppResult<()> {
+    if input.title.trim().is_empty() {
+        return Err(ApiError::param_invalid("title"));
+    }
     if input.companyname.trim().is_empty() {
         return Err(ApiError::param_invalid("companyname"));
     }
@@ -220,8 +236,14 @@ fn validate_fields(input: &UpsertInput) -> AppResult<()> {
     if input.provinceid == 0 && input.cityid == 0 {
         return Err(ApiError::param_invalid("city"));
     }
+    if input.address.trim().is_empty() {
+        return Err(ApiError::param_invalid("address"));
+    }
     if input.require.trim().is_empty() {
         return Err(ApiError::param_invalid("require"));
+    }
+    if input.salary.trim().is_empty() {
+        return Err(ApiError::param_invalid("salary"));
     }
     Ok(())
 }

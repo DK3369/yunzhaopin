@@ -22,6 +22,8 @@ pub fn routes() -> Router<AppState> {
 pub struct RedeemSubmit {
     #[validate(range(min = 1, max = 99_999_999))]
     pub id: u64,
+    #[validate(length(min = 6, max = 64))]
+    pub password: String,
     #[validate(length(min = 1, max = 64))]
     pub linkman: String,
     #[validate(length(min = 6, max = 32))]
@@ -29,6 +31,15 @@ pub struct RedeemSubmit {
     #[validate(length(max = 500))]
     #[serde(default)]
     pub address: String,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub provinceid: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub cityid: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub three_cityid: i32,
     #[validate(range(min = 1, max = 999))]
     pub num: u32,
 }
@@ -57,9 +68,13 @@ pub async fn redeem(
         &user,
         f.id,
         &RedeemForm {
+            password: &f.password,
             linkman: &f.linkman,
             linktel: &f.linktel,
             address: &f.address,
+            provinceid: f.provinceid,
+            cityid: f.cityid,
+            three_cityid: f.three_cityid,
             num: f.num,
         },
     )

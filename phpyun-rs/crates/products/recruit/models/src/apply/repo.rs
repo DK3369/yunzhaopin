@@ -147,6 +147,22 @@ pub async fn count_by_uid(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `getSqJobInfo(['com_id'=>$uid,'eid'=>$eid,'isdel'=>9])`.
+pub async fn exists_by_com_eid(
+    pool: &MySqlPool,
+    com_id: u64,
+    eid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM phpyun_userid_job WHERE com_id = ? AND eid = ? AND isdel = 9 LIMIT 1",
+    )
+    .bind(com_id)
+    .bind(eid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
 /// Count active (`isdel = 9`) applications by a jobseeker to a specific
 /// company. Used by the company-detail page to show "you've applied N times".
 pub async fn count_by_uid_to_company(

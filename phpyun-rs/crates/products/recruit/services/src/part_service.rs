@@ -100,6 +100,125 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<PartJob> {
     Ok(job)
 }
 
+/// PHP `part.model.php::getLink()` — never return plaintext `linktel` to strangers.
+pub struct PartLink {
+    pub linktel: Option<String>,
+    pub linktel_n: String,
+    pub link_tip: i32,
+}
+
+fn csv_has_rating(raw: &str, rating: i32) -> bool {
+    raw.split(',')
+        .any(|p| p.trim().parse::<i32>().ok() == Some(rating))
+}
+
+pub async fn resolve_part_link(
+    state: &AppState,
+    job: &PartJob,
+    user: Option<&AuthenticatedUser>,
+    rating: i32,
+    infostatus: i32,
+) -> PartLink {
+    let tel = job.linktel.clone().unwrap_or_default();
+    let masked = phpyun_core::utils::mask_tel(&tel);
+    let uid = user.map(|u| u.uid);
+    let usertype = user.map(|u| i32::from(u.usertype)).unwrap_or(0);
+
+    if uid == Some(job.uid) {
+        return PartLink {
+            linktel: if tel.is_empty() { None } else { Some(tel) },
+            linktel_n: job.linktel.clone().unwrap_or_default(),
+            link_tip: 0,
+        };
+    }
+
+    let cfg = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &["com_login_link", "com_link_no"],
+    )
+    .await
+    .unwrap_or_default();
+    let login_link = cfg
+        .get("com_login_link")
+        .and_then(|s| s.trim().parse::<i32>().ok())
+        .unwrap_or(1);
+    let link_no = cfg.get("com_link_no").map(|s| s.as_str()).unwrap_or("");
+
+    let mut show = false;
+    let mut tip = 0i32;
+    if csv_has_rating(link_no, rating) {
+        tip = 1;
+    } else if login_link == 1 {
+        if infostatus == 1 {
+            show = true;
+        } else {
+            tip = 2;
+        }
+    } else if login_link == 2 {
+        tip = 3;
+    } else if login_link == 3 {
+        if usertype == 1 {
+            show = true;
+        } else {
+            tip = 7;
+        }
+    } else if login_link == 4 {
+        if usertype == 1 {
+            if let Some(uid) = uid {
+                match phpyun_models::resume::expect::find_default_state_by_uid(
+                    state.db.reader(),
+                    uid,
+                )
+                .await
+                {
+                    Ok(Some((state_n, status_n))) if state_n == 1 && status_n == 1 => {
+                        show = true;
+                    }
+                    Ok(Some(_)) => tip = 4,
+                    _ => tip = 5,
+                }
+            } else {
+                tip = 7;
+            }
+        } else {
+            tip = 7;
+        }
+    } else if login_link == 5 {
+        if usertype == 1 {
+            if let Some(uid) = uid {
+                let applied = part_repo::find_apply(state.db.reader(), uid, job.id)
+                    .await
+                    .ok()
+                    .flatten()
+                    .is_some();
+                if applied {
+                    show = true;
+                } else {
+                    tip = 6;
+                }
+            } else {
+                tip = 7;
+            }
+        } else {
+            tip = 7;
+        }
+    }
+
+    if show {
+        PartLink {
+            linktel: if tel.is_empty() { None } else { Some(tel.clone()) },
+            linktel_n: tel,
+            link_tip: 0,
+        }
+    } else {
+        PartLink {
+            linktel: None,
+            linktel_n: masked,
+            link_tip: tip,
+        }
+    }
+}
+
 // ==================== Apply (sign up) ====================
 
 pub struct ApplyResult {

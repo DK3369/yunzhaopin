@@ -55,11 +55,15 @@ fn default_did() -> u32 {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OnceListItem {
     pub id: u64,
+    pub title: String,
     pub companyname: String,
     pub province_id: i32,
     pub city_id: i32,
     pub three_city_id: i32,
+    pub address: String,
     pub salary: i32,
+    pub salary_text: String,
+    pub mans: String,
     pub number: i32,
     pub exp: i32,
     pub edu: i32,
@@ -71,11 +75,15 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
     fn from(j: phpyun_models::once_job::entity::OnceJob) -> Self {
         Self {
             id: j.id,
+            title: j.title,
             companyname: j.companyname,
             province_id: j.provinceid,
             city_id: j.cityid,
             three_city_id: j.three_cityid,
+            address: j.address,
             salary: j.salary,
+            salary_text: j.salary_text,
+            mans: j.mans,
             number: j.number,
             exp: j.exp,
             edu: j.edu,
@@ -109,6 +117,7 @@ pub async fn list(
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OnceDetail {
     pub id: u64,
+    pub title: String,
     pub companyname: String,
     /// Masked phone number
     pub linktel_masked: String,
@@ -116,7 +125,10 @@ pub struct OnceDetail {
     pub province_id: i32,
     pub city_id: i32,
     pub three_city_id: i32,
+    pub address: String,
     pub salary: i32,
+    pub salary_text: String,
+    pub mans: String,
     pub number: i32,
     pub job_type: i32,
     pub exp: i32,
@@ -139,13 +151,17 @@ pub async fn show(
     let j = once_service::show(&state, id).await?;
     Ok(ApiResponse::data(OnceDetail {
         id: j.id,
+        title: j.title,
         companyname: j.companyname,
         linktel_masked: mask_tel(&j.linktel),
         linkman_masked: mask_name(&j.linkman),
         province_id: j.provinceid,
         city_id: j.cityid,
         three_city_id: j.three_cityid,
+        address: j.address,
         salary: j.salary,
+        salary_text: j.salary_text,
+        mans: j.mans,
         number: j.number,
         job_type: j.r#type,
         exp: j.exp,
@@ -164,6 +180,8 @@ pub struct UpsertBody {
     #[validate(range(min = 1, max = 99_999_999))]
     pub id: u64,
 
+    #[validate(length(min = 1, max = 200))]
+    pub title: String,
     #[validate(length(min = 1, max = 64))]
     pub companyname: String,
     #[validate(length(min = 1, max = 32))]
@@ -179,20 +197,14 @@ pub struct UpsertBody {
     #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: i32,
-    #[validate(range(min = 1, max = 999))]
-    pub number: i32,
+    #[validate(length(min = 1, max = 200))]
+    pub address: String,
     #[serde(default)]
-    #[validate(range(min = 0, max = 99))]
-    pub job_type: i32,
+    #[validate(length(max = 100))]
+    pub mans: String,
     #[serde(default)]
-    #[validate(range(min = 0, max = 999))]
-    pub salary: i32,
-    #[serde(default)]
-    #[validate(range(min = 0, max = 99))]
-    pub exp: i32,
-    #[serde(default)]
-    #[validate(range(min = 0, max = 99))]
-    pub edu: i32,
+    #[validate(length(max = 100))]
+    pub salary: String,
     #[validate(length(min = 1, max = 2000))]
     pub require: String,
     #[serde(default)]
@@ -204,9 +216,10 @@ pub struct UpsertBody {
     #[serde(default = "default_status")]
     #[validate(range(min = 0, max = 2))]
     pub default_status: i32,
-    #[serde(default = "default_valid_days")]
-    #[validate(range(min = 0i64, max = 365i64))]
-    pub valid_days: i64,
+    /// PHP `oncepricegear` id; required on create so `edate` is computed server-side.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
+    pub oncepricegear: i32,
     #[serde(default)]
     #[validate(range(min = 0, max = 1_000_000))]
     pub daily_total_limit: u64,
@@ -220,9 +233,6 @@ pub struct UpsertBody {
 fn default_status() -> i32 {
     1
 }
-fn default_valid_days() -> i64 {
-    30
-}
 
 async fn upsert_common(
     state: &AppState,
@@ -233,6 +243,7 @@ async fn upsert_common(
     let (today_by_ip, today_total) = once_service::usage_today(state, ip).await?;
     let input = UpsertInput {
         id,
+        title: b.title,
         companyname: b.companyname,
         linkman: b.linkman,
         linktel: b.linktel,
@@ -240,16 +251,14 @@ async fn upsert_common(
         provinceid: b.province_id,
         cityid: b.city_id,
         three_cityid: b.three_city_id,
-        number: b.number,
-        job_type: b.job_type,
+        address: b.address,
+        mans: b.mans,
         salary: b.salary,
-        exp: b.exp,
-        edu: b.edu,
         require: b.require,
         pic: b.pic,
         yyzz: b.yyzz,
         default_status: b.default_status,
-        valid_days: b.valid_days,
+        oncepricegear: b.oncepricegear,
         today_by_ip,
         today_total,
         daily_total_limit: b.daily_total_limit,

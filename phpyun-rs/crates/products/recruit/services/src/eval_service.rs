@@ -51,13 +51,14 @@ pub async fn get_paper_with_questions(
 
 pub async fn submit(
     state: &AppState,
-    user: &AuthenticatedUser,
+    user: Option<&AuthenticatedUser>,
     paper_id: u64,
     answers: HashMap<String, String>,
-) -> AppResult<(u64, i32)> {
+    nuid: Option<&str>,
+) -> AppResult<(u64, i32, Option<String>)> {
     let db = state.db.pool();
     let reader = state.db.reader();
-    let _paper = eval_repo::find_paper(reader, paper_id)
+    let paper = eval_repo::find_paper(reader, paper_id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("paper_not_found"))?;
 
@@ -66,7 +67,7 @@ pub async fn submit(
         return Err(ApiError::param_invalid("no_questions"));
     }
 
-    // Scoring: for each question, look up the option.score for the label submitted by the user
+    // PHP: $scores += $score['q'.$id][$_POST['q'.$id]] — option index into the score array.
     let mut score: i32 = 0;
     for q in &questions {
         let qid_key = q.id.to_string();
@@ -87,17 +88,25 @@ pub async fn submit(
         }
     }
 
-    let answers_json = serde_json::to_value(&answers).map_err(ApiError::internal)?;
-    let id = eval_repo::create_log(
-        db,
-        user.uid,
-        paper_id,
-        score,
-        &answers_json,
-        clock::now_ts(),
-    )
-    .await?;
-    Ok((id, score))
+    let uid = user.map(|u| u.uid).unwrap_or(0);
+    let id = eval_repo::upsert_log(db, uid, nuid, paper_id, score, clock::now_ts()).await?;
+    let comment = match_grade_comment(&paper, score);
+    Ok((id, score, comment))
+}
+
+fn match_grade_comment(paper: &EvalPaper, score: i32) -> Option<String> {
+    use phpyun_models::eval::php_ser::unserialize_strings;
+    let froms = unserialize_strings(&paper.fromscore_raw);
+    let tos = unserialize_strings(&paper.toscore_raw);
+    let comments = unserialize_strings(&paper.comment_raw);
+    for (i, from_s) in froms.iter().enumerate() {
+        let from: i32 = from_s.parse().unwrap_or(0);
+        let to: i32 = tos.get(i).and_then(|s| s.parse().ok()).unwrap_or(i32::MAX);
+        if score >= from && score <= to {
+            return comments.get(i).cloned().filter(|s| !s.is_empty());
+        }
+    }
+    None
 }
 
 pub async fn list_my_logs(

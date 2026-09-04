@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
 const { t } = useI18n()
-const { me } = useSiteChrome()
 const id = computed(() => Number(route.params.id))
 const api = useApi()
 const { data, error } = await useAsyncData(
@@ -10,18 +9,28 @@ const { data, error } = await useAsyncData(
 )
 const answers = reactive<Record<string, string>>({})
 const result = ref('')
+const comment = ref('')
+function nuidCookie(): string {
+  if (!import.meta.client) return ''
+  const m = document.cookie.match(/(?:^|; )eval_nuid=([^;]*)/)
+  return m ? decodeURIComponent(m[1]) : ''
+}
+function setNuid(v: string) {
+  if (!import.meta.client || !v) return
+  document.cookie = `eval_nuid=${encodeURIComponent(v)};path=/;max-age=3600`
+}
 async function submit() {
   result.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  comment.value = ''
   try {
-    const r = await api.post<{ score?: number }>('/v1/mcenter/eval-papers/submit', {
+    const r = await api.post<{ score?: number; comment?: string; nuid?: string }>('/v1/wap/eval-papers/submit', {
       id: id.value,
       answers: { ...answers },
+      nuid: nuidCookie() || undefined,
     })
-    result.value = String(r.score ?? t('common.confirm'))
+    if (r.nuid) setNuid(r.nuid)
+    result.value = String(r.score ?? '')
+    comment.value = r.comment || ''
   } catch (e: unknown) {
     result.value = e instanceof Error ? e.message : t('common_00888')
   }
@@ -40,12 +49,21 @@ useSeoMeta({ title: data.value?.name ? String(data.value.name) : t('ui.eval_deta
         <ol class="stack">
           <li v-for="q in data?.questions || []" :key="q.id">
             <p>{{ q.content }}</p>
-            <input v-model="answers[String(q.id)]" />
+            <label v-for="(opt, idx) in (q.options || [])" :key="String(opt.label ?? idx)" class="muted">
+              <input
+                v-model="answers[String(q.id)]"
+                type="radio"
+                :name="`q-${q.id}`"
+                :value="String(opt.label ?? idx)"
+              />
+              {{ opt.text || opt.label }}
+            </label>
           </li>
         </ol>
         <button type="submit">{{ $t('common.submit') }}</button>
       </form>
       <p v-if="result">{{ result }}</p>
+      <p v-if="comment" class="muted">{{ comment }}</p>
     </template>
   </section>
 </template>

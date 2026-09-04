@@ -182,6 +182,7 @@ pub fn get_allowed_paths() -> Vec<&'static str> {
     v.extend_from_slice(zph::GET_ALLOWED_PATHS);
     v.extend_from_slice(part::GET_ALLOWED_PATHS);
     v.extend_from_slice(once::GET_ALLOWED_PATHS);
+    v.extend_from_slice(claim::GET_ALLOWED_PATHS);
     v.extend_from_slice(tiny::GET_ALLOWED_PATHS);
     v.extend_from_slice(ads::GET_ALLOWED_PATHS);
     v.extend_from_slice(nav::GET_ALLOWED_PATHS);

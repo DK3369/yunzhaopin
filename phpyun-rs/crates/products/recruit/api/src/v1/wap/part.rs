@@ -245,7 +245,11 @@ pub struct PartDetail {
     // ---- Contact info (from the part-time table itself, takes priority) ----
     pub com_name: Option<String>,
     pub linkman: Option<String>,
+    /// Plaintext only when `getLink` authorizes; otherwise omitted.
     pub linktel: Option<String>,
+    pub linktel_n: String,
+    /// PHP `link_tip` (0 = shown).
+    pub link_tip: i32,
 
     // ---- Company info (JOIN phpyun_company) ----
     pub com_logo: Option<String>,
@@ -290,6 +294,7 @@ fn compute_edate_state(edate: i64, now: i64) -> i32 {
 )]
 pub async fn part_detail(
     State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<PartDetail>> {
     let id = b.id;
@@ -305,6 +310,10 @@ pub async fn part_detail(
     let login_date = phpyun_models::user::repo::login_date(db, j.uid)
         .await
         .unwrap_or(0);
+
+    let rating = company.as_ref().map(|c| c.rating).unwrap_or(0);
+    let infostatus = company.as_ref().map(|c| c.infostatus).unwrap_or(1);
+    let link = part_service::resolve_part_link(&state, &j, user.as_ref(), rating, infostatus).await;
 
     // Hits +1 (fire-and-forget)
     let pool = state.db.pool().clone();
@@ -378,7 +387,9 @@ pub async fn part_detail(
 
         com_name: j.com_name,
         linkman: j.linkman,
-        linktel: j.linktel,
+        linktel: link.linktel,
+        linktel_n: link.linktel_n,
+        link_tip: link.link_tip,
 
         com_logo,
         com_shortname,

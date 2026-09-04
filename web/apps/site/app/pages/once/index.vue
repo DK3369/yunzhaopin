@@ -9,7 +9,7 @@ const api = useApi()
 const { data, error } = await useAsyncData(
   () => `once-${page.value}-${keyword.value}`,
   () =>
-    api.get<{ list: Array<{ id: number; companyname: string; number?: string }>; total: number }>('/v1/wap/once-jobs/list', {
+    api.get<{ list: Array<{ id: number; title?: string; companyname: string; mans?: string; number?: string }>; total: number }>('/v1/wap/once-jobs/list', {
       page: page.value,
       page_size: 20,
       keyword: keyword.value || undefined,
@@ -26,7 +26,7 @@ const list = computed(() => data.value?.list || [])
       <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
-    <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.companyname" :meta="row.number" />
+    <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.title || row.companyname" :meta="row.mans || row.number" />
     <template #pager>
       <Pager
         :page="page"

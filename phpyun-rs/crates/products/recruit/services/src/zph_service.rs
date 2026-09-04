@@ -43,6 +43,7 @@ pub struct ReserveInput<'a> {
     pub job_ids: &'a str,
     pub name: &'a str,
     pub mobile: &'a str,
+    pub bid: i32,
 }
 
 pub async fn reserve(
@@ -51,24 +52,105 @@ pub async fn reserve(
     zid: u64,
     input: ReserveInput<'_>,
 ) -> AppResult<u64> {
-    // Must confirm the zph exists and is published
-    let zph = zph_repo::find_by_id(state.db.reader(), zid)
+    user.require_employer()?;
+    let now = clock::now_ts();
+    let reader = state.db.reader();
+    let pool = state.db.pool();
+
+    let zph = zph_repo::find_by_id(reader, zid)
         .await?
         .ok_or_else(|| ApiError::param_invalid("zph_not_found"))?;
-    if zph.status != 1 {
-        return Err(ApiError::param_invalid("zph_unavailable"));
+    if zph.status != 1 || zph.is_open != 1 {
+        return Err(ApiError::business("zph_closed"));
+    }
+    // PHP: starttime already passed → too late; endtime passed → ended.
+    if zph.start_at > 0 && zph.start_at < now {
+        return Err(ApiError::business("zph_already_started"));
+    }
+    if zph.end_at > 0 && zph.end_at < now {
+        return Err(ApiError::business("zph_ended"));
     }
 
+    let com = phpyun_models::company::repo::find_by_uid(reader, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("company_not_found"))?;
+    if com.name.as_deref().unwrap_or("").trim().is_empty() {
+        return Err(ApiError::param_invalid("company_name_required"));
+    }
+    if com.r_status == 4 {
+        return Err(ApiError::business("company_locked"));
+    }
+    if com.r_status != 1 {
+        return Err(ApiError::business("company_not_verified"));
+    }
+
+    if input.bid <= 0 {
+        return Err(ApiError::param_invalid("bid"));
+    }
+    if zph_repo::find_com_by_bid(reader, zid, input.bid)
+        .await?
+        .is_some()
+    {
+        return Err(ApiError::business("zph_booth_taken"));
+    }
+    if zph_repo::find_my_reservation(reader, zid, user.uid)
+        .await?
+        .is_some()
+    {
+        return Err(ApiError::business("zph_already_reserved"));
+    }
+
+    let space = zph_repo::find_space_by_id(reader, input.bid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("booth_not_found"))?;
+    let parent = if space.keyid > 0 {
+        zph_repo::find_space_by_id(reader, space.keyid as i32).await?
+    } else {
+        None
+    };
+    let cid = space.keyid as i32;
+    let sid = parent.map(|p| p.keyid as i32).unwrap_or(0);
+
+    let statis = phpyun_models::company_statis::repo::find_admin(reader, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("statis_not_found"))?;
+    let vip_ok = statis.vip_etime == 0 || statis.vip_etime >= now;
+    if !vip_ok {
+        return Err(ApiError::business("zph_need_vip"));
+    }
+    if statis.rating_type == 1 {
+        if statis.zph_num <= 0 {
+            if space.price > 0 {
+                return Err(ApiError::business("zph_need_pay"));
+            }
+        } else {
+            let n = phpyun_models::company_statis::repo::dec_zph_num(pool, user.uid).await?;
+            if n == 0 {
+                return Err(ApiError::business("zph_need_pay"));
+            }
+        }
+    }
+
+    let com_name = input.name.trim();
+    let name = if com_name.is_empty() {
+        com.name.clone().unwrap_or_default()
+    } else {
+        com_name.to_string()
+    };
+    let _ = input.mobile;
+
     let id = zph_repo::upsert_reservation(
-        state.db.pool(),
+        pool,
         zph_repo::ReservationCreate {
             zid,
             uid: user.uid,
             job_ids: input.job_ids,
-            name: input.name,
-            mobile: input.mobile,
+            name: &name,
+            sid,
+            cid,
+            bid: input.bid,
         },
-        clock::now_ts(),
+        now,
     )
     .await?;
     Ok(id)

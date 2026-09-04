@@ -5,13 +5,12 @@ use sqlx::{MySql, MySqlPool, Transaction};
 // Strictly aligned with PHPYun:
 //   phpyun_reward       columns: id/name/nid/tnid/integral/num/restriction/stock/pic/sort/content/status/sdate/rec/hot
 //   phpyun_redeem_class columns: id/keyid/name/sort
-//   phpyun_company_order columns: id/uid/order_id/order_type/order_price/order_time/.../integral/rewardid/status
+//   phpyun_change       gift-redemption work orders (PHP `redeem.model.php::AddChange`)
 //
 // Rust field -> PHP column (bridged via SELECT aliases):
 //   Reward.sold       <-> num        |  is_rec <-> rec  |  is_hot <-> hot  |  created_at <-> sdate
 //   RedeemClass.parent_id <-> keyid  |  created_at = 0
-//   RedeemOrder.gid      <-> rewardid |  name/linkman/linktel/address have no column -> empty string
-//   RedeemOrder.num      = 1          |  created_at <-> order_time
+//   RedeemOrder.gid      <-> gid     |  address <-> body |  created_at <-> ctime
 
 const REWARD_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -32,12 +31,15 @@ const REWARD_FIELDS: &str = "\
 const ORDER_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
     CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
-    CAST(COALESCE(rewardid, 0) AS UNSIGNED) AS gid, \
-    '' AS name, '' AS linkman, '' AS linktel, '' AS address, \
+    CAST(COALESCE(gid, 0) AS UNSIGNED) AS gid, \
+    COALESCE(name, '') AS name, \
+    COALESCE(linkman, '') AS linkman, \
+    COALESCE(linktel, '') AS linktel, \
+    COALESCE(body, '') AS address, \
     CAST(COALESCE(integral, 0) AS UNSIGNED) AS integral, \
-    CAST(1 AS UNSIGNED) AS num, \
+    CAST(COALESCE(num, 0) AS UNSIGNED) AS num, \
     CAST(COALESCE(status, 0) AS SIGNED) AS status, \
-    CAST(COALESCE(order_time, 0) AS SIGNED) AS created_at";
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at";
 
 const CLASS_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -284,16 +286,14 @@ pub async fn count_user_orders_for_reward(
     uid: u64,
     reward_id: u64,
 ) -> Result<u32, sqlx::Error> {
-    // For phpyun_company_order redemption rows, rewardid is the reward id;
-    // each order counts as 1.
     let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_order \
-         WHERE uid = ? AND rewardid = ? AND status IN (0, 1)",
+        "SELECT COALESCE(SUM(num), 0) FROM phpyun_change \
+         WHERE uid = ? AND gid = ?",
     )
-    .bind(uid)
-    .bind(reward_id)
-    .fetch_one(pool)
-    .await?;
+        .bind(uid)
+        .bind(reward_id)
+        .fetch_one(pool)
+        .await?;
     Ok(phpyun_core::numeric::saturating_count_u32(n))
 }
 
@@ -302,17 +302,21 @@ pub async fn tx_insert_order(
     o: &NewOrder<'_>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    // phpyun_company_order columns: uid/rewardid/integral/order_time/status/order_type
-    // name/linkman/linktel/address/num have no dedicated columns in PHP; dropped.
-    let _ = (o.name, o.linkman, o.linktel, o.address, o.num);
     let res = sqlx::query(
-        "INSERT INTO phpyun_company_order \
-         (uid, rewardid, integral, order_time, status, order_type) \
-         VALUES (?, ?, ?, ?, 0, 'redeem')",
+        "INSERT INTO phpyun_change \
+         (uid, username, usertype, name, gid, linkman, linktel, body, integral, num, ctime, status) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
     )
     .bind(o.uid)
+    .bind(o.username)
+    .bind(o.usertype)
+    .bind(o.name)
     .bind(o.gid)
+    .bind(o.linkman)
+    .bind(o.linktel)
+    .bind(o.address)
     .bind(o.integral)
+    .bind(o.num)
     .bind(now)
     .execute(&mut **tx)
     .await?;
@@ -321,6 +325,8 @@ pub async fn tx_insert_order(
 
 pub struct NewOrder<'a> {
     pub uid: u64,
+    pub username: &'a str,
+    pub usertype: i32,
     pub gid: u64,
     pub name: &'a str,
     pub linkman: &'a str,
@@ -337,7 +343,7 @@ pub async fn list_orders(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<RedeemOrder>, sqlx::Error> {
-    let mut sql = format!("SELECT {ORDER_FIELDS} FROM phpyun_company_order WHERE 1=1");
+    let mut sql = format!("SELECT {ORDER_FIELDS} FROM phpyun_change WHERE 1=1");
     if uid.is_some() {
         sql.push_str(" AND uid = ?");
     }
@@ -360,7 +366,7 @@ pub async fn count_orders(
     uid: Option<u64>,
     status: Option<i32>,
 ) -> Result<u64, sqlx::Error> {
-    let mut sql = String::from("SELECT COUNT(*) FROM phpyun_company_order WHERE 1=1");
+    let mut sql = String::from("SELECT COUNT(*) FROM phpyun_change WHERE 1=1");
     if uid.is_some() {
         sql.push_str(" AND uid = ?");
     }
@@ -379,7 +385,7 @@ pub async fn count_orders(
 }
 
 pub async fn get_order(pool: &MySqlPool, id: u64) -> Result<Option<RedeemOrder>, sqlx::Error> {
-    let sql = format!("SELECT {ORDER_FIELDS} FROM phpyun_company_order WHERE id = ?");
+    let sql = format!("SELECT {ORDER_FIELDS} FROM phpyun_change WHERE id = ?");
     sqlx::query_as::<_, RedeemOrder>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -392,7 +398,7 @@ pub async fn tx_set_order_status(
     expected: i32,
     new_status: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("UPDATE phpyun_company_order SET status = ? WHERE id = ? AND status = ?")
+    let res = sqlx::query("UPDATE phpyun_change SET status = ? WHERE id = ? AND status = ?")
         .bind(new_status)
         .bind(id)
         .bind(expected)

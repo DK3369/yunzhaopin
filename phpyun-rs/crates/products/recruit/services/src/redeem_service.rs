@@ -10,6 +10,7 @@
 //! Because writes cross tables and services, we don't use a single transaction; we follow
 //! the compensation pattern from integral_service.
 
+use phpyun_auth::verify_password_async;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
@@ -237,9 +238,13 @@ pub async fn delete_reward(state: &AppState, admin: &AuthenticatedUser, id: u64)
 // ---------- User work orders (redeem flow) ----------
 
 pub struct RedeemForm<'a> {
+    pub password: &'a str,
     pub linkman: &'a str,
     pub linktel: &'a str,
     pub address: &'a str,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
     pub num: u32,
 }
 
@@ -251,6 +256,21 @@ pub async fn redeem(
 ) -> AppResult<u64> {
     if f.num == 0 {
         return Err(ApiError::param_invalid("bad_num"));
+    }
+    if f.password.trim().is_empty() {
+        return Err(ApiError::param_invalid("password_required"));
+    }
+    let member = phpyun_models::user::repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("member_not_found"))?;
+    if !verify_password_async(
+        f.password.to_string(),
+        member.password.clone(),
+        member.salt.clone(),
+    )
+    .await
+    {
+        return Err(ApiError::param_invalid("password_mismatch"));
     }
     let reward = get_reward(state, reward_id).await?;
     if reward.status != 1 {
@@ -291,16 +311,24 @@ pub async fn redeem(
         return Err(ApiError::param_invalid("out_of_stock"));
     }
 
+    // PHP body: provinceid cityid three_cityid + address
+    let body = format!(
+        "{} {} {} {}",
+        f.provinceid, f.cityid, f.three_cityid, f.address.trim()
+    );
+
     // 3) Write work order
     let order_id = match redeem_repo::tx_insert_order(
         &mut tx,
         &redeem_repo::NewOrder {
             uid: user.uid,
+            username: &member.username,
+            usertype: i32::from(user.usertype),
             gid: reward_id,
             name: &reward.name,
             linkman: f.linkman,
             linktel: f.linktel,
-            address: f.address,
+            address: &body,
             integral: total_cost,
             num: f.num,
         },

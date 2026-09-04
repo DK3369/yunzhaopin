@@ -47,6 +47,7 @@ fn validate_answers(answers: &HashMap<String, String>) -> Result<(), validator::
 pub struct SubmitResult {
     pub log_id: u64,
     pub score: i32,
+    pub comment: Option<String>,
 }
 
 /// Submit assessment answers
@@ -63,8 +64,8 @@ pub async fn submit(
     ValidatedJson(f): ValidatedJson<SubmitForm>,
 ) -> AppResult<ApiResponse<SubmitResult>> {
     let id = f.id;
-    let (log_id, score) = eval_service::submit(&state, &user, id, f.answers).await?;
-    Ok(ApiResponse::data(SubmitResult { log_id, score }))
+    let (log_id, score, comment) = eval_service::submit(&state, Some(&user), id, f.answers, None).await?;
+    Ok(ApiResponse::data(SubmitResult { log_id, score, comment }))
 }
 
 /// Assessment history item — all 6 columns of phpyun_eval_log + formatted timestamp.

@@ -18,6 +18,16 @@ pub async fn ensure_row(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+pub async fn dec_zph_num(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET zph_num = zph_num - 1 WHERE uid = ? AND zph_num > 0",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn insert_admin_created<'e, E>(
     exec: E,
     uid: u64,

@@ -16,13 +16,17 @@ const PAPER_FIELDS: &str = "\
     COALESCE(pic, '') AS cover, \
     CAST(COALESCE(visits, 0) AS UNSIGNED) AS visits, \
     CAST(1 AS SIGNED) AS status, \
-    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at";
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at, \
+    COALESCE(fromscore, '') AS fromscore_raw, \
+    COALESCE(toscore, '') AS toscore_raw, \
+    COALESCE(comment, '') AS comment_raw";
 
 const Q_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
     CAST(COALESCE(gid, 0) AS UNSIGNED) AS paper_id, \
     COALESCE(question, '') AS content, \
-    JSON_ARRAY(COALESCE(`option`, '')) AS options, \
+    COALESCE(`option`, '') AS option_raw, \
+    COALESCE(score, '') AS score_raw, \
     CAST(COALESCE(sort, 0) AS SIGNED) AS sort";
 
 const LOG_FIELDS: &str = "\
@@ -74,32 +78,118 @@ pub async fn incr_paper_visits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Er
     Ok(())
 }
 
+#[derive(Debug, Clone, sqlx::FromRow)]
+struct QuestionRow {
+    id: u64,
+    paper_id: u64,
+    content: String,
+    option_raw: String,
+    score_raw: String,
+    sort: i32,
+}
+
+fn question_from_row(row: QuestionRow) -> EvalQuestion {
+    let opts = super::php_ser::unserialize_strings(&row.option_raw);
+    let scores = super::php_ser::unserialize_strings(&row.score_raw);
+    let options = serde_json::Value::Array(
+        opts.iter()
+            .enumerate()
+            .map(|(i, text)| {
+                let score: i64 = scores
+                    .get(i)
+                    .and_then(|s| s.parse().ok())
+                    .unwrap_or(0);
+                serde_json::json!({
+                    "label": i.to_string(),
+                    "text": text,
+                    "score": score,
+                })
+            })
+            .collect(),
+    );
+    EvalQuestion {
+        id: row.id,
+        paper_id: row.paper_id,
+        content: row.content,
+        options,
+        sort: row.sort,
+    }
+}
+
 pub async fn list_questions(
     pool: &MySqlPool,
     paper_id: u64,
 ) -> Result<Vec<EvalQuestion>, sqlx::Error> {
     let sql =
         format!("SELECT {Q_FIELDS} FROM phpyun_evaluate WHERE gid = ? AND {PREDICATE} ORDER BY sort ASC, id ASC");
-    sqlx::query_as::<_, EvalQuestion>(&sql)
+    let rows = sqlx::query_as::<_, QuestionRow>(&sql)
         .bind(paper_id)
         .fetch_all(pool)
-        .await
+        .await?;
+    Ok(rows.into_iter().map(question_from_row).collect())
 }
 
-pub async fn create_log(
+pub async fn upsert_log(
     pool: &MySqlPool,
     uid: u64,
+    nuid: Option<&str>,
     paper_id: u64,
     score: i32,
-    _answers: &serde_json::Value,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    // PHPYun does not store per-question answers; only uid/examid/grade/ctime/usedsecond.
+    if uid > 0 {
+        let existing: Option<(u64,)> = sqlx::query_as(
+            "SELECT CAST(id AS UNSIGNED) FROM phpyun_evaluate_log WHERE uid = ? AND examid = ? LIMIT 1",
+        )
+        .bind(uid)
+        .bind(paper_id)
+        .fetch_optional(pool)
+        .await?;
+        if let Some((id,)) = existing {
+            sqlx::query("UPDATE phpyun_evaluate_log SET grade = ?, ctime = ? WHERE id = ?")
+                .bind(score)
+                .bind(now)
+                .bind(id)
+                .execute(pool)
+                .await?;
+            return Ok(id);
+        }
+        let res = sqlx::query(
+            "INSERT INTO phpyun_evaluate_log (uid, examid, grade, ctime, usedsecond) \
+             VALUES (?, ?, ?, ?, 0)",
+        )
+        .bind(uid)
+        .bind(paper_id)
+        .bind(score)
+        .bind(now)
+        .execute(pool)
+        .await?;
+        return Ok(res.last_insert_id());
+    }
+    let nuid = nuid.unwrap_or("");
+    if !nuid.is_empty() {
+        let existing: Option<(u64,)> = sqlx::query_as(
+            "SELECT CAST(id AS UNSIGNED) FROM phpyun_evaluate_log WHERE nuid = ? AND examid = ? LIMIT 1",
+        )
+        .bind(nuid)
+        .bind(paper_id)
+        .fetch_optional(pool)
+        .await?;
+        if let Some((id,)) = existing {
+            sqlx::query("UPDATE phpyun_evaluate_log SET grade = ?, ctime = ? WHERE id = ?")
+                .bind(score)
+                .bind(now)
+                .bind(id)
+                .execute(pool)
+                .await?;
+            return Ok(id);
+        }
+    }
     let res = sqlx::query(
-        "INSERT INTO phpyun_evaluate_log (uid, examid, grade, ctime, usedsecond) \
-         VALUES (?, ?, ?, ?, 0)",
+        "INSERT INTO phpyun_evaluate_log (uid, nuid, examid, grade, ctime, usedsecond) \
+         VALUES (0, ?, ?, ?, ?, 0)",
     )
-    .bind(uid)
+    .bind(nuid)
     .bind(paper_id)
     .bind(score)
     .bind(now)

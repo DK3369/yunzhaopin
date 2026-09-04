@@ -4,10 +4,12 @@ use axum::{extract::State, routing::{get, post}, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::json;
 use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use utoipa::ToSchema;
+use validator::Validate;
 
 /// Public list is GET-aliasable so Nuxt SSR can `api.get` like `/v1/wap/jobs`.
 pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/eval-papers"];
@@ -16,6 +18,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/eval-papers", get(list_papers).post(list_papers))
         .route("/eval-papers/detail", post(paper_detail))
+        .route("/eval-papers/submit", post(submit_public))
         .route("/eval-papers/messages/list", post(list_messages))
         .route("/eval-papers/recent-examinees", post(list_recent_examinees))
 }
@@ -165,6 +168,53 @@ pub async fn paper_detail(
                 options: strip_scores(&q.options),
             })
             .collect(),
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PublicSubmitForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[validate(length(max = 64))]
+    #[serde(default)]
+    pub nuid: Option<String>,
+    pub answers: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PublicSubmitResult {
+    pub log_id: u64,
+    pub score: i32,
+    pub comment: Option<String>,
+    pub nuid: Option<String>,
+}
+
+/// Public submit — guests use a `nuid` cookie (PHP `evaluate.class.php`).
+#[utoipa::path(post, path = "/v1/wap/eval-papers/submit", tag = "wap",
+    request_body = PublicSubmitForm,
+    responses((status = 200, description = "ok", body = PublicSubmitResult)))]
+pub async fn submit_public(
+    State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
+    ValidatedJson(f): ValidatedJson<PublicSubmitForm>,
+) -> AppResult<ApiResponse<PublicSubmitResult>> {
+    let mut nuid = f.nuid.filter(|s| !s.trim().is_empty());
+    if user.is_none() && nuid.is_none() {
+        nuid = Some(uuid::Uuid::now_v7().to_string());
+    }
+    let (log_id, score, comment) = eval_service::submit(
+        &state,
+        user.as_ref(),
+        f.id,
+        f.answers,
+        nuid.as_deref(),
+    )
+    .await?;
+    Ok(ApiResponse::data(PublicSubmitResult {
+        log_id,
+        score,
+        comment,
+        nuid: if user.is_none() { nuid } else { None },
     }))
 }
 

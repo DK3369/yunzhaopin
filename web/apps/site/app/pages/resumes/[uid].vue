@@ -162,7 +162,11 @@ async function download(confirm = false) {
     if (!ok) return
   }
   try {
-    const res = await api.post<DownloadResult>('/v1/mcenter/resume-downloads', { uid, confirm })
+    const res = await api.post<DownloadResult>('/v1/mcenter/resume-downloads', {
+      uid,
+      eid: Number(row.value.def_job || expect0.value.id || 0) || undefined,
+      confirm,
+    })
     if (res.status === 2) {
       if (window.confirm(payConfirmText(res))) {
         await download(true)
@@ -735,7 +739,7 @@ async function report() {
     <ReportSheet
       v-if="reportOpen"
       :target-kind="3"
-      :target-id="uid"
+      :target-id="Number(row.def_job || expect0.id || 0)"
       @close="reportOpen = false"
       @done="actionMsg = $t('common.confirm')"
     />

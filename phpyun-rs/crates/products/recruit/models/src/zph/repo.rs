@@ -184,7 +184,9 @@ pub struct ReservationCreate<'a> {
     pub uid: u64,
     pub job_ids: &'a str,
     pub name: &'a str,
-    pub mobile: &'a str,
+    pub sid: i32,
+    pub cid: i32,
+    pub bid: i32,
 }
 
 pub async fn upsert_reservation(
@@ -192,42 +194,23 @@ pub async fn upsert_reservation(
     r: ReservationCreate<'_>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    let _ = r.mobile; // phpyun_zhaopinhui_com has no mobile column; ignore
-                      // Try UPDATE first; if 0 rows, INSERT (phpyun_zhaopinhui_com typically has no (zid,uid) unique key)
-    let updated = sqlx::query(
-        "UPDATE phpyun_zhaopinhui_com SET jobid = ?, com_name = ?, ctime = ? \
-         WHERE zid = ? AND uid = ?",
+    // PHP reserveZph always INSERTs a pending row (status=0); never overwrites.
+    let res = sqlx::query(
+        "INSERT INTO phpyun_zhaopinhui_com \
+         (zid, uid, jobid, com_name, ctime, status, sid, cid, bid) \
+         VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)",
     )
+    .bind(r.zid)
+    .bind(r.uid)
     .bind(r.job_ids)
     .bind(r.name)
     .bind(now)
-    .bind(r.zid)
-    .bind(r.uid)
+    .bind(r.sid)
+    .bind(r.cid)
+    .bind(r.bid)
     .execute(pool)
     .await?;
-    if updated.rows_affected() == 0 {
-        let res = sqlx::query(
-            "INSERT INTO phpyun_zhaopinhui_com (zid, uid, jobid, com_name, ctime, status) \
-             VALUES (?, ?, ?, ?, ?, 0)",
-        )
-        .bind(r.zid)
-        .bind(r.uid)
-        .bind(r.job_ids)
-        .bind(r.name)
-        .bind(now)
-        .execute(pool)
-        .await?;
-        Ok(res.last_insert_id())
-    } else {
-        let row: (i64,) = sqlx::query_as(
-            "SELECT id FROM phpyun_zhaopinhui_com WHERE zid = ? AND uid = ? LIMIT 1",
-        )
-        .bind(r.zid)
-        .bind(r.uid)
-        .fetch_one(pool)
-        .await?;
-        phpyun_core::numeric::checked_db_u64(row.0, "zph_reservation.id")
-    }
+    Ok(res.last_insert_id())
 }
 
 const ZS_FIELDS: &str = "\
@@ -890,6 +873,29 @@ pub async fn reserved_parent_pairs(
     }
     qb.push(")");
     qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn find_space_by_id(pool: &MySqlPool, id: i32) -> Result<Option<ZphSpace>, sqlx::Error> {
+    let sql = format!("SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE id = ? LIMIT 1");
+    sqlx::query_as::<_, ZphSpace>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn find_com_by_bid(
+    pool: &MySqlPool,
+    zid: u64,
+    bid: i32,
+) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_zhaopinhui_com WHERE zid = ? AND bid = ? LIMIT 1",
+    )
+    .bind(zid)
+    .bind(bid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
 }
 
 pub async fn taken_bids(pool: &MySqlPool, zid: u64) -> Result<Vec<i32>, sqlx::Error> {

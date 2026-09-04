@@ -76,6 +76,59 @@ pub async fn create(pool: &MySqlPool, c: ReportCreate<'_>, now: i64) -> Result<u
     Ok(res.last_insert_id())
 }
 
+/// PHP `ReportResume`: duplicate when the same company already reported this expect.
+pub async fn exists_resume_report(
+    pool: &MySqlPool,
+    p_uid: u64,
+    c_uid: u64,
+    eid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM phpyun_report WHERE p_uid = ? AND c_uid = ? AND eid = ? LIMIT 1",
+    )
+    .bind(p_uid)
+    .bind(c_uid)
+    .bind(eid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub struct ResumeReportCreate<'a> {
+    pub p_uid: u64,
+    pub c_uid: u64,
+    pub eid: u64,
+    pub usertype: i32,
+    pub did: u32,
+    pub r_name: &'a str,
+    pub username: &'a str,
+    pub reason: &'a str,
+}
+
+pub async fn create_resume_report(
+    pool: &MySqlPool,
+    c: ResumeReportCreate<'_>,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_report
+           (p_uid, c_uid, eid, usertype, r_name, username, r_reason, r_type, did, status, inputtime)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 3, ?, 0, ?)"#,
+    )
+    .bind(c.p_uid)
+    .bind(c.c_uid)
+    .bind(c.eid)
+    .bind(c.usertype)
+    .bind(c.r_name)
+    .bind(c.username)
+    .bind(c.reason)
+    .bind(c.did)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 pub async fn list_by_reporter(
     pool: &MySqlPool,
     reporter_uid: u64,

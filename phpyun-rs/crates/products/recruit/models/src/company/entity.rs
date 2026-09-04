@@ -85,6 +85,9 @@ pub struct Company {
     pub email_status: i32,
     #[sqlx(default)]
     pub yyzz_status: i32,
+    /// PHP `infostatus`: 1 = public contact, 2 = hide (`gk` in part.model getLink).
+    #[sqlx(default)]
+    pub infostatus: i32,
 
     // ---- Membership tier ----
     #[sqlx(default)]

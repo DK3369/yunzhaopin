@@ -469,6 +469,18 @@ pub async fn count_posted_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `getJobNum(['uid','state'=>1,'r_status'=>1,'status'=>0])` — lietou download gate.
+pub async fn count_online_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_job \
+         WHERE uid = ? AND r_status = 1 AND state = 1 AND status = 0",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub struct JobCreate<'a> {
     pub uid: u64,
     pub com_name: Option<&'a str>,

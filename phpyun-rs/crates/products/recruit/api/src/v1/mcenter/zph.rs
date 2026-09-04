@@ -29,6 +29,10 @@ pub struct ReserveForm {
     /// Contact phone (PHPYun field name moblie)
     #[validate(length(min = 6, max = 32))]
     pub moblie: String,
+    /// Booth id (`phpyun_zhaopinhui_space.id`), PHP `$id`.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub bid: i32,
 }
 
 /// Reserve a job-fair slot
@@ -54,6 +58,7 @@ pub async fn reserve(
             job_ids: &f.job_ids,
             name: &f.name,
             mobile: &f.moblie,
+            bid: f.bid,
         },
     )
     .await?;

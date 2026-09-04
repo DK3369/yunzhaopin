@@ -10,9 +10,11 @@ const { data } = await useAsyncData(`fair-${id}`, () => api.get('/v1/wap/zph/det
 const { data: companies } = await useAsyncData(`fair-com-${id}`, () =>
   api.get<{ list?: CompanyLike[] }>('/v1/wap/zph/companies', { id, page: 1, page_size: 20 }).catch(() => ({ list: [] })),
 )
-const { data: jobs } = await useAsyncData(`fair-job-${id}`, () =>
-  api.get<{ list?: JobLike[] }>('/v1/wap/zph/jobs', { id, page: 1, page_size: 20 }).catch(() => ({ list: [] })),
-)
+const { data: jobs } = await useAsyncData(`fair-job-${id}`, async () => {
+  const raw = await api.get<JobLike[] | { list?: JobLike[] }>('/v1/wap/zph/jobs', { id, page: 1, page_size: 20 }).catch(() => [])
+  if (Array.isArray(raw)) return raw
+  return raw?.list || []
+})
 useSeoMeta({
   title: () => String(data.value?.title || t('ui.fairs')),
   description: () => seoJoin([data.value?.address, data.value?.body, data.value?.title]),
@@ -34,8 +36,8 @@ useHead({ link: [{ rel: 'canonical', href: `/fairs/${id}` }] })
       <CompanyCard v-for="c in companies?.list || []" :key="c.uid" :company="c" />
     </div>
     <div v-else-if="tab === 'jobs'">
-      <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('default_00033') }}</p>
-      <JobCard v-for="j in jobs?.list || []" :key="j.id" :job="j" />
+      <p v-if="!(jobs || []).length" class="muted">{{ $t('default_00033') }}</p>
+      <JobCard v-for="j in jobs || []" :key="j.id" :job="j" />
     </div>
     <template v-else>
       <div v-if="data?.body" v-html="data.body" />

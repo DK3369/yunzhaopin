@@ -37,6 +37,21 @@ pub async fn already_downloaded(
     Ok(row.is_some())
 }
 
+/// PHP `getDownResumeInfo(['eid'=>$eid,'comid'=>$uid])`.
+pub async fn already_downloaded_eid(
+    pool: &MySqlPool,
+    com_id: u64,
+    eid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> =
+        sqlx::query_as("SELECT id FROM phpyun_down_resume WHERE comid = ? AND eid = ? LIMIT 1")
+            .bind(com_id)
+            .bind(eid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.is_some())
+}
+
 /// PHP `freedown_resume` — free-quota unlock still counts as `m_status=1`.
 pub async fn already_freedown(
     pool: &MySqlPool,
@@ -49,6 +64,21 @@ pub async fn already_freedown(
             .bind(uid)
             .fetch_optional(pool)
             .await?;
+    Ok(row.is_some())
+}
+
+pub async fn already_freedown_eid(
+    pool: &MySqlPool,
+    com_id: u64,
+    eid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT id FROM phpyun_freedown_resume WHERE comid = ? AND eid = ? LIMIT 1",
+    )
+    .bind(com_id)
+    .bind(eid)
+    .fetch_optional(pool)
+    .await?;
     Ok(row.is_some())
 }
 
