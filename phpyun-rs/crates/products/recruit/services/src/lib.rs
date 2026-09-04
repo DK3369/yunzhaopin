@@ -137,6 +137,7 @@ pub mod saved_search_service;
 pub mod search_history_service;
 pub mod search_service;
 pub mod sign_service;
+pub mod site_gate_service;
 pub mod site_page_service;
 pub mod site_setting_service;
 pub mod sms_service;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { dictReqLabel, formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { seoJoin } from '~/utils/seo'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -220,7 +221,7 @@ async function apply() {
     return
   }
   if (!me.value) {
-    await navigateTo('/login')
+    await navigateTo(`/quick-apply/${id}`)
     return
   }
   if (me.value.usertype !== 1) {
@@ -346,7 +347,17 @@ const employmentType = computed(() => {
 })
 useSeoMeta({
   title: () => String(job.value.name || t('common.job')),
-  description: () => description.value,
+  description: () =>
+    seoJoin([
+      job.value.name,
+      job.value.com_name,
+      hyLabel.value,
+      cityLabel.value,
+      salary.value,
+      job.value.description,
+    ]),
+  keywords: () =>
+    [job.value.name, job.value.com_name, hyLabel.value, cityLabel.value].filter(Boolean).join(','),
 })
 useHead({
   link: [{ rel: 'canonical', href: `/jobs/${id}` }],
@@ -894,6 +905,16 @@ useHead({
               <a href="javascript:;" class="yun_czfoot_s" @click.prevent="shareJob">
                 <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ $t('common.share') }}</div>
               </a>
+              <NuxtLink :to="`/poster/job/${id}`" class="yun_czfoot_s">
+                <div class="yun_czfoot_s_p">{{ $t('ui.poster') }}</div>
+              </NuxtLink>
+              <NuxtLink
+                v-if="String(settings.sy_h5_share || '1') !== '2'"
+                :to="`/share/job/${id}`"
+                class="yun_czfoot_s"
+              >
+                <div class="yun_czfoot_s_p">{{ $t('common.share') }}</div>
+              </NuxtLink>
             </div>
             <a
               v-if="applyCta.kind !== 'apply'"

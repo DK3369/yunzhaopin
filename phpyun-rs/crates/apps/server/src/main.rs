@@ -69,6 +69,7 @@ async fn serve(config: Config) -> anyhow::Result<()> {
         phpyun_api_admin::router(state.clone()),
         Some(("/api-docs/admin/openapi.json", admin_docs)),
         phpyun_api_admin::get_allowed_paths(),
+        state.clone(),
     )
     .with_state(state);
 

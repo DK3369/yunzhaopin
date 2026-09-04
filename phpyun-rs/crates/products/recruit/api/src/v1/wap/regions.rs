@@ -179,6 +179,18 @@ pub struct CityDomainQuery {
     /// Latitude (BD-09)
     #[validate(range(min = -90.0, max = 90.0))]
     pub y: Option<f64>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub province_id: Option<i32>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub city_id: Option<i32>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub three_city_id: Option<i32>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub hy: Option<i32>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -187,15 +199,17 @@ pub struct CityDomainResp {
     pub error: i32,
     pub domain: Option<String>,
     pub city: Option<String>,
+    pub did: Option<u64>,
+    pub province: Option<i32>,
+    pub city_id: Option<i32>,
+    pub three_city_id: Option<i32>,
+    pub hy: Option<i32>,
 }
 
 /// Resolve a `(lng, lat)` to the configured sub-site domain — counterpart of
 /// PHP `wap/index::getCityDomain_action`.
 ///
-/// Multi-site mode is not yet wired in Rust (needs Baidu Maps reverse-geocoding
-/// + the `phpyun_domain` table); this endpoint always returns `error: 2`,
-/// which matches PHP's "sub-site disabled" branch and lets clients render the
-/// fall-through state without 404s.
+/// PHP `wap/index::getCityDomain_action`. `sy_web_site!=1` returns `error: 2`.
 #[utoipa::path(
     post,
     path = "/v1/wap/regions/city-domain",
@@ -204,13 +218,54 @@ pub struct CityDomainResp {
     responses((status = 200, description = "ok", body = CityDomainResp))
 )]
 pub async fn city_domain(
-    State(_state): State<AppState>,
-    ValidatedJsonOrQuery(_q): ValidatedJsonOrQuery<CityDomainQuery>,
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CityDomainQuery>,
 ) -> AppResult<ApiResponse<CityDomainResp>> {
-    Ok(ApiResponse::data(CityDomainResp {
-        error: 2,
-        domain: None,
-        city: None,
+    let enabled = phpyun_services::site_gate_service::setting_i32(&state, "sy_web_site").await == 1;
+    if !enabled {
+        return Ok(ApiResponse::data(CityDomainResp {
+            error: 2,
+            domain: None,
+            city: None,
+            did: None,
+            province: None,
+            city_id: None,
+            three_city_id: None,
+            hy: None,
+        }));
+    }
+    let row = if q.hy.unwrap_or(0) > 0 {
+        phpyun_models::domain::repo::find_for_hy(state.db.reader(), q.hy.unwrap_or(0)).await?
+    } else {
+        phpyun_models::domain::repo::find_for_city(
+            state.db.reader(),
+            q.province_id.unwrap_or(0),
+            q.city_id.unwrap_or(0),
+            q.three_city_id.unwrap_or(0),
+        )
+        .await?
+    };
+    Ok(ApiResponse::data(match row {
+        Some(d) => CityDomainResp {
+            error: 1,
+            domain: Some(d.domain),
+            city: Some(d.title),
+            did: Some(d.id),
+            province: d.province,
+            city_id: d.city_id,
+            three_city_id: d.three_city_id,
+            hy: d.hy,
+        },
+        None => CityDomainResp {
+            error: 0,
+            domain: None,
+            city: None,
+            did: None,
+            province: None,
+            city_id: None,
+            three_city_id: None,
+            hy: None,
+        },
     }))
 }
 

@@ -59,6 +59,20 @@ pub struct JobFilter<'a> {
     /// Company uid (`phpyun_company_job.uid`). Additive filter for company pages.
     pub uid: Option<u64>,
     pub did: u32,
+    /// When true, skip the default `is_depower = 2` filter.
+    pub include_depowered: bool,
+    /// PHP `job_full_text_search=1` also matches `description`.
+    pub keyword_full_text: bool,
+    /// Downward-compatible education dict ids (PHP `job_edu` sort).
+    pub edu_ids: Option<&'a [i32]>,
+    /// Downward-compatible experience dict ids (PHP `job_exp` sort).
+    pub exp_ids: Option<&'a [i32]>,
+    /// Keyword expanded to city-class ids (name contains keyword).
+    pub keyword_city_ids: Option<&'a [i32]>,
+    /// Keyword expanded to job-class ids.
+    pub keyword_job_ids: Option<&'a [i32]>,
+    /// PHP joblist does not drop expired rows; similar/geo still do.
+    pub exclude_expired: bool,
 }
 
 // COALESCE coerces the many NULLable int columns in PHPYun's source table
@@ -140,9 +154,7 @@ pub async fn list_public(
 ) -> Result<Vec<Job>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (edate = 0 OR edate > ");
-    qb.push_bind(now);
-    qb.push(") AND did = ");
+    qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND did = ");
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     match f.order {
@@ -169,22 +181,71 @@ pub async fn count_public(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (edate = 0 OR edate > ",
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND did = ",
     );
-    qb.push_bind(now);
-    qb.push(") AND did = ");
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+fn push_in_i32s<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, ids: &'a [i32]) {
+    let mut sep = qb.separated(",");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+}
+
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, now: i64) {
+    if !f.include_depowered {
+        qb.push(" AND COALESCE(is_depower, 2) = 2");
+    }
+    if f.exclude_expired {
+        qb.push(" AND (edate = 0 OR edate > ");
+        qb.push_bind(now);
+        qb.push(")");
+    }
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
-            qb.push(" AND name LIKE ");
             let pat = format!("%{kw}%");
-            qb.push_bind(pat);
+            qb.push(" AND (name LIKE ");
+            qb.push_bind(pat.clone());
+            qb.push(" OR com_name LIKE ");
+            qb.push_bind(pat.clone());
+            qb.push(
+                " OR uid IN (SELECT uid FROM phpyun_company WHERE name LIKE ",
+            );
+            qb.push_bind(pat.clone());
+            qb.push(" OR shortname LIKE ");
+            qb.push_bind(pat.clone());
+            qb.push(")");
+            if f.keyword_full_text {
+                qb.push(" OR description LIKE ");
+                qb.push_bind(pat);
+            }
+            if let Some(ids) = f.keyword_city_ids {
+                if !ids.is_empty() {
+                    qb.push(" OR provinceid IN (");
+                    push_in_i32s(qb, ids);
+                    qb.push(") OR cityid IN (");
+                    push_in_i32s(qb, ids);
+                    qb.push(") OR three_cityid IN (");
+                    push_in_i32s(qb, ids);
+                    qb.push(")");
+                }
+            }
+            if let Some(ids) = f.keyword_job_ids {
+                if !ids.is_empty() {
+                    qb.push(" OR job1 IN (");
+                    push_in_i32s(qb, ids);
+                    qb.push(") OR job1_son IN (");
+                    push_in_i32s(qb, ids);
+                    qb.push(") OR job_post IN (");
+                    push_in_i32s(qb, ids);
+                    qb.push(")");
+                }
+            }
+            qb.push(")");
         }
     }
     if let Some(v) = f.province_id {
@@ -211,19 +272,36 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
         qb.push(" AND job_post = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.min_salary {
-        qb.push(" AND minsalary >= ");
-        qb.push_bind(v);
-    }
-    if let Some(v) = f.max_salary {
+    if let (Some(min), Some(max)) = (f.min_salary, f.max_salary) {
+        qb.push(" AND (minsalary >= ");
+        qb.push_bind(min);
+        qb.push(" AND minsalary <= ");
+        qb.push_bind(max);
         qb.push(" AND maxsalary <= ");
-        qb.push_bind(v);
+        qb.push_bind(max);
+        qb.push(")");
+    } else if let Some(min) = f.min_salary {
+        qb.push(" AND minsalary >= ");
+        qb.push_bind(min);
+    } else if let Some(max) = f.max_salary {
+        qb.push(" AND minsalary <= ");
+        qb.push_bind(max);
+        qb.push(" AND maxsalary <= ");
+        qb.push_bind(max);
     }
-    if let Some(v) = f.exp {
+    if let Some(ids) = f.exp_ids.filter(|s| !s.is_empty()) {
+        qb.push(" AND exp IN (");
+        push_in_i32s(qb, ids);
+        qb.push(")");
+    } else if let Some(v) = f.exp {
         qb.push(" AND exp = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.edu {
+    if let Some(ids) = f.edu_ids.filter(|s| !s.is_empty()) {
+        qb.push(" AND edu IN (");
+        push_in_i32s(qb, ids);
+        qb.push(")");
+    } else if let Some(v) = f.edu {
         qb.push(" AND edu = ");
         qb.push_bind(v);
     }
@@ -970,9 +1048,9 @@ pub async fn list_same_company(
     qb.push_bind(com_uid);
     qb.push(" AND id <> ");
     qb.push_bind(exclude_id);
-    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND edate > ");
+    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
-    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push(") AND COALESCE(is_depower, 2) = 2 ORDER BY lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.build_query_as::<Job>().fetch_all(pool).await
 }
@@ -995,9 +1073,9 @@ pub async fn list_similar(
     qb.push_bind(exclude_id);
     qb.push(" AND uid <> ");
     qb.push_bind(exclude_uid);
-    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND edate > ");
+    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
-    qb.push(" ORDER BY rec DESC, lastupdate DESC LIMIT ");
+    qb.push(") AND COALESCE(is_depower, 2) = 2 ORDER BY rec DESC, lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.build_query_as::<Job>().fetch_all(pool).await
 }
@@ -1176,6 +1254,22 @@ pub async fn incr_jobhits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> 
         .bind(id)
         .execute(pool)
         .await?;
+    Ok(())
+}
+
+pub async fn incr_jobexpoure(pool: &MySqlPool, ids: &[u64]) -> Result<(), sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(());
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_company_job SET jobexpoure = jobexpoure + 1 WHERE id IN (",
+    );
+    let mut sep = qb.separated(",");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    qb.build().execute(pool).await?;
     Ok(())
 }
 

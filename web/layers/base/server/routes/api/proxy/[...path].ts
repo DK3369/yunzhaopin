@@ -14,6 +14,17 @@ export default defineEventHandler(async (event) => {
     ...rustLangHeaders(event),
   }
   if (token) headers.authorization = `Bearer ${token}`
+  const ua = getHeader(event, 'user-agent')
+  if (ua) headers['user-agent'] = ua
+  const xff = getHeader(event, 'x-forwarded-for')
+  const ip = getRequestIP(event, { xForwardedFor: true })
+  if (xff) headers['x-forwarded-for'] = xff
+  else if (ip) headers['x-forwarded-for'] = ip
+  const xri = getHeader(event, 'x-real-ip')
+  if (xri) headers['x-real-ip'] = xri
+  else if (ip) headers['x-real-ip'] = ip
+  const cookie = getHeader(event, 'cookie')
+  if (cookie) headers.cookie = cookie
 
   let body: unknown
   if (method === 'POST') {

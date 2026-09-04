@@ -122,6 +122,14 @@ pub struct GzDetail {
     pub end_at_n: String,
     pub created_at: i64,
     pub created_at_n: String,
+    pub prev: Option<NeighborView>,
+    pub next: Option<NeighborView>,
+}
+
+#[derive(Debug, Serialize, ToSchema, Clone)]
+pub struct NeighborView {
+    pub id: u64,
+    pub title: String,
 }
 
 impl GzDetail {
@@ -150,6 +158,8 @@ impl GzDetail {
             end_at: g.end_at,
             created_at_n: fmt_dt(g.created_at),
             created_at: g.created_at,
+            prev: None,
+            next: None,
         }
     }
 }
@@ -192,5 +202,15 @@ pub async fn detail(
 ) -> AppResult<ApiResponse<GzDetail>> {
     let id = b.id;
     let g = gongzhao_service::get(&state, id).await?;
-    Ok(ApiResponse::data(GzDetail::from_with_ctx(g, &state)))
+    let (prev, next) = gongzhao_service::neighbors(&state, &g).await?;
+    let mut d = GzDetail::from_with_ctx(g, &state);
+    d.prev = prev.map(|n| NeighborView {
+        id: n.id,
+        title: n.title,
+    });
+    d.next = next.map(|n| NeighborView {
+        id: n.id,
+        title: n.title,
+    });
+    Ok(ApiResponse::data(d))
 }

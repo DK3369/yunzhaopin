@@ -55,14 +55,27 @@ pub async fn get_mine(state: &AppState, user: &AuthenticatedUser) -> AppResult<C
         .ok_or_else(|| ApiError::business("company_not_found"))
 }
 
-/// Public company view (WAP detail page) — accessible to anyone, but the company must have `r_status=1` (passed review).
-pub async fn get_public(state: &AppState, uid: u64) -> AppResult<Company> {
+/// Public company view (WAP detail page) — accessible to anyone, but the company must have `r_status=1` (passed review), except the owner.
+pub async fn get_public(
+    state: &AppState,
+    uid: u64,
+    viewer: Option<&AuthenticatedUser>,
+) -> AppResult<Company> {
     let c = company_repo::find_by_uid(state.db.reader(), uid)
         .await?
         .ok_or(ApiError::business("company_not_found"))?;
+    if viewer.is_some_and(|u| u.uid == c.uid) {
+        if c.r_status == 1 {
+            let pool = state.db.pool().clone();
+            let uid = c.uid;
+            phpyun_core::background::spawn_best_effort("company.hits", async move {
+                let _ = company_repo::incr_hits(&pool, uid).await;
+            });
+        }
+        return Ok(c);
+    }
     match c.r_status {
         1 => {
-            // View counter +1 (best-effort, written in the background)
             let pool = state.db.pool().clone();
             let uid = c.uid;
             phpyun_core::background::spawn_best_effort("company.hits", async move {

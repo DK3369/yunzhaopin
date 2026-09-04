@@ -98,3 +98,27 @@ pub async fn find_for_city(
     }
     Ok(None)
 }
+
+pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<DomainSite>, sqlx::Error> {
+    if id == 0 {
+        return Ok(None);
+    }
+    let sql = format!("SELECT {FIELDS} FROM phpyun_domain WHERE id = ? AND {PREDICATE} LIMIT 1");
+    sqlx::query_as::<_, DomainSite>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn find_for_hy(pool: &MySqlPool, hy: i32) -> Result<Option<DomainSite>, sqlx::Error> {
+    if hy <= 0 {
+        return Ok(None);
+    }
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_domain WHERE fz_type = 2 AND hy = ? AND {PREDICATE} LIMIT 1"
+    );
+    sqlx::query_as::<_, DomainSite>(&sql)
+        .bind(hy)
+        .fetch_optional(pool)
+        .await
+}

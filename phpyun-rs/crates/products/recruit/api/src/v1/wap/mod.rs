@@ -51,8 +51,12 @@ pub mod upload;
 pub mod wechat;
 pub mod zph;
 
+use axum::extract::{Request, State};
+use axum::http::{header, HeaderMap};
+use axum::middleware::Next;
+use axum::response::Response;
 use axum::Router;
-use phpyun_core::AppState;
+use phpyun_core::{ApiError, AppState};
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -108,6 +112,57 @@ pub fn router() -> Router<AppState> {
         .merge(data_show::routes())
         .merge(once::routes())
         .merge(poster::routes())
+}
+
+pub fn request_user_agent(headers: &HeaderMap) -> String {
+    headers
+        .get(header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string()
+}
+
+fn client_ip(headers: &HeaderMap) -> String {
+    if let Some(xff) = headers
+        .get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok())
+    {
+        if let Some(first) = xff.split(',').next() {
+            let ip = first.trim();
+            if !ip.is_empty() {
+                return ip.to_string();
+            }
+        }
+    }
+    if let Some(xri) = headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
+        let ip = xri.trim();
+        if !ip.is_empty() {
+            return ip.to_string();
+        }
+    }
+    "0.0.0.0".into()
+}
+
+fn skip_site_gate(path: &str) -> bool {
+    path.contains("/site/settings")
+        || path.contains("/health")
+        || path.contains("/ready")
+        || path.contains("/api-docs")
+}
+
+pub async fn site_gate_layer(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Result<Response, ApiError> {
+    let path = request.uri().path().to_string();
+    if skip_site_gate(&path) {
+        return Ok(next.run(request).await);
+    }
+    phpyun_services::site_gate_service::ensure_site_online(&state).await?;
+    phpyun_services::site_gate_service::ensure_ip_allowed(&state, &client_ip(request.headers()))
+        .await?;
+    Ok(next.run(request).await)
 }
 
 /// Paths under `/v1/wap` that are exempt from the POST-only rule, collected

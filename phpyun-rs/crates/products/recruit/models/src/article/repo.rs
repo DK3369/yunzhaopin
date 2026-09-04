@@ -658,3 +658,92 @@ pub async fn delete_properties(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sql
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct Neighbor {
+    pub id: u64,
+    pub title: String,
+}
+
+/// Same-category prev/next by publish time (PHP `article/show`).
+pub async fn neighbors(
+    pool: &MySqlPool,
+    id: u64,
+    nid: i32,
+    published_at: i64,
+) -> Result<(Option<Neighbor>, Option<Neighbor>), sqlx::Error> {
+    let prev_sql = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_news_base \
+         WHERE COALESCE(deleted,0)=0 AND nid = ? \
+           AND (datetime < ? OR (datetime = ? AND id < ?)) \
+         ORDER BY datetime DESC, id DESC LIMIT 1";
+    let next_sql = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_news_base \
+         WHERE COALESCE(deleted,0)=0 AND nid = ? \
+           AND (datetime > ? OR (datetime = ? AND id > ?)) \
+         ORDER BY datetime ASC, id ASC LIMIT 1";
+    let prev = sqlx::query_as::<_, Neighbor>(prev_sql)
+        .bind(nid)
+        .bind(published_at)
+        .bind(published_at)
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
+    let next = sqlx::query_as::<_, Neighbor>(next_sql)
+        .bind(nid)
+        .bind(published_at)
+        .bind(published_at)
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
+    Ok((prev, next))
+}
+
+pub async fn related(
+    pool: &MySqlPool,
+    id: u64,
+    nid: i32,
+    keyword: &str,
+    limit: u64,
+) -> Result<Vec<Neighbor>, sqlx::Error> {
+    let parts: Vec<&str> = keyword
+        .split(|c: char| c == ',' || c == '，' || c == ' ' || c == '|')
+        .map(str::trim)
+        .filter(|s| !s.is_empty() && s.len() < 40)
+        .take(6)
+        .collect();
+    if parts.is_empty() {
+        let sql = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+             FROM phpyun_news_base \
+             WHERE COALESCE(deleted,0)=0 AND nid = ? AND id <> ? \
+             ORDER BY datetime DESC LIMIT ?";
+        return sqlx::query_as::<_, Neighbor>(sql)
+            .bind(nid)
+            .bind(id)
+            .bind(limit)
+            .fetch_all(pool)
+            .await;
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_news_base WHERE COALESCE(deleted,0)=0 AND nid = ",
+    );
+    qb.push_bind(nid);
+    qb.push(" AND id <> ");
+    qb.push_bind(id);
+    qb.push(" AND (");
+    let mut first = true;
+    for p in parts {
+        if !first {
+            qb.push(" OR ");
+        }
+        first = false;
+        qb.push("keyword LIKE ");
+        qb.push_bind(format!("%{p}%"));
+        qb.push(" OR title LIKE ");
+        qb.push_bind(format!("%{p}%"));
+    }
+    qb.push(") ORDER BY datetime DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.build_query_as::<Neighbor>().fetch_all(pool).await
+}

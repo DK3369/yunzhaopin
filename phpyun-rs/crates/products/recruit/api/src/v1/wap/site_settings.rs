@@ -1,7 +1,7 @@
 //! Public site settings (keys with is_public=1).
 
 use axum::{extract::State, routing::post, Json, Router};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, Lang, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, Lang, ValidatedJson};
 use phpyun_models::report::repo as report_repo;
 use phpyun_services::site_setting_service;
 use serde::Serialize;
@@ -52,6 +52,7 @@ pub struct SettingsListBody {
 pub async fn list(
     State(state): State<AppState>,
     lang: Lang,
+    ClientIp(ip): ClientIp,
     body: Option<Json<SettingsListBody>>,
 ) -> AppResult<ApiResponse<Value>> {
     if body.as_ref().is_some_and(|b| b.key == "report_reasons") {
@@ -68,7 +69,17 @@ pub async fn list(
     }
 
     let list = site_setting_service::list_public(&state).await?;
-    let data: Vec<SettingView> = list.into_iter().map(SettingView::from).collect();
+    let mut data: Vec<SettingView> = list.into_iter().map(SettingView::from).collect();
+    if phpyun_services::site_gate_service::ensure_ip_allowed(&state, &ip)
+        .await
+        .is_err()
+    {
+        data.push(SettingView {
+            key: "sy_client_ip_banned".into(),
+            value: "1".into(),
+            description: String::new(),
+        });
+    }
     Ok(ApiResponse::data(json!(data)))
 }
 

@@ -8,10 +8,14 @@ pub mod wap;
 use axum::Router;
 use phpyun_core::AppState;
 
-pub fn router() -> Router<AppState> {
+pub fn router(state: AppState) -> Router<AppState> {
     Router::new()
         .nest("/wap", wap::router())
         .nest("/mcenter", mcenter::router())
+        .layer(axum::middleware::from_fn_with_state(
+            state,
+            wap::site_gate_layer,
+        ))
 }
 
 /// Paths in this version that accept `GET` despite the POST-only convention.

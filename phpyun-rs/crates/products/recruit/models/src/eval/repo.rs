@@ -40,7 +40,7 @@ pub async fn list_papers(
 ) -> Result<Vec<EvalPaper>, sqlx::Error> {
     let sql = format!(
         "SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group \
-         WHERE {PREDICATE} ORDER BY sort DESC, id DESC LIMIT ? OFFSET ?"
+         WHERE keyid <> 0 AND {PREDICATE} ORDER BY sort DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, EvalPaper>(&sql)
         .bind(limit)
@@ -51,7 +51,7 @@ pub async fn list_papers(
 
 pub async fn count_papers(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(&format!(
-        "SELECT COUNT(*) FROM phpyun_evaluate_group WHERE {PREDICATE}"
+        "SELECT COUNT(*) FROM phpyun_evaluate_group WHERE keyid <> 0 AND {PREDICATE}"
     ))
         .fetch_one(pool)
         .await?;

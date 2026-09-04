@@ -39,3 +39,17 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<Article> {
     });
     Ok(a)
 }
+
+pub async fn neighbors_and_related(
+    state: &AppState,
+    a: &Article,
+) -> AppResult<(
+    Option<phpyun_models::article::repo::Neighbor>,
+    Option<phpyun_models::article::repo::Neighbor>,
+    Vec<phpyun_models::article::repo::Neighbor>,
+)> {
+    let db = state.db.reader();
+    let (prev, next) = article_repo::neighbors(db, a.id, a.nid, a.published_at).await?;
+    let related = article_repo::related(db, a.id, a.nid, &a.keyword, 6).await?;
+    Ok((prev, next, related))
+}

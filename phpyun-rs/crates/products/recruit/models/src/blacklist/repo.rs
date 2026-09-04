@@ -122,3 +122,13 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
             .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
+
+pub async fn list_blocked_uids(pool: &MySqlPool, uid: u64) -> Result<Vec<u64>, sqlx::Error> {
+    sqlx::query_scalar::<_, u64>(
+        "SELECT CAST(c_uid AS UNSIGNED) FROM phpyun_blacklist \
+         WHERE p_uid = ? AND status != 2",
+    )
+    .bind(uid)
+    .fetch_all(pool)
+    .await
+}

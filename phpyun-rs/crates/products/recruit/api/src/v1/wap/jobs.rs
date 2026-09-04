@@ -2,6 +2,7 @@
 
 use axum::{
     extract::State,
+    http::HeaderMap,
     routing::{get, post},
     Router,
 };
@@ -324,9 +325,16 @@ async fn attach_company_card_fields(
 pub async fn list_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<JobListQuery>,
 ) -> AppResult<ApiResponse<json::Value>> {
+    phpyun_services::site_gate_service::ensure_list_login(
+        &state,
+        user.as_ref(),
+        &crate::v1::wap::request_user_agent(&headers),
+    )
+    .await?;
     // Detail mode: body carried an id → defer to the same logic as
     // `/v1/wap/jobs/detail` so callers get the full job document.
     if let Some(id) = q.id {
@@ -440,7 +448,7 @@ pub async fn build_job_detail_value(
     user: Option<&phpyun_core::AuthenticatedUser>,
     id: u64,
 ) -> AppResult<json::Value> {
-    let d = job_service::get_detail(state, id).await?;
+    let d = job_service::get_detail(state, id, user).await?;
     // Logged-in user: record visit footprint + bump view count (fire-and-forget)
     if let Some(u) = user {
         view_service::record_async(state, u.uid, KIND_JOB, id);

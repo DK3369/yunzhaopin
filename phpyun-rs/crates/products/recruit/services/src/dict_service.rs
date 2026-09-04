@@ -67,6 +67,19 @@ impl DictTable {
         None
     }
 
+    /// Names that contain `needle` (PHP keyword → city / job-class id expansion).
+    pub fn ids_containing(&self, needle: &str) -> Vec<i32> {
+        let n = needle.trim();
+        if n.is_empty() {
+            return Vec::new();
+        }
+        self.default_zh
+            .iter()
+            .filter(|(_, name)| name.contains(n))
+            .map(|(id, _)| *id)
+            .collect()
+    }
+
     fn all_names(&self, lang: Lang) -> Vec<(i32, String)> {
         let mut ids: Vec<i32> = self.default_zh.keys().copied().collect();
         ids.sort();
@@ -280,6 +293,50 @@ impl LocalizedDicts {
             variable,
             self.lang,
         )
+    }
+
+    /// PHP joblist: selected sort and all *lower* sorts (exclude 「不限」).
+    /// `upward=true` is resume search (selected and *higher* sorts).
+    pub fn downward_comclass_ids(&self, variable: &str, selected: i32, upward: bool) -> Vec<i32> {
+        Self::downward_from(&self.comclass_by_variable(variable), selected, upward)
+    }
+    pub fn downward_userclass_ids(&self, variable: &str, selected: i32, upward: bool) -> Vec<i32> {
+        Self::downward_from(&self.userclass_by_variable(variable), selected, upward)
+    }
+    fn downward_from(items: &[(i32, String)], selected: i32, upward: bool) -> Vec<i32> {
+        fn unlimited(name: &str) -> bool {
+            name.contains("不限") || name.eq_ignore_ascii_case("unlimited")
+        }
+        let pos = items.iter().position(|(id, name)| *id == selected && !unlimited(name));
+        let Some(sort_idx) = pos else {
+            return vec![selected];
+        };
+        let ids: Vec<i32> = items
+            .iter()
+            .enumerate()
+            .filter(|(k, (_, name))| {
+                if unlimited(name) {
+                    return false;
+                }
+                if upward {
+                    *k >= sort_idx
+                } else {
+                    *k <= sort_idx
+                }
+            })
+            .map(|(_, (id, _))| *id)
+            .collect();
+        if ids.is_empty() {
+            vec![selected]
+        } else {
+            ids
+        }
+    }
+    pub fn city_ids_containing(&self, needle: &str) -> Vec<i32> {
+        self.inner.city.ids_containing(needle)
+    }
+    pub fn job_ids_containing(&self, needle: &str) -> Vec<i32> {
+        self.inner.job.ids_containing(needle)
     }
     /// PHP `$city_index` + `$city_name` (job/company/resume search filters).
     pub fn city_provinces(&self) -> Vec<(i32, String)> {

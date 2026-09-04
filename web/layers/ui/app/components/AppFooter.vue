@@ -120,8 +120,12 @@
             <div class="wap_footer_name">{{ isCompany ? $t('common.publish_job') : me ? $t('common.publish_resume') : $t('common.publish') }}</div>
           </NuxtLink>
           <NuxtLink class="wap_footernav" :to="me ? messageTo : '/login'">
-            <div class="wap_footericon">
+            <div class="wap_footericon" style="position: relative">
               <img :src="tabIcon('news')" alt="" style="width: 100%" />
+              <em
+                v-if="unreadTotal > 0"
+                style="position: absolute; top: -4px; right: -6px; min-width: 16px; height: 16px; line-height: 16px; border-radius: 8px; background: #f33; color: #fff; font-size: 11px; text-align: center; padding: 0 4px"
+              >{{ unreadTotal > 99 ? '99+' : unreadTotal }}</em>
             </div>
             <div class="wap_footer_name">{{ $t('common.message') }}</div>
           </NuxtLink>
@@ -140,8 +144,19 @@
 <script setup lang="ts">
 const route = useRoute()
 const { siteName, phone, worktime, copyright, record, email, address, me, memberHome, footerNav, wxQr, wapQr, perfor, hrlicense, secord } = useSiteChrome()
+const api = useApi()
 const isCompany = computed(() => Number(me.value?.usertype) === 2)
 const messageTo = computed(() => (isCompany.value ? '/com/messages' : '/user/messages'))
+const { data: unread } = await useAsyncData(
+  () => `footer-unread-${me.value?.uid || 0}`,
+  () =>
+    me.value
+      ? api
+          .post<{ total?: number }>('/v1/mcenter/messages/unread-summary', {})
+          .catch(() => ({ total: 0 }))
+      : Promise.resolve({ total: 0 }),
+)
+const unreadTotal = computed(() => Number(unread.value?.total || 0))
 
 function tabIcon(kind: 'home' | 'job' | 'resume' | 'news' | 'me') {
   const on =

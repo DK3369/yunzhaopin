@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { isPathModuleOn } from '~/utils/site'
+
 const route = useRoute()
-const { locale, setLocale } = useI18n()
+const { locale, setLocale, t } = useI18n()
 async function applyQueryLang() {
   const mapped = mapPhpLang(String(route.query.lang || ''))
   if (mapped && mapped !== locale.value) {
@@ -11,9 +13,21 @@ async function applyQueryLang() {
 await applyQueryLang()
 watch(() => route.query.lang, () => applyQueryLang())
 const siteUrl = String(useRuntimeConfig().public.siteUrl || 'http://127.0.0.1:3001').replace(/\/$/, '')
-const { isHome, isAuth, isMember } = useSiteChrome()
+const { isHome, isAuth, isMember, settings } = useSiteChrome()
 const { userItems, comItems } = useMemberNav()
 const memberItems = computed(() => (route.path.startsWith('/com') ? comItems.value : userItems.value))
+const siteClosed = computed(() => String(settings.value.sy_web_online || '') === '2')
+const ipBanned = computed(() => String(settings.value.sy_client_ip_banned || '') === '1')
+const moduleOff = computed(() => {
+  if (isAuth.value || isMember.value) return false
+  return !isPathModuleOn(settings.value, route.path)
+})
+const siteBlocked = computed(() => siteClosed.value || ipBanned.value || moduleOff.value)
+const blockHtml = computed(() => {
+  if (ipBanned.value) return settings.value.sy_bannedip_alert || t('ui.ip_banned')
+  if (siteClosed.value) return settings.value.sy_webclose || t('ui.site_closed')
+  return t('ui.module_closed')
+})
 
 useHead({
   htmlAttrs: { lang: () => (locale.value === 'en' ? 'en' : 'zh-CN') },
@@ -42,7 +56,8 @@ const mainClass = computed(() => {
 </script>
 
 <template>
-  <div class="site-root">
+  <div v-if="siteBlocked" class="site-closed site-inner" v-html="blockHtml" />
+  <div v-else class="site-root">
     <AppHeader v-if="!isAuth" />
     <main :class="mainClass">
       <MemberShell v-if="isMember" :items="memberItems" :kind="route.path.startsWith('/com') ? 'com' : 'user'">

@@ -2,6 +2,7 @@
 
 use axum::{
     extract::State,
+    http::HeaderMap,
     routing::{get, post},
     Router,
 };
@@ -84,6 +85,8 @@ pub struct CompanyListQuery {
     #[serde(default = "default_did")]
     #[validate(range(max = 9_999_999))]
     pub did: u32,
+    #[validate(range(min = 0, max = 3650))]
+    pub uptime: Option<i32>,
 }
 fn default_did() -> u32 {
     0
@@ -206,9 +209,16 @@ async fn fill_isatn(
 pub async fn list_companies(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CompanyListQuery>,
 ) -> AppResult<ApiResponse<Paged<CompanySummary>>> {
+    phpyun_services::site_gate_service::ensure_list_login(
+        &state,
+        user.as_ref(),
+        &crate::v1::wap::request_user_agent(&headers),
+    )
+    .await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
     }
@@ -224,6 +234,15 @@ pub async fn list_companies(
         cert: q.cert,
         rec: q.rec,
         did: q.did,
+        uptime: {
+            let explicit = q.uptime;
+            phpyun_services::site_gate_service::default_uptime_days(
+                &state,
+                explicit,
+                "sy_datacycle_com",
+            )
+            .await
+        },
     };
     let r = company_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -401,7 +420,7 @@ pub async fn company_detail(
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<CompanyDetail>> {
     let uid = b.uid;
-    let c = company_service::get_public(&state, uid).await?;
+    let c = company_service::get_public(&state, uid, user.as_ref()).await?;
     if let Some(u) = user.as_ref() {
         view_service::record_async(&state, u.uid, KIND_COMPANY, uid);
     }
@@ -698,7 +717,7 @@ pub async fn hot_companies(
     let now = phpyun_core::clock::now_ts();
 
     let rows =
-        phpyun_models::company::repo::list_hot(state.db.reader(), sort_mode, limit, now).await?;
+        phpyun_models::company::repo::list_hot(state.db.reader(), sort_mode, limit, now, None).await?;
     let web_base = state.config.web_base_url.as_deref();
     let storage = &state.storage;
     let out: Vec<HotCompanyView> = rows

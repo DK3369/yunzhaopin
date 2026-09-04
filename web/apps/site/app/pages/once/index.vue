@@ -3,14 +3,16 @@ import { listFailMsg } from '~/utils/site'
 
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
+const keyword = computed(() => String(route.query.keyword || ''))
 const { t } = useI18n()
 const api = useApi()
 const { data, error } = await useAsyncData(
-  () => `once-${page.value}`,
+  () => `once-${page.value}-${keyword.value}`,
   () =>
     api.get<{ list: Array<{ id: number; companyname: string; number?: string }>; total: number }>('/v1/wap/once-jobs/list', {
       page: page.value,
       page_size: 20,
+      keyword: keyword.value || undefined,
     }),
 )
 useSeoMeta({ title: t('wap_js_00130') })
@@ -20,6 +22,10 @@ const list = computed(() => data.value?.list || [])
 
 <template>
   <NewsListShell :title="$t('wap_js_00130')" :error="error" :error-text="failMsg" :count="list.length">
+    <form class="form" method="get" action="/once">
+      <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
+      <button type="submit">{{ $t('common.search') }}</button>
+    </form>
     <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.companyname" :meta="row.number" />
     <template #pager>
       <Pager

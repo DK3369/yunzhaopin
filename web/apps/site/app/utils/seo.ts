@@ -5,6 +5,14 @@ export function stripHtml(value: unknown): string {
     .trim()
 }
 
+export function seoJoin(parts: unknown[], max = 160): string {
+  return parts
+    .map((p) => stripHtml(p))
+    .filter(Boolean)
+    .join(' ')
+    .slice(0, max)
+}
+
 export function unixToIso(ts: unknown): string | undefined {
   const n = Number(ts)
   if (!Number.isFinite(n) || n <= 0) return undefined

@@ -29,3 +29,13 @@ pub async fn get(state: &AppState, id: u64) -> AppResult<Gongzhao> {
     });
     Ok(g)
 }
+
+pub async fn neighbors(
+    state: &AppState,
+    g: &Gongzhao,
+) -> AppResult<(
+    Option<phpyun_models::gongzhao::repo::Neighbor>,
+    Option<phpyun_models::gongzhao::repo::Neighbor>,
+)> {
+    Ok(gz_repo::neighbors(state.db.reader(), g.id).await?)
+}

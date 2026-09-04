@@ -22,3 +22,13 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Option<Announcem
     }
     Ok(row)
 }
+
+pub async fn neighbors(
+    state: &AppState,
+    a: &Announcement,
+) -> AppResult<(
+    Option<phpyun_models::announcement::repo::Neighbor>,
+    Option<phpyun_models::announcement::repo::Neighbor>,
+)> {
+    Ok(ann_repo::neighbors(state.db.reader(), a.id, a.datetime).await?)
+}

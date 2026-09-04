@@ -19,9 +19,13 @@ pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Zph>> {
 }
 
 pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Zph> {
-    zph_repo::find_by_id(state.db.reader(), id)
+    let z = zph_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or_else(|| ApiError::param_invalid("zph_not_found"))
+        .ok_or_else(|| ApiError::param_invalid("zph_not_found"))?;
+    if z.is_open != 1 {
+        return Err(ApiError::business("zph_closed"));
+    }
+    Ok(z)
 }
 
 pub async fn list_companies(

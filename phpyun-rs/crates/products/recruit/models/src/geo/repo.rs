@@ -45,15 +45,23 @@ fn bbox(x: f64, y: f64, radius_km: f64) -> (f64, f64, f64, f64) {
     (x - lon_delta, x + lon_delta, y - lat_delta, y + lat_delta)
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct NearQuery {
+    pub x: f64,
+    pub y: f64,
+    pub radius_km: f64,
+    pub now: i64,
+    pub limit: u64,
+    pub offset: u64,
+    pub did: u32,
+    pub min_lastupdate: i64,
+}
+
 pub async fn list_jobs_near(
     pool: &MySqlPool,
-    x: f64,
-    y: f64,
-    radius_km: f64,
-    now: i64,
-    limit: u64,
+    q: NearQuery,
 ) -> Result<Vec<JobNear>, sqlx::Error> {
-    let (xmin, xmax, ymin, ymax) = bbox(x, y, radius_km);
+    let (xmin, xmax, ymin, ymax) = bbox(q.x, q.y, q.radius_km);
     // `phpyun_company_job` declares provinceid/cityid/minsalary/maxsalary as
     // nullable int and x/y as nullable varchar(50) (PHP stores coordinates
     // as strings). The bounding-box predicate on `x BETWEEN ? AND ?` already
@@ -77,35 +85,82 @@ pub async fn list_jobs_near(
                  )
                ) AS distance
         FROM phpyun_company_job
-        WHERE state = 1 AND status = 0 AND r_status = 1 AND edate > ?
+        WHERE state = 1 AND status = 0 AND r_status = 1
+          AND COALESCE(is_depower, 2) = 2
+          AND (edate = 0 OR edate > ?)
+          AND (? <= 0 OR lastupdate > ?)
+          AND (? = 0 OR COALESCE(did, 0) = ?)
           AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
         HAVING distance <= ?
         ORDER BY distance ASC
-        LIMIT ?
+        LIMIT ? OFFSET ?
     "#;
     sqlx::query_as::<_, JobNear>(sql)
-        .bind(y)
-        .bind(y)
-        .bind(x)
-        .bind(now)
+        .bind(q.y)
+        .bind(q.y)
+        .bind(q.x)
+        .bind(q.now)
+        .bind(q.min_lastupdate)
+        .bind(q.min_lastupdate)
+        .bind(q.did)
+        .bind(q.did)
         .bind(xmin)
         .bind(xmax)
         .bind(ymin)
         .bind(ymax)
-        .bind(radius_km)
-        .bind(limit)
+        .bind(q.radius_km)
+        .bind(q.limit)
+        .bind(q.offset)
         .fetch_all(pool)
         .await
 }
 
+pub async fn count_jobs_near(pool: &MySqlPool, q: NearQuery) -> Result<u64, sqlx::Error> {
+    let (xmin, xmax, ymin, ymax) = bbox(q.x, q.y, q.radius_km);
+    let sql = r#"
+        SELECT COUNT(*) FROM (
+            SELECT id,
+                   6371 * 2 * ASIN(
+                     SQRT(
+                       POW(SIN(RADIANS((y - ?) / 2)), 2)
+                       + COS(RADIANS(?)) * COS(RADIANS(y))
+                         * POW(SIN(RADIANS((x - ?) / 2)), 2)
+                     )
+                   ) AS distance
+            FROM phpyun_company_job
+            WHERE state = 1 AND status = 0 AND r_status = 1
+              AND COALESCE(is_depower, 2) = 2
+              AND (edate = 0 OR edate > ?)
+              AND (? <= 0 OR lastupdate > ?)
+              AND (? = 0 OR COALESCE(did, 0) = ?)
+              AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
+            HAVING distance <= ?
+        ) t
+    "#;
+    let n: i64 = sqlx::query_scalar(sql)
+        .bind(q.y)
+        .bind(q.y)
+        .bind(q.x)
+        .bind(q.now)
+        .bind(q.min_lastupdate)
+        .bind(q.min_lastupdate)
+        .bind(q.did)
+        .bind(q.did)
+        .bind(xmin)
+        .bind(xmax)
+        .bind(ymin)
+        .bind(ymax)
+        .bind(q.radius_km)
+        .fetch_one(pool)
+        .await?;
+    Ok(n.max(0) as u64)
+}
+
 pub async fn list_companies_near(
     pool: &MySqlPool,
-    x: f64,
-    y: f64,
-    radius_km: f64,
-    limit: u64,
+    q: NearQuery,
 ) -> Result<Vec<CompanyNear>, sqlx::Error> {
-    let (xmin, xmax, ymin, ymax) = bbox(x, y, radius_km);
+    let (xmin, xmax, ymin, ymax) = bbox(q.x, q.y, q.radius_km);
     // Same NULL-coordinate guard as `list_jobs_near` — see notes there.
     let sql = r#"
         SELECT uid, name,
@@ -122,23 +177,62 @@ pub async fn list_companies_near(
                ) AS distance
         FROM phpyun_company
         WHERE r_status = 1
+          AND (? = 0 OR COALESCE(did, 0) = ?)
           AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
         HAVING distance <= ?
         ORDER BY distance ASC
-        LIMIT ?
+        LIMIT ? OFFSET ?
     "#;
     sqlx::query_as::<_, CompanyNear>(sql)
-        .bind(y)
-        .bind(y)
-        .bind(x)
+        .bind(q.y)
+        .bind(q.y)
+        .bind(q.x)
+        .bind(q.did)
+        .bind(q.did)
         .bind(xmin)
         .bind(xmax)
         .bind(ymin)
         .bind(ymax)
-        .bind(radius_km)
-        .bind(limit)
+        .bind(q.radius_km)
+        .bind(q.limit)
+        .bind(q.offset)
         .fetch_all(pool)
         .await
+}
+
+pub async fn count_companies_near(pool: &MySqlPool, q: NearQuery) -> Result<u64, sqlx::Error> {
+    let (xmin, xmax, ymin, ymax) = bbox(q.x, q.y, q.radius_km);
+    let sql = r#"
+        SELECT COUNT(*) FROM (
+            SELECT uid,
+                   6371 * 2 * ASIN(
+                     SQRT(
+                       POW(SIN(RADIANS((y - ?) / 2)), 2)
+                       + COS(RADIANS(?)) * COS(RADIANS(y))
+                         * POW(SIN(RADIANS((x - ?) / 2)), 2)
+                     )
+                   ) AS distance
+            FROM phpyun_company
+            WHERE r_status = 1
+              AND (? = 0 OR COALESCE(did, 0) = ?)
+              AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
+            HAVING distance <= ?
+        ) t
+    "#;
+    let n: i64 = sqlx::query_scalar(sql)
+        .bind(q.y)
+        .bind(q.y)
+        .bind(q.x)
+        .bind(q.did)
+        .bind(q.did)
+        .bind(xmin)
+        .bind(xmax)
+        .bind(ymin)
+        .bind(ymax)
+        .bind(q.radius_km)
+        .fetch_one(pool)
+        .await?;
+    Ok(n.max(0) as u64)
 }
 
 #[cfg(test)]

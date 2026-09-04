@@ -80,10 +80,24 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
                 ..Default::default()
             };
 
+            let sort_mode = phpyun_models::site_setting::repo::find(st.db.reader(), "hotcom_top")
+                .await
+                .ok()
+                .flatten()
+                .and_then(|s| s.value.trim().parse().ok())
+                .unwrap_or(0);
+            let site = if did > 0 {
+                phpyun_models::domain::repo::find_by_id(db, u64::from(did))
+                    .await
+                    .ok()
+                    .flatten()
+            } else {
+                None
+            };
             let (ann_r, jobs_r, hot_com_r, art_r, feat_r, hot_art_r, hot_r) = tokio::join!(
                 ann_repo::list_published(db, 0, 5),
                 job_repo::list_public(db, &job_filter, 0, 8, now),
-                company_repo::list_hot(db, 0, 12, now),
+                company_repo::list_hot(db, sort_mode, 12, now, site.as_ref()),
                 article_repo::list_public(db, &art_filter, 0, 14),
                 article_repo::list_public(db, &feat_filter, 0, 2),
                 article_repo::list_public(db, &hot_art_filter, 0, 10),

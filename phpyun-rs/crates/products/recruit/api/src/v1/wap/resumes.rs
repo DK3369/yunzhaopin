@@ -441,13 +441,52 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
 pub async fn list_resumes(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ResumeListQuery>,
 ) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
+    phpyun_services::site_gate_service::ensure_list_login(
+        &state,
+        user.as_ref(),
+        &crate::v1::wap::request_user_agent(&headers),
+    )
+    .await?;
     ensure_resume_browse(&state, user.as_ref()).await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
     }
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let tag_name = q
+        .tag
+        .filter(|id| *id > 0)
+        .map(|id| dicts.user_or_com(id).to_string())
+        .filter(|s| !s.is_empty());
+    let education_ids: Vec<i32> = q
+        .education
+        .filter(|v| *v > 0)
+        .map(|v| dicts.downward_userclass_ids("user_edu", v, true))
+        .unwrap_or_default();
+    let exp_ids: Vec<i32> = q
+        .exp
+        .filter(|v| *v > 0)
+        .map(|v| dicts.downward_userclass_ids("user_word", v, true))
+        .unwrap_or_default();
+    let blocked: Vec<u64> = if user.as_ref().is_some_and(|u| u.usertype == USERTYPE_EMPLOYER) {
+        phpyun_models::blacklist::repo::list_blocked_uids(
+            state.db.reader(),
+            user.as_ref().map(|u| u.uid).unwrap_or(0),
+        )
+        .await
+        .unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+    let uptime = phpyun_services::site_gate_service::default_uptime_days(
+        &state,
+        q.uptime,
+        "sy_datacycle",
+    )
+    .await;
     let filter = ResumeFilter {
         keyword: q.keyword.as_deref(),
         education: q.education,
@@ -464,11 +503,12 @@ pub async fn list_resumes(
         report: q.report,
         r#type: q.r#type,
         tag: q.tag,
+        tag_name: tag_name.as_deref(),
         min_salary: q.min_salary,
         max_salary: q.max_salary,
         min_age: q.min_age,
         max_age: q.max_age,
-        uptime: q.uptime,
+        uptime,
         integrity: q.integrity,
         order: q.order.as_deref(),
         photo: q.photo,
@@ -477,9 +517,23 @@ pub async fn list_resumes(
         did: q.did,
         recg: q.recg,
         top: q.top,
+        education_ids: if education_ids.is_empty() {
+            None
+        } else {
+            Some(education_ids.as_slice())
+        },
+        exp_ids: if exp_ids.is_empty() {
+            None
+        } else {
+            Some(exp_ids.as_slice())
+        },
+        exclude_uids: if blocked.is_empty() {
+            None
+        } else {
+            Some(blocked.as_slice())
+        },
     };
     let r = resume_service::list_public(&state, &filter, page).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
     let show_cfg = load_resume_show_cfg(&state).await;
     let mut list: Vec<ResumeSummary> = r
         .list
@@ -948,9 +1002,23 @@ pub async fn resume_detail(
         }
     }
     let m_status = resume_m_status(&state, user.as_ref(), uid).await;
-    let unlocked = m_status == 1;
+    let mut unlocked = m_status == 1;
     let gate = resume_service::open_resume_check(&state, user.as_ref(), uid).await;
-    let body_open = gate.resume_check == 1;
+    let visitor_max = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &["sy_resume_visitors"],
+    )
+    .await
+    .ok()
+    .and_then(|m| m.get("sy_resume_visitors")?.trim().parse().ok())
+    .unwrap_or(0);
+    let visitor_blocked = user.is_none()
+        && visitor_max > 0
+        && cookie_count(&headers, "resumevisitors") >= i64::from(visitor_max);
+    let body_open = gate.resume_check == 1 && !visitor_blocked;
+    if visitor_blocked {
+        unlocked = false;
+    }
     let db = state.db.reader();
     let (bundle_res, dicts, shows_res, docs_res) = tokio::join!(
         resume_children_service::get_full_bundle(&state, uid),
@@ -1025,17 +1093,6 @@ pub async fn resume_detail(
     } else {
         (false, false)
     };
-    let visitor_max = phpyun_models::site_setting::repo::find_many(
-        state.db.reader(),
-        &["sy_resume_visitors"],
-    )
-    .await
-    .ok()
-    .and_then(|m| m.get("sy_resume_visitors")?.trim().parse().ok())
-    .unwrap_or(0);
-    let visitor_blocked = user.is_none()
-        && visitor_max > 0
-        && cookie_count(&headers, "resumevisitors") >= i64::from(visitor_max);
     Ok(ApiResponse::data(ResumeDetail {
         uid: r.uid,
         display_name,

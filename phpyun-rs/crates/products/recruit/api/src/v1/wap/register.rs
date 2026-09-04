@@ -223,6 +223,7 @@ pub struct RegisterConfig {
     pub supported_usertypes: Vec<u8>,
     pub sms_code_length: u32,
     pub sms_code_ttl_secs: u32,
+    pub registration_open: bool,
 }
 
 /// Registration rules config: clients can use this for instant validation and display copy.
@@ -232,7 +233,10 @@ pub struct RegisterConfig {
     tag = "auth",
     responses((status = 200, description = "ok", body = RegisterConfig))
 )]
-pub async fn config() -> AppResult<ApiResponse<RegisterConfig>> {
+pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<RegisterConfig>> {
+    let open = phpyun_services::site_gate_service::ensure_registration_open(&state)
+        .await
+        .is_ok();
     Ok(ApiResponse::data(RegisterConfig {
         username_min_len: 3,
         username_max_len: 20,
@@ -244,5 +248,6 @@ pub async fn config() -> AppResult<ApiResponse<RegisterConfig>> {
         supported_usertypes: vec![1, 2, 3],
         sms_code_length: 6,
         sms_code_ttl_secs: 300,
+        registration_open: open,
     }))
 }

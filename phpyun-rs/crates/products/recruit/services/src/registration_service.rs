@@ -47,6 +47,7 @@ pub struct RegisterResult {
 }
 
 pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<RegisterResult> {
+    crate::site_gate_service::ensure_registration_open(state).await?;
     // 1. Image captcha (case-insensitive: stored uppercase, input is upper-cased before compare)
     let captcha_input_upper = input.captcha_input.to_uppercase();
     if !verify::verify(

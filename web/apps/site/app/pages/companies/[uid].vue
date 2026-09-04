@@ -226,6 +226,10 @@ async function toggleFollow() {
 useSeoMeta({
   title: () => String(company.value.name || t('common.company')),
   description: () => stripHtml(company.value.content || company.value.hy_n || company.value.name),
+  keywords: () =>
+    [company.value.name, company.value.hy_n, company.value.city_one, company.value.city_two]
+      .filter(Boolean)
+      .join(','),
 })
 useHead({
   link: [{ rel: 'canonical', href: `/companies/${uid}` }],
@@ -249,7 +253,7 @@ useHead({
 </script>
 
 <template>
-  <article v-if="company.name">
+  <article v-if="company.name" :class="{ comtpl_dark: String(settings.sy_wap_comtpl || '') === '1' }">
     <div class="site-pc">
       <div class="com_details_top">
         <div class="w1200">
@@ -268,6 +272,7 @@ useHead({
                 <i v-if="Number(company.yyzz_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_zz" />
                 <i v-if="Number(company.moblie_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_sj" />
                 <i v-if="Number(company.email_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_yx" />
+                <NuxtLink :to="`/poster/company/${uid}`">{{ $t('ui.poster') }}</NuxtLink>
               </h1>
               <div class="com_details_info">
                 <template v-if="company.city_one">{{ company.city_one }}</template>

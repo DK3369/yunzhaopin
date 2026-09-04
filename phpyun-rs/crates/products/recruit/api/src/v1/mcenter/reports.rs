@@ -28,6 +28,10 @@ pub struct ReportForm {
     pub reason_code: String,
     #[validate(length(max = 2000))]
     pub detail: Option<String>,
+    #[validate(length(min = 1, max = 64))]
+    pub captcha_cid: String,
+    #[validate(length(min = 1, max = 16))]
+    pub captcha_input: String,
 }
 
 /// Submit a report
@@ -45,6 +49,15 @@ pub async fn submit(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ReportForm>,
 ) -> AppResult<ApiResponse<CreatedId>> {
+    phpyun_core::verify::verify(
+        &state.redis,
+        phpyun_core::verify::VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &f.captcha_input.to_uppercase(),
+    )
+    .await?
+    .then_some(())
+    .ok_or_else(phpyun_core::ApiError::captcha)?;
     let id = report_service::submit(
         &state,
         &user,

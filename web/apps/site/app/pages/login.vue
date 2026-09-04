@@ -59,6 +59,11 @@ onMounted(async () => {
 })
 
 async function afterLogin(me: { uid: number; usertype: number }) {
+  const next = String(useRoute().query.next || '')
+  if (next.startsWith('/') && !next.startsWith('//')) {
+    await navigateTo(next)
+    return
+  }
   await navigateTo(me.usertype === 2 ? '/com' : '/user')
 }
 async function submitPass() {

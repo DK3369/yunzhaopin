@@ -22,12 +22,14 @@ const pr = computed(() => numQuery(route.query.pr))
 const mun = computed(() => numQuery(route.query.mun))
 const uptime = computed(() => numQuery(route.query.uptime))
 const sex = computed(() => numQuery(route.query.sex))
+const jobType = computed(() => numQuery(route.query.job_type) || numQuery(route.query.type))
 const urgent = computed(() => route.query.urgent === '1')
 const rec = computed(() => route.query.rec === '1')
 const cert = computed(() => route.query.cert === '1')
 const order = computed(() => String(route.query.order || ''))
 const salaryBound = computed(() => (salaryId.value ? SALARY_BOUNDS[salaryId.value] : undefined))
 const { settings, hotSearches } = useSiteChrome()
+const { applyToQuery } = useSubSite()
 const sexSwitch = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
 const hiddenFilters = computed(() => {
   const skip = new Set(['keyword', 'page'])
@@ -40,34 +42,38 @@ const api = useApi()
 
 const { data, error } = await useAsyncData(
   () =>
-    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
+    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${jobType.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
   () =>
-    api.get<{ list: JobLike[]; total: number }>('/v1/wap/jobs', {
-      page: page.value,
-      page_size: 20,
-      keyword: keyword.value || undefined,
-      job1: job1.value,
-      job1_son: job1Son.value,
-      job_post: jobPost.value,
-      province_id: provinceId.value,
-      city_id: cityId.value,
-      three_city_id: threeCityId.value,
-      edu: edu.value,
-      exp: exp.value,
-      hy: hy.value,
-      welfare: welfare.value,
-      report: report.value,
-      pr: pr.value,
-      mun: mun.value,
-      uptime: uptime.value,
-      sex: sex.value,
-      min_salary: salaryBound.value?.min_salary,
-      max_salary: salaryBound.value?.max_salary,
-      urgent: urgent.value ? true : undefined,
-      rec: rec.value ? true : undefined,
-      cert: cert.value ? true : undefined,
-      order: order.value || undefined,
-    }),
+    api.get<{ list: JobLike[]; total: number }>(
+      '/v1/wap/jobs',
+      applyToQuery({
+        page: page.value,
+        page_size: 20,
+        keyword: keyword.value || undefined,
+        job1: job1.value,
+        job1_son: job1Son.value,
+        job_post: jobPost.value,
+        province_id: provinceId.value,
+        city_id: cityId.value,
+        three_city_id: threeCityId.value,
+        edu: edu.value,
+        exp: exp.value,
+        hy: hy.value,
+        welfare: welfare.value,
+        report: report.value,
+        pr: pr.value,
+        mun: mun.value,
+        uptime: uptime.value,
+        sex: sex.value,
+        job_type: jobType.value,
+        min_salary: salaryBound.value?.min_salary,
+        max_salary: salaryBound.value?.max_salary,
+        urgent: urgent.value ? true : undefined,
+        rec: rec.value ? true : undefined,
+        cert: cert.value ? true : undefined,
+        order: order.value || undefined,
+      }),
+    ),
 )
 const listRaw = computed(() => data.value?.list || [])
 
@@ -115,6 +121,10 @@ const { data: welfares } = await useAsyncData(
 const { data: reports } = await useAsyncData(
   () => `dict-report-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/reports').catch(() => [] as DictItem[]),
+)
+const { data: jobTypes } = await useAsyncData(
+  () => `dict-job-type-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/job-types').catch(() => [] as DictItem[]),
 )
 const { data: natures } = await useAsyncData(
   () => `dict-pr-${locale.value}`,
@@ -276,6 +286,8 @@ const selected = computed(() => {
   if (upN) rows.push({ param: 'uptime', name: `${t('wap_00326')}：${upN}` })
   const sexN = dictName(sexItems.value, sex.value)
   if (sexN) rows.push({ param: 'sex', name: `${t('wap_com_00303')}：${sexN}` })
+  const typeN = dictName(jobTypes.value, jobType.value)
+  if (typeN) rows.push({ param: 'type', name: typeN })
   if (cert.value) rows.push({ param: 'cert', name: t('common_02393') })
   return rows
 })
@@ -283,6 +295,7 @@ const selected = computed(() => {
 useSeoMeta({ title: keyword.value ? `${keyword.value} - ${t('common.job')}` : t('default_00246') })
 
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+useListLoginGate(error)
 
 function goPage(p: number) {
   return navigateTo({ query: { ...route.query, page: p } })
@@ -374,6 +387,15 @@ function goPage(p: number) {
             param="salary"
             :items="salaries || []"
             :current="salaryId"
+            path="/jobs"
+            :all-label="$t('common.all')"
+          />
+          <FilterRow
+            extra-class="search_more"
+            :label="$t('wap_user_00012')"
+            param="type"
+            :items="jobTypes || []"
+            :current="jobType"
             path="/jobs"
             :all-label="$t('common.all')"
           />

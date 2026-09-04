@@ -114,9 +114,22 @@ pub struct SubSitesQuery {
     pub fz_type: Option<i32>,
 }
 
-/// List configured sub-sites. PHP equivalent: `wap/site::cache_action`
-/// (the raw `phpyun_domain` rows behind the legacy `cron.cache.php`
-/// pre-baked dump).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SubSiteGroup {
+    pub letter: String,
+    pub list: Vec<SubSiteView>,
+}
+
+fn site_letter(title: &str) -> String {
+    let ch = title.chars().next().unwrap_or('#');
+    if ch.is_ascii_alphabetic() {
+        ch.to_ascii_uppercase().to_string()
+    } else {
+        "#".into()
+    }
+}
+
+/// List configured sub-sites grouped A-Z (PHP `wap/site::cache_action`).
 #[utoipa::path(
     post,
     path = "/v1/wap/site/sub-sites",
@@ -127,14 +140,24 @@ pub struct SubSitesQuery {
 pub async fn list_sub_sites(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<SubSitesQuery>,
-) -> AppResult<ApiResponse<Vec<SubSiteView>>> {
+) -> AppResult<ApiResponse<Vec<SubSiteGroup>>> {
     use phpyun_models::domain::repo as domain_repo;
     let rows = match q.fz_type {
         Some(t) => domain_repo::list_by_fz_type(state.db.reader(), t).await?,
         None => domain_repo::list_all(state.db.reader()).await?,
     };
+    let mut map: std::collections::BTreeMap<String, Vec<SubSiteView>> =
+        std::collections::BTreeMap::new();
+    for r in rows {
+        let view = SubSiteView::from(r);
+        map.entry(site_letter(&view.title))
+            .or_default()
+            .push(view);
+    }
     Ok(ApiResponse::data(
-        rows.into_iter().map(SubSiteView::from).collect(),
+        map.into_iter()
+            .map(|(letter, list)| SubSiteGroup { letter, list })
+            .collect(),
     ))
 }
 
@@ -150,6 +173,9 @@ pub struct MatchSubSiteQuery {
     #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: Option<i32>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub hy: Option<i32>,
 }
 
 /// Find the matching sub-site for a city triplet. PHP `wap/site::domain_action`
@@ -170,10 +196,15 @@ pub async fn match_sub_site(
     let p = q.province_id.unwrap_or(0);
     let c = q.city_id.unwrap_or(0);
     let t = q.three_city_id.unwrap_or(0);
-    if p == 0 && c == 0 && t == 0 {
+    let hy = q.hy.unwrap_or(0);
+    if p == 0 && c == 0 && t == 0 && hy == 0 {
         return Ok(ApiResponse::data(None));
     }
-    let row = phpyun_models::domain::repo::find_for_city(state.db.reader(), p, c, t).await?;
+    let row = if hy > 0 {
+        phpyun_models::domain::repo::find_for_hy(state.db.reader(), hy).await?
+    } else {
+        phpyun_models::domain::repo::find_for_city(state.db.reader(), p, c, t).await?
+    };
     Ok(ApiResponse::data(row.map(SubSiteView::from)))
 }
 

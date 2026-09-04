@@ -3,6 +3,7 @@
 
 use axum::{
     extract::State,
+    http::HeaderMap,
     routing::{get, post},
     Router,
 };
@@ -141,9 +142,16 @@ pub fn part_summary_from_dict(
 pub async fn list_parts(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<PartListQuery>,
 ) -> AppResult<ApiResponse<Paged<PartSummary>>> {
+    phpyun_services::site_gate_service::ensure_list_login(
+        &state,
+        user.as_ref(),
+        &crate::v1::wap::request_user_agent(&headers),
+    )
+    .await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());
         if let Some(u) = user.as_ref() {

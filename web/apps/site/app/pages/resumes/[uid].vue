@@ -6,12 +6,13 @@ const { t, te, locale } = useI18n()
 const uid = Number(route.params.uid)
 const api = useApi()
 const { me } = useSiteChrome()
-const visitorBlocked = ref(false)
+const clientVisitorBlocked = ref(false)
 const { data, error, refresh } = await useAsyncData(
   () => `resume-${locale.value}-${uid}`,
   () => api.get('/v1/wap/resumes/detail', { uid }),
 )
 const row = computed(() => (data.value || {}) as Record<string, unknown>)
+const visitorBlocked = computed(() => Boolean(row.value.visitor_blocked) || clientVisitorBlocked.value)
 const name = computed(() => String(row.value.display_name || row.value.name || row.value.uname || ''))
 const works = computed(() => (Array.isArray(row.value.works) ? row.value.works : []) as Record<string, unknown>[])
 const edus = computed(() => (Array.isArray(row.value.edus) ? row.value.edus : []) as Record<string, unknown>[])
@@ -116,16 +117,20 @@ function payConfirmText(res: DownloadResult) {
     ? t((res.msg_key || 'common_00696') as never)
     : t('common_00696')
 }
-useSeoMeta({ title: () => name.value || t('common.resume') })
+useSeoMeta({
+  title: () => name.value || t('common.resume'),
+  description: () => String(expectTitle.value || name.value || t('common.resume')),
+  keywords: () => [name.value, expectTitle.value, expectCity.value].filter(Boolean).join(','),
+})
 onMounted(async () => {
   if (Boolean(row.value.visitor_blocked)) {
-    visitorBlocked.value = true
+    clientVisitorBlocked.value = true
     return
   }
   const max = Number(row.value.visitor_max || 0)
   if (!me.value && max > 0 && import.meta.client) {
     if (readVisitorCookie() >= max) {
-      visitorBlocked.value = true
+      clientVisitorBlocked.value = true
       return
     }
     bumpVisitorCookie()

@@ -76,6 +76,14 @@ pub struct AnnouncementDetail {
     pub did: u64,
     pub status: i32,
     pub created_at: i64,
+    pub prev: Option<NeighborView>,
+    pub next: Option<NeighborView>,
+}
+
+#[derive(Debug, Serialize, ToSchema, Clone)]
+pub struct NeighborView {
+    pub id: u64,
+    pub title: String,
 }
 
 impl From<phpyun_models::announcement::entity::Announcement> for AnnouncementDetail {
@@ -96,6 +104,8 @@ impl From<phpyun_models::announcement::entity::Announcement> for AnnouncementDet
             did: a.did,
             status: a.status,
             created_at: a.created_at,
+            prev: None,
+            next: None,
         }
     }
 }
@@ -132,5 +142,15 @@ pub async fn detail(
     let row = announcement_service::get_detail(&state, id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("announcement_not_found"))?;
-    Ok(ApiResponse::data(AnnouncementDetail::from(row)))
+    let (prev, next) = announcement_service::neighbors(&state, &row).await?;
+    let mut d = AnnouncementDetail::from(row);
+    d.prev = prev.map(|n| NeighborView {
+        id: n.id,
+        title: n.title,
+    });
+    d.next = next.map(|n| NeighborView {
+        id: n.id,
+        title: n.title,
+    });
+    Ok(ApiResponse::data(d))
 }

@@ -150,6 +150,28 @@ export function isNavModuleOn(
   return String(settings[`sy_${key}_web`] || '') !== '2'
 }
 
+export function modulePathFor(path: string): string {
+  const keys = Object.keys(PATH_TO_MODULE).sort((a, b) => b.length - a.length)
+  return keys.find((k) => path === k || path.startsWith(`${k}/`)) || ''
+}
+
+export function isPathModuleOn(settings: Record<string, string>, path: string): boolean {
+  const to = modulePathFor(path)
+  if (!to) return true
+  return isNavModuleOn(settings, to)
+}
+
+export function errKey(err: unknown): string {
+  if (!err || typeof err !== 'object') return ''
+  const e = err as { key?: string; data?: { key?: string } }
+  return String(e.key || e.data?.key || '')
+}
+
+export function isUnauthErr(err: unknown): boolean {
+  const k = errKey(err)
+  return k === 'unauth' || k === 'unauthenticated'
+}
+
 export const DEFAULT_NAV: NavItem[] = [
   { label: '', to: '/' },
   { label: '', to: '/jobs' },

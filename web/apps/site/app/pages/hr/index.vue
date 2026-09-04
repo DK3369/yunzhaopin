@@ -3,14 +3,16 @@ import { listFailMsg } from '~/utils/site'
 
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
+const cid = computed(() => Number(route.query.cid || 0) || undefined)
 const { t } = useI18n()
 const api = useApi()
 const { data, error } = await useAsyncData(
-  () => `hr-${page.value}`,
+  () => `hr-${page.value}-${cid.value || 0}`,
   () =>
     api.get<{ list: Array<{ id: number; name: string; created_at_n?: string }>; total: number }>('/v1/wap/hr-docs', {
       page: page.value,
       page_size: 20,
+      cid: cid.value,
     }),
 )
 useSeoMeta({ title: t('default_00138') })

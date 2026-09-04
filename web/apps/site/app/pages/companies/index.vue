@@ -16,24 +16,29 @@ const pr = computed(() => numQuery(route.query.pr))
 const mun = computed(() => numQuery(route.query.mun))
 const welfare = computed(() => numQuery(route.query.welfare))
 const api = useApi()
+const { applyToQuery } = useSubSite()
 const { data, error } = await useAsyncData(
   () =>
     `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${cert.value}-${hy.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${pr.value}-${mun.value}-${welfare.value}`,
   () =>
-    api.get<{ list: CompanyLike[]; total: number }>('/v1/wap/companies', {
-      page: page.value,
-      page_size: 20,
-      keyword: keyword.value || undefined,
-      rec: rec.value || undefined,
-      cert: cert.value || undefined,
-      hy: hy.value,
-      province_id: provinceId.value,
-      city_id: cityId.value,
-      three_city_id: threeCityId.value,
-      pr: pr.value,
-      mun: mun.value,
-      welfare: welfare.value,
-    }),
+    api.get<{ list: CompanyLike[]; total: number }>(
+      '/v1/wap/companies',
+      applyToQuery({
+        page: page.value,
+        page_size: 20,
+        keyword: keyword.value || undefined,
+        rec: rec.value || undefined,
+        cert: cert.value || undefined,
+        hy: hy.value,
+        province_id: provinceId.value,
+        city_id: cityId.value,
+        three_city_id: threeCityId.value,
+        pr: pr.value,
+        mun: mun.value,
+        welfare: welfare.value,
+        uptime: numQuery(route.query.uptime),
+      }),
+    ),
 )
 const { data: industries } = await useAsyncData(
   () => `dict-hy-${locale.value}`,
@@ -75,6 +80,7 @@ const { data: welfares } = await useAsyncData(
 )
 useSeoMeta({ title: t('home.famous_companies') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+useListLoginGate(error)
 const list = computed(() => data.value?.list || [])
 </script>
 

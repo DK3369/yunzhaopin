@@ -31,3 +31,30 @@ pub async fn list(state: &AppState, category: Option<&str>) -> AppResult<Arc<Vec
         })
         .await
 }
+
+pub async fn apply(
+    state: &AppState,
+    name: &str,
+    url: &str,
+    client_ip: &str,
+) -> AppResult<u64> {
+    let name = name.trim();
+    let url = url.trim();
+    if name.is_empty() || url.is_empty() {
+        return Err(phpyun_core::ApiError::param_invalid("link_required"));
+    }
+    let _ = client_ip;
+    Ok(friend_link_repo::upsert(
+        state.db.pool(),
+        friend_link_repo::FriendLinkUpsert {
+            id: None,
+            link_name: name,
+            link_url: url,
+            pic: "",
+            link_type: "1",
+            link_sorting: 0,
+            link_state: 0,
+        },
+    )
+    .await?)
+}

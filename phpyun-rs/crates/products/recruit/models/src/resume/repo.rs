@@ -98,6 +98,8 @@ pub struct ResumeFilter<'a> {
     pub report: Option<i32>,
     pub r#type: Option<i32>,
     pub tag: Option<i32>,
+    /// PHP FIND_IN_SET(标签名称, resume.tag)
+    pub tag_name: Option<&'a str>,
     pub min_salary: Option<i32>,
     pub max_salary: Option<i32>,
     pub min_age: Option<i32>,
@@ -116,6 +118,9 @@ pub struct ResumeFilter<'a> {
     pub recg: bool,
     /// PHP `userlist topdate=1`: default expect `top=1 AND topdate>now`.
     pub top: bool,
+    pub education_ids: Option<&'a [i32]>,
+    pub exp_ids: Option<&'a [i32]>,
+    pub exclude_uids: Option<&'a [u64]>,
 }
 
 pub async fn list_public(
@@ -159,6 +164,13 @@ pub async fn count_public(pool: &MySqlPool, f: &ResumeFilter<'_>) -> Result<u64,
 fn push_order<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {
     if f.order == Some("ctime") {
         qb.push("ORDER BY resumetime DESC");
+    } else if f.order == Some("topdate") {
+        qb.push(
+            "ORDER BY IF(COALESCE((SELECT e.topdate FROM phpyun_resume_expect e \
+             WHERE e.uid = phpyun_resume.uid AND e.defaults = 1 LIMIT 1), 0) > UNIX_TIMESTAMP(), \
+             (SELECT e.topdate FROM phpyun_resume_expect e WHERE e.uid = phpyun_resume.uid AND e.defaults = 1 LIMIT 1), \
+             lastupdate) DESC",
+        );
     } else {
         qb.push("ORDER BY lastupdate DESC");
     }
@@ -200,17 +212,60 @@ fn has_expect_filters(f: &ResumeFilter<'_>) -> bool {
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {
+    qb.push(
+        " AND EXISTS (SELECT 1 FROM phpyun_resume_expect e \
+         WHERE e.uid = phpyun_resume.uid AND e.defaults = 1 \
+           AND e.state = 1 AND e.status = 1 AND e.r_status = 1)",
+    );
+    if let Some(ids) = f.exclude_uids.filter(|s| !s.is_empty()) {
+        qb.push(" AND uid NOT IN (");
+        let mut sep = qb.separated(",");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    }
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
-            qb.push(" AND name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            let pat = format!("%{kw}%");
+            qb.push(" AND (name LIKE ");
+            qb.push_bind(pat.clone());
+            qb.push(
+                " OR EXISTS (SELECT 1 FROM phpyun_resume_expect e \
+                 WHERE e.uid = phpyun_resume.uid AND e.uname LIKE ",
+            );
+            qb.push_bind(pat.clone());
+            qb.push(
+                ") OR uid IN (SELECT uid FROM phpyun_resume_work \
+                 WHERE name LIKE ",
+            );
+            qb.push_bind(pat.clone());
+            qb.push(" OR title LIKE ");
+            qb.push_bind(pat.clone());
+            qb.push(" OR content LIKE ");
+            qb.push_bind(pat);
+            qb.push("))");
         }
     }
-    if let Some(v) = f.education {
+    if let Some(ids) = f.education_ids.filter(|s| !s.is_empty()) {
+        qb.push(" AND edu IN (");
+        let mut sep = qb.separated(",");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    } else if let Some(v) = f.education {
         qb.push(" AND edu = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.exp {
+    if let Some(ids) = f.exp_ids.filter(|s| !s.is_empty()) {
+        qb.push(" AND exp IN (");
+        let mut sep = qb.separated(",");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    } else if let Some(v) = f.exp {
         qb.push(" AND exp = ");
         qb.push_bind(v);
     }
@@ -222,13 +277,17 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
         qb.push(" AND marriage = ");
         qb.push_bind(v);
     }
-    if let Some(v) = f.tag {
+    if let Some(name) = f.tag_name.filter(|s| !s.is_empty()) {
+        qb.push(" AND FIND_IN_SET(");
+        qb.push_bind(name);
+        qb.push(", tag)");
+    } else if let Some(v) = f.tag {
         qb.push(" AND FIND_IN_SET(");
         qb.push_bind(v.to_string());
         qb.push(", tag)");
     }
     if f.photo {
-        qb.push(" AND photo IS NOT NULL AND photo <> ''");
+        qb.push(" AND photo IS NOT NULL AND photo <> '' AND phototype != 1 AND COALESCE(defphoto, 1) = 1");
     }
     if f.idcard {
         qb.push(" AND COALESCE(idcard_status, 0) = 1");

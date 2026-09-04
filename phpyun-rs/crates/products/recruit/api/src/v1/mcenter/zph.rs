@@ -45,7 +45,7 @@ pub async fn reserve(
     ValidatedJson(f): ValidatedJson<ReserveForm>,
 ) -> AppResult<ApiResponse<CreatedId>> {
     let id = f.id;
-    user.require_jobseeker()?;
+    user.require_employer()?;
     let rid = zph_service::reserve(
         &state,
         &user,

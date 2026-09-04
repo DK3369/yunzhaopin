@@ -3,14 +3,16 @@ import { listFailMsg } from '~/utils/site'
 
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
+const nid = computed(() => Number(route.query.nid || 0) || undefined)
 const { t } = useI18n()
 const api = useApi()
 const { data, error } = await useAsyncData(
-  () => `redeem-${page.value}`,
+  () => `redeem-${page.value}-${nid.value || 0}`,
   () =>
     api.get<{ list: Array<{ id: number; name: string; integral?: number }>; total: number }>('/v1/wap/redeem/rewards', {
       page: page.value,
       page_size: 20,
+      nid: nid.value,
     }),
 )
 useSeoMeta({ title: t('common_06524') })

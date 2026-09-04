@@ -25,6 +25,10 @@ pub struct AdviceForm {
     #[validate(length(max = 20))]
     #[serde(default)]
     pub username: String,
+    #[validate(length(min = 1, max = 64))]
+    pub captcha_cid: String,
+    #[validate(length(min = 1, max = 16))]
+    pub captcha_input: String,
 }
 
 /// Submit advice/feedback
@@ -41,6 +45,15 @@ pub async fn submit(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AdviceForm>,
 ) -> AppResult<ApiResponse<CreatedId>> {
+    phpyun_core::verify::verify(
+        &state.redis,
+        phpyun_core::verify::VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &f.captcha_input.to_uppercase(),
+    )
+    .await?
+    .then_some(())
+    .ok_or_else(phpyun_core::ApiError::captcha)?;
     let id = feedback_service::submit(
         &state,
         user.as_ref(),

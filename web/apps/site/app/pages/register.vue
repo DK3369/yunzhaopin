@@ -1,7 +1,16 @@
 <script setup lang="ts">
-const { siteName, logoPc } = useSiteChrome()
+const { siteName, logoPc, settings } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
+const { data: cfg } = await useAsyncData('register-config', () =>
+  api.post<{ registration_open?: boolean }>('/v1/wap/register/config', {}).catch(() => ({
+    registration_open: true,
+  })),
+)
+const registrationOpen = computed(() => {
+  if (String(settings.value.reg_user_stop || '1') !== '1') return false
+  return cfg.value?.registration_open !== false
+})
 const form = reactive({
   username: '',
   password: '',
@@ -47,7 +56,8 @@ useSeoMeta({ title: t('common.register') })
       </div>
       <div class="logoin_cont_box">
         <div class="login_left">
-          <form class="login_t_box" @submit.prevent="submit">
+          <p v-if="!registrationOpen" class="muted">{{ $t('ui.registration_closed') }}</p>
+          <form v-else class="login_t_box" @submit.prevent="submit">
             <div class="login_box_list">
               <input v-model="form.username" class="login_box_bth" :placeholder="$t('admin_user_00140')" />
             </div>
@@ -88,7 +98,8 @@ useSeoMeta({ title: t('common.register') })
         <div>{{ $t('common.register') }}</div>
         <div>{{ siteName }}</div>
       </div>
-      <form @submit.prevent="submit">
+      <p v-if="!registrationOpen" class="muted">{{ $t('ui.registration_closed') }}</p>
+      <form v-else @submit.prevent="submit">
         <div class="The_login_subject">
           <div class="login_textbox">
             <input v-model="form.username" :placeholder="$t('admin_user_00140')" />

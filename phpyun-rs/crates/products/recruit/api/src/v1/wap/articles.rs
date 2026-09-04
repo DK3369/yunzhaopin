@@ -175,6 +175,15 @@ pub struct ArticleDetail {
     pub endtime_n: String,
     /// Body HTML (phpyun_news_content.content)
     pub content: Option<String>,
+    pub prev: Option<NeighborView>,
+    pub next: Option<NeighborView>,
+    pub related: Vec<NeighborView>,
+}
+
+#[derive(Debug, Serialize, ToSchema, Clone)]
+pub struct NeighborView {
+    pub id: u64,
+    pub title: String,
 }
 
 impl ArticleDetail {
@@ -212,6 +221,9 @@ impl ArticleDetail {
             endtime: s.endtime,
             endtime_n: s.endtime_n,
             content,
+            prev: None,
+            next: None,
+            related: Vec::new(),
         }
     }
 }
@@ -266,7 +278,24 @@ pub async fn article_detail(
 ) -> AppResult<ApiResponse<ArticleDetail>> {
     let id = b.id;
     let a = article_service::get_public(&state, id).await?;
-    Ok(ApiResponse::data(ArticleDetail::from_with_ctx(a, &state)))
+    let (prev, next, related) = article_service::neighbors_and_related(&state, &a).await?;
+    let mut d = ArticleDetail::from_with_ctx(a, &state);
+    d.prev = prev.map(|n| NeighborView {
+        id: n.id,
+        title: n.title,
+    });
+    d.next = next.map(|n| NeighborView {
+        id: n.id,
+        title: n.title,
+    });
+    d.related = related
+        .into_iter()
+        .map(|n| NeighborView {
+            id: n.id,
+            title: n.title,
+        })
+        .collect();
+    Ok(ApiResponse::data(d))
 }
 
 /// Bump and return the new hit count. Counterpart of PHP

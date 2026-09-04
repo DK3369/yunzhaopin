@@ -87,9 +87,10 @@ const moreOpen = ref(
   ),
 )
 const api = useApi()
+const { applyToQuery } = useSubSite()
 
 function resumeListParams(extra: Record<string, unknown> = {}) {
-  return {
+  return applyToQuery({
     page: page.value,
     page_size: 20,
     keyword: keyword.value || undefined,
@@ -118,7 +119,7 @@ function resumeListParams(extra: Record<string, unknown> = {}) {
     work: work.value ? true : undefined,
     recg: recg.value ? true : undefined,
     ...extra,
-  }
+  })
 }
 
 const listKey = computed(
@@ -253,6 +254,7 @@ const ageItems = computed<DictItem[]>(() => agePresets.value.map((p, i) => ({ id
 
 useSeoMeta({ title: t('default_00312') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
+useListLoginGate(error)
 const topList = computed(() => (page.value > 1 ? [] : topResumes.value?.list || []).slice(0, 5))
 const list = computed(() => {
   const raw = data.value?.list || []

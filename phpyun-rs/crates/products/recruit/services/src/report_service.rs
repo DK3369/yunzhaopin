@@ -28,6 +28,7 @@ pub async fn submit(
     input: ReportInput<'_>,
     client_ip: &str,
 ) -> AppResult<u64> {
+    user.require_jobseeker()?;
     if !matches!(
         input.target_kind,
         KIND_JOB | KIND_COMPANY | KIND_RESUME | KIND_ARTICLE | KIND_USER

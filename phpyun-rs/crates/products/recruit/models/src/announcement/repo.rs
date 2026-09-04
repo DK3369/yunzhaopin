@@ -162,3 +162,43 @@ pub async fn set_did_ids(pool: &MySqlPool, ids: &[u64], did: i32) -> Result<u64,
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct Neighbor {
+    pub id: u64,
+    pub title: String,
+}
+
+pub async fn neighbors(
+    pool: &MySqlPool,
+    id: u64,
+    datetime: i64,
+) -> Result<(Option<Neighbor>, Option<Neighbor>), sqlx::Error> {
+    let prev_sql = format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_admin_announcement \
+         WHERE {PREDICATE} AND {PUBLISHED_WHERE} \
+           AND (datetime < ? OR (datetime = ? AND id < ?)) \
+         ORDER BY datetime DESC, id DESC LIMIT 1"
+    );
+    let next_sql = format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_admin_announcement \
+         WHERE {PREDICATE} AND {PUBLISHED_WHERE} \
+           AND (datetime > ? OR (datetime = ? AND id > ?)) \
+         ORDER BY datetime ASC, id ASC LIMIT 1"
+    );
+    let prev = sqlx::query_as::<_, Neighbor>(&prev_sql)
+        .bind(datetime)
+        .bind(datetime)
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
+    let next = sqlx::query_as::<_, Neighbor>(&next_sql)
+        .bind(datetime)
+        .bind(datetime)
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
+    Ok((prev, next))
+}

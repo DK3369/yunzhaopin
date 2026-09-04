@@ -3,10 +3,10 @@
 //! Longitude/latitude as `x` and `y`; radius capped at 50km to prevent full-table scans.
 
 use phpyun_core::{clock, ApiError, AppResult, AppState};
-use phpyun_models::geo::repo::{self as geo_repo, CompanyNear, JobNear};
+use phpyun_models::geo::repo::{self as geo_repo, CompanyNear, JobNear, NearQuery};
 
 const MAX_RADIUS_KM: f64 = 50.0;
-const DEFAULT_LIMIT: u64 = 50;
+const DEFAULT_LIMIT: u64 = 10;
 
 fn validate(x: f64, y: f64, radius_km: f64) -> AppResult<()> {
     if !x.is_finite()
@@ -22,17 +22,64 @@ fn validate(x: f64, y: f64, radius_km: f64) -> AppResult<()> {
     Ok(())
 }
 
+async fn near_query(
+    state: &AppState,
+    x: f64,
+    y: f64,
+    radius_km: f64,
+    page: u32,
+    page_size: u64,
+    did: u32,
+) -> AppResult<NearQuery> {
+    validate(x, y, radius_km)?;
+    let limit = page_size.clamp(1, 50);
+    let page = page.max(1);
+    let offset = u64::from(page.saturating_sub(1)).saturating_mul(limit);
+    let now = clock::now_ts();
+    let days = crate::site_gate_service::default_uptime_days(state, None, "sy_datacycle_job").await;
+    let min_lastupdate = days
+        .filter(|d| *d > 0)
+        .map(|d| now.saturating_sub(i64::from(d) * 86_400))
+        .unwrap_or(0);
+    Ok(NearQuery {
+        x,
+        y,
+        radius_km,
+        now,
+        limit,
+        offset,
+        did,
+        min_lastupdate,
+    })
+}
+
+pub struct NearPage<T> {
+    pub list: Vec<T>,
+    pub total: u64,
+    pub page: u32,
+    pub page_size: u32,
+}
+
 pub async fn jobs_near(
     state: &AppState,
     x: f64,
     y: f64,
     radius_km: f64,
-    limit: u64,
-) -> AppResult<Vec<JobNear>> {
-    validate(x, y, radius_km)?;
-    let limit = limit.clamp(1, 200);
-    let now = clock::now_ts();
-    Ok(geo_repo::list_jobs_near(state.db.reader(), x, y, radius_km, now, limit).await?)
+    page: u32,
+    page_size: u64,
+    did: u32,
+) -> AppResult<NearPage<JobNear>> {
+    let q = near_query(state, x, y, radius_km, page, page_size, did).await?;
+    let (list, total) = tokio::join!(
+        geo_repo::list_jobs_near(state.db.reader(), q),
+        geo_repo::count_jobs_near(state.db.reader(), q),
+    );
+    Ok(NearPage {
+        list: list?,
+        total: total?,
+        page: page.max(1),
+        page_size: q.limit as u32,
+    })
 }
 
 pub async fn companies_near(
@@ -40,11 +87,21 @@ pub async fn companies_near(
     x: f64,
     y: f64,
     radius_km: f64,
-    limit: u64,
-) -> AppResult<Vec<CompanyNear>> {
-    validate(x, y, radius_km)?;
-    let limit = limit.clamp(1, 200);
-    Ok(geo_repo::list_companies_near(state.db.reader(), x, y, radius_km, limit).await?)
+    page: u32,
+    page_size: u64,
+    did: u32,
+) -> AppResult<NearPage<CompanyNear>> {
+    let q = near_query(state, x, y, radius_km, page, page_size, did).await?;
+    let (list, total) = tokio::join!(
+        geo_repo::list_companies_near(state.db.reader(), q),
+        geo_repo::count_companies_near(state.db.reader(), q),
+    );
+    Ok(NearPage {
+        list: list?,
+        total: total?,
+        page: page.max(1),
+        page_size: q.limit as u32,
+    })
 }
 
 pub fn default_limit() -> u64 {

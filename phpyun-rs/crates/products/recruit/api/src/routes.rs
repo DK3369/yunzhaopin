@@ -52,8 +52,8 @@ where
     }
 }
 
-pub fn build_router(cfg: &phpyun_core::Config) -> Router<AppState> {
-    assemble(cfg, Router::new(), None, [])
+pub fn build_router(cfg: &phpyun_core::Config, state: AppState) -> Router<AppState> {
+    assemble(cfg, Router::new(), None, [], state)
 }
 
 /// Production assembly. `extra` is merged at the router root (typically the
@@ -64,9 +64,10 @@ pub fn assemble(
     extra: Router<AppState>,
     extra_docs: Option<(&'static str, OpenApi)>,
     extra_get: impl IntoIterator<Item = &'static str>,
+    state: AppState,
 ) -> Router<AppState> {
     let api = Router::new()
-        .nest("/v1", v1::router())
+        .nest("/v1", v1::router(state))
         .nest("/v2", v2::router())
         .nest("/callback", crate::callback::router())
         .merge(extra);
@@ -77,8 +78,8 @@ pub fn assemble(
 
 /// State-aware variant kept for tests and in-process smoke probes that do not
 /// mount the sibling admin crate.
-pub fn build_router_with_state(cfg: &phpyun_core::Config, _state: AppState) -> Router<AppState> {
-    assemble(cfg, Router::new(), None, [])
+pub fn build_router_with_state(cfg: &phpyun_core::Config, state: AppState) -> Router<AppState> {
+    assemble(cfg, Router::new(), None, [], state)
 }
 
 #[cfg(test)]

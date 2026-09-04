@@ -68,9 +68,9 @@ pub async fn list_public(
     // Resolve the welfare id to its dict NAME (PHP: `$comclass_name[$id]`),
     // so the repo can do `welfare LIKE '%<name>%'`. Empty / unresolved ids
     // become None (== filter not applied).
+    let dicts = crate::dict_service::get(state).await?;
     let welfare_name: Option<String> = match search.welfare {
         Some(id) if id > 0 => {
-            let dicts = crate::dict_service::get(state).await?;
             let name = dicts.comclass(id);
             if name.is_empty() {
                 None
@@ -80,6 +80,35 @@ pub async fn list_public(
         }
         _ => None,
     };
+    let edu_ids: Vec<i32> = search
+        .edu
+        .filter(|v| *v > 0)
+        .map(|v| dicts.downward_comclass_ids("job_edu", v, false))
+        .unwrap_or_default();
+    let exp_ids: Vec<i32> = search
+        .exp
+        .filter(|v| *v > 0)
+        .map(|v| dicts.downward_comclass_ids("job_exp", v, false))
+        .unwrap_or_default();
+    let kw_trim = search
+        .keyword
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
+    let keyword_city_ids: Vec<i32> = kw_trim
+        .map(|k| dicts.city_ids_containing(k))
+        .unwrap_or_default();
+    let keyword_job_ids: Vec<i32> = kw_trim
+        .map(|k| dicts.job_ids_containing(k))
+        .unwrap_or_default();
+    let uptime = crate::site_gate_service::default_uptime_days(
+        state,
+        search.uptime,
+        "sy_datacycle_job",
+    )
+    .await;
+    let keyword_full_text =
+        crate::site_gate_service::setting_i32(state, "job_full_text_search").await == 1;
 
     let f = JobFilter {
         keyword: search.keyword.as_deref(),
@@ -100,7 +129,7 @@ pub async fn list_public(
         pr: search.pr,
         mun: search.mun,
         welfare: welfare_name.as_deref(),
-        uptime: search.uptime,
+        uptime,
         urgent: search.urgent,
         rec: search.rec,
         cert: search.cert,
@@ -108,6 +137,28 @@ pub async fn list_public(
         order: search.order.as_deref(),
         uid: search.uid,
         did: search.did,
+        keyword_full_text,
+        edu_ids: if edu_ids.is_empty() {
+            None
+        } else {
+            Some(edu_ids.as_slice())
+        },
+        exp_ids: if exp_ids.is_empty() {
+            None
+        } else {
+            Some(exp_ids.as_slice())
+        },
+        keyword_city_ids: if keyword_city_ids.is_empty() {
+            None
+        } else {
+            Some(keyword_city_ids.as_slice())
+        },
+        keyword_job_ids: if keyword_job_ids.is_empty() {
+            None
+        } else {
+            Some(keyword_job_ids.as_slice())
+        },
+        ..Default::default()
     };
 
     // Run count + list concurrently to cut RTT
@@ -115,19 +166,34 @@ pub async fn list_public(
         job_repo::count_public(state.db.reader(), &f, now),
         job_repo::list_public(state.db.reader(), &f, page.offset, page.limit, now),
     );
+    let list = list_res?;
+    let ids: Vec<u64> = list.iter().map(|j| j.id).collect();
+    if !ids.is_empty() {
+        let pool = state.db.pool().clone();
+        phpyun_core::background::spawn_best_effort("job.expoure", async move {
+            let _ = job_repo::incr_jobexpoure(&pool, &ids).await;
+        });
+    }
     Ok(JobPage {
         total: total_res?,
-        list: list_res?,
+        list,
     })
 }
 
 /// Public detail — approved jobs still render when stopped or expired (PHP
-/// comapply stamp). Unreviewed / rejected remain hidden.
-pub async fn get_public(state: &AppState, id: u64) -> AppResult<Job> {
+/// comapply stamp). Unreviewed / rejected remain hidden except to the owner.
+pub async fn get_public(
+    state: &AppState,
+    id: u64,
+    viewer: Option<&AuthenticatedUser>,
+) -> AppResult<Job> {
     let j = job_repo::find_by_id(state.db.reader(), id)
         .await?
         .ok_or(ApiError::business("job_not_found"))?;
     if j.state != 1 || j.r_status != 1 {
+        if viewer.is_some_and(|u| u.uid == j.uid) {
+            return Ok(j);
+        }
         return Err(ApiError::business("job_pending"));
     }
     Ok(j)
@@ -164,8 +230,12 @@ pub struct JobDetailData {
     pub expired: bool,
 }
 
-pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
-    let job = get_public(state, id).await?;
+pub async fn get_detail(
+    state: &AppState,
+    id: u64,
+    viewer: Option<&AuthenticatedUser>,
+) -> AppResult<JobDetailData> {
+    let job = get_public(state, id, viewer).await?;
     let now = clock::now_ts();
     let offline = job.status != 0;
     let expired = job.edate > 0 && job.edate <= now;

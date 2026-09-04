@@ -68,6 +68,8 @@ pub struct CompanyFilter<'a> {
     /// `rec=1 AND hotstart <= now AND hottime > now`.
     pub rec: bool,
     pub did: u32,
+    /// PHP `comlist uptime` days.
+    pub uptime: Option<i32>,
 }
 
 pub async fn list_public(
@@ -82,7 +84,7 @@ pub async fn list_public(
     qb.push(" FROM phpyun_company WHERE r_status = 1 AND did = ");
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
-    qb.push(" ORDER BY rec DESC, hits DESC LIMIT ");
+    qb.push(" ORDER BY jobtime DESC, hits DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -118,12 +120,18 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
         qb.push_bind(v);
     }
     if let Some(v) = f.city_id {
-        qb.push(" AND cityid = ");
+        qb.push(" AND (provinceid = ");
         qb.push_bind(v);
+        qb.push(" OR cityid = ");
+        qb.push_bind(v);
+        qb.push(")");
     }
     if let Some(v) = f.three_city_id {
-        qb.push(" AND three_cityid = ");
+        qb.push(" AND (provinceid = ");
         qb.push_bind(v);
+        qb.push(" OR three_cityid = ");
+        qb.push_bind(v);
+        qb.push(")");
     }
     if let Some(v) = f.hy {
         qb.push(" AND hy = ");
@@ -151,6 +159,15 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
         qb.push_bind(now);
         qb.push(" AND hottime > ");
         qb.push_bind(now);
+    }
+    if let Some(days) = f.uptime.filter(|d| *d > 0) {
+        let threshold = if days == 1 {
+            now - now.rem_euclid(86_400)
+        } else {
+            now - i64::from(days) * 86_400
+        };
+        qb.push(" AND lastupdate > ");
+        qb.push_bind(threshold);
     }
 }
 
@@ -734,6 +751,7 @@ pub async fn list_hot(
     sort_mode: i32,
     limit: u64,
     now: i64,
+    geo: Option<&crate::domain::entity::DomainSite>,
 ) -> Result<Vec<HotCompany>, sqlx::Error> {
     // ORDER BY clause is whitelisted (not user-supplied) — building it from
     // a static match is safe and avoids an extra lookup.
@@ -742,6 +760,22 @@ pub async fn list_hot(
         2 => "RAND()",
         _ => "h.sort DESC, h.id DESC",
     };
+    let hy = geo
+        .filter(|s| s.fz_type == 2)
+        .and_then(|s| s.hy)
+        .unwrap_or(0);
+    let three_city_id = geo
+        .filter(|s| s.fz_type != 2)
+        .and_then(|s| s.three_city_id)
+        .unwrap_or(0);
+    let city_id = geo
+        .filter(|s| s.fz_type != 2)
+        .and_then(|s| s.city_id)
+        .unwrap_or(0);
+    let province_id = geo
+        .filter(|s| s.fz_type != 2)
+        .and_then(|s| s.province)
+        .unwrap_or(0);
     let sql = format!(
         "SELECT \
             CAST(c.uid AS UNSIGNED) AS uid, \
@@ -756,6 +790,10 @@ pub async fn list_hot(
            AND h.time_start < ? \
            AND h.time_end > ? \
            AND COALESCE(h.deleted,0)=0 \
+           AND (? = 0 OR c.hy = ?) \
+           AND (? = 0 OR c.three_cityid = ?) \
+           AND (? = 0 OR c.cityid = ?) \
+           AND (? = 0 OR c.provinceid = ?) \
          ORDER BY {order_clause} \
          LIMIT ?"
     );
@@ -763,6 +801,14 @@ pub async fn list_hot(
         .bind(sort_mode)
         .bind(now)
         .bind(now)
+        .bind(hy)
+        .bind(hy)
+        .bind(three_city_id)
+        .bind(three_city_id)
+        .bind(city_id)
+        .bind(city_id)
+        .bind(province_id)
+        .bind(province_id)
         .bind(limit)
         .fetch_all(pool)
         .await

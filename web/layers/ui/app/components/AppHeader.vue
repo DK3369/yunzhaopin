@@ -38,6 +38,7 @@
           </div>
           <span class="yun_new_right_we">{{ $t('common.welcome', { site: siteName }) }}</span>
           <LangSwitch />
+          <NuxtLink v-if="sitePickOn" to="/site" class="yun_new_right_wap">{{ $t('ui.pick_site') }}</NuxtLink>
           <NuxtLink to="/" class="yun_new_right_wap">{{ $t('common.mobile_site') }}</NuxtLink>
           <span class="login_head_id">
             <template v-if="me">
@@ -192,7 +193,9 @@ const {
   hotSearches,
   wxQr,
   wapQr,
+  settings,
 } = useSiteChrome()
+const sitePickOn = computed(() => String(settings.value.sy_web_site || '') === '1')
 
 type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
 const searchKind = ref<SearchKind>('job')

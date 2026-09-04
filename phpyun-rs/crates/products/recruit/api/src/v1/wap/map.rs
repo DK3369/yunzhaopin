@@ -8,7 +8,7 @@
 
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::{fmt_dt, pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, ValidatedJsonOrQuery};
 use phpyun_services::map_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -29,14 +29,23 @@ pub struct GeoQuery {
     #[serde(default = "default_radius")]
     pub radius_km: f64,
     #[serde(default = "default_limit")]
-    #[validate(range(min = 1, max = 200))]
+    #[validate(range(min = 1, max = 50))]
     pub limit: u64,
+    #[serde(default = "default_page")]
+    #[validate(range(min = 1, max = 10_000))]
+    pub page: u32,
+    #[serde(default)]
+    #[validate(range(max = 999))]
+    pub did: u32,
 }
 fn default_radius() -> f64 {
-    5.0
+    20.0
 }
 fn default_limit() -> u64 {
     map_service::default_limit()
+}
+fn default_page() -> u32 {
+    1
 }
 
 /// Nearby job item -- phpyun_company_job projection + dict + derived distance + time formatting.
@@ -89,10 +98,20 @@ pub struct NearCompany {
 pub async fn jobs_near(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<GeoQuery>,
-) -> AppResult<ApiResponse<Vec<NearJob>>> {
-    let list = map_service::jobs_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
+) -> AppResult<ApiResponse<Paged<NearJob>>> {
+    let page = map_service::jobs_near(
+        &state,
+        q.x,
+        q.y,
+        q.radius_km,
+        q.page,
+        q.limit,
+        q.did,
+    )
+    .await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    let items = list
+    let items = page
+        .list
         .into_iter()
         .map(|j| -> AppResult<NearJob> {
             let salary_avg = (j.minsalary + j.maxsalary) / 2;
@@ -122,7 +141,12 @@ pub async fn jobs_near(
             })
         })
         .collect::<AppResult<Vec<_>>>()?;
-    Ok(ApiResponse::data(items))
+    Ok(ApiResponse::data(Paged::new(
+        items,
+        page.total,
+        page.page,
+        page.page_size,
+    )))
 }
 
 /// Nearby companies
@@ -136,10 +160,20 @@ pub async fn jobs_near(
 pub async fn companies_near(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<GeoQuery>,
-) -> AppResult<ApiResponse<Vec<NearCompany>>> {
-    let list = map_service::companies_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
+) -> AppResult<ApiResponse<Paged<NearCompany>>> {
+    let page = map_service::companies_near(
+        &state,
+        q.x,
+        q.y,
+        q.radius_km,
+        q.page,
+        q.limit,
+        q.did,
+    )
+    .await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    let items = list
+    let items = page
+        .list
         .into_iter()
         .map(|c| -> AppResult<NearCompany> {
             let distance_m = phpyun_core::numeric::finite_f64_to_i64_db(
@@ -161,5 +195,10 @@ pub async fn companies_near(
             })
         })
         .collect::<AppResult<Vec<_>>>()?;
-    Ok(ApiResponse::data(items))
+    Ok(ApiResponse::data(Paged::new(
+        items,
+        page.total,
+        page.page,
+        page.page_size,
+    )))
 }

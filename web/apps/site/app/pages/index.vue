@@ -17,6 +17,9 @@ type FriendLink = { id: number; name: string; url: string; logo?: string; catego
 const api = useApi()
 const { t, te } = useI18n()
 const { siteName, me, h5Nav, settings } = useSiteChrome()
+const { applyToQuery, didNum, gotocity } = useSubSite()
+const pcBannerFlag = useCookie('pc_bannerFlag', { path: '/', maxAge: 3600 })
+const wapBannerFlag = useCookie('wap_bannerFlag', { path: '/', maxAge: 3600 })
 const resumeGate = computed(() => {
   const needLogin = String(settings.value.com_search || '') === '1' && !me.value
   if (needLogin) return 'login'
@@ -51,7 +54,7 @@ watch(h5NavPages, (pages) => {
 })
 
 const { data: home, error } = await useAsyncData('home', async () => {
-  const h = (await api.get('/v1/wap/home', { did: 0 })) as {
+  const h = (await api.get('/v1/wap/home', applyToQuery({}))) as {
     hot_jobs?: JobLike[]
     rec_companies?: CompanyLike[]
     announcements?: unknown[]
@@ -61,10 +64,10 @@ const { data: home, error } = await useAsyncData('home', async () => {
     hot_articles?: ArticleLike[]
   }
   const [rec, latest, urgent, bid] = await Promise.all([
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
-    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { bid: true, page_size: 32 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ rec: true, page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ urgent: true, page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', applyToQuery({ bid: true, page_size: 32 })).catch(() => ({ list: [] as JobLike[] })),
   ])
   const bidList = bid.list || []
   const bidIds = new Set(bidList.map((j) => j.id))
@@ -177,16 +180,25 @@ const adsCouplet = computed(() => (adsMid.value?.slot11 || []).filter((b) => b.i
 const popupPc = ref(false)
 const popupH5 = ref(false)
 onMounted(() => {
-  if (adsPopupPc.value.length && !sessionStorage.getItem('ad506')) popupPc.value = true
-  if (adsPopupH5.value.length && !sessionStorage.getItem('ad502')) popupH5.value = true
+  if (
+    String(settings.value.sy_gotocity || '') === '1' &&
+    String(settings.value.sy_web_site || '') === '1' &&
+    !didNum.value &&
+    !gotocity.value
+  ) {
+    navigateTo('/site')
+    return
+  }
+  if (adsPopupPc.value.length && !pcBannerFlag.value) popupPc.value = true
+  if (adsPopupH5.value.length && !wapBannerFlag.value) popupH5.value = true
 })
 function closePopup(kind: 'pc' | 'h5') {
   if (kind === 'pc') {
     popupPc.value = false
-    sessionStorage.setItem('ad506', '1')
+    pcBannerFlag.value = '1'
   } else {
     popupH5.value = false
-    sessionStorage.setItem('ad502', '1')
+    wapBannerFlag.value = '1'
   }
 }
 const hasMidAds = computed(() => mid13.value.length + mid14.value.length + mid15.value.length > 0)

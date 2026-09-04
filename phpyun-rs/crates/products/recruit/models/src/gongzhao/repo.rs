@@ -79,6 +79,35 @@ pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<Gongzhao>, sqlx::E
         .await
 }
 
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct Neighbor {
+    pub id: u64,
+    pub title: String,
+}
+
+pub async fn neighbors(
+    pool: &MySqlPool,
+    id: u64,
+) -> Result<(Option<Neighbor>, Option<Neighbor>), sqlx::Error> {
+    let prev_sql = format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_gongzhao WHERE {PREDICATE} AND id < ? ORDER BY id DESC LIMIT 1"
+    );
+    let next_sql = format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title \
+         FROM phpyun_gongzhao WHERE {PREDICATE} AND id > ? ORDER BY id ASC LIMIT 1"
+    );
+    let prev = sqlx::query_as::<_, Neighbor>(&prev_sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
+    let next = sqlx::query_as::<_, Neighbor>(&next_sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
+    Ok((prev, next))
+}
+
 pub async fn incr_view(_pool: &MySqlPool, _id: u64) -> Result<(), sqlx::Error> {
     // PHPYun phpyun_gongzhao has no view-count column; this op is a no-op.
     Ok(())

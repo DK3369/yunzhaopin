@@ -62,6 +62,9 @@ pub async fn show(state: &AppState, id: u64) -> AppResult<OnceJob> {
     let item = once_repo::find_by_id(state.db.reader(), id)
         .await?
         .ok_or(ApiError::business("tiny_not_found"))?;
+    if item.status < 1 {
+        return Err(ApiError::business("once_not_approved"));
+    }
 
     let pool = state.db.pool().clone();
     tokio::spawn(async move {
