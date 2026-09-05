@@ -71,6 +71,10 @@ pub struct JobFilter<'a> {
     pub keyword_city_ids: Option<&'a [i32]>,
     /// Keyword expanded to job-class ids.
     pub keyword_job_ids: Option<&'a [i32]>,
+    /// PHP likeJob: job1 / job1_son / job_post IN (...).
+    pub class_ids: Option<&'a [i32]>,
+    /// PHP likeJob: provinceid / cityid / three_cityid IN (...).
+    pub city_ids: Option<&'a [i32]>,
     /// PHP joblist does not drop expired rows; similar/geo still do.
     pub exclude_expired: bool,
 }
@@ -378,6 +382,28 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
         qb.push(" AND lastupdate > ");
         qb.push_bind(threshold);
     }
+    if let Some(ids) = f.class_ids {
+        if !ids.is_empty() {
+            qb.push(" AND (job1 IN (");
+            push_in_i32s(qb, ids);
+            qb.push(") OR job1_son IN (");
+            push_in_i32s(qb, ids);
+            qb.push(") OR job_post IN (");
+            push_in_i32s(qb, ids);
+            qb.push("))");
+        }
+    }
+    if let Some(ids) = f.city_ids {
+        if !ids.is_empty() {
+            qb.push(" AND (provinceid IN (");
+            push_in_i32s(qb, ids);
+            qb.push(") OR cityid IN (");
+            push_in_i32s(qb, ids);
+            qb.push(") OR three_cityid IN (");
+            push_in_i32s(qb, ids);
+            qb.push("))");
+        }
+    }
 }
 
 // ==================== Company-private CRUD ====================
@@ -511,6 +537,8 @@ pub struct JobCreate<'a> {
     pub sdate: i64,
     pub edate: i64,
     pub did: u32,
+    pub x: &'a str,
+    pub y: &'a str,
 }
 
 /// Create a new job. **Defaults to under-review** (state=0); waits for
@@ -519,12 +547,12 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     let res = sqlx::query(
         r#"INSERT INTO phpyun_company_job
            (uid, com_name, name, job1, job1_son, job_post,
-            provinceid, cityid, three_cityid,
+            provinceid, cityid, three_cityid, x, y,
             minsalary, maxsalary, `type`, number, exp, edu,
             description, welfare, report, sex, marriage, lang,
             state, status, r_status, rec, urgent,
             rec_time, sdate, edate, lastupdate, did)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                    0, 0, 0, '',
                    0, 0, 1, 0, 0, 0, ?, ?, ?, ?)"#,
     )
@@ -537,6 +565,8 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     .bind(c.provinceid)
     .bind(c.cityid)
     .bind(c.three_cityid)
+    .bind(c.x)
+    .bind(c.y)
     .bind(c.minsalary)
     .bind(c.maxsalary)
     .bind(c.job_type)

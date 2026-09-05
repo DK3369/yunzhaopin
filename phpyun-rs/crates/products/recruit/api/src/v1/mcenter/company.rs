@@ -34,6 +34,8 @@ pub struct CompanyData {
     pub hits: i32,
     pub x: Option<String>,
     pub y: Option<String>,
+    pub pr: i32,
+    pub mun: i32,
 }
 
 /// Get my company profile
@@ -68,6 +70,8 @@ pub async fn get_mine(
         hits: c.hits,
         x: c.x,
         y: c.y,
+        pr: c.pr,
+        mun: c.mun,
     }))
 }
 
@@ -101,6 +105,12 @@ pub struct UpdateCompanyForm {
     pub x: Option<String>,
     #[validate(length(max = 32))]
     pub y: Option<String>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub pr: Option<i32>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub mun: Option<i32>,
 }
 
 /// Update company profile
@@ -136,6 +146,8 @@ pub async fn update_mine(
             linkmail: f.linkmail.as_deref(),
             x: f.x.as_deref(),
             y: f.y.as_deref(),
+            pr: f.pr,
+            mun: f.mun,
         },
         &ip,
     )

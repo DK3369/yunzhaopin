@@ -113,6 +113,7 @@ pub async fn list_by_uid(
     pool: &MySqlPool,
     uid: u64,
     state_filter: Option<i32>,
+    days: Option<i32>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Apply>, sqlx::Error> {
@@ -125,6 +126,10 @@ pub async fn list_by_uid(
         qb.push(" AND is_browse = ");
         qb.push_bind(s);
     }
+    if let Some(d) = days.filter(|d| *d > 0) {
+        qb.push(" AND datetime > ");
+        qb.push_bind(phpyun_core::clock::now_ts() - i64::from(d) * 86_400);
+    }
     qb.push(" ORDER BY datetime DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
@@ -136,6 +141,7 @@ pub async fn count_by_uid(
     pool: &MySqlPool,
     uid: u64,
     state_filter: Option<i32>,
+    days: Option<i32>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new("SELECT COUNT(*) FROM phpyun_userid_job WHERE uid = ");
@@ -144,6 +150,10 @@ pub async fn count_by_uid(
     if let Some(s) = state_filter {
         qb.push(" AND is_browse = ");
         qb.push_bind(s);
+    }
+    if let Some(d) = days.filter(|d| *d > 0) {
+        qb.push(" AND datetime > ");
+        qb.push_bind(phpyun_core::clock::now_ts() - i64::from(d) * 86_400);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -207,7 +217,7 @@ pub async fn count_replied_by_job(pool: &MySqlPool, job_id: u64) -> Result<u64, 
 }
 
 /// Company side: transition application to any is_browse enum value
-/// (1=unread / 0=viewed / 3=interviewed / 4=unsuitable / 7=hired).
+/// (1=unread / 2=viewed / 3=interviewed / 4=unsuitable / 5=unreachable / 7=hired).
 /// Constrained by com_id so only the job owner may change it.
 pub async fn set_browse_state(
     pool: &MySqlPool,
@@ -221,6 +231,18 @@ pub async fn set_browse_state(
         .bind(com_id)
         .execute(pool)
         .await?;
+    Ok(res.rows_affected())
+}
+
+/// Job seeker deletes an application (PHP `delSqJob` usertype=1 → `isdel=1`).
+pub async fn hide_by_uid(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_job SET isdel = 1 WHERE id = ? AND uid = ? AND isdel = 9",
+    )
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
     Ok(res.rows_affected())
 }
 
@@ -242,6 +264,8 @@ pub struct ApplyFilter {
     /// None = all; true = unread only; false = viewed only.
     pub unread_only: Option<bool>,
     pub invited_only: Option<bool>,
+    /// PHP `is_browse` 1/2/3/4/5/7. Takes precedence over unread_only.
+    pub browse_state: Option<i32>,
 }
 
 pub async fn list_by_com(
@@ -256,9 +280,12 @@ pub async fn list_by_com(
     qb.push(" FROM phpyun_userid_job WHERE com_id = ");
     qb.push_bind(com_id);
     qb.push(" AND isdel = 9 AND quxiao = 0");
-    if let Some(unread) = f.unread_only {
+    if let Some(st) = f.browse_state {
         qb.push(" AND is_browse = ");
-        qb.push_bind(if unread { 1 } else { 0 });
+        qb.push_bind(st);
+    } else if let Some(unread) = f.unread_only {
+        qb.push(" AND is_browse = ");
+        qb.push_bind(if unread { 1 } else { 2 });
     }
     if let Some(inv) = f.invited_only {
         qb.push(" AND invited = ");
@@ -300,9 +327,12 @@ pub async fn count_by_com(
         QueryBuilder::new("SELECT COUNT(*) FROM phpyun_userid_job WHERE com_id = ");
     qb.push_bind(com_id);
     qb.push(" AND isdel = 9 AND quxiao = 0");
-    if let Some(unread) = f.unread_only {
+    if let Some(st) = f.browse_state {
         qb.push(" AND is_browse = ");
-        qb.push_bind(if unread { 1 } else { 0 });
+        qb.push_bind(st);
+    } else if let Some(unread) = f.unread_only {
+        qb.push(" AND is_browse = ");
+        qb.push_bind(if unread { 1 } else { 2 });
     }
     if let Some(inv) = f.invited_only {
         qb.push(" AND invited = ");
@@ -312,10 +342,10 @@ pub async fn count_by_com(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
-/// Company marks as viewed (is_browse: 1 -> 0).
+/// Company marks as viewed (is_browse: 1 -> 2).
 pub async fn mark_browsed(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
-        "UPDATE phpyun_userid_job SET is_browse = 0 WHERE id = ? AND com_id = ? AND is_browse = 1",
+        "UPDATE phpyun_userid_job SET is_browse = 2 WHERE id = ? AND com_id = ? AND is_browse = 1",
     )
     .bind(id)
     .bind(com_id)

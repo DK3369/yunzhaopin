@@ -46,7 +46,9 @@ useSeoMeta({ title: t('member_com_00597') })
     <p v-if="!(pool?.list || []).length" class="muted">{{ $t('ui.talent_empty') }}</p>
     <div class="stack">
       <article v-for="row in pool?.list || []" :key="row.id" class="job-card">
-        <h3>{{ $t('ui.seeker') }} {{ row.seeker_uid }}</h3>
+        <h3>
+          <NuxtLink :to="`/resumes/${row.eid || row.seeker_uid}`">{{ row.uname || row.seeker_uid }}</NuxtLink>
+        </h3>
         <p v-if="row.remark" class="muted">{{ row.remark }}</p>
       </article>
     </div>

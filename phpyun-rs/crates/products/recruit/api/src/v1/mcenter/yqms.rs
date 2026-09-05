@@ -7,6 +7,7 @@ use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
+use phpyun_models::apply::repo as apply_repo;
 use phpyun_services::yqms_service::{self, YqmsInput, YqmsResult};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -15,6 +16,8 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/company/yqms/create", post(create))
+        .route("/company/yqms/list", post(list_company))
+        .route("/company/yqms/cancel", post(cancel_company))
         .route("/yqms/list", post(list_mine))
         .route("/yqms/accept", post(accept))
         .route("/yqms/reject", post(reject))
@@ -117,6 +120,7 @@ pub struct YqmsItem {
     pub datetime: i64,
     pub datetime_n: String,
     pub remark: String,
+    pub uname: String,
 }
 
 impl From<phpyun_models::userid_msg::entity::UseridMsg> for YqmsItem {
@@ -138,8 +142,20 @@ impl From<phpyun_models::userid_msg::entity::UseridMsg> for YqmsItem {
             datetime_n: fmt_dt(r.datetime),
             datetime: r.datetime,
             remark: r.remark,
+            uname: String::new(),
         }
     }
+}
+
+async fn with_unames(state: &AppState, mut items: Vec<YqmsItem>) -> AppResult<Vec<YqmsItem>> {
+    let uids: Vec<u64> = items.iter().map(|i| i.uid).collect();
+    let names = apply_repo::resume_names_by_uids(state.db.reader(), &uids).await?;
+    for it in &mut items {
+        if let Some(n) = names.get(&it.uid) {
+            it.uname = n.clone();
+        }
+    }
+    Ok(items)
 }
 
 /// PHP `member/user/invite` — interview invitations in `userid_msg`.
@@ -156,11 +172,51 @@ pub async fn list_mine(
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<YqmsItem>>> {
     let r = yqms_service::list_mine(&state, &user, page).await?;
-    Ok(ApiResponse::data(Paged::from_listing(
+    let list = with_unames(
+        &state,
         r.list.into_iter().map(YqmsItem::from).collect::<Vec<_>>(),
-        r.total,
-        page,
-    )))
+    )
+    .await?;
+    Ok(ApiResponse::data(Paged::from_listing(list, r.total, page)))
+}
+
+/// PHP `member/com/invite` — invitations this company sent (`userid_msg.fid`).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/yqms/list",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_company(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<ApiResponse<Paged<YqmsItem>>> {
+    let r = yqms_service::list_company(&state, &user, page).await?;
+    let list = with_unames(
+        &state,
+        r.list.into_iter().map(YqmsItem::from).collect::<Vec<_>>(),
+    )
+    .await?;
+    Ok(ApiResponse::data(Paged::from_listing(list, r.total, page)))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/yqms/cancel",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn cancel_company(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let n = yqms_service::hide_company(&state, &user, b.id).await?;
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

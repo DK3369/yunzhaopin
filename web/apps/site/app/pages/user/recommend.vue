@@ -23,6 +23,7 @@ useSeoMeta({ title: t('wap_user_00211') })
         <p class="muted">
           <NuxtLink v-if="row.uid" :to="`/companies/${row.uid}`">{{ row.com_name }}</NuxtLink>
           · {{ row.min_salary }} - {{ row.max_salary }}
+          <span v-if="row.pre"> · {{ row.pre }}%</span>
         </p>
       </article>
     </div>

@@ -87,6 +87,7 @@ pub mod entrust_service;
 pub mod eval_service;
 pub mod fan_service;
 pub mod feedback_service;
+pub mod finder_service;
 pub mod friend_link_service;
 pub mod gallery_service;
 pub mod gongzhao_service;

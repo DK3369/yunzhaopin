@@ -13,7 +13,7 @@ async function onFile(ev: Event) {
   if (!file) return
   msg.value = ''
   try {
-    const r = await $fetch<{ key: string; url: string }>('/api/upload/cert', {
+    const r = await $fetch<{ key: string; url: string }>('/api/upload/attachment', {
       method: 'POST',
       body: file,
       headers: { 'content-type': file.type || 'image/jpeg' },

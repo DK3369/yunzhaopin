@@ -9,9 +9,11 @@ use md5::{Digest, Md5};
 use phpyun_core::{ApiError, AppResult, AppState};
 
 use crate::once_service;
+use crate::resume_service;
 use crate::site_setting_service;
 use crate::vip_service;
 use phpyun_models::once_job::repo as once_repo;
+use phpyun_models::resume::expect as expect_repo;
 use phpyun_models::vip::repo as vip_repo;
 
 fn md5_hex_lower(bytes: &[u8]) -> String {
@@ -277,6 +279,12 @@ pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> A
         .is_some()
     {
         return once_service::mark_paid(state, order_no).await;
+    }
+    if expect_repo::find_top_order(state.db.reader(), order_no)
+        .await?
+        .is_some()
+    {
+        return resume_service::settle_top_order(state, order_no).await;
     }
     Err(ApiError::param_invalid("order_not_found"))
 }

@@ -34,6 +34,7 @@ pub mod email_msg;
 pub mod entrust;
 pub mod eval;
 pub mod feedback;
+pub mod finder;
 pub mod friend_link;
 pub mod gallery;
 pub mod geo;

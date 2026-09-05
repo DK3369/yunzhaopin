@@ -168,6 +168,8 @@ async fn ingest_job(state: &AppState, post: &HashMap<String, String>) -> AppResu
             sdate: now,
             edate: now + 90 * 86_400i64,
             did: 0,
+            x: "",
+            y: "",
         },
         now,
     )

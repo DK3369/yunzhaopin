@@ -63,6 +63,7 @@ pub struct MyPartApplyItem {
     pub status_n: String,
     pub job_name: String,
     pub com_name: String,
+    pub uname: String,
 }
 
 impl From<phpyun_models::part::entity::PartApply> for MyPartApplyItem {
@@ -78,6 +79,7 @@ impl From<phpyun_models::part::entity::PartApply> for MyPartApplyItem {
             status: a.status,
             job_name: a.job_name,
             com_name: a.com_name,
+            uname: a.uname,
         }
     }
 }

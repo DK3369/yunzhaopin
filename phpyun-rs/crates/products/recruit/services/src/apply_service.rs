@@ -104,15 +104,17 @@ pub async fn list_mine(
     state: &AppState,
     user: &AuthenticatedUser,
     state_filter: Option<i32>,
+    days: Option<i32>,
     page: Pagination,
 ) -> AppResult<ApplyPage> {
     user.require_jobseeker()?;
     let (total, list) = tokio::join!(
-        apply_repo::count_by_uid(state.db.reader(), user.uid, state_filter),
+        apply_repo::count_by_uid(state.db.reader(), user.uid, state_filter, days),
         apply_repo::list_by_uid(
             state.db.reader(),
             user.uid,
             state_filter,
+            days,
             page.offset,
             page.limit,
         ),
@@ -146,7 +148,28 @@ pub async fn withdraw(
     Ok(())
 }
 
-// ==================== Employer: applications received ====================
+pub async fn hide_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    apply_id: u64,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_jobseeker()?;
+    let affected = apply_repo::hide_by_uid(state.db.pool(), apply_id, user.uid).await?;
+    if affected == 0 {
+        return Err(ApiError::business("apply_not_owner"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new(
+            "resume.apply_delete",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("apply:{apply_id}")),
+    )
+    .await;
+    Ok(())
+}
 
 pub async fn list_for_company(
     state: &AppState,
@@ -187,7 +210,7 @@ pub async fn mark_browsed(
 }
 
 /// Employer side: set the application's `is_browse` to any enum value.
-/// PHPYun convention: 1=not viewed / 0=viewed / 3=interviewed / 4=not a fit / 7=hired.
+/// PHPYun convention: 1=not viewed / 2=viewed / 3=interviewed / 4=not a fit / 5=unreachable / 7=hired.
 /// Invalid values are rejected.
 pub async fn set_browse_state(
     state: &AppState,
@@ -197,7 +220,7 @@ pub async fn set_browse_state(
     client_ip: &str,
 ) -> AppResult<()> {
     user.require_employer()?;
-    if !matches!(new_state, 0 | 1 | 3 | 4 | 7) {
+    if !matches!(new_state, 1 | 2 | 3 | 4 | 5 | 7) {
         return Err(ApiError::param_invalid("state"));
     }
     let affected =

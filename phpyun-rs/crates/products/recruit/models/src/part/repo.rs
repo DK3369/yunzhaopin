@@ -71,7 +71,8 @@ const APPLY_FIELDS: &str = "id, \
     COALESCE(ctime, 0) AS ctime, \
     COALESCE(status, 0) AS status, \
     CAST('' AS CHAR) AS job_name, \
-    CAST('' AS CHAR) AS com_name";
+    CAST('' AS CHAR) AS com_name, \
+    CAST('' AS CHAR) AS uname";
 
 const APPLY_LIST_FIELDS: &str = "a.id, \
     COALESCE(a.uid, 0) AS uid, \
@@ -80,7 +81,8 @@ const APPLY_LIST_FIELDS: &str = "a.id, \
     COALESCE(a.ctime, 0) AS ctime, \
     COALESCE(a.status, 0) AS status, \
     COALESCE(j.name, '') AS job_name, \
-    COALESCE(j.com_name, '') AS com_name";
+    COALESCE(j.com_name, '') AS com_name, \
+    COALESCE(r.name, '') AS uname";
 
 const COLLECT_FIELDS: &str = "id, \
     COALESCE(uid, 0) AS uid, \
@@ -452,6 +454,7 @@ pub async fn list_applies_by_uid(
     sqlx::query_as::<_, PartApply>(
         &format!("SELECT {APPLY_LIST_FIELDS} FROM phpyun_part_apply a \
          LEFT JOIN phpyun_partjob j ON j.id = a.jobid \
+         LEFT JOIN phpyun_resume r ON r.uid = a.uid \
          WHERE a.uid = ? ORDER BY a.ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(uid)
@@ -478,6 +481,7 @@ pub async fn list_applies_by_com(
     sqlx::query_as::<_, PartApply>(
         &format!("SELECT {APPLY_LIST_FIELDS} FROM phpyun_part_apply a \
          LEFT JOIN phpyun_partjob j ON j.id = a.jobid \
+         LEFT JOIN phpyun_resume r ON r.uid = a.uid \
          WHERE a.comid = ? ORDER BY a.ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(com_uid)

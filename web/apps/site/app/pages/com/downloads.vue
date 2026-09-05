@@ -10,7 +10,7 @@ useSeoMeta({ title: t('wap_com_00235') })
 <template>
   <MemberPanel :title="$t('wap_com_00235')" :error="error" :empty="!error && !(data?.list || []).length">
     <article v-for="row in data?.list || []" :key="row.id || row.uid" class="look_resume_list">
-      <NuxtLink :to="`/resumes/${row.uid}`">{{ row.name || row.display_name || row.uid }}</NuxtLink>
+      <NuxtLink :to="`/resumes/${row.eid || row.uid}`">{{ row.name || row.display_name || row.uname || row.uid }}</NuxtLink>
       <p class="muted">{{ row.datetime_n }}</p>
     </article>
   </MemberPanel>

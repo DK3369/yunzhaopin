@@ -10,6 +10,8 @@ use phpyun_models::company::repo as company_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::interview_template::repo as tpl_repo;
 use phpyun_models::job::repo as job_repo;
+use phpyun_models::message::repo as message_repo;
+use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::userid_msg::repo as msg_repo;
 use serde::Serialize;
@@ -389,6 +391,37 @@ pub async fn list_mine(
     })
 }
 
+/// PHP `member/com/invite` list.
+pub async fn list_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<YqmsPage> {
+    user.require_employer()?;
+    let (total, list) = tokio::join!(
+        msg_repo::count_by_fid(state.db.reader(), user.uid),
+        msg_repo::list_by_fid(state.db.reader(), user.uid, page.offset, page.limit),
+    );
+    Ok(YqmsPage {
+        total: total?,
+        list: list?,
+    })
+}
+
+/// PHP `delYqms` usertype=2.
+pub async fn hide_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    let n = msg_repo::hide_by_fid(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    Ok(n)
+}
+
 /// PHP `setYqms`: browse 3 agree / 4 reject.
 pub async fn respond(
     state: &AppState,
@@ -402,9 +435,52 @@ pub async fn respond(
     if browse != 3 && browse != 4 {
         return Err(ApiError::param_invalid("browse"));
     }
+    let row = msg_repo::find_by_id_uid(state.db.reader(), id, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
     let n = msg_repo::set_browse(state.db.pool(), id, user.uid, browse, remark).await?;
     if n == 0 {
         return Err(ApiError::business("not_found"));
+    }
+    let uname = resume_repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .and_then(|r| r.name)
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or_else(|| format!("{}", user.uid));
+    let content = if browse == 3 {
+        format!(
+            "用户 <a href=\"usertpl,{uid}\">{name}</a> 同意了您的邀请面试！",
+            uid = user.uid,
+            name = uname
+        )
+    } else {
+        format!(
+            "用户 <a href=\"usertpl,{uid}\">{name}</a> 拒绝了您的邀请面试！",
+            uid = user.uid,
+            name = uname
+        )
+    };
+    let _ = message_repo::insert_simple(
+        state.db.pool(),
+        row.fid,
+        2,
+        &content,
+        clock::now_ts(),
+    )
+    .await;
+    let email_on = read_setting_i64(state, "sy_email_yqmshf").await == 1;
+    if email_on {
+        if let Some(com) = company_repo::find_by_uid(state.db.reader(), row.fid).await? {
+            if let Some(mail) = com.linkmail.filter(|s| s.contains('@')) {
+                let _ = crate::mail_service::send_text(
+                    state,
+                    &mail,
+                    "yqmshf",
+                    &content,
+                )
+                .await;
+            }
+        }
     }
     let _ = audit::emit(
         state,

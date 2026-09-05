@@ -299,7 +299,7 @@ pub async fn find_order_by_no(
 ) -> Result<Option<PayOrder>, sqlx::Error> {
     let sql = format!(
         "SELECT {ORDER_SELECT}
-           FROM phpyun_company_order WHERE order_id = ? LIMIT 1"
+           FROM phpyun_company_order WHERE order_id = ? AND type = 1 LIMIT 1"
     );
     sqlx::query_as::<_, PayOrder>(&sql)
         .bind(order_no)

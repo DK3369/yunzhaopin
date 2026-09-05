@@ -71,18 +71,18 @@ async function ask() {
     <p>
       <NuxtLink to="/questions/topics">{{ $t('wap_user_00223') }}</NuxtLink>
       <template v-if="me">
-        · <NuxtLink :to="{ query: { mine: 'q' } }">{{ $t('wap_00160') }}</NuxtLink>
-        · <NuxtLink :to="{ query: { mine: 'a' } }">{{ $t('ui.qa') }}</NuxtLink>
+        · <NuxtLink :to="{ query: { mine: 'q' } }">{{ $t('wap_00331') }}</NuxtLink>
+        · <NuxtLink :to="{ query: { mine: 'a' } }">{{ $t('wap_01443') }}</NuxtLink>
         · <NuxtLink :to="{ query: { mine: 'f' } }">{{ $t('wap_00164') }}</NuxtLink>
       </template>
     </p>
     <template v-if="mineTab === 'q'">
-      <NewsListShell :title="$t('wap_00160')" :count="(myQuestions?.list || []).length">
+      <NewsListShell :title="$t('wap_00331')" :count="(myQuestions?.list || []).length">
         <SimpleCard v-for="row in myQuestions?.list || []" :key="row.id" :to="`/questions/${row.id}`" :title="row.title" />
       </NewsListShell>
     </template>
     <template v-else-if="mineTab === 'a'">
-      <NewsListShell :title="$t('ui.qa')" :count="(myAnswers?.list || []).length">
+      <NewsListShell :title="$t('wap_01443')" :count="(myAnswers?.list || []).length">
         <SimpleCard
           v-for="row in myAnswers?.list || []"
           :key="row.id"

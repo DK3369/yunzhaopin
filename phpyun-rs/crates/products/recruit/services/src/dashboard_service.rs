@@ -49,7 +49,7 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
     // favorites have no backing table, so the dashboard total is just job-fav count.
     let (messages, applies, interviews, fav_job, looks, bal, sign) = tokio::join!(
         message_repo::count(db, uid, None, true),
-        apply_repo::count_by_uid(db, uid, None),
+        apply_repo::count_by_uid(db, uid, None, None),
         phpyun_models::userid_msg::repo::count_by_uid(db, uid),
         collect_repo::count_by_user(db, uid),
         phpyun_models::look_resume::count_by_resume_uid(db, uid),
@@ -87,6 +87,7 @@ pub async fn com_counts(
         apply_repo::ApplyFilter {
             unread_only: Some(true),
             invited_only: None,
+            browse_state: None,
         },
     );
     let interviews_f = interview_repo::count_for_company(db, uid);

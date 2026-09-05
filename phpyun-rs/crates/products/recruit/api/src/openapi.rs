@@ -199,6 +199,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::resume::get_mine,
         v1::mcenter::resume::update_mine,
         v1::mcenter::resume::update_status,
+        v1::mcenter::resume::buy_top,
         // mcenter: company (employer)
         v1::mcenter::company::get_mine,
         v1::mcenter::company::update_mine,
@@ -217,6 +218,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::apply::apply_to_job,
         v1::mcenter::apply::list_mine,
         v1::mcenter::apply::withdraw,
+        v1::mcenter::apply::delete_mine,
         // mcenter: applications (employer view)
         v1::mcenter::applications::list_received,
         v1::mcenter::applications::mark_browsed,
@@ -226,6 +228,9 @@ impl Modify for UniqueOperationId {
         v1::mcenter::favorites::list,
         v1::mcenter::favorites::remove,
         v1::mcenter::favorites::exists,
+        v1::mcenter::finder::list,
+        v1::mcenter::finder::create,
+        v1::mcenter::finder::delete,
         // mcenter: resume children (jobseeker)
         v1::mcenter::resume_expect::list,
         v1::mcenter::resume_expect::create,
@@ -260,6 +265,8 @@ impl Modify for UniqueOperationId {
         v1::mcenter::interviews::cancel,
         v1::mcenter::yqms::create,
         v1::mcenter::yqms::list_mine,
+        v1::mcenter::yqms::list_company,
+        v1::mcenter::yqms::cancel_company,
         v1::mcenter::yqms::accept,
         v1::mcenter::yqms::reject,
         v1::mcenter::yqms::delete_mine,
@@ -629,6 +636,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::look_jobs::list_mine_seeker,
         v1::mcenter::look_jobs::delete_mine_seeker,
         v1::mcenter::look_resumes::list_mine,
+        v1::mcenter::look_resumes::list_company_mine,
         v1::mcenter::look_resumes::delete_mine,
         v1::mcenter::part::my_applies,
         v1::mcenter::part::delete_applies,

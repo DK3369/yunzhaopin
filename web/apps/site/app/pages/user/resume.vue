@@ -267,6 +267,29 @@ function fillLanguage(row: ChildRow) {
   languageForm.name = String(row.name || '')
   languageForm.level = Number(row.level || 0)
 }
+const topDays = ref(7)
+const topMsg = ref('')
+async function buyTop() {
+  topMsg.value = ''
+  const resumeid = Number(data.value?.def_job || (Array.isArray(expects.value) ? expects.value[0]?.id : 0) || 0)
+  if (!resumeid) {
+    topMsg.value = t('ui.no_expect')
+    return
+  }
+  try {
+    const r = await api.post<{ status?: number; pay_url?: string; msg?: string }>('/v1/mcenter/resume/top', {
+      resumeid,
+      days: topDays.value,
+    })
+    if (r.pay_url) {
+      window.location.assign(r.pay_url)
+      return
+    }
+    topMsg.value = r.msg || t('common.success')
+  } catch (e: unknown) {
+    topMsg.value = fail(e)
+  }
+}
 useSeoMeta({ title: t('wap_user_00204') })
 </script>
 
@@ -302,6 +325,12 @@ useSeoMeta({ title: t('wap_user_00204') })
       <textarea v-model="form.description" rows="4" :placeholder="$t('wap_user_00102')" />
       <button type="submit">{{ $t('ui.save_resume') }}</button>
       <button type="button" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
+      <select v-model.number="topDays">
+        <option :value="7">7</option>
+        <option :value="30">30</option>
+      </select>
+      <button type="button" @click="buyTop">{{ $t('wap_user_00207') }}</button>
+      <p v-if="topMsg">{{ topMsg }}</p>
     </form>
     <h2>{{ $t('home.intention') }}</h2>
     <p v-if="!(Array.isArray(expects) ? expects : []).length" class="muted">{{ $t('ui.no_expect') }}</p>

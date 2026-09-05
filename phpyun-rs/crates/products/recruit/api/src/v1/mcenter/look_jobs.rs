@@ -29,6 +29,8 @@ pub struct LookJobItem {
     pub maxsalary: i32,
     pub datetime: i64,
     pub datetime_n: String,
+    pub uname: String,
+    pub eid: i64,
 }
 
 impl From<phpyun_models::look_job::LookJob> for LookJobItem {
@@ -43,6 +45,8 @@ impl From<phpyun_models::look_job::LookJob> for LookJobItem {
             maxsalary: r.maxsalary,
             datetime_n: fmt_dt(r.datetime),
             datetime: r.datetime,
+            uname: r.uname,
+            eid: r.eid,
         }
     }
 }

@@ -21,6 +21,7 @@ pub mod eval;
 pub mod fans;
 pub mod favorites;
 pub mod feedback;
+pub mod finder;
 pub mod integral;
 pub mod interview_tpl;
 pub mod interviews;
@@ -98,6 +99,7 @@ pub fn router() -> Router<AppState> {
         .merge(apply::routes())
         .merge(applications::routes())
         .merge(favorites::routes())
+        .merge(finder::routes())
         .merge(fans::routes())
         .merge(views::routes())
         .merge(interviews::routes())

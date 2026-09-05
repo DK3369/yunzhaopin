@@ -152,6 +152,19 @@ pub async fn list_transfers(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
+pub async fn list_consumes(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<Paged<IntegralTransfer>> {
+    let db = state.db.reader();
+    let (list, total) = tokio::join!(
+        transfer_repo::list_ledger_by_uid(db, user.uid, page.offset, page.limit),
+        transfer_repo::count_ledger_by_uid(db, user.uid),
+    );
+    Ok(Paged::new(list?, total?, page.page, page.page_size))
+}
+
 #[cfg(test)]
 mod transfer_tests {
     use super::validate_transfer;

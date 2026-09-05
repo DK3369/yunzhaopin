@@ -24,31 +24,39 @@ pub struct BlackItem {
     pub id: u64,
     pub uid: u64,
     pub blocked_uid: u64,
+    pub com_name: String,
     pub reason: String,
     pub created_at: i64,
     pub created_at_n: String,
 }
 
-impl From<phpyun_models::blacklist::entity::BlacklistEntry> for BlackItem {
-    fn from(b: phpyun_models::blacklist::entity::BlacklistEntry) -> Self {
+impl BlackItem {
+    fn from_row(b: phpyun_models::blacklist::entity::BlacklistEntry, as_seeker: bool) -> Self {
+        let company_uid = if as_seeker { b.uid } else { b.blocked_uid };
         Self {
             id: b.id,
             uid: b.uid,
-            blocked_uid: b.blocked_uid,
-            reason: b.reason,
+            blocked_uid: company_uid,
+            com_name: b.reason.clone(),
             created_at_n: fmt_dt(b.created_at),
             created_at: b.created_at,
+            reason: b.reason,
         }
     }
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct AddForm {
-    #[validate(range(min = 1, max = 99_999_999))]
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub blocked_uid: u64,
     #[validate(length(max = 200))]
     #[serde(default)]
     pub reason: String,
+    /// PHP `type=yqms` shield from an interview row.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub yqms_id: u64,
 }
 
 /// My blacklist
@@ -65,8 +73,14 @@ pub async fn list(
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<BlackItem>>> {
     let r = blacklist_service::list(&state, &user, page).await?;
+    let as_seeker = user.usertype == 1;
     Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
+        r.list
+            .into_iter()
+            .map(|b| BlackItem::from_row(b, as_seeker))
+            .collect::<Vec<_>>(),
+        r.total,
+        page,
     )))
 }
 
@@ -84,7 +98,7 @@ pub async fn add(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AddForm>,
 ) -> AppResult<ApiResponse> {
-    blacklist_service::add(&state, &user, f.blocked_uid, &f.reason).await?;
+    blacklist_service::add(&state, &user, f.blocked_uid, &f.reason, f.yqms_id).await?;
     Ok(ApiResponse::message("ok"))
 }
 

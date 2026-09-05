@@ -67,7 +67,9 @@
 /v1/mcenter/company/products
 /v1/mcenter/company/products/list
 /v1/mcenter/company/products/update
+/v1/mcenter/company/yqms/cancel
 /v1/mcenter/company/yqms/create
+/v1/mcenter/company/yqms/list
 /v1/mcenter/dashboard
 /v1/mcenter/dashboard/year-report
 /v1/mcenter/entrust
@@ -85,6 +87,9 @@
 /v1/mcenter/favorites/remove
 /v1/mcenter/feedback
 /v1/mcenter/feedback/list
+/v1/mcenter/finder
+/v1/mcenter/finder/delete
+/v1/mcenter/finder/list
 /v1/mcenter/followers
 /v1/mcenter/follows
 /v1/mcenter/follows/exists
@@ -125,12 +130,14 @@
 /v1/mcenter/look-jobs/mine
 /v1/mcenter/look-resumes/delete
 /v1/mcenter/look-resumes/list
+/v1/mcenter/look-resumes/mine
 /v1/mcenter/messages
 /v1/mcenter/messages/delete
 /v1/mcenter/messages/read
 /v1/mcenter/messages/read-all
 /v1/mcenter/messages/unread-summary
 /v1/mcenter/my-applications
+/v1/mcenter/my-applications/delete
 /v1/mcenter/my-applications/withdraw
 /v1/mcenter/my-part-applications
 /v1/mcenter/my-part-applications/list
@@ -211,6 +218,7 @@
 /v1/mcenter/resume/skills/update
 /v1/mcenter/resume/status
 /v1/mcenter/resume/timeline
+/v1/mcenter/resume/top
 /v1/mcenter/resume/trainings
 /v1/mcenter/resume/trainings/list
 /v1/mcenter/resume/trainings/update

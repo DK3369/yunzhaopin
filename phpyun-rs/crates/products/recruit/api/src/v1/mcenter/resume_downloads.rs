@@ -8,6 +8,7 @@ use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
+use phpyun_models::apply::repo as apply_repo;
 use phpyun_services::resume_download_service::{self, DownloadResult};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -61,6 +62,7 @@ pub struct DownloadItem {
     pub eid: u64,
     pub datetime: i64,
     pub datetime_n: String,
+    pub uname: String,
 }
 
 impl From<phpyun_models::resume_download::entity::ResumeDownload> for DownloadItem {
@@ -72,6 +74,7 @@ impl From<phpyun_models::resume_download::entity::ResumeDownload> for DownloadIt
             eid: d.eid,
             datetime_n: fmt_dt(d.datetime),
             datetime: d.datetime,
+            uname: String::new(),
         }
     }
 }
@@ -91,7 +94,9 @@ pub async fn list_outbox(
 ) -> AppResult<ApiResponse<Paged<DownloadItem>>> {
     let r = resume_download_service::list_mine_as_company(&state, &user, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
+        with_names(&state, r.list).await?,
+        r.total,
+        page,
     )))
 }
 
@@ -110,6 +115,23 @@ pub async fn list_inbox(
 ) -> AppResult<ApiResponse<Paged<DownloadItem>>> {
     let r = resume_download_service::list_mine_as_user(&state, &user, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
+        with_names(&state, r.list).await?,
+        r.total,
+        page,
     )))
+}
+
+async fn with_names(
+    state: &AppState,
+    list: Vec<phpyun_models::resume_download::entity::ResumeDownload>,
+) -> AppResult<Vec<DownloadItem>> {
+    let mut items: Vec<DownloadItem> = list.into_iter().map(DownloadItem::from).collect();
+    let uids: Vec<u64> = items.iter().map(|i| i.uid).collect();
+    let names = apply_repo::resume_names_by_uids(state.db.reader(), &uids).await?;
+    for it in &mut items {
+        if let Some(n) = names.get(&it.uid) {
+            it.uname = n.clone();
+        }
+    }
+    Ok(items)
 }

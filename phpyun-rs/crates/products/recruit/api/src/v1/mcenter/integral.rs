@@ -1,6 +1,7 @@
 //! Points: balance / exchange / history (authenticated).
 
 use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
@@ -188,13 +189,14 @@ impl TryFrom<phpyun_models::integral_transfer::entity::IntegralTransfer> for Tra
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ConsumeItem {
     pub id: u64,
-    /// Operation type (aligned with PHPYun `phpyun_member_log.opera`; TODO: formal enum)
+    /// Operation type (aligned with PHPYun `phpyun_company_pay.pay_type`)
     pub opera: i32,
     /// Description text
     pub detail: String,
     /// Points delta (positive = earned, negative = spent)
     pub delta: i32,
     pub ctime: i64,
+    pub ctime_n: String,
 }
 
 /// Points ledger (non-exchange increments/decrements — sign-in, viewing resumes, downloading resumes, etc.).
@@ -210,13 +212,24 @@ pub struct ConsumeItem {
     responses((status = 200, description = "ok"))
 )]
 pub async fn consumes(
-    State(_state): State<AppState>,
-    _user: AuthenticatedUser,
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<ConsumeItem>>> {
+    let r = integral_service::list_consumes(&state, &user, page).await?;
     Ok(ApiResponse::data(Paged::new(
-        Vec::<ConsumeItem>::new(),
-        0,
+        r.list
+            .into_iter()
+            .map(|t| ConsumeItem {
+                id: t.id,
+                opera: t.pay_type,
+                detail: t.pay_remark,
+                delta: t.order_price.round() as i32,
+                ctime_n: fmt_dt(t.pay_time),
+                ctime: t.pay_time,
+            })
+            .collect::<Vec<_>>(),
+        r.total,
         page.page,
         page.page_size,
     )))

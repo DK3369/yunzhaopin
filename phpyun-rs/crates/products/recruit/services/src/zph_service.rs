@@ -12,10 +12,14 @@ use std::collections::HashSet;
 
 pub use phpyun_models::job::repo::OwnJobBrief;
 
-pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Zph>> {
+pub async fn list(
+    state: &AppState,
+    page: Pagination,
+    keyword: Option<&str>,
+) -> AppResult<Paged<Zph>> {
     let db = state.db.reader();
-    let list = zph_repo::list(db, page.offset, page.limit).await?;
-    let total = zph_repo::count(db).await?;
+    let list = zph_repo::list(db, page.offset, page.limit, keyword).await?;
+    let total = zph_repo::count(db, keyword).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 

@@ -3,20 +3,28 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-apps', () =>
-  api.post<{
-    list: Array<{
-      id: number
-      uid: number
-      job_id: number
-      datetime_n?: string
-      is_browse?: number
-      eid?: number
-      job_name?: string
-      uname?: string
-    }>
-  }>('/v1/mcenter/applications', { page: 1, page_size: 20 }),
+const state = ref<number | null>(null)
+const { data, error, refresh } = await useAsyncData(
+  () => `com-apps-${state.value ?? 'all'}`,
+  () =>
+    api.post<{
+      list: Array<{
+        id: number
+        uid: number
+        job_id: number
+        datetime_n?: string
+        is_browse?: number
+        eid?: number
+        job_name?: string
+        uname?: string
+      }>
+    }>('/v1/mcenter/applications', {
+      page: 1,
+      page_size: 20,
+      ...(state.value === null ? {} : { state: state.value }),
+    }),
 )
+watch(state, () => refresh())
 const list = computed(() => data.value?.list || [])
 const invite = reactive({
   seeker_uid: 0,
@@ -49,11 +57,12 @@ async function setState(id: number, state: number) {
   }
 }
 function browseLabel(state?: number) {
-  if (state === 1) return t('wap_00129')
-  if (state === 0) return t('wap_com_00427')
-  if (state === 3) return t('wap_com_00046')
-  if (state === 4) return t('wap_user_00167')
-  if (state === 7) return t('common.yes')
+  if (state === 1) return t('wap_user_00260')
+  if (state === 2) return t('wap_user_00258')
+  if (state === 3) return t('wap_user_00266')
+  if (state === 4) return t('wap_user_00354')
+  if (state === 5) return t('member_com_00108')
+  if (state === 7) return t('wap_user_00356')
   return String(state ?? '')
 }
 async function sendInvite(confirm = false) {
@@ -94,8 +103,17 @@ useSeoMeta({ title: t('wap_com_00420') })
 <template>
   <section>
     <h1>{{ $t('wap_com_00420') }}</h1>
+    <p>
+      <button type="button" @click="state = null">{{ $t('common.all') }}</button>
+      <button type="button" @click="state = 1">{{ $t('wap_user_00260') }}</button>
+      <button type="button" @click="state = 2">{{ $t('wap_user_00258') }}</button>
+      <button type="button" @click="state = 3">{{ $t('wap_user_00266') }}</button>
+      <button type="button" @click="state = 4">{{ $t('wap_user_00354') }}</button>
+      <button type="button" @click="state = 5">{{ $t('member_com_00108') }}</button>
+      <button type="button" @click="state = 7">{{ $t('wap_user_00356') }}</button>
+    </p>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!list.length" class="muted">{{ $t('wap_00129') }}</p>
+    <p v-else-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
     <div class="stack">
       <article v-for="row in list" :key="row.id" class="job-card">
         <h3>
@@ -104,10 +122,11 @@ useSeoMeta({ title: t('wap_com_00420') })
         </h3>
         <p class="muted">{{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</p>
         <button type="button" @click="pick(row)">{{ $t('wap_com_00046') }}</button>
-        <button type="button" @click="setState(row.id, 0)">{{ $t('wap_com_00427') }}</button>
-        <button type="button" @click="setState(row.id, 4)">{{ $t('wap_user_00167') }}</button>
-        <button type="button" @click="setState(row.id, 3)">{{ $t('wap_com_00046') }}</button>
-        <button type="button" @click="setState(row.id, 7)">{{ $t('common.yes') }}</button>
+        <button type="button" @click="setState(row.id, 2)">{{ $t('wap_user_00258') }}</button>
+        <button type="button" @click="setState(row.id, 4)">{{ $t('wap_user_00354') }}</button>
+        <button type="button" @click="setState(row.id, 3)">{{ $t('wap_user_00266') }}</button>
+        <button type="button" @click="setState(row.id, 5)">{{ $t('member_com_00108') }}</button>
+        <button type="button" @click="setState(row.id, 7)">{{ $t('wap_user_00356') }}</button>
       </article>
     </div>
     <h2>{{ $t('wap_com_00046') }}</h2>

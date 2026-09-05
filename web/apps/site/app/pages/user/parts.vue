@@ -11,7 +11,7 @@ const { data: collects, refresh: refreshCollects } = await useAsyncData('my-part
 )
 const msg = ref('')
 function statusLabel(status?: number) {
-  if (status === 1) return t('wap_00129')
+  if (status === 1) return t('wap_user_00260')
   if (status === 2) return t('wap_com_00427')
   if (status === 3) return t('wap_com_00046')
   return String(status ?? '')

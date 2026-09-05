@@ -260,6 +260,35 @@ pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Erro
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub async fn list_ledger_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<IntegralTransfer>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_company_pay
+          WHERE com_id = ?
+          ORDER BY pay_time DESC, id DESC
+          LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, IntegralTransfer>(&sql)
+        .bind(uid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_ledger_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_pay WHERE com_id = ?")
+            .bind(uid)
+            .fetch_one(pool)
+            .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct PhpPayRow {
     pub id: u64,

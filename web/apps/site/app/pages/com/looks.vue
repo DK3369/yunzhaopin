@@ -18,7 +18,7 @@ useSeoMeta({ title: t('member_com_00007') })
       <article v-for="row in data?.list || []" :key="row.id" class="job-card">
         <h3>{{ row.job_name || row.job_id }}</h3>
         <p class="muted">
-          <NuxtLink v-if="row.uid" :to="`/resumes/${row.uid}`">{{ row.uid }}</NuxtLink>
+          <NuxtLink v-if="row.uid" :to="`/resumes/${row.eid || row.uid}`">{{ row.uname || row.uid }}</NuxtLink>
           · {{ row.datetime_n }}
         </p>
         <NuxtLink v-if="row.job_id" :to="`/jobs/${row.job_id}`">{{ $t('wap_com_00427') }}</NuxtLink>

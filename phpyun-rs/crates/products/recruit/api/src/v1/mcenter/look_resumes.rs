@@ -14,6 +14,7 @@ use utoipa::ToSchema;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/look-resumes/list", post(list_mine))
+        .route("/look-resumes/mine", post(list_company_mine))
         .route("/look-resumes/delete", post(delete_mine))
 }
 
@@ -26,6 +27,7 @@ pub struct LookResumeItem {
     pub com_name: String,
     pub com_job: String,
     pub com_job_num: i64,
+    pub resume_name: String,
     pub datetime: i64,
     pub datetime_n: String,
 }
@@ -40,6 +42,7 @@ impl From<phpyun_models::look_resume::LookResume> for LookResumeItem {
             com_name: r.com_name,
             com_job: r.com_job,
             com_job_num: r.com_job_num,
+            resume_name: r.resume_name,
             datetime_n: fmt_dt(r.datetime),
             datetime: r.datetime,
         }
@@ -59,6 +62,29 @@ pub async fn list_mine(
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<LookResumeItem>>> {
     let r = resume_service::list_look_resumes(&state, &user, page).await?;
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list
+            .into_iter()
+            .map(LookResumeItem::from)
+            .collect::<Vec<_>>(),
+        r.total,
+        page,
+    )))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/look-resumes/mine",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_company_mine(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<ApiResponse<Paged<LookResumeItem>>> {
+    let r = resume_service::list_look_resumes_mine(&state, &user, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list
             .into_iter()

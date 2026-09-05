@@ -150,6 +150,21 @@ pub async fn list_by_ids(pool: &MySqlPool, ids: &[u64]) -> Result<Vec<Expect>, s
     q.fetch_all(pool).await
 }
 
+/// Raw CSV class ids for PHP `likeJob`.
+pub async fn class_csv_for_uid(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<(String, String, i32)>, sqlx::Error> {
+    sqlx::query_as::<_, (String, String, i32)>(
+        "SELECT COALESCE(job_classid,''), COALESCE(city_classid,''), COALESCE(report,0) \
+         FROM phpyun_resume_expect WHERE uid = ? \
+         ORDER BY COALESCE(defaults,0) DESC, id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
 /// PHP public resume list uses `resume_expect.defaults = 1` when `resume.def_job` is 0.
 pub async fn list_defaults_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<Vec<Expect>, sqlx::Error> {
     if uids.is_empty() {
@@ -998,4 +1013,106 @@ pub async fn count_php_resumes(
     push_php_resume_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+const RESUME_TOP_TYPE: i32 = 14;
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct ResumeTopOrder {
+    pub order_id: String,
+    #[sqlx(try_from = "i32")]
+    pub uid: u64,
+    pub rating: i32,
+    pub sid: i32,
+    pub order_state: i32,
+}
+
+pub async fn find_topdate(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+) -> Result<Option<i64>, sqlx::Error> {
+    sqlx::query_scalar::<_, i64>(
+        "SELECT CAST(COALESCE(topdate,0) AS SIGNED) FROM phpyun_resume_expect \
+         WHERE id = ? AND uid = ? LIMIT 1",
+    )
+    .bind(id)
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn set_member_top(
+    pool: &MySqlPool,
+    uid: u64,
+    id: u64,
+    topdate: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume_expect SET top = 1, topdate = ? WHERE id = ? AND uid = ?",
+    )
+    .bind(topdate)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn insert_top_order(
+    pool: &MySqlPool,
+    uid: u64,
+    order_id: &str,
+    pay_type: &str,
+    price: f64,
+    resume_id: u64,
+    days: i32,
+    now: i64,
+    state: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_order \
+            (uid, order_id, order_type, order_price, order_time, order_state, \
+             order_remark, type, rating, sid, did, port, usertype, status) \
+         VALUES (?, ?, ?, ?, ?, ?, 'wap_user_00207', ?, ?, ?, 0, 1, 1, 1)",
+    )
+    .bind(uid)
+    .bind(order_id)
+    .bind(pay_type)
+    .bind(price)
+    .bind(now)
+    .bind(state)
+    .bind(RESUME_TOP_TYPE)
+    .bind(i32::try_from(resume_id).unwrap_or(0))
+    .bind(days)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn find_top_order(
+    pool: &MySqlPool,
+    order_id: &str,
+) -> Result<Option<ResumeTopOrder>, sqlx::Error> {
+    sqlx::query_as::<_, ResumeTopOrder>(
+        "SELECT COALESCE(order_id,'') AS order_id, CAST(COALESCE(uid,0) AS SIGNED) AS uid, \
+         COALESCE(rating,0) AS rating, COALESCE(sid,0) AS sid, COALESCE(order_state,0) AS order_state \
+         FROM phpyun_company_order WHERE order_id = ? AND type = ? LIMIT 1",
+    )
+    .bind(order_id)
+    .bind(RESUME_TOP_TYPE)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn mark_top_order_paid(pool: &MySqlPool, order_id: &str) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_order SET order_state = 2 \
+         WHERE order_id = ? AND type = ? AND order_state = 1",
+    )
+    .bind(order_id)
+    .bind(RESUME_TOP_TYPE)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }

@@ -162,10 +162,13 @@ useSeoMeta({ title: t('member_com_00480') })
     <p v-if="!(applies?.list || []).length" class="muted">{{ $t('ui.no_apply') }}</p>
     <div class="stack">
       <article v-for="row in applies?.list || []" :key="row.id" class="job-card">
-        <h3>uid {{ row.uid }} · job_id {{ row.job_id }}</h3>
+        <h3>
+          <NuxtLink :to="`/resumes/${row.uid}`">{{ row.uname || row.uid }}</NuxtLink>
+          · {{ row.job_name || row.job_id }}
+        </h3>
         <p class="muted">status {{ row.status }} {{ row.status_n }}</p>
-        <button type="button" @click="setApply(row.id, 2)">{{ $t('common.yes') }}</button>
-        <button type="button" @click="setApply(row.id, 3)">{{ $t('common.phone') }}</button>
+        <button type="button" @click="setApply(row.id, 2)">{{ $t('wap_user_00258') }}</button>
+        <button type="button" @click="setApply(row.id, 3)">{{ $t('wap_com_00046') }}</button>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>

@@ -89,7 +89,7 @@ async function sign() {
 const h5Links = [
   { to: '/user/resume', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00204' },
   { to: '/user/privacy', icon: '/legacy/h5/images/ys.png', key: 'wap_user_00215' },
-  { to: '/user/parts', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00196' },
+  { to: '/user/parts', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00220' },
   { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
   { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
   { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
@@ -129,7 +129,7 @@ function labelOf(to: string, key: string) {
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/favorites">
               <i class="yun_m_index_date_icon3" />
-              <div class="yun_m_index_datename">{{ $t('default_00101') }}</div>
+              <div class="yun_m_index_datename">{{ $t('member_user_00103') }}</div>
               <div class="yun_m_index_date_n">{{ dash?.favorite_count ?? 0 }}</div>
             </NuxtLink>
           </div>
@@ -260,13 +260,13 @@ function labelOf(to: string, key: string) {
             <li>
               <NuxtLink to="/user/favorites">
                 <i class="userparticulars_number">{{ dash?.favorite_count ?? 0 }}</i>
-                <i class="userparticulars_word">{{ $t('wap_user_00193') }}</i>
+                <i class="userparticulars_word">{{ $t('member_user_00103') }}</i>
               </NuxtLink>
             </li>
             <li>
               <NuxtLink to="/user/views">
                 <i class="userparticulars_number">{{ dash?.view_count ?? 0 }}</i>
-                <i class="userparticulars_word">{{ $t('wap_user_00221') }}</i>
+                <i class="userparticulars_word">{{ $t('wap_user_00276') }}</i>
               </NuxtLink>
             </li>
           </ul>

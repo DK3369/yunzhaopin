@@ -26,6 +26,10 @@ pub struct LookJob {
     pub minsalary: i32,
     #[sqlx(default)]
     pub maxsalary: i32,
+    #[sqlx(default)]
+    pub uname: String,
+    #[sqlx(default)]
+    pub eid: i64,
 }
 
 const FIELDS: &str = "d.id, COALESCE(d.uid,0) AS uid, COALESCE(d.jobid,0) AS jobid, \
@@ -33,7 +37,8 @@ const FIELDS: &str = "d.id, COALESCE(d.uid,0) AS uid, COALESCE(d.jobid,0) AS job
     COALESCE(d.status,0) AS status, COALESCE(d.com_status,0) AS com_status, \
     COALESCE(d.did,0) AS did, d.ip, COALESCE(j.name,'') AS job_name, \
     COALESCE(j.com_name,'') AS com_name, COALESCE(j.minsalary,0) AS minsalary, \
-    COALESCE(j.maxsalary,0) AS maxsalary";
+    COALESCE(j.maxsalary,0) AS maxsalary, COALESCE(r.name,'') AS uname, \
+    COALESCE(r.def_job,0) AS eid";
 
 pub async fn list_by_com(
     pool: &MySqlPool,
@@ -44,6 +49,7 @@ pub async fn list_by_com(
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_look_job d \
          LEFT JOIN phpyun_company_job j ON j.id = d.jobid \
+         LEFT JOIN phpyun_resume r ON r.uid = d.uid \
          WHERE d.com_id = ? ORDER BY d.datetime DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, LookJob>(&sql)
@@ -78,6 +84,7 @@ pub async fn list_by_seeker(
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_look_job d \
          LEFT JOIN phpyun_company_job j ON j.id = d.jobid \
+         LEFT JOIN phpyun_resume r ON r.uid = d.uid \
          WHERE d.uid = ? AND COALESCE(d.status,0) = 0 \
          ORDER BY d.datetime DESC LIMIT ? OFFSET ?"
     );

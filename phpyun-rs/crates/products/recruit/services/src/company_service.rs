@@ -43,6 +43,8 @@ pub struct CompanyUpdateInput<'a> {
     pub linkmail: Option<&'a str>,
     pub x: Option<&'a str>,
     pub y: Option<&'a str>,
+    pub pr: Option<i32>,
+    pub mun: Option<i32>,
 }
 
 /// Company reads its own profile; if no row exists, calls ensure_row first.
@@ -116,6 +118,8 @@ pub async fn update_mine(
             linkmail: input.linkmail,
             x: input.x,
             y: input.y,
+            pr: input.pr,
+            mun: input.mun,
         },
     )
     .await?;

@@ -15,6 +15,7 @@ pub fn routes() -> Router<AppState> {
         .route("/resume/list", post(get_mine))
         .route("/resume/status", post(update_status))
         .route("/resume/refresh", post(refresh))
+        .route("/resume/top", post(buy_top))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -264,4 +265,65 @@ pub async fn refresh(
     Ok(ApiResponse::data(
         json::json!({ "ok": true, "lastupdate": ts }),
     ))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ResumeTopForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub resumeid: u64,
+    #[validate(range(min = 1, max = 365))]
+    pub days: i32,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub paytype: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume/top",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ResumeTopForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn buy_top(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ResumeTopForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let paytype = if f.paytype.trim().is_empty() {
+        "alipay"
+    } else {
+        f.paytype.as_str()
+    };
+    if paytype == "alipay" {
+        let _ = phpyun_services::payment_notify_service::ensure_alipay_page(&state).await;
+    }
+    let r = resume_service::buy_top(&state, &user, f.resumeid, f.days, paytype).await?;
+    let mut body = json::json!({
+        "status": r.status,
+        "order_id": r.order_id,
+        "price": r.price,
+        "msg": r.msg,
+    });
+    if r.status == 2 && paytype == "alipay" {
+        let cents = (r.price * 100.0).round() as i32;
+        match phpyun_services::payment_notify_service::build_alipay_page_url(
+            &state,
+            &r.order_id,
+            "wap_user_00207",
+            cents,
+            None,
+        )
+        .await
+        {
+            Ok(url) => {
+                body["pay_url"] = json::Value::String(url);
+            }
+            Err(e) => {
+                body["msg"] = json::Value::String(e.to_string());
+            }
+        }
+    }
+    Ok(ApiResponse::data(body))
 }

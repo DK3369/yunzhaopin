@@ -146,3 +146,66 @@ pub async fn hide_by_uid(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sql
     .await?;
     Ok(res.rows_affected())
 }
+
+/// PHP `member/com/invite`: `fid = me AND isdel = 9`.
+pub async fn list_by_fid(
+    pool: &MySqlPool,
+    fid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<UseridMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_userid_msg \
+         WHERE fid = ? AND COALESCE(isdel,9) = 9 \
+         ORDER BY id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, UseridMsg>(&sql)
+        .bind(fid)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            limit,
+            "pagination.limit",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            offset,
+            "pagination.offset",
+        )?)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_by_fid(pool: &MySqlPool, fid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+         WHERE fid = ? AND COALESCE(isdel,9) = 9",
+    )
+    .bind(fid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `delYqms` for usertype=2: `isdel = 2`.
+pub async fn hide_by_fid(pool: &MySqlPool, id: u64, fid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_msg SET isdel = 2 \
+         WHERE id = ? AND fid = ? AND COALESCE(isdel,9) = 9",
+    )
+    .bind(id)
+    .bind(fid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP shield-company: hide remaining invites from that company.
+pub async fn hide_by_uid_fid(pool: &MySqlPool, uid: u64, fid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_msg SET isdel = 1 \
+         WHERE uid = ? AND fid = ? AND COALESCE(isdel,9) = 9",
+    )
+    .bind(uid)
+    .bind(fid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}

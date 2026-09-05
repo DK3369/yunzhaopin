@@ -8,6 +8,7 @@ use phpyun_core::{
     json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
     ValidatedJson,
 };
+use phpyun_models::apply::repo as apply_repo;
 use phpyun_services::talent_pool_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -32,6 +33,7 @@ pub struct TalentPoolView {
     pub remark: Option<String>,
     pub ctime: i64,
     pub ctime_n: String,
+    pub uname: String,
 }
 
 impl From<phpyun_models::talent_pool::entity::TalentPoolItem> for TalentPoolView {
@@ -44,6 +46,7 @@ impl From<phpyun_models::talent_pool::entity::TalentPoolItem> for TalentPoolView
             remark: t.remark,
             ctime_n: fmt_dt(t.ctime),
             ctime: t.ctime,
+            uname: String::new(),
         }
     }
 }
@@ -90,9 +93,15 @@ pub async fn list(
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<TalentPoolView>>> {
     let r = talent_pool_service::list_mine(&state, &user, page).await?;
-    Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
-    )))
+    let mut list: Vec<TalentPoolView> = r.list.into_iter().map(TalentPoolView::from).collect();
+    let uids: Vec<u64> = list.iter().map(|i| i.seeker_uid).collect();
+    let names = apply_repo::resume_names_by_uids(state.db.reader(), &uids).await?;
+    for it in &mut list {
+        if let Some(n) = names.get(&it.seeker_uid) {
+            it.uname = n.clone();
+        }
+    }
+    Ok(ApiResponse::data(Paged::from_listing(list, r.total, page)))
 }
 
 #[utoipa::path(

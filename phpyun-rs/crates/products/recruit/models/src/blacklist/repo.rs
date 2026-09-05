@@ -25,17 +25,28 @@ pub async fn add(
     reason: &str,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    // PHP has no UNIQUE on (p_uid, c_uid); guard against duplicates by
-    // un-deleting an existing row first, then INSERT only if none was found.
+    add_edge(pool, uid, blocked_uid, 1, reason, now).await
+}
+
+/// PHP `black.model.php`: `p_uid` = company, `c_uid` = seeker.
+pub async fn add_edge(
+    pool: &MySqlPool,
+    p_uid: u64,
+    c_uid: u64,
+    usertype: i32,
+    com_name: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
     let updated = sqlx::query(
         "UPDATE phpyun_blacklist \
-            SET com_name = ?, inputtime = ?, status = 0 \
+            SET com_name = ?, inputtime = ?, usertype = ?, status = 0 \
           WHERE p_uid = ? AND c_uid = ?",
     )
-    .bind(reason)
+    .bind(com_name)
     .bind(now)
-    .bind(uid)
-    .bind(blocked_uid)
+    .bind(usertype)
+    .bind(p_uid)
+    .bind(c_uid)
     .execute(pool)
     .await?;
     if updated.rows_affected() > 0 {
@@ -43,13 +54,14 @@ pub async fn add(
     }
     let res = sqlx::query(
         "INSERT INTO phpyun_blacklist \
-            (p_uid, c_uid, inputtime, com_name, status) \
-         VALUES (?, ?, ?, ?, 0)",
+            (p_uid, c_uid, inputtime, usertype, com_name, status) \
+         VALUES (?, ?, ?, ?, ?, 0)",
     )
-    .bind(uid)
-    .bind(blocked_uid)
+    .bind(p_uid)
+    .bind(c_uid)
     .bind(now)
-    .bind(reason)
+    .bind(usertype)
+    .bind(com_name)
     .execute(pool)
     .await?;
     Ok(res.rows_affected())
@@ -121,6 +133,60 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
             .fetch_one(pool)
             .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP jobseeker privacy list: `WHERE c_uid = me` (I blocked these companies).
+pub async fn list_by_c_uid(
+    pool: &MySqlPool,
+    c_uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<BlacklistEntry>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_blacklist \
+         WHERE c_uid = ? AND status != 2 \
+         ORDER BY inputtime DESC, id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, BlacklistEntry>(&sql)
+        .bind(c_uid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_by_c_uid(pool: &MySqlPool, c_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_blacklist WHERE c_uid = ? AND status != 2")
+            .bind(c_uid)
+            .fetch_one(pool)
+            .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn remove_by_c_uid(
+    pool: &MySqlPool,
+    c_uid: u64,
+    p_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_blacklist SET status = 2 \
+         WHERE c_uid = ? AND p_uid = ? AND status != 2",
+    )
+    .bind(c_uid)
+    .bind(p_uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn remove_all_by_c_uid(pool: &MySqlPool, c_uid: u64) -> Result<u64, sqlx::Error> {
+    let res =
+        sqlx::query("UPDATE phpyun_blacklist SET status = 2 WHERE c_uid = ? AND status != 2")
+            .bind(c_uid)
+            .execute(pool)
+            .await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn list_blocked_uids(pool: &MySqlPool, uid: u64) -> Result<Vec<u64>, sqlx::Error> {

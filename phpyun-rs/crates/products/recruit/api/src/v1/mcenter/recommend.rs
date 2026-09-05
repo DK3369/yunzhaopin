@@ -35,6 +35,7 @@ pub struct RecJob {
     pub min_salary: i32,
     pub max_salary: i32,
     pub lastupdate: i64,
+    pub pre: i32,
 }
 
 impl From<phpyun_models::job::entity::Job> for RecJob {
@@ -48,6 +49,7 @@ impl From<phpyun_models::job::entity::Job> for RecJob {
             min_salary: j.minsalary,
             max_salary: j.maxsalary,
             lastupdate: j.lastupdate,
+            pre: 0,
         }
     }
 }
@@ -68,7 +70,13 @@ pub async fn jobs(
 ) -> AppResult<ApiResponse<Vec<RecJob>>> {
     let list = recommend_service::recommend_jobs_for_me(&state, &user, q.limit).await?;
     Ok(ApiResponse::data(
-        list.into_iter().map(RecJob::from).collect(),
+        list.into_iter()
+            .map(|s| {
+                let mut row = RecJob::from(s.job);
+                row.pre = s.pre;
+                row
+            })
+            .collect(),
     ))
 }
 

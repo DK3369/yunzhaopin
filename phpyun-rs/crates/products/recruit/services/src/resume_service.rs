@@ -408,3 +408,141 @@ pub async fn hide_look_resume(
     }
     Ok(n)
 }
+
+/// PHP `member/com/look_resume` — resumes I viewed.
+pub async fn list_look_resumes_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<LookResumePage> {
+    user.require_employer()?;
+    let (total, list) = tokio::join!(
+        phpyun_models::look_resume::count_by_com(state.db.reader(), user.uid),
+        phpyun_models::look_resume::list_by_com(
+            state.db.reader(),
+            user.uid,
+            page.offset,
+            page.limit
+        ),
+    );
+    Ok(LookResumePage {
+        total: total?,
+        list: list?,
+    })
+}
+
+/// PHP `userpay.model.php::buyZdresume`.
+pub struct ResumeTopResult {
+    pub status: i32,
+    pub order_id: String,
+    pub price: f64,
+    pub msg: Option<String>,
+}
+
+pub async fn buy_top(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    resume_id: u64,
+    days: i32,
+    paytype: &str,
+) -> AppResult<ResumeTopResult> {
+    user.require_jobseeker()?;
+    if days <= 0 || days > 365 {
+        return Err(ApiError::param_invalid("days"));
+    }
+    let db = state.db.reader();
+    let topdate = phpyun_models::resume::expect::find_topdate(db, resume_id, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("common_06645"))?;
+    let unit = phpyun_models::site_setting::repo::find(db, "integral_resume_top")
+        .await?
+        .and_then(|r| r.value.trim().parse::<f64>().ok())
+        .unwrap_or(0.0);
+    let price = (unit * f64::from(days) * 100.0).round() / 100.0;
+    let now = clock::now_ts();
+    let order_id = format!("{now}{:05}", (now % 90_000) + 10_000);
+    if price <= 0.0 {
+        let next = if topdate > now {
+            topdate.saturating_add(i64::from(days) * 86_400)
+        } else {
+            now.saturating_add(i64::from(days) * 86_400)
+        };
+        phpyun_models::resume::expect::set_member_top(state.db.pool(), user.uid, resume_id, next)
+            .await?;
+        let _ = phpyun_models::resume::expect::insert_top_order(
+            state.db.pool(),
+            user.uid,
+            &order_id,
+            paytype,
+            0.0,
+            resume_id,
+            days,
+            now,
+            2,
+        )
+        .await;
+        return Ok(ResumeTopResult {
+            status: 3,
+            order_id,
+            price: 0.0,
+            msg: None,
+        });
+    }
+    phpyun_models::resume::expect::insert_top_order(
+        state.db.pool(),
+        user.uid,
+        &order_id,
+        paytype,
+        price,
+        resume_id,
+        days,
+        now,
+        1,
+    )
+    .await?;
+    Ok(ResumeTopResult {
+        status: 2,
+        order_id,
+        price,
+        msg: Some("wap_user_00207".into()),
+    })
+}
+
+pub async fn settle_top_order(state: &AppState, order_no: &str) -> AppResult<()> {
+    let row = phpyun_models::resume::expect::find_top_order(state.db.reader(), order_no)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
+    if row.order_state == 2 {
+        return Ok(());
+    }
+    let n = phpyun_models::resume::expect::mark_top_order_paid(state.db.pool(), order_no).await?;
+    if n == 0 {
+        return Ok(());
+    }
+    let resume_id = u64::try_from(row.rating).unwrap_or(0);
+    let days = row.sid;
+    if resume_id == 0 || days <= 0 {
+        return Ok(());
+    }
+    let now = clock::now_ts();
+    let topdate = phpyun_models::resume::expect::find_topdate(
+        state.db.reader(),
+        resume_id,
+        row.uid,
+    )
+    .await?
+    .unwrap_or(0);
+    let next = if topdate > now {
+        topdate.saturating_add(i64::from(days) * 86_400)
+    } else {
+        now.saturating_add(i64::from(days) * 86_400)
+    };
+    let _ = phpyun_models::resume::expect::set_member_top(
+        state.db.pool(),
+        row.uid,
+        resume_id,
+        next,
+    )
+    .await;
+    Ok(())
+}

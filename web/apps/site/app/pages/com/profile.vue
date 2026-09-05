@@ -15,6 +15,8 @@ const form = reactive({
   linkphone: '',
   linkmail: '',
   hy: 0,
+  pr: 0,
+  mun: 0,
   provinceid: 0,
   cityid: 0,
   three_cityid: 0,
@@ -33,6 +35,8 @@ watch(
     form.linkphone = String(row.linkphone || '')
     form.linkmail = String(row.linkmail || '')
     form.hy = Number(row.hy || 0)
+    form.pr = Number(row.pr || 0)
+    form.mun = Number(row.mun || 0)
     form.provinceid = Number(row.provinceid || 0)
     form.cityid = Number(row.cityid || 0)
     form.three_cityid = Number(row.three_cityid || 0)
@@ -45,6 +49,14 @@ watch(
 const { data: industries } = await useAsyncData(
   () => `dict-hy-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
+)
+const { data: natures } = await useAsyncData(
+  () => `dict-pr-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/company-natures').catch(() => [] as DictItem[]),
+)
+const { data: sizes } = await useAsyncData(
+  () => `dict-mun-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
 )
 const { data: provinces } = await useAsyncData(
   () => `dict-city-${locale.value}`,
@@ -119,6 +131,14 @@ useSeoMeta({ title: t('member_com_00378') })
       <select v-model.number="form.hy">
         <option :value="0">{{ $t('common.all') }}</option>
         <option v-for="h in industries || []" :key="h.id" :value="h.id">{{ h.name }}</option>
+      </select>
+      <select v-model.number="form.pr">
+        <option :value="0">{{ $t('wap_com_00159') }}</option>
+        <option v-for="n in natures || []" :key="n.id" :value="n.id">{{ n.name }}</option>
+      </select>
+      <select v-model.number="form.mun">
+        <option :value="0">{{ $t('member_com_00196') }}</option>
+        <option v-for="s in sizes || []" :key="s.id" :value="s.id">{{ s.name }}</option>
       </select>
       <select v-model.number="form.provinceid">
         <option :value="0">{{ $t('member_com_00378') }}</option>

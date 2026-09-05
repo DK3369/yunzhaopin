@@ -101,9 +101,27 @@ pub async fn create(
     user.require_employer()?;
     ensure_can_publish(state, user).await?;
     let now = clock::now_ts();
-    let looked_up = company_repo::find_by_uid(state.db.reader(), user.uid)
-        .await?
-        .and_then(|c| c.name)
+    let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
+    if let Some(s) = st.as_ref() {
+        if s.vip_etime > 0 && s.vip_etime < now {
+            return Err(ApiError::business("member_com_00696"));
+        }
+        if s.job_num == 0 {
+            return Err(ApiError::business("model_00056"));
+        }
+    }
+    let company_row = company_repo::find_by_uid(state.db.reader(), user.uid).await?;
+    let looked_up = company_row
+        .as_ref()
+        .and_then(|c| c.name.clone())
+        .unwrap_or_default();
+    let x = company_row
+        .as_ref()
+        .and_then(|c| c.x.clone())
+        .unwrap_or_default();
+    let y = company_row
+        .as_ref()
+        .and_then(|c| c.y.clone())
         .unwrap_or_default();
     let resolved_name = match com_name {
         Some(s) if !s.is_empty() => s,
@@ -121,7 +139,6 @@ pub async fn create(
             provinceid: input.provinceid,
             cityid: input.cityid,
             three_cityid: input.three_cityid,
-
             minsalary: input.minsalary,
             maxsalary: input.maxsalary,
             job_type: input.job_type,
@@ -133,6 +150,8 @@ pub async fn create(
             sdate: input.sdate,
             edate: input.edate,
             did: user.did,
+            x: x.as_str(),
+            y: y.as_str(),
         },
         now,
     )

@@ -14,49 +14,84 @@ use phpyun_models::resume::{
 
 const DEFAULT_LIMIT: u64 = 20;
 
+pub struct ScoredJob {
+    pub job: Job,
+    pub pre: i32,
+}
+
+fn parse_csv_ids(raw: &str) -> Vec<i32> {
+    raw.split(|c| c == ',' || c == '.')
+        .filter_map(|s| s.trim().parse::<i32>().ok())
+        .filter(|n| *n > 0)
+        .collect()
+}
+
+fn score_job(job: &Job, resume: Option<&Resume>, city_ids: &[i32], report: i32) -> i32 {
+    let mut pre = 60;
+    if city_ids.iter().any(|id| job.cityid == *id || job.three_cityid == *id) {
+        pre += 10;
+    }
+    if let Some(r) = resume {
+        if job.edu == 0 || r.education == job.edu {
+            pre += 5;
+        }
+        if job.marriage == 0 || r.marriage == job.marriage {
+            pre += 5;
+        }
+        if job.sex == 0 || r.sex == job.sex {
+            pre += 5;
+        }
+        if job.exp == 0 || r.exp == job.exp {
+            pre += 5;
+        }
+    }
+    if job.report == 0 || report == job.report {
+        pre += 5;
+    }
+    pre
+}
+
 pub async fn recommend_jobs_for_me(
     state: &AppState,
     user: &AuthenticatedUser,
     limit: u64,
-) -> AppResult<Vec<Job>> {
+) -> AppResult<Vec<ScoredJob>> {
     user.require_jobseeker()?;
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();
     let limit = limit.clamp(1, 50);
 
-    // 1. Load the user's first `expect` entry
-    let expects = expect_repo::list_by_uid(db, user.uid).await?;
+    let csv = expect_repo::class_csv_for_uid(db, user.uid).await?;
     let resume = resume_repo::find_by_uid(db, user.uid).await?;
+    let (job_ids, city_ids, report) = match csv {
+        Some((j, c, r)) => (parse_csv_ids(&j), parse_csv_ids(&c), r),
+        None => (Vec::new(), Vec::new(), 0),
+    };
 
     let mut filter = JobFilter {
         did: 1,
+        uptime: Some(30),
         ..Default::default()
     };
-    if let Some(e) = expects.first() {
-        if e.job_classid > 0 {
-            filter.job1 = Some(phpyun_core::numeric::checked_db(
-                e.job_classid,
-                "resume_expect.job_classid",
-            )?);
-        }
-        if e.city_classid > 0 {
-            filter.city_id = Some(phpyun_core::numeric::checked_db(
-                e.city_classid,
-                "resume_expect.city_classid",
-            )?);
-        }
-        // The jobseeker expects a salary >= e.salary
-        if e.salary > 0 {
-            filter.min_salary = Some(e.salary);
-        }
+    if !job_ids.is_empty() {
+        filter.class_ids = Some(&job_ids);
     }
-    if let Some(r) = resume.as_ref() {
-        if r.education > 0 {
-            filter.edu = Some(r.education);
-        }
+    if !city_ids.is_empty() {
+        filter.city_ids = Some(&city_ids);
     }
 
-    Ok(job_repo::list_public(db, &filter, 0, limit, now).await?)
+    let fetch = (limit * 3).clamp(16, 80);
+    let mut jobs = job_repo::list_public(db, &filter, 0, fetch, now).await?;
+    let mut scored: Vec<ScoredJob> = jobs
+        .drain(..)
+        .map(|job| {
+            let pre = score_job(&job, resume.as_ref(), &city_ids, report);
+            ScoredJob { job, pre }
+        })
+        .collect();
+    scored.sort_by(|a, b| b.pre.cmp(&a.pre));
+    scored.truncate(limit as usize);
+    Ok(scored)
 }
 
 pub fn default_limit() -> u64 {

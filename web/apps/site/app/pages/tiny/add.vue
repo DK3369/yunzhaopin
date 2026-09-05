@@ -74,6 +74,10 @@ async function sendSms() {
 }
 async function submit() {
   msg.value = ''
+  if (!form.city_id) {
+    msg.value = t('common_02110')
+    return
+  }
   try {
     await api.post('/v1/wap/tiny-resumes', applyToQuery({
       ...form,
@@ -105,7 +109,7 @@ useSeoMeta({ title: t('default_00331') })
         <option :value="0">{{ $t('member_com_00378') }}</option>
         <option v-for="p in provinces || []" :key="p.id" :value="p.id">{{ p.name }}</option>
       </select>
-      <select v-model.number="form.city_id">
+      <select v-model.number="form.city_id" required>
         <option :value="0">{{ $t('common_02110') }}</option>
         <option v-for="c in cities || []" :key="c.id" :value="c.id">{{ c.name }}</option>
       </select>

@@ -221,7 +221,7 @@ fn validate_fields(input: &UpsertInput) -> AppResult<()> {
     if input.mobile.trim().is_empty() {
         return Err(ApiError::param_invalid("mobile"));
     }
-    if input.provinceid == 0 && input.cityid == 0 {
+    if input.cityid == 0 {
         return Err(ApiError::param_invalid("city"));
     }
     if input.production.trim().is_empty() {

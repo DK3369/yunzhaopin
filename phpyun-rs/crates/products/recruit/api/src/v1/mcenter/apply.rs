@@ -17,6 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/apply", post(apply_to_job))
         .route("/my-applications", post(list_mine))
         .route("/my-applications/withdraw", post(withdraw))
+        .route("/my-applications/delete", post(delete_mine))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -71,9 +72,9 @@ pub struct MyApplySummary {
     pub com_name: String,
     pub datetime: i64,
     pub datetime_n: String,
-    /// 1 unviewed / 0 viewed / 3 interviewed / 4 not suitable / 7 hired
+    /// 1 unviewed / 2 viewed / 3 interviewed / 4 not suitable / 7 hired
     pub is_browse: i32,
-    /// Derived: whether the employer has viewed (is_browse == 0)
+    /// Derived: whether the employer has viewed (is_browse != 1)
     pub employer_viewed: bool,
     pub invited_int: i32,
     pub invited: bool,
@@ -95,7 +96,7 @@ impl From<phpyun_models::apply::entity::Apply> for MyApplySummary {
             com_name: a.com_name,
             datetime_n: fmt_dt(a.datetime),
             datetime: a.datetime,
-            employer_viewed: a.is_browse == 0,
+            employer_viewed: a.is_browse != 1,
             is_browse: a.is_browse,
             invited: a.invited == 1,
             invited_int: a.invited,
@@ -110,11 +111,15 @@ impl From<phpyun_models::apply::entity::Apply> for MyApplySummary {
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct MyAppliesQuery {
     /// Filter by application feedback state (aligned with phpyun `is_browse` enum):
-    /// 1=unviewed / 0=viewed / 3=interviewed / 4=not suitable / 7=hired.
+    /// 1=unviewed / 2=viewed / 3=interviewed / 4=not suitable / 7=hired.
     /// Omitted = all.
     #[serde(default)]
     #[validate(range(min = 0, max = 99))]
     pub state: Option<i32>,
+    /// PHP time filter: 1 / 3 / 7 / 15 / 30 days.
+    #[serde(default)]
+    #[validate(range(min = 1, max = 365))]
+    pub days: Option<i32>,
 }
 
 /// Job seeker views their own application list
@@ -132,7 +137,7 @@ pub async fn list_mine(
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MyAppliesQuery>,
 ) -> AppResult<ApiResponse<Paged<MyApplySummary>>> {
-    let r = apply_service::list_mine(&state, &user, q.state, page).await?;
+    let r = apply_service::list_mine(&state, &user, q.state, q.days, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))
@@ -154,5 +159,23 @@ pub async fn withdraw(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
     apply_service::withdraw(&state, &user, b.id, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/my-applications/delete",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn delete_mine(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    apply_service::hide_mine(&state, &user, b.id, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

@@ -79,6 +79,8 @@ pub struct PartApply {
     pub job_name: String,
     #[sqlx(default)]
     pub com_name: String,
+    #[sqlx(default)]
+    pub uname: String,
 }
 
 /// Part-time favorite (`phpyun_part_collect`)

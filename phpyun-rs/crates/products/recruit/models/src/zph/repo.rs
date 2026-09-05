@@ -17,7 +17,7 @@
 
 use super::entity::{Zph, ZphCompany, ZphReservation, ZphSpace};
 use crate::soft_delete::{self, PREDICATE};
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 const ZPH_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -49,22 +49,36 @@ const ZPH_FIELDS: &str = "\
     CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
     CAST(COALESCE(is_open, 0) AS SIGNED) AS is_open";
 
-pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Zph>, sqlx::Error> {
+pub async fn list(
+    pool: &MySqlPool,
+    offset: u64,
+    limit: u64,
+    keyword: Option<&str>,
+) -> Result<Vec<Zph>, sqlx::Error> {
     let sql = format!(
         "SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui \
-         WHERE is_open = 1 AND {PREDICATE} ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC \
-         LIMIT ? OFFSET ?"
+         WHERE is_open = 1 AND {PREDICATE}"
     );
-    sqlx::query_as::<_, Zph>(&sql)
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(pool)
-        .await
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(sql);
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(" ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<Zph>().fetch_all(pool).await
 }
 
-pub async fn count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+pub async fn count(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
     let sql = format!("SELECT COUNT(*) FROM phpyun_zhaopinhui WHERE is_open = 1 AND {PREDICATE}");
-    let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(sql);
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

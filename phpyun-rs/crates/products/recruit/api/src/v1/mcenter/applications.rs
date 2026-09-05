@@ -29,6 +29,10 @@ pub struct ApplicationsQuery {
     /// Show only invited
     #[serde(default)]
     pub invited_only: Option<bool>,
+    /// PHP `is_browse` 1/2/3/4/5/7
+    #[serde(default)]
+    #[validate(range(min = 1, max = 7))]
+    pub state: Option<i32>,
 }
 
 /// Application record item — full 11 columns of phpyun_userid_job + formatted timestamps + derived unread/invited booleans.
@@ -46,7 +50,7 @@ pub struct ApplicantSummary {
     pub uname: String,
     pub datetime: i64,
     pub datetime_n: String,
-    /// 1 unviewed / 0 viewed / 3 interviewed / 4 not suitable / 7 hired etc. (PHP polysemous status)
+    /// 1 unviewed / 2 viewed / 3 interviewed / 4 not suitable / 7 hired etc.
     pub is_browse: i32,
     /// Derived: is_browse == 1
     pub unread: bool,
@@ -104,6 +108,7 @@ pub async fn list_received(
     let filter = ApplyFilter {
         unread_only: q.unread_only,
         invited_only: q.invited_only,
+        browse_state: q.state,
     };
     let r = apply_service::list_for_company(&state, &user, filter, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
@@ -133,8 +138,8 @@ pub async fn mark_browsed(
 pub struct SetStateBody {
     #[validate(range(min = 1, max = 99_999_999))]
     pub id: u64,
-    /// Aligned with PHPYun `is_browse`: 1=unviewed / 0=viewed / 3=interviewed / 4=not suitable / 7=hired
-    #[validate(range(min = 0, max = 7))]
+    /// Aligned with PHPYun `is_browse`: 1=unviewed / 2=viewed / 3=interviewed / 4=not suitable / 5=unreachable / 7=hired
+    #[validate(range(min = 1, max = 7))]
     pub state: i32,
 }
 
@@ -147,7 +152,7 @@ pub struct SetStateBody {
     request_body = SetStateBody,
     responses(
         (status = 200, description = "ok"),
-        (status = 400, description = "state not in {0,1,3,4,7}"),
+        (status = 400, description = "state not in {1,2,3,4,5,7}"),
         (status = 403, description = "Application does not belong to you"),
     )
 )]
