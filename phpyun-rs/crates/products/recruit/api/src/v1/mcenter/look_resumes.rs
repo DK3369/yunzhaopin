@@ -108,6 +108,10 @@ pub async fn delete_mine(
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    let n = resume_service::hide_look_resume(&state, &user, b.id).await?;
+    let n = if user.usertype == 2 {
+        resume_service::hide_look_resume_by_com(&state, &user, b.id).await?
+    } else {
+        resume_service::hide_look_resume(&state, &user, b.id).await?
+    };
     Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }

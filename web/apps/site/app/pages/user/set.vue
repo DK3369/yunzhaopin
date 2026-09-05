@@ -17,6 +17,8 @@ async function logout() {
       <NuxtLink to="/user/privacy" class="job-card">{{ $t('wap_user_00215') }}</NuxtLink>
       <NuxtLink to="/user/binding" class="job-card">{{ $t('wap_00389') }}</NuxtLink>
       <NuxtLink to="/user/account" class="job-card">{{ $t('wap_user_00338') }}</NuxtLink>
+      <NuxtLink to="/user/searches" class="job-card">{{ $t('member_user_00108') }}</NuxtLink>
+      <NuxtLink to="/user/outbox" class="job-card">{{ $t('member_user_00188') }}</NuxtLink>
       <NuxtLink to="/advice" class="job-card">{{ $t('wap_user_00203') }}</NuxtLink>
     </div>
     <p>

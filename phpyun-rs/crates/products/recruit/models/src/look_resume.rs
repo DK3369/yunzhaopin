@@ -117,6 +117,19 @@ pub async fn list_by_com(
         .await
 }
 
+/// PHP `lookresume.model.php::delInfo` for usertype=2: `com_status = 1`.
+pub async fn hide_by_com(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_look_resume SET com_status = 1 \
+         WHERE id = ? AND com_id = ? AND COALESCE(com_status,0) = 0",
+    )
+    .bind(id)
+    .bind(com_id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn count_by_com(pool: &MySqlPool, com_id: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_look_resume \

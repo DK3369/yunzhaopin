@@ -59,6 +59,9 @@ export function useMemberNav() {
     { to: '/com/pay', label: t('common_01946') },
     { to: '/com/stats', label: t('admin_tool_00224') },
     { to: '/com/password', label: t('member_user_00226') },
+    { to: '/com/binding', label: t('member_user_00059') },
+    { to: '/com/finder', label: t('member_com_00086') },
+    { to: '/com/set', label: t('wap_user_00214') },
     { to: '/advice', label: t('wap_user_00203') },
   ])
   return { userItems, comItems }

@@ -30,7 +30,7 @@ pub struct FinderItem {
     pub addtime_n: String,
 }
 
-fn para_to_query(para: &str) -> (String, String) {
+fn para_to_query(para: &str, usertype: i32) -> (String, String) {
     let mut q: Vec<String> = Vec::new();
     let mut labels: Vec<String> = Vec::new();
     for chunk in para.split("##") {
@@ -44,17 +44,19 @@ fn para_to_query(para: &str) -> (String, String) {
         q.push(format!("{k}={v}"));
     }
     let qs = q.join("&");
+    // PHP: jobseeker finder opens job list; employer finder opens resume list.
+    let base = if usertype == 2 { "/resumes" } else { "/jobs" };
     let to = if qs.is_empty() {
-        "/jobs".to_string()
+        base.to_string()
     } else {
-        format!("/jobs?{qs}")
+        format!("{base}?{qs}")
     };
     (labels.join(" · "), to)
 }
 
 impl From<phpyun_models::finder::Finder> for FinderItem {
     fn from(r: phpyun_models::finder::Finder) -> Self {
-        let (para_n, search_to) = para_to_query(&r.para);
+        let (para_n, search_to) = para_to_query(&r.para, r.usertype);
         Self {
             id: r.id,
             name: r.name,

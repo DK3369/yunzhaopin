@@ -409,6 +409,20 @@ pub async fn hide_look_resume(
     Ok(n)
 }
 
+/// PHP `member/com/look_resume` del — hide a browse record the company created.
+pub async fn hide_look_resume_by_com(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    let n = phpyun_models::look_resume::hide_by_com(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    Ok(n)
+}
+
 /// PHP `member/com/look_resume` — resumes I viewed.
 pub async fn list_look_resumes_mine(
     state: &AppState,

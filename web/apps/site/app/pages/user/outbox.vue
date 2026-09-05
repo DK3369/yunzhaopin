@@ -39,6 +39,17 @@ async function send() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+async function remove(id: number) {
+  if (!window.confirm(t('member_com_00083'))) return
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume-outbox/delete', { ids: [id] })
+    msg.value = t('common.success')
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 useSeoMeta({ title: t('member_user_00188') })
 </script>
 
@@ -63,6 +74,7 @@ useSeoMeta({ title: t('member_user_00188') })
       <article v-for="row in data?.list || []" :key="row.id" class="job-card">
         <h3>{{ row.com_name }} · {{ row.job_name }}</h3>
         <p class="muted">{{ row.email }} · {{ row.addtime_n }}</p>
+        <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
       </article>
     </div>
   </section>
