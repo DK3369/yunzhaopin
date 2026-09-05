@@ -384,7 +384,7 @@ pub async fn check_member_username(
     username: &str,
 ) -> AppResult<()> {
     user.require_admin()?;
-    add_member_check(state, username, "", "", "", None).await
+    add_member_check(state, username, "", "", None).await
 }
 
 /// PHP `CheckMobile`.
@@ -417,11 +417,14 @@ fn gen_salt() -> String {
     Uuid::now_v7().simple().to_string().chars().take(16).collect()
 }
 
-/// PHP `userinfo::addMemberCheck` (username / companyName / mobile / email).
+/// PHP `userinfo::addMemberCheck` (username / mobile / email).
+///
+/// 与 PHP 原实现的差异：不校验企业名称是否重复。同名企业在现实中大量存在，
+/// 且 `phpyun_company.name` 无唯一索引；新增表单的自动补全下拉仍会列出同名
+/// 企业供管理员参考。
 async fn add_member_check(
     state: &AppState,
     username: &str,
-    company_name: &str,
     mobile: &str,
     email: &str,
     except_uid: Option<u64>,
@@ -437,10 +440,6 @@ async fn add_member_check(
         if user_repo::exists_username_except(db, username, except_uid).await? {
             return Err(ApiError::business("common_01388"));
         }
-    }
-    if !company_name.is_empty() && company_repo::find_uid_by_name(db, company_name).await?.is_some()
-    {
-        return Err(ApiError::business("admin_user_00021"));
     }
     if !mobile.is_empty() {
         if !check_mobile(mobile) {
@@ -479,7 +478,7 @@ pub async fn create_admin_company(
     if password.chars().count() < 6 || password.chars().count() > 20 {
         return Err(ApiError::business("admin_user_00085"));
     }
-    add_member_check(state, &username, &name, &mobile, &email, None).await?;
+    add_member_check(state, &username, &mobile, &email, None).await?;
 
     let mut phone = String::new();
     let areacode = json_str(body, "areacode");
@@ -989,7 +988,7 @@ pub async fn company_save_user(
         return Err(ApiError::business("wap_com_00228"));
     }
     let status = json_i32(body, "status");
-    add_member_check(state, &username, "", "", "", Some(uid)).await?;
+    add_member_check(state, &username, "", "", Some(uid)).await?;
     let password = json_str(body, "password");
     let hash = if password.is_empty() {
         None
@@ -1414,7 +1413,7 @@ async fn create_jobseeker(
     exp: i32,
     description: &str,
 ) -> AppResult<u64> {
-    add_member_check(state, username, "", mobile, email, None).await?;
+    add_member_check(state, username, mobile, email, None).await?;
     let now = clock::now_ts();
     let salt = gen_salt();
     let password_hash = argon2_hash_async(format!("{password}{salt}")).await?;

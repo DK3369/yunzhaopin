@@ -63,7 +63,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span style="color:red;">{{ lc('admin_00604') }}</span>
+                            <span style="color:#909399;">{{ lc('admin_00604') }}</span>
                         </div>
                     </td>
                 </tr>
