@@ -140,6 +140,7 @@ export default defineNuxtConfig({
         },
         { src: '/admin/php-admin/js/jquery.min.js' },
         { src: '/admin/php-admin/js/echarts.min.js' },
+        { src: '/admin/php-admin/js/clipboard.min.js' },
         {
           src: '/admin/php-admin/js/wangeditor/index.js',
           tagPosition: 'head',

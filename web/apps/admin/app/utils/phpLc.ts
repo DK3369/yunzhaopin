@@ -227,6 +227,7 @@ declare global {
     yunAdminT?: (text: unknown) => string
     yunAdminTransText?: (text: unknown) => string
     httpPost?: typeof import('./httpPost').httpPost
+    httpGet?: typeof import('./httpPost').httpPost
     homeapp?: Record<string, unknown>
     custoapp?: { openSeoshezhi?: (data: unknown) => void; seotabRefresh?: () => void; curTab?: string }
     echarts?: {

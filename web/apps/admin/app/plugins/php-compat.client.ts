@@ -382,6 +382,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   if (import.meta.client) {
     window.lc = lc
     window.httpPost = httpPost
+    // PHP admin never defined httpGet either; huancunset.vue still calls it.
+    // Same envelope as httpPost (`{ data: { error, msg, data } }`), so reuse the POST channel.
+    window.httpGet = httpPost
     const w = window as unknown as Record<string, unknown>
     // PHP api.js: skip on zh; leftover Chinese → alias → lc(). Exact match only.
     w.yunAdminT = (text: unknown) => {
