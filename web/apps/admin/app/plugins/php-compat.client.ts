@@ -161,10 +161,87 @@ function isEmpty(val: unknown) {
 function isArray(arr: unknown) {
   return Array.isArray(arr)
 }
-/** PHP admin/js/api.js `isjsMobile`. Mainland-CN mobile only, same regex as PHP. */
+/**
+ * PHP admin/js/api.js `isjsMobile`, relaxed for international numbers: PHP only
+ * accepted 11-digit mainland-CN mobiles (`/^1[3-9]\d{9}$/`).
+ */
 function isjsMobile(obj: unknown) {
-  const val = String(obj ?? '')
-  return val.length === 11 && /^1[3-9]\d{9}$/.test(val)
+  return /^\+?\d{6,15}$/.test(String(obj ?? '').replace(/[\s-]/g, ''))
+}
+function accMul(arg1: unknown, arg2: unknown) {
+  const s1 = String(arg1 ?? '').trim()
+  const s2 = String(arg2 ?? '').trim()
+  const m = (s1.split('.')[1]?.length || 0) + (s2.split('.')[1]?.length || 0)
+  return (Number(s1.replace('.', '')) * Number(s2.replace('.', ''))) / Math.pow(10, m)
+}
+function accDiv(arg1: unknown, arg2: unknown) {
+  const s1 = String(arg1 ?? '').trim()
+  const s2 = String(arg2 ?? '').trim()
+  const t1 = s1.split('.')[1]?.length || 0
+  const t2 = s2.split('.')[1]?.length || 0
+  return (Number(s1.replace('.', '')) / Number(s2.replace('.', ''))) * Math.pow(10, t2 - t1)
+}
+/** PHP api.js `toDate`. Month is used unadjusted as the JS month index, same as PHP. */
+function toDate(str: unknown) {
+  const sd = String(str ?? '').split('-')
+  return new Date(parseInt(sd[0] || '', 10), parseInt(sd[1] || '', 10), parseInt(sd[2] || '', 10))
+}
+function getBase64Image(img: HTMLImageElement) {
+  const canvas = document.createElement('canvas')
+  canvas.width = img.width
+  canvas.height = img.height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return ''
+  ctx.drawImage(img, 0, 0, img.width, img.height)
+  return canvas.toDataURL('image/png')
+}
+/** PHP api.js `formatMoney`. Vue 2 `$set` is gone in Vue 3, so write to `row` directly. */
+function formatMoney(value: unknown, row: Record<string, unknown>, item: string) {
+  let sNum = String(value ?? '')
+  if (sNum.indexOf('.') === 0) sNum = '0' + sNum
+  sNum = sNum.replace(/[^\d.]/g, '')
+  sNum = sNum.replace(/\.{2,}/g, '.')
+  sNum = sNum.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.')
+  sNum = sNum.replace(/^(-)*(\d+)\.(\d\d).*$/, '$1$2.$3')
+  if (!row || typeof row !== 'object') return
+  row[item] = sNum.indexOf('.') < 0 && sNum !== '' ? parseFloat(sNum) : sNum
+}
+
+type CascaderOption = { value: unknown; label: unknown; children?: CascaderOption[] }
+
+/**
+ * PHP api.js `cityCascader` / `jobCascader`. The source arrays (`ci`/`ct`/`cn`,
+ * `ji`/`jt`/`jn`) were injected as globals by PHP templates and have no equivalent
+ * here yet, so this yields an empty list rather than throwing and aborting the
+ * caller's init(). Depth is capped at 3 levels to match PHP.
+ */
+function buildCascader(idsKey: string, treeKey: string, nameKey: string, raw: boolean) {
+  const w = window as unknown as Record<string, unknown>
+  const ids = Array.isArray(w[idsKey]) ? (w[idsKey] as unknown[]) : []
+  const tree = (w[treeKey] as Record<string, unknown[]> | undefined) || {}
+  const names = (w[nameKey] as Record<string, unknown> | undefined) || {}
+  const build = (parent: unknown, depth: number): CascaderOption[] => {
+    const kids = tree[String(parent)]
+    if (depth <= 0 || !Array.isArray(kids) || !kids.length) return []
+    return kids.map((k) => {
+      const node: CascaderOption = { value: raw ? k : String(k), label: names[String(k)] }
+      const sub = build(k, depth - 1)
+      if (sub.length) node.children = sub
+      return node
+    })
+  }
+  return ids.map((one) => {
+    const node: CascaderOption = { value: raw ? one : String(one), label: names[String(one)] }
+    const kids = build(one, 2)
+    if (kids.length) node.children = kids
+    return node
+  })
+}
+function cityCascader() {
+  return buildCascader('ci', 'ct', 'cn', false)
+}
+function jobCascader() {
+  return buildCascader('ji', 'jt', 'jn', true)
 }
 function deepClone<T>(obj: T): T {
   if (obj == null || typeof obj !== 'object') return obj
@@ -378,6 +455,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     w.isArray = isArray
     w.isEmpty = isEmpty
     w.isjsMobile = isjsMobile
+    w.accMul = accMul
+    w.accDiv = accDiv
+    w.toDate = toDate
+    w.getBase64Image = getBase64Image
+    w.formatMoney = formatMoney
+    w.cityCascader = cityCascader
+    w.jobCascader = jobCascader
     w.scrollToTop = scrollToTop
     w.getUrlParams = parseLocationQuery
     w.showFullScreenLoading = () => undefined
