@@ -161,6 +161,11 @@ function isEmpty(val: unknown) {
 function isArray(arr: unknown) {
   return Array.isArray(arr)
 }
+/** PHP admin/js/api.js `isjsMobile`. Mainland-CN mobile only, same regex as PHP. */
+function isjsMobile(obj: unknown) {
+  const val = String(obj ?? '')
+  return val.length === 11 && /^1[3-9]\d{9}$/.test(val)
+}
 function deepClone<T>(obj: T): T {
   if (obj == null || typeof obj !== 'object') return obj
   return JSON.parse(JSON.stringify(obj)) as T
@@ -372,6 +377,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     w.deepClone = deepClone
     w.isArray = isArray
     w.isEmpty = isEmpty
+    w.isjsMobile = isjsMobile
     w.scrollToTop = scrollToTop
     w.getUrlParams = parseLocationQuery
     w.showFullScreenLoading = () => undefined
