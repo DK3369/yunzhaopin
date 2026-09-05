@@ -259,39 +259,127 @@ pub async fn withdraw(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::
 
 // ==================== Company view ====================
 
-#[derive(Debug, Default, Clone, Copy)]
+/// Same columns as `FIELDS`, qualified with the `j` alias so the applicant
+/// filters can join `phpyun_resume` (which also has `id` / `uid` / `name`).
+const FIELDS_J: &str = "CAST(j.id AS UNSIGNED) AS id, \
+     CAST(j.uid AS UNSIGNED) AS uid, \
+     CAST(j.job_id AS UNSIGNED) AS job_id, \
+     CAST(j.com_id AS UNSIGNED) AS com_id, \
+     CAST(j.eid AS UNSIGNED) AS eid, \
+     COALESCE(j.job_name, '') AS job_name, \
+     COALESCE(j.com_name, '') AS com_name, \
+     CAST(j.datetime AS SIGNED) AS datetime, j.is_browse, \
+     COALESCE(j.invited, 0) AS invited, \
+     COALESCE(j.invite_time, 0) AS invite_time, \
+     j.isdel, j.quxiao";
+
+/// Employer-side filters for the received-applications screen
+/// (PHP `member/com/model/hr.class.php::index_action`).
+#[derive(Debug, Default, Clone)]
 pub struct ApplyFilter {
     /// None = all; true = unread only; false = viewed only.
     pub unread_only: Option<bool>,
     pub invited_only: Option<bool>,
     /// PHP `is_browse` 1/2/3/4/5/7. Takes precedence over unread_only.
     pub browse_state: Option<i32>,
+    /// PHP `jobid`: restrict to one of the employer's postings.
+    pub job_id: Option<u64>,
+    /// PHP `rstate`: `phpyun_userid_job.resume_state`.
+    pub resume_state: Option<i32>,
+    /// PHP `keyword`: applicant name, matched against the submitted resume.
+    pub keyword: Option<String>,
+    /// PHP `edu` / `exp` / `sex`: columns of the submitted resume.
+    pub edu: Option<i32>,
+    pub exp: Option<i32>,
+    pub sex: Option<i32>,
+    /// PHP `uptime`, already resolved to a cutoff timestamp by the service:
+    /// only resumes touched after this instant.
+    pub updated_after: Option<i64>,
+}
+
+impl ApplyFilter {
+    /// The resume-backed filters are the only ones needing the join, and it is
+    /// an INNER JOIN, so adding it unconditionally would silently drop rows
+    /// whose resume was deleted.
+    fn needs_resume_join(&self) -> bool {
+        self.keyword.is_some()
+            || self.edu.is_some()
+            || self.exp.is_some()
+            || self.sex.is_some()
+            || self.updated_after.is_some()
+    }
+}
+
+/// Shared `FROM ... WHERE ...` so list and count can never drift apart.
+fn push_com_source(qb: &mut QueryBuilder<'_, sqlx::MySql>, com_id: u64, f: &ApplyFilter) {
+    qb.push(" FROM phpyun_userid_job j");
+    if f.needs_resume_join() {
+        // `phpyun_resume` is keyed by `uid` (one row per seeker); the per-intent
+        // rows live in `phpyun_resume_expect`.
+        qb.push(" INNER JOIN phpyun_resume r ON r.uid = j.uid");
+    }
+    qb.push(" WHERE j.com_id = ");
+    qb.push_bind(com_id);
+    qb.push(" AND j.isdel = 9 AND j.quxiao = 0");
+    if let Some(st) = f.browse_state {
+        qb.push(" AND j.is_browse = ");
+        qb.push_bind(st);
+    } else if let Some(unread) = f.unread_only {
+        qb.push(" AND j.is_browse = ");
+        qb.push_bind(if unread { 1 } else { 2 });
+    }
+    if let Some(inv) = f.invited_only {
+        qb.push(" AND j.invited = ");
+        qb.push_bind(if inv { 1 } else { 0 });
+    }
+    if let Some(job_id) = f.job_id {
+        qb.push(" AND j.job_id = ");
+        qb.push_bind(job_id);
+    }
+    if let Some(rs) = f.resume_state {
+        qb.push(" AND j.resume_state = ");
+        qb.push_bind(rs);
+    }
+    if let Some(edu) = f.edu {
+        qb.push(" AND r.edu = ");
+        qb.push_bind(edu);
+    }
+    if let Some(exp) = f.exp {
+        qb.push(" AND r.exp = ");
+        qb.push_bind(exp);
+    }
+    if let Some(sex) = f.sex {
+        qb.push(" AND r.sex = ");
+        qb.push_bind(sex);
+    }
+    if let Some(after) = f.updated_after {
+        qb.push(" AND r.lastupdate > ");
+        qb.push_bind(after);
+    }
+    if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|k| !k.is_empty()) {
+        qb.push(" AND r.name LIKE ");
+        qb.push_bind(format!("%{}%", escape_like(kw)));
+    }
+}
+
+fn escape_like(raw: &str) -> String {
+    raw.replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_")
 }
 
 pub async fn list_by_com(
     pool: &MySqlPool,
     com_id: u64,
-    f: ApplyFilter,
+    f: &ApplyFilter,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Apply>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(FIELDS);
-    qb.push(" FROM phpyun_userid_job WHERE com_id = ");
-    qb.push_bind(com_id);
-    qb.push(" AND isdel = 9 AND quxiao = 0");
-    if let Some(st) = f.browse_state {
-        qb.push(" AND is_browse = ");
-        qb.push_bind(st);
-    } else if let Some(unread) = f.unread_only {
-        qb.push(" AND is_browse = ");
-        qb.push_bind(if unread { 1 } else { 2 });
-    }
-    if let Some(inv) = f.invited_only {
-        qb.push(" AND invited = ");
-        qb.push_bind(if inv { 1 } else { 0 });
-    }
-    qb.push(" ORDER BY datetime DESC LIMIT ");
+    qb.push(FIELDS_J);
+    push_com_source(&mut qb, com_id, f);
+    // PHP orders unread first within the same day so new applicants surface.
+    qb.push(" ORDER BY j.datetime DESC, j.is_browse ASC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -321,25 +409,63 @@ pub async fn resume_names_by_uids(
 pub async fn count_by_com(
     pool: &MySqlPool,
     com_id: u64,
-    f: ApplyFilter,
+    f: &ApplyFilter,
 ) -> Result<u64, sqlx::Error> {
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_userid_job WHERE com_id = ");
-    qb.push_bind(com_id);
-    qb.push(" AND isdel = 9 AND quxiao = 0");
-    if let Some(st) = f.browse_state {
-        qb.push(" AND is_browse = ");
-        qb.push_bind(st);
-    } else if let Some(unread) = f.unread_only {
-        qb.push(" AND is_browse = ");
-        qb.push_bind(if unread { 1 } else { 2 });
-    }
-    if let Some(inv) = f.invited_only {
-        qb.push(" AND invited = ");
-        qb.push_bind(if inv { 1 } else { 0 });
-    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT COUNT(*)");
+    push_com_source(&mut qb, com_id, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// Per-`is_browse` totals for the status tabs (PHP `StateList`). The tab counts
+/// ignore `browse_state` itself, so the caller passes a filter with that field
+/// cleared and still gets counts narrowed by job / keyword / resume filters.
+pub async fn count_states_by_com(
+    pool: &MySqlPool,
+    com_id: u64,
+    f: &ApplyFilter,
+) -> Result<HashMap<i32, u64>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT j.is_browse, COUNT(*)");
+    push_com_source(&mut qb, com_id, f);
+    qb.push(" GROUP BY j.is_browse");
+    let rows: Vec<(i32, i64)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows
+        .into_iter()
+        .map(|(st, n)| (st, phpyun_core::numeric::nonnegative_count(n)))
+        .collect())
+}
+
+/// PHP `ReadSqJob`: mark a batch of applications as viewed in one statement.
+pub async fn mark_browsed_batch(
+    pool: &MySqlPool,
+    ids: &[u64],
+    com_id: u64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_userid_job SET is_browse = 2 WHERE com_id = ");
+    qb.push_bind(com_id);
+    qb.push(" AND is_browse = 1 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// Company deletes a received application (PHP `delSqJob` utype=com → `isdel=1`).
+pub async fn hide_by_com(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_job SET isdel = 1 WHERE id = ? AND com_id = ? AND isdel = 9",
+    )
+    .bind(id)
+    .bind(com_id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }
 
 /// Company marks as viewed (is_browse: 1 -> 2).

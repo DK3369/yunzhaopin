@@ -221,7 +221,10 @@ impl Modify for UniqueOperationId {
         v1::mcenter::apply::delete_mine,
         // mcenter: applications (employer view)
         v1::mcenter::applications::list_received,
+        v1::mcenter::applications::state_counts,
         v1::mcenter::applications::mark_browsed,
+        v1::mcenter::applications::batch_read,
+        v1::mcenter::applications::delete_received,
         v1::mcenter::applications::invite,
         // mcenter: favorites
         v1::mcenter::favorites::add,
@@ -755,6 +758,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::apply::ApplyCreated,
             v1::mcenter::apply::MyApplySummary,
             v1::mcenter::applications::ApplicantSummary,
+            v1::mcenter::applications::StateCounts,
             v1::mcenter::favorites::AddFavoriteForm,
             v1::mcenter::favorites::FavoriteListForm,
             v1::mcenter::favorites::FavoriteListItem,

@@ -964,11 +964,7 @@ pub async fn company_php_getinfo(
         apply_repo::count_by_com(
             db,
             comid,
-            apply_repo::ApplyFilter {
-                unread_only: None,
-                invited_only: None,
-                browse_state: None,
-            },
+            &apply_repo::ApplyFilter::default(),
         )
         .await?
     );

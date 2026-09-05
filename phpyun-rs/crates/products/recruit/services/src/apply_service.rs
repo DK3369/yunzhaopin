@@ -171,6 +171,16 @@ pub async fn hide_mine(
     Ok(())
 }
 
+/// PHP hr `uptime`: 1 means "updated since midnight today", any other N means
+/// "within the last N days".
+pub fn resume_updated_cutoff(days: i32, now: i64) -> i64 {
+    if days == 1 {
+        now - now.rem_euclid(86_400)
+    } else {
+        now - i64::from(days) * 86_400
+    }
+}
+
 pub async fn list_for_company(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -179,8 +189,8 @@ pub async fn list_for_company(
 ) -> AppResult<ApplyPage> {
     user.require_employer()?;
     let (total, list) = tokio::join!(
-        apply_repo::count_by_com(state.db.reader(), user.uid, filter),
-        apply_repo::list_by_com(state.db.reader(), user.uid, filter, page.offset, page.limit),
+        apply_repo::count_by_com(state.db.reader(), user.uid, &filter),
+        apply_repo::list_by_com(state.db.reader(), user.uid, &filter, page.offset, page.limit),
     );
     let mut list = list?;
     let uids: Vec<u64> = list.iter().map(|a| a.uid).collect();
@@ -196,6 +206,19 @@ pub async fn list_for_company(
     })
 }
 
+/// Tab counts for the received-applications screen. `browse_state` is cleared
+/// so selecting one tab does not zero out the others.
+pub async fn state_counts_for_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    mut filter: apply_repo::ApplyFilter,
+) -> AppResult<std::collections::HashMap<i32, u64>> {
+    user.require_employer()?;
+    filter.browse_state = None;
+    filter.unread_only = None;
+    Ok(apply_repo::count_states_by_com(state.db.reader(), user.uid, &filter).await?)
+}
+
 pub async fn mark_browsed(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -206,6 +229,40 @@ pub async fn mark_browsed(
     if affected == 0 {
         // Not found / already read — both treated as success: idempotent
     }
+    Ok(())
+}
+
+/// PHP `ReadSqJob`: bulk "mark as read" from the list checkboxes.
+pub async fn mark_browsed_batch(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<u64> {
+    user.require_employer()?;
+    Ok(apply_repo::mark_browsed_batch(state.db.pool(), ids, user.uid).await?)
+}
+
+/// PHP `delSqJob` on the employer side: hide the application from this company.
+pub async fn delete_for_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    apply_id: u64,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_employer()?;
+    let affected = apply_repo::hide_by_com(state.db.pool(), apply_id, user.uid).await?;
+    if affected == 0 {
+        return Err(ApiError::business("apply_not_owner"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new(
+            "application.delete",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("apply:{apply_id}")),
+    )
+    .await;
     Ok(())
 }
 

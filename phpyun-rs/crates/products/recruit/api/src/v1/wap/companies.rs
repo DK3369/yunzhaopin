@@ -451,7 +451,7 @@ pub async fn company_detail(
     let apply_total = phpyun_models::apply::repo::count_by_com(
         state.db.reader(),
         uid,
-        phpyun_models::apply::repo::ApplyFilter::default(),
+        &phpyun_models::apply::repo::ApplyFilter::default(),
     )
     .await
     .unwrap_or(0);

@@ -80,16 +80,13 @@ pub async fn com_counts(
     let db = state.db.reader();
     let uid = user.uid;
 
-    let applies_total_f = apply_repo::count_by_com(db, uid, apply_repo::ApplyFilter::default());
-    let applies_unread_f = apply_repo::count_by_com(
-        db,
-        uid,
-        apply_repo::ApplyFilter {
-            unread_only: Some(true),
-            invited_only: None,
-            browse_state: None,
-        },
-    );
+    let all_applies = apply_repo::ApplyFilter::default();
+    let unread_applies = apply_repo::ApplyFilter {
+        unread_only: Some(true),
+        ..Default::default()
+    };
+    let applies_total_f = apply_repo::count_by_com(db, uid, &all_applies);
+    let applies_unread_f = apply_repo::count_by_com(db, uid, &unread_applies);
     let interviews_f = interview_repo::count_for_company(db, uid);
     let downloads_f = phpyun_models::resume_download::repo::count_for_company(db, uid);
     let messages_f = message_repo::count(db, uid, None, true);

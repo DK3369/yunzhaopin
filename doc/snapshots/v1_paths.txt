@@ -8,9 +8,12 @@
 /v1/mcenter/answers/comments
 /v1/mcenter/answers/support
 /v1/mcenter/applications
+/v1/mcenter/applications/batch-read
 /v1/mcenter/applications/browse
+/v1/mcenter/applications/delete
 /v1/mcenter/applications/invite
 /v1/mcenter/applications/state
+/v1/mcenter/applications/state-counts
 /v1/mcenter/apply
 /v1/mcenter/blacklist
 /v1/mcenter/blacklist/delete
