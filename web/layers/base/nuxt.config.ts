@@ -19,6 +19,8 @@ export default defineNuxtConfig({
     cookieSecure: process.env.COOKIE_SECURE === '1',
     public: {
       siteName: process.env.NUXT_PUBLIC_SITE_NAME || '',
+      localeCookieKey: 'lang',
+      localeFallback: 'zh',
     },
   },
   hooks: {

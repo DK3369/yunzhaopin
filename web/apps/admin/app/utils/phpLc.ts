@@ -7,15 +7,37 @@
  * Menu labels follow PHP `navigation.model.php translateAdminNavRows` +
  * `index.htm translateMenuText`: Chinese name → alias key → lc(key).
  */
-import { persistWebLocale, parseWebLocale, readStoredLocale, rustLangFor, type WebLocale } from '../../../../layers/base/app/utils/locale'
+import {
+  ADMIN_LOCALE_KEY,
+  persistWebLocale,
+  parseWebLocale,
+  readStoredLocale as readStoredWebLocale,
+  rustLangFor as rustLangForWeb,
+  type WebLocale,
+} from '../../../../layers/base/app/utils/locale'
 
 export type AdminLocale = WebLocale
 
+/**
+ * Admin language lives in `admin_lang`, separate from the front-end `lang`, so
+ * switching language in the console never touches what job seekers / companies
+ * see on PC or H5. Same split as PHP `global.php`, English default included.
+ */
 export function parseAdminLocale(raw?: string | null): AdminLocale {
-  return parseWebLocale(raw)
+  return parseWebLocale(raw, 'en')
 }
 
-export { persistWebLocale as persistLocale, readStoredLocale, rustLangFor }
+export function persistLocale(locale: AdminLocale) {
+  persistWebLocale(locale, ADMIN_LOCALE_KEY)
+}
+
+export function readStoredLocale(): AdminLocale {
+  return readStoredWebLocale(ADMIN_LOCALE_KEY, 'en')
+}
+
+export function rustLangFor(locale: AdminLocale): string {
+  return rustLangForWeb(locale, ADMIN_LOCALE_KEY)
+}
 
 /** PHP `Yun_I18n::isAutoKey` */
 const AUTO_KEY_RE = /^([a-z][a-z0-9_]*)_([0-9]{5})$/
@@ -90,7 +112,7 @@ function composer(): I18nComposer | null {
 }
 
 function activeLocale(i18n?: I18nComposer | null): WebLocale {
-  return parseWebLocale(i18n?.locale.value)
+  return parseAdminLocale(i18n?.locale.value)
 }
 
 function lookupRaw(i18n: I18nComposer, key: string): string | undefined {
@@ -192,8 +214,8 @@ export function translateMenuText(name: string, navId?: number): string {
 }
 
 export async function setAdminLocale(locale: AdminLocale | string): Promise<AdminLocale> {
-  const loc = parseWebLocale(locale)
-  persistWebLocale(loc)
+  const loc = parseAdminLocale(locale)
+  persistLocale(loc)
   mergedFixes = false
   applyPhpLcFixes()
   return loc

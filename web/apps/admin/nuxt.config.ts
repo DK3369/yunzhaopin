@@ -87,6 +87,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       adminAssetTag,
+      localeCookieKey: 'admin_lang',
+      localeFallback: 'en',
     },
   },
   routeRules: {
@@ -106,18 +108,15 @@ export default defineNuxtConfig({
       { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },
       { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
     ],
-    defaultLocale: 'zh',
+    defaultLocale: 'en',
     lazy: true,
     langDir: 'locales',
     strategy: 'no_prefix',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'lang',
-      cookieCrossOrigin: false,
-      fallbackLocale: 'zh',
-      alwaysRedirect: false,
-      redirectOn: 'no prefix',
-    },
+    // PHP `global.php` never sniffs the browser for admin: it reads `?lang=`,
+    // then the `admin_lang` cookie, then falls back to English. Browser
+    // detection is off so `php-compat.client.ts` owns that resolution, and the
+    // shared front-end `lang` cookie can never leak in here.
+    detectBrowserLanguage: false,
     compilation: {
       strictMessage: false,
     },

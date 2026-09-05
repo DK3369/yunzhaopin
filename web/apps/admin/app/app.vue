@@ -8,7 +8,7 @@ const { locale, setLocale } = useI18n()
 async function applyQueryLang() {
   const mapped = mapPhpLang(String(route.query.lang || ''))
   if (mapped && mapped !== locale.value) {
-    persistWebLocale(mapped)
+    persistLocale(mapped)
     await setLocale(mapped)
   }
 }
