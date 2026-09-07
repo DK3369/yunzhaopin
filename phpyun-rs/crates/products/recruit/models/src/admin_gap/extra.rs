@@ -1402,6 +1402,385 @@ pub async fn count_userid_job_php(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+const MEMBER_APPLY_SELECT: &str = "CAST(j.id AS UNSIGNED) AS id, \
+    CAST(COALESCE(j.uid,0) AS UNSIGNED) AS uid, \
+    CAST(COALESCE(j.com_id,0) AS UNSIGNED) AS com_id, \
+    CAST(COALESCE(j.job_id,0) AS UNSIGNED) AS job_id, \
+    COALESCE(j.com_name,'') AS com_name, COALESCE(j.job_name,'') AS job_name, \
+    CAST(COALESCE(j.datetime,0) AS SIGNED) AS datetime, \
+    CAST(COALESCE(j.is_browse,0) AS SIGNED) AS is_browse, \
+    CAST(COALESCE(j.isdel,9) AS SIGNED) AS isdel";
+
+/// PHP `users_member::jobSqLog_action` — one seeker's job applications.
+pub async fn list_member_applies(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<MemberApplyRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    sqlx::query_as(&format!(
+        "SELECT {MEMBER_APPLY_SELECT} FROM phpyun_userid_job j \
+         WHERE j.uid = ? ORDER BY j.id DESC LIMIT ? OFFSET ?"
+    ))
+    .bind(uid)
+    .bind(l)
+    .bind(o)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn count_member_applies(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_userid_job WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+const MEMBER_INVITE_SELECT: &str = "CAST(m.id AS UNSIGNED) AS id, \
+    CAST(COALESCE(m.uid,0) AS UNSIGNED) AS uid, \
+    CAST(COALESCE(m.fid,0) AS UNSIGNED) AS fid, \
+    CAST(COALESCE(m.jobid,0) AS UNSIGNED) AS jobid, \
+    COALESCE(m.fname,'') AS fname, COALESCE(m.jobname,'') AS jobname, \
+    COALESCE(m.title,'') AS title, COALESCE(m.content,'') AS content, \
+    CAST(COALESCE(m.datetime,0) AS SIGNED) AS datetime, \
+    CAST(COALESCE(m.is_browse,0) AS SIGNED) AS is_browse, \
+    CAST(COALESCE(m.isdel,9) AS SIGNED) AS isdel";
+
+/// PHP `users_member::yqmsLog_action` — interview invitations sent to one seeker.
+pub async fn list_member_invites(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<MemberInviteRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    sqlx::query_as(&format!(
+        "SELECT {MEMBER_INVITE_SELECT} FROM phpyun_userid_msg m \
+         WHERE m.uid = ? ORDER BY m.id DESC LIMIT ? OFFSET ?"
+    ))
+    .bind(uid)
+    .bind(l)
+    .bind(o)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn count_member_invites(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_userid_msg WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `resume.model::statusCert` — idcard review for one or more seekers.
+/// PHP mirrors the status onto `resume_expect` so the seeker's job-hunting
+/// cards stop showing an unverified badge.
+pub async fn set_idcard_review_many(
+    pool: &MySqlPool,
+    uids: &[u64],
+    status: i32,
+    body: &str,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume SET idcard_status = ");
+    qb.push_bind(status);
+    qb.push(", statusbody = ");
+    qb.push_bind(body.to_string());
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    let n = qb.build().execute(pool).await?.rows_affected();
+
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_expect SET idcard_status = ");
+    qb.push_bind(status);
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    qb.build().execute(pool).await?;
+    Ok(n)
+}
+
+/// Which verification flag PHP `users_member::batchfirm` is toggling.
+#[derive(Debug, Clone, Copy)]
+pub enum CertFlag {
+    Email,
+    Mobile,
+    Idcard,
+}
+
+/// PHP `users_member::batchfirm` — flip one verification flag for many seekers.
+/// `idcard_status` only lives on `resume`, the other two are mirrored on
+/// `member` so login-side checks agree with the resume.
+pub async fn set_cert_flag_bulk(
+    pool: &MySqlPool,
+    uids: &[u64],
+    flag: CertFlag,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let (col, also_member) = match flag {
+        CertFlag::Email => ("email_status", true),
+        CertFlag::Mobile => ("moblie_status", true),
+        CertFlag::Idcard => ("idcard_status", false),
+    };
+    let mut affected = 0;
+    let mut tables: Vec<&str> = vec!["resume"];
+    if also_member {
+        tables.push("member");
+    }
+    for t in tables {
+        let mut qb = QueryBuilder::new(format!("UPDATE phpyun_{t} SET {col} = "));
+        qb.push_bind(status);
+        qb.push(" WHERE uid IN (");
+        let mut sep = qb.separated(", ");
+        for uid in uids {
+            sep.push_bind(*uid);
+        }
+        qb.push(")");
+        affected += qb.build().execute(pool).await?.rows_affected();
+    }
+    Ok(affected)
+}
+
+/// `resume.email` / `resume.email_status` before an admin rebinds them, so the
+/// caller can tell "already verified, nothing to do" from a real change.
+pub async fn resume_email_state(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<(String, i32)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT COALESCE(email,''), CAST(COALESCE(email_status,0) AS SIGNED) \
+         FROM phpyun_resume WHERE uid = ?",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+/// `resume.telphone` / `resume.moblie_status`, counterpart of [`resume_email_state`].
+pub async fn resume_mobile_state(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<(String, i32)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT COALESCE(telphone,''), CAST(COALESCE(moblie_status,0) AS SIGNED) \
+         FROM phpyun_resume WHERE uid = ?",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+/// PHP `users_member::emailstatus` — bind the email to this seeker, then release
+/// it from every other account still claiming it (a verified address must be
+/// unique). PHP also sweeps `lt_info` / `px_train`; those belong to modules the
+/// Rust API does not serve, so they are left alone.
+pub async fn rebind_member_email(
+    pool: &MySqlPool,
+    uid: u64,
+    email: &str,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    let n = sqlx::query("UPDATE phpyun_resume SET email = ?, email_status = ? WHERE uid = ?")
+        .bind(email)
+        .bind(status)
+        .bind(uid)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    if n == 0 {
+        return Ok(0);
+    }
+    sqlx::query("UPDATE phpyun_member SET email = ?, email_status = ? WHERE uid = ?")
+        .bind(email)
+        .bind(status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    for sql in [
+        "UPDATE phpyun_member SET email = '', email_status = 0 WHERE uid <> ? AND email = ?",
+        "UPDATE phpyun_resume SET email = '', email_status = 0 WHERE uid <> ? AND email = ?",
+        "UPDATE phpyun_company SET linkmail = '', email_status = 0 WHERE uid <> ? AND linkmail = ?",
+    ] {
+        sqlx::query(sql)
+            .bind(uid)
+            .bind(email)
+            .execute(pool)
+            .await?;
+    }
+    Ok(n)
+}
+
+/// PHP `users_member::mobliestatus` — same as [`rebind_member_email`] for the
+/// phone number. When the account's username was its old phone number PHP
+/// renames the username too, and any account already squatting the new number
+/// gets suffixed `_s`. Returns false when the seeker has no resume row.
+pub async fn rebind_member_mobile(
+    pool: &MySqlPool,
+    uid: u64,
+    phone: &str,
+    status: i32,
+) -> Result<bool, sqlx::Error> {
+    let n = sqlx::query("UPDATE phpyun_resume SET telphone = ?, moblie_status = ? WHERE uid = ?")
+        .bind(phone)
+        .bind(status)
+        .bind(uid)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    if n == 0 {
+        return Ok(false);
+    }
+
+    let displaced: Option<(u64,)> =
+        sqlx::query_as("SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE username = ? LIMIT 1")
+            .bind(phone)
+            .fetch_optional(pool)
+            .await?;
+    if let Some(other) = displaced.map(|(u,)| u).filter(|u| *u != uid) {
+        sqlx::query("UPDATE phpyun_member SET username = ? WHERE uid = ?")
+            .bind(format!("{phone}_s"))
+            .bind(other)
+            .execute(pool)
+            .await?;
+    }
+
+    let self_row: Option<(String, String)> = sqlx::query_as(
+        "SELECT COALESCE(username,''), COALESCE(moblie,'') FROM phpyun_member WHERE uid = ?",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    let renamed_self = self_row
+        .as_ref()
+        .is_some_and(|(username, moblie)| !username.is_empty() && username == moblie);
+    if renamed_self {
+        sqlx::query("UPDATE phpyun_member SET moblie = ?, moblie_status = ?, username = ? WHERE uid = ?")
+            .bind(phone)
+            .bind(status)
+            .bind(phone)
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    } else {
+        sqlx::query("UPDATE phpyun_member SET moblie = ?, moblie_status = ? WHERE uid = ?")
+            .bind(phone)
+            .bind(status)
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    }
+
+    for sql in [
+        "UPDATE phpyun_member SET moblie = '', moblie_status = 0 WHERE uid <> ? AND moblie = ?",
+        "UPDATE phpyun_resume SET telphone = '', moblie_status = 0 WHERE uid <> ? AND telphone = ?",
+        "UPDATE phpyun_company SET linktel = '', moblie_status = 0 WHERE uid <> ? AND linktel = ?",
+    ] {
+        sqlx::query(sql)
+            .bind(uid)
+            .bind(phone)
+            .execute(pool)
+            .await?;
+    }
+    Ok(true)
+}
+
+/// One `updDid` call from PHP `site.model`: which table to touch, which column
+/// holds the account id, and whether the table is shared between seeker and
+/// company rows (`usertype`).
+struct DidTarget {
+    table: &'static str,
+    col: &'static str,
+    usertype: Option<i32>,
+}
+
+/// Table/column pairs are compile-time constants, never request data, so the
+/// interpolation below cannot be reached by a caller.
+async fn apply_did(
+    pool: &MySqlPool,
+    targets: &[DidTarget],
+    uids: &[u64],
+    did: i32,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut affected = 0;
+    for t in targets {
+        let mut qb = QueryBuilder::new(format!("UPDATE phpyun_{} SET did = ", t.table));
+        qb.push_bind(did);
+        qb.push(format!(" WHERE {} IN (", t.col));
+        let mut sep = qb.separated(", ");
+        for uid in uids {
+            sep.push_bind(*uid);
+        }
+        qb.push(")");
+        if let Some(ut) = t.usertype {
+            qb.push(" AND usertype = ");
+            qb.push_bind(ut);
+        }
+        affected += qb.build().execute(pool).await?.rows_affected();
+    }
+    Ok(affected)
+}
+
+const MEMBER_DID_TARGETS: &[DidTarget] = &[
+    DidTarget { table: "report", col: "p_uid", usertype: None },
+    DidTarget { table: "company_pay", col: "com_id", usertype: None },
+    DidTarget { table: "company_cert", col: "uid", usertype: None },
+    DidTarget { table: "company_msg", col: "uid", usertype: None },
+    DidTarget { table: "company_order", col: "uid", usertype: None },
+    DidTarget { table: "look_job", col: "uid", usertype: None },
+    DidTarget { table: "member", col: "uid", usertype: None },
+    DidTarget { table: "member_statis", col: "uid", usertype: None },
+    DidTarget { table: "resume", col: "uid", usertype: None },
+    DidTarget { table: "resume_expect", col: "uid", usertype: None },
+    DidTarget { table: "user_entrust", col: "uid", usertype: None },
+    DidTarget { table: "userid_job", col: "uid", usertype: None },
+];
+
+const COMPANY_DID_TARGETS: &[DidTarget] = &[
+    DidTarget { table: "report", col: "p_uid", usertype: Some(2) },
+    DidTarget { table: "userid_msg", col: "fid", usertype: None },
+    DidTarget { table: "company_pay", col: "com_id", usertype: Some(2) },
+    DidTarget { table: "look_resume", col: "com_id", usertype: Some(2) },
+    DidTarget { table: "down_resume", col: "comid", usertype: Some(2) },
+    DidTarget { table: "ad_order", col: "comid", usertype: None },
+    DidTarget { table: "member", col: "uid", usertype: None },
+    DidTarget { table: "company", col: "uid", usertype: None },
+    DidTarget { table: "company_statis", col: "uid", usertype: None },
+    DidTarget { table: "company_job", col: "uid", usertype: None },
+    DidTarget { table: "company_cert", col: "uid", usertype: None },
+    DidTarget { table: "company_news", col: "uid", usertype: None },
+    DidTarget { table: "company_order", col: "uid", usertype: None },
+    DidTarget { table: "company_product", col: "uid", usertype: None },
+    DidTarget { table: "partjob", col: "uid", usertype: None },
+    DidTarget { table: "hotjob", col: "uid", usertype: None },
+];
+
+/// PHP `users_member::checksitedid_action` — move seeker accounts to a sub-site.
+pub async fn set_member_did(pool: &MySqlPool, uids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    apply_did(pool, MEMBER_DID_TARGETS, uids, did).await
+}
+
+/// PHP `company::checksitedid_action` — move company accounts to a sub-site.
+pub async fn set_company_did(pool: &MySqlPool, uids: &[u64], did: i32) -> Result<u64, sqlx::Error> {
+    apply_did(pool, COMPANY_DID_TARGETS, uids, did).await
+}
+
 pub async fn delete_userid_job_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);

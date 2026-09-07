@@ -211,6 +211,15 @@ function phpContent(mod: string, act: string): PhpAction {
   return { path: `/v1/admin/php-content/${mod}/${act}`, transformReq: pageQuery }
 }
 
+// The unbind-log tabs share one Rust handler; `utype` says whether the tab is
+// listing seeker (1) or company (2) accounts, which PHP hardcoded per class.
+function phpContentUtype(mod: string, act: string, utype: number): PhpAction {
+  return {
+    path: `/v1/admin/php-content/${mod}/${act}`,
+    transformReq: (b) => ({ ...pageQuery(b), utype }),
+  }
+}
+
 function phpContentRaw(mod: string, act: string): PhpAction {
   return { path: `/v1/admin/php-content/${mod}/${act}`, rawBody: true }
 }
@@ -331,6 +340,26 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/admin_memberlog/delLog': phpContent('user-gap', 'memlog-del'),
   'user/company/log': phpContent('user-gap', 'memlog-index'),
   'user/company/delLog': phpContent('user-gap', 'memlog-del'),
+  'user/users_member/writtenOffLog': phpContentUtype('user-gap', 'writtenoff-index', 1),
+  'user/users_member/delwflog': phpContentUtype('user-gap', 'writtenoff-del', 1),
+  'user/company/writtenOffLog': phpContentUtype('user-gap', 'writtenoff-index', 2),
+  'user/company/delwflog': phpContentUtype('user-gap', 'writtenoff-del', 2),
+  'user/users_member/jobSqLog': phpContent('user-gap', 'apply-log'),
+  'user/users_member/yqmsLog': phpContent('user-gap', 'invite-log'),
+  'user/users_member/payLog': phpContent('user-gap', 'pay-log'),
+  'user/users_member/searchCom': phpContentRaw('user-gap', 'search-com'),
+  'user/users_member/log': phpContentUtype('user-gap', 'member-activity', 1),
+  'user/users_member/logDel': phpContentUtype('user-gap', 'member-activity-del', 1),
+  'user/users_member/usercert': phpContentRaw('user-gap', 'usercert'),
+  'user/users_member/checksitedid': phpContent('user-gap', 'member-checksitedid'),
+  'user/company/checksitedid': phpContent('user-gap', 'company-checksitedid'),
+  'user/users_member/merge': {
+    path: '/v1/admin/account-merge',
+    transformReq: (b) => ({
+      user_uid: Number(b.uid || 0),
+      company_uid: Number(b.com_uid || 0),
+    }),
+  },
   'user/company/reset_companypassword': phpContent('user-gap', 'reset-password'),
   'user/company_job/matching': phpContent('user-gap', 'matching'),
   'user/users_resume/resumeAudit': phpContent('user-gap', 'resume-audit'),

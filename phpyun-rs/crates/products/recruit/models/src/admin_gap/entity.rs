@@ -392,6 +392,37 @@ pub struct BannerAdminRow {
     pub name: String,
 }
 
+/// One `phpyun_userid_job` row for the member CRM "application records" tab.
+/// Keeps raw `isdel` because PHP renders it as translated text, not a flag.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct MemberApplyRow {
+    pub id: u64,
+    pub uid: u64,
+    pub com_id: u64,
+    pub job_id: u64,
+    pub com_name: String,
+    pub job_name: String,
+    pub datetime: i64,
+    pub is_browse: i32,
+    pub isdel: i32,
+}
+
+/// One `phpyun_userid_msg` row for the member CRM "interview invitations" tab.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct MemberInviteRow {
+    pub id: u64,
+    pub uid: u64,
+    pub fid: u64,
+    pub jobid: u64,
+    pub fname: String,
+    pub jobname: String,
+    pub title: String,
+    pub content: String,
+    pub datetime: i64,
+    pub is_browse: i32,
+    pub isdel: i32,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct BizLogRow {
     pub id: u64,

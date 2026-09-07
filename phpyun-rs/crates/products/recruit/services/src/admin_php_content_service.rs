@@ -277,6 +277,21 @@ pub async fn dispatch(
         ("user-gap", "login-del") => user_gap_login_del(state, body).await,
         ("user-gap", "memlog-index") => Ok(PhpOut::Data(user_gap_memlog_index(state, body).await?)),
         ("user-gap", "memlog-del") => user_gap_memlog_del(state, body).await,
+        ("user-gap", "writtenoff-index") => {
+            Ok(PhpOut::Data(user_gap_writtenoff_index(state, body).await?))
+        }
+        ("user-gap", "writtenoff-del") => user_gap_writtenoff_del(state, body).await,
+        ("user-gap", "apply-log") => Ok(PhpOut::Data(user_gap_apply_log(state, body).await?)),
+        ("user-gap", "invite-log") => Ok(PhpOut::Data(user_gap_invite_log(state, body).await?)),
+        ("user-gap", "pay-log") => Ok(PhpOut::Data(user_gap_pay_log(state, body).await?)),
+        ("user-gap", "search-com") => Ok(PhpOut::Data(user_gap_search_com(state, body).await?)),
+        ("user-gap", "member-activity") => {
+            Ok(PhpOut::Data(user_gap_member_activity(state, body).await?))
+        }
+        ("user-gap", "member-activity-del") => user_gap_member_activity_del(state, body).await,
+        ("user-gap", "usercert") => user_gap_usercert(state, body).await,
+        ("user-gap", "member-checksitedid") => user_gap_member_checksitedid(state, body).await,
+        ("user-gap", "company-checksitedid") => user_gap_company_checksitedid(state, body).await,
         ("user-gap", "mem-imitate") => Ok(PhpOut::Data(user_gap_mem_imitate(state, body).await?)),
         ("user-gap", "mem-lock") => user_gap_mem_lock(state, body).await,
         ("user-gap", "mem-edit") => user_gap_mem_edit(state, body).await,
@@ -5547,6 +5562,7 @@ async fn user_gap_memlog_index(state: &AppState, body: &Value) -> AppResult<Valu
         } else {
             Some(content.as_str())
         },
+        content_like_any: &[],
         opera: json_opt_i32(body, "operas"),
         log_type: json_opt_i32(body, "parrs"),
         time_from,
@@ -5613,6 +5629,584 @@ async fn user_gap_memlog_del(state: &AppState, body: &Value) -> AppResult<PhpOut
     }
     gap_repo::delete_php_member_logs(db, &ids).await?;
     Ok(PhpOut::Message("admin_user_00187"))
+}
+
+
+/// PHP `users_member::writtenOffLog` narrows opera 12 to these three keys, so
+/// the unbind tab does not show every account-security log in the bucket.
+const WRITTENOFF_CONTENT_KEYS: &[&str] = &["wap_user_00138", "wap_js_00065", "common_02028"];
+const WRITTENOFF_OPERA: i32 = 12;
+
+/// PHP `users_member::writtenOffLog_action` — 解绑日志.
+async fn user_gap_writtenoff_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (_, _, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let kw_type = json_i32(body, "type");
+    let mut username_like: Option<String> = None;
+    let mut content_like: Option<String> = None;
+    if !kw.is_empty() {
+        match kw_type {
+            1 => username_like = Some(kw.clone()),
+            2 => content_like = Some(kw.clone()),
+            _ => {}
+        }
+    }
+    // PHP: strtotime(time_start) .. strtotime(time_end . ' 23:59:59').
+    let t0 = Some(parse_date_ts(&json_str(body, "time_start"))).filter(|n| *n > 0);
+    let t1 = Some(parse_date_ts(&json_str(body, "time_end")))
+        .filter(|n| *n > 0)
+        .map(|n| n + 86_399);
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gap_repo::PhpMemberLogFilter {
+        usertype: user_gap_log_usertype(body),
+        uid: None,
+        username_like: username_like.as_deref(),
+        content_like: content_like.as_deref(),
+        content_like_any: if content_like.is_some() {
+            &[]
+        } else {
+            WRITTENOFF_CONTENT_KEYS
+        },
+        opera: Some(WRITTENOFF_OPERA),
+        log_type: None,
+        time_from: t0,
+        time_to: t1,
+        order_t: order_t.as_str(),
+        order_dir: order_dir.as_str(),
+    };
+    let db = state.db.reader();
+    let total = gap_repo::count_php_member_logs(db, &f).await?;
+    let rows = if total > 0 {
+        gap_repo::list_php_member_logs(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let (page, per, _, _) = page_of(body);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "opera": r.opera,
+                "usertype": r.usertype,
+                "content": r.content,
+                "ip": r.ip,
+                "ctime": r.ctime,
+                "ctime_n": fmt_ts(r.ctime, "%Y-%m-%d %H:%M:%S"),
+                "username": r.username,
+                "rname": r.rname,
+                "sub_n": r.sub_n,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `users_member::delwflog_action`. `del=all` clears only opera 12, and only
+/// for the `utype` the tab is showing — PHP hardcodes `usertype = 1` here even in
+/// the company copy, which would let the company tab wipe personal unbind logs.
+async fn user_gap_writtenoff_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let db = state.db.pool();
+    if json_str(body, "del").trim() == "all" {
+        let ut = user_gap_log_usertype(body);
+        gap_repo::delete_php_member_logs_by_usertype_opera(db, ut, WRITTENOFF_OPERA).await?;
+        return Ok(PhpOut::Message("admin_01290"));
+    }
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    gap_repo::delete_php_member_logs(db, &ids).await?;
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `job.model::subSqListInfo` isdel text for `userid_job`.
+fn apply_isdel_text(isdel: i32) -> String {
+    let lang = i18n::current_lang();
+    i18n::t(
+        match isdel {
+            1 => "messages.common_06284",
+            2 => "messages.common_06285",
+            3 => "messages.common_01522",
+            _ => "messages.admin_user_00149",
+        },
+        lang,
+    )
+}
+
+/// PHP `job.model::subYqmsListInfo` isdel text for `userid_msg`.
+fn invite_isdel_text(isdel: i32) -> String {
+    let lang = i18n::current_lang();
+    i18n::t(
+        match isdel {
+            1 => "messages.common_06294",
+            2 => "messages.common_06285",
+            _ => "messages.admin_user_00149",
+        },
+        lang,
+    )
+}
+
+/// PHP `users_member::jobSqLog_action` — 职位申请记录.
+async fn user_gap_apply_log(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let db = state.db.reader();
+    let total = gap_extra::count_member_applies(db, uid).await?;
+    let rows = if total > 0 {
+        gap_extra::list_member_applies(db, uid, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let base = preview_base(state);
+    let base = base.trim_end_matches('/');
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "job_name": r.job_name,
+                "com_name": r.com_name,
+                "job_comapply": format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", r.job_id),
+                "company_show": format!("{base}/index.php?m=company&c=show&id={}&look=admin", r.com_id),
+                "datetime": r.datetime,
+                "datetime_n_n": fmt_dt(r.datetime),
+                "is_browse": r.is_browse,
+                "isdel_n": apply_isdel_text(r.isdel),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `users_member::yqmsLog_action` — 面试邀请记录.
+async fn user_gap_invite_log(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let db = state.db.reader();
+    let total = gap_extra::count_member_invites(db, uid).await?;
+    let rows = if total > 0 {
+        gap_extra::list_member_invites(db, uid, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let base = preview_base(state);
+    let base = base.trim_end_matches('/');
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "fname": r.fname,
+                "jobname": r.jobname,
+                "title": r.title,
+                "content": r.content,
+                "job_comapply": format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", r.jobid),
+                "company_show": format!("{base}/index.php?m=company&c=show&id={}&look=admin", r.fid),
+                "datetime": r.datetime,
+                "datetime_n": fmt_dt(r.datetime),
+                "is_browse": r.is_browse,
+                "isdel_n": invite_isdel_text(r.isdel),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `db.data.php` `paystate` after `strip_tags`.
+fn pay_state_text(state: i32) -> &'static str {
+    match state {
+        0 => "支付失败",
+        1 => "等待付款",
+        2 => "支付成功",
+        3 => "等待确认",
+        4 => "交易关闭",
+        _ => "",
+    }
+}
+
+/// PHP `users_member::payLog_action` — 消费记录（`company_pay.com_id = uid`）.
+async fn user_gap_pay_log(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let f = pay_repo::PhpPayFilter {
+        com_id: Some(uid),
+        usertype: None,
+        order_id_kw: None,
+        remark_kw: None,
+        uid_in: None,
+        pay_state: None,
+        time_min: None,
+    };
+    let db = state.db.reader();
+    let total = pay_repo::php_count_pay(db, &f).await?;
+    let rows = if total > 0 {
+        pay_repo::php_list_pay(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    // PHP `getPayList` default branch: integral orders carry the点数 unit, the rest 元.
+    let unit = setting_repo::find(db, "integral_priceunit")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let pricename = setting_repo::find(db, "integral_pricename")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let price = r.order_price.replace(".00", "");
+            let tag = if r.r#type == 1 {
+                format!("{unit}{pricename}")
+            } else {
+                "元".to_string()
+            };
+            json!({
+                "id": r.id,
+                "order_id": r.order_id,
+                "consume_id": r.order_id,
+                "consume_price_n": format!("{price}{tag}"),
+                "consume_remark": r.pay_remark,
+                "consume_state_n": pay_state_text(r.pay_state),
+                "pay_time_n": fmt_ts(r.pay_time, "%Y-%m-%d %H:%M:%S"),
+                "consume_time_n": fmt_ts(r.pay_time, "%Y-%m-%d %H:%M:%S"),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `users_member::log_action` maps each `operas` bucket to the content
+/// keywords its log lines carry, instead of filtering on `member_log.opera`.
+fn member_activity_content_keys(operas: i32) -> &'static [&'static str] {
+    match operas {
+        1 => &["wap_user_00154"],
+        2 => &["common_01951", "wap_com_00428", "common_02021"],
+        3 => &["wap_00070"],
+        4 => &["common_02040"],
+        5 => &["wap_00379", "common_01949", "member_user_00242"],
+        6 => &["wap_00574", "common_01991", "common_01982", "common_01971"],
+        7 => &["wap_00456"],
+        8 => &["member_user_00226"],
+        9 => &["wap_user_00220"],
+        11 => &["admin_user_00140", "common_02035"],
+        12 => &[
+            "member_com_00093",
+            "common_02028",
+            "member_user_00234",
+            "member_user_00236",
+            "common_02034",
+            "admin_user_00171",
+            "member_user_00235",
+        ],
+        14 => &["member_com_00293", "common_01937"],
+        15 => &["wap_00317", "common_01954"],
+        16 => &[
+            "wap_js_00081",
+            "member_user_00161",
+            "LOGO",
+            "common_02012",
+            "default_00092",
+            "admin_tool_00428",
+            "common_01886",
+            "member_com_00077",
+        ],
+        17 => &["admin_yunying_00117", "wap_user_00008"],
+        18 => &["common_01967", "common_01965", "common_02015", "wap_user_00363"],
+        19 => &["wap_user_00223"],
+        22 => &["admin_tool_00428"],
+        23 => &["wap_com_00350"],
+        25 => &["wap_com_00357", "admin_user_company_00379"],
+        26 => &["wap_user_00221", "member_user_00044"],
+        29 => &["common_02046"],
+        88 => &["common_02029"],
+        _ => &[],
+    }
+}
+
+/// PHP `log_action` labels each row's day: today gets its own word, other days
+/// get the weekday name, `date('w')` being 0 = Sunday.
+fn activity_day_label(ctime: i64, today: &str) -> String {
+    const WEEKDAYS: [&str; 7] = [
+        "wap_00014", "wap_00008", "wap_00010", "wap_00009", "wap_00013", "wap_00011", "wap_00012",
+    ];
+    let day = fmt_ts(ctime, "%Y-%m-%d");
+    let key = if day == today {
+        "common_01940"
+    } else {
+        let w = fmt_ts(ctime, "%w").parse::<usize>().unwrap_or(0);
+        WEEKDAYS[w.min(6)]
+    };
+    let lang = i18n::current_lang();
+    i18n::t(&format!("messages.{key}"), lang)
+}
+
+/// PHP `users_member::log_action` — 会员活动日志（个人日志 tab 与日志列表页共用）.
+async fn user_gap_member_activity(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let kw_type = json_i32(body, "type");
+    let mut uid = json_u64(body, "uid");
+    let mut username_like: Option<String> = None;
+    if !kw.is_empty() {
+        match kw_type {
+            1 => username_like = Some(kw.clone()),
+            3 => uid = kw.trim().parse().unwrap_or(uid),
+            _ => {}
+        }
+    }
+    let content = json_str(body, "content");
+    // PHP: end=1 means "since midnight", any other N means "last N days".
+    let mut time_from = Some(parse_date_ts(&json_str(body, "time_start"))).filter(|n| *n > 0);
+    let end = json_i32(body, "end");
+    if end > 0 {
+        let now = clock::now_ts();
+        let from_end = if end == 1 {
+            now - now.rem_euclid(86_400)
+        } else {
+            now - i64::from(end) * 86_400
+        };
+        time_from = Some(time_from.map_or(from_end, |t| t.max(from_end)));
+    }
+    let time_to = Some(parse_date_ts(&json_str(body, "time_end")))
+        .filter(|n| *n > 0)
+        .map(|n| n + 86_399);
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gap_repo::PhpMemberLogFilter {
+        usertype: user_gap_log_usertype(body),
+        uid: if uid > 0 { Some(uid) } else { None },
+        username_like: username_like.as_deref(),
+        content_like: if content.is_empty() {
+            None
+        } else {
+            Some(content.as_str())
+        },
+        content_like_any: member_activity_content_keys(json_i32(body, "operas")),
+        opera: None,
+        log_type: json_opt_i32(body, "parrs"),
+        time_from,
+        time_to,
+        order_t: order_t.as_str(),
+        order_dir: order_dir.as_str(),
+    };
+    let db = state.db.reader();
+    let total = gap_repo::count_php_member_logs(db, &f).await?;
+    let rows = if total > 0 {
+        gap_repo::list_php_member_logs(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let today = fmt_ts(clock::now_ts(), "%Y-%m-%d");
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "opera": r.opera,
+                "type": r.r#type,
+                "usertype": r.usertype,
+                "content": r.content,
+                "ip": r.ip,
+                "ctime": r.ctime,
+                "ctime_n": fmt_ts(r.ctime, "%Y-%m-%d %H:%M:%S"),
+                "date_n": fmt_ts(r.ctime, "%Y-%m-%d"),
+                "time_n": fmt_ts(r.ctime, "%H:%M"),
+                "week": activity_day_label(r.ctime, &today),
+                "username": r.username,
+                "rname": r.rname,
+                "eid": r.eid,
+                "sub_n": r.sub_n,
+            })
+        })
+        .collect();
+    let mut out = paged(Value::Array(list), total, page, per);
+    let last_page = total.div_ceil(u64::from(per)).max(1);
+    out["last_page"] = json!(last_page);
+    Ok(out)
+}
+
+/// PHP `users_member::logDel_action`. `del=all` clears the whole log for the
+/// account type the page is showing.
+async fn user_gap_member_activity_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let db = state.db.pool();
+    if json_str(body, "del").trim() == "all" {
+        let ut = user_gap_log_usertype(body);
+        gap_repo::delete_php_member_logs_by_usertype(db, ut).await?;
+        return Ok(PhpOut::Message("admin_01293"));
+    }
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    gap_repo::delete_php_member_logs(db, &ids).await?;
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `users_member::usercert_action` — one action, four branches picked by
+/// which field the dialog sent.
+async fn user_gap_usercert(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if body.get("batchfirm").is_some() {
+        return user_gap_usercert_batch(state, body).await;
+    }
+    if body.get("email").is_some() {
+        return user_gap_usercert_email(state, body).await;
+    }
+    if body.get("moblie").is_some() {
+        return user_gap_usercert_mobile(state, body).await;
+    }
+    user_gap_usercert_idcard(state, body).await
+}
+
+/// PHP `users_member::batchfirm` — `type` is a checkbox list, `status` the flag.
+async fn user_gap_usercert_batch(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let types: Vec<String> = match body.get("type") {
+        Some(Value::Array(a)) => a
+            .iter()
+            .filter_map(|v| v.as_str().map(str::to_string))
+            .collect(),
+        Some(Value::String(s)) => s.split(',').map(|p| p.trim().to_string()).collect(),
+        _ => Vec::new(),
+    };
+    if types.is_empty() {
+        return Err(ApiError::param_invalid("admin_01288"));
+    }
+    if body.get("status").is_none() {
+        return Err(ApiError::param_invalid("admin_01289"));
+    }
+    let uids = ids_named(body, "uid");
+    if uids.is_empty() {
+        return Err(ApiError::param_invalid("member_com_00320"));
+    }
+    let status = json_i32(body, "status");
+    let db = state.db.pool();
+    for t in &types {
+        let flag = match t.as_str() {
+            "email" => gap_extra::CertFlag::Email,
+            "moblie" => gap_extra::CertFlag::Mobile,
+            "idcard" => gap_extra::CertFlag::Idcard,
+            _ => continue,
+        };
+        gap_extra::set_cert_flag_bulk(db, &uids, flag, status).await?;
+    }
+    Ok(PhpOut::Message("admin_model_00110"))
+}
+
+/// PHP `users_member::emailstatus`.
+async fn user_gap_usercert_email(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let email = json_str(body, "email");
+    let email = email.trim();
+    if email.is_empty() {
+        return Err(ApiError::param_invalid("wap_01119"));
+    }
+    if !email.contains('@') || !email.rsplit('@').next().is_some_and(|d| d.contains('.')) {
+        return Err(ApiError::param_invalid("wap_js_00120"));
+    }
+    let db = state.db.pool();
+    let before = gap_extra::resume_email_state(db, uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("admin_user_00086"))?;
+    if before.0 == email && before.1 == 1 {
+        return Ok(PhpOut::Message("admin_user_00080"));
+    }
+    let status = json_i32(body, "estatus");
+    if gap_extra::rebind_member_email(db, uid, email, status).await? == 0 {
+        return Err(ApiError::business("admin_user_00089"));
+    }
+    Ok(PhpOut::Message("admin_01286"))
+}
+
+/// PHP `users_member::mobliestatus`.
+async fn user_gap_usercert_mobile(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let phone = json_str(body, "moblie");
+    let phone = phone.trim();
+    if phone.is_empty() {
+        return Err(ApiError::param_invalid("wap_user_00274"));
+    }
+    if phone.len() != 11 || !phone.chars().all(|c| c.is_ascii_digit()) {
+        return Err(ApiError::param_invalid("wap_user_00039"));
+    }
+    let db = state.db.pool();
+    let before = gap_extra::resume_mobile_state(db, uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("admin_user_00086"))?;
+    if before.0 == phone && before.1 == 1 {
+        return Ok(PhpOut::Message("admin_user_00078"));
+    }
+    let status = json_i32(body, "mstatus");
+    if !gap_extra::rebind_member_mobile(db, uid, phone, status).await? {
+        return Err(ApiError::business("admin_user_00087"));
+    }
+    Ok(PhpOut::Message("admin_01287"))
+}
+
+/// PHP `users_member::userStatus` → `resume.model::statusCert`.
+async fn user_gap_usercert_idcard(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uids = ids_named(body, "uid");
+    if uids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "r_status");
+    let statusbody = json_str(body, "statusbody");
+    let n =
+        gap_extra::set_idcard_review_many(state.db.pool(), &uids, status, statusbody.trim()).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("admin_user_00086"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `users_member::checksitedid_action` — 个人账号迁分站.
+async fn user_gap_member_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uids = ids_named(body, "uid");
+    if uids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    gap_extra::set_member_did(state.db.pool(), &uids, json_i32(body, "did")).await?;
+    Ok(PhpOut::Message("admin_model_00111"))
+}
+
+/// PHP `company::checksitedid_action` — 企业账号迁分站.
+async fn user_gap_company_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uids = ids_named(body, "uid");
+    if uids.is_empty() {
+        return Err(ApiError::param_invalid("common_01236"));
+    }
+    gap_extra::set_company_did(state.db.pool(), &uids, json_i32(body, "did")).await?;
+    Ok(PhpOut::Message("admin_model_00118"))
+}
+
+/// PHP `users_member::searchCom_action` — `{companyList:[{uid,name}]}`.
+async fn user_gap_search_com(state: &AppState, body: &Value) -> AppResult<Value> {
+    let name = json_str(body, "com_name");
+    let name = name.trim();
+    if name.is_empty() {
+        return Ok(json!({ "companyList": [] }));
+    }
+    let rows = company_repo::search_admin_brief(state.db.reader(), name, 50).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|(uid, name)| json!({ "uid": uid, "name": name }))
+        .collect();
+    Ok(json!({ "companyList": list }))
 }
 
 /// PHP `admin_member::Imitate_action` — `{url: sy_weburl/member}` (no PHP cookie).

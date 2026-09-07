@@ -267,6 +267,9 @@ pub struct PhpMemberLogFilter<'a> {
     pub uid: Option<u64>,
     pub username_like: Option<&'a str>,
     pub content_like: Option<&'a str>,
+    /// `content LIKE a OR content LIKE b OR ...`, narrowing an `opera` bucket the
+    /// way PHP `users_member::writtenOffLog` narrows opera 12 to the unbind keys.
+    pub content_like_any: &'a [&'a str],
     pub opera: Option<i32>,
     pub log_type: Option<i32>,
     pub time_from: Option<i64>,
@@ -296,6 +299,23 @@ fn push_php_member_log_filters<'a>(
         qb.push(" OR l.id IN (SELECT log_id FROM phpyun_member_log_detail WHERE detail LIKE ");
         qb.push_bind(format!("%{kw}%"));
         qb.push("))");
+    }
+    let any: Vec<&str> = f
+        .content_like_any
+        .iter()
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .collect();
+    if !any.is_empty() {
+        qb.push(" AND (");
+        for (i, kw) in any.iter().enumerate() {
+            if i > 0 {
+                qb.push(" OR ");
+            }
+            qb.push("l.content LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+        qb.push(")");
     }
     if let Some(op) = f.opera.filter(|v| *v > 0) {
         qb.push(" AND l.opera = ");
@@ -383,6 +403,21 @@ pub async fn delete_php_member_logs_by_usertype(
 ) -> Result<u64, sqlx::Error> {
     let r = sqlx::query("DELETE FROM phpyun_member_log WHERE usertype = ?")
         .bind(usertype)
+        .execute(pool)
+        .await?;
+    Ok(r.rows_affected())
+}
+
+/// PHP `users_member::delwflog_action` with `del=all`: scoped to one `opera`
+/// bucket so clearing unbind logs cannot wipe the whole member log.
+pub async fn delete_php_member_logs_by_usertype_opera(
+    pool: &MySqlPool,
+    usertype: i32,
+    opera: i32,
+) -> Result<u64, sqlx::Error> {
+    let r = sqlx::query("DELETE FROM phpyun_member_log WHERE usertype = ? AND opera = ?")
+        .bind(usertype)
+        .bind(opera)
         .execute(pool)
         .await?;
     Ok(r.rows_affected())

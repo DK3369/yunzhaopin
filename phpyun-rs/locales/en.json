@@ -350,7 +350,20 @@
     "admin_01401": "Generate failed",
     "wap_com_00228": "Parameter error",
     "admin_index_00010": "Shortcut navigation save failed",
-    "admin_index_00011": "Shortcut navigation saved successfully"
+    "admin_index_00011": "Shortcut navigation saved successfully",
+    "admin_user_00149": "Normal",
+    "common_01522": "Headhunter user delete",
+    "common_06284": "Delete Resumes Users",
+    "common_06285": "Company Users Delete",
+    "common_06294": "Individual Users Delete",
+    "common_01940": "Today",
+    "wap_00008": "Monday",
+    "wap_00009": "Wednesday",
+    "wap_00010": "Tuesday",
+    "wap_00011": "Friday",
+    "wap_00012": "Saturday",
+    "wap_00013": "Thursday",
+    "wap_00014": "Sunday"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

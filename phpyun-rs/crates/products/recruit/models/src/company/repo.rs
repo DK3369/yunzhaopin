@@ -779,6 +779,24 @@ pub async fn list_kh_by_name(
     .await
 }
 
+/// PHP `users_member::searchCom_action` — target picker for account merge.
+/// Unlike [`search_brief`] this ignores `r_status`, so a company still in
+/// review can be chosen as the merge target.
+pub async fn search_admin_brief(
+    pool: &MySqlPool,
+    keyword: &str,
+    limit: u64,
+) -> Result<Vec<(u64, String)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED), COALESCE(name,'') \
+         FROM phpyun_company WHERE name LIKE ? ORDER BY uid DESC LIMIT ?",
+    )
+    .bind(format!("%{keyword}%"))
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}
+
 /// Quick autocomplete for company name search — counterpart of PHP
 /// `ajax::getComBySearch_action`. Returns up to `limit` rows whose `name`
 /// matches `LIKE %keyword%` and have been approved (`r_status = 1`).
