@@ -1,57 +1,36 @@
-//! Country data access — sourced from `phpyun_city_class` (the canonical
-//! PHPYun region tree; countries are the `keyid = 0` rows, ids 4001..=4250).
-//! ISO alpha-2 code + continent are pulled from `phpyun_region` via the
-//! offset relationship `phpyun_region.id = phpyun_city_class.id - 4000`
-//! (verified to match exactly across all 250 countries).
+//! Country data access — `phpyun_country` is the country table.
 //!
-//! Field mapping:
-//! - `id`            ← cc.id (the PHPYun city_class id; matches what every
-//!   other PHPYun endpoint expects)
-//! - `code` (ISO α2) ← r.country_code  (LEFT JOIN; '' if region missing)
-//! - `name_en`       ← cc.e_name
-//! - `name_zh`       ← cc.name
-//! - `continent`     ← r.continent
-//! - `phone_code`    ← cc.code (stored as INT, cast to CHAR)
-//! - `sort`          ← cc.sort
-//! - `status`        ← cc.display (1 = visible)
-//!
-//! Source rows lack `code3`, `numeric_code`, `currency`, `flag`, `created_at`,
-//! `updated_at` — synthesised as empty / 0.
-//!
-//! Reads go through `country_service`'s in-process cache.
+//! Countries are not `phpyun_city_class` rows. Subdivisions live in
+//! `phpyun_region` (parented by country code) and are loaded through
+//! `region_service`, not this repo.
 
 use super::entity::Country;
 use sqlx::MySqlPool;
 
 const PROJECTION: &str = "\
-    CAST(cc.id AS UNSIGNED) AS id, \
-    COALESCE(r.country_code, '') AS code, \
-    '' AS code3, \
-    0 AS numeric_code, \
-    cc.e_name AS name_en, \
-    cc.name AS name_zh, \
-    COALESCE(r.continent, '') AS continent, \
-    CAST(cc.code AS CHAR) AS phone_code, \
-    '' AS currency, \
-    '' AS flag, \
-    cc.sort, \
-    CAST(cc.display AS SIGNED) AS status, \
-    CAST(0 AS SIGNED) AS created_at, \
-    CAST(0 AS SIGNED) AS updated_at";
-
-const FROM_JOIN: &str = "\
-    FROM phpyun_city_class cc \
-    LEFT JOIN phpyun_region r ON r.id = cc.id - 4000";
+    CAST(id AS UNSIGNED) AS id, \
+    code, \
+    code3, \
+    CAST(numeric_code AS SIGNED) AS numeric_code, \
+    name_en, \
+    name_zh, \
+    continent, \
+    phone_code, \
+    currency, \
+    flag, \
+    sort, \
+    CAST(status AS SIGNED) AS status, \
+    created_at, \
+    updated_at";
 
 // ==================== Reads ====================
 
-/// All visible countries (city_class.keyid = 0 AND display = 1) in
-/// `(sort ASC, id ASC)` order. Loaded by the cache.
+/// All visible countries (`status != 2`) in `(sort ASC, id ASC)` order.
 pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> {
     let sql = format!(
-        "SELECT {PROJECTION} {FROM_JOIN} \
-         WHERE cc.keyid = 0 AND cc.display = 1 AND COALESCE(cc.deleted,0)=0 \
-         ORDER BY cc.sort ASC, cc.id ASC"
+        "SELECT {PROJECTION} FROM phpyun_country \
+         WHERE status != 2 \
+         ORDER BY sort ASC, id ASC"
     );
     phpyun_core::db::ok_default_if_object_missing(
         sqlx::query_as::<_, Country>(&sql).fetch_all(pool).await,
@@ -60,8 +39,8 @@ pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> 
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Country>, sqlx::Error> {
     let sql = format!(
-        "SELECT {PROJECTION} {FROM_JOIN} \
-         WHERE cc.id = ? AND cc.keyid = 0 AND cc.display = 1 AND COALESCE(cc.deleted,0)=0 LIMIT 1"
+        "SELECT {PROJECTION} FROM phpyun_country \
+         WHERE id = ? AND status != 2 LIMIT 1"
     );
     let r = sqlx::query_as::<_, Country>(&sql)
         .bind(id)
@@ -75,11 +54,9 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Country>, sq
 }
 
 pub async fn find_by_code(pool: &MySqlPool, code: &str) -> Result<Option<Country>, sqlx::Error> {
-    // ISO α2 lookup goes through the LEFT-joined region row; if region is
-    // missing we can't resolve by code, return None.
     let sql = format!(
-        "SELECT {PROJECTION} {FROM_JOIN} \
-         WHERE r.country_code = ? AND cc.keyid = 0 AND cc.display = 1 AND COALESCE(cc.deleted,0)=0 LIMIT 1"
+        "SELECT {PROJECTION} FROM phpyun_country \
+         WHERE code = ? AND status != 2 LIMIT 1"
     );
     let r = sqlx::query_as::<_, Country>(&sql)
         .bind(code)
@@ -105,13 +82,14 @@ pub struct CountryCreate<'a> {
     pub currency: &'a str,
     pub flag: &'a str,
     pub sort: i32,
+    pub status: i32,
 }
 
 pub async fn create(pool: &MySqlPool, c: CountryCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_country \
          (code, code3, numeric_code, name_en, name_zh, continent, phone_code, currency, flag, sort, status, created_at, updated_at) \
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)",
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(c.code)
     .bind(c.code3)
@@ -123,6 +101,7 @@ pub async fn create(pool: &MySqlPool, c: CountryCreate<'_>, now: i64) -> Result<
     .bind(c.currency)
     .bind(c.flag)
     .bind(c.sort)
+    .bind(c.status)
     .bind(now)
     .bind(now)
     .execute(pool)
@@ -139,6 +118,7 @@ pub struct CountryPatch<'a> {
     pub currency: Option<&'a str>,
     pub flag: Option<&'a str>,
     pub sort: Option<i32>,
+    pub status: Option<i32>,
 }
 
 /// Partial update — only fields explicitly set on the patch are touched.
@@ -170,6 +150,9 @@ pub async fn update(
     if p.sort.is_some() {
         sets.push("sort = ?");
     }
+    if p.status.is_some() {
+        sets.push("status = ?");
+    }
     if sets.is_empty() {
         return Ok(0);
     }
@@ -200,6 +183,9 @@ pub async fn update(
     if let Some(v) = p.sort {
         q = q.bind(v);
     }
+    if let Some(v) = p.status {
+        q = q.bind(v);
+    }
     q = q.bind(now).bind(id);
     Ok(q.execute(pool).await?.rows_affected())
 }
@@ -215,4 +201,25 @@ pub async fn soft_delete(pool: &MySqlPool, id: u64, now: i64) -> Result<u64, sql
     .execute(pool)
     .await?;
     Ok(res.rows_affected())
+}
+
+/// Mark `ids` as the front-end set (`status = 1`); every other live row
+/// becomes `status = 0`. Soft-deleted rows (`status = 2`) are left alone.
+pub async fn set_enabled(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    sqlx::query("UPDATE phpyun_country SET status = 0, updated_at = ? WHERE status != 2")
+        .bind(now)
+        .execute(pool)
+        .await?;
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let placeholders = ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+    let sql = format!(
+        "UPDATE phpyun_country SET status = 1, updated_at = ? WHERE status != 2 AND id IN ({placeholders})"
+    );
+    let mut q = sqlx::query(&sql).bind(now);
+    for id in ids {
+        q = q.bind(*id);
+    }
+    Ok(q.execute(pool).await?.rows_affected())
 }

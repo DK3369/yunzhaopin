@@ -56,11 +56,13 @@ pub struct CompanyListQuery {
     /// Matched against `name` AND `shortname` via LIKE (mirrors PHP `comlist`).
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(length(min = 2, max = 8))]
+    pub country: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub city_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub three_city_id: Option<i32>,
     /// Industry dict id (PHP `hy`).
     #[validate(range(min = 0, max = 9_999_999))]
@@ -120,8 +122,8 @@ pub fn company_summary_from_dict(
         // pr / mun live in phpyun_comclass (grouped by keyid)
         pr_n: dicts.comclass(c.pr).to_string(),
         mun_n: dicts.comclass(c.mun).to_string(),
-        city_one: dicts.city(c.provinceid).to_string(),
-        city_two: dicts.city(c.cityid).to_string(),
+        city_one: phpyun_services::region_service::loc_name(dicts.city(c.provinceid), c.provinceid),
+        city_two: phpyun_services::region_service::loc_name(dicts.city(c.cityid), c.cityid),
 
         logo: c.logo,
         hot_pic: None,
@@ -234,11 +236,21 @@ pub async fn list_companies(
             Some(n.to_string())
         }
     });
+    let loc_ids = phpyun_services::region_service::location_match_ids(
+        &state,
+        q.country.as_deref(),
+        q.province_id,
+        q.city_id,
+        q.three_city_id,
+    )
+    .await?;
+    let loc_filter = loc_ids.is_some();
     let filter = CompanyFilter {
         keyword: q.keyword.as_deref(),
-        province_id: q.province_id,
-        city_id: q.city_id,
-        three_city_id: q.three_city_id,
+        province_id: if loc_filter { None } else { q.province_id },
+        city_id: if loc_filter { None } else { q.city_id },
+        three_city_id: if loc_filter { None } else { q.three_city_id },
+        city_ids: loc_ids.as_deref(),
         hy: q.hy,
         pr: q.pr,
         mun: q.mun,
@@ -477,8 +489,8 @@ pub async fn company_detail(
     let hy_n = dicts.industry(c.hy).to_string();
     let pr_n = dicts.comclass(c.pr).to_string();
     let mun_n = dicts.comclass(c.mun).to_string();
-    let city_one = dicts.city(c.provinceid).to_string();
-    let city_two = dicts.city(c.cityid).to_string();
+    let city_one = phpyun_services::region_service::loc_name(dicts.city(c.provinceid), c.provinceid);
+    let city_two = phpyun_services::region_service::loc_name(dicts.city(c.cityid), c.cityid);
     let welfare_n = c
         .welfare
         .as_deref()

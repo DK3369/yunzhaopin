@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { listFailMsg } from '~/utils/site'
-import type { DictItem } from '~/utils/query'
 
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
 const keyword = computed(() => String(route.query.keyword || ''))
+const country = computed(() => countryQuery(route.query.country))
 const provinceId = computed(() => Number(route.query.province_id || 0) || undefined)
 const cityId = computed(() => Number(route.query.city_id || 0) || undefined)
 const threeCityId = computed(() => Number(route.query.three_city_id || 0) || undefined)
@@ -13,9 +13,14 @@ const billingCycle = computed(() => Number(route.query.billing_cycle || 0) || un
 const { t, locale } = useI18n()
 const api = useApi()
 const { applyToQuery } = useSubSite()
+const { countryItems, provinceItems, cityItems, districtItems } = await useRegionCascade({
+  country,
+  provinceId: computed(() => provinceId.value || 0),
+  cityId: computed(() => cityId.value || 0),
+})
 const { data, error } = await useAsyncData(
   () =>
-    `parts-${page.value}-${keyword.value}-${provinceId.value || 0}-${cityId.value || 0}-${threeCityId.value || 0}-${partType.value || 0}-${billingCycle.value || 0}`,
+    `parts-${page.value}-${keyword.value}-${country.value}-${provinceId.value || 0}-${cityId.value || 0}-${threeCityId.value || 0}-${partType.value || 0}-${billingCycle.value || 0}`,
   () =>
     api.get<{ list: Array<{ id: number; name: string; com_name?: string; city_name?: string }>; total: number }>(
       '/v1/wap/parts',
@@ -23,6 +28,7 @@ const { data, error } = await useAsyncData(
         page: page.value,
         page_size: 20,
         keyword: keyword.value || undefined,
+        country: country.value || undefined,
         province_id: provinceId.value,
         city_id: cityId.value,
         three_city_id: threeCityId.value,
@@ -30,24 +36,6 @@ const { data, error } = await useAsyncData(
         billing_cycle: billingCycle.value,
       }),
     ),
-)
-const { data: provinces } = await useAsyncData(
-  () => `dict-city-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
-)
-const { data: cities } = await useAsyncData(
-  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
-  () =>
-    provinceId.value
-      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value }).catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
-const { data: districts } = await useAsyncData(
-  () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
-  () =>
-    cityId.value
-      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: cityId.value }).catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
 )
 const { data: partTypes } = await useAsyncData(
   () => `cat-part-${locale.value}`,
@@ -71,28 +59,38 @@ const list = computed(() => data.value?.list || [])
       <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
+    <CountryFilterRow
+      :label="$t('common.country')"
+      :items="countryItems"
+      :current="country"
+      path="/parts"
+      :all-label="$t('common.all')"
+    />
     <FilterRow
+      v-if="country"
       :label="$t('member_com_00378')"
       param="province_id"
-      :items="provinces || []"
+      :items="provinceItems"
       :current="provinceId"
       path="/parts"
       :all-label="$t('common.all')"
+      :extra-clear="{ city_id: undefined, three_city_id: undefined }"
     />
     <FilterRow
-      v-if="provinceId && (cities || []).length"
+      v-if="provinceId && cityItems.length"
       :label="$t('common_02110')"
       param="city_id"
-      :items="cities || []"
+      :items="cityItems"
       :current="cityId"
       path="/parts"
       :all-label="$t('common.all')"
+      :extra-clear="{ three_city_id: undefined }"
     />
     <FilterRow
-      v-if="cityId && (districts || []).length"
+      v-if="cityId && districtItems.length"
       :label="$t('member_com_00378')"
       param="three_city_id"
-      :items="districts || []"
+      :items="districtItems"
       :current="threeCityId"
       path="/parts"
       :all-label="$t('common.all')"

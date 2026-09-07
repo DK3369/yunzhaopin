@@ -92,6 +92,7 @@ pub struct ResumeFilter<'a> {
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
+    pub city_ids: Option<&'a [i32]>,
     pub sex: Option<i32>,
     pub marriage: Option<i32>,
     pub hy: Option<i32>,
@@ -359,16 +360,6 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
 }
 
 fn push_city_job_class<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {
-    let city_col = if f.three_city_id.is_some() {
-        Some("three_cityid")
-    } else if f.city_id.is_some() {
-        Some("cityid")
-    } else if f.province_id.is_some() {
-        Some("provinceid")
-    } else {
-        None
-    };
-    let city_val = f.three_city_id.or(f.city_id).or(f.province_id);
     let job_col = if f.job_post.is_some() {
         Some("job_post")
     } else if f.job1_son.is_some() {
@@ -379,6 +370,52 @@ fn push_city_job_class<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFil
         None
     };
     let job_val = f.job_post.or(f.job1_son).or(f.job1);
+    if let Some(ids) = f.city_ids {
+        if ids.is_empty() {
+            qb.push(" AND 1=0");
+            return;
+        }
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_resume_city_job_class WHERE (provinceid IN (");
+        {
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+        }
+        qb.push(") OR cityid IN (");
+        {
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+        }
+        qb.push(") OR three_cityid IN (");
+        {
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+        }
+        qb.push(")");
+        if let (Some(col), Some(v)) = (job_col, job_val) {
+            qb.push(" AND `");
+            qb.push(col);
+            qb.push("` = ");
+            qb.push_bind(v);
+        }
+        qb.push(")");
+        return;
+    }
+    let city_col = if f.three_city_id.is_some() {
+        Some("three_cityid")
+    } else if f.city_id.is_some() {
+        Some("cityid")
+    } else if f.province_id.is_some() {
+        Some("provinceid")
+    } else {
+        None
+    };
+    let city_val = f.three_city_id.or(f.city_id).or(f.province_id);
     if city_col.is_none() && job_col.is_none() {
         return;
     }

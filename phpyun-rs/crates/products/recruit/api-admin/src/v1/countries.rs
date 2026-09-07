@@ -1,15 +1,18 @@
 //! Admin country CRUD. Mutations invalidate the in-process country cache.
 //!
-//! - `POST /v1/admin/countries`             create
-//! - `POST /v1/admin/countries/{id}`        patch
-//! - `POST /v1/admin/countries/{id}/delete` soft-delete
+//! - `POST /v1/admin/countries/list`        live rows (including hidden)
+//! - `POST /v1/admin/countries/select`      pick which ones the public site shows
+//! - `POST /v1/admin/countries`             create (code + 中文名 is enough)
+//! - `POST /v1/admin/countries/patch`       patch
+//! - `POST /v1/admin/countries/delete`      soft-delete
 //! - `POST /v1/admin/countries/reload`      manual cache reload
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::dto::{BatchResult, CreatedId, IdBody};
 use phpyun_core::{
     clock, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson,
 };
+use phpyun_models::country::entity::Country;
 use phpyun_models::country::repo as country_repo;
 use phpyun_services::country_service;
 use serde::Deserialize;
@@ -18,10 +21,55 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
+        .route("/countries/list", post(list))
+        .route("/countries/select", post(select))
         .route("/countries", post(create))
         .route("/countries/patch", post(patch))
         .route("/countries/delete", post(delete))
         .route("/countries/reload", post(reload))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/countries/list",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Vec<Country>>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(country_service::list_admin(&state).await?))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct SelectForm {
+    #[validate(length(min = 1, max = 500))]
+    pub ids: Vec<u64>,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/countries/select",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = SelectForm,
+    responses((status = 200, description = "ok", body = BatchResult))
+)]
+pub async fn select(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<SelectForm>,
+) -> AppResult<ApiResponse<BatchResult>> {
+    user.require_admin()?;
+    let requested = f.ids.len();
+    let affected = country_service::select_enabled(&state, &f.ids).await?;
+    Ok(ApiResponse::data(BatchResult {
+        requested,
+        affected,
+    }))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -29,31 +77,24 @@ pub struct CreateForm {
     /// ISO 3166-1 alpha-2 (CN/US/JP/...).
     #[validate(length(equal = 2))]
     pub code: String,
-    /// ISO 3166-1 alpha-3 (CHN/USA/JPN/...).
-    #[validate(length(equal = 3))]
-    pub code3: String,
-    /// ISO 3166-1 numeric (156/840/...).
-    #[validate(range(min = 0, max = 65_535))]
-    pub numeric_code: u16,
-    #[validate(length(min = 1, max = 120))]
-    pub name_en: String,
+    #[serde(default)]
+    pub code3: Option<String>,
+    #[serde(default)]
+    pub numeric_code: Option<u16>,
+    #[serde(default)]
+    pub name_en: Option<String>,
     #[validate(length(min = 1, max = 120))]
     pub name_zh: String,
-    /// `AF/AN/AS/EU/NA/OC/SA`.
-    #[validate(length(equal = 2))]
-    pub continent: String,
-    /// International dialing prefix without `+` (e.g. `86`).
-    #[validate(length(min = 1, max = 8))]
-    pub phone_code: String,
-    /// ISO 4217 (CNY/USD/...).
-    #[validate(length(equal = 3))]
-    pub currency: String,
-    /// Unicode flag emoji (e.g. 🇨🇳).
-    #[validate(length(min = 1, max = 8))]
-    pub flag: String,
     #[serde(default)]
-    #[validate(range(min = 0, max = 9_999))]
-    pub sort: i32,
+    pub continent: Option<String>,
+    #[serde(default)]
+    pub phone_code: Option<String>,
+    #[serde(default)]
+    pub currency: Option<String>,
+    #[serde(default)]
+    pub flag: Option<String>,
+    #[serde(default)]
+    pub sort: Option<i32>,
 }
 
 #[utoipa::path(
@@ -73,25 +114,22 @@ pub async fn create(
     ValidatedJson(f): ValidatedJson<CreateForm>,
 ) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
-    let id = country_repo::create(
-        state.db.pool(),
-        country_repo::CountryCreate {
-            code: &f.code.to_uppercase(),
-            code3: &f.code3.to_uppercase(),
+    let id = country_service::admin_create(
+        &state,
+        country_service::AdminCountryCreate {
+            code: f.code,
+            code3: f.code3,
             numeric_code: f.numeric_code,
-            name_en: &f.name_en,
-            name_zh: &f.name_zh,
-            continent: &f.continent.to_uppercase(),
-            phone_code: &f.phone_code,
-            currency: &f.currency.to_uppercase(),
-            flag: &f.flag,
+            name_en: f.name_en,
+            name_zh: f.name_zh,
+            continent: f.continent,
+            phone_code: f.phone_code,
+            currency: f.currency,
+            flag: f.flag,
             sort: f.sort,
         },
-        clock::now_ts(),
     )
-    .await
-    .map_err(ApiError::internal)?;
-    country_service::invalidate().await;
+    .await?;
     Ok(ApiResponse::data(CreatedId { id }))
 }
 
@@ -121,6 +159,9 @@ pub struct PatchForm {
     #[serde(default)]
     #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 1))]
+    pub status: Option<i32>,
 }
 
 #[utoipa::path(post,
@@ -154,6 +195,7 @@ pub async fn patch(
             currency: currency.as_deref(),
             flag: f.flag.as_deref(),
             sort: f.sort,
+            status: f.status,
         },
         clock::now_ts(),
     )

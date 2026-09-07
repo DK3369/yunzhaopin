@@ -35,7 +35,7 @@
       <template v-else>
         <NuxtLink
           class="h5-filter-item"
-          :class="{ on: !activeId && !childId && !grandId }"
+          :class="{ on: !activeId && !strVal && !childId && !grandId }"
           :to="{ path: route.path, query: mergeQuery(route.query, clearPatch) }"
           @click="open = ''"
         >
@@ -43,16 +43,12 @@
         </NuxtLink>
         <NuxtLink
           v-for="item in openTab.items"
-          :key="item.id"
+          :key="item.code || item.id"
           class="h5-filter-item"
-          :class="{ on: activeId === item.id }"
+          :class="{ on: isActive(item) }"
           :to="{
             path: route.path,
-            query: mergeQuery(route.query, {
-              [openTab.key]: item.id,
-              ...(openTab.childKey ? { [openTab.childKey]: undefined } : {}),
-              ...(openTab.grandKey ? { [openTab.grandKey]: undefined } : {}),
-            }),
+            query: mergeQuery(route.query, itemPatch(item)),
           }"
           @click="openTab.childKey ? undefined : (open = '')"
         >
@@ -70,6 +66,7 @@
               query: mergeQuery(route.query, {
                 [openTab.childKey]: item.id,
                 ...(openTab.grandKey ? { [openTab.grandKey]: undefined } : {}),
+                ...(openTab.extraClear || {}),
               }),
             }"
             @click="openTab.grandKey ? undefined : (open = '')"
@@ -84,7 +81,10 @@
             :key="'g' + item.id"
             class="h5-filter-item"
             :class="{ on: grandId === item.id }"
-            :to="{ path: route.path, query: mergeQuery(route.query, { [openTab.grandKey]: item.id }) }"
+            :to="{
+              path: route.path,
+              query: mergeQuery(route.query, { [openTab.grandKey]: item.id, ...(openTab.extraClear || {}) }),
+            }"
             @click="open = ''"
           >
             {{ item.name }}
@@ -107,6 +107,7 @@ export type H5FilterTab = {
   childItems?: DictItem[]
   grandKey?: string
   grandItems?: DictItem[]
+  extraClear?: Record<string, undefined>
   kind?: 'list' | 'more'
   groups?: Array<{
     label: string
@@ -124,6 +125,7 @@ const route = useRoute()
 const open = ref('')
 const openTab = computed(() => props.tabs.find((t) => t.key === open.value))
 const activeId = computed(() => (openTab.value ? numQuery(route.query[openTab.value.key]) : undefined))
+const strVal = computed(() => (openTab.value ? String(route.query[openTab.value.key] || '') : ''))
 const childId = computed(() =>
   openTab.value?.childKey ? numQuery(route.query[openTab.value.childKey]) : undefined,
 )
@@ -133,9 +135,23 @@ const grandId = computed(() =>
 const clearPatch = computed(() => {
   const tab = openTab.value
   if (!tab) return {}
-  const patch: Record<string, undefined> = { [tab.key]: undefined }
+  const patch: Record<string, undefined> = { [tab.key]: undefined, ...(tab.extraClear || {}) }
   if (tab.childKey) patch[tab.childKey] = undefined
   if (tab.grandKey) patch[tab.grandKey] = undefined
   return patch
 })
+function isActive(item: DictItem) {
+  if (item.code) return strVal.value === item.code
+  return activeId.value === item.id
+}
+function itemPatch(item: DictItem) {
+  const tab = openTab.value
+  if (!tab) return {}
+  return {
+    [tab.key]: item.code || item.id,
+    ...(tab.childKey ? { [tab.childKey]: undefined } : {}),
+    ...(tab.grandKey ? { [tab.grandKey]: undefined } : {}),
+    ...(tab.extraClear || {}),
+  }
+}
 </script>

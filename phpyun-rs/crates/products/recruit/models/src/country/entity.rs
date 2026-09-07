@@ -11,8 +11,6 @@ pub struct Country {
     pub id: u64,
     pub code: String,
     pub code3: String,
-    /// Decoded as i32 then narrowed — the source row may be a `phpyun_region`
-    /// projection where this field doesn't exist and we synthesize `0`.
     #[sqlx(try_from = "i32")]
     pub numeric_code: u16,
     pub name_en: String,
@@ -27,4 +25,9 @@ pub struct Country {
     pub updated_at: i64,
 }
 
+/// Not in the curated front-end set (or not configured yet).
+pub const STATUS_HIDDEN: i32 = 0;
+/// Show this country on the public site.
+pub const STATUS_ENABLED: i32 = 1;
+/// Soft-deleted.
 pub const STATUS_DELETED: i32 = 2;

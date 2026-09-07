@@ -254,11 +254,46 @@ pub async fn menu(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<A
         .into_iter()
         .collect();
     let rows = rbac_repo::list_navigation(state.db.reader()).await?;
-    Ok(rows
+    let mut items: Vec<AdminMenuItem> = rows
         .into_iter()
         .filter(|n| power.is_empty() || power.contains(&n.id))
         .map(nav_item)
-        .collect())
+        .collect();
+    inject_country_menu(&mut items);
+    Ok(items)
+}
+
+/// Same section as 城市分类. Not a DB nav row — country is not city_class.
+const COUNTRY_MENU_ID: i64 = 910001;
+
+fn inject_country_menu(items: &mut Vec<AdminMenuItem>) {
+    if items.iter().any(|m| {
+        let r = m.route.trim();
+        r == "/country" || r == "country" || m.path.trim() == "country"
+    }) {
+        return;
+    }
+    let Some((keyid, classname, menu, sort)) = items.iter().find_map(|m| {
+        let r = m.route.trim();
+        if r == "/city" || r == "city" || m.path.trim() == "city" {
+            Some((m.keyid, m.classname.clone(), m.menu, m.sort))
+        } else {
+            None
+        }
+    }) else {
+        return;
+    };
+    items.push(AdminMenuItem {
+        id: COUNTRY_MENU_ID,
+        keyid,
+        name: "国家".to_string(),
+        url: String::new(),
+        path: "country".to_string(),
+        classname,
+        menu,
+        sort: sort.saturating_add(1),
+        route: "/country".to_string(),
+    });
 }
 
 fn nav_item(n: AdminNavRow) -> AdminMenuItem {

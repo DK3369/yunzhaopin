@@ -19,6 +19,7 @@ use phpyun_models::once_job::repo as once_repo;
 #[derive(Debug, Clone, Default)]
 pub struct OnceSearch {
     pub keyword: Option<String>,
+    pub country: Option<String>,
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
@@ -38,11 +39,21 @@ pub async fn list_public(
     page: Pagination,
 ) -> AppResult<OncePage> {
     let now = clock::now_ts();
+    let loc_ids = crate::region_service::location_match_ids(
+        state,
+        search.country.as_deref(),
+        search.province_id,
+        search.city_id,
+        search.three_city_id,
+    )
+    .await?;
+    let loc_filter = loc_ids.is_some();
     let filter = once_repo::Filter {
         keyword: search.keyword.as_deref(),
-        province_id: search.province_id,
-        city_id: search.city_id,
-        three_city_id: search.three_city_id,
+        province_id: if loc_filter { None } else { search.province_id },
+        city_id: if loc_filter { None } else { search.city_id },
+        three_city_id: if loc_filter { None } else { search.three_city_id },
+        city_ids: loc_ids.as_deref(),
         exp: search.exp,
         edu: search.edu,
         did: search.did,

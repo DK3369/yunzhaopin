@@ -15,6 +15,8 @@ use phpyun_models::site_setting::repo as setting_repo;
 #[derive(Debug, Default, Clone)]
 pub struct JobSearch {
     pub keyword: Option<String>,
+    /// ISO 3166-1 alpha-2. Cities hang off this, not off `phpyun_city_class`.
+    pub country: Option<String>,
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
@@ -110,11 +112,21 @@ pub async fn list_public(
     let keyword_full_text =
         crate::site_gate_service::setting_i32(state, "job_full_text_search").await == 1;
 
+    let loc_ids = crate::region_service::location_match_ids(
+        state,
+        search.country.as_deref(),
+        search.province_id,
+        search.city_id,
+        search.three_city_id,
+    )
+    .await?;
+    let loc_filter = loc_ids.is_some();
     let f = JobFilter {
         keyword: search.keyword.as_deref(),
-        province_id: search.province_id,
-        city_id: search.city_id,
-        three_city_id: search.three_city_id,
+        province_id: if loc_filter { None } else { search.province_id },
+        city_id: if loc_filter { None } else { search.city_id },
+        three_city_id: if loc_filter { None } else { search.three_city_id },
+        city_ids: loc_ids.as_deref(),
         job1: search.job1,
         job1_son: search.job1_son,
         job_post: search.job_post,

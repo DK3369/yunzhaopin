@@ -60,6 +60,8 @@ pub struct ResumeListQuery {
     pub job1_son: Option<i32>,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub job_post: Option<i32>,
+    #[validate(length(min = 2, max = 8))]
+    pub country: Option<String>,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub province_id: Option<i32>,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
@@ -484,6 +486,15 @@ pub async fn list_resumes(
         "sy_datacycle",
     )
     .await;
+    let loc_ids = phpyun_services::region_service::location_match_ids(
+        &state,
+        q.country.as_deref(),
+        q.province_id,
+        q.city_id,
+        q.three_city_id,
+    )
+    .await?;
+    let loc_filter = loc_ids.is_some();
     let filter = ResumeFilter {
         keyword: q.keyword.as_deref(),
         education: q.education,
@@ -491,9 +502,10 @@ pub async fn list_resumes(
         job1: q.job1,
         job1_son: q.job1_son,
         job_post: q.job_post,
-        province_id: q.province_id,
-        city_id: q.city_id,
-        three_city_id: q.three_city_id,
+        province_id: if loc_filter { None } else { q.province_id },
+        city_id: if loc_filter { None } else { q.city_id },
+        three_city_id: if loc_filter { None } else { q.three_city_id },
+        city_ids: loc_ids.as_deref(),
         sex: q.sex,
         marriage: q.marriage,
         hy: q.hy,
@@ -595,7 +607,7 @@ fn apply_expect(
     }
     if row.expect_city_n.is_empty() {
         let city_id = i32::try_from(e.city_classid).unwrap_or(0);
-        row.expect_city_n = dicts.city(city_id).to_string();
+        row.expect_city_n = phpyun_services::region_service::loc_name(dicts.city(city_id), city_id);
     }
     if row.expect_salary_n.is_empty() {
         row.expect_salary_n = {
@@ -680,7 +692,7 @@ pub fn resume_expect_item_from_dict(
         phpyun_core::numeric::checked_db_i32(e.city_classid, "resume_expect.city_classid")?;
     Ok(ResumeExpectItem {
         job_class_n: dicts.job(job_classid).to_string(),
-        city_class_n: dicts.city(city_classid).to_string(),
+        city_class_n: phpyun_services::region_service::loc_name(dicts.city(city_classid), city_classid),
         salary_n: dicts.user_or_com(e.salary).to_string(),
         hy_n: dicts.industry(e.hy).to_string(),
         report_n: dicts.user_or_com(e.report).to_string(),

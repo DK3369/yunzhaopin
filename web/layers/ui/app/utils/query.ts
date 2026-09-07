@@ -1,10 +1,19 @@
 import type { LocationQuery } from 'vue-router'
 
-export type DictItem = { id: number; name: string }
+export type DictItem = { id: number; name: string; code?: string }
 
 export function numQuery(q: unknown): number | undefined {
   const n = Number(q)
   return Number.isFinite(n) && n > 0 ? n : undefined
+}
+
+/** ISO 3166-1 alpha-2 from `?country=`. */
+export function countryQuery(q: unknown): string {
+  const raw = Array.isArray(q) ? q[0] : q
+  const s = String(raw || '')
+    .trim()
+    .toUpperCase()
+  return /^[A-Z]{2,8}$/.test(s) ? s : ''
 }
 
 export function boolQuery(q: unknown): boolean {

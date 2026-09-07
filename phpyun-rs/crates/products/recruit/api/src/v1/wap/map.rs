@@ -123,8 +123,8 @@ pub async fn jobs_near(
             Ok(NearJob {
                 distance_m,
                 lastupdate_n: fmt_dt(j.lastupdate),
-                province_name: dicts.city(j.provinceid).to_string(),
-                city_name: dicts.city(j.cityid).to_string(),
+                province_name: phpyun_services::region_service::loc_name(dicts.city(j.provinceid), j.provinceid),
+                city_name: phpyun_services::region_service::loc_name(dicts.city(j.cityid), j.cityid),
                 id: j.id,
                 uid: j.uid,
                 name: j.name,
@@ -184,7 +184,7 @@ pub async fn companies_near(
             Ok(NearCompany {
                 logo_n: pic_n(&state, c.logo.as_deref()),
                 distance_m,
-                city_name: dicts.city(c.cityid).to_string(),
+                city_name: phpyun_services::region_service::loc_name(dicts.city(c.cityid), c.cityid),
                 uid: c.uid,
                 name: c.name,
                 city_id: c.cityid,

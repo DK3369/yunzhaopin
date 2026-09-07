@@ -24,6 +24,7 @@ use phpyun_models::part::repo as part_repo;
 #[derive(Debug, Clone, Default)]
 pub struct PartSearch {
     pub keyword: Option<String>,
+    pub country: Option<String>,
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
@@ -49,11 +50,21 @@ pub async fn list_public(
     page: Pagination,
 ) -> AppResult<PartPage<PartJob>> {
     let now = clock::now_ts();
+    let loc_ids = crate::region_service::location_match_ids(
+        state,
+        search.country.as_deref(),
+        search.province_id,
+        search.city_id,
+        search.three_city_id,
+    )
+    .await?;
+    let loc_filter = loc_ids.is_some();
     let filter = part_repo::PartFilter {
         keyword: search.keyword.as_deref(),
-        province_id: search.province_id,
-        city_id: search.city_id,
-        three_city_id: search.three_city_id,
+        province_id: if loc_filter { None } else { search.province_id },
+        city_id: if loc_filter { None } else { search.city_id },
+        three_city_id: if loc_filter { None } else { search.three_city_id },
+        city_ids: loc_ids.as_deref(),
         part_type: search.part_type,
         salary_type: search.salary_type,
         billing_cycle: search.billing_cycle,

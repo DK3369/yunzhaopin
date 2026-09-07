@@ -35,11 +35,13 @@ pub fn routes() -> Router<AppState> {
 pub struct PartListQuery {
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(length(min = 2, max = 8))]
+    pub country: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub city_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub three_city_id: Option<i32>,
     /// Part-time category id (aligned with PHPYun `partjob.type`)
     #[validate(range(min = 0, max = 99))]
@@ -78,9 +80,9 @@ pub fn part_summary_from_dict(
     let part_type_n = dicts.part(j.r#type).to_string();
     let salary_type_n = dicts.part(j.salary_type).to_string();
     let billing_cycle_n = dicts.part(j.billing_cycle).to_string();
-    let province_name = dicts.city(j.provinceid).to_string();
-    let city_name = dicts.city(j.cityid).to_string();
-    let three_city_name = dicts.city(j.three_cityid).to_string();
+    let province_name = phpyun_services::region_service::loc_name(dicts.city(j.provinceid), j.provinceid);
+    let city_name = phpyun_services::region_service::loc_name(dicts.city(j.cityid), j.cityid);
+    let three_city_name = phpyun_services::region_service::loc_name(dicts.city(j.three_cityid), j.three_cityid);
     PartSummary {
         id: j.id,
         uid: j.uid,
@@ -166,6 +168,7 @@ pub async fn list_parts(
     }
     let search = PartSearch {
         keyword: q.keyword,
+        country: q.country,
         province_id: q.province_id,
         city_id: q.city_id,
         three_city_id: q.three_city_id,
@@ -328,9 +331,9 @@ pub async fn part_detail(
     let salary_type_n = dicts.part(j.salary_type).to_string();
     let billing_cycle_n = dicts.part(j.billing_cycle).to_string();
     let sex_n = dicts.userclass(j.sex).to_string();
-    let province_name = dicts.city(j.provinceid).to_string();
-    let city_name = dicts.city(j.cityid).to_string();
-    let three_city_name = dicts.city(j.three_cityid).to_string();
+    let province_name = phpyun_services::region_service::loc_name(dicts.city(j.provinceid), j.provinceid);
+    let city_name = phpyun_services::region_service::loc_name(dicts.city(j.cityid), j.cityid);
+    let three_city_name = phpyun_services::region_service::loc_name(dicts.city(j.three_cityid), j.three_cityid);
 
     let (
         com_logo,

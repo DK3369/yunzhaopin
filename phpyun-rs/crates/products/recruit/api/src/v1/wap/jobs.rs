@@ -80,11 +80,14 @@ pub struct JobListQuery {
     /// guard against memory-exhaustion via 10MB-keyword requests.
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 99_999))]
+    /// ISO 3166-1 alpha-2. Cities are loaded under this country, not from city_class.
+    #[validate(length(min = 2, max = 8))]
+    pub country: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub city_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub three_city_id: Option<i32>,
     #[validate(range(min = 0, max = 9_999_999))]
     pub job1: Option<i32>,
@@ -188,9 +191,10 @@ pub fn job_summary_from_dict_fav(
         .collect();
     let jobname = parts.join(" / ");
     let job_hy = dicts.industry(j.hy).to_string();
-    let job_city_one = dicts.city(j.provinceid).to_string();
-    let job_city_two = dicts.city(j.cityid).to_string();
-    let job_city_three = dicts.city(j.three_cityid).to_string();
+    let job_city_one = phpyun_services::region_service::loc_name(dicts.city(j.provinceid), j.provinceid);
+    let job_city_two = phpyun_services::region_service::loc_name(dicts.city(j.cityid), j.cityid);
+    let job_city_three =
+        phpyun_services::region_service::loc_name(dicts.city(j.three_cityid), j.three_cityid);
     let welfare_n = j
         .welfare
         .as_deref()
@@ -360,6 +364,7 @@ pub async fn list_jobs(
     }
     let search = JobSearch {
         keyword: q.keyword,
+        country: q.country,
         province_id: q.province_id,
         city_id: q.city_id,
         three_city_id: q.three_city_id,
@@ -483,8 +488,8 @@ pub async fn build_job_detail_value(
         .as_deref()
         .map(|s| dicts.comclass_csv(s))
         .unwrap_or_default();
-    let city_one = dicts.city(d.job.provinceid).to_string();
-    let city_two = dicts.city(d.job.cityid).to_string();
+    let city_one = phpyun_services::region_service::loc_name(dicts.city(d.job.provinceid), d.job.provinceid);
+    let city_two = phpyun_services::region_service::loc_name(dicts.city(d.job.cityid), d.job.cityid);
 
     // --- Latest 5 inquiries (raw table fields passed through) ---
     let msg_list: Vec<json::Value> = {
@@ -613,7 +618,10 @@ pub async fn build_job_detail_value(
             "city_two": city_two,
             "edu_n": dicts.comclass(d.job.edu).to_string(),
             "exp_n": dicts.comclass(d.job.exp).to_string(),
-            "city_three": dicts.city(d.job.three_cityid).to_string(),
+            "city_three": phpyun_services::region_service::loc_name(
+                dicts.city(d.job.three_cityid),
+                d.job.three_cityid,
+            ),
             "number_n": dicts.comclass(d.job.number).to_string(),
             "age_n": dicts.comclass(d.job.age).to_string(),
             "sex_n": dicts.comclass(d.job.sex).to_string(),
@@ -881,7 +889,7 @@ pub async fn share_text(
     } else {
         String::new()
     };
-    let city = dicts.city(prov_id).to_string();
+    let city = phpyun_services::region_service::loc_name(dicts.city(prov_id), prov_id);
 
     let mut parts = Vec::with_capacity(2);
     if !salary.is_empty() {
@@ -1038,7 +1046,7 @@ pub async fn job_contact(
     let isgetprv = b.isgetprv.unwrap_or(0) == 1;
     let c = job_service::resolve_job_contact(&state, id, user.as_ref(), isgetprv).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    let city_name = dicts.city(c.city_id).to_string();
+    let city_name = phpyun_services::region_service::loc_name(dicts.city(c.city_id), c.city_id);
     Ok(ApiResponse::data(contact_view(c, city_name)))
 }
 

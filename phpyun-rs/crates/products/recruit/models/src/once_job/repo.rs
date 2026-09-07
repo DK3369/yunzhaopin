@@ -38,6 +38,7 @@ pub struct Filter<'a> {
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
+    pub city_ids: Option<&'a [i32]>,
     pub exp: Option<i32>,
     pub edu: Option<i32>,
     pub did: u32,
@@ -102,17 +103,40 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &Filter<'a>) {
             qb.push(")");
         }
     }
-    if let Some(v) = f.province_id {
-        qb.push(" AND provinceid = ");
-        qb.push_bind(v);
-    }
-    if let Some(v) = f.city_id {
-        qb.push(" AND cityid = ");
-        qb.push_bind(v);
-    }
-    if let Some(v) = f.three_city_id {
-        qb.push(" AND three_cityid = ");
-        qb.push_bind(v);
+    if let Some(ids) = f.city_ids {
+        if ids.is_empty() {
+            qb.push(" AND 1=0");
+        } else {
+            qb.push(" AND (provinceid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push(") OR cityid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push(") OR three_cityid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push("))");
+        }
+    } else {
+        if let Some(v) = f.province_id {
+            qb.push(" AND provinceid = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = f.city_id {
+            qb.push(" AND cityid = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = f.three_city_id {
+            qb.push(" AND three_cityid = ");
+            qb.push_bind(v);
+        }
     }
     // PHP table has no exp/edu columns; keyword/city filters only.
     let _ = (f.exp, f.edu);

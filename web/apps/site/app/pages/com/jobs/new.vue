@@ -35,24 +35,6 @@ const { data: cats } = await useAsyncData(
 const jobRoots = computed(() => catTree(cats.value || [], 80))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === form.job1)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === form.job1_son)?.children || [])
-const { data: provinces } = await useAsyncData(
-  () => `dict-city-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
-)
-const { data: cities, refresh: refreshCities } = await useAsyncData(
-  () => `dict-city-child-${locale.value}-${form.provinceid}`,
-  () =>
-    form.provinceid
-      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: form.provinceid }).catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
-const { data: districts, refresh: refreshDistricts } = await useAsyncData(
-  () => `dict-city-dist-${locale.value}-${form.cityid}`,
-  () =>
-    form.cityid
-      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: form.cityid }).catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
 const { data: edus } = await useAsyncData(
   () => `dict-edu-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/educations').catch(() => [] as DictItem[]),
@@ -68,23 +50,6 @@ const { data: welfares } = await useAsyncData(
 const { data: jobTypes } = await useAsyncData(
   () => `dict-job-type-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/job-types').catch(() => [] as DictItem[]),
-)
-watch(
-  () => form.provinceid,
-  (n, o) => {
-    if (o && n !== o) {
-      form.cityid = 0
-      form.three_cityid = 0
-    }
-    refreshCities()
-  },
-)
-watch(
-  () => form.cityid,
-  (n, o) => {
-    if (o && n !== o) form.three_cityid = 0
-    refreshDistricts()
-  },
 )
 watch(
   () => form.job1,
@@ -124,8 +89,6 @@ if (editId.value) {
       const d = new Date(form.sdate * 1000)
       sdateN.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     }
-    await refreshCities()
-    await refreshDistricts()
   }
 }
 watch(welfares, (list) => {
@@ -175,18 +138,11 @@ useSeoMeta({ title: t('wap_00322') })
         <option :value="0">{{ $t('common.all') }}</option>
         <option v-for="c in jobLevel3" :key="c.id" :value="c.id">{{ c.name }}</option>
       </select>
-      <select v-model.number="form.provinceid">
-        <option :value="0">{{ $t('member_com_00378') }}</option>
-        <option v-for="p in provinces || []" :key="p.id" :value="p.id">{{ p.name }}</option>
-      </select>
-      <select v-model.number="form.cityid">
-        <option :value="0">{{ $t('common_02110') }}</option>
-        <option v-for="c in cities || []" :key="c.id" :value="c.id">{{ c.name }}</option>
-      </select>
-      <select v-if="(districts || []).length" v-model.number="form.three_cityid">
-        <option :value="0">{{ $t('member_com_00378') }}</option>
-        <option v-for="d in districts || []" :key="d.id" :value="d.id">{{ d.name }}</option>
-      </select>
+      <LocationFields
+        v-model:province-id="form.provinceid"
+        v-model:city-id="form.cityid"
+        v-model:district-id="form.three_cityid"
+      />
       <input v-model.number="form.minsalary" type="number" :placeholder="$t('ui.min_salary')" />
       <input v-model.number="form.maxsalary" type="number" :placeholder="$t('ui.max_salary')" />
       <select v-model.number="form.type">

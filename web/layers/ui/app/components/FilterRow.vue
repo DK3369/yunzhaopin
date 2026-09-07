@@ -4,7 +4,7 @@
     <div class="Search_jobs_sub">
       <div class="Search_jobs_sub_Box">
         <NuxtLink
-          :to="{ path, query: mergeQuery(route.query, { [param]: undefined }) }"
+          :to="{ path, query: mergeQuery(route.query, { [param]: undefined, ...(extraClear || {}) }) }"
           class="Search_jobs_sub_a"
           :class="{ Search_jobs_sub_cur: !current }"
         >
@@ -14,7 +14,7 @@
           v-for="(item, idx) in items"
           v-show="expanded || idx < limit"
           :key="item.id"
-          :to="{ path, query: mergeQuery(route.query, { [param]: item.id }) }"
+          :to="{ path, query: mergeQuery(route.query, { [param]: item.id, ...(extraClear || {}) }) }"
           class="Search_jobs_sub_a"
           :class="{ Search_jobs_sub_cur: current === item.id }"
         >
@@ -43,6 +43,7 @@ const props = withDefaults(
     allLabel: string
     limit?: number
     extraClass?: string
+    extraClear?: Record<string, undefined>
   }>(),
   { limit: 7, extraClass: '' },
 )

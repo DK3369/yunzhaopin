@@ -22,7 +22,7 @@
 //! and job categories. Untranslated rows fall back to `name`.
 
 use arc_swap::ArcSwap;
-use phpyun_core::i18n::Lang;
+use phpyun_core::i18n::{current_lang, Lang};
 use phpyun_core::{ApiError, AppResult, AppState};
 use phpyun_models::region::entity::{Region, LEVEL_COUNTRY};
 use phpyun_models::region::repo as region_repo;
@@ -103,6 +103,30 @@ impl RegionTree {
     pub fn has_children(&self, parent_id: u64) -> bool {
         self.children.get(&parent_id).is_some_and(|v| !v.is_empty())
     }
+    /// `id` plus every descendant. Unknown ids still return `[id]` so a
+    /// stored city-class value keeps matching itself.
+    pub fn descendant_ids(&self, id: u64) -> Vec<u64> {
+        let mut out = vec![id];
+        let mut i = 0;
+        while i < out.len() {
+            if let Some(ch) = self.children.get(&out[i]) {
+                out.extend(ch.iter().copied());
+            }
+            i += 1;
+        }
+        out
+    }
+    /// Every region node of one country, including the country row itself
+    /// (`level = 0`) so a country with no provinces can still match jobs
+    /// that stored that node id.
+    pub fn ids_under_country(&self, country_code: &str) -> Vec<u64> {
+        let code = country_code.to_uppercase();
+        self.by_id
+            .values()
+            .filter(|n| n.region.country_code.eq_ignore_ascii_case(&code))
+            .map(|n| n.region.id)
+            .collect()
+    }
     pub fn total(&self) -> usize {
         self.by_id.len()
     }
@@ -170,6 +194,79 @@ pub async fn get(state: &AppState) -> AppResult<Arc<RegionTree>> {
         })
         .await;
     Ok(swap.load_full())
+}
+
+fn to_i32_ids(ids: Vec<u64>) -> Vec<i32> {
+    ids.into_iter()
+        .filter_map(|id| i32::try_from(id).ok())
+        .filter(|id| *id > 0)
+        .collect()
+}
+
+/// Location picker → stored `provinceid` / `cityid` / `three_cityid` match set.
+///
+/// Country is resolved through the region tree, not `phpyun_city_class`.
+pub async fn location_match_ids(
+    state: &AppState,
+    country: Option<&str>,
+    province_id: Option<i32>,
+    city_id: Option<i32>,
+    three_city_id: Option<i32>,
+) -> AppResult<Option<Vec<i32>>> {
+    let three = three_city_id.filter(|v| *v > 0);
+    let city = city_id.filter(|v| *v > 0);
+    let province = province_id.filter(|v| *v > 0);
+    let country = country
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(str::to_uppercase);
+    if three.is_none() && city.is_none() && province.is_none() && country.is_none() {
+        return Ok(None);
+    }
+    let tree = get(state).await?;
+    let mut ids = to_i32_ids(if let Some(id) = three {
+        tree.descendant_ids(id as u64)
+    } else if let Some(id) = city {
+        tree.descendant_ids(id as u64)
+    } else if let Some(id) = province {
+        tree.descendant_ids(id as u64)
+    } else if let Some(code) = country.as_deref() {
+        tree.ids_under_country(code)
+    } else {
+        Vec::new()
+    });
+    // China jobs still store the PHP city-cache ids. Country=CN with no
+    // province selected includes that tree so old rows stay visible.
+    if country.as_deref() == Some("CN") && province.is_none() && city.is_none() && three.is_none() {
+        if let Ok(dicts) = crate::dict_service::get(state).await {
+            for (id, _) in dicts.city_provinces() {
+                ids.push(id);
+                ids.extend(dicts.city_descendant_ids(id));
+            }
+            ids.sort_unstable();
+            ids.dedup();
+        }
+    }
+    Ok(Some(ids))
+}
+
+/// Legacy city-class name, or the region-tree label when the stored id is a region node.
+pub fn loc_name(city_class_name: &str, id: i32) -> String {
+    if !city_class_name.is_empty() {
+        return city_class_name.to_string();
+    }
+    if id <= 0 {
+        return String::new();
+    }
+    let lang = current_lang();
+    TREE.get()
+        .and_then(|swap| {
+            swap
+                .load()
+                .get(id as u64)
+                .map(|n| n.display_name(lang).to_string())
+        })
+        .unwrap_or_default()
 }
 
 /// Manual refresh (call after admin edit) + cluster broadcast.

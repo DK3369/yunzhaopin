@@ -58,41 +58,6 @@ const { data: sizes } = await useAsyncData(
   () => `dict-mun-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
 )
-const { data: provinces } = await useAsyncData(
-  () => `dict-city-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
-)
-const { data: cities, refresh: refreshCities } = await useAsyncData(
-  () => `dict-city-child-${locale.value}-${form.provinceid}`,
-  () =>
-    form.provinceid
-      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: form.provinceid }).catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
-const { data: districts, refresh: refreshDistricts } = await useAsyncData(
-  () => `dict-city-dist-${locale.value}-${form.cityid}`,
-  () =>
-    form.cityid
-      ? api.get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: form.cityid }).catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
-watch(
-  () => form.provinceid,
-  (n, o) => {
-    if (o && n !== o) {
-      form.cityid = 0
-      form.three_cityid = 0
-    }
-    refreshCities()
-  },
-)
-watch(
-  () => form.cityid,
-  (n, o) => {
-    if (o && n !== o) form.three_cityid = 0
-    refreshDistricts()
-  },
-)
 const msg = ref('')
 async function onLogo(ev: Event) {
   const file = (ev.target as HTMLInputElement).files?.[0]
@@ -140,18 +105,11 @@ useSeoMeta({ title: t('member_com_00378') })
         <option :value="0">{{ $t('member_com_00196') }}</option>
         <option v-for="s in sizes || []" :key="s.id" :value="s.id">{{ s.name }}</option>
       </select>
-      <select v-model.number="form.provinceid">
-        <option :value="0">{{ $t('member_com_00378') }}</option>
-        <option v-for="p in provinces || []" :key="p.id" :value="p.id">{{ p.name }}</option>
-      </select>
-      <select v-model.number="form.cityid">
-        <option :value="0">{{ $t('common_02110') }}</option>
-        <option v-for="c in cities || []" :key="c.id" :value="c.id">{{ c.name }}</option>
-      </select>
-      <select v-if="(districts || []).length" v-model.number="form.three_cityid">
-        <option :value="0">{{ $t('member_com_00378') }}</option>
-        <option v-for="d in districts || []" :key="d.id" :value="d.id">{{ d.name }}</option>
-      </select>
+      <LocationFields
+        v-model:province-id="form.provinceid"
+        v-model:city-id="form.cityid"
+        v-model:district-id="form.three_cityid"
+      />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onLogo" />
       <textarea v-model="form.content" :placeholder="$t('ui.desc')" rows="6" />
       <input v-model="form.linkman" :placeholder="$t('wap_01431')" />

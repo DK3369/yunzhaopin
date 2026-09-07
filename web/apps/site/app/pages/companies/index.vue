@@ -9,6 +9,7 @@ const keyword = computed(() => String(route.query.keyword || ''))
 const rec = computed(() => route.query.rec === '1')
 const cert = computed(() => route.query.cert === '1')
 const hy = computed(() => numQuery(route.query.hy))
+const country = computed(() => countryQuery(route.query.country))
 const provinceId = computed(() => numQuery(route.query.province_id))
 const cityId = computed(() => numQuery(route.query.city_id))
 const threeCityId = computed(() => numQuery(route.query.three_city_id))
@@ -17,9 +18,14 @@ const mun = computed(() => numQuery(route.query.mun))
 const welfare = computed(() => numQuery(route.query.welfare))
 const api = useApi()
 const { applyToQuery } = useSubSite()
+const { countryItems, countryDictItems, provinceItems, cityItems, districtItems } = await useRegionCascade({
+  country,
+  provinceId: computed(() => provinceId.value || 0),
+  cityId: computed(() => cityId.value || 0),
+})
 const { data, error } = await useAsyncData(
   () =>
-    `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${cert.value}-${hy.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${pr.value}-${mun.value}-${welfare.value}`,
+    `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${cert.value}-${hy.value}-${country.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${pr.value}-${mun.value}-${welfare.value}`,
   () =>
     api.get<{ list: CompanyLike[]; total: number }>(
       '/v1/wap/companies',
@@ -30,6 +36,7 @@ const { data, error } = await useAsyncData(
         rec: rec.value || undefined,
         cert: cert.value || undefined,
         hy: hy.value,
+        country: country.value || undefined,
         province_id: provinceId.value,
         city_id: cityId.value,
         three_city_id: threeCityId.value,
@@ -43,28 +50,6 @@ const { data, error } = await useAsyncData(
 const { data: industries } = await useAsyncData(
   () => `dict-hy-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
-)
-const { data: provinces } = await useAsyncData(
-  () => `dict-city-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
-)
-const { data: cities } = await useAsyncData(
-  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
-  () =>
-    provinceId.value
-      ? api
-          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value })
-          .catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
-const { data: districts } = await useAsyncData(
-  () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
-  () =>
-    cityId.value
-      ? api
-          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: cityId.value })
-          .catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
 )
 const { data: natures } = await useAsyncData(
   () => `dict-pr-${locale.value}`,
@@ -122,28 +107,38 @@ const list = computed(() => data.value?.list || [])
         path="/companies"
         :all-label="$t('common.all')"
       />
+      <CountryFilterRow
+        :label="$t('common.country')"
+        :items="countryItems"
+        :current="country"
+        path="/companies"
+        :all-label="$t('common.all')"
+      />
       <FilterRow
+        v-if="country"
         :label="$t('member_com_00378')"
         param="province_id"
-        :items="provinces || []"
+        :items="provinceItems"
         :current="provinceId"
         path="/companies"
         :all-label="$t('common.all')"
+        :extra-clear="{ city_id: undefined, three_city_id: undefined }"
       />
       <FilterRow
-        v-if="provinceId && (cities || []).length"
+        v-if="provinceId && cityItems.length"
         :label="$t('common_02110')"
         param="city_id"
-        :items="cities || []"
+        :items="cityItems"
         :current="cityId"
         path="/companies"
         :all-label="$t('common.all')"
+        :extra-clear="{ three_city_id: undefined }"
       />
       <FilterRow
-        v-if="cityId && (districts || []).length"
+        v-if="cityId && districtItems.length"
         :label="$t('member_com_00378')"
         param="three_city_id"
-        :items="districts || []"
+        :items="districtItems"
         :current="threeCityId"
         path="/companies"
         :all-label="$t('common.all')"
@@ -210,13 +205,14 @@ const list = computed(() => data.value?.list || [])
         :all-label="$t('common.all')"
         :tabs="[
           {
-            key: 'province_id',
-            label: $t('common_02110'),
-            items: provinces || [],
-            childKey: 'city_id',
-            childItems: cities || [],
-            grandKey: 'three_city_id',
-            grandItems: districts || [],
+            key: 'country',
+            label: $t('common.country'),
+            items: countryDictItems,
+            extraClear: { three_city_id: undefined },
+            childKey: 'province_id',
+            childItems: provinceItems,
+            grandKey: 'city_id',
+            grandItems: cityItems,
           },
           { key: 'hy', label: $t('admin_user_company_00373'), items: industries || [] },
           { key: 'pr', label: $t('wap_com_00018'), items: natures || [] },

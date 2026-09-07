@@ -45,11 +45,13 @@ pub fn routes() -> Router<AppState> {
 pub struct ListQuery {
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(length(min = 2, max = 8))]
+    pub country: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub city_id: Option<i32>,
-    #[validate(range(min = 0, max = 99_999))]
+    #[validate(range(min = 0, max = 9_999_999))]
     pub three_city_id: Option<i32>,
     #[validate(range(min = 0, max = 99))]
     pub exp: Option<i32>,
@@ -107,6 +109,7 @@ pub async fn list(
     phpyun_services::site_gate_service::ensure_module_on(&state, "sy_tiny_web").await?;
     let search = TinySearch {
         keyword: q.keyword,
+        country: q.country,
         province_id: q.province_id,
         city_id: q.city_id,
         three_city_id: q.three_city_id,

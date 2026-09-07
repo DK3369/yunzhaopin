@@ -54,6 +54,9 @@ pub struct CompanyFilter<'a> {
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
+    /// Expanded region / country match set. When set, the exact province/city
+    /// columns above are ignored.
+    pub city_ids: Option<&'a [i32]>,
     /// Industry dict id (`hy`).
     pub hy: Option<i32>,
     /// Company-type dict id — 国企/外资/民营/… (`pr`).
@@ -130,23 +133,46 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
             qb.push(")");
         }
     }
-    if let Some(v) = f.province_id {
-        qb.push(" AND provinceid = ");
-        qb.push_bind(v);
-    }
-    if let Some(v) = f.city_id {
-        qb.push(" AND (provinceid = ");
-        qb.push_bind(v);
-        qb.push(" OR cityid = ");
-        qb.push_bind(v);
-        qb.push(")");
-    }
-    if let Some(v) = f.three_city_id {
-        qb.push(" AND (provinceid = ");
-        qb.push_bind(v);
-        qb.push(" OR three_cityid = ");
-        qb.push_bind(v);
-        qb.push(")");
+    if let Some(ids) = f.city_ids {
+        if ids.is_empty() {
+            qb.push(" AND 1=0");
+        } else {
+            qb.push(" AND (provinceid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push(") OR cityid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push(") OR three_cityid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push("))");
+        }
+    } else {
+        if let Some(v) = f.province_id {
+            qb.push(" AND provinceid = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = f.city_id {
+            qb.push(" AND (provinceid = ");
+            qb.push_bind(v);
+            qb.push(" OR cityid = ");
+            qb.push_bind(v);
+            qb.push(")");
+        }
+        if let Some(v) = f.three_city_id {
+            qb.push(" AND (provinceid = ");
+            qb.push_bind(v);
+            qb.push(" OR three_cityid = ");
+            qb.push_bind(v);
+            qb.push(")");
+        }
     }
     if let Some(v) = f.hy {
         qb.push(" AND hy = ");

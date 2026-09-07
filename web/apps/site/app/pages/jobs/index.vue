@@ -9,6 +9,7 @@ const keyword = computed(() => String(route.query.keyword || ''))
 const job1 = computed(() => numQuery(route.query.job1))
 const job1Son = computed(() => numQuery(route.query.job1_son))
 const jobPost = computed(() => numQuery(route.query.job_post))
+const country = computed(() => countryQuery(route.query.country))
 const provinceId = computed(() => numQuery(route.query.province_id))
 const cityId = computed(() => numQuery(route.query.city_id))
 const threeCityId = computed(() => numQuery(route.query.three_city_id))
@@ -39,10 +40,16 @@ const hiddenFilters = computed(() => {
 })
 const freeTel = computed(() => String(settings.value.sy_freewebtel || ''))
 const api = useApi()
+const { countryItems, countryDictItems, provinceItems: provinces, cityItems: cities, districtItems: districts } =
+  await useRegionCascade({
+    country,
+    provinceId: computed(() => provinceId.value || 0),
+    cityId: computed(() => cityId.value || 0),
+  })
 
 const { data, error } = await useAsyncData(
   () =>
-    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${jobType.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
+    `jobs-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${country.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${jobType.value}-${urgent.value}-${rec.value}-${cert.value}-${order.value}`,
   () =>
     api.get<{ list: JobLike[]; total: number }>(
       '/v1/wap/jobs',
@@ -53,6 +60,7 @@ const { data, error } = await useAsyncData(
         job1: job1.value,
         job1_son: job1Son.value,
         job_post: jobPost.value,
+        country: country.value || undefined,
         province_id: provinceId.value,
         city_id: cityId.value,
         three_city_id: threeCityId.value,
@@ -85,19 +93,6 @@ const jobRoots = computed(() => catTree(cats.value || [], 40))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === job1.value)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === job1Son.value)?.children || [])
 
-const { data: provinces } = await useAsyncData(
-  () => `dict-city-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
-)
-const { data: cities } = await useAsyncData(
-  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
-  () =>
-    provinceId.value
-      ? api
-          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value })
-          .catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
 const { data: edus } = await useAsyncData(
   () => `dict-edu-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/educations').catch(() => [] as DictItem[]),
@@ -134,15 +129,6 @@ const { data: sizes } = await useAsyncData(
   () => `dict-mun-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
 )
-const { data: districts } = await useAsyncData(
-  () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
-  () =>
-    cityId.value
-      ? api
-          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: cityId.value })
-          .catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
 const { data: adsTop } = await useAsyncData('ads-507', () =>
   api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '507', limit: 1 }).catch(() => []),
 )
@@ -166,7 +152,8 @@ const cityLabel = computed(() => {
   const hit = [...(provinces.value || []), ...(cities.value || []), ...(districts.value || [])].find(
     (c) => c.id === threeCityId.value || c.id === cityId.value || c.id === provinceId.value,
   )
-  return hit?.name || ''
+  if (hit?.name) return hit.name
+  return countryItems.value.find((c) => c.code === country.value)?.name || ''
 })
 const dictName = (items: DictItem[] | null | undefined, id?: number) =>
   items?.find((x) => x.id === id)?.name || ''
@@ -200,7 +187,7 @@ function exchangeRec() {
 }
 const { data: bidJobs } = await useAsyncData(
   () =>
-    `jobs-bid-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}`,
+    `jobs-bid-${locale.value}-${page.value}-${keyword.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${country.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${edu.value}-${exp.value}-${salaryId.value}-${hy.value}-${welfare.value}-${report.value}-${pr.value}-${mun.value}-${uptime.value}-${sex.value}-${urgent.value}-${rec.value}-${cert.value}`,
   () =>
     page.value > 1
       ? Promise.resolve({ list: [] as JobLike[] })
@@ -212,6 +199,7 @@ const { data: bidJobs } = await useAsyncData(
             job1: job1.value,
             job1_son: job1Son.value,
             job_post: jobPost.value,
+            country: country.value || undefined,
             province_id: provinceId.value,
             city_id: cityId.value,
             three_city_id: threeCityId.value,
@@ -253,6 +241,15 @@ const selected = computed(() => {
   if (jobPost.value) {
     const n = dictName(job3Items.value, jobPost.value)
     if (n) rows.push({ param: 'job_post', name: n })
+  }
+  if (country.value) {
+    const n = countryItems.value.find((c) => c.code === country.value)?.name
+    if (n)
+      rows.push({
+        param: 'country',
+        name: `${t('common.country')}：${n}`,
+        extra: { province_id: undefined, city_id: undefined, three_city_id: undefined },
+      })
   }
   if (provinceId.value) {
     const n = dictName(provinces.value, provinceId.value)
@@ -374,9 +371,11 @@ function goPage(p: number) {
             :all-label="$t('common.all')"
             :unlimited-label="$t('common_01936')"
             :more-label="$t('common.more')"
+            :countries="countryItems"
             :provinces="provinces || []"
             :cities="cities || []"
             :districts="districts || []"
+            :country="country"
             :province-id="provinceId"
             :city-id="cityId"
             :three-city-id="threeCityId"
@@ -615,14 +614,15 @@ function goPage(p: number) {
         :all-label="$t('common.all')"
         :tabs="[
           {
-            key: 'province_id',
-            label: $t('common_02110'),
+            key: 'country',
+            label: $t('common.country'),
             current: cityLabel,
-            items: provinces || [],
-            childKey: 'city_id',
-            childItems: cities || [],
-            grandKey: 'three_city_id',
-            grandItems: districts || [],
+            items: countryDictItems,
+            extraClear: { three_city_id: undefined },
+            childKey: 'province_id',
+            childItems: provinces || [],
+            grandKey: 'city_id',
+            grandItems: cities || [],
           },
           {
             key: 'job1',

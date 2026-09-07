@@ -15,6 +15,7 @@ pub struct PartFilter<'a> {
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
+    pub city_ids: Option<&'a [i32]>,
     /// Part-time category id
     pub part_type: Option<i32>,
     pub min_salary: Option<i32>,
@@ -167,32 +168,55 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, 
             qb.push_bind(format!("%{kw}%"));
         }
     }
-    if let Some(v) = f.province_id {
-        qb.push(" AND (provinceid = ");
-        qb.push_bind(v);
-        qb.push(" OR cityid = ");
-        qb.push_bind(v);
-        qb.push(" OR three_cityid = ");
-        qb.push_bind(v);
-        qb.push(")");
-    }
-    if let Some(v) = f.city_id {
-        qb.push(" AND (provinceid = ");
-        qb.push_bind(v);
-        qb.push(" OR cityid = ");
-        qb.push_bind(v);
-        qb.push(" OR three_cityid = ");
-        qb.push_bind(v);
-        qb.push(")");
-    }
-    if let Some(v) = f.three_city_id {
-        qb.push(" AND (provinceid = ");
-        qb.push_bind(v);
-        qb.push(" OR cityid = ");
-        qb.push_bind(v);
-        qb.push(" OR three_cityid = ");
-        qb.push_bind(v);
-        qb.push(")");
+    if let Some(ids) = f.city_ids {
+        if ids.is_empty() {
+            qb.push(" AND 1=0");
+        } else {
+            qb.push(" AND (provinceid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push(") OR cityid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push(") OR three_cityid IN (");
+            let mut sep = qb.separated(",");
+            for id in ids {
+                sep.push_bind(*id);
+            }
+            qb.push("))");
+        }
+    } else {
+        if let Some(v) = f.province_id {
+            qb.push(" AND (provinceid = ");
+            qb.push_bind(v);
+            qb.push(" OR cityid = ");
+            qb.push_bind(v);
+            qb.push(" OR three_cityid = ");
+            qb.push_bind(v);
+            qb.push(")");
+        }
+        if let Some(v) = f.city_id {
+            qb.push(" AND (provinceid = ");
+            qb.push_bind(v);
+            qb.push(" OR cityid = ");
+            qb.push_bind(v);
+            qb.push(" OR three_cityid = ");
+            qb.push_bind(v);
+            qb.push(")");
+        }
+        if let Some(v) = f.three_city_id {
+            qb.push(" AND (provinceid = ");
+            qb.push_bind(v);
+            qb.push(" OR cityid = ");
+            qb.push_bind(v);
+            qb.push(" OR three_cityid = ");
+            qb.push_bind(v);
+            qb.push(")");
+        }
     }
     if let Some(v) = f.part_type {
         qb.push(" AND `type` = ");

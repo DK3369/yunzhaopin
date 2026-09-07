@@ -4,30 +4,30 @@
     <div class="Search_citybox_right">
       <div class="Search_cityall" :class="{ none: !allOpen }">
         <NuxtLink
-          :to="{ path, query: mergeQuery(route.query, { province_id: undefined, city_id: undefined, three_city_id: undefined }) }"
+          :to="{ path, query: mergeQuery(route.query, { country: undefined, province_id: undefined, city_id: undefined, three_city_id: undefined }) }"
           class="city_name"
-          :class="{ city_name_active: !provinceId }"
+          :class="{ city_name_active: !country && !provinceId }"
           @click="allOpen = false"
         >
           {{ allLabel }}
         </NuxtLink>
         <NuxtLink
-          v-for="item in provinces"
-          :key="'all-' + item.id"
-          :to="{ path, query: mergeQuery(route.query, { province_id: item.id, city_id: undefined, three_city_id: undefined }) }"
+          v-for="item in countries"
+          :key="'cc-' + item.code"
+          :to="{ path, query: mergeQuery(route.query, { country: item.code, province_id: undefined, city_id: undefined, three_city_id: undefined }) }"
           class="city_name"
-          :class="{ city_name_active: provinceId === item.id && !cityId }"
+          :class="{ city_name_active: country === item.code && !provinceId }"
           @click="allOpen = false"
         >
           {{ item.name }}
         </NuxtLink>
       </div>
-      <div class="Search_cityboxright">
+      <div v-if="!country || provinces.length" class="Search_cityboxright">
         <a
           class="search_city_list_cur acity_two"
           :class="{
-            none: !provinceId,
-            search_city_active: !!provinceId && (!cityId || !districts.length),
+            none: !country && !provinceId,
+            search_city_active: !!(country || provinceId) && (!cityId || !districts.length),
           }"
           href="javascript:;"
           @click.prevent="clearCity"
@@ -49,13 +49,25 @@
           <i class="search_city_list_line" />
         </a>
         <NuxtLink
-          :to="{ path, query: mergeQuery(route.query, { province_id: undefined, city_id: undefined, three_city_id: undefined }) }"
+          :to="{ path, query: mergeQuery(route.query, country ? { province_id: undefined, city_id: undefined, three_city_id: undefined } : { country: undefined, province_id: undefined, city_id: undefined, three_city_id: undefined }) }"
           class="search_city_list_all"
-          :class="{ city_name_active: !provinceId }"
+          :class="{ city_name_active: country ? !provinceId : !country }"
         >
           {{ allLabel }}
         </NuxtLink>
-        <div class="search_city_list">
+        <div v-if="!country" class="search_city_list">
+          <NuxtLink
+            v-for="(item, idx) in countries"
+            v-show="allOpen || idx < visibleLimit"
+            :key="'c-' + item.code"
+            :to="{ path, query: mergeQuery(route.query, { country: item.code, province_id: undefined, city_id: undefined, three_city_id: undefined }) }"
+            class="city_name"
+            :class="{ city_name_active: country === item.code }"
+          >
+            {{ item.name }}
+          </NuxtLink>
+        </div>
+        <div v-else class="search_city_list">
           <NuxtLink
             v-for="(item, idx) in provinces"
             v-show="allOpen || idx < visibleLimit"
@@ -113,6 +125,7 @@
 
 <script setup lang="ts">
 import type { DictItem } from '../utils/query'
+import type { CountryOpt } from '../composables/useRegionCascade'
 
 const props = defineProps<{
   label: string
@@ -120,9 +133,11 @@ const props = defineProps<{
   allLabel: string
   unlimitedLabel: string
   moreLabel: string
+  countries?: CountryOpt[]
   provinces: DictItem[]
   cities: DictItem[]
   districts: DictItem[]
+  country?: string
   provinceId?: number
   cityId?: number
   threeCityId?: number
@@ -137,14 +152,24 @@ const visibleLimit = computed(() => {
   return 15
 })
 
-const provinceName = computed(() => props.provinces.find((x) => x.id === props.provinceId)?.name || '')
+const country = computed(() => String(props.country || '').toUpperCase())
+const countries = computed(() => props.countries || [])
+const provinceName = computed(() => {
+  if (props.provinceId) return props.provinces.find((x) => x.id === props.provinceId)?.name || ''
+  return countries.value.find((x) => x.code === country.value)?.name || ''
+})
 const cityName = computed(() => props.cities.find((x) => x.id === props.cityId)?.name || '')
 const showDistricts = computed(() => !!(props.cityId && props.districts.length))
 const showCities = computed(() => !!(props.provinceId && props.cities.length && !showDistricts.value))
 
 function clearCity() {
   return navigateTo({
-    query: mergeQuery(route.query, { city_id: undefined, three_city_id: undefined }),
+    query: mergeQuery(
+      route.query,
+      props.provinceId
+        ? { province_id: undefined, city_id: undefined, three_city_id: undefined }
+        : { country: undefined, province_id: undefined, city_id: undefined, three_city_id: undefined },
+    ),
   })
 }
 

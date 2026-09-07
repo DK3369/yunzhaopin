@@ -64,8 +64,10 @@
 /v1/admin/company-statis/save
 /v1/admin/countries
 /v1/admin/countries/delete
+/v1/admin/countries/list
 /v1/admin/countries/patch
 /v1/admin/countries/reload
+/v1/admin/countries/select
 /v1/admin/cron
 /v1/admin/cron/delete
 /v1/admin/cron/info

@@ -26,6 +26,7 @@ const exp = computed(() => numQuery(route.query.exp))
 const job1 = computed(() => numQuery(route.query.job1))
 const job1Son = computed(() => numQuery(route.query.job1_son))
 const jobPost = computed(() => numQuery(route.query.job_post))
+const country = computed(() => countryQuery(route.query.country))
 const provinceId = computed(() => numQuery(route.query.province_id))
 const cityId = computed(() => numQuery(route.query.city_id))
 const threeCityId = computed(() => numQuery(route.query.three_city_id))
@@ -88,6 +89,12 @@ const moreOpen = ref(
 )
 const api = useApi()
 const { applyToQuery } = useSubSite()
+const { countryItems, countryDictItems, provinceItems: provinces, cityItems: cities, districtItems: districts } =
+  await useRegionCascade({
+    country,
+    provinceId: computed(() => provinceId.value || 0),
+    cityId: computed(() => cityId.value || 0),
+  })
 
 function resumeListParams(extra: Record<string, unknown> = {}) {
   return applyToQuery({
@@ -99,6 +106,7 @@ function resumeListParams(extra: Record<string, unknown> = {}) {
     job1: job1.value,
     job1_son: job1Son.value,
     job_post: jobPost.value,
+    country: country.value || undefined,
     province_id: provinceId.value,
     city_id: cityId.value,
     three_city_id: threeCityId.value,
@@ -124,7 +132,7 @@ function resumeListParams(extra: Record<string, unknown> = {}) {
 
 const listKey = computed(
   () =>
-    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${filterMinSalary.value}-${filterMaxSalary.value}-${filterMinAge.value}-${filterMaxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
+    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${country.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${filterMinSalary.value}-${filterMaxSalary.value}-${filterMinAge.value}-${filterMaxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
 )
 
 const { data, error } = await useAsyncData(
@@ -163,28 +171,6 @@ const { data: edus } = await useAsyncData(
 const { data: exps } = await useAsyncData(
   () => `dict-exp-user-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/experiences', { source: 'user' }).catch(() => [] as DictItem[]),
-)
-const { data: provinces } = await useAsyncData(
-  () => `dict-city-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
-)
-const { data: cities } = await useAsyncData(
-  () => `dict-city-child-${locale.value}-${provinceId.value || 0}`,
-  () =>
-    provinceId.value
-      ? api
-          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: provinceId.value })
-          .catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
-)
-const { data: districts } = await useAsyncData(
-  () => `dict-city-dist-${locale.value}-${cityId.value || 0}`,
-  () =>
-    cityId.value
-      ? api
-          .get<DictItem[]>('/v1/wap/dict/cities/by-province', { province_id: cityId.value })
-          .catch(() => [] as DictItem[])
-      : Promise.resolve([] as DictItem[]),
 )
 const { data: tags } = await useAsyncData(
   () => `dict-user-tag-${locale.value}`,
@@ -273,7 +259,8 @@ const cityLabel = computed(() => {
   const hit = [...(provinces.value || []), ...(cities.value || []), ...(districts.value || [])].find(
     (c) => c.id === threeCityId.value || c.id === cityId.value || c.id === provinceId.value,
   )
-  return hit?.name || ''
+  if (hit?.name) return hit.name
+  return countryItems.value.find((c) => c.code === country.value)?.name || ''
 })
 const salaryActive = (min?: number, max?: number) => minSalary.value === min && maxSalary.value === max
 const ageActive = (min?: number, max?: number) => minAge.value === min && maxAge.value === max
@@ -303,6 +290,15 @@ const selected = computed(() => {
   if (jobPost.value) {
     const n = dictName(job3Items.value, jobPost.value)
     if (n) rows.push({ param: 'job_post', name: n })
+  }
+  if (country.value) {
+    const n = countryItems.value.find((c) => c.code === country.value)?.name
+    if (n)
+      rows.push({
+        param: 'country',
+        name: n,
+        extra: { province_id: undefined, city_id: undefined, three_city_id: undefined },
+      })
   }
   if (provinceId.value) {
     const n = dictName(provinces.value, provinceId.value)
@@ -426,9 +422,11 @@ function recPhoto(row: Record<string, unknown>) {
             :all-label="$t('common.all')"
             :unlimited-label="$t('common_01936')"
             :more-label="$t('common.more')"
+            :countries="countryItems"
             :provinces="provinces || []"
             :cities="cities || []"
             :districts="districts || []"
+            :country="country"
             :province-id="provinceId"
             :city-id="cityId"
             :three-city-id="threeCityId"
@@ -711,14 +709,15 @@ function recPhoto(row: Record<string, unknown>) {
         :all-label="$t('common.all')"
         :tabs="[
           {
-            key: 'province_id',
-            label: $t('common_02110'),
+            key: 'country',
+            label: $t('common.country'),
             current: cityLabel,
-            items: provinces || [],
-            childKey: 'city_id',
-            childItems: cities || [],
-            grandKey: 'three_city_id',
-            grandItems: districts || [],
+            items: countryDictItems,
+            extraClear: { three_city_id: undefined },
+            childKey: 'province_id',
+            childItems: provinces || [],
+            grandKey: 'city_id',
+            grandItems: cities || [],
           },
           {
             key: 'job1',
