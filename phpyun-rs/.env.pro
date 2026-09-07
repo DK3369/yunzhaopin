@@ -1,6 +1,8 @@
 # Production configuration. Keep this file out of Git and restrict permissions.
 APP_ENV=prod
 BIND=127.0.0.1:3003
+# 站点时区，UTC 以东分钟数。要和 PHP config/db.config.php 的 PRC 一致。
+TZ_OFFSET_MINUTES=480
 RUST_LOG=info,phpyun_core=info,phpyun_handlers=info,phpyun_services=info
 WORKER_THREADS=0
 THREAD_STACK_MB=2

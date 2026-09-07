@@ -7,26 +7,20 @@
 use crate::AppState;
 
 // ==================== Time formatting ====================
+//
+// All three render in the **site** timezone ([`crate::clock::tz`], +08:00 by
+// default). PHP runs under `date_default_timezone_set('PRC')`, so formatting in
+// UTC here would show every timestamp 8 hours earlier than the legacy pages.
 
 /// Format a unix timestamp as `YYYY-MM-DD HH:MM`. Returns empty string for
 /// `ts <= 0` to mirror PHPYun behaviour where `0` = "not set".
 pub fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
+    fmt_ts(ts, "%Y-%m-%d %H:%M")
 }
 
 /// Format a unix timestamp as `YYYY-MM-DD`. Returns empty string for `ts <= 0`.
 pub fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
+    fmt_ts(ts, "%Y-%m-%d")
 }
 
 /// Format a unix timestamp with a custom pattern. Used by handlers that want
@@ -36,7 +30,7 @@ pub fn fmt_ts(ts: i64, pattern: &str) -> String {
         return String::new();
     }
     chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format(pattern).to_string())
+        .map(|dt| dt.with_timezone(&crate::clock::tz()).format(pattern).to_string())
         .unwrap_or_default()
 }
 

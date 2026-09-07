@@ -17,6 +17,8 @@ use phpyun_handlers::assemble;
 fn main() -> anyhow::Result<()> {
     let config = Config::load().context("load configuration")?;
     telemetry::init(&config.log_level, config.env);
+    // Before anything can render a date.
+    phpyun_core::clock::init_tz_offset_minutes(config.tz_offset_minutes);
 
     let mut builder = tokio::runtime::Builder::new_multi_thread();
     builder.enable_all().thread_name("phpyun-worker");

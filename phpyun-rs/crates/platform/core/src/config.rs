@@ -202,6 +202,11 @@ pub struct Config {
     pub env: AppEnvironment,
     pub log_level: String,
 
+    /// Site timezone, minutes east of UTC. Must match PHP
+    /// `config/db.config.php` (`PRC` = +480) or rendered dates disagree with
+    /// the legacy pages.
+    pub tz_offset_minutes: i32,
+
     // Tokio runtime
     /// Worker thread count; 0 = auto-detect CPU count.
     pub worker_threads: usize,
@@ -454,6 +459,11 @@ impl Config {
 
             env: parse_app_environment(env::var("APP_ENV").ok().as_deref())?,
             log_level: env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
+
+            tz_offset_minutes: env_parse(
+                "TZ_OFFSET_MINUTES",
+                crate::clock::DEFAULT_TZ_OFFSET_MINUTES,
+            ),
 
             worker_threads: env_parse("WORKER_THREADS", 0usize),
             thread_stack_mb: env_parse("THREAD_STACK_MB", 2usize),

@@ -1027,14 +1027,15 @@ fn nid_from_body(body: &Value) -> Option<String> {
 }
 
 fn days_ago_ts(days: i32) -> i64 {
-    let now = clock::now_ts();
     if days <= 1 {
-        let day = now - (now % 86_400);
-        return day;
+        return clock::start_of_today();
     }
-    now - i64::from(days) * 86_400
+    clock::now_ts() - i64::from(days) * 86_400
 }
 
+/// A `YYYY-MM-DD` filter bound from an admin form. Site-timezone midnight, so
+/// picking one day covers that day in Beijing time rather than being 8 hours
+/// off like a UTC parse would be.
 fn parse_date_ts(s: &str) -> i64 {
     let s = s.trim();
     if s.is_empty() {
@@ -1043,11 +1044,7 @@ fn parse_date_ts(s: &str) -> i64 {
     if let Ok(n) = s.parse::<i64>() {
         return n;
     }
-    chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d")
-        .ok()
-        .and_then(|d| d.and_hms_opt(0, 0, 0))
-        .map(|dt| dt.and_utc().timestamp())
-        .unwrap_or(0)
+    clock::parse_site_date(s).unwrap_or(0)
 }
 
 fn pic_url(base: &str, pic: &str) -> String {
