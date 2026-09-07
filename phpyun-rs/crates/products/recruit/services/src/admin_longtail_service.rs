@@ -3,6 +3,7 @@
 use phpyun_auth::argon2_hash_async;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_gap::repo as gap_repo;
 use phpyun_models::admin_rbac::repo as rbac_repo;
 use phpyun_models::apply::repo as apply_repo;
@@ -22,6 +23,7 @@ use phpyun_models::resume::repo::AdminResumeRow;
 use phpyun_models::resume::skill::{self as skill_repo, Skill};
 use phpyun_models::resume::training::{self as training_repo, Training};
 use phpyun_models::resume::work::{self as work_repo, Work};
+use phpyun_models::site_setting::repo as site_setting_repo;
 use phpyun_models::user::entity::Member;
 use phpyun_models::user::repo as user_repo;
 use serde::Serialize;
@@ -945,19 +947,26 @@ pub async fn company_php_getinfo(
         json!(c.linktel)
     };
     info["vipetime_n"] = json!(phpyun_core::utils::fmt_date(c.vipetime));
-    info["package"] = json!(c
-        .welfare
-        .as_deref()
+    let db = state.db.reader();
+    // PHP `package` is a CSV of extra `company_rating` ids; the bind-package
+    // dialog binds it straight to a checkbox group, so it has to be an array.
+    let package = gap_extra::company_package(db, comid).await?;
+    info["package"] = json!(package
+        .split(',')
+        .map(str::trim)
         .filter(|s| !s.is_empty())
-        .map(|_| Vec::<String>::new())
-        .unwrap_or_default());
-    // PHP `package` is a CSV of purchased extras; leave empty when column missing on entity.
+        .collect::<Vec<_>>());
     info["did"] = json!(c.did.to_string());
     info["did_name"] = json!("");
     info["yyzzurl"] = json!("");
     info["logo_n"] = json!(c.logo.clone().unwrap_or_default());
-    info["zt_days"] = json!(0);
-    let db = state.db.reader();
+    // PHP `company::info_action`: `intval((time() - zt_time) / 86400)`.
+    let zt_time = gap_extra::company_zt_time(db, comid).await?;
+    info["zt_days"] = json!(if zt_time > 0 {
+        (clock::now_ts() - zt_time).max(0) / 86_400
+    } else {
+        0
+    });
     info["jobNum"] = json!(job_repo::count_by_uid(db, comid).await?);
     info["applyNum"] = json!(
         apply_repo::count_by_com(
@@ -1320,11 +1329,152 @@ pub async fn company_suspend(
     if uid == 0 {
         return Err(ApiError::param_invalid("uid"));
     }
-    company_repo::set_r_status(state.db.pool(), uid, 4).await?;
-    user_repo::admin_set_status(state.db.pool(), uid, 4).await?;
+    let pool = state.db.pool();
+    // PHP refuses to touch companies parked at `r_status = 2`; the Vue button
+    // guards this too, but the check belongs on the server.
+    let current = company_repo::find_by_uid(pool, uid).await?;
+    if current.map(|c| c.r_status) == Some(2) {
+        return Err(ApiError::business("admin_user_company_00079"));
+    }
+    let now = clock::now_ts();
+    company_repo::set_r_status(pool, uid, 4).await?;
+    user_repo::admin_set_status(pool, uid, 4).await?;
+    // PHP `userinfo::status` stamps the suspension start, then
+    // `setComStaticSub` banks the quota block and zeroes it so a suspended
+    // company cannot keep spending its package.
+    gap_extra::set_company_zt_time(pool, uid, now).await?;
+    gap_extra::snapshot_and_clear_company_quota(pool, uid, now).await?;
     audit_write(state, user, "admin.company.suspend", format!("uid:{uid}")).await;
     Ok(())
 }
+
+/// PHP `company::setupcom_action` -> `company.model::setupcom` — lift a
+/// suspension, optionally crediting the suspended days back onto the VIP end
+/// date.
+pub async fn company_setupcom(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+    add_zt_time: bool,
+) -> AppResult<()> {
+    user.require_admin()?;
+    if uid == 0 {
+        return Err(ApiError::business("common_06427"));
+    }
+    let pool = state.db.pool();
+    let company = company_repo::find_by_uid(pool, uid)
+        .await?
+        .ok_or_else(|| ApiError::business("common_06427"))?;
+    let quota = gap_extra::company_quota(pool, uid).await?;
+    let vip_etime = quota.as_ref().map(|q| q.vip_etime).unwrap_or(0);
+    let max_time = quota.as_ref().map(|q| q.max_time).unwrap_or(0);
+
+    // PHP `isVip`: 0 means unlimited, otherwise it must not be before today.
+    let today = clock::start_of_today();
+    let vip_expired = max_time > 0 && max_time < today;
+
+    let zt_time = gap_extra::company_zt_time(pool, uid).await?;
+    let suspended_for = if zt_time > 0 {
+        (clock::now_ts() - zt_time).max(0)
+    } else {
+        0
+    };
+
+    // Only tiers that carry a service window can be credited; PHP falls back to
+    // `zt_type = 2` (no compensation) for open-ended or missing tiers.
+    let service_time = gap_extra::rating_service_time(pool, company.rating as i64)
+        .await?
+        .map(|(_, t)| t)
+        .unwrap_or(0);
+    let compensate = service_time > 0 && add_zt_time;
+    let (new_vip_etime, zt_type) = if compensate {
+        (vip_etime + suspended_for, 1)
+    } else {
+        (vip_etime, 2)
+    };
+
+    if vip_expired {
+        // Past the tier's maximum suspension window: PHP skips the restore
+        // entirely and lets the expiry path below downgrade the company.
+        gap_extra::clear_suspension(pool, uid, vip_etime).await?;
+    } else {
+        gap_extra::restore_company_quota(pool, uid, zt_type, clock::now_ts()).await?;
+        gap_extra::set_company_vip_etime(pool, uid, new_vip_etime).await?;
+        gap_extra::clear_suspension(pool, uid, new_vip_etime).await?;
+    }
+
+    gap_extra::reinstate_company(pool, uid).await?;
+    user_repo::admin_set_status(pool, uid, 1).await?;
+
+    if vip_expired {
+        vip_over(state, uid).await?;
+    }
+    audit_write(
+        state,
+        user,
+        "admin.company.setupcom",
+        format!("uid:{uid} days:{} credited:{compensate}", suspended_for / 86_400),
+    )
+    .await;
+    Ok(())
+}
+
+/// PHP `statis.model::vipOver` for `usertype = 2`, persistence only — the
+/// derived read-model fields it also returns (`addjobnum`, `free_num`, `days`)
+/// are unused by every caller ported so far.
+///
+/// Callers reach this after the company is already back at `r_status = 1`, so
+/// PHP's inner `r_status == 4` branch can never fire and the condition reduces
+/// to "has a VIP end date that has passed".
+async fn vip_over(state: &AppState, uid: u64) -> AppResult<()> {
+    let pool = state.db.pool();
+    let Some(quota) = gap_extra::company_quota(pool, uid).await? else {
+        return Ok(());
+    };
+    let today = clock::start_of_today();
+    let expired = quota.vip_etime != 0 && quota.vip_etime < today;
+    if !expired {
+        return Ok(());
+    }
+    let cfg = site_setting_repo::find_many(pool, &["com_vip_done", "jobunder", "job_under_delay"])
+        .await?;
+    let vip_done = cfg.get("com_vip_done").map(String::as_str).unwrap_or("0");
+    if vip_done != "0" {
+        // The "keep a downgraded tier" branch runs through PHP
+        // `rating.model::ratingInfo`, which is not ported yet. Bail out rather
+        // than half-applying a tier change.
+        tracing::warn!(
+            uid,
+            com_vip_done = vip_done,
+            "vipOver: com_vip_done tier downgrade not migrated; skipping"
+        );
+        return Ok(());
+    }
+    // `rating > 0` keeps repeat calls idempotent — an already-expired company
+    // has been zeroed and must not have `oldrating_name` overwritten.
+    if quota.rating > 0 {
+        // PHP unpublishes jobs only when `jobunder = 1` and no delay window is
+        // configured.
+        let jobunder = cfg.get("jobunder").map(String::as_str).unwrap_or("0") == "1";
+        let delay = cfg
+            .get("job_under_delay")
+            .map(|s| !s.is_empty() && s != "0")
+            .unwrap_or(false);
+        gap_extra::expire_company_rating(
+            pool,
+            uid,
+            &quota.rating_name,
+            EXPIRED_RATING_NAME,
+            jobunder && !delay,
+        )
+        .await?;
+    }
+    Ok(())
+}
+
+/// PHP stores the raw auto-key in `rating_name`; display code runs it back
+/// through the i18n table, so the key must be written verbatim.
+const EXPIRED_RATING_NAME: &str = "admin_user_company_00297";
 
 /// PHP `company::comcert_action` 分发。
 pub async fn company_comcert(

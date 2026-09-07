@@ -2313,6 +2313,291 @@ pub struct TuiWenTaskIn {
     pub gzh: i32,
 }
 
+// ---------- 企业暂停 / 恢复配额快照 ----------
+//
+// PHP `company.model::setComStaticSub` / `restoreComStatic`. Note that PHP's
+// `suspend_action` calls `jugdeSuspend()`, a method that is defined nowhere in
+// the codebase, so the legacy suspend path fatals before it ever reaches the
+// snapshot — which is why `phpyun_company_statis_sub` is empty. There is no
+// working legacy behaviour to mirror here, only the intended design.
+
+/// Counters + rating a company holds right before being suspended.
+pub async fn company_quota(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<CompanyQuotaRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(COALESCE(rating, 0) AS SIGNED) AS rating, \
+         COALESCE(rating_name, '') AS rating_name, \
+         CAST(COALESCE(rating_type, 0) AS SIGNED) AS rating_type, \
+         CAST(COALESCE(job_num, 0) AS SIGNED) AS job_num, \
+         CAST(COALESCE(breakjob_num, 0) AS SIGNED) AS breakjob_num, \
+         CAST(COALESCE(down_resume, 0) AS SIGNED) AS down_resume, \
+         CAST(COALESCE(invite_resume, 0) AS SIGNED) AS invite_resume, \
+         CAST(COALESCE(zph_num, 0) AS SIGNED) AS zph_num, \
+         CAST(COALESCE(top_num, 0) AS SIGNED) AS top_num, \
+         CAST(COALESCE(urgent_num, 0) AS SIGNED) AS urgent_num, \
+         CAST(COALESCE(rec_num, 0) AS SIGNED) AS rec_num, \
+         CAST(COALESCE(vip_stime, 0) AS SIGNED) AS vip_stime, \
+         CAST(COALESCE(vip_etime, 0) AS SIGNED) AS vip_etime, \
+         CAST(COALESCE(max_time, 0) AS SIGNED) AS max_time \
+         FROM phpyun_company_statis WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+/// PHP `setComStaticSub` — snapshot the quota block, then zero it out.
+///
+/// PHP's zero list also names `chat_num` and `spview_num`, but neither column
+/// exists on `phpyun_company_statis`; `update_once` filters unknown keys, so
+/// only these nine are really cleared.
+pub async fn snapshot_and_clear_company_quota(
+    pool: &MySqlPool,
+    uid: u64,
+    zt_time: i64,
+) -> Result<bool, sqlx::Error> {
+    let Some(q) = company_quota(pool, uid).await? else {
+        return Ok(false);
+    };
+    sqlx::query(
+        "INSERT INTO phpyun_company_statis_sub \
+         (uid, rating, rating_name, rating_type, job_num, breakjob_num, down_resume, \
+          invite_resume, zph_num, top_num, urgent_num, rec_num, vip_stime, vip_etime, zt_time) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(uid)
+    .bind(q.rating)
+    .bind(&q.rating_name)
+    .bind(q.rating_type)
+    .bind(q.job_num)
+    .bind(q.breakjob_num)
+    .bind(q.down_resume)
+    .bind(q.invite_resume)
+    .bind(q.zph_num)
+    .bind(q.top_num)
+    .bind(q.urgent_num)
+    .bind(q.rec_num)
+    .bind(q.vip_stime)
+    .bind(q.vip_etime)
+    .bind(zt_time)
+    .execute(pool)
+    .await?;
+    sqlx::query(
+        "UPDATE phpyun_company_statis SET down_resume = 0, breakjob_num = 0, invite_resume = 0, \
+         zph_num = 0, job_num = 0, top_num = 0, urgent_num = 0, rec_num = 0, sons_num = 0 \
+         WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(true)
+}
+
+/// PHP `restoreComStatic` — put the newest snapshot back and stamp the sub row.
+///
+/// Restores eight counters; `sons_num` stays zeroed because PHP never
+/// snapshots it, so a suspend/resume round trip loses it.
+pub async fn restore_company_quota(
+    pool: &MySqlPool,
+    uid: u64,
+    zt_type: i32,
+    now: i64,
+) -> Result<bool, sqlx::Error> {
+    let snap: Option<CompanyQuotaSnapshotRow> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, \
+         CAST(COALESCE(job_num, 0) AS SIGNED) AS job_num, \
+         CAST(COALESCE(breakjob_num, 0) AS SIGNED) AS breakjob_num, \
+         CAST(COALESCE(down_resume, 0) AS SIGNED) AS down_resume, \
+         CAST(COALESCE(invite_resume, 0) AS SIGNED) AS invite_resume, \
+         CAST(COALESCE(zph_num, 0) AS SIGNED) AS zph_num, \
+         CAST(COALESCE(top_num, 0) AS SIGNED) AS top_num, \
+         CAST(COALESCE(urgent_num, 0) AS SIGNED) AS urgent_num, \
+         CAST(COALESCE(rec_num, 0) AS SIGNED) AS rec_num \
+         FROM phpyun_company_statis_sub WHERE uid = ? ORDER BY id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    let Some(s) = snap else { return Ok(false) };
+    sqlx::query(
+        "UPDATE phpyun_company_statis SET down_resume = ?, breakjob_num = ?, invite_resume = ?, \
+         zph_num = ?, job_num = ?, top_num = ?, urgent_num = ?, rec_num = ? WHERE uid = ?",
+    )
+    .bind(s.down_resume)
+    .bind(s.breakjob_num)
+    .bind(s.invite_resume)
+    .bind(s.zph_num)
+    .bind(s.job_num)
+    .bind(s.top_num)
+    .bind(s.urgent_num)
+    .bind(s.rec_num)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    sqlx::query("UPDATE phpyun_company_statis_sub SET hf_time = ?, zt_type = ? WHERE id = ?")
+        .bind(now)
+        .bind(zt_type)
+        .bind(s.id)
+        .execute(pool)
+        .await?;
+    Ok(true)
+}
+
+/// `phpyun_company.package` — CSV of extra `company_rating` ids.
+pub async fn company_package(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    let row: Option<(String,)> =
+        sqlx::query_as("SELECT COALESCE(package, '') FROM phpyun_company WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.map(|r| r.0).unwrap_or_default())
+}
+
+/// `phpyun_company.zt_time` — when the current suspension started (0 = active).
+pub async fn company_zt_time(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(zt_time, 0) AS SIGNED) FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).unwrap_or(0))
+}
+
+pub async fn set_company_zt_time(pool: &MySqlPool, uid: u64, ts: i64) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_company SET zt_time = ? WHERE uid = ?")
+            .bind(ts)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+/// PHP `setupcom` clears the suspension stamp and mirrors the new VIP end date
+/// onto `phpyun_company.vipetime`.
+pub async fn clear_suspension(
+    pool: &MySqlPool,
+    uid: u64,
+    vip_etime: i64,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_company SET zt_time = 0, vipetime = ? WHERE uid = ?")
+            .bind(vip_etime)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn set_company_vip_etime(
+    pool: &MySqlPool,
+    uid: u64,
+    vip_etime: i64,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_company_statis SET vip_etime = ? WHERE uid = ?")
+            .bind(vip_etime)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+/// PHP `userinfo.model::status` with `usertype = 2, setup = 1` — reinstate a
+/// company and its job rows. Companies sitting at `r_status = 2` are skipped,
+/// as PHP filters them out of the update set.
+pub async fn reinstate_company(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(r_status, 0) AS SIGNED) FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    match row {
+        Some((2,)) | None => return Ok(false),
+        _ => {}
+    }
+    // `logo_status = 0` rides along because PHP sets it whenever a company is
+    // approved back to `r_status = 1`.
+    sqlx::query("UPDATE phpyun_company SET r_status = 1, logo_status = 0 WHERE uid = ?")
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_partjob SET r_status = 1 WHERE uid = ?")
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_company_job SET r_status = 1 WHERE uid = ?")
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(true)
+}
+
+/// `phpyun_company_rating.service_time` / `name` for the company's tier.
+pub async fn rating_service_time(
+    pool: &MySqlPool,
+    rating_id: i64,
+) -> Result<Option<(String, i64)>, sqlx::Error> {
+    if rating_id <= 0 {
+        return Ok(None);
+    }
+    sqlx::query_as(
+        "SELECT COALESCE(`name`, '') AS `name`, \
+         CAST(COALESCE(service_time, 0) AS SIGNED) AS service_time \
+         FROM phpyun_company_rating WHERE id = ? LIMIT 1",
+    )
+    .bind(rating_id)
+    .fetch_optional(pool)
+    .await
+}
+
+/// PHP `statis.model::vipOver`, `com_vip_done = '0'` branch — drop the company
+/// back to the expired tier and clear its quota.
+pub async fn expire_company_rating(
+    pool: &MySqlPool,
+    uid: u64,
+    old_rating_name: &str,
+    expired_name: &str,
+    unpublish_jobs: bool,
+) -> Result<u64, sqlx::Error> {
+    let affected = sqlx::query(
+        "UPDATE phpyun_company_statis SET job_num = 0, breakjob_num = 0, down_resume = 0, \
+         invite_resume = 0, zph_num = 0, top_num = 0, rec_num = 0, urgent_num = 0, \
+         oldrating_name = ?, rating_name = ?, rating_type = 0, rating = 0, \
+         suspend_num = 0, max_time = 0 WHERE uid = ?",
+    )
+    .bind(old_rating_name)
+    .bind(expired_name)
+    .bind(uid)
+    .execute(pool)
+    .await?
+    .rows_affected();
+    sqlx::query("UPDATE phpyun_company SET rating = 0, rating_name = ? WHERE uid = ?")
+        .bind(expired_name)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    if unpublish_jobs {
+        sqlx::query("UPDATE phpyun_company_job SET rating = 0, status = 1 WHERE uid = ?")
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    } else {
+        sqlx::query("UPDATE phpyun_company_job SET rating = 0 WHERE uid = ?")
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    }
+    Ok(affected)
+}
+
 pub async fn insert_tuiwen_tasks(
     pool: &MySqlPool,
     rows: &[TuiWenTaskIn],

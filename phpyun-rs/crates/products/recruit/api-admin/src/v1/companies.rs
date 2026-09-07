@@ -33,6 +33,7 @@ pub fn routes() -> Router<AppState> {
         .route("/companies/php-uprating", post(php_uprating))
         .route("/companies/php-audit", post(php_audit))
         .route("/companies/php-suspend", post(php_suspend))
+        .route("/companies/php-setupcom", post(php_setupcom))
         .route("/companies/php-comcert", post(php_comcert))
 }
 
@@ -371,6 +372,25 @@ pub async fn php_suspend(
         .unwrap_or(0);
     admin_longtail_service::company_suspend(&state, &user, uid).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+pub async fn php_setupcom(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    let uid = body
+        .get("uid")
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    // The Vue drawer posts `addzttime` as the string "1" when the admin ticks
+    // "credit the suspended days back".
+    let add_zt_time = body
+        .get("addzttime")
+        .map(|v| v.as_str() == Some("1") || v.as_i64() == Some(1) || v.as_bool() == Some(true))
+        .unwrap_or(false);
+    admin_longtail_service::company_setupcom(&state, &user, uid, add_zt_time).await?;
+    Ok(ApiResponse::message("admin_user_company_00111"))
 }
 
 pub async fn php_comcert(

@@ -402,6 +402,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company/uprating': { path: '/v1/admin/companies/php-uprating' },
   'user/company/companyAudit': { path: '/v1/admin/companies/php-audit' },
   'user/company/suspend': { path: '/v1/admin/companies/php-suspend' },
+  'user/company/setupcom': { path: '/v1/admin/companies/php-setupcom' },
   'user/company/comcert': { path: '/v1/admin/companies/php-comcert' },
   'user/users_resume/checkUsername': { path: '/v1/admin/companies/check-username' },
   'user/users_resume/add': { path: '/v1/admin/resumes/php-add' },

@@ -1,5 +1,7 @@
 {
   "errors": {
+    "admin_user_company_00079": "该企业已被锁定，请先解锁后再暂停！",
+    "common_06427": "参数错误请重试！",
     "unauth": "未登录",
     "session_expired": "会话已过期，请重新登录",
     "bad_credentials": "账号或密码错误",
@@ -333,6 +335,7 @@
     "no": "否"
   },
   "messages": {
+    "admin_user_company_00111": "解除暂停成功！",
     "collect_added": "添加收藏成功",
     "collect_removed": "已取消收藏",
     "session_revoked": "已踢下线该设备",

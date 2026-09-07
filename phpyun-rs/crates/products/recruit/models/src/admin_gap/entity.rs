@@ -596,6 +596,42 @@ pub struct CompanyTplRow {
     pub status: i32,
 }
 
+/// The `phpyun_company_statis` counters PHP snapshots into
+/// `phpyun_company_statis_sub` when an admin suspends a company.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct CompanyQuotaRow {
+    pub rating: i64,
+    pub rating_name: String,
+    pub rating_type: i64,
+    pub job_num: i64,
+    pub breakjob_num: i64,
+    pub down_resume: i64,
+    pub invite_resume: i64,
+    pub zph_num: i64,
+    pub top_num: i64,
+    pub urgent_num: i64,
+    pub rec_num: i64,
+    pub vip_stime: i64,
+    pub vip_etime: i64,
+    pub max_time: i64,
+}
+
+/// The subset of a `phpyun_company_statis_sub` row that a resume restores.
+/// `sons_num` is deliberately absent: PHP zeroes it on suspend but never
+/// snapshots or restores it.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct CompanyQuotaSnapshotRow {
+    pub id: u64,
+    pub job_num: i64,
+    pub breakjob_num: i64,
+    pub down_resume: i64,
+    pub invite_resume: i64,
+    pub zph_num: i64,
+    pub top_num: i64,
+    pub urgent_num: i64,
+    pub rec_num: i64,
+}
+
 /// The company columns a 推文 task row is built from (PHP
 /// `wxpubtemp.model::addTwTask` `type = 2`).
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]

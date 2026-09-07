@@ -1,5 +1,7 @@
 {
   "errors": {
+    "admin_user_company_00079": "該企業已被鎖定，請先解鎖後再暫停！",
+    "common_06427": "參數錯誤請重試！",
     "unauth": "未登入",
     "session_expired": "工作階段已過期，請重新登入",
     "bad_credentials": "帳號或密碼錯誤",
@@ -334,6 +336,7 @@
     "no": "否"
   },
   "messages": {
+    "admin_user_company_00111": "解除暫停成功！",
     "collect_added": "新增收藏成功",
     "collect_removed": "已取消收藏",
     "session_revoked": "已踢下線該裝置",

@@ -1,5 +1,7 @@
 {
   "errors": {
+    "admin_user_company_00079": "This company is locked. Unlock it before pausing.",
+    "common_06427": "Parameter error, please try again!",
     "unauth": "Not logged in",
     "session_expired": "Session expired, please log in again",
     "bad_credentials": "Invalid username or password",
@@ -340,6 +342,7 @@
     "no": "No"
   },
   "messages": {
+    "admin_user_company_00111": "Suspension released successfully!",
     "collect_added": "Added to favorites",
     "collect_removed": "Removed from favorites",
     "session_revoked": "Device signed out",
