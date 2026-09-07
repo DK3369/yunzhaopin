@@ -1206,6 +1206,54 @@ pub async fn admin_set_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u6
     Ok(res.rows_affected())
 }
 
+/// PHP `company_job::depower_action`: `is_depower` 1 降权 / 2 取消降权.
+/// The list query already hides depowered jobs, this is the write side.
+pub async fn admin_set_depower(
+    pool: &MySqlPool,
+    id: u64,
+    is_depower: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET is_depower = ? WHERE id = ?")
+        .bind(is_depower)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `company_job::setlinkopen_action` — whether the job shows its外链 apply
+/// button.
+pub async fn admin_set_linkopen(
+    pool: &MySqlPool,
+    id: u64,
+    linkopen: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET linkopen = ? WHERE id = ?")
+        .bind(linkopen)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `job.model::upJobHits` — admin sets views and impressions to absolute
+/// values, unlike the visitor-side counter which only increments.
+pub async fn admin_set_hits(
+    pool: &MySqlPool,
+    id: u64,
+    jobhits: i64,
+    jobexpoure: i64,
+) -> Result<u64, sqlx::Error> {
+    let res =
+        sqlx::query("UPDATE phpyun_company_job SET jobhits = ?, jobexpoure = ? WHERE id = ?")
+            .bind(jobhits)
+            .bind(jobexpoure)
+            .bind(id)
+            .execute(pool)
+            .await?;
+    Ok(res.rows_affected())
+}
+
 /// PHP `checkstate_action`: `status` 1 招聘中 / 0 下架.
 pub async fn admin_set_publish(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_company_job SET status = ? WHERE id = ?")

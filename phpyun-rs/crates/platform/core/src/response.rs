@@ -118,6 +118,32 @@ impl ApiResponse<()> {
     }
 }
 
+/// A message the caller already translated, for PHP strings whose text carries
+/// runtime placeholders (`职位{action}(ID:{id})操作成功`) and so cannot be
+/// represented by a static key.
+pub struct ApiMessage {
+    key: &'static str,
+    msg: String,
+}
+
+impl ApiMessage {
+    pub fn new(key: &'static str, msg: String) -> Self {
+        Self { key, msg }
+    }
+}
+
+impl IntoResponse for ApiMessage {
+    fn into_response(self) -> Response {
+        Json(ApiBody::<()> {
+            code: CODE_OK,
+            key: self.key.to_owned(),
+            msg: self.msg,
+            data: None,
+        })
+        .into_response()
+    }
+}
+
 impl<T: Serialize> IntoResponse for ApiResponse<T> {
     fn into_response(self) -> Response {
         let lang = crate::i18n::current_lang();

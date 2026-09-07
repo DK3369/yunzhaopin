@@ -1698,6 +1698,320 @@ pub async fn rebind_member_mobile(
     Ok(true)
 }
 
+// ---------- 预约刷新 (phpyun_reserve_refresh) ----------
+
+/// PHP `company_job::reserveJob_action` scope: only jobs that are live,
+/// approved and still open can sit in the refresh queue.
+const RESERVE_JOB_SCOPE: &str =
+    " FROM phpyun_company_job j LEFT JOIN phpyun_reserve_refresh r ON r.job_id = j.id \
+      WHERE j.is_reserve = 1 AND j.state = 1 AND j.status = 0 AND j.r_status = 1";
+
+pub struct ReserveJobFilter<'a> {
+    /// PHP `type`: 1 filters `com_name`, 2 filters the job `name`.
+    pub keyword: Option<&'a str>,
+    pub keyword_type: i32,
+    pub uid: Option<u64>,
+    pub order_col: &'a str,
+    pub order_desc: bool,
+}
+
+fn push_reserve_filters<'a>(
+    qb: &mut QueryBuilder<'a, sqlx::MySql>,
+    f: &ReserveJobFilter<'a>,
+) {
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let col = if f.keyword_type == 1 {
+            "j.com_name"
+        } else {
+            "j.name"
+        };
+        qb.push(format!(" AND {col} LIKE "));
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(uid) = f.uid.filter(|v| *v > 0) {
+        qb.push(" AND j.uid = ");
+        qb.push_bind(uid);
+    }
+}
+
+pub async fn list_reserve_jobs(
+    pool: &MySqlPool,
+    f: &ReserveJobFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<ReserveJobRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(j.id AS UNSIGNED) AS id, CAST(COALESCE(j.uid,0) AS UNSIGNED) AS uid, \
+         COALESCE(j.name,'') AS name, COALESCE(j.com_name,'') AS com_name, \
+         CAST(COALESCE(r.status,0) AS SIGNED) AS reserve_status, \
+         CAST(COALESCE(r.`interval`,0) AS SIGNED) AS reserve_interval, \
+         CAST(COALESCE(r.start_time,0) AS SIGNED) AS start_time, \
+         CAST(COALESCE(r.end_time,0) AS SIGNED) AS end_time, \
+         COALESCE(r.s_time,'') AS s_time, COALESCE(r.e_time,'') AS e_time",
+    );
+    qb.push(RESERVE_JOB_SCOPE);
+    push_reserve_filters(&mut qb, f);
+    // Sorting is a whitelist: the Element table only offers `id`, and PHP falls
+    // back to `lastupdate desc`.
+    let col = if f.order_col == "id" {
+        "j.id"
+    } else {
+        "j.lastupdate"
+    };
+    qb.push(format!(
+        " ORDER BY {col} {}",
+        if f.order_desc { "DESC" } else { "ASC" }
+    ));
+    qb.push(" LIMIT ");
+    qb.push_bind(l);
+    qb.push(" OFFSET ");
+    qb.push_bind(o);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_reserve_jobs(
+    pool: &MySqlPool,
+    f: &ReserveJobFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT COUNT(*)");
+    qb.push(RESERVE_JOB_SCOPE);
+    push_reserve_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP member-side `job.model::reserveInfo` — the schedule the settings dialog
+/// pre-fills from. Admin looks up by job only, without binding to a member uid.
+pub async fn find_reserve_schedule(
+    pool: &MySqlPool,
+    job_id: u64,
+) -> Result<Option<ReserveScheduleRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(COALESCE(status,0) AS SIGNED) AS status, \
+         CAST(COALESCE(`interval`,0) AS SIGNED) AS `interval`, \
+         COALESCE(s_time,'') AS s_time, COALESCE(e_time,'') AS e_time, \
+         CAST(COALESCE(end_time,0) AS SIGNED) AS end_time \
+         FROM phpyun_reserve_refresh WHERE job_id = ? ORDER BY id DESC LIMIT 1",
+    )
+    .bind(job_id)
+    .fetch_optional(pool)
+    .await
+}
+
+/// PHP `job.model::closeReserve` with explicit ids — drop the jobs out of the
+/// queue and mark their schedule closed.
+pub async fn close_reserve_jobs(pool: &MySqlPool, job_ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(0);
+    }
+    let mut affected = 0;
+    for sql in [
+        "UPDATE phpyun_company_job SET is_reserve = 0 WHERE id IN (",
+        "UPDATE phpyun_reserve_refresh SET status = 2 WHERE job_id IN (",
+    ] {
+        let mut qb = QueryBuilder::new(sql);
+        let mut sep = qb.separated(", ");
+        for id in job_ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+        affected += qb.build().execute(pool).await?.rows_affected();
+    }
+    Ok(affected)
+}
+
+/// PHP `job.model::closeReserve` with `auto=1` — the housekeeping sweep the
+/// refresh page fires on mount: anything still queued but no longer live gets
+/// dropped.
+pub async fn close_stale_reserve_jobs(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let ids: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job \
+         WHERE is_reserve = 1 AND (state <> 1 OR status = 1 OR r_status <> 1)",
+    )
+    .fetch_all(pool)
+    .await?;
+    let ids: Vec<u64> = ids.into_iter().map(|(v,)| v).collect();
+    close_reserve_jobs(pool, &ids).await
+}
+
+/// Of `job_ids`, the ones that belong to `uid` and are still eligible for the
+/// refresh queue (PHP `reserveUpJob` re-checks this before writing).
+pub async fn eligible_reserve_job_ids(
+    pool: &MySqlPool,
+    uid: u64,
+    job_ids: &[u64],
+) -> Result<Vec<u64>, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job \
+         WHERE state = 1 AND r_status = 1 AND status = 0 AND uid = ",
+    );
+    qb.push_bind(uid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in job_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(v,)| v).collect())
+}
+
+/// Which of `job_ids` already have a `reserve_refresh` row under `uid`, so the
+/// caller knows to UPDATE rather than INSERT.
+pub async fn existing_reserve_job_ids(
+    pool: &MySqlPool,
+    uid: u64,
+    job_ids: &[u64],
+) -> Result<Vec<u64>, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(job_id AS UNSIGNED) FROM phpyun_reserve_refresh WHERE uid = ",
+    );
+    qb.push_bind(uid);
+    qb.push(" AND job_id IN (");
+    let mut sep = qb.separated(", ");
+    for id in job_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(v,)| v).collect())
+}
+
+/// The schedule an admin just submitted, shared by the INSERT and UPDATE paths.
+pub struct ReserveScheduleIn<'a> {
+    pub status: i32,
+    pub interval: i32,
+    pub start_time: i64,
+    pub end_time: i64,
+    pub next_time: i64,
+    pub s_time: &'a str,
+    pub e_time: &'a str,
+}
+
+pub async fn insert_reserve_schedules(
+    pool: &MySqlPool,
+    uid: u64,
+    job_ids: &[u64],
+    v: &ReserveScheduleIn<'_>,
+) -> Result<u64, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "INSERT INTO phpyun_reserve_refresh \
+         (job_id, uid, status, `interval`, start_time, end_time, last_time, next_time, s_time, e_time) ",
+    );
+    qb.push_values(job_ids, |mut b, id| {
+        b.push_bind(*id)
+            .push_bind(uid)
+            .push_bind(v.status)
+            .push_bind(v.interval)
+            .push_bind(v.start_time)
+            .push_bind(v.end_time)
+            .push_bind(0_i64)
+            .push_bind(v.next_time)
+            .push_bind(v.s_time)
+            .push_bind(v.e_time);
+    });
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn update_reserve_schedules(
+    pool: &MySqlPool,
+    uid: u64,
+    job_ids: &[u64],
+    v: &ReserveScheduleIn<'_>,
+) -> Result<u64, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_reserve_refresh SET status = ");
+    qb.push_bind(v.status);
+    qb.push(", `interval` = ");
+    qb.push_bind(v.interval);
+    qb.push(", start_time = ");
+    qb.push_bind(v.start_time);
+    qb.push(", end_time = ");
+    qb.push_bind(v.end_time);
+    qb.push(", last_time = 0, next_time = ");
+    qb.push_bind(v.next_time);
+    qb.push(", s_time = ");
+    qb.push_bind(v.s_time);
+    qb.push(", e_time = ");
+    qb.push_bind(v.e_time);
+    qb.push(" WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND job_id IN (");
+    let mut sep = qb.separated(", ");
+    for id in job_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn set_jobs_is_reserve(
+    pool: &MySqlPool,
+    uid: u64,
+    job_ids: &[u64],
+    flag: i32,
+) -> Result<u64, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET is_reserve = ");
+    qb.push_bind(flag);
+    qb.push(" WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in job_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// The refresh budget PHP `reserveUpJob` checks: paid refreshes left on the
+/// company plus today's unused free allowance from its rating tier.
+pub async fn reserve_refresh_budget(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
+    let statis: Option<(i64, i64)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(breakjob_num,0) AS SIGNED), CAST(COALESCE(rating,0) AS SIGNED) \
+         FROM phpyun_company_statis WHERE uid = ?",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    let (paid, rating) = statis.unwrap_or((0, 0));
+
+    let free_cap: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(freerefresh_num,0) AS SIGNED) FROM phpyun_company_rating WHERE id = ?",
+    )
+    .bind(rating)
+    .fetch_optional(pool)
+    .await?;
+    let free_cap = free_cap.map_or(0, |(v,)| v);
+    if free_cap <= 0 {
+        return Ok(paid);
+    }
+    let (used,): (i64,) = sqlx::query_as(
+        "SELECT CAST(COALESCE(SUM(free_num),0) AS SIGNED) FROM phpyun_job_refresh_log \
+         WHERE uid = ? AND free = 1 AND r_time >= ?",
+    )
+    .bind(uid)
+    .bind(phpyun_core::clock::start_of_today())
+    .fetch_one(pool)
+    .await?;
+    Ok(paid + (free_cap - used).max(0))
+}
+
 /// One `updDid` call from PHP `site.model`: which table to touch, which column
 /// holds the account id, and whether the table is shared between seeker and
 /// company rows (`usertype`).

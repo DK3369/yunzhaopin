@@ -423,6 +423,34 @@ pub struct MemberInviteRow {
     pub isdel: i32,
 }
 
+/// One row of the 预约刷新 admin list: a `company_job` joined onto its
+/// `phpyun_reserve_refresh` schedule. Times stay raw so the service can render
+/// them the way PHP `subReserveJob` does.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct ReserveJobRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub com_name: String,
+    pub reserve_status: i32,
+    pub reserve_interval: i32,
+    pub start_time: i64,
+    pub end_time: i64,
+    pub s_time: String,
+    pub e_time: String,
+}
+
+/// The `phpyun_reserve_refresh` schedule of one job, for the "current setting"
+/// dialog (PHP member-side `reserveInfo`).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct ReserveScheduleRow {
+    pub status: i32,
+    pub interval: i32,
+    pub s_time: String,
+    pub e_time: String,
+    pub end_time: i64,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct BizLogRow {
     pub id: u64,

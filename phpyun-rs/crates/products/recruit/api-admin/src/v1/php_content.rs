@@ -4,7 +4,7 @@ use axum::extract::{Path, State};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
 use axum::{Json, Router};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiError, ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::admin_php_content_service::{self, PhpOut};
 use serde_json::Value;
 
@@ -25,6 +25,7 @@ pub async fn php_content(
     match admin_php_content_service::dispatch(&state, &user, &module, &action, &body).await? {
         PhpOut::Data(v) => Ok(ApiResponse::data(v).into_response()),
         PhpOut::Message(k) => Ok(ApiResponse::message(k).into_response()),
+        PhpOut::Text(k, msg) => Ok(ApiMessage::new(k, msg).into_response()),
     }
 }
 

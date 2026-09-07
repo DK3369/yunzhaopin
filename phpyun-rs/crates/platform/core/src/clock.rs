@@ -31,6 +31,14 @@ pub fn ts_to_rfc3339(ts: i64) -> String {
         .unwrap_or_default()
 }
 
+/// Midnight of the current day (Unix seconds), the equivalent of PHP
+/// `strtotime('today')` used by daily-quota queries.
+#[inline]
+pub fn start_of_today() -> i64 {
+    let now = now_ts();
+    now - now.rem_euclid(86_400)
+}
+
 /// Current UTC year (4 digits, e.g. 2026). Used for age/birthday calculations etc.
 pub fn now_year() -> u16 {
     use chrono::Datelike;

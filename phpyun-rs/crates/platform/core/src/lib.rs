@@ -61,7 +61,7 @@ pub use extractors::{
 pub use i18n::{t, t_args, Lang};
 pub use kv::Kv;
 pub use oauth::{OAuth, OAuthProvider, ProviderIdentity, ProviderKind};
-pub use response::{ApiBody, ApiResponse, Paged};
+pub use response::{ApiBody, ApiMessage, ApiResponse, Paged};
 pub use scheduler::Scheduler;
 pub use shutdown::{wait_for_signal, CancellationToken};
 pub use sms::{Sms, SmsBackend, SmsTemplate};

@@ -54,6 +54,9 @@ use uuid::Uuid;
 pub enum PhpOut {
     Data(Value),
     Message(&'static str),
+    /// Already-translated message, for PHP strings with runtime placeholders.
+    /// The key still travels so clients can branch on it.
+    Text(&'static str, String),
 }
 
 pub async fn dispatch(
@@ -292,6 +295,19 @@ pub async fn dispatch(
         ("user-gap", "usercert") => user_gap_usercert(state, body).await,
         ("user-gap", "member-checksitedid") => user_gap_member_checksitedid(state, body).await,
         ("user-gap", "company-checksitedid") => user_gap_company_checksitedid(state, body).await,
+
+        ("company-job", "depower") => company_job_depower(state, body).await,
+        ("company-job", "setlinkopen") => company_job_setlinkopen(state, body).await,
+        ("company-job", "upjobhits") => company_job_upjobhits(state, body).await,
+        ("company-job", "reserve-index") => {
+            Ok(PhpOut::Data(company_job_reserve_index(state, body).await?))
+        }
+        ("company-job", "get-refresh") => {
+            Ok(PhpOut::Data(company_job_get_refresh(state, body).await?))
+        }
+        ("company-job", "close-reserve") => company_job_close_reserve(state, body).await,
+        ("company-job", "close-stale-reserve") => company_job_close_stale_reserve(state).await,
+        ("company-job", "up-reserve") => company_job_up_reserve(state, body).await,
         ("user-gap", "mem-imitate") => Ok(PhpOut::Data(user_gap_mem_imitate(state, body).await?)),
         ("user-gap", "mem-lock") => user_gap_mem_lock(state, body).await,
         ("user-gap", "mem-edit") => user_gap_mem_edit(state, body).await,
@@ -345,6 +361,14 @@ fn json_i32(v: &Value, key: &str) -> i32 {
 fn json_u64(v: &Value, key: &str) -> u64 {
     match v.get(key) {
         Some(Value::Number(n)) => n.as_u64().unwrap_or(0),
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn json_i64(v: &Value, key: &str) -> i64 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n.as_i64().unwrap_or(0),
         Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
         _ => 0,
     }
@@ -5889,6 +5913,261 @@ async fn user_gap_pay_log(state: &AppState, body: &Value) -> AppResult<Value> {
         })
         .collect();
     Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP `company_job::depower_action` — 职位降权 / 取消降权.
+async fn company_job_depower(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let is_depower = json_i32(body, "is_depower");
+    if id == 0 || is_depower == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let lang = i18n::current_lang();
+    let verb = i18n::t(
+        if is_depower == 1 {
+            "messages.admin_user_company_00374"
+        } else {
+            "messages.admin_user_company_00367"
+        },
+        lang,
+    );
+    let id_s = id.to_string();
+    if job_repo::admin_set_depower(state.db.pool(), id, is_depower).await? == 0 {
+        return Err(ApiError::business("admin_model_00132"));
+    }
+    Ok(PhpOut::Text(
+        "admin_model_00131",
+        i18n::t_args(
+            "messages.admin_model_00131",
+            lang,
+            &[("action", &verb), ("id", &id_s)],
+        ),
+    ))
+}
+
+/// PHP `company_job::setlinkopen_action` — 外链投递开关.
+async fn company_job_setlinkopen(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "linkjobid");
+    let linkopen = json_i32(body, "linkopen");
+    if id == 0 || linkopen == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    if job_repo::admin_set_linkopen(state.db.pool(), id, linkopen).await? == 0 {
+        return Err(ApiError::business("wap_01715"));
+    }
+    Ok(PhpOut::Message("model_00011"))
+}
+
+/// PHP `company_job::upjobhits_action` — 浏览量 / 曝光量改绝对值.
+async fn company_job_upjobhits(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "pid");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_01298"));
+    }
+    let hits = json_i64(body, "jobhits");
+    let expoure = json_i64(body, "jobexpoure");
+    if job_repo::admin_set_hits(state.db.pool(), id, hits, expoure).await? == 0 {
+        return Err(ApiError::business("member_user_00603"));
+    }
+    Ok(PhpOut::Message("member_user_00602"))
+}
+
+/// PHP `job.model::subReserveJob` renders the daily window as `s - e`, filling
+/// in the open end, and says "不限" when neither bound is set.
+fn reserve_window_text(s_time: &str, e_time: &str) -> String {
+    match (s_time.is_empty(), e_time.is_empty()) {
+        (false, false) => format!("{s_time} - {e_time}"),
+        (false, true) => format!("{s_time} - 24:00"),
+        (true, false) => format!("00:00 - {e_time}"),
+        (true, true) => i18n::t("messages.common_01936", i18n::current_lang()),
+    }
+}
+
+/// PHP `company_job::reserveJob_action` — 预约刷新列表.
+async fn company_job_reserve_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let keyword = json_str(body, "keyword");
+    let order_col = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gap_extra::ReserveJobFilter {
+        keyword: if keyword.trim().is_empty() {
+            None
+        } else {
+            Some(keyword.as_str())
+        },
+        keyword_type: json_i32(body, "type"),
+        uid: Some(json_u64(body, "uid")).filter(|v| *v > 0),
+        order_col: order_col.as_str(),
+        order_desc: !order_dir.eq_ignore_ascii_case("asc"),
+    };
+    let db = state.db.reader();
+    let total = gap_extra::count_reserve_jobs(db, &f).await?;
+    let rows = if total > 0 {
+        gap_extra::list_reserve_jobs(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let base = preview_base(state);
+    let base = base.trim_end_matches('/');
+    let unlimited = i18n::t("messages.common_01936", i18n::current_lang());
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "name": r.name,
+                "com_name": r.com_name,
+                "joburl": format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", r.id),
+                "comurl": format!("{base}/index.php?m=company&c=show&id={}&look=admin", r.uid),
+                "reserve_status": r.reserve_status.to_string(),
+                "reserve_interval": r.reserve_interval.to_string(),
+                "reserve_start": fmt_ts(r.start_time, "%Y-%m-%d %H:%M:%S"),
+                "reserve_end": if r.end_time > 0 { fmt_ts(r.end_time, "%Y-%m-%d") } else { unlimited.clone() },
+                "s_time": r.s_time,
+                "e_time": r.e_time,
+                "sx_time_n": reserve_window_text(&r.s_time, &r.e_time),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+/// PHP member-side `reserveInfo`, called by the admin dialog to pre-fill a job
+/// that is not queued yet. `refreshStatus` 0 means "never scheduled".
+async fn company_job_get_refresh(state: &AppState, body: &Value) -> AppResult<Value> {
+    let job_id = json_u64(body, "job_id");
+    if job_id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let row = gap_extra::find_reserve_schedule(state.db.reader(), job_id).await?;
+    Ok(match row {
+        Some(r) => json!({
+            "refreshStatus": r.status,
+            "interval": r.interval,
+            "s_time": r.s_time,
+            "e_time": r.e_time,
+            "end_time": r.end_time,
+        }),
+        None => json!({
+            "refreshStatus": 0,
+            "interval": 0,
+            "s_time": "",
+            "e_time": "",
+            "end_time": 0,
+        }),
+    })
+}
+
+/// PHP `company_job::closeReserve_action` — 关闭选中职位的预约刷新.
+async fn company_job_close_reserve(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "ids");
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    gap_extra::close_reserve_jobs(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("model_00009"))
+}
+
+/// PHP `company_job::ajaxCloseReserve_action` — 页面挂载时的清扫，无入参.
+async fn company_job_close_stale_reserve(state: &AppState) -> AppResult<PhpOut> {
+    gap_extra::close_stale_reserve_jobs(state.db.pool()).await?;
+    Ok(PhpOut::Message("model_00009"))
+}
+
+/// `HH:MM` start must be strictly before `HH:MM` end, the check PHP does by
+/// splitting on `:` and comparing hour then minute.
+fn reserve_window_invalid(s_time: &str, e_time: &str) -> bool {
+    if s_time.is_empty() || e_time.is_empty() {
+        return false;
+    }
+    let parse = |v: &str| {
+        let mut it = v.split(':');
+        let h: i32 = it.next().unwrap_or("0").trim().parse().unwrap_or(0);
+        let m: i32 = it.next().unwrap_or("0").trim().parse().unwrap_or(0);
+        h * 60 + m
+    };
+    parse(s_time) >= parse(e_time)
+}
+
+/// PHP `company_job::upReserveJob_action` → `job.model::reserveUpJob`.
+async fn company_job_up_reserve(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let job_ids = ids_named(body, "job_id");
+    if uid == 0 || job_ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    let opening = status == 1;
+    let db = state.db.pool();
+
+    // PHP divides the remaining refresh budget by the per-refresh price. Closing
+    // a schedule (`status = 2`) skips the check, so an out-of-quota company can
+    // still turn its refreshes off.
+    if status != 2 {
+        let price = setting_repo::find(db, "sy_reserve_refresh_price")
+            .await?
+            .and_then(|s| s.value.trim().parse::<i64>().ok())
+            .filter(|v| *v > 0)
+            .unwrap_or(1);
+        if gap_extra::reserve_refresh_budget(db, uid).await? / price == 0 {
+            return Err(ApiError::business("common_00982"));
+        }
+    }
+    if setting_repo::find(db, "com_job_reserve")
+        .await?
+        .map(|s| s.value.trim() != "1")
+        .unwrap_or(true)
+    {
+        return Err(ApiError::business("common_01177"));
+    }
+
+    let eligible = gap_extra::eligible_reserve_job_ids(db, uid, &job_ids).await?;
+    if eligible.is_empty() {
+        return Err(ApiError::business("model_00008"));
+    }
+
+    let end_time = parse_date_ts(&json_str(body, "end_time"));
+    if opening && end_time > 0 && end_time < clock::start_of_today() + 86_400 {
+        return Err(ApiError::business("wap_com_00212"));
+    }
+    let interval = json_i32(body, "interval");
+    let floor = setting_repo::find(db, "sy_reserve_refresh_interval")
+        .await?
+        .and_then(|s| s.value.trim().parse::<i32>().ok())
+        .unwrap_or(0);
+    // PHP appends the configured floor to the message, but also appends the raw
+    // key `wap_com_00247` instead of translating it, so the sentence it produces
+    // is broken. The locale entry here is self-contained instead.
+    if opening && interval < floor {
+        return Err(ApiError::business("common_00606"));
+    }
+    let s_time = json_str(body, "s_time");
+    let e_time = json_str(body, "e_time");
+    if reserve_window_invalid(&s_time, &e_time) {
+        return Err(ApiError::business("common_00227"));
+    }
+
+    let now = clock::now_ts();
+    let v = gap_extra::ReserveScheduleIn {
+        status,
+        interval,
+        start_time: now,
+        end_time,
+        next_time: now + i64::from(interval.max(0)) * 60,
+        s_time: s_time.as_str(),
+        e_time: e_time.as_str(),
+    };
+    let existing = gap_extra::existing_reserve_job_ids(db, uid, &eligible).await?;
+    let fresh: Vec<u64> = eligible
+        .iter()
+        .copied()
+        .filter(|id| !existing.contains(id))
+        .collect();
+    gap_extra::insert_reserve_schedules(db, uid, &fresh, &v).await?;
+    gap_extra::update_reserve_schedules(db, uid, &existing, &v).await?;
+    gap_extra::set_jobs_is_reserve(db, uid, &eligible, i32::from(opening)).await?;
+    Ok(PhpOut::Message("common_01047"))
 }
 
 /// PHP `users_member::log_action` maps each `operas` bucket to the content
