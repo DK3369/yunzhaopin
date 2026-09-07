@@ -568,3 +568,41 @@ pub struct WxZdConRow {
     pub sort: i32,
     pub time: i64,
 }
+
+/// One `phpyun_company_statis_detail` row — the per-company package ledger
+/// behind admin `company::statisDetail`.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct CompanyStatisDetailRow {
+    pub id: u64,
+    pub uid: u64,
+    #[sqlx(rename = "type")]
+    pub kind: i32,
+    pub num: i64,
+    pub detail: String,
+    pub time: i64,
+    pub uri: String,
+    pub ip: String,
+}
+
+/// One selectable company skin from `phpyun_company_tpl`, for admin
+/// `company::mcomtpl`.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct CompanyTplRow {
+    pub id: u64,
+    pub name: String,
+    pub url: String,
+    pub pic: String,
+    pub price: String,
+    pub status: i32,
+}
+
+/// The company columns a 推文 task row is built from (PHP
+/// `wxpubtemp.model::addTwTask` `type = 2`).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct TuiWenCompanyRow {
+    pub uid: u64,
+    pub name: String,
+    /// `phpyun_company.lastupdate` is `varchar(10)` even though it holds a unix
+    /// timestamp, and it lands in `wxpub_twtask.jobsdate` (`int`).
+    pub lastupdate: String,
+}

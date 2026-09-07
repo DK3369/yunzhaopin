@@ -15,7 +15,9 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="type_n" :label="lc('admin_user_company_00051')" width="150"></el-table-column>
+                <el-table-column :label="lc('admin_user_company_00051')" width="150">
+                    <template #default="scope">{{ lc(scope.row.type_n) }}</template>
+                </el-table-column>
                 <el-table-column prop="num" :label="lc('admin_00623')" width="150"></el-table-column>
                 <el-table-column prop="detail" :label="lc('admin_user_00231')"></el-table-column>
                 <el-table-column prop="ip" label="IP" width="150"></el-table-column>

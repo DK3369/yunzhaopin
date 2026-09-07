@@ -297,7 +297,16 @@
     "weibo_appid_missing": "Weibo AppID is not configured",
     "weibo_appsecret_missing": "Weibo AppSecret is not configured",
     "weibo_oauth_redirect_missing": "Weibo OAuth redirect URL is not configured",
-    "x": "Invalid value"
+    "x": "Invalid value",
+    "admin_01307": "Select Assign Consultant!",
+    "admin_user_00186": "Delete failed",
+    "api_wxapp_00016": "Set failed",
+    "common_01238": "Parameter error, please try again",
+    "common_06402": "Assign failed!",
+    "common_06585": "Select Records Delete",
+    "common_06677": "Post Tasks Add failed",
+    "wap_00203": "Parameter error, please try again!",
+    "wap_js_00141": "Actions failed"
   },
   "validation": {
     "username": {
@@ -381,7 +390,14 @@
     "wap_00011": "Friday",
     "wap_00012": "Saturday",
     "wap_00013": "Thursday",
-    "wap_00014": "Sunday"
+    "wap_00014": "Sunday",
+    "admin_model_00123": "LOGO set successfully (Company UID:%{uid})",
+    "admin_user_00187": "Deleted successfully!",
+    "admin_user_company_00405": "The manager set a company template for you: ",
+    "common_00802": "The manager assigned a recruitment consultant to you:",
+    "common_06401": "Assign successful!",
+    "common_06676": "Post Tasks Add successful",
+    "wap_user_00264": "Operation successful"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

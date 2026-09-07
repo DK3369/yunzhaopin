@@ -9,6 +9,7 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_gap::repo as gap_repo;
+use phpyun_models::company_tpl::repo as company_tpl_repo;
 use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::company_statis::repo as cstatis_repo;
 use phpyun_models::integral_transfer::repo as pay_repo;
@@ -308,6 +309,17 @@ pub async fn dispatch(
         ("company-job", "close-reserve") => company_job_close_reserve(state, body).await,
         ("company-job", "close-stale-reserve") => company_job_close_stale_reserve(state).await,
         ("company-job", "up-reserve") => company_job_up_reserve(state, body).await,
+
+        ("company", "bind-package") => company_bind_package(state, body).await,
+        ("company", "set-logo") => company_set_logo(state, body).await,
+        ("company", "check-guwen") => company_check_guwen(state, body).await,
+        ("company", "statis-detail") => {
+            Ok(PhpOut::Data(company_statis_detail(state, body).await?))
+        }
+        ("company", "del-statis-detail") => company_del_statis_detail(state, body).await,
+        ("company", "mcomtpl") => Ok(PhpOut::Data(company_mcomtpl(state, body).await?)),
+        ("company", "msettpl") => company_msettpl(state, body).await,
+        ("company", "add-tuiwen-task") => company_add_tuiwen_task(state, user, body).await,
         ("user-gap", "mem-imitate") => Ok(PhpOut::Data(user_gap_mem_imitate(state, body).await?)),
         ("user-gap", "mem-lock") => user_gap_mem_lock(state, body).await,
         ("user-gap", "mem-edit") => user_gap_mem_edit(state, body).await,
@@ -7835,4 +7847,242 @@ async fn user_gap_job_refresh_del(state: &AppState, body: &Value) -> AppResult<P
     }
     gap_repo::delete_php_refresh_logs(state.db.pool(), &ids).await?;
     Ok(PhpOut::Message("admin_user_00187"))
+}
+
+// ==================== 企业管理长尾 (PHP `user/company`) ====================
+
+/// PHP `company::bindPackage_action` — bind extra rating packages to a company.
+async fn company_bind_package(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_js_00141"));
+    }
+    // PHP `pylode(',', $_POST['package'])`: the checkbox group posts an array,
+    // and clearing every box legitimately stores an empty string.
+    let package = json_csv(body, "package");
+    if gap_extra::set_company_package(state.db.pool(), uid, &package).await? == 0 {
+        return Err(ApiError::business("wap_js_00141"));
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+/// PHP `company::setLogo_action` — admin overwrites a company logo.
+async fn company_set_logo(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let logo = json_str(body, "logo");
+    if uid == 0 || logo.is_empty() {
+        return Err(ApiError::param_invalid("api_wxapp_00016"));
+    }
+    if gap_extra::set_company_logo_by_admin(state.db.pool(), uid, &logo).await? == 0 {
+        return Err(ApiError::business("api_wxapp_00016"));
+    }
+    let lang = i18n::current_lang();
+    let uid_s = uid.to_string();
+    Ok(PhpOut::Text(
+        "admin_model_00123",
+        i18n::t_args("messages.admin_model_00123", lang, &[("uid", &uid_s)]),
+    ))
+}
+
+/// PHP `company::checkguwen_action` — assign a CRM advisor to one or many
+/// companies and notify each of them.
+async fn company_check_guwen(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let gid = json_u64(body, "gid");
+    let uids = gap_extra::parse_id_csv(&json_csv(body, "comid"));
+    if gid == 0 || uids.is_empty() {
+        return Err(ApiError::param_invalid("admin_01307"));
+    }
+    let Some(advisor) = gap_extra::admin_user_name(state.db.pool(), gid).await? else {
+        return Err(ApiError::business("admin_01307"));
+    };
+    let now = clock::now_ts();
+    if gap_extra::set_company_advisor(state.db.pool(), &uids, gid, now).await? == 0 {
+        return Err(ApiError::business("common_06402"));
+    }
+    let lang = i18n::current_lang();
+    let notice = format!("{}{}", i18n::t("messages.common_00802", lang), advisor);
+    for uid in &uids {
+        gap_repo::insert_sysmsg(state.db.pool(), *uid, 2, &notice, now).await?;
+    }
+    Ok(PhpOut::Message("common_06401"))
+}
+
+/// The ledger kinds behind `company_statis_detail.type` (PHP
+/// `statis.model::$typeN`). Kind 1 is a literal in PHP, not a lang key.
+const STATIS_DETAIL_TYPES: &[(i32, &str)] = &[
+    (1, "上架|发布 职位"),
+    (2, "wap_com_00029"),
+    (3, "wap_00451"),
+    (4, "resume_00029"),
+    (5, "wap_com_00237"),
+    (6, "member_com_00613"),
+    (7, "wap_com_00238"),
+    (8, "wap_com_00039"),
+    (10, "admin_user_00019"),
+    (11, "wap_00788"),
+];
+
+fn statis_detail_type_name(kind: i32) -> &'static str {
+    STATIS_DETAIL_TYPES
+        .iter()
+        .find(|(k, _)| *k == kind)
+        .map(|(_, n)| *n)
+        .unwrap_or("")
+}
+
+/// PHP `company::statisDetail_action` — one company's package ledger.
+/// `type_n` stays a raw lang key, matching PHP; the admin table runs it
+/// through `lc()`.
+async fn company_statis_detail(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_00203"));
+    }
+    let (page, per, offset, limit) = page_of(body);
+    let filter = gap_extra::StatisDetailFilter {
+        uid,
+        kind: json_i32(body, "type"),
+    };
+    let db = state.db.reader();
+    let total = gap_extra::count_company_statis_details(db, &filter).await?;
+    let rows = if total > 0 {
+        gap_extra::list_company_statis_details(db, &filter, limit, offset).await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "type": r.kind,
+                "type_n": statis_detail_type_name(r.kind),
+                "num": r.num,
+                "detail": r.detail,
+                "time": r.time,
+                "time_n": fmt_dt(r.time),
+                "uri": r.uri,
+                "ip": r.ip,
+            })
+        })
+        .collect();
+    // PHP only offers kinds 1..8 in the filter dropdown even though `typeN`
+    // also names 10 and 11.
+    let options: serde_json::Map<String, Value> = STATIS_DETAIL_TYPES
+        .iter()
+        .filter(|(k, _)| *k <= 8)
+        .map(|(k, n)| (k.to_string(), Value::String((*n).to_string())))
+        .collect();
+    let mut out = paged(Value::Array(list), total, page, per);
+    if let Some(obj) = out.as_object_mut() {
+        obj.insert(
+            "search_list".into(),
+            json!([{
+                "param": "type",
+                "name": "admin_user_company_00051",
+                "value": Value::Object(options),
+            }]),
+        );
+    }
+    Ok(out)
+}
+
+/// PHP `company::delStatisDetail_action`.
+async fn company_del_statis_detail(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("common_06585"));
+    }
+    if gap_extra::delete_company_statis_details(state.db.pool(), &ids).await? == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+/// PHP `company::mcomtpl_action` — skins this company may pick from, plus the
+/// one currently applied.
+async fn company_mcomtpl(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "comid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_00203"));
+    }
+    let db = state.db.reader();
+    let rows = gap_extra::list_company_tpls_for(db, uid).await?;
+    let applied = company_tpl_repo::fetch_applied_tpl(db, uid).await?;
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "url": r.url,
+                "pic": r.pic,
+                "pic_n": pic_url(&base, &r.pic),
+                "price": r.price,
+                "status": r.status,
+                "preview_url": format!("{base}/companies/{uid}?style={}", r.url),
+            })
+        })
+        .collect();
+    // The drawer reads `comtplstatis.comtpl` straight away, so this has to stay
+    // an object even when the company has no `company_statis` row.
+    Ok(json!({ "list": list, "statis": { "comtpl": applied } }))
+}
+
+/// PHP `company::msettpl_action` — admin applies a skin on the company's behalf.
+async fn company_msettpl(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "comid");
+    let id = json_u64(body, "id");
+    if uid == 0 || id == 0 {
+        return Err(ApiError::param_invalid("wap_01715"));
+    }
+    let Some(url) = gap_extra::company_tpl_url(state.db.pool(), id).await? else {
+        return Err(ApiError::business("wap_01715"));
+    };
+    if company_tpl_repo::set_applied_tpl(state.db.pool(), uid, &url).await? == 0 {
+        return Err(ApiError::business("wap_01715"));
+    }
+    let lang = i18n::current_lang();
+    let notice = format!(
+        "{}<a href=\"comtpl,{uid}\">{url}</a>",
+        i18n::t("messages.admin_user_company_00405", lang)
+    );
+    gap_repo::insert_sysmsg(state.db.pool(), uid, 2, &notice, clock::now_ts()).await?;
+    Ok(PhpOut::Message("model_00011"))
+}
+
+/// PHP `company::addTuiWenTask_action` — queue a 推文 task per company.
+async fn company_add_tuiwen_task(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let uids = gap_extra::parse_id_csv(&json_csv(body, "twtask_uid"));
+    let content = json_str(body, "twtask_content");
+    if uids.is_empty() || user.uid == 0 {
+        return Err(ApiError::param_invalid("common_01238"));
+    }
+    let companies = gap_extra::tuiwen_companies(state.db.reader(), &uids).await?;
+    if companies.is_empty() {
+        return Err(ApiError::business("common_06677"));
+    }
+    let rows: Vec<gap_extra::TuiWenTaskIn> = companies
+        .iter()
+        .map(|c| gap_extra::TuiWenTaskIn {
+            cuid: c.uid,
+            comname: c.name.clone(),
+            jobsdate: c.lastupdate.trim().parse().unwrap_or(0),
+            auid: user.uid,
+            content: content.clone(),
+            urgent: json_i32(body, "twtask_urgent"),
+            wcmoments: json_i32(body, "twtask_wcmoments"),
+            gzh: json_i32(body, "twtask_gzh"),
+        })
+        .collect();
+    if gap_extra::insert_tuiwen_tasks(state.db.pool(), &rows, clock::now_ts()).await? == 0 {
+        return Err(ApiError::business("common_06677"));
+    }
+    Ok(PhpOut::Message("common_06676"))
 }

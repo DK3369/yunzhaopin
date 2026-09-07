@@ -2107,3 +2107,236 @@ pub async fn delete_userid_job_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64,
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
+
+// ---------- 企业管理长尾（PHP `admin/model/user/company.class.php`） ----------
+
+/// PHP `company::bindPackage_action` — the extra `company_rating` ids a company
+/// is entitled to, stored as a CSV in `phpyun_company.package`.
+pub async fn set_company_package(
+    pool: &MySqlPool,
+    uid: u64,
+    package: &str,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_company SET package = ? WHERE uid = ?")
+            .bind(package)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+/// PHP `company.model::setLogoByAdmin` — the logo is denormalised onto every
+/// job row, and an admin-set logo skips re-review (`logo_status = 0`).
+pub async fn set_company_logo_by_admin(
+    pool: &MySqlPool,
+    uid: u64,
+    logo: &str,
+) -> Result<u64, sqlx::Error> {
+    let affected = sqlx::query("UPDATE phpyun_company SET logo = ?, logo_status = 0 WHERE uid = ?")
+        .bind(logo)
+        .bind(uid)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    if affected > 0 {
+        sqlx::query("UPDATE phpyun_company_job SET com_logo = ? WHERE uid = ?")
+            .bind(logo)
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    }
+    Ok(affected)
+}
+
+/// PHP `company.model::setComGw` — assign a CRM advisor to one or many
+/// companies. PHP also passes `crm_source = 5`, but `phpyun_company` has no such
+/// column and `update_once` filters unknown keys, so that write is a no-op.
+pub async fn set_company_advisor(
+    pool: &MySqlPool,
+    uids: &[u64],
+    crm_uid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company SET crm_uid = ");
+    qb.push_bind(crm_uid);
+    qb.push(", crm_time = ");
+    qb.push_bind(now);
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// `phpyun_admin_user.name` of an advisor, used to reject unknown ids the way
+/// PHP `admin.model::getAdminUser` does.
+pub async fn admin_user_name(pool: &MySqlPool, uid: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> =
+        sqlx::query_as("SELECT COALESCE(`name`, '') FROM phpyun_admin_user WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.map(|r| r.0))
+}
+
+/// PHP `company::statisDetail_action` filter: one company, optional ledger type.
+#[derive(Debug, Clone, Default)]
+pub struct StatisDetailFilter {
+    pub uid: u64,
+    pub kind: i32,
+}
+
+fn statis_detail_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &StatisDetailFilter) {
+    qb.push(" WHERE uid = ");
+    qb.push_bind(f.uid);
+    if f.kind > 0 {
+        qb.push(" AND `type` = ");
+        qb.push_bind(f.kind);
+    }
+}
+
+pub async fn count_company_statis_details(
+    pool: &MySqlPool,
+    f: &StatisDetailFilter,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company_statis_detail");
+    statis_detail_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn list_company_statis_details(
+    pool: &MySqlPool,
+    f: &StatisDetailFilter,
+    limit: u64,
+    offset: u64,
+) -> Result<Vec<CompanyStatisDetailRow>, sqlx::Error> {
+    let (limit, offset) = lim(limit, offset)?;
+    // `id` / `uid` are signed INT in MySQL; sqlx refuses to decode those into
+    // `u64` without an explicit cast.
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(uid AS UNSIGNED) AS uid, `type`, num, \
+         COALESCE(detail, '') AS detail, `time`, \
+         COALESCE(uri, '') AS uri, COALESCE(ip, '') AS ip \
+         FROM phpyun_company_statis_detail",
+    );
+    statis_detail_where(&mut qb, f);
+    // PHP `orderby = 'id'` with no direction, which its query builder renders ASC.
+    qb.push(" ORDER BY id ASC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn delete_company_statis_details(
+    pool: &MySqlPool,
+    ids: &[u64],
+) -> Result<u64, sqlx::Error> {
+    delete_in(
+        pool,
+        "DELETE FROM phpyun_company_statis_detail WHERE id IN (",
+        ids,
+    )
+    .await
+}
+
+/// PHP `company::mcomtpl_action` — enabled skins that are either global
+/// (`service_uid = 0`) or explicitly granted to this company.
+pub async fn list_company_tpls_for(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Vec<CompanyTplRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(`name`, '') AS `name`, \
+         COALESCE(url, '') AS url, COALESCE(pic, '') AS pic, \
+         COALESCE(price, '') AS price, CAST(COALESCE(status, 0) AS SIGNED) AS status \
+         FROM phpyun_company_tpl \
+         WHERE status = 1 AND (service_uid = '0' OR FIND_IN_SET(?, service_uid)) \
+         ORDER BY id DESC",
+    )
+    .bind(uid)
+    .fetch_all(pool)
+    .await
+}
+
+/// `phpyun_company_tpl.url` of one skin, for `company::msettpl_action`.
+pub async fn company_tpl_url(pool: &MySqlPool, id: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> =
+        sqlx::query_as("SELECT COALESCE(url, '') FROM phpyun_company_tpl WHERE id = ? LIMIT 1")
+            .bind(id)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.map(|r| r.0))
+}
+
+/// PHP `wxpubtemp.model::addTwTask` `type = 2` reads these three columns before
+/// fanning out one task row per company.
+pub async fn tuiwen_companies(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<Vec<TuiWenCompanyRow>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(`name`, '') AS `name`, \
+         COALESCE(lastupdate, '') AS lastupdate \
+         FROM phpyun_company WHERE uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+/// One `phpyun_wxpub_twtask` row to queue. `jobid` / `jobname` stay empty for
+/// company-level tasks (`type = 2`).
+#[derive(Debug, Clone)]
+pub struct TuiWenTaskIn {
+    pub cuid: u64,
+    pub comname: String,
+    pub jobsdate: i64,
+    pub auid: u64,
+    pub content: String,
+    pub urgent: i32,
+    pub wcmoments: i32,
+    pub gzh: i32,
+}
+
+pub async fn insert_tuiwen_tasks(
+    pool: &MySqlPool,
+    rows: &[TuiWenTaskIn],
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if rows.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "INSERT INTO phpyun_wxpub_twtask \
+         (cuid, comname, jobsdate, auid, content, urgent, wcmoments, gzh, ctime, status, `type`) ",
+    );
+    qb.push_values(rows, |mut b, r| {
+        b.push_bind(r.cuid)
+            .push_bind(r.comname.clone())
+            .push_bind(r.jobsdate)
+            .push_bind(r.auid)
+            .push_bind(r.content.clone())
+            .push_bind(r.urgent)
+            .push_bind(r.wcmoments)
+            .push_bind(r.gzh)
+            .push_bind(now)
+            .push_bind(0)
+            .push_bind(2);
+    });
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}

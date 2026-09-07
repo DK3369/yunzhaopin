@@ -291,7 +291,16 @@
     "weibo_appid_missing": "微博 AppID 未設定",
     "weibo_appsecret_missing": "微博 AppSecret 未設定",
     "weibo_oauth_redirect_missing": "微博 OAuth 回呼網址未設定",
-    "x": "值不合法"
+    "x": "值不合法",
+    "admin_01307": "請選擇分配顧問！",
+    "admin_user_00186": "刪除失敗",
+    "api_wxapp_00016": "設定失敗",
+    "common_01238": "參數錯誤，請重試",
+    "common_06402": "分配失敗！",
+    "common_06585": "請選擇您要刪除的記錄！",
+    "common_06677": "推文任務新增失敗",
+    "wap_00203": "參數錯誤，請重試！",
+    "wap_js_00141": "操作失敗"
   },
   "validation": {
     "username": {
@@ -375,7 +384,14 @@
     "wap_00011": "星期五",
     "wap_00012": "星期六",
     "wap_00013": "星期四",
-    "wap_00014": "星期日"
+    "wap_00014": "星期日",
+    "admin_model_00123": "LOGO設定成功（企業UID:%{uid}）",
+    "admin_user_00187": "刪除成功！",
+    "admin_user_company_00405": "管理員為您設定企業模板：",
+    "common_00802": "管理員為您分配招聘顧問：",
+    "common_06401": "分配成功！",
+    "common_06676": "推文任務新增成功",
+    "wap_user_00264": "操作成功"
   },
   "recommend": {
     "disabled": "推薦功能已關閉",
