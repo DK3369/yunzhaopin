@@ -431,6 +431,66 @@ pub async fn try_consume_breakjob(pool: &MySqlPool, uid: u64, n: i32) -> Result<
     Ok(res.rows_affected() > 0)
 }
 
+/// Deduct package days for job top / rec / urgent (`top_num` / `rec_num` / `urgent_num`).
+pub async fn try_consume_promote(
+    pool: &MySqlPool,
+    uid: u64,
+    kind: &str,
+    days: i32,
+) -> Result<bool, sqlx::Error> {
+    if days <= 0 {
+        return Ok(true);
+    }
+    let sql = match kind {
+        "top" => {
+            "UPDATE phpyun_company_statis SET top_num = top_num - ? \
+             WHERE uid = ? AND top_num >= ?"
+        }
+        "rec" => {
+            "UPDATE phpyun_company_statis SET rec_num = rec_num - ? \
+             WHERE uid = ? AND rec_num >= ?"
+        }
+        "urgent" => {
+            "UPDATE phpyun_company_statis SET urgent_num = urgent_num - ? \
+             WHERE uid = ? AND urgent_num >= ?"
+        }
+        _ => return Ok(false),
+    };
+    let res = sqlx::query(sql)
+        .bind(days)
+        .bind(uid)
+        .bind(days)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected() > 0)
+}
+
+pub async fn add_promote_num(
+    pool: &MySqlPool,
+    uid: u64,
+    kind: &str,
+    days: i32,
+) -> Result<u64, sqlx::Error> {
+    if days <= 0 {
+        return Ok(0);
+    }
+    ensure_row(pool, uid).await?;
+    let sql = match kind {
+        "top" => "UPDATE phpyun_company_statis SET top_num = top_num + ? WHERE uid = ?",
+        "rec" => "UPDATE phpyun_company_statis SET rec_num = rec_num + ? WHERE uid = ?",
+        "urgent" => {
+            "UPDATE phpyun_company_statis SET urgent_num = urgent_num + ? WHERE uid = ?"
+        }
+        _ => return Ok(0),
+    };
+    Ok(sqlx::query(sql)
+        .bind(days)
+        .bind(uid)
+        .execute(pool)
+        .await?
+        .rows_affected())
+}
+
 pub async fn try_consume_invite_resume(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_company_statis SET invite_resume = invite_resume - 1 \

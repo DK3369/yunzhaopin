@@ -286,6 +286,12 @@ pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> A
     {
         return resume_service::settle_top_order(state, order_no).await;
     }
+    if phpyun_models::company_pack::find_order_by_no(state.db.reader(), order_no)
+        .await?
+        .is_some()
+    {
+        return crate::pack_service::mark_paid(state, order_no, pay_tx_id).await;
+    }
     Err(ApiError::param_invalid("order_not_found"))
 }
 

@@ -24,6 +24,9 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/batch/refresh", post(batch_refresh))
         .route("/jobs/batch/close", post(batch_close))
         .route("/jobs/batch/delete", post(batch_delete))
+        .route("/jobs/promote/quote", post(promote_quote))
+        .route("/jobs/promote", post(promote))
+        .route("/jobs/promote/close", post(promote_close))
 }
 
 // ==================== Create ====================
@@ -241,6 +244,9 @@ pub struct JobCountsView {
     pub closed: u64,
     pub total: u64,
     pub breakjob_num: i32,
+    pub top_num: i32,
+    pub rec_num: i32,
+    pub urgent_num: i32,
 }
 
 /// My jobs grouped by state (used for job management tab badges)
@@ -262,6 +268,9 @@ pub async fn counts_by_state(
         closed: c.closed,
         total: c.online + c.pending + c.closed,
         breakjob_num: c.breakjob_num,
+        top_num: c.top_num,
+        rec_num: c.rec_num,
+        urgent_num: c.urgent_num,
     }))
 }
 
@@ -455,4 +464,105 @@ pub async fn batch_delete(
 ) -> AppResult<ApiResponse<BatchResult>> {
     let r = job_mgmt_service::batch_delete(&state, &user, &f.ids, &ip).await?;
     Ok(ApiResponse::data(batch_result(r)))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PromoteQuoteForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub job_id: u64,
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PromoteQuoteView {
+    pub kind: String,
+    pub remain: i32,
+    pub expire_at: i64,
+    pub active: bool,
+}
+
+/// 套餐推广报价：剩余次数 + 当前到期时间
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/promote/quote",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = PromoteQuoteForm,
+    responses((status = 200, description = "ok", body = PromoteQuoteView))
+)]
+pub async fn promote_quote(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<PromoteQuoteForm>,
+) -> AppResult<ApiResponse<PromoteQuoteView>> {
+    let q = job_mgmt_service::quote_promote(&state, &user, f.job_id, &f.kind).await?;
+    Ok(ApiResponse::data(PromoteQuoteView {
+        kind: q.kind,
+        remain: q.remain,
+        expire_at: q.expire_at,
+        active: q.active,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PromoteForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub job_id: u64,
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+    #[validate(range(min = 1, max = 365))]
+    pub days: i32,
+}
+
+/// 职位置顶 / 推荐 / 紧急（扣套餐次数）
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/promote",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = PromoteForm,
+    responses((status = 200, description = "ok", body = PromoteQuoteView))
+)]
+pub async fn promote(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<PromoteForm>,
+) -> AppResult<ApiResponse<PromoteQuoteView>> {
+    let q = job_mgmt_service::promote(&state, &user, f.job_id, &f.kind, f.days, &ip).await?;
+    Ok(ApiResponse::data(PromoteQuoteView {
+        kind: q.kind,
+        remain: q.remain,
+        expire_at: q.expire_at,
+        active: q.active,
+    }))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PromoteCloseView {
+    pub ok: bool,
+    pub refunded: i32,
+}
+
+/// 关闭职位置顶 / 推荐 / 紧急；`tg_back=1` 时退回剩余天数
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/promote/close",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = PromoteQuoteForm,
+    responses((status = 200, description = "ok", body = PromoteCloseView))
+)]
+pub async fn promote_close(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<PromoteQuoteForm>,
+) -> AppResult<ApiResponse<PromoteCloseView>> {
+    let r = job_mgmt_service::close_promote(&state, &user, f.job_id, &f.kind, &ip).await?;
+    Ok(ApiResponse::data(PromoteCloseView {
+        ok: true,
+        refunded: r.refunded,
+    }))
 }

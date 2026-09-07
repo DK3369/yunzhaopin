@@ -2,7 +2,7 @@
 //!
 //! Returns multi-dimensional counters in a single request so the frontend can render badges directly.
 
-use phpyun_core::{AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::apply::repo as apply_repo;
 use phpyun_models::collect::repo as collect_repo;
 use phpyun_models::integral::repo as integral_repo;
@@ -175,5 +175,83 @@ pub async fn year_report(state: &AppState, user: &AuthenticatedUser) -> AppResul
         last_night_work_at: lastwork,
         company_name,
         linkman,
+    })
+}
+
+fn shanghai_day_bounds(now_utc: i64) -> (i64, i64) {
+    const OFFSET: i64 = 8 * 3600;
+    let local = now_utc + OFFSET;
+    let day_start_local = local - local.rem_euclid(86_400);
+    let start = day_start_local - OFFSET;
+    (start, start + 86_400 - 1)
+}
+
+pub struct DayMetric {
+    pub num: u64,
+    pub jzr: i64,
+}
+
+pub struct ComTodayStats {
+    pub look_resume: DayMetric,
+    pub look_job: DayMetric,
+    pub down_resume: DayMetric,
+    pub apply: DayMetric,
+    pub invite: DayMetric,
+}
+
+fn metric(today: u64, yesterday: u64) -> DayMetric {
+    DayMetric {
+        num: today,
+        jzr: i64::try_from(today).unwrap_or(0) - i64::try_from(yesterday).unwrap_or(0),
+    }
+}
+
+/// PHP `zhaopin::getTodayData` — 今日五项及较昨日。
+pub async fn com_today(state: &AppState, user: &AuthenticatedUser) -> AppResult<ComTodayStats> {
+    user.require_employer()?;
+    let now = clock::now_ts();
+    let (today_s, today_e) = shanghai_day_bounds(now);
+    let yest_s = today_s - 86_400;
+    let yest_e = today_s - 1;
+    let db = state.db.reader();
+    let uid = user.uid;
+    let ut = i32::from(user.usertype);
+
+    let (
+        look_r_t,
+        look_r_y,
+        look_j_t,
+        look_j_y,
+        down_t,
+        down_y,
+        fdown_t,
+        fdown_y,
+        apply_t,
+        apply_y,
+        inv_t,
+        inv_y,
+    ) = tokio::join!(
+        phpyun_models::look_resume::count_by_com_range(db, uid, ut, today_s, today_e),
+        phpyun_models::look_resume::count_by_com_range(db, uid, ut, yest_s, yest_e),
+        phpyun_models::look_job::count_by_com_range(db, uid, today_s, today_e),
+        phpyun_models::look_job::count_by_com_range(db, uid, yest_s, yest_e),
+        phpyun_models::resume_download::repo::count_down_range(db, uid, ut, today_s, today_e),
+        phpyun_models::resume_download::repo::count_down_range(db, uid, ut, yest_s, yest_e),
+        phpyun_models::resume_download::repo::count_freedown_range(db, uid, ut, today_s, today_e),
+        phpyun_models::resume_download::repo::count_freedown_range(db, uid, ut, yest_s, yest_e),
+        apply_repo::count_by_com_range(db, uid, today_s, today_e),
+        apply_repo::count_by_com_range(db, uid, yest_s, yest_e),
+        phpyun_models::userid_msg::repo::count_by_fid_range(db, uid, today_s, today_e),
+        phpyun_models::userid_msg::repo::count_by_fid_range(db, uid, yest_s, yest_e),
+    );
+
+    let down_today = down_t? + fdown_t?;
+    let down_yest = down_y? + fdown_y?;
+    Ok(ComTodayStats {
+        look_resume: metric(look_r_t?, look_r_y?),
+        look_job: metric(look_j_t?, look_j_y?),
+        down_resume: metric(down_today, down_yest),
+        apply: metric(apply_t?, apply_y?),
+        invite: metric(inv_t?, inv_y?),
     })
 }

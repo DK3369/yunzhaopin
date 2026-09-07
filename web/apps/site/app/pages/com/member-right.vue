@@ -65,6 +65,8 @@ useSeoMeta({ title: t('wap_com_00097') })
         </template>
         <p>
           <NuxtLink to="/com/pay">{{ $t('member_com_00041') }}</NuxtLink>
+          ·
+          <NuxtLink to="/com/added">{{ $t('wap_com_00393') }}</NuxtLink>
         </p>
       </div>
 

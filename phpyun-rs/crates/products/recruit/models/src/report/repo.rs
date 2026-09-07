@@ -13,8 +13,8 @@
 //! - `status`       → `status`
 //! - `created_at`   → `inputtime`
 
-use super::entity::{Report, ReportReason};
-use sqlx::MySqlPool;
+use super::entity::{CrmReport, Report, ReportReason};
+use sqlx::{MySqlPool, QueryBuilder};
 
 const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
                              CAST(COALESCE(c_uid, 0) AS UNSIGNED) AS reporter_uid, \
@@ -223,4 +223,95 @@ pub async fn set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, s
         .execute(pool)
         .await?;
     Ok(res.rows_affected())
+}
+
+const CRM_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+    CAST(COALESCE(eid, 0) AS UNSIGNED) AS eid, \
+    COALESCE(r_name, '') AS r_name, \
+    COALESCE(username, '') AS username, \
+    COALESCE(r_reason, '') AS r_reason, \
+    result, \
+    COALESCE(inputtime, 0) AS inputtime, \
+    COALESCE(status, 0) AS status";
+
+pub struct CrmReportCreate<'a> {
+    pub p_uid: u64,
+    pub eid: u64,
+    pub usertype: i32,
+    pub did: u32,
+    pub username: &'a str,
+    pub r_name: &'a str,
+    pub reason: &'a str,
+}
+
+pub async fn create_crm_report(
+    pool: &MySqlPool,
+    c: CrmReportCreate<'_>,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_report
+           (p_uid, c_uid, eid, usertype, inputtime, username, r_name, r_reason, type, did, status)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 2, ?, 0)"#,
+    )
+    .bind(c.p_uid)
+    .bind(c.p_uid)
+    .bind(c.eid)
+    .bind(c.usertype)
+    .bind(now)
+    .bind(c.username)
+    .bind(c.r_name)
+    .bind(c.reason)
+    .bind(c.did)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn list_crm_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<CrmReport>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {CRM_FIELDS} FROM phpyun_report \
+         WHERE p_uid = ? AND type = 2 ORDER BY inputtime DESC, id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, CrmReport>(&sql)
+        .bind(uid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_crm_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_report WHERE p_uid = ? AND type = 2",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_crm_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    ids: &[u64],
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb =
+        QueryBuilder::new("DELETE FROM phpyun_report WHERE p_uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND type = 2 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }

@@ -98,6 +98,8 @@ pub struct JobSummary {
     pub is_urgent: bool,
     pub rec_time: i64,
     pub urgent_time: i64,
+    /// PHP `xsdate` 置顶到期（unix 秒）。
+    pub xsdate: i64,
 
     // Time
     pub sdate: i64,
@@ -176,6 +178,7 @@ impl From<Job> for JobSummary {
             is_urgent: false,
             rec_time: j.rec_time,
             urgent_time: j.urgent_time,
+            xsdate: j.xsdate,
 
             sdate: j.sdate,
             lastupdate: j.lastupdate,

@@ -11,6 +11,7 @@ pub fn routes() -> Router<AppState> {
         .route("/dashboard", post(counts))
         .route("/com-dashboard", post(com_counts))
         .route("/dashboard/year-report", post(year_report))
+        .route("/com-stats/today", post(today))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -136,5 +137,46 @@ pub async fn year_report(
         last_night_work_at: d.last_night_work_at,
         company_name: d.company_name,
         linkman: d.linkman,
+    }))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct DayMetricView {
+    pub num: u64,
+    pub jzr: i64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ComTodayView {
+    pub look_resume: DayMetricView,
+    pub look_job: DayMetricView,
+    pub down_resume: DayMetricView,
+    pub apply: DayMetricView,
+    pub invite: DayMetricView,
+}
+
+fn metric(m: dashboard_service::DayMetric) -> DayMetricView {
+    DayMetricView { num: m.num, jzr: m.jzr }
+}
+
+/// PHP `zhaopin::getTodayData` — 今日五项及较昨日。
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-stats/today",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = ComTodayView))
+)]
+pub async fn today(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<ComTodayView>> {
+    let d = dashboard_service::com_today(&state, &user).await?;
+    Ok(ApiResponse::data(ComTodayView {
+        look_resume: metric(d.look_resume),
+        look_job: metric(d.look_job),
+        down_resume: metric(d.down_resume),
+        apply: metric(d.apply),
+        invite: metric(d.invite),
     }))
 }

@@ -1,16 +1,40 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { formatUnixDate, isUnauthErr } from '~/utils/site'
+
+type JobRow = {
+  id: number
+  name?: string
+  state?: number
+  status?: number
+  istop?: boolean
+  is_rec?: boolean
+  is_urgent?: boolean
+  xsdate?: number
+  rec_time?: number
+  urgent_time?: number
+}
 
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-jobs', () =>
   api.post('/v1/mcenter/jobs/list', { page: 1, page_size: 20 }),
 )
-const { data: counts } = await useAsyncData('com-job-counts', () =>
-  api.post<{ total: number; online: number; breakjob_num?: number }>('/v1/mcenter/jobs/counts', {}).catch(() => null),
+const { data: counts, refresh: refreshCounts } = await useAsyncData('com-job-counts', () =>
+  api
+    .post<{
+      total: number
+      online: number
+      breakjob_num?: number
+      top_num?: number
+      rec_num?: number
+      urgent_num?: number
+    }>('/v1/mcenter/jobs/counts', {})
+    .catch(() => null),
 )
-const list = computed(() => (data.value?.list || []) as Array<{ id: number; name?: string; state?: number; status?: number }>)
+const list = computed(() => (data.value?.list || []) as JobRow[])
 const msg = ref('')
+const days = ref(1)
+
 function jobPhase(job: { state?: number; status?: number }) {
   if (Number(job.status) === 1) return t('wap_com_00242')
   if (Number(job.state) === 0) return t('wap_user_00006')
@@ -18,12 +42,19 @@ function jobPhase(job: { state?: number; status?: number }) {
   if (Number(job.state) === 1) return t('wap_com_00243')
   return t('member_user_00181')
 }
+
+function expireOf(job: JobRow, kind: 'top' | 'rec' | 'urgent') {
+  const ts = kind === 'top' ? job.xsdate : kind === 'rec' ? job.rec_time : job.urgent_time
+  return formatUnixDate(ts)
+}
+
 async function refreshJob(id: number) {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/jobs/refresh', { id })
     msg.value = t('common.success')
     await refresh()
+    await refreshCounts()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
@@ -38,22 +69,69 @@ async function setStatus(id: number, status: number) {
     msg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
 }
+async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
+  msg.value = ''
+  const n = Math.max(1, Math.min(365, Number(days.value) || 1))
+  try {
+    await api.post('/v1/mcenter/jobs/promote', { job_id: jobId, kind, days: n })
+    msg.value = t('common.success')
+    await refresh()
+    await refreshCounts()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
+}
+async function closePromote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/jobs/promote/close', { job_id: jobId, kind })
+    msg.value = t('common.success')
+    await refresh()
+    await refreshCounts()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
+}
 useSeoMeta({ title: t('wap_com_00106') })
 </script>
 
 <template>
   <MemberPanel :title="$t('wap_com_00106')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p><NuxtLink to="/com/jobs/new">{{ $t('wap_00322') }}</NuxtLink></p>
-    <p v-if="counts" class="muted">{{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }}</p>
+    <p v-if="counts" class="muted">
+      {{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }} ·
+      {{ $t('wap_com_00238') }} {{ counts.top_num ?? 0 }}{{ $t('common_02067') }} ·
+      {{ $t('wap_com_00237') }} {{ counts.rec_num ?? 0 }}{{ $t('common_02067') }} ·
+      {{ $t('member_com_00613') }} {{ counts.urgent_num ?? 0 }}{{ $t('common_02067') }}
+    </p>
+    <p>
+      <label>{{ $t('member_com_00282') }}
+        <input v-model.number="days" type="number" min="1" max="365" style="width: 4em">
+        {{ $t('common_02067') }}
+      </label>
+    </p>
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <article v-for="job in list" :key="job.id" class="look_resume_list">
       <h3>{{ job.name }}</h3>
       <p class="muted">{{ $t('member_user_00181') }} {{ jobPhase(job) }}</p>
+      <p class="muted">
+        <span v-if="job.istop">{{ $t('wap_com_00238') }} {{ expireOf(job, 'top') }}</span>
+        <span v-if="job.is_rec"> {{ $t('wap_com_00237') }} {{ expireOf(job, 'rec') }}</span>
+        <span v-if="job.is_urgent"> {{ $t('member_com_00613') }} {{ expireOf(job, 'urgent') }}</span>
+      </p>
       <p>
         <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
         <button type="button" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</button>
         <button type="button" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</button>
         <button type="button" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</button>
+      </p>
+      <p>
+        <button v-if="!job.istop" type="button" @click="promote(job.id, 'top')">{{ $t('wap_com_00238') }}</button>
+        <button v-else type="button" @click="closePromote(job.id, 'top')">{{ $t('wap_com_00231') }}</button>
+        <button v-if="!job.is_rec" type="button" @click="promote(job.id, 'rec')">{{ $t('wap_com_00237') }}</button>
+        <button v-else type="button" @click="closePromote(job.id, 'rec')">{{ $t('common.close') }} {{ $t('wap_com_00237') }}</button>
+        <button v-if="!job.is_urgent" type="button" @click="promote(job.id, 'urgent')">{{ $t('member_com_00613') }}</button>
+        <button v-else type="button" @click="closePromote(job.id, 'urgent')">{{ $t('common.close') }} {{ $t('member_com_00613') }}</button>
       </p>
     </article>
     <p v-if="msg">{{ msg }}</p>

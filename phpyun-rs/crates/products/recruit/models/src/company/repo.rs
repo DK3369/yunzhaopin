@@ -208,6 +208,17 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Company>, 
         .await
 }
 
+/// PHP `phpyun_company.crm_uid` — assigned sales advisor.
+pub async fn find_crm_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(crm_uid, 0) AS UNSIGNED) FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}
+
 /// Load full company rows for the given uids, preserving input order.
 pub async fn list_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<Vec<Company>, sqlx::Error> {
     if uids.is_empty() {

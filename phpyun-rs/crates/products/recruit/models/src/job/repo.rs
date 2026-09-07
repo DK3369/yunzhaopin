@@ -394,7 +394,9 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
         }
     }
     if let Some(ids) = f.city_ids {
-        if !ids.is_empty() {
+        if ids.is_empty() {
+            qb.push(" AND 1=0");
+        } else {
             qb.push(" AND (provinceid IN (");
             push_in_i32s(qb, ids);
             qb.push(") OR cityid IN (");
@@ -1291,6 +1293,107 @@ pub async fn admin_promote(
     }
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// Member-center 套餐推广：在当前到期时间上叠加天数（未生效则从 now 起算）。
+pub async fn apply_member_promote(
+    pool: &MySqlPool,
+    job_id: u64,
+    uid: u64,
+    kind: &str,
+    days: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if days <= 0 {
+        return Ok(0);
+    }
+    let extra = i64::from(days) * 86_400;
+    let res = match kind {
+        "top" => {
+            sqlx::query(
+                "UPDATE phpyun_company_job \
+                 SET xsdate = IF(COALESCE(xsdate, 0) > ?, xsdate + ?, ? + ?) \
+                 WHERE id = ? AND uid = ?",
+            )
+            .bind(now)
+            .bind(extra)
+            .bind(now)
+            .bind(extra)
+            .bind(job_id)
+            .bind(uid)
+            .execute(pool)
+            .await?
+        }
+        "rec" => {
+            sqlx::query(
+                "UPDATE phpyun_company_job \
+                 SET rec = 1, rec_time = IF(COALESCE(rec_time, 0) > ?, rec_time + ?, ? + ?) \
+                 WHERE id = ? AND uid = ?",
+            )
+            .bind(now)
+            .bind(extra)
+            .bind(now)
+            .bind(extra)
+            .bind(job_id)
+            .bind(uid)
+            .execute(pool)
+            .await?
+        }
+        "urgent" => {
+            sqlx::query(
+                "UPDATE phpyun_company_job \
+                 SET urgent = 1, urgent_time = IF(COALESCE(urgent_time, 0) > ?, urgent_time + ?, ? + ?) \
+                 WHERE id = ? AND uid = ?",
+            )
+            .bind(now)
+            .bind(extra)
+            .bind(now)
+            .bind(extra)
+            .bind(job_id)
+            .bind(uid)
+            .execute(pool)
+            .await?
+        }
+        _ => return Ok(0),
+    };
+    Ok(res.rows_affected())
+}
+
+pub async fn close_member_promote(
+    pool: &MySqlPool,
+    job_id: u64,
+    uid: u64,
+    kind: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = match kind {
+        "top" => {
+            sqlx::query("UPDATE phpyun_company_job SET xsdate = 0 WHERE id = ? AND uid = ?")
+                .bind(job_id)
+                .bind(uid)
+                .execute(pool)
+                .await?
+        }
+        "rec" => {
+            sqlx::query(
+                "UPDATE phpyun_company_job SET rec = 0, rec_time = 0 WHERE id = ? AND uid = ?",
+            )
+            .bind(job_id)
+            .bind(uid)
+            .execute(pool)
+            .await?
+        }
+        "urgent" => {
+            sqlx::query(
+                "UPDATE phpyun_company_job SET urgent = 0, urgent_time = 0 WHERE id = ? AND uid = ?",
+            )
+            .bind(job_id)
+            .bind(uid)
+            .execute(pool)
+            .await?
+        }
+        _ => return Ok(0),
+    };
+    Ok(res.rows_affected())
 }
 
 // ==================== Job hits counter ====================

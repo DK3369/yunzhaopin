@@ -34,6 +34,7 @@
 /v1/mcenter/com-parts/refresh
 /v1/mcenter/com-parts/status
 /v1/mcenter/com-parts/update
+/v1/mcenter/com-stats/today
 /v1/mcenter/comments/delete
 /v1/mcenter/company
 /v1/mcenter/company-addresses
@@ -73,9 +74,14 @@
 /v1/mcenter/company/yqms/cancel
 /v1/mcenter/company/yqms/create
 /v1/mcenter/company/yqms/list
+/v1/mcenter/crm-reports
+/v1/mcenter/crm-reports/delete
+/v1/mcenter/crm-reports/list
 /v1/mcenter/dashboard
 /v1/mcenter/dashboard/year-report
 /v1/mcenter/entrust
+/v1/mcenter/entrust-records/delete
+/v1/mcenter/entrust-records/list
 /v1/mcenter/entrust/delete
 /v1/mcenter/entrust/list
 /v1/mcenter/entrusts
@@ -125,6 +131,9 @@
 /v1/mcenter/jobs/counts
 /v1/mcenter/jobs/detail
 /v1/mcenter/jobs/list
+/v1/mcenter/jobs/promote
+/v1/mcenter/jobs/promote/close
+/v1/mcenter/jobs/promote/quote
 /v1/mcenter/jobs/refresh
 /v1/mcenter/jobs/status
 /v1/mcenter/jobs/update
@@ -154,6 +163,10 @@
 /v1/mcenter/oauth-bindings/unbind
 /v1/mcenter/once-jobs/orders
 /v1/mcenter/once-jobs/orders/cancel
+/v1/mcenter/packs/list
+/v1/mcenter/packs/orders
+/v1/mcenter/packs/orders/mock-paid
+/v1/mcenter/packs/quote
 /v1/mcenter/password
 /v1/mcenter/profile
 /v1/mcenter/profile-views

@@ -214,6 +214,18 @@ impl Modify for UniqueOperationId {
         v1::mcenter::jobs::batch_refresh,
         v1::mcenter::jobs::batch_close,
         v1::mcenter::jobs::batch_delete,
+        v1::mcenter::jobs::promote_quote,
+        v1::mcenter::jobs::promote,
+        v1::mcenter::jobs::promote_close,
+        v1::mcenter::packs::list_packs,
+        v1::mcenter::packs::quote,
+        v1::mcenter::packs::create_order,
+        v1::mcenter::dashboard::today,
+        v1::mcenter::entrust_records::list_mine,
+        v1::mcenter::entrust_records::delete_mine,
+        v1::mcenter::crm_reports::submit,
+        v1::mcenter::crm_reports::list_mine,
+        v1::mcenter::crm_reports::delete_mine,
         // mcenter: apply (jobseeker)
         v1::mcenter::apply::apply_to_job,
         v1::mcenter::apply::list_mine,
@@ -753,6 +765,21 @@ impl Modify for UniqueOperationId {
             v1::mcenter::jobs::SetStatusForm,
             v1::mcenter::jobs::MyJobSummary,
             v1::mcenter::jobs::BatchIdsForm,
+            v1::mcenter::jobs::PromoteQuoteForm,
+            v1::mcenter::jobs::PromoteQuoteView,
+            v1::mcenter::jobs::PromoteForm,
+            v1::mcenter::jobs::PromoteCloseView,
+            v1::mcenter::packs::PackDetailView,
+            v1::mcenter::packs::PackGroupView,
+            v1::mcenter::packs::PackDetailBody,
+            v1::mcenter::packs::PackQuoteView,
+            v1::mcenter::packs::PackOrderForm,
+            v1::mcenter::packs::PackOrderCreated,
+            v1::mcenter::dashboard::DayMetricView,
+            v1::mcenter::dashboard::ComTodayView,
+            v1::mcenter::entrust_records::EntrustRecordView,
+            v1::mcenter::crm_reports::CrmReportForm,
+            v1::mcenter::crm_reports::CrmReportView,
             phpyun_core::dto::BatchResult,
             v1::mcenter::apply::ApplyForm,
             v1::mcenter::apply::ApplyCreated,
@@ -1037,7 +1064,7 @@ pub struct V1Doc;
 
 #[cfg(debug_assertions)]
 #[derive(OpenApi)]
-#[openapi(paths(v1::mcenter::vip::mock_paid))]
+#[openapi(paths(v1::mcenter::vip::mock_paid, v1::mcenter::packs::mock_paid_pack))]
 struct DebugOnlyDoc;
 
 /// Build the environment-appropriate v1 specification. Development-only

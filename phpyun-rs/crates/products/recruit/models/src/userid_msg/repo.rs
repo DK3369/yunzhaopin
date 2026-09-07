@@ -184,6 +184,26 @@ pub async fn count_by_fid(pool: &MySqlPool, fid: u64) -> Result<u64, sqlx::Error
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `zhaopin::getTodayData` 邀请面试 (`fid` + datetime).
+pub async fn count_by_fid_range(
+    pool: &MySqlPool,
+    fid: u64,
+    start: i64,
+    end: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+         WHERE fid = ? AND COALESCE(isdel,9) = 9 \
+           AND datetime >= ? AND datetime <= ?",
+    )
+    .bind(fid)
+    .bind(start)
+    .bind(end)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// PHP `delYqms` for usertype=2: `isdel = 2`.
 pub async fn hide_by_fid(pool: &MySqlPool, id: u64, fid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(

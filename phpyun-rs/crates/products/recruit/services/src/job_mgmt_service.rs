@@ -496,6 +496,9 @@ pub struct JobStateCounts {
     pub pending: u64,
     pub closed: u64,
     pub breakjob_num: i32,
+    pub top_num: i32,
+    pub rec_num: i32,
+    pub urgent_num: i32,
 }
 
 pub async fn counts_by_state(
@@ -510,10 +513,186 @@ pub async fn counts_by_state(
         job_repo::count_own(db, user.uid, Some(2)),
         statis_repo::find_admin(db, user.uid),
     );
+    let st = st?;
     Ok(JobStateCounts {
         online: a?,
         pending: b?,
         closed: c?,
-        breakjob_num: st?.map(|s| s.breakjob_num).unwrap_or(0),
+        breakjob_num: st.as_ref().map(|s| s.breakjob_num).unwrap_or(0),
+        top_num: st.as_ref().map(|s| s.top_num).unwrap_or(0),
+        rec_num: st.as_ref().map(|s| s.rec_num).unwrap_or(0),
+        urgent_num: st.as_ref().map(|s| s.urgent_num).unwrap_or(0),
     })
+}
+
+fn promote_kind(kind: &str) -> AppResult<&'static str> {
+    match kind {
+        "top" => Ok("top"),
+        "rec" => Ok("rec"),
+        "urgent" => Ok("urgent"),
+        _ => Err(ApiError::param_invalid("kind")),
+    }
+}
+
+fn insufficient_key(kind: &str) -> &'static str {
+    match kind {
+        "top" => "common_00207",
+        "rec" => "common_00206",
+        _ => "common_00180",
+    }
+}
+
+fn job_expire_at(job: &Job, kind: &str) -> i64 {
+    match kind {
+        "top" => job.xsdate,
+        "rec" => job.rec_time,
+        "urgent" => job.urgent_time,
+        _ => 0,
+    }
+}
+
+fn job_promote_active(job: &Job, kind: &str, now: i64) -> bool {
+    match kind {
+        "top" => job.xsdate > now,
+        "rec" => job.rec == 1 && job.rec_time > now,
+        "urgent" => job.urgent == 1 && job.urgent_time > now,
+        _ => false,
+    }
+}
+
+fn remain_for(st: &phpyun_models::company_statis::repo::AdminStatisRow, kind: &str) -> i32 {
+    match kind {
+        "top" => st.top_num,
+        "rec" => st.rec_num,
+        "urgent" => st.urgent_num,
+        _ => 0,
+    }
+}
+
+/// PHP `closeJobPromote` leftover days when `tg_back=1`.
+fn leftover_promote_days(expiry: i64, now: i64) -> i32 {
+    if expiry <= now {
+        return 0;
+    }
+    const OFFSET: i64 = 8 * 3600;
+    let local = now + OFFSET;
+    let today_start = (local - local.rem_euclid(86_400)) - OFFSET;
+    let numer = expiry - today_start - 86_400;
+    if numer <= 0 {
+        return 0;
+    }
+    let end_day = (numer + 86_400 - 1) / 86_400;
+    i32::try_from((end_day - 1).max(0)).unwrap_or(0)
+}
+
+pub struct PromoteQuote {
+    pub kind: String,
+    pub remain: i32,
+    pub expire_at: i64,
+    pub active: bool,
+}
+
+pub async fn quote_promote(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    job_id: u64,
+    kind: &str,
+) -> AppResult<PromoteQuote> {
+    user.require_employer()?;
+    let kind = promote_kind(kind)?;
+    let job = job_repo::find_by_id(state.db.reader(), job_id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    let now = clock::now_ts();
+    let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
+    Ok(PromoteQuote {
+        kind: kind.to_string(),
+        remain: st.as_ref().map(|s| remain_for(s, kind)).unwrap_or(0),
+        expire_at: job_expire_at(&job, kind),
+        active: job_promote_active(&job, kind, now),
+    })
+}
+
+pub async fn promote(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    job_id: u64,
+    kind: &str,
+    days: i32,
+    client_ip: &str,
+) -> AppResult<PromoteQuote> {
+    user.require_employer()?;
+    let kind = promote_kind(kind)?;
+    if !(1..=365).contains(&days) {
+        return Err(ApiError::param_invalid("days"));
+    }
+    let job = job_repo::find_by_id(state.db.reader(), job_id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    let st = statis_repo::find_admin(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business(insufficient_key(kind)))?;
+    if remain_for(&st, kind) < days {
+        return Err(ApiError::business(insufficient_key(kind)));
+    }
+    if !statis_repo::try_consume_promote(state.db.pool(), user.uid, kind, days).await? {
+        return Err(ApiError::business(insufficient_key(kind)));
+    }
+    let now = clock::now_ts();
+    let affected =
+        job_repo::apply_member_promote(state.db.pool(), job.id, user.uid, kind, days, now).await?;
+    if affected == 0 {
+        let _ = statis_repo::add_promote_num(state.db.pool(), user.uid, kind, days).await;
+        return Err(ApiError::business("job_not_found"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("job.promote", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("job:{job_id}"))
+            .meta(&serde_json::json!({ "kind": kind, "days": days })),
+    )
+    .await;
+    quote_promote(state, user, job_id, kind).await
+}
+
+pub struct PromoteCloseResult {
+    pub refunded: i32,
+}
+
+pub async fn close_promote(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    job_id: u64,
+    kind: &str,
+    client_ip: &str,
+) -> AppResult<PromoteCloseResult> {
+    user.require_employer()?;
+    let kind = promote_kind(kind)?;
+    let job = job_repo::find_by_id(state.db.reader(), job_id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    let now = clock::now_ts();
+    let refund = if setting_on(state, "tg_back").await {
+        leftover_promote_days(job_expire_at(&job, kind), now)
+    } else {
+        0
+    };
+    let affected = job_repo::close_member_promote(state.db.pool(), job.id, user.uid, kind).await?;
+    if affected == 0 {
+        return Err(ApiError::business("job_not_found"));
+    }
+    if refund > 0 {
+        let _ = statis_repo::add_promote_num(state.db.pool(), user.uid, kind, refund).await;
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("job.promote_close", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("job:{job_id}"))
+            .meta(&serde_json::json!({ "kind": kind, "refunded": refund })),
+    )
+    .await;
+    Ok(PromoteCloseResult { refunded: refund })
 }

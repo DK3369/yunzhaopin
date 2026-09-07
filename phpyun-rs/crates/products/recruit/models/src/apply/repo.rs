@@ -624,3 +624,23 @@ pub async fn count_userid_msg_today(
     .await?;
     Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
+
+/// PHP `zhaopin::getTodayData` 投递简历 (`type <> 3`).
+pub async fn count_by_com_range(
+    pool: &MySqlPool,
+    com_id: u64,
+    start: i64,
+    end: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job \
+         WHERE com_id = ? AND COALESCE(`type`, 0) <> 3 AND isdel = 9 \
+           AND datetime >= ? AND datetime <= ?",
+    )
+    .bind(com_id)
+    .bind(start)
+    .bind(end)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

@@ -14,8 +14,10 @@ pub mod company_hr;
 pub mod company_skin;
 pub mod company_sub;
 pub mod contact_cert;
+pub mod crm_reports;
 pub mod dashboard;
 pub mod entrust;
+pub mod entrust_records;
 pub mod entrust_search;
 pub mod eval;
 pub mod fans;
@@ -34,6 +36,7 @@ pub mod messages;
 pub mod oauth_bindings;
 pub mod once_orders;
 pub mod part;
+pub mod packs;
 pub mod password;
 pub mod profile;
 pub mod qna;
@@ -93,6 +96,7 @@ pub fn router() -> Router<AppState> {
         .merge(resume_other::routes())
         .merge(company::routes())
         .merge(jobs::routes())
+        .merge(packs::routes())
         .merge(look_jobs::routes())
         .merge(look_resumes::routes())
         .merge(job_messages::routes())
@@ -108,6 +112,7 @@ pub fn router() -> Router<AppState> {
         .merge(resume_downloads::routes())
         .merge(feedback::routes())
         .merge(reports::routes())
+        .merge(crm_reports::routes())
         .merge(vip::routes())
         .merge(zph::routes())
         .merge(qna::routes())
@@ -127,6 +132,7 @@ pub fn router() -> Router<AppState> {
         .merge(warnings::routes())
         .merge(broadcasts::routes())
         .merge(entrust::routes())
+        .merge(entrust_records::routes())
         .merge(entrust_search::routes())
         .merge(recommend::routes())
         .merge(activity::routes())

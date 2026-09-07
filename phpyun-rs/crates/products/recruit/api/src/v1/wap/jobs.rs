@@ -251,6 +251,7 @@ pub fn job_summary_from_dict_fav(
         is_urgent,
         rec_time: j.rec_time,
         urgent_time: j.urgent_time,
+        xsdate: j.xsdate,
 
         sdate: j.sdate,
         lastupdate: j.lastupdate,

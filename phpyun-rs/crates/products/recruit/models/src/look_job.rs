@@ -75,6 +75,26 @@ pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::E
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `zhaopin::getTodayData` — 看过我 (`com_id` + `com_status=0`).
+pub async fn count_by_com_range(
+    pool: &MySqlPool,
+    com_uid: u64,
+    start: i64,
+    end: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_look_job \
+         WHERE com_id = ? AND COALESCE(com_status,0) = 0 \
+           AND datetime >= ? AND datetime <= ?",
+    )
+    .bind(com_uid)
+    .bind(start)
+    .bind(end)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn list_by_seeker(
     pool: &MySqlPool,
     uid: u64,

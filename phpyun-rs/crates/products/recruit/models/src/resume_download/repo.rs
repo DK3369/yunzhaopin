@@ -239,3 +239,44 @@ pub async fn count_today_down(
     .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
+
+/// PHP `zhaopin::getTodayData` 下载简历（付费）。
+pub async fn count_down_range(
+    pool: &MySqlPool,
+    com_id: u64,
+    usertype: i32,
+    start: i64,
+    end: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_down_resume \
+         WHERE comid = ? AND usertype = ? AND downtime >= ? AND downtime <= ?",
+    )
+    .bind(com_id)
+    .bind(usertype)
+    .bind(start)
+    .bind(end)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn count_freedown_range(
+    pool: &MySqlPool,
+    com_id: u64,
+    usertype: i32,
+    start: i64,
+    end: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_freedown_resume \
+         WHERE comid = ? AND usertype = ? AND downtime >= ? AND downtime <= ?",
+    )
+    .bind(com_id)
+    .bind(usertype)
+    .bind(start)
+    .bind(end)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

@@ -181,3 +181,90 @@ pub async fn list_mine(
         list: list?,
     })
 }
+
+pub struct CrmReportPage {
+    pub list: Vec<phpyun_models::report::entity::CrmReport>,
+    pub total: u64,
+}
+
+pub async fn submit_crm(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    reason: &str,
+    client_ip: &str,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    let reason = reason.trim();
+    if reason.is_empty() {
+        return Err(ApiError::param_invalid("reason"));
+    }
+    let crm_uid = phpyun_models::company::repo::find_crm_uid(state.db.reader(), user.uid).await?;
+    if crm_uid == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let crm_name = phpyun_models::admin_rbac::repo::find_profile(state.db.reader(), crm_uid)
+        .await?
+        .map(|p| p.1)
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| crm_uid.to_string());
+    let username = phpyun_models::user::repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .map(|m| m.username)
+        .unwrap_or_default();
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:crm-report:uid:{}", user.uid),
+        rate_limit::LimitRule {
+            max: 10,
+            window: Duration::from_secs(600),
+        },
+    )
+    .await?;
+    let id = report_repo::create_crm_report(
+        state.db.pool(),
+        report_repo::CrmReportCreate {
+            p_uid: user.uid,
+            eid: crm_uid,
+            usertype: i32::from(user.usertype),
+            did: user.did,
+            username: &username,
+            r_name: &crm_name,
+            reason,
+        },
+        clock::now_ts(),
+    )
+    .await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("crm_report.submit", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("crm-report:{id}"))
+            .meta(&serde_json::json!({ "eid": crm_uid })),
+    )
+    .await;
+    Ok(id)
+}
+
+pub async fn list_crm(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<CrmReportPage> {
+    user.require_employer()?;
+    let (total, list) = tokio::join!(
+        report_repo::count_crm_by_uid(state.db.reader(), user.uid),
+        report_repo::list_crm_by_uid(state.db.reader(), user.uid, page.offset, page.limit),
+    );
+    Ok(CrmReportPage {
+        total: total?,
+        list: list?,
+    })
+}
+
+pub async fn delete_crm(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<u64> {
+    user.require_employer()?;
+    Ok(report_repo::delete_crm_by_uid(state.db.pool(), user.uid, ids).await?)
+}

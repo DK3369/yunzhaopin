@@ -20,6 +20,19 @@ pub struct ReportReason {
     pub name: String,
 }
 
+/// PHP `phpyun_report.type = 2` 顾问投诉。
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct CrmReport {
+    pub id: u64,
+    pub eid: u64,
+    pub r_name: String,
+    pub username: String,
+    pub r_reason: String,
+    pub result: Option<String>,
+    pub inputtime: i64,
+    pub status: i32,
+}
+
 pub const KIND_JOB: i32 = 1;
 pub const KIND_COMPANY: i32 = 2;
 pub const KIND_RESUME: i32 = 3;
