@@ -17,6 +17,8 @@
     "admin_model_00132": "Job operation failed",
     "model_00008": "Failed to query job information",
     "wap_01715": "Set failed!",
+    "wap_js_00054": "Name already exists!",
+    "admin_system_00137": "Add failed!",
     "member_user_00603": "Edit failed!",
     "common_00982": "Remaining refresh package quota is insufficient for reservation",
     "common_01177": "Scheduled refresh is not enabled",
@@ -440,7 +442,16 @@
     "common_06572": "Restore Data successful!",
     "admin_01458": "Recycle Bin Clear Already!",
     "admin_user_00047": "Operation Platform",
-    "member_user_00163": "Mobile"
+    "member_user_00163": "Mobile",
+    "admin_user_00054": "Company settings configuration updated successfully!",
+    "admin_user_00055": "Member avatar configuration set successfully!",
+    "admin_user_00056": "Consumption settings configuration updated successfully!",
+    "admin_user_00097": "Individual consumption settings configuration updated successfully",
+    "admin_user_00099": "Individual settings configuration updated successfully",
+    "admin_model_00001": "Order contract image (ID:%{id}) added successfully!",
+    "admin_model_00002": "Order contract image (ID:%{id}) deleted successfully!",
+    "admin_model_00161": "Company value-added service (ID:%{id}) name updated successfully",
+    "model_00021": "Recharge record (ID:"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

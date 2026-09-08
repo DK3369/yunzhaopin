@@ -473,6 +473,8 @@ pub struct PhpOrderFilter<'a> {
     pub time_min: Option<i64>,
     pub time_max: Option<i64>,
     pub ids: Option<&'a [u64]>,
+    pub sort: Option<&'a str>,
+    pub dir: Option<&'a str>,
 }
 
 const PHP_ORDER_FIELDS: &str = "\
@@ -566,7 +568,18 @@ pub async fn php_list_orders(
 ) -> Result<Vec<PhpOrderRow>, sqlx::Error> {
     let mut qb = QueryBuilder::new(format!("SELECT {PHP_ORDER_FIELDS}"));
     push_php_order_where(&mut qb, f);
-    qb.push(" ORDER BY o.id DESC LIMIT ");
+    let col = match f.sort.map(str::trim) {
+        Some("order_time") => "o.order_time",
+        Some("order_price") => "o.order_price",
+        Some("order_state") => "o.order_state",
+        _ => "o.id",
+    };
+    let dir = if f.dir.is_some_and(|s| s.eq_ignore_ascii_case("asc")) {
+        "ASC"
+    } else {
+        "DESC"
+    };
+    qb.push(format!(" ORDER BY {col} {dir} LIMIT "));
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -756,6 +769,85 @@ pub async fn find_company_uids_like(
     .fetch_all(pool)
     .await?;
     Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct OrderHtPicRow {
+    pub id: u64,
+    pub order_id: u64,
+    pub picurl: String,
+    pub ctime: i64,
+}
+
+pub async fn list_order_ht_pics(
+    pool: &MySqlPool,
+    order_id: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<OrderHtPicRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(order_id,0) AS UNSIGNED) AS order_id, \
+         COALESCE(picurl,'') AS picurl, CAST(COALESCE(ctime,0) AS SIGNED) AS ctime \
+         FROM phpyun_order_ht_pic WHERE order_id = ? ORDER BY id DESC LIMIT ? OFFSET ?",
+    )
+    .bind(order_id)
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn count_order_ht_pics(pool: &MySqlPool, order_id: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_order_ht_pic WHERE order_id = ?")
+            .bind(order_id)
+            .fetch_one(pool)
+            .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn insert_order_ht_pics(
+    pool: &MySqlPool,
+    order_id: u64,
+    pics: &[String],
+    ctime: i64,
+) -> Result<u64, sqlx::Error> {
+    if pics.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("INSERT INTO phpyun_order_ht_pic (order_id, picurl, ctime) VALUES ");
+    let mut first = true;
+    for pic in pics {
+        let pic = pic.trim();
+        if pic.is_empty() {
+            continue;
+        }
+        if !first {
+            qb.push(", ");
+        }
+        first = false;
+        qb.push("(");
+        qb.push_bind(order_id);
+        qb.push(", ");
+        qb.push_bind(pic);
+        qb.push(", ");
+        qb.push_bind(ctime);
+        qb.push(")");
+    }
+    if first {
+        return Ok(0);
+    }
+    Ok(qb.build().execute(pool).await?.last_insert_id())
+}
+
+pub async fn delete_order_ht_pic(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("DELETE FROM phpyun_order_ht_pic WHERE id = ?")
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
 }
 
 #[cfg(test)]

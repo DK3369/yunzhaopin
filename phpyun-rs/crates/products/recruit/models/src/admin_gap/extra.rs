@@ -782,6 +782,37 @@ pub async fn upsert_rating_service(
     )
 }
 
+pub async fn count_rating_service_name(
+    pool: &MySqlPool,
+    name: &str,
+    except_id: u64,
+) -> Result<u64, sqlx::Error> {
+    let sql = format!(
+        "SELECT COUNT(*) FROM phpyun_company_service WHERE name = ? AND id <> ? AND {PREDICATE}"
+    );
+    let (n,): (i64,) = sqlx::query_as(&sql)
+        .bind(name)
+        .bind(except_id)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn rename_rating_service(
+    pool: &MySqlPool,
+    id: u64,
+    name: &str,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_company_service SET name = ? WHERE id = ?")
+            .bind(name)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
 pub async fn set_rating_service_display(
     pool: &MySqlPool,
     id: u64,

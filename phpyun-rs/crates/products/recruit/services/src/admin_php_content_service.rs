@@ -34,6 +34,7 @@ use phpyun_models::resume::expect as expect_repo;
 use phpyun_models::resume::other as other_repo;
 use phpyun_models::resume::project as project_repo;
 use phpyun_models::resume::repo as resume_repo;
+use phpyun_models::recycle_bin::php_repo as recycle_php;
 use phpyun_models::resume::skill as skill_repo;
 use phpyun_models::site_page::repo as site_page_repo;
 use phpyun_models::site_setting::repo as setting_repo;
@@ -139,11 +140,19 @@ pub async fn dispatch(
         ("finance-order", "edit") => Ok(PhpOut::Data(finance_order_edit(state, body).await?)),
         ("finance-order", "save") => finance_order_save(state, body).await,
         ("finance-order", "setpay") => finance_order_setpay(state, body).await,
-        ("finance-order", "delete") => finance_order_del(state, body).await,
+        ("finance-order", "delete") => finance_order_del(state, user, body).await,
         ("finance-order", "xls") => Ok(PhpOut::Data(finance_order_xls(state, body).await?)),
+        ("finance-order", "upload") => Ok(PhpOut::Data(finance_order_upload(state, body).await?)),
         ("finance-order", "multiupload") => Err(ApiError::business("upload_not_supported")),
-        ("finance-order", "uploadsave") => Err(ApiError::business("upload_not_supported")),
-        ("finance-order", "htpic_del") => Err(ApiError::business("upload_not_supported")),
+        ("finance-order", "uploadsave") => finance_order_uploadsave(state, body).await,
+        ("finance-order", "htpic_del") => finance_order_htpic_del(state, body).await,
+        ("comset", "logo") => comset_logo(state, user, body).await,
+        ("comset", "rating") => Ok(PhpOut::Data(comset_rating(state, body).await?)),
+        ("comset", "comspend") => Ok(PhpOut::Data(comset_comspend(state).await?)),
+        ("userset", "userspend") => Ok(PhpOut::Data(userset_userspend(state).await?)),
+        ("rating", "ajax") => rating_ajax(state, body).await,
+        ("rating", "zzData") => Ok(PhpOut::Data(rating_zz_data(state).await?)),
+        ("rating", "edittc") => Ok(PhpOut::Data(rating_edittc(state, body).await?)),
         ("finance-pay", "index") => Ok(PhpOut::Data(finance_pay_index(state, body).await?)),
         ("finance-pay", "delete") => finance_pay_del(state, body).await,
         ("finance-recharge", "index") => Ok(PhpOut::Data(finance_recharge_index(state).await?)),
@@ -358,6 +367,26 @@ fn json_str(v: &Value, key: &str) -> String {
         Some(Value::String(s)) => s.trim().to_string(),
         Some(Value::Number(n)) => n.to_string(),
         _ => String::new(),
+    }
+}
+
+fn json_str_list(v: &Value, key: &str) -> Vec<String> {
+    match v.get(key) {
+        Some(Value::Array(a)) => a
+            .iter()
+            .map(|x| match x {
+                Value::String(s) => s.trim().to_string(),
+                Value::Number(n) => n.to_string(),
+                _ => String::new(),
+            })
+            .filter(|s| !s.is_empty())
+            .collect(),
+        Some(Value::String(s)) => s
+            .split([',', ';'])
+            .map(|x| x.trim().to_string())
+            .filter(|x| !x.is_empty())
+            .collect(),
+        _ => Vec::new(),
     }
 }
 
@@ -2707,6 +2736,7 @@ fn finance_order_json(r: &vip_repo::PhpOrderRow) -> Value {
         "order_type": r.order_type,
         "order_type_n": pay_name(&r.order_type),
         "order_time": fmt_dt(r.order_time),
+        "order_time_n": fmt_dt(r.order_time),
         "order_time_ymd": fmt_dt(r.order_time),
         "once_id": r.once_id,
         "crm_uid": r.crm_uid,
@@ -2726,9 +2756,16 @@ fn new_dingdan(now: i64) -> String {
 }
 
 async fn finance_order_query(state: &AppState, body: &Value) -> AppResult<OrderQ> {
-    let typezf = json_str(body, "typezf");
+    let mut typezf = json_str(body, "typezf");
+    if typezf.is_empty() {
+        typezf = json_str(body, "order_type");
+    }
     let order_id_kw = json_str(body, "keyword");
-    let typeca = json_i32(body, "typeca");
+    let typeca = if body.get("typeca").is_some() {
+        json_i32(body, "typeca")
+    } else {
+        json_i32(body, "type")
+    };
     let mut uid_in = Vec::new();
     let mut order_id_owned = String::new();
     if !order_id_kw.is_empty() {
@@ -2743,16 +2780,28 @@ async fn finance_order_query(state: &AppState, body: &Value) -> AppResult<OrderQ
         }
     }
     let (t0, t1) = json_date_pair(body, "times");
-    let time_min = if t0.is_empty() {
+    let mut time_min = if t0.is_empty() {
         None
     } else {
         Some(parse_date_ts(&t0))
     };
-    let time_max = if t1.is_empty() {
+    let mut time_max = if t1.is_empty() {
         None
     } else {
         Some(parse_date_ts(&t1) + 86_400)
     };
+    let time_days = json_i32(body, "time");
+    if time_min.is_none() && time_days > 0 {
+        time_min = Some(days_ago_ts(time_days));
+    }
+    let start1 = json_str(body, "time_start1");
+    if !start1.is_empty() {
+        time_min = Some(parse_date_ts(&start1));
+    }
+    let end1 = json_str(body, "time_end1");
+    if !end1.is_empty() {
+        time_max = Some(parse_date_ts(&end1) + 86_400);
+    }
     let mut ids = ids_of(body);
     if ids.is_empty() {
         match body.get("uid") {
@@ -2788,6 +2837,8 @@ async fn finance_order_query(state: &AppState, body: &Value) -> AppResult<OrderQ
         time_min,
         time_max,
         ids,
+        sort: json_str(body, "t"),
+        dir: json_str(body, "order"),
     })
 }
 
@@ -2803,6 +2854,8 @@ struct OrderQ {
     time_min: Option<i64>,
     time_max: Option<i64>,
     ids: Vec<u64>,
+    sort: String,
+    dir: String,
 }
 
 fn order_q_filter<'a>(q: &'a OrderQ) -> vip_repo::PhpOrderFilter<'a> {
@@ -2833,6 +2886,16 @@ fn order_q_filter<'a>(q: &'a OrderQ) -> vip_repo::PhpOrderFilter<'a> {
             None
         } else {
             Some(q.ids.as_slice())
+        },
+        sort: if q.sort.is_empty() {
+            None
+        } else {
+            Some(q.sort.as_str())
+        },
+        dir: if q.dir.is_empty() {
+            None
+        } else {
+            Some(q.dir.as_str())
         },
     }
 }
@@ -2890,12 +2953,18 @@ async fn finance_order_index(state: &AppState, body: &Value) -> AppResult<Value>
     let total = vip_repo::php_count_orders(db, &f).await?;
     let sum = vip_repo::php_sum_orders(db, &f).await?;
     let list: Vec<Value> = rows.iter().map(finance_order_json).collect();
+    let pricename = setting_repo::find(db, "integral_pricename")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
     Ok(json!({
         "data": list,
+        "list": list,
         "total": total,
         "pageSizes": [10, 20, 50, 100],
         "perPage": per,
         "page": page,
+        "integral_pricename": pricename,
         "orderSum": {
             "orderPriceAll": sum.all_price,
             "orderPayed": sum.payed,
@@ -2914,9 +2983,13 @@ async fn finance_order_edit(state: &AppState, body: &Value) -> AppResult<Value> 
         .await?
         .map(|s| s.value)
         .unwrap_or_default();
+    let (htpics, preview_pics) = order_ht_pics(state, r.id, 0, 500).await?;
+    let row = finance_order_json(&r);
     Ok(json!({
-        "detail": finance_order_json(&r),
-        "htpics": [],
+        "detail": row.clone(),
+        "row": row,
+        "htpics": htpics,
+        "preview_pics": preview_pics,
         "integral_pricename": pricename,
     }))
 }
@@ -2967,13 +3040,41 @@ async fn finance_order_setpay(state: &AppState, body: &Value) -> AppResult<PhpOu
     Ok(PhpOut::Message("ok"))
 }
 
-async fn finance_order_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+async fn finance_order_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
     let ids = ids_of(body);
     if ids.is_empty() {
         return Err(ApiError::business("wap_com_00228"));
     }
-    vip_repo::php_delete_orders(state.db.pool(), &ids).await?;
-    Ok(PhpOut::Message("ok"))
+    let joined = ids.iter().map(u64::to_string).collect::<Vec<_>>().join(",");
+    let ident = md5_hex(&format!("company_order{joined}"));
+    let username = recycle_php::admin_username(state.db.pool(), user.uid)
+        .await
+        .unwrap_or_default();
+    if let Err(e) = recycle_php::archive(
+        state.db.pool(),
+        "company_order",
+        &ids,
+        user.uid,
+        &username,
+        &ident,
+        "/v1/admin/php-content/finance-order/delete",
+    )
+    .await
+    {
+        tracing::warn!(error = %e, "recycle snapshot skipped for company_order");
+    }
+    let n = vip_repo::php_delete_orders(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    let lang = i18n::current_lang();
+    let msg = format!(
+        "{}{}{}",
+        i18n::t("messages.model_00021", lang),
+        joined,
+        i18n::t("messages.model_00112", lang),
+    );
+    Ok(PhpOut::Text("admin_user_00187", msg))
 }
 
 async fn finance_order_xls(state: &AppState, body: &Value) -> AppResult<Value> {
@@ -3020,6 +3121,256 @@ fn csv_cell(s: &str) -> String {
         format!("\"{}\"", s.replace('"', "\"\""))
     } else {
         s.to_string()
+    }
+}
+
+fn csv_arr(s: &str) -> Vec<String> {
+    s.split(',')
+        .map(|x| x.trim().to_string())
+        .filter(|x| !x.is_empty())
+        .collect()
+}
+
+fn rating_opt_json(id: i32, name: &str) -> Value {
+    json!({ "id": id.to_string(), "name": name })
+}
+
+async fn order_ht_pics(
+    state: &AppState,
+    order_id: u64,
+    offset: u64,
+    limit: u64,
+) -> AppResult<(Vec<Value>, Vec<String>)> {
+    let cfg = settings_hash(state).await?;
+    let rows = vip_repo::list_order_ht_pics(state.db.reader(), order_id, offset, limit).await?;
+    let mut list = Vec::new();
+    let mut pics = Vec::new();
+    for r in rows {
+        let pic_n = checkpic_url(&cfg, &r.picurl);
+        if !pic_n.is_empty() {
+            pics.push(pic_n.clone());
+        }
+        list.push(json!({
+            "id": r.id,
+            "order_id": r.order_id,
+            "picurl": r.picurl,
+            "pic_n": pic_n,
+            "ctime": r.ctime,
+        }));
+    }
+    Ok((list, pics))
+}
+
+async fn finance_order_upload(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let (page, per, offset, limit) = page_of(body);
+    let row = match vip_repo::php_find_order(state.db.reader(), id).await? {
+        Some(r) => finance_order_json(&r),
+        None => json!({}),
+    };
+    let total = vip_repo::count_order_ht_pics(state.db.reader(), id).await?;
+    let (list, pics) = order_ht_pics(state, id, offset, limit).await?;
+    Ok(json!({
+        "row": row,
+        "list": list,
+        "pics": pics,
+        "total": total,
+        "perPage": per,
+        "page": page,
+        "pageSizes": [10, 20, 50, 100],
+    }))
+}
+
+async fn finance_order_uploadsave(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let order_id = json_u64(body, "order_id");
+    if order_id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let pics = json_str_list(body, "picurl");
+    if pics.is_empty() {
+        return Err(ApiError::business("admin_system_00137"));
+    }
+    let nid = vip_repo::insert_order_ht_pics(state.db.pool(), order_id, &pics, clock::now_ts()).await?;
+    if nid == 0 {
+        return Err(ApiError::business("admin_system_00137"));
+    }
+    let lang = i18n::current_lang();
+    let id_s = nid.to_string();
+    Ok(PhpOut::Text(
+        "admin_model_00001",
+        i18n::t_args("messages.admin_model_00001", lang, &[("id", &id_s)]),
+    ))
+}
+
+async fn finance_order_htpic_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "delid");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let n = vip_repo::delete_order_ht_pic(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    let lang = i18n::current_lang();
+    let id_s = id.to_string();
+    Ok(PhpOut::Text(
+        "admin_model_00002",
+        i18n::t_args("messages.admin_model_00002", lang, &[("id", &id_s)]),
+    ))
+}
+
+fn cfg_pick(cfg: &HashMap<String, String>, key: &str) -> String {
+    cfg.get(key).cloned().unwrap_or_default()
+}
+
+fn strip_site_url(cfg: &HashMap<String, String>, url: &str) -> String {
+    let mut s = url.trim().to_string();
+    for k in ["sy_ossurl", "sy_weburl"] {
+        let Some(raw) = cfg.get(k).map(|x| x.trim()).filter(|x| !x.is_empty()) else {
+            continue;
+        };
+        let base = raw.trim_end_matches('/');
+        if s.starts_with(base) {
+            s = s[base.len()..].trim_start_matches('/').to_string();
+        }
+    }
+    s
+}
+
+async fn comset_logo(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let cfg = settings_hash(state).await?;
+    if body.get("submit").is_some() || body.get("sy_unit_icon").is_some() {
+        for key in ["sy_unit_icon", "sy_guwen", "sy_banner", "sy_member_ewm"] {
+            if body.get(key).is_some() {
+                let val = strip_site_url(&cfg, &json_str(body, key));
+                upsert_cfg(state, user, key, &val).await?;
+            }
+        }
+        return Ok(PhpOut::Message("admin_user_00055"));
+    }
+    Ok(PhpOut::Data(json!({
+        "config": {
+            "sy_unit_icon": checkpic_url(&cfg, &cfg_pick(&cfg, "sy_unit_icon")),
+            "sy_guwen": checkpic_url(&cfg, &cfg_pick(&cfg, "sy_guwen")),
+            "sy_banner": checkpic_url(&cfg, &cfg_pick(&cfg, "sy_banner")),
+            "sy_member_ewm": checkpic_url(&cfg, &cfg_pick(&cfg, "sy_member_ewm")),
+        }
+    })))
+}
+
+async fn comset_rating(state: &AppState, body: &Value) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    let need = json_str(body, "need");
+    let mut config = json!({});
+    if need == "all" || need.is_empty() {
+        config = json!({
+            "integral_pricename": cfg_pick(&cfg, "integral_pricename"),
+            "com_vip_type": cfg_pick(&cfg, "com_vip_type"),
+            "com_integral_online": cfg_pick(&cfg, "com_integral_online"),
+            "com_single_can": csv_arr(&cfg_pick(&cfg, "com_single_can")),
+            "sy_only_price": csv_arr(&cfg_pick(&cfg, "sy_only_price")),
+            "tg_back": cfg_pick(&cfg, "tg_back"),
+            "rating_add": csv_arr(&cfg_pick(&cfg, "rating_add")),
+            "job_ms_rating": csv_arr(&cfg_pick(&cfg, "job_ms_rating")),
+            "com_package_open": csv_arr(&cfg_pick(&cfg, "com_package_open")),
+            "com_rating": cfg_pick(&cfg, "com_rating"),
+            "com_vip_done": cfg_pick(&cfg, "com_vip_done"),
+        });
+    }
+    let rows = company_repo::list_rating_options(state.db.reader()).await?;
+    let qy_rows: Vec<Value> = rows
+        .iter()
+        .map(|r| rating_opt_json(r.id, &r.name))
+        .collect();
+    let mut tc_package = qy_rows.clone();
+    tc_package.push(json!({ "id": "999", "name": "admin_user_company_00297" }));
+    Ok(json!({
+        "config": config,
+        "qy_rows": qy_rows,
+        "tcPackage": tc_package,
+    }))
+}
+
+async fn comset_comspend(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    let mut data = Vec::new();
+    for part in cfg_pick(&cfg, "integral_down_resume_dayprice").split(':') {
+        let part = part.trim();
+        if part.is_empty() {
+            continue;
+        }
+        let mut it = part.splitn(2, '_');
+        let days = it.next().unwrap_or("").trim();
+        let price = it.next().unwrap_or("").trim();
+        if days.is_empty() {
+            continue;
+        }
+        data.push(json!({ "days": days, "price": price }));
+    }
+    Ok(json!({
+        "config": {
+            "integral_pricename": cfg_pick(&cfg, "integral_pricename"),
+            "integral_proportion": cfg_pick(&cfg, "integral_proportion"),
+            "integral_priceunit": cfg_pick(&cfg, "integral_priceunit"),
+            "integral_job": cfg_pick(&cfg, "integral_job"),
+            "integral_down_resume": cfg_pick(&cfg, "integral_down_resume"),
+            "integral_interview": cfg_pick(&cfg, "integral_interview"),
+            "integral_jobefresh": cfg_pick(&cfg, "integral_jobefresh"),
+            "com_urgent": cfg_pick(&cfg, "com_urgent"),
+            "integral_job_top": cfg_pick(&cfg, "integral_job_top"),
+            "com_recjob": cfg_pick(&cfg, "com_recjob"),
+            "job_auto": cfg_pick(&cfg, "job_auto"),
+        },
+        "data": data,
+    }))
+}
+
+async fn userset_userspend(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    Ok(json!({
+        "config": {
+            "integral_resume_top": cfg_pick(&cfg, "integral_resume_top"),
+            "pay_trust_resume": cfg_pick(&cfg, "pay_trust_resume"),
+        }
+    }))
+}
+
+async fn rating_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let name = json_str(body, "name");
+    if id == 0 || name.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let n = gap_extra::count_rating_service_name(state.db.reader(), &name, id).await?;
+    if n > 0 {
+        return Err(ApiError::business("wap_js_00054"));
+    }
+    gap_extra::rename_rating_service(state.db.pool(), id, &name).await?;
+    let lang = i18n::current_lang();
+    let id_s = id.to_string();
+    Ok(PhpOut::Text(
+        "admin_model_00161",
+        i18n::t_args("messages.admin_model_00161", lang, &[("id", &id_s)]),
+    ))
+}
+
+async fn rating_zz_data(state: &AppState) -> AppResult<Value> {
+    let list = gap_extra::list_rating_services(state.db.reader()).await?;
+    let zzlist: Vec<Value> = list
+        .into_iter()
+        .map(|s| json!({ "id": s.id, "name": s.name, "display": s.display, "sort": s.sort }))
+        .collect();
+    Ok(json!({ "config": {}, "zzlist": zzlist }))
+}
+
+async fn rating_edittc(state: &AppState, body: &Value) -> AppResult<Value> {
+    let tid = json_u64(body, "tid");
+    if tid == 0 {
+        return Ok(json!({}));
+    }
+    match gap_extra::find_rating_detail(state.db.reader(), tid).await? {
+        Some(r) => Ok(serde_json::to_value(r).unwrap_or(json!({}))),
+        None => Ok(json!({})),
     }
 }
 
