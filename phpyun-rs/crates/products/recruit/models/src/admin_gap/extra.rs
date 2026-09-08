@@ -3,7 +3,7 @@
 use super::entity::*;
 use super::repo::{delete_in, lim};
 use crate::soft_delete::{self, PREDICATE};
-use sqlx::{MySqlPool, QueryBuilder};
+use sqlx::{FromRow, MySqlPool, QueryBuilder};
 
 pub fn parse_id_csv(raw: &str) -> Vec<u64> {
     raw.split(|c: char| c == ',' || c == ';' || c.is_whitespace())
@@ -2921,4 +2921,202 @@ pub async fn insert_tuiwen_tasks(
             .push_bind(2);
     });
     Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_get_admin_email(pool: &MySqlPool, id: u64) -> Result<Option<AdminEmailRow>, sqlx::Error> {
+    sqlx::query_as::<_, AdminEmailRow>(
+        "SELECT CAST(id AS UNSIGNED) AS id, \
+                COALESCE(smtpserver,'') AS smtpserver, \
+                COALESCE(smtpuser,'') AS smtpuser, \
+                COALESCE(smtppass,'') AS smtppass, \
+                COALESCE(smtpport,'') AS smtpport, \
+                COALESCE(smtpnick,'') AS smtpnick, \
+                CAST(COALESCE(`default`,0) AS SIGNED) AS default_flag \
+         FROM phpyun_admin_email WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn php_count_default_smtp(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_email WHERE `default` = 1")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_delete_admin_email(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query("DELETE FROM phpyun_admin_email WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?
+        .rows_affected())
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpWxBoundRow {
+    pub uid: u64,
+    pub username: String,
+    pub wxid: String,
+    pub wxbindtime: i64,
+}
+
+fn push_wx_bound_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, keyword: Option<&str>) {
+    qb.push(" FROM phpyun_member WHERE wxid IS NOT NULL AND wxid <> ''");
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+}
+
+pub async fn php_list_wx_bound(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpWxBoundRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(username,'') AS username, \
+         COALESCE(wxid,'') AS wxid, CAST(COALESCE(wxbindtime,0) AS SIGNED) AS wxbindtime",
+    );
+    push_wx_bound_where(&mut qb, keyword);
+    qb.push(" ORDER BY wxbindtime DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_wx_bound(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_wx_bound_where(&mut qb, keyword);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_clear_member_wxids(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_member SET wxid = '', wxbindtime = 0 WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_delete_old_wxqrcodes(pool: &MySqlPool, before: i64) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query("DELETE FROM phpyun_wxqrcode WHERE `time` < ?")
+        .bind(before)
+        .execute(pool)
+        .await?
+        .rows_affected())
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpWxHotKeyRow {
+    pub id: u64,
+    pub key_name: String,
+    pub num: i32,
+    pub wxtime: i64,
+}
+
+pub async fn php_list_wx_hot_keys(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpWxHotKeyRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(key_name,'') AS key_name, \
+         CAST(COALESCE(num,0) AS SIGNED) AS num, CAST(COALESCE(wxtime,0) AS SIGNED) AS wxtime \
+         FROM phpyun_hot_key WHERE COALESCE(deleted,0)=0 AND `type` = 8",
+    );
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND key_name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(" ORDER BY num DESC, id DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_wx_hot_keys(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_hot_key WHERE COALESCE(deleted,0)=0 AND `type` = 8",
+    );
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND key_name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpMemberContact {
+    pub uid: u64,
+    pub email: String,
+    pub moblie: String,
+    pub usertype: i32,
+    pub username: String,
+}
+
+pub async fn php_list_members_by_usertype(
+    pool: &MySqlPool,
+    usertype: i32,
+) -> Result<Vec<PhpMemberContact>, sqlx::Error> {
+    sqlx::query_as::<_, PhpMemberContact>(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(email,'') AS email, COALESCE(moblie,'') AS moblie, \
+         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, COALESCE(username,'') AS username \
+         FROM phpyun_member WHERE usertype = ?",
+    )
+    .bind(usertype)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn php_list_members_by_emails(
+    pool: &MySqlPool,
+    emails: &[String],
+) -> Result<Vec<PhpMemberContact>, sqlx::Error> {
+    if emails.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(email,'') AS email, COALESCE(moblie,'') AS moblie, \
+         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, COALESCE(username,'') AS username \
+         FROM phpyun_member WHERE email IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for e in emails {
+        sep.push_bind(e);
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_list_members_by_mobiles(
+    pool: &MySqlPool,
+    mobiles: &[String],
+) -> Result<Vec<PhpMemberContact>, sqlx::Error> {
+    if mobiles.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(email,'') AS email, COALESCE(moblie,'') AS moblie, \
+         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, COALESCE(username,'') AS username \
+         FROM phpyun_member WHERE moblie IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for m in mobiles {
+        sep.push_bind(m);
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
 }

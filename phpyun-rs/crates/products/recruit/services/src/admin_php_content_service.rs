@@ -416,6 +416,22 @@ pub async fn dispatch(
         ("email-set", "ceshi") => email_set_ceshi(state, body).await,
         ("email-set", "gettpl") => Ok(PhpOut::Data(email_set_gettpl(state, body).await?)),
         ("email-set", "savetpl") => email_set_savetpl(state, body).await,
+        ("email-set", "delconfig") => email_set_delconfig(state, user, body).await,
+        ("email-set", "tplswitch") => Ok(PhpOut::Data(tplswitch_data(state, "email").await?)),
+        ("email-set", "savetplconfig") => email_set_savetplconfig(state, user, body).await,
+        ("message-set", "tplswitch") => Ok(PhpOut::Data(tplswitch_data(state, "msg").await?)),
+        ("message-set", "gettpl") => Ok(PhpOut::Data(email_set_gettpl(state, body).await?)),
+        ("message-set", "savetpl") => message_set_savetpl(state, body).await,
+        ("admin-uc", "index") => Ok(PhpOut::Data(admin_uc_index(state).await?)),
+        ("admin-uc", "ucsave") => admin_uc_save(state, user, body, false).await,
+        ("admin-uc", "pwsave") => admin_uc_save(state, user, body, true).await,
+        ("admin-member", "send") => admin_member_send_email(state, body).await,
+        ("admin-member", "msgsave") => admin_member_send_sms(state, body).await,
+        ("weixinrecord", "clearwx") => weixinrecord_clearwx(state).await,
+        ("weixinrecord", "userbd") => Ok(PhpOut::Data(weixinrecord_userbd(state, body).await?)),
+        ("weixinrecord", "deluser") => weixinrecord_deluser(state, body).await,
+        ("weixinrecord", "keyword") => Ok(PhpOut::Data(weixinrecord_keyword(state, body).await?)),
+        ("weixinrecord", "delkeyword") => weixinrecord_delkeyword(state, user, body).await,
         ("role-user", "index") => Ok(PhpOut::Data(role_user_index(state, body).await?)),
         ("role-user", "save") => role_user_save(state, body).await,
         ("role-user", "delete") => role_user_del(state, user, body).await,
@@ -5742,14 +5758,15 @@ async fn email_set_gettpl(state: &AppState, body: &Value) -> AppResult<Value> {
     } else {
         site_page_repo::find_by_code(state.db.reader(), &name).await?
     };
+    let (tpl_n, tpl_temp) = tpl_meta_of(&name);
     Ok(json!({
         "info": row.map(|r| json!({
             "name": r.code,
             "title": r.title,
             "content": r.content,
         })).unwrap_or(json!({})),
-        "tpl_temp": {},
-        "tpl_n": name,
+        "tpl_temp": tpl_temp,
+        "tpl_n": tpl_n,
     }))
 }
 
@@ -5766,7 +5783,7 @@ async fn email_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut> 
         &content,
     )
     .await?;
-    Ok(PhpOut::Message("ok"))
+    Ok(PhpOut::Message("admin_01462"))
 }
 
 fn kv_obj(pairs: &[(&str, &str)]) -> Value {
@@ -12406,4 +12423,496 @@ async fn domain_list_get_cache(state: &AppState) -> AppResult<Value> {
         "picMaxSize": pic_maxsize,
         "picType": if pic_type.is_empty() { "jpg,png,jpeg,bmp,gif".to_string() } else { pic_type },
     }))
+}
+
+struct PhpTplDef {
+    key: String,
+    name: String,
+    kind: String,
+    config: String,
+    cate: String,
+    vars: serde_json::Map<String, Value>,
+}
+
+fn php_squote_after(block: &str, key: &str) -> String {
+    let needle = format!("'{key}'");
+    let Some(pos) = block.find(&needle) else {
+        return String::new();
+    };
+    let rest = block[pos + needle.len()..].trim_start();
+    let rest = rest.strip_prefix("=>").unwrap_or(rest).trim_start();
+    let rest = rest.strip_prefix('\'').unwrap_or(rest);
+    rest.find('\'').map(|i| rest[..i].to_string()).unwrap_or_default()
+}
+
+fn php_tpl_vars(block: &str) -> serde_json::Map<String, Value> {
+    let mut m = serde_json::Map::new();
+    let mut s = block;
+    while let Some(i) = s.find("'{") {
+        let s2 = &s[i + 1..];
+        let Some(endk) = s2.find('\'') else {
+            break;
+        };
+        let key = &s2[..endk];
+        let rest = s2[endk + 1..].trim_start();
+        let rest = rest.strip_prefix("=>").unwrap_or(rest).trim_start();
+        let rest = rest.strip_prefix('\'').unwrap_or(rest);
+        let Some(j) = rest.find('\'') else {
+            break;
+        };
+        m.insert(key.to_string(), json!(rest[..j]));
+        s = &rest[j + 1..];
+    }
+    m
+}
+
+fn last_php_ident_key(s: &str) -> String {
+    let mut i = s.len();
+    while i > 0 {
+        let Some(p) = s[..i].rfind('\'') else {
+            break;
+        };
+        let Some(p0) = s[..p].rfind('\'') else {
+            break;
+        };
+        let k = &s[p0 + 1..p];
+        if !k.is_empty() && k.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+            return k.to_string();
+        }
+        i = p0;
+    }
+    String::new()
+}
+
+fn split_paren_block(s: &str) -> (&str, &str) {
+    let mut depth = 1i32;
+    for (i, c) in s.char_indices() {
+        match c {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return (&s[..i], &s[i + 1..]);
+                }
+            }
+            _ => {}
+        }
+    }
+    (s, "")
+}
+
+fn parse_arr_tpl() -> Vec<PhpTplDef> {
+    let text = std::fs::read_to_string("/www/wwwroot/zzzz.com/uploads/config/db.tpl.php").unwrap_or_default();
+    let mut out = Vec::new();
+    let mut search = text.as_str();
+    while let Some(arr) = search.find("=> array") {
+        let key = last_php_ident_key(&search[..arr]);
+        let after = search[arr + "=> array".len()..].trim_start();
+        let after = after.strip_prefix('(').unwrap_or(after);
+        let (block, rest) = split_paren_block(after);
+        if !key.is_empty() {
+            let mut vars = php_tpl_vars(block);
+            vars.remove("name");
+            vars.remove("type");
+            vars.remove("config");
+            vars.remove("cate");
+            out.push(PhpTplDef {
+                key,
+                name: php_squote_after(block, "name"),
+                kind: php_squote_after(block, "type"),
+                config: php_squote_after(block, "config"),
+                cate: php_squote_after(block, "cate"),
+                vars,
+            });
+        }
+        search = rest;
+    }
+    out
+}
+
+fn tpl_meta_of(name: &str) -> (String, Value) {
+    for t in parse_arr_tpl() {
+        if t.key == name {
+            return (t.name, Value::Object(t.vars));
+        }
+    }
+    (name.to_string(), json!({}))
+}
+
+async fn tplswitch_data(state: &AppState, kind: &str) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let (user_key, com_key) = if kind == "email" {
+        ("admin_01459", "admin_01460")
+    } else {
+        ("admin_01469", "admin_01470")
+    };
+    let mut public = Vec::new();
+    let mut user = Vec::new();
+    let mut com = Vec::new();
+    for t in parse_arr_tpl() {
+        if t.kind != kind {
+            continue;
+        }
+        let item = json!({
+            "name": t.name,
+            "tpl": t.key,
+            "config_name": t.config,
+            "config_val": cfg_pick(&cfg, &t.config),
+        });
+        match t.cate.as_str() {
+            "user" => user.push(item),
+            "com" => com.push(item),
+            _ => public.push(item),
+        }
+    }
+    Ok(json!({
+        "public": { "name": msg_t("admin_tool_00029"), "configarr": public },
+        "user": { "name": msg_t(user_key), "configarr": user },
+        "com": { "name": msg_t(com_key), "configarr": com },
+    }))
+}
+
+async fn email_set_savetplconfig(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let allowed: std::collections::HashSet<String> = parse_arr_tpl()
+        .into_iter()
+        .filter(|t| t.kind == "email")
+        .map(|t| t.config)
+        .collect();
+    if let Some(obj) = body.as_object() {
+        for (k, v) in obj {
+            if !allowed.contains(k) {
+                continue;
+            }
+            let val = match v {
+                Value::String(s) => s.clone(),
+                Value::Number(n) => n.to_string(),
+                Value::Bool(true) => "1".into(),
+                _ => "2".into(),
+            };
+            upsert_cfg(state, user, k, &val).await?;
+        }
+    }
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("admin_01461"))
+}
+
+async fn email_set_delconfig(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let row = gap_extra::php_get_admin_email(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("wap_00203"))?;
+    if row.default_flag == 1 && gap_extra::php_count_default_smtp(state.db.reader()).await? < 2 {
+        return Err(ApiError::business("admin_tool_00024"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "admin_email",
+        &[id],
+        "/v1/admin/php-content/email-set/delconfig",
+    )
+    .await;
+    let n = gap_extra::php_delete_admin_email(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00137"));
+    }
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("model_00112"))
+}
+
+async fn message_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let content = json_str(body, "content").replace("amp;nbsp;", "nbsp;");
+    let title = {
+        let t = json_str(body, "title");
+        if t.is_empty() {
+            site_page_repo::find_by_code(state.db.reader(), &name)
+                .await?
+                .map(|r| r.title)
+                .unwrap_or_default()
+        } else {
+            t
+        }
+    };
+    site_page_repo::upsert_content(state.db.pool(), &name, &title, &content).await?;
+    Ok(PhpOut::Message("admin_01471"))
+}
+
+fn json_to_uc_map(body: &Value) -> serde_json::Map<String, Value> {
+    let mut m = serde_json::Map::new();
+    if let Some(obj) = body.as_object() {
+        for (k, v) in obj {
+            if k == "sy_uc_type" || k == "sy_pw_type" || k == "m" || k == "c" || k == "a" {
+                continue;
+            }
+            if k.starts_with("UC_") {
+                m.insert(k.clone(), json!(match v {
+                    Value::String(s) => s.clone(),
+                    Value::Number(n) => n.to_string(),
+                    _ => String::new(),
+                }));
+            }
+        }
+    }
+    m
+}
+
+async fn admin_uc_index(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let ucinfo = serde_json::from_str::<Value>(&cfg_pick(&cfg, "sy_uc_info")).unwrap_or(json!({}));
+    let pw_ucinfo = serde_json::from_str::<Value>(&cfg_pick(&cfg, "sy_pw_info")).unwrap_or(json!({}));
+    Ok(json!({
+        "ucinfo": ucinfo,
+        "pw_ucinfo": pw_ucinfo,
+        "config": {
+            "sy_uc_type": cfg_pick(&cfg, "sy_uc_type"),
+            "sy_pw_type": cfg_pick(&cfg, "sy_pw_type"),
+        }
+    }))
+}
+
+async fn admin_uc_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+    pw: bool,
+) -> AppResult<PhpOut> {
+    let info = Value::Object(json_to_uc_map(body));
+    if pw {
+        upsert_cfg(state, user, "sy_pw_type", &json_str(body, "sy_pw_type")).await?;
+        upsert_cfg(state, user, "sy_pw_info", &info.to_string()).await?;
+        upsert_cfg(state, user, "sy_uc_type", "").await?;
+    } else {
+        upsert_cfg(state, user, "sy_uc_type", &json_str(body, "sy_uc_type")).await?;
+        upsert_cfg(state, user, "sy_uc_info", &info.to_string()).await?;
+    }
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("wap_user_00104"))
+}
+
+fn split_csv(raw: &str) -> Vec<String> {
+    raw.split([',', ';', '\n'])
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect()
+}
+
+async fn admin_member_send_email(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let title = json_str(body, "email_title");
+    let content = json_str(body, "content");
+    if title.is_empty() || content.is_empty() {
+        return Err(ApiError::business("admin_user_00007"));
+    }
+    let utype = json_i32(body, "utype");
+    let rows = if utype == 5 {
+        let emails = split_csv(&json_str(body, "email_user"));
+        gap_extra::php_list_members_by_emails(state.db.reader(), &emails).await?
+    } else if utype > 0 {
+        gap_extra::php_list_members_by_usertype(state.db.reader(), utype).await?
+    } else {
+        Vec::new()
+    };
+    let mut targets: Vec<(u64, String)> = rows
+        .into_iter()
+        .filter(|r| r.email.contains('@'))
+        .map(|r| (r.uid, r.email))
+        .collect();
+    targets.sort_by(|a, b| a.0.cmp(&b.0));
+    targets.dedup_by(|a, b| a.0 == b.0);
+    if targets.is_empty() {
+        return Err(ApiError::business("admin_user_00003"));
+    }
+    let limit = json_u64(body, "pagelimit").clamp(1, 100) as usize;
+    let start = json_u64(body, "value") as usize * limit;
+    let now = clock::now_ts();
+    let mut sent = 0u64;
+    for (uid, email) in targets.iter().skip(start).take(limit) {
+        gap_repo::insert_email_log(state.db.pool(), *uid, email, &title, &content, now, 1).await?;
+        let _ = state
+            .events
+            .publish_json(
+                "email.verify_queued",
+                &json!({
+                    "kind": "admin_member_mail",
+                    "uid": uid,
+                    "email": email,
+                    "subject": title,
+                }),
+            )
+            .await;
+        sent += 1;
+    }
+    let _ = sent;
+    Ok(PhpOut::Message("admin_tool_00495"))
+}
+
+async fn admin_member_send_sms(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let open = cfg_pick(&cfg, "sy_msg_isopen");
+    if open != "1" {
+        return Err(ApiError::business("admin_user_00010"));
+    }
+    let content = json_str(body, "content");
+    if content.is_empty() {
+        return Err(ApiError::business("admin_01299"));
+    }
+    let utype = json_i32(body, "utype");
+    if utype == 5 && json_str(body, "userarr").is_empty() {
+        return Err(ApiError::business("wap_00399"));
+    }
+    let rows = if utype == 5 {
+        let mobiles = split_csv(&json_str(body, "userarr"));
+        gap_extra::php_list_members_by_mobiles(state.db.reader(), &mobiles).await?
+    } else if utype > 0 {
+        gap_extra::php_list_members_by_usertype(state.db.reader(), utype).await?
+    } else {
+        Vec::new()
+    };
+    let mut targets: Vec<(u64, String)> = rows
+        .into_iter()
+        .filter(|r| !r.moblie.trim().is_empty())
+        .map(|r| (r.uid, r.moblie))
+        .collect();
+    if utype == 5 {
+        let known: std::collections::HashSet<String> = targets.iter().map(|(_, m)| m.clone()).collect();
+        for m in split_csv(&json_str(body, "userarr")) {
+            if !known.contains(&m) && m.chars().any(|c| c.is_ascii_digit()) {
+                targets.push((0, m));
+            }
+        }
+    }
+    if targets.is_empty() {
+        return Err(ApiError::business("admin_user_00004"));
+    }
+    let limit = json_u64(body, "pagelimit").clamp(1, 100) as usize;
+    let start = json_u64(body, "value") as usize * limit;
+    let now = clock::now_ts();
+    for (uid, mobile) in targets.iter().skip(start).take(limit) {
+        gap_repo::insert_sms_log(state.db.pool(), *uid, mobile, &content, now, 1).await?;
+        let _ = state
+            .events
+            .publish_json(
+                "sms.admin_queued",
+                &json!({
+                    "kind": "admin_member_sms",
+                    "uid": uid,
+                    "mobile": mobile,
+                }),
+            )
+            .await;
+    }
+    Ok(PhpOut::Message("admin_tool_00495"))
+}
+
+async fn weixinrecord_clearwx(state: &AppState) -> AppResult<PhpOut> {
+    let before = clock::now_ts() - 3 * 86400;
+    let n = gap_extra::php_delete_old_wxqrcodes(state.db.pool(), before).await?;
+    if n > 0 {
+        Ok(PhpOut::Message("admin_tool_00058"))
+    } else {
+        Ok(PhpOut::Message("admin_user_00186"))
+    }
+}
+
+async fn weixinrecord_userbd(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let db = state.db.reader();
+    let total = gap_extra::php_count_wx_bound(db, keyword).await?;
+    let rows = if total > 0 {
+        gap_extra::php_list_wx_bound(db, keyword, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "uid": r.uid,
+                "username": r.username,
+                "wxid": r.wxid,
+                "wxbindtime": r.wxbindtime,
+                "wxbindtime_n": if r.wxbindtime > 0 { fmt_dt(r.wxbindtime) } else { String::new() },
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn weixinrecord_deluser(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::business("admin_tool_00055"));
+    }
+    let n = gap_extra::php_clear_member_wxids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_tool_00055"));
+    }
+    Ok(PhpOut::Message("admin_01379"))
+}
+
+async fn weixinrecord_keyword(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let db = state.db.reader();
+    let total = gap_extra::php_count_wx_hot_keys(db, keyword).await?;
+    let rows = if total > 0 {
+        gap_extra::php_list_wx_hot_keys(db, keyword, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "key_name": r.key_name,
+                "num": r.num,
+                "wxtime": r.wxtime,
+                "wxtime_n": if r.wxtime > 0 { fmt_dt(r.wxtime) } else { String::new() },
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn weixinrecord_delkeyword(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_00203"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "hot_key",
+        &ids,
+        "/v1/admin/php-content/weixinrecord/delkeyword",
+    )
+    .await;
+    let n = gap_repo::delete_hot_keys(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00137"));
+    }
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("model_00112"))
 }
