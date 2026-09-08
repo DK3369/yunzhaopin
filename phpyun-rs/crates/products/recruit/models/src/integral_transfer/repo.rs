@@ -501,6 +501,52 @@ pub async fn php_insert_pay(
     Ok(res.last_insert_id())
 }
 
+/// PHP `companyorder::getCompanyPayNum` by `com_id` + `pay_remark`.
+pub async fn count_by_remark(
+    pool: &MySqlPool,
+    uid: u64,
+    remark: &str,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_pay WHERE com_id = ? AND pay_remark = ?",
+    )
+    .bind(uid)
+    .bind(remark)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// Same ledger insert as [`php_insert_pay`], with PHP `pay_type` (redeem refunds use 24).
+pub async fn php_insert_pay_typed(
+    pool: &MySqlPool,
+    order_id: &str,
+    price: &str,
+    now: i64,
+    uid: u64,
+    remark: &str,
+    kind: i32,
+    usertype: i32,
+    pay_type: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_pay \
+         (order_id, order_price, pay_time, pay_state, com_id, pay_remark, `type`, pay_type, did, eid, usertype, coupon_id) \
+         VALUES (?, ?, ?, 2, ?, ?, ?, ?, 0, 0, ?, 0)",
+    )
+    .bind(order_id)
+    .bind(price)
+    .bind(now)
+    .bind(uid)
+    .bind(remark)
+    .bind(kind)
+    .bind(pay_type)
+    .bind(usertype)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

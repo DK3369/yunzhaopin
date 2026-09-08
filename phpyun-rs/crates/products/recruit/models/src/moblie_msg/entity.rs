@@ -17,4 +17,6 @@ pub struct MoblieMsg {
     pub ip: String,
     pub del: i32,
     pub msgtype: i32,
+    pub port: i32,
+    pub location: String,
 }

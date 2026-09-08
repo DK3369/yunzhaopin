@@ -22,7 +22,10 @@ use phpyun_models::category::repo as cat_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::description::repo as desc_repo;
 use phpyun_models::domain::repo as domain_repo;
+use phpyun_models::email_msg::repo as email_msg_repo;
+use phpyun_models::friend_link::repo as friend_link_repo;
 use phpyun_models::gongzhao::repo as gongzhao_repo;
+use phpyun_models::moblie_msg::repo as moblie_msg_repo;
 use phpyun_models::interview_template::repo as yqmb_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::member_logout::repo as logout_repo;
@@ -40,7 +43,9 @@ use phpyun_models::site_page::repo as site_page_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::special::repo as special_repo;
 use phpyun_models::tiny::repo as tiny_repo;
+use phpyun_models::redeem::repo as redeem_repo;
 use phpyun_models::user::repo as user_repo;
+use phpyun_models::warning::repo as warning_repo;
 use phpyun_models::wx_nav::repo as wx_nav_repo;
 use phpyun_models::zph::repo as zph_repo;
 use serde_json::{json, Value};
@@ -49,6 +54,8 @@ use crate::admin_cms_service;
 use crate::admin_longtail_service;
 use crate::description_service;
 use crate::dict_service;
+use crate::friend_link_service;
+use crate::redeem_service;
 use crate::site_setting_service;
 use crate::wechat_api_service;
 use uuid::Uuid;
@@ -153,6 +160,39 @@ pub async fn dispatch(
         ("rating", "ajax") => rating_ajax(state, body).await,
         ("rating", "zzData") => Ok(PhpOut::Data(rating_zz_data(state).await?)),
         ("rating", "edittc") => Ok(PhpOut::Data(rating_edittc(state, body).await?)),
+        ("email-log", "index") => Ok(PhpOut::Data(email_log_index(state, body).await?)),
+        ("email-log", "delete") => email_log_del(state, user, body).await,
+        ("email-log", "repeat") => email_log_repeat(state, body).await,
+        ("sms-log", "index") => Ok(PhpOut::Data(sms_log_index(state, body).await?)),
+        ("sms-log", "delete") => sms_log_del(state, user, body).await,
+        ("sms-log", "repeat") => sms_log_repeat(state, body).await,
+        ("warning", "index") => Ok(PhpOut::Data(warning_index(state, body).await?)),
+        ("warning", "delete") => warning_del(state, user, body).await,
+        ("warning", "getWarningConfig") => Ok(PhpOut::Data(warning_get_config(state).await?)),
+        ("warning", "config") => warning_config_save(state, user, body).await,
+        ("cron-log", "index") => Ok(PhpOut::Data(cron_log_index(state, body).await?)),
+        ("cron-log", "delete") => cron_log_del(state, user, body).await,
+        ("shop-reward", "index") => Ok(PhpOut::Data(shop_reward_index(state, body).await?)),
+        ("shop-reward", "rec") => shop_reward_flag(state, user, body, true).await,
+        ("shop-reward", "hot") => shop_reward_flag(state, user, body, false).await,
+        ("shop-reward", "getclass") => Ok(PhpOut::Data(shop_reward_getclass(state, body).await?)),
+        ("shop-reward", "add") => shop_reward_add(state, user, body).await,
+        ("shop-reward", "status") => shop_reward_status(state, user, body).await,
+        ("shop-reward", "delete") => shop_reward_del(state, user, body).await,
+        ("shop-class", "index") => Ok(PhpOut::Data(shop_class_index(state).await?)),
+        ("shop-class", "up") => Ok(PhpOut::Data(shop_class_up(state, body).await?)),
+        ("shop-class", "ajax") => shop_class_ajax(state, user, body).await,
+        ("shop-class", "save") => shop_class_save(state, user, body).await,
+        ("shop-class", "delete") => shop_class_del(state, user, body).await,
+        ("shop-list", "index") => Ok(PhpOut::Data(shop_list_index(state, body).await?)),
+        ("shop-list", "status") => shop_list_status(state, user, body).await,
+        ("shop-list", "delete") => shop_list_del(state, user, body).await,
+        ("friend-link", "getInfo") => Ok(PhpOut::Data(friend_link_get_info(state, body).await?)),
+        ("friend-link", "sitedid") => friend_link_sitedid(state, body).await,
+        ("friend-link", "index") => Ok(PhpOut::Data(friend_link_index(state, body).await?)),
+        ("friend-link", "status") => friend_link_status(state, body).await,
+        ("friend-link", "delete") => friend_link_del(state, user, body).await,
+        ("friend-link", "save") => friend_link_save(state, body).await,
         ("finance-pay", "index") => Ok(PhpOut::Data(finance_pay_index(state, body).await?)),
         ("finance-pay", "delete") => finance_pay_del(state, body).await,
         ("finance-recharge", "index") => Ok(PhpOut::Data(finance_recharge_index(state).await?)),
@@ -411,6 +451,23 @@ fn json_i64(v: &Value, key: &str) -> i64 {
     match v.get(key) {
         Some(Value::Number(n)) => n.as_i64().unwrap_or(0),
         Some(Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+fn json_ts(v: &Value, key: &str) -> i64 {
+    match v.get(key) {
+        Some(Value::Number(n)) => n
+            .as_i64()
+            .or_else(|| n.as_f64().map(|f| f as i64))
+            .unwrap_or(0),
+        Some(Value::String(s)) => {
+            let s = s.trim();
+            s.parse::<i64>()
+                .ok()
+                .or_else(|| s.parse::<f64>().ok().map(|f| f as i64))
+                .unwrap_or(0)
+        }
         _ => 0,
     }
 }
@@ -1089,7 +1146,10 @@ fn parse_date_ts(s: &str) -> i64 {
 }
 
 fn pic_url(base: &str, pic: &str) -> String {
-    if pic.is_empty() || pic.starts_with("http") {
+    let pic = pic.trim();
+    if pic.is_empty() || pic == "undefined" || pic == "null" {
+        String::new()
+    } else if pic.starts_with("http") {
         pic.to_string()
     } else {
         format!("{}/{}", base.trim_end_matches('/'), pic.trim_start_matches('/'))
@@ -8456,4 +8516,1562 @@ async fn company_add_tuiwen_task(
         return Err(ApiError::business("common_06677"));
     }
     Ok(PhpOut::Message("common_06676"))
+}
+
+fn msg_t(key: &str) -> String {
+    let lang = i18n::current_lang();
+    for prefix in ["messages.", "errors."] {
+        let prefixed = format!("{prefix}{key}");
+        let t = i18n::t(&prefixed, lang);
+        if t != prefixed {
+            return t;
+        }
+    }
+    let t = i18n::t(key, lang);
+    if t != key {
+        t
+    } else {
+        key.to_string()
+    }
+}
+
+fn is_system_sender(kw: &str) -> bool {
+    let kw = kw.trim();
+    kw == "common_02020" || (!kw.is_empty() && kw == msg_t("common_02020"))
+}
+
+fn php_unix_range(body: &Value) -> (Option<i64>, Option<i64>) {
+    let a = json_ts(body, "date1");
+    let b = json_ts(body, "date2");
+    if a > 0 && b > 0 {
+        (Some(a), Some(b + 86_399))
+    } else {
+        (None, None)
+    }
+}
+
+async fn recycle_ids(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    table: &str,
+    ids: &[u64],
+    uri: &str,
+) {
+    let joined = ids.iter().map(u64::to_string).collect::<Vec<_>>().join(",");
+    let ident = md5_hex(&format!("{table}{joined}"));
+    let username = recycle_php::admin_username(state.db.pool(), user.uid)
+        .await
+        .unwrap_or_default();
+    if let Err(e) = recycle_php::archive(
+        state.db.pool(),
+        table,
+        ids,
+        user.uid,
+        &username,
+        &ident,
+        uri,
+    )
+    .await
+    {
+        tracing::warn!(error = %e, table, "recycle snapshot skipped");
+    }
+}
+
+fn del_ids_msg(prefix_key: &str, ids: &[u64]) -> String {
+    format!(
+        "{}{}{}",
+        msg_t(prefix_key),
+        ids.iter().map(u64::to_string).collect::<Vec<_>>().join(","),
+        msg_t("model_00112"),
+    )
+}
+
+async fn resolve_name_uids(state: &AppState, kw: &str) -> AppResult<Vec<u64>> {
+    Ok(gap_extra::find_display_uids_like(state.db.reader(), kw).await?)
+}
+
+async fn email_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let ty = json_i32(body, "type");
+    let mut email_kw = None;
+    let mut smtp_kw = None;
+    let mut cuid_zero = false;
+    let mut uid_zero = false;
+    let cuid_buf = if !kw.is_empty() && ty == 2 && !is_system_sender(&kw) {
+        resolve_name_uids(state, &kw).await?
+    } else {
+        Vec::new()
+    };
+    let uid_buf = if !kw.is_empty() && ty == 3 && !is_system_sender(&kw) {
+        resolve_name_uids(state, &kw).await?
+    } else {
+        Vec::new()
+    };
+    let mut cuid_in = None;
+    let mut uid_in = None;
+    if !kw.is_empty() {
+        match ty {
+            2 => {
+                if is_system_sender(&kw) {
+                    cuid_zero = true;
+                } else {
+                    cuid_in = Some(cuid_buf.as_slice());
+                }
+            }
+            3 => {
+                if is_system_sender(&kw) {
+                    uid_zero = true;
+                } else {
+                    uid_in = Some(uid_buf.as_slice());
+                }
+            }
+            4 => smtp_kw = Some(kw.as_str()),
+            _ => email_kw = Some(kw.as_str()),
+        }
+    }
+    let (time_min, time_max) = php_unix_range(body);
+    let sort = json_str(body, "t");
+    let dir = json_str(body, "order");
+    let f = email_msg_repo::PhpEmailFilter {
+        email_kw,
+        smtp_kw,
+        cuid_zero,
+        uid_zero,
+        cuid_in,
+        uid_in,
+        time_min,
+        time_max,
+        sort: &sort,
+        dir: &dir,
+    };
+    let db = state.db.reader();
+    let rows = email_msg_repo::php_list(db, &f, offset, limit).await?;
+    let total = email_msg_repo::php_count(db, &f).await?;
+    let mut uids = Vec::new();
+    for r in &rows {
+        if r.cuid > 0 {
+            uids.push(r.cuid as u64);
+        }
+        if r.uid > 0 {
+            uids.push(r.uid as u64);
+        }
+    }
+    uids.sort_unstable();
+    uids.dedup();
+    let names = gap_extra::display_names_by_uids(db, &uids).await?;
+    let sys = msg_t("common_02020");
+    let admin = msg_t("wap_user_00361");
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let fname = if r.cuid > 0 {
+                names
+                    .get(&(r.cuid as u64))
+                    .cloned()
+                    .unwrap_or_else(|| r.cname.clone())
+            } else {
+                sys.clone()
+            };
+            let sname = if r.uid > 0 {
+                names.get(&(r.uid as u64)).cloned().unwrap_or_default()
+            } else if r.uid < 0 {
+                admin.clone()
+            } else {
+                String::new()
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "cuid": r.cuid,
+                "email": r.email,
+                "title": r.title,
+                "content": r.content,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "state": r.state,
+                "smtpserver": r.smtpserver,
+                "fname": fname,
+                "sname": sname,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn email_log_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01066"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "email_msg",
+        &ids,
+        "/v1/admin/php-content/email-log/delete",
+    )
+    .await;
+    let n = email_msg_repo::delete_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Text("admin_user_00187", del_ids_msg("model_00244", &ids)))
+}
+
+async fn email_log_repeat(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("admin_tool_00021"));
+    }
+    let rows = email_msg_repo::get_by_ids(state.db.reader(), &ids).await?;
+    let failed: Vec<_> = rows
+        .into_iter()
+        .filter(|r| r.state != 1 && r.del != 1 && r.email.contains('@'))
+        .collect();
+    if failed.is_empty() {
+        return Ok(PhpOut::Message("common_01031"));
+    }
+    let mut ok = 0u32;
+    let mut bad = 0u32;
+    for row in &failed {
+        match state
+            .events
+            .publish_json(
+                "email.verify_queued",
+                &json!({
+                    "kind": "admin_email_repeat",
+                    "id": row.id,
+                    "email": row.email,
+                    "subject": row.title,
+                    "content": row.content,
+                    "repeat": 1,
+                }),
+            )
+            .await
+        {
+            Ok(_) => ok += 1,
+            Err(_) => bad += 1,
+        }
+    }
+    let mut msg = format!("{}{ok}条", msg_t("common_01132"));
+    if bad > 0 {
+        msg.push_str(&format!("，失败：{bad}条"));
+    }
+    Ok(PhpOut::Text("common_01132", msg))
+}
+
+async fn sms_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let ty = json_i32(body, "type");
+    let mut moblie_kw = None;
+    let mut content_kw = None;
+    let mut cuid_zero = false;
+    let mut uid_zero = false;
+    let cuid_buf = if !kw.is_empty() && ty == 2 && !is_system_sender(&kw) {
+        resolve_name_uids(state, &kw).await?
+    } else {
+        Vec::new()
+    };
+    let uid_buf = if !kw.is_empty() && ty == 3 && !is_system_sender(&kw) {
+        resolve_name_uids(state, &kw).await?
+    } else {
+        Vec::new()
+    };
+    let mut cuid_in = None;
+    let mut uid_in = None;
+    if !kw.is_empty() {
+        match ty {
+            2 => {
+                if is_system_sender(&kw) {
+                    cuid_zero = true;
+                } else {
+                    cuid_in = Some(cuid_buf.as_slice());
+                }
+            }
+            3 => {
+                if is_system_sender(&kw) {
+                    uid_zero = true;
+                } else {
+                    uid_in = Some(uid_buf.as_slice());
+                }
+            }
+            4 => content_kw = Some(kw.as_str()),
+            _ => moblie_kw = Some(kw.as_str()),
+        }
+    }
+    let time_days = json_i32(body, "time");
+    let (d1, d2) = php_unix_range(body);
+    let (time_min, time_max) = if time_days > 0 {
+        (
+            Some(if time_days == 1 {
+                clock::start_of_today()
+            } else {
+                days_ago_ts(time_days)
+            }),
+            None,
+        )
+    } else {
+        (d1, d2)
+    };
+    let state_f = match json_i32(body, "state") {
+        1 => Some(0),
+        2 => Some(2),
+        _ => None,
+    };
+    let port = json_present_i32(body, "port");
+    let sort = json_str(body, "t");
+    let dir = json_str(body, "order");
+    let f = moblie_msg_repo::PhpSmsFilter {
+        moblie_kw,
+        content_kw,
+        cuid_zero,
+        uid_zero,
+        cuid_in,
+        uid_in,
+        time_min,
+        time_max,
+        state: state_f,
+        port,
+        sort: &sort,
+        dir: &dir,
+    };
+    let db = state.db.reader();
+    let rows = moblie_msg_repo::php_list(db, &f, offset, limit).await?;
+    let total = moblie_msg_repo::php_count(db, &f).await?;
+    let mut uids = Vec::new();
+    for r in &rows {
+        if r.cuid > 0 {
+            uids.push(r.cuid as u64);
+        }
+        if r.uid > 0 {
+            uids.push(r.uid as u64);
+        }
+    }
+    uids.sort_unstable();
+    uids.dedup();
+    let names = gap_extra::display_names_by_uids(db, &uids).await?;
+    let sys = msg_t("common_02020");
+    let admin = msg_t("wap_user_00361");
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let fname = if r.cuid > 0 {
+                names
+                    .get(&(r.cuid as u64))
+                    .cloned()
+                    .unwrap_or_else(|| r.cname.clone())
+            } else {
+                sys.clone()
+            };
+            let sname = if r.uid > 0 {
+                names.get(&(r.uid as u64)).cloned().unwrap_or_default()
+            } else if r.uid < 0 {
+                admin.clone()
+            } else {
+                String::new()
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "cuid": r.cuid,
+                "moblie": r.moblie,
+                "content": r.content,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "state": r.state,
+                "ip": r.ip,
+                "port": r.port,
+                "port_n": sms_port_n(r.port),
+                "location": r.location,
+                "result": sms_result_n(r.state),
+                "fname": fname,
+                "sname": sname,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+fn sms_port_n(port: i32) -> String {
+    match port {
+        1 => msg_t("member_user_00094"),
+        2 => "WAP".into(),
+        5 => msg_t("wap_js_00101"),
+        7 => msg_t("ajax_00010"),
+        8 => msg_t("wap_00121"),
+        _ => String::new(),
+    }
+}
+
+fn sms_result_n(state: i32) -> String {
+    match state {
+        0 => String::new(),
+        401 => "手机号为空".into(),
+        402 => "短信内容为空".into(),
+        403 => "appKey为空".into(),
+        404 => "appSecret为空".into(),
+        405 => "手机号码格式错误".into(),
+        406 => "禁用手机号".into(),
+        407 => "短信内容含有敏感字词".into(),
+        410 => "短信秘钥认证错误".into(),
+        411 => "网站无有效短信签名".into(),
+        412 => "短信余额不足".into(),
+        413 => "短信发送失败".into(),
+        501 => "检测是空号".into(),
+        502 => "空号检测归属地失败".into(),
+        n => n.to_string(),
+    }
+}
+
+async fn sms_log_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01066"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "moblie_msg",
+        &ids,
+        "/v1/admin/php-content/sms-log/delete",
+    )
+    .await;
+    let n = moblie_msg_repo::delete_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Text("admin_user_00187", del_ids_msg("model_00243", &ids)))
+}
+
+async fn sms_log_repeat(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("admin_tool_00021"));
+    }
+    let rows = moblie_msg_repo::get_by_ids(state.db.reader(), &ids).await?;
+    let failed: Vec<_> = rows
+        .into_iter()
+        .filter(|r| r.state != 0 && r.del != 1 && !r.moblie.is_empty())
+        .collect();
+    if failed.is_empty() {
+        return Ok(PhpOut::Message("common_01031"));
+    }
+    let mut ok = 0u32;
+    let mut bad = 0u32;
+    for row in &failed {
+        match state
+            .events
+            .publish_json(
+                "sms.send_queued",
+                &json!({
+                    "kind": "admin_sms_repeat",
+                    "id": row.id,
+                    "phone": row.moblie,
+                    "content": row.content,
+                }),
+            )
+            .await
+        {
+            Ok(_) => ok += 1,
+            Err(_) => bad += 1,
+        }
+    }
+    let mut msg = format!("{}{ok}条", msg_t("common_01131"));
+    if bad > 0 {
+        msg.push_str(&format!("，失败：{bad}条"));
+    }
+    Ok(PhpOut::Text("common_01131", msg))
+}
+
+fn warn_type_n(kind: i32) -> String {
+    let key = match kind {
+        1 => "wap_com_00028",
+        2 => "wap_00451",
+        3 => "wap_user_00111",
+        4 => "common_01686",
+        5 => "admin_user_00166",
+        6 => "common_06469",
+        7 => "wap_com_00355",
+        8 => "member_com_00032",
+        9 => "common_01800",
+        12 => "common_01239",
+        _ => return String::new(),
+    };
+    msg_t(key)
+}
+
+async fn warning_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let (time_min, time_max) = php_unix_range(body);
+    let f = warning_repo::PhpWarningFilter {
+        status: json_present_i32(body, "status").filter(|n| *n > 0),
+        time_min,
+        time_max,
+    };
+    let db = state.db.reader();
+    let rows = warning_repo::php_list(db, &f, offset, limit).await?;
+    let total = warning_repo::php_count(db, &f).await?;
+    let ids: Vec<u64> = rows.iter().map(|r| r.id).collect();
+    let _ = warning_repo::mark_admin_seen(state.db.pool(), &ids).await;
+    let tip = msg_t("common_01546");
+    let seeker = msg_t("admin_user_00122");
+    let company = msg_t("admin_user_00124");
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let type_n = warn_type_n(r.warn_type);
+            let content = if r.warn_type == 15 {
+                r.content
+            } else {
+                format!("{type_n}{tip}")
+            };
+            let usertype_n = match r.usertype {
+                1 => seeker.clone(),
+                2 => company.clone(),
+                _ => String::new(),
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "type": r.warn_type,
+                "type_n": type_n,
+                "status": r.status,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "content": content,
+                "usertype": r.usertype,
+                "usertype_n": usertype_n,
+                "username": r.username,
+                "name_n": r.name_n,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn warning_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("member_com_00084"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "warning",
+        &ids,
+        "/v1/admin/php-content/warning/delete",
+    )
+    .await;
+    let n = warning_repo::delete_ids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    let msg = format!(
+        "{}{}{}{}",
+        msg_t("model_00215"),
+        ids.iter().map(u64::to_string).collect::<Vec<_>>().join(","),
+        msg_t("model_00130"),
+        msg_t("admin_user_00187"),
+    );
+    Ok(PhpOut::Text("admin_user_00187", msg))
+}
+
+const WARNING_CFG_KEYS: &[&str] = &[
+    "warning_addjob",
+    "warning_addjob_type",
+    "warning_downresume",
+    "warning_downresume_type",
+    "warning_addresume",
+    "warning_addresume_type",
+    "warning_recharge",
+    "warning_recharge_type",
+    "sy_hour_msgnum",
+    "warning_closemsg_type",
+    "warning_lookresume",
+    "warning_lookresume_type",
+    "warning_lookjob",
+    "warning_lookjob_type",
+    "warning_teljob",
+    "warning_teljob_type",
+    "warning_reg_ip",
+    "warning_reg_ip_type",
+    "warning_exchange_link",
+    "warning_exchange_link_type",
+    "warning_sendresume",
+    "warning_sendresume_type",
+    "warning_sendresume_tips",
+    "warning_sendresume_tipss",
+    "warning_sqjob",
+    "warning_sqjob_type",
+    "warning_sqjob_tips",
+    "warning_sqjob_tipss",
+];
+
+async fn warning_get_config(state: &AppState) -> AppResult<Value> {
+    let map = setting_repo::find_many(state.db.reader(), WARNING_CFG_KEYS).await?;
+    let mut out = serde_json::Map::new();
+    for k in WARNING_CFG_KEYS {
+        out.insert(
+            (*k).to_string(),
+            json!(map.get(*k).cloned().unwrap_or_default()),
+        );
+    }
+    Ok(Value::Object(out))
+}
+
+async fn warning_config_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    for key in WARNING_CFG_KEYS {
+        if body.get(*key).is_some() {
+            site_setting_service::admin_upsert(
+                state,
+                user,
+                site_setting_service::UpsertInput {
+                    key,
+                    value: &json_str(body, key),
+                    description: "",
+                    is_public: true,
+                },
+            )
+            .await?;
+        }
+    }
+    Ok(PhpOut::Message("admin_01362"))
+}
+
+fn cron_log_time_range(body: &Value) -> (Option<i64>, Option<i64>) {
+    let (a, b) = json_day_range(body, "time");
+    if a.is_some() {
+        return (a, b);
+    }
+    let s = json_str(body, "time");
+    if let Some((l, r)) = s.split_once('~') {
+        let from = parse_date_ts(l);
+        let mut to = parse_date_ts(r);
+        if to > 0 {
+            to += 86_399;
+        }
+        return (
+            if from > 0 { Some(from) } else { None },
+            if to > 0 { Some(to) } else { None },
+        );
+    }
+    (None, None)
+}
+
+async fn cron_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let (time_min, time_max) = cron_log_time_range(body);
+    let mut sort = json_str(body, "t");
+    if sort == "ctime_n" || sort == "cron_name" {
+        sort = if sort == "cron_name" {
+            "id".into()
+        } else {
+            "ctime".into()
+        };
+    }
+    let dir = json_str(body, "order");
+    let f = gap_extra::PhpCronLogFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        time_min,
+        time_max,
+        sort: &sort,
+        dir: &dir,
+    };
+    let db = state.db.reader();
+    let mut rows = gap_extra::php_list_cron_logs(db, &f, offset, limit).await?;
+    let total = gap_extra::php_count_cron_logs(db, &f).await?;
+    for r in &mut rows {
+        r.ctime_n = if r.ctime > 0 {
+            fmt_dt(r.ctime)
+        } else {
+            String::new()
+        };
+    }
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "cid": r.cid,
+                "ctime": r.ctime,
+                "ctime_n": r.ctime_n,
+                "name": r.name,
+                "cron_name": r.name,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn cron_log_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_00597"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "cron_log",
+        &ids,
+        "/v1/admin/php-content/cron-log/delete",
+    )
+    .await;
+    let n = gap_extra::delete_cron_logs(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("common_01536"))
+}
+
+async fn shop_reward_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let ctype = json_i32(body, "ctype");
+    let mut name_kw = None;
+    let mut integral = None;
+    if !kw.is_empty() {
+        if ctype == 2 {
+            integral = Some(json_i32(body, "keyword"));
+        } else {
+            name_kw = Some(kw.as_str());
+        }
+    }
+    let status = match json_i32(body, "status") {
+        0 => None,
+        2 => Some(0),
+        n => Some(n),
+    };
+    let rec = match json_i32(body, "rec") {
+        0 => None,
+        2 => Some(0),
+        n => Some(n),
+    };
+    let hot = match json_i32(body, "hot") {
+        0 => None,
+        2 => Some(0),
+        n => Some(n),
+    };
+    let sort = json_str(body, "t");
+    let dir = json_str(body, "order");
+    let f = redeem_repo::PhpRewardFilter {
+        name_kw,
+        integral,
+        nid: Some(json_u64(body, "nid")).filter(|n| *n > 0),
+        status,
+        rec,
+        hot,
+        sort: &sort,
+        dir: &dir,
+    };
+    let db = state.db.reader();
+    let rows = redeem_repo::php_list_rewards(db, &f, offset, limit).await?;
+    let total = redeem_repo::php_count_rewards(db, &f).await?;
+    let classes = redeem_repo::list_classes(db, None).await?;
+    let class_name: HashMap<u64, String> = classes.into_iter().map(|c| (c.id, c.name)).collect();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let mut classname = class_name.get(&r.nid).cloned().unwrap_or_default();
+            if let Some(tn) = class_name.get(&r.tnid) {
+                classname = if classname.is_empty() {
+                    tn.clone()
+                } else {
+                    format!("{classname}-{tn}")
+                };
+            }
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "nid": r.nid,
+                "tnid": r.tnid,
+                "integral": r.integral,
+                "restriction": r.restriction,
+                "stock": r.stock,
+                "sort": r.sort,
+                "status": r.status,
+                "status_n": r.status == 1,
+                "rec": r.rec,
+                "rec_n": r.rec == 1,
+                "hot": r.hot,
+                "hot_n": r.hot == 1,
+                "pic": r.pic,
+                "classname": classname,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn shop_reward_flag(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+    is_rec: bool,
+) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    let flag = if is_rec {
+        json_i32(body, "rec")
+    } else {
+        json_i32(body, "hot")
+    }
+    .clamp(0, 1);
+    let (rec, hot) = if is_rec {
+        (Some(flag), None)
+    } else {
+        (None, Some(flag))
+    };
+    redeem_service::set_reward_flags(state, user, id, rec, hot).await?;
+    Ok(PhpOut::Message(if is_rec {
+        "admin_01434"
+    } else {
+        "admin_01435"
+    }))
+}
+
+async fn shop_reward_getclass(state: &AppState, body: &Value) -> AppResult<Value> {
+    let nid = json_u64(body, "nid");
+    if nid == 0 {
+        return Err(ApiError::business("common_01237"));
+    }
+    let classes = redeem_repo::list_classes(state.db.reader(), Some(nid)).await?;
+    let class: Vec<Value> = classes.iter().map(redeem_class_json).collect();
+    Ok(json!({ "class": class }))
+}
+
+fn redeem_class_json(c: &phpyun_models::redeem::entity::RedeemClass) -> Value {
+    json!({
+        "id": c.id,
+        "name": c.name,
+        "keyid": c.parent_id,
+        "sort": c.sort,
+    })
+}
+
+async fn shop_class_index(state: &AppState) -> AppResult<Value> {
+    let rows = redeem_repo::list_classes(state.db.reader(), Some(0)).await?;
+    let list: Vec<Value> = rows.iter().map(redeem_class_json).collect();
+    Ok(json!({ "list": list }))
+}
+
+async fn shop_class_up(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Ok(json!({ "list": [] }));
+    }
+    let db = state.db.reader();
+    let mut list = Vec::new();
+    if let Some(one) = redeem_repo::find_class(db, id).await? {
+        list.push(redeem_class_json(&one));
+        let kids = redeem_repo::list_classes(db, Some(id)).await?;
+        list.extend(kids.iter().map(redeem_class_json));
+    }
+    Ok(json!({ "list": list }))
+}
+
+async fn shop_class_ajax(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    let name = json_str(body, "name");
+    let sort = if body.get("sort").is_some() {
+        Some(json_i32(body, "sort"))
+    } else {
+        None
+    };
+    let name_opt = if name.is_empty() { None } else { Some(name.as_str()) };
+    redeem_service::update_class_fields(state, user, id, name_opt, sort).await?;
+    Ok(PhpOut::Message("admin_user_company_00208"))
+}
+
+async fn friend_link_get_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Ok(json!({}));
+    }
+    match friend_link_repo::php_find(state.db.reader(), id).await? {
+        Some(r) => {
+            let pic = clean_stored_pic(&r.pic);
+            let pic_n = pic_url(&preview_base(state), &pic);
+            Ok(json!({
+                "id": r.id,
+                "link_name": r.link_name,
+                "link_url": r.link_url,
+                "pic": pic,
+                "pic_n": pic_n,
+                "link_type": r.link_type,
+                "link_sorting": r.link_sorting.to_string(),
+                "did": r.did,
+                "tem_type": r.tem_type,
+                "img_type": r.img_type,
+            }))
+        }
+        None => Ok(json!({})),
+    }
+}
+
+async fn friend_link_sitedid(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01236"));
+    }
+    let n = friend_link_repo::set_did(state.db.pool(), &ids, json_i32(body, "did")).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00030"));
+    }
+    friend_link_service::invalidate_all().await;
+    let msg = format!(
+        "{}{}{}",
+        msg_t("model_00211"),
+        ids.iter().map(u64::to_string).collect::<Vec<_>>().join(","),
+        msg_t("model_00212"),
+    );
+    Ok(PhpOut::Text("model_00212", msg))
+}
+
+fn nest<'a>(v: &'a Value, key: &str) -> &'a Value {
+    v.get(key).unwrap_or(&Value::Null)
+}
+
+fn php_address(body: &str) -> String {
+    let chars: Vec<char> = body.trim().chars().collect();
+    if chars.len() <= 6 {
+        return String::new();
+    }
+    chars[5..chars.len() - 1].iter().collect()
+}
+
+fn stored_pic(raw: &str) -> Option<String> {
+    let s = clean_stored_pic(raw);
+    if s.is_empty() || s.starts_with("blob:") {
+        None
+    } else {
+        Some(s)
+    }
+}
+
+fn clean_stored_pic(pic: &str) -> String {
+    let p = pic.trim();
+    if p.is_empty() || p.eq_ignore_ascii_case("undefined") || p.eq_ignore_ascii_case("null") {
+        String::new()
+    } else {
+        p.to_string()
+    }
+}
+
+async fn credit_integral(
+    state: &AppState,
+    uid: u64,
+    usertype: i32,
+    amount: i32,
+    remark: &str,
+) -> AppResult<()> {
+    if uid == 0 || amount <= 0 {
+        return Ok(());
+    }
+    let now = clock::now_ts();
+    let delta = i64::from(amount);
+    if usertype == 2 {
+        cstatis_repo::adjust_integral(state.db.pool(), uid, delta).await?;
+    } else {
+        mstatis_repo::add_balance(state.db.pool(), uid, delta, now).await?;
+    }
+    let oid = new_dingdan(now);
+    pay_repo::php_insert_pay_typed(
+        state.db.pool(),
+        &oid,
+        &amount.to_string(),
+        now,
+        uid,
+        remark,
+        1,
+        usertype,
+        24,
+    )
+    .await?;
+    Ok(())
+}
+
+async fn shop_reward_add(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    if has_flag(body, "add") {
+        let id = json_u64(body, "id");
+        let db = state.db.reader();
+        let class = redeem_repo::list_classes(db, Some(0)).await?;
+        let class: Vec<Value> = class.iter().map(redeem_class_json).collect();
+        let integral_pricename = setting_repo::find(db, "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_else(|| "积分".into());
+        let info = if id > 0 {
+            match redeem_repo::php_get_reward(db, id).await? {
+                Some(r) => {
+                    let nid = if r.nid > 0 {
+                        json!(r.nid.to_string())
+                    } else {
+                        json!("")
+                    };
+                    let tnid = if r.tnid > 0 {
+                        json!(r.tnid.to_string())
+                    } else {
+                        json!("")
+                    };
+                    json!({
+                        "id": r.id,
+                        "name": r.name,
+                        "nid": nid,
+                        "tnid": tnid,
+                        "integral": r.integral.to_string(),
+                        "restriction": r.restriction.to_string(),
+                        "stock": r.stock.to_string(),
+                        "sort": r.sort.to_string(),
+                        "status": if r.status == 0 { "1".into() } else { r.status.to_string() },
+                        "pic": pic_url(&preview_base(state), &r.pic),
+                        "content": r.content,
+                        "content_n": r.content,
+                    })
+                }
+                None => json!({}),
+            }
+        } else {
+            json!({})
+        };
+        return Ok(PhpOut::Data(json!({
+            "info": info,
+            "class": class,
+            "integral_pricename": integral_pricename,
+        })));
+    }
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_vue_00084"));
+    }
+    let id = json_u64(body, "id");
+    let _ = user;
+    let n = redeem_repo::php_save_reward(
+        state.db.pool(),
+        &redeem_repo::PhpRewardSave {
+            id: if id > 0 { Some(id) } else { None },
+            name: &name,
+            pic: stored_pic(&json_str(body, "pic")).as_deref(),
+            content: &amp(&json_str(body, "content")),
+            integral: json_i32(body, "integral"),
+            stock: json_i32(body, "stock"),
+            restriction: json_i32(body, "restriction"),
+            nid: json_u64(body, "nid"),
+            tnid: json_u64(body, "tnid"),
+            status: {
+                let s = json_i32(body, "status");
+                if s == 0 { 1 } else { s }
+            },
+            sort: json_i32(body, "sort"),
+            now: clock::now_ts(),
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business(if id > 0 {
+            "admin_01422"
+        } else {
+            "api_wxapp_00012"
+        }));
+    }
+    Ok(PhpOut::Message(if id > 0 {
+        "admin_01431"
+    } else {
+        "admin_01432"
+    }))
+}
+
+async fn shop_reward_status(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    redeem_service::set_reward_status(state, user, id, json_i32(body, "status")).await?;
+    Ok(PhpOut::Message("admin_01433"))
+}
+
+async fn shop_reward_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01162"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "reward",
+        &ids,
+        "/v1/admin/php-content/shop-reward/delete",
+    )
+    .await;
+    let n = redeem_repo::php_delete_rewards(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("wap_user_00146"));
+    }
+    Ok(PhpOut::Message("admin_01436"))
+}
+
+async fn shop_class_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let names: Vec<String> = json_str(body, "name")
+        .split('-')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(str::to_string)
+        .collect();
+    if names.is_empty() {
+        return Err(ApiError::business("admin_01200"));
+    }
+    if redeem_repo::count_class_names(state.db.reader(), &names).await? > 0 {
+        return Err(ApiError::business("admin_system_00050"));
+    }
+    let parent = if json_i32(body, "ctype") == 1 {
+        0
+    } else {
+        json_u64(body, "nid")
+    };
+    let mut last = 0u64;
+    for name in &names {
+        last = redeem_service::create_class(state, user, parent, name, 0).await?;
+    }
+    if last == 0 {
+        return Err(ApiError::business("api_wxapp_00012"));
+    }
+    Ok(PhpOut::Message("admin_01426"))
+}
+
+async fn shop_class_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01162"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "redeem_class",
+        &ids,
+        "/v1/admin/php-content/shop-class/delete",
+    )
+    .await;
+    let n = redeem_repo::php_delete_classes(state.db.pool(), &ids).await?;
+    redeem_service::invalidate_classes_cache().await;
+    if n == 0 {
+        return Err(ApiError::business("wap_user_00146"));
+    }
+    Ok(PhpOut::Message("admin_01427"))
+}
+
+async fn shop_list_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let ty = json_i32(body, "type");
+    let mut name_kw = None;
+    let mut username_kw = None;
+    if !kw.is_empty() {
+        if ty == 2 {
+            username_kw = Some(kw.as_str());
+        } else {
+            name_kw = Some(kw.as_str());
+        }
+    }
+    let status = match json_i32(body, "status") {
+        0 => None,
+        -1 => Some(0),
+        n => Some(n),
+    };
+    let change = json_i32(body, "change");
+    let time_min = if change > 0 {
+        Some(if change == 1 {
+            clock::start_of_today()
+        } else {
+            days_ago_ts(change)
+        })
+    } else {
+        None
+    };
+    let sort = json_str(body, "t");
+    let dir = json_str(body, "order");
+    let f = redeem_repo::PhpChangeFilter {
+        name_kw,
+        username_kw,
+        status,
+        time_min,
+        sort: &sort,
+        dir: &dir,
+    };
+    let db = state.db.reader();
+    let rows = redeem_repo::php_list_changes(db, &f, offset, limit).await?;
+    let total = redeem_repo::php_count_changes(db, &f).await?;
+    let gids: Vec<u64> = {
+        let mut v: Vec<u64> = rows.iter().map(|r| r.gid).filter(|g| *g > 0).collect();
+        v.sort_unstable();
+        v.dedup();
+        v
+    };
+    let mut pics: HashMap<u64, String> = HashMap::new();
+    let base = preview_base(state);
+    for gid in gids {
+        if let Some(r) = redeem_repo::php_get_reward(db, gid).await? {
+            pics.insert(gid, pic_url(&base, &r.pic));
+        }
+    }
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "username": r.username,
+                "usertype": r.usertype,
+                "name": r.name,
+                "gid": r.gid,
+                "integral": r.integral,
+                "num": r.num,
+                "linkman": r.linkman,
+                "linktel": r.linktel,
+                "body": r.body,
+                "address": php_address(&r.body),
+                "status": r.status,
+                "statusbody": r.statusbody,
+                "express": r.express,
+                "expnum": r.expnum,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "pic": pics.get(&r.gid).cloned().unwrap_or_default(),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn shop_list_status(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("member_com_00320"));
+    }
+    let new_status = json_i32(body, "status");
+    if new_status <= 0 {
+        return Err(ApiError::business("admin_user_weipin_00015"));
+    }
+    let row = redeem_repo::php_get_change(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("api_wxapp_00016"))?;
+    let mut express = json_str(body, "express");
+    let mut expnum = json_str(body, "expnum");
+    if row.status == 0 && new_status > 0 {
+        if new_status == 2 {
+            express.clear();
+            expnum.clear();
+            if row.num != 0 {
+                let _ = redeem_repo::php_adjust_reward_stock(state.db.pool(), row.gid, row.num)
+                    .await?;
+            }
+            let already =
+                pay_repo::count_by_remark(state.db.reader(), row.uid, "admin_01428").await?;
+            if already == 0 && row.integral > 0 {
+                credit_integral(state, row.uid, row.usertype, row.integral, "admin_01428")
+                    .await?;
+            }
+        }
+    }
+    let n = redeem_repo::php_review_change(
+        state.db.pool(),
+        id,
+        &redeem_repo::PhpChangeReview {
+            status: new_status,
+            linkman: &json_str(body, "linkman"),
+            linktel: &json_str(body, "linktel"),
+            statusbody: &json_str(body, "statusbody"),
+            express: &express,
+            expnum: &expnum,
+        },
+    )
+    .await?;
+    let _ = user;
+    if n == 0 {
+        return Err(ApiError::business("api_wxapp_00016"));
+    }
+    Ok(PhpOut::Message("admin_01429"))
+}
+
+async fn shop_list_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01162"));
+    }
+    let rows = redeem_repo::php_get_changes(state.db.reader(), &ids).await?;
+    for r in &rows {
+        if r.status == 0 {
+            if r.num != 0 {
+                let _ = redeem_repo::php_adjust_reward_stock(state.db.pool(), r.gid, r.num).await?;
+            }
+            if r.integral > 0 {
+                credit_integral(state, r.uid, r.usertype, r.integral, "wap_user_00003").await?;
+            }
+        }
+    }
+    recycle_ids(
+        state,
+        user,
+        "change",
+        &ids,
+        "/v1/admin/php-content/shop-list/delete",
+    )
+    .await;
+    let n = redeem_repo::php_delete_changes(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("wap_user_00146"));
+    }
+    Ok(PhpOut::Message("admin_01430"))
+}
+
+fn friend_link_page(body: &Value) -> (u32, u32, u64, u64) {
+    let p = nest(body, "pagination");
+    if !p.is_null() {
+        let page = json_u64(p, "page").max(1) as u32;
+        let mut per = json_u64(p, "pageSize");
+        if per == 0 {
+            per = json_u64(p, "page_size");
+        }
+        if per == 0 {
+            per = 20;
+        }
+        let per = per.clamp(1, 100) as u32;
+        let offset = u64::from(page.saturating_sub(1)) * u64::from(per);
+        return (page, per, offset, u64::from(per));
+    }
+    page_of(body)
+}
+
+fn friend_link_time_min(opt: &Value) -> Option<i64> {
+    let n = json_i32(opt, "ctime");
+    if n <= 0 {
+        None
+    } else if n == 1 {
+        Some(clock::start_of_today())
+    } else {
+        Some(days_ago_ts(n))
+    }
+}
+
+async fn friend_link_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = friend_link_page(body);
+    let opt = nest(body, "searchOption");
+    let kw = json_str(opt, "keyword");
+    let ty = json_str(opt, "type");
+    let did = json_i32(opt, "did");
+    let state_f = json_present_i32(opt, "state");
+    let sort = json_str(body, "t");
+    let dir = json_str(body, "order");
+    let f = friend_link_repo::PhpLinkFilter {
+        name_kw: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        link_type: if ty.is_empty() { None } else { Some(ty.as_str()) },
+        did: if did > 0 { Some(did) } else { None },
+        state: state_f,
+        time_min: friend_link_time_min(opt),
+        sort: &sort,
+        dir: &dir,
+    };
+    let db = state.db.reader();
+    let rows = friend_link_repo::php_list(db, &f, offset, limit).await?;
+    let total = friend_link_repo::php_count(db, &f).await?;
+    let domains = domain_repo::list_all(db).await?;
+    let mut did_name: HashMap<i32, String> = HashMap::new();
+    for d in &domains {
+        did_name.insert(d.id as i32, d.title.clone());
+    }
+    let type_txt = msg_t("admin_01013");
+    let type_img = msg_t("admin_00100");
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let ts = r.link_time.trim().parse::<i64>().unwrap_or(0);
+            let pic = clean_stored_pic(&r.pic);
+            json!({
+                "id": r.id,
+                "link_name": r.link_name,
+                "link_url": r.link_url,
+                "pic": pic,
+                "pic_n": pic_url(&base, &pic),
+                "link_type": r.link_type,
+                "link_type_n": if r.link_type == "1" { type_txt.clone() } else { type_img.clone() },
+                "link_sorting": r.link_sorting,
+                "link_state": r.link_state,
+                "statusbody": r.statusbody,
+                "did": r.did,
+                "did_n": did_name.get(&r.did).cloned().unwrap_or_default(),
+                "ctime_n": if ts > 0 { fmt_date(ts) } else { String::new() },
+                "tem_type": r.tem_type,
+                "img_type": r.img_type,
+            })
+        })
+        .collect();
+    let domain: Vec<Value> = domains
+        .iter()
+        .map(|d| json!({ "label": d.title, "value": d.id.to_string() }))
+        .collect();
+    let mut out = paged(Value::Array(list), total, page, per);
+    if let Some(m) = out.as_object_mut() {
+        m.insert("domain".into(), Value::Array(domain));
+        m.insert("pageSize".into(), json!(per));
+        m.insert("pageSizes".into(), json!([10, 20, 50, 100]));
+    }
+    Ok(out)
+}
+
+async fn friend_link_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let form = nest(body, "formdata");
+    let id = json_u64(form, "id");
+    if id == 0 {
+        return Err(ApiError::business("common_06518"));
+    }
+    let n = friend_link_repo::php_set_status(
+        state.db.pool(),
+        id,
+        json_i32(form, "status"),
+        &json_str(form, "content"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06517"));
+    }
+    friend_link_service::invalidate_all().await;
+    Ok(PhpOut::Message("common_06516"))
+}
+
+async fn friend_link_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01237"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "admin_link",
+        &ids,
+        "/v1/admin/php-content/friend-link/delete",
+    )
+    .await;
+    let n = friend_link_repo::php_delete_ids(state.db.pool(), &ids).await?;
+    friend_link_service::invalidate_all().await;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    let msg = format!(
+        "{}{}{}{}",
+        msg_t("model_00211"),
+        ids.iter().map(u64::to_string).collect::<Vec<_>>().join(","),
+        msg_t("model_00130"),
+        msg_t("admin_user_00187"),
+    );
+    Ok(PhpOut::Text("admin_user_00187", msg))
+}
+
+async fn friend_link_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let sorting = json_str(body, "sorting");
+    if !sorting.is_empty()
+        && sorting
+            .chars()
+            .any(|c| !c.is_ascii_digit() && c != '-' && c != '.' && c != ',' && c != ' ')
+    {
+        return Err(ApiError::business("common_00811"));
+    }
+    let id = json_u64(body, "id");
+    let phototype = json_i32(body, "phototype");
+    let pic = if phototype == 1 {
+        None
+    } else {
+        stored_pic(&json_str(body, "uplocadpic"))
+    };
+    let n = friend_link_repo::php_save(
+        state.db.pool(),
+        &friend_link_repo::PhpLinkSave {
+            id: if id > 0 { Some(id) } else { None },
+            link_name: &json_str(body, "title"),
+            link_url: &json_str(body, "url"),
+            pic: pic.as_deref(),
+            link_type: &json_str(body, "type"),
+            link_sorting: json_i32(body, "sorting"),
+            did: json_i32(body, "did"),
+            tem_type: json_i32(body, "tem_type"),
+            img_type: phototype,
+            now: clock::now_ts(),
+        },
+    )
+    .await?;
+    friend_link_service::invalidate_all().await;
+    let verb = if id > 0 {
+        msg_t("wap_js_00073")
+    } else {
+        msg_t("wap_js_00091")
+    };
+    let msg = format!(
+        "{}{n}{}{verb}{}",
+        msg_t("model_00211"),
+        msg_t("model_00130"),
+        msg_t("wap_js_00104"),
+    );
+    Ok(PhpOut::Text("wap_js_00104", msg))
 }

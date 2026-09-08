@@ -12,8 +12,8 @@
 //! response payloads to keep the Rust DTO shape stable. If they are needed
 //! for product features, add them via a real ALTER TABLE migration first.
 
-use super::entity::Warning;
-use sqlx::MySqlPool;
+use super::entity::{PhpWarningRow, Warning};
+use sqlx::{MySqlPool, QueryBuilder};
 
 const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
                              CAST(uid AS UNSIGNED) AS target_uid, \
@@ -138,4 +138,94 @@ pub async fn admin_count(pool: &MySqlPool, kind: Option<i32>) -> Result<u64, sql
         }
     };
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+const PHP_FIELDS: &str = "CAST(w.id AS UNSIGNED) AS id, \
+    CAST(COALESCE(w.uid,0) AS UNSIGNED) AS uid, \
+    CAST(COALESCE(w.`type`,0) AS SIGNED) AS warn_type, \
+    CAST(COALESCE(w.status,0) AS SIGNED) AS status, \
+    CAST(COALESCE(w.ctime,0) AS SIGNED) AS ctime, \
+    COALESCE(w.content,'') AS content, \
+    CAST(COALESCE(w.usertype,0) AS SIGNED) AS usertype, \
+    COALESCE(m.username,'') AS username, \
+    CASE WHEN w.usertype=1 THEN COALESCE(r.name,'') \
+         WHEN w.usertype=2 THEN COALESCE(c.name,'') \
+         ELSE '' END AS name_n";
+
+pub struct PhpWarningFilter {
+    pub status: Option<i32>,
+    pub time_min: Option<i64>,
+    pub time_max: Option<i64>,
+}
+
+fn push_php_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpWarningFilter) {
+    qb.push(
+        " FROM phpyun_warning w \
+         LEFT JOIN phpyun_member m ON m.uid = w.uid \
+         LEFT JOIN phpyun_resume r ON r.uid = w.uid \
+         LEFT JOIN phpyun_company c ON c.uid = w.uid WHERE 1=1",
+    );
+    if let Some(s) = f.status.filter(|n| *n > 0) {
+        qb.push(" AND w.status = ");
+        qb.push_bind(s);
+    }
+    if let Some(t) = f.time_min {
+        qb.push(" AND w.ctime >= ");
+        qb.push_bind(t);
+    }
+    if let Some(t) = f.time_max {
+        qb.push(" AND w.ctime <= ");
+        qb.push_bind(t);
+    }
+}
+
+pub async fn php_list(
+    pool: &MySqlPool,
+    f: &PhpWarningFilter,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpWarningRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!("SELECT {PHP_FIELDS}"));
+    push_php_where(&mut qb, f);
+    qb.push(" ORDER BY w.id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count(pool: &MySqlPool, f: &PhpWarningFilter) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT COUNT(*)");
+    push_php_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `getWarningList(..., utype=admin)` marks listed rows as status=1.
+pub async fn mark_admin_seen(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_warning SET status = 1 WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_warning WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }

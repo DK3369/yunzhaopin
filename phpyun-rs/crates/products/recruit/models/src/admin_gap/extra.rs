@@ -1207,6 +1207,140 @@ pub async fn count_cron_logs(pool: &MySqlPool, keyword: Option<&str>) -> Result<
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub struct PhpCronLogFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub time_min: Option<i64>,
+    pub time_max: Option<i64>,
+    pub sort: &'a str,
+    pub dir: &'a str,
+}
+
+fn push_cron_log_where(qb: &mut QueryBuilder<sqlx::MySql>, f: &PhpCronLogFilter<'_>) {
+    qb.push(
+        " FROM phpyun_cron_log l LEFT JOIN phpyun_cron c \
+         ON CAST(c.id AS CHAR)=l.cid AND COALESCE(c.deleted,0)=0 WHERE 1=1",
+    );
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND c.name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(t) = f.time_min {
+        qb.push(" AND l.ctime >= ");
+        qb.push_bind(t);
+    }
+    if let Some(t) = f.time_max {
+        qb.push(" AND l.ctime <= ");
+        qb.push_bind(t);
+    }
+}
+
+fn cron_log_order(sort: &str, dir: &str) -> &'static str {
+    let desc = !dir.eq_ignore_ascii_case("asc");
+    match sort {
+        "ctime" => {
+            if desc {
+                " ORDER BY l.ctime DESC, l.id DESC"
+            } else {
+                " ORDER BY l.ctime ASC, l.id ASC"
+            }
+        }
+        _ => {
+            if desc {
+                " ORDER BY l.id DESC"
+            } else {
+                " ORDER BY l.id ASC"
+            }
+        }
+    }
+}
+
+pub async fn php_list_cron_logs(
+    pool: &MySqlPool,
+    f: &PhpCronLogFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<CronLogRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(l.id AS UNSIGNED) AS id, COALESCE(l.cid,'') AS cid, \
+         CAST(COALESCE(l.ctime,0) AS SIGNED) AS ctime, COALESCE(c.name,'') AS name",
+    );
+    push_cron_log_where(&mut qb, f);
+    qb.push(cron_log_order(f.sort, f.dir));
+    qb.push(" LIMIT ");
+    qb.push_bind(l);
+    qb.push(" OFFSET ");
+    qb.push_bind(o);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_cron_logs(
+    pool: &MySqlPool,
+    f: &PhpCronLogFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT COUNT(*)");
+    push_cron_log_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_cron_logs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(pool, "DELETE FROM phpyun_cron_log WHERE id IN (", ids).await
+}
+
+/// PHP `userinfo::getUidsByWhere` subset: company name / resume name / username.
+pub async fn find_display_uids_like(
+    pool: &MySqlPool,
+    keyword: &str,
+) -> Result<Vec<u64>, sqlx::Error> {
+    let like = format!("%{keyword}%");
+    let rows: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) AS uid FROM ( \
+            SELECT uid FROM phpyun_company WHERE name LIKE ? LIMIT 50 \
+            UNION \
+            SELECT uid FROM phpyun_resume WHERE name LIKE ? LIMIT 50 \
+            UNION \
+            SELECT uid FROM phpyun_member WHERE username LIKE ? LIMIT 50 \
+         ) t LIMIT 50",
+    )
+    .bind(&like)
+    .bind(&like)
+    .bind(&like)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+/// Prefer company name, then resume name, then member username.
+pub async fn display_names_by_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<std::collections::HashMap<u64, String>, sqlx::Error> {
+    let mut out = std::collections::HashMap::new();
+    if uids.is_empty() {
+        return Ok(out);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(m.uid AS UNSIGNED) AS uid, \
+         COALESCE(NULLIF(c.name,''), NULLIF(r.name,''), m.username, '') AS name \
+         FROM phpyun_member m \
+         LEFT JOIN phpyun_company c ON c.uid = m.uid \
+         LEFT JOIN phpyun_resume r ON r.uid = m.uid WHERE m.uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64, String)> = qb.build_query_as().fetch_all(pool).await?;
+    for (uid, name) in rows {
+        if !name.is_empty() {
+            out.insert(uid, name);
+        }
+    }
+    Ok(out)
+}
+
 pub async fn set_special_com_status_ids(
     pool: &MySqlPool,
     ids: &[u64],

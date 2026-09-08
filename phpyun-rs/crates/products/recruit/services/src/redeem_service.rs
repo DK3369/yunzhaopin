@@ -43,7 +43,7 @@ fn classes_cache() -> &'static SimpleCache<Option<u64>, Vec<RedeemClass>> {
 
 /// Invalidate-on-write (called after admin creates/deletes a category) -- expire the entire
 /// category tree in sync to avoid mismatch between subtree and parent.
-async fn invalidate_classes_cache() {
+pub async fn invalidate_classes_cache() {
     if let Some(c) = CLASSES_CACHE.get() {
         c.invalidate_all();
     }
@@ -94,6 +94,27 @@ pub async fn delete_class(state: &AppState, actor: &AuthenticatedUser, id: u64) 
     )
     .await;
     Ok(())
+}
+
+pub async fn update_class_fields(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    id: u64,
+    name: Option<&str>,
+    sort: Option<i32>,
+) -> AppResult<u64> {
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    let n = redeem_repo::update_class(state.db.pool(), id, name, sort).await?;
+    invalidate_classes_cache().await;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("admin.redeem_class.update", Actor::uid(actor.uid))
+            .target(format!("class:{id}")),
+    )
+    .await;
+    Ok(n)
 }
 
 // ---------- Reward catalog ----------

@@ -1,6 +1,6 @@
 use super::entity::{RedeemClass, RedeemOrder, Reward};
 use crate::soft_delete::{self, PREDICATE};
-use sqlx::{MySql, MySqlPool, Transaction};
+use sqlx::{MySql, MySqlPool, QueryBuilder, Transaction};
 
 // Strictly aligned with PHPYun:
 //   phpyun_reward       columns: id/name/nid/tnid/integral/num/restriction/stock/pic/sort/content/status/sdate/rec/hot
@@ -91,6 +91,170 @@ pub async fn insert_class(
 pub async fn delete_class(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     soft_delete::mark_col_in(pool, "phpyun_redeem_class", "keyid", &[id]).await?;
     soft_delete::mark_id(pool, "phpyun_redeem_class", id).await
+}
+
+pub async fn find_class(pool: &MySqlPool, id: u64) -> Result<Option<RedeemClass>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {CLASS_FIELDS} FROM phpyun_redeem_class WHERE id = ? AND {PREDICATE} LIMIT 1"
+    );
+    sqlx::query_as(&sql).bind(id).fetch_optional(pool).await
+}
+
+pub async fn update_class(
+    pool: &MySqlPool,
+    id: u64,
+    name: Option<&str>,
+    sort: Option<i32>,
+) -> Result<u64, sqlx::Error> {
+    if name.is_none() && sort.is_none() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("UPDATE phpyun_redeem_class SET ");
+    let mut first = true;
+    if let Some(n) = name {
+        qb.push("name = ");
+        qb.push_bind(n);
+        first = false;
+    }
+    if let Some(s) = sort {
+        if !first {
+            qb.push(", ");
+        }
+        qb.push("sort = ");
+        qb.push_bind(s);
+    }
+    qb.push(" WHERE id = ");
+    qb.push_bind(id);
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpRewardRow {
+    pub id: u64,
+    pub name: String,
+    pub nid: u64,
+    pub tnid: u64,
+    pub integral: i32,
+    pub restriction: i32,
+    pub stock: i32,
+    pub sort: i32,
+    pub status: i32,
+    pub rec: i32,
+    pub hot: i32,
+    pub pic: String,
+    pub content: String,
+}
+
+pub struct PhpRewardFilter<'a> {
+    pub name_kw: Option<&'a str>,
+    pub integral: Option<i32>,
+    pub nid: Option<u64>,
+    pub status: Option<i32>,
+    pub rec: Option<i32>,
+    pub hot: Option<i32>,
+    pub sort: &'a str,
+    pub dir: &'a str,
+}
+
+fn push_reward_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpRewardFilter<'_>) {
+    qb.push(format!(" FROM phpyun_reward WHERE {PREDICATE}"));
+    if let Some(kw) = f.name_kw.filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(n) = f.integral {
+        qb.push(" AND integral = ");
+        qb.push_bind(n);
+    }
+    if let Some(n) = f.nid.filter(|n| *n > 0) {
+        qb.push(" AND nid = ");
+        qb.push_bind(n);
+    }
+    if let Some(s) = f.status {
+        qb.push(" AND COALESCE(status,0) = ");
+        qb.push_bind(s);
+    }
+    if let Some(s) = f.rec {
+        qb.push(" AND COALESCE(rec,0) = ");
+        qb.push_bind(s);
+    }
+    if let Some(s) = f.hot {
+        qb.push(" AND COALESCE(hot,0) = ");
+        qb.push_bind(s);
+    }
+}
+
+fn reward_order(sort: &str, dir: &str) -> &'static str {
+    let desc = !dir.eq_ignore_ascii_case("asc");
+    match sort {
+        "integral" => {
+            if desc {
+                " ORDER BY integral DESC, id DESC"
+            } else {
+                " ORDER BY integral ASC, id ASC"
+            }
+        }
+        "stock" => {
+            if desc {
+                " ORDER BY stock DESC, id DESC"
+            } else {
+                " ORDER BY stock ASC, id ASC"
+            }
+        }
+        "sort" => {
+            if desc {
+                " ORDER BY sort DESC, id DESC"
+            } else {
+                " ORDER BY sort ASC, id ASC"
+            }
+        }
+        _ => {
+            if desc {
+                " ORDER BY id DESC"
+            } else {
+                " ORDER BY id ASC"
+            }
+        }
+    }
+}
+
+const PHP_REWARD_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    COALESCE(name,'') AS name, \
+    CAST(COALESCE(nid,0) AS UNSIGNED) AS nid, \
+    CAST(COALESCE(tnid,0) AS UNSIGNED) AS tnid, \
+    CAST(COALESCE(integral,0) AS SIGNED) AS integral, \
+    CAST(COALESCE(restriction,0) AS SIGNED) AS restriction, \
+    CAST(COALESCE(stock,0) AS SIGNED) AS stock, \
+    CAST(COALESCE(sort,0) AS SIGNED) AS sort, \
+    CAST(COALESCE(status,0) AS SIGNED) AS status, \
+    CAST(COALESCE(rec,0) AS SIGNED) AS rec, \
+    CAST(COALESCE(hot,0) AS SIGNED) AS hot, \
+    COALESCE(pic,'') AS pic, \
+    COALESCE(content,'') AS content";
+
+pub async fn php_list_rewards(
+    pool: &MySqlPool,
+    f: &PhpRewardFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpRewardRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new(format!("SELECT {PHP_REWARD_FIELDS}"));
+    push_reward_where(&mut qb, f);
+    qb.push(reward_order(f.sort, f.dir));
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_rewards(pool: &MySqlPool, f: &PhpRewardFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT COUNT(*)");
+    push_reward_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ---------- rewards ----------
@@ -404,5 +568,343 @@ pub async fn tx_set_order_status(
         .bind(expected)
         .execute(&mut **tx)
         .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn count_class_names(pool: &MySqlPool, names: &[String]) -> Result<u64, sqlx::Error> {
+    if names.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT COUNT(*) FROM phpyun_redeem_class WHERE {PREDICATE} AND name IN ("
+    ));
+    let mut sep = qb.separated(", ");
+    for n in names {
+        sep.push_bind(n);
+    }
+    qb.push(")");
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_delete_classes(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_redeem_class WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(") OR keyid IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_get_reward(pool: &MySqlPool, id: u64) -> Result<Option<PhpRewardRow>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {PHP_REWARD_FIELDS} FROM phpyun_reward WHERE id = ? AND {PREDICATE} LIMIT 1"
+    );
+    sqlx::query_as(&sql).bind(id).fetch_optional(pool).await
+}
+
+pub struct PhpRewardSave<'a> {
+    pub id: Option<u64>,
+    pub name: &'a str,
+    pub pic: Option<&'a str>,
+    pub content: &'a str,
+    pub integral: i32,
+    pub stock: i32,
+    pub restriction: i32,
+    pub nid: u64,
+    pub tnid: u64,
+    pub status: i32,
+    pub sort: i32,
+    pub now: i64,
+}
+
+pub async fn php_save_reward(pool: &MySqlPool, a: &PhpRewardSave<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = a.id.filter(|i| *i > 0) {
+        let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("UPDATE phpyun_reward SET name = ");
+        qb.push_bind(a.name);
+        qb.push(", content = ");
+        qb.push_bind(a.content);
+        qb.push(", integral = ");
+        qb.push_bind(a.integral);
+        qb.push(", stock = ");
+        qb.push_bind(a.stock);
+        qb.push(", restriction = ");
+        qb.push_bind(a.restriction);
+        qb.push(", nid = ");
+        qb.push_bind(a.nid);
+        qb.push(", tnid = ");
+        qb.push_bind(a.tnid);
+        qb.push(", status = ");
+        qb.push_bind(a.status);
+        qb.push(", sort = ");
+        qb.push_bind(a.sort);
+        qb.push(", sdate = ");
+        qb.push_bind(a.now);
+        qb.push(", hot = 0");
+        if let Some(pic) = a.pic {
+            qb.push(", pic = ");
+            qb.push_bind(pic);
+        }
+        qb.push(" WHERE id = ");
+        qb.push_bind(id);
+        qb.build().execute(pool).await?;
+        Ok(id)
+    } else {
+        let pic = a.pic.unwrap_or("");
+        let res = sqlx::query(
+            "INSERT INTO phpyun_reward \
+             (name, pic, content, integral, stock, num, restriction, nid, tnid, status, rec, hot, sdate, sort) \
+             VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0, 0, ?, ?)",
+        )
+        .bind(a.name)
+        .bind(pic)
+        .bind(a.content)
+        .bind(a.integral)
+        .bind(a.stock)
+        .bind(a.restriction)
+        .bind(a.nid)
+        .bind(a.tnid)
+        .bind(a.status)
+        .bind(a.now)
+        .bind(a.sort)
+        .execute(pool)
+        .await?;
+        Ok(res.last_insert_id())
+    }
+}
+
+pub async fn php_delete_rewards(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_reward WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+const PHP_CHANGE_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
+    COALESCE(username,'') AS username, \
+    CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, \
+    COALESCE(name,'') AS name, \
+    CAST(COALESCE(gid,0) AS UNSIGNED) AS gid, \
+    CAST(COALESCE(integral,0) AS SIGNED) AS integral, \
+    CAST(COALESCE(ctime,0) AS SIGNED) AS ctime, \
+    CAST(COALESCE(num,0) AS SIGNED) AS num, \
+    COALESCE(linktel,'') AS linktel, \
+    COALESCE(linkman,'') AS linkman, \
+    COALESCE(body,'') AS body, \
+    CAST(COALESCE(status,0) AS SIGNED) AS status, \
+    COALESCE(statusbody,'') AS statusbody, \
+    COALESCE(express,'') AS express, \
+    COALESCE(expnum,'') AS expnum";
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct PhpChangeRow {
+    pub id: u64,
+    pub uid: u64,
+    pub username: String,
+    pub usertype: i32,
+    pub name: String,
+    pub gid: u64,
+    pub integral: i32,
+    pub ctime: i64,
+    pub num: i32,
+    pub linktel: String,
+    pub linkman: String,
+    pub body: String,
+    pub status: i32,
+    pub statusbody: String,
+    pub express: String,
+    pub expnum: String,
+}
+
+pub struct PhpChangeFilter<'a> {
+    pub name_kw: Option<&'a str>,
+    pub username_kw: Option<&'a str>,
+    pub status: Option<i32>,
+    pub time_min: Option<i64>,
+    pub sort: &'a str,
+    pub dir: &'a str,
+}
+
+fn push_change_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpChangeFilter<'_>) {
+    qb.push(" FROM phpyun_change WHERE 1=1");
+    if let Some(kw) = f.name_kw.filter(|s| !s.is_empty()) {
+        qb.push(" AND name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(kw) = f.username_kw.filter(|s| !s.is_empty()) {
+        qb.push(" AND username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(s) = f.status {
+        qb.push(" AND COALESCE(status,0) = ");
+        qb.push_bind(s);
+    }
+    if let Some(t) = f.time_min {
+        qb.push(" AND ctime >= ");
+        qb.push_bind(t);
+    }
+}
+
+fn change_order(sort: &str, dir: &str) -> &'static str {
+    let desc = !dir.eq_ignore_ascii_case("asc");
+    match sort {
+        "ctime" | "ctime_n" => {
+            if desc {
+                " ORDER BY ctime DESC, id DESC"
+            } else {
+                " ORDER BY ctime ASC, id ASC"
+            }
+        }
+        "status" | "zt" => {
+            if desc {
+                " ORDER BY status DESC, id DESC"
+            } else {
+                " ORDER BY status ASC, id ASC"
+            }
+        }
+        "integral" => {
+            if desc {
+                " ORDER BY integral DESC, id DESC"
+            } else {
+                " ORDER BY integral ASC, id ASC"
+            }
+        }
+        _ => {
+            if sort.is_empty() {
+                " ORDER BY status ASC, id DESC"
+            } else if desc {
+                " ORDER BY id DESC"
+            } else {
+                " ORDER BY id ASC"
+            }
+        }
+    }
+}
+
+pub async fn php_list_changes(
+    pool: &MySqlPool,
+    f: &PhpChangeFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpChangeRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new(format!("SELECT {PHP_CHANGE_FIELDS}"));
+    push_change_where(&mut qb, f);
+    qb.push(change_order(f.sort, f.dir));
+    qb.push(" LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_changes(
+    pool: &MySqlPool,
+    f: &PhpChangeFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT COUNT(*)");
+    push_change_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_get_change(pool: &MySqlPool, id: u64) -> Result<Option<PhpChangeRow>, sqlx::Error> {
+    let sql = format!("SELECT {PHP_CHANGE_FIELDS} FROM phpyun_change WHERE id = ? LIMIT 1");
+    sqlx::query_as(&sql).bind(id).fetch_optional(pool).await
+}
+
+pub async fn php_get_changes(
+    pool: &MySqlPool,
+    ids: &[u64],
+) -> Result<Vec<PhpChangeRow>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new(format!("SELECT {PHP_CHANGE_FIELDS} FROM phpyun_change WHERE id IN ("));
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub struct PhpChangeReview<'a> {
+    pub status: i32,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub statusbody: &'a str,
+    pub express: &'a str,
+    pub expnum: &'a str,
+}
+
+pub async fn php_review_change(
+    pool: &MySqlPool,
+    id: u64,
+    a: &PhpChangeReview<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_change SET status = ?, linkman = ?, linktel = ?, statusbody = ?, express = ?, expnum = ? WHERE id = ?",
+    )
+    .bind(a.status)
+    .bind(a.linkman)
+    .bind(a.linktel)
+    .bind(a.statusbody)
+    .bind(a.express)
+    .bind(a.expnum)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_delete_changes(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_change WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_adjust_reward_stock(
+    pool: &MySqlPool,
+    gid: u64,
+    num: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_reward SET stock = GREATEST(CAST(stock AS SIGNED) + ?, 0), \
+         num = GREATEST(CAST(num AS SIGNED) - ?, 0) WHERE id = ?",
+    )
+    .bind(num)
+    .bind(num)
+    .bind(gid)
+    .execute(pool)
+    .await?;
     Ok(res.rows_affected())
 }
