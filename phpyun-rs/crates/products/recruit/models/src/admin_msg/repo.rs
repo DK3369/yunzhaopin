@@ -402,3 +402,69 @@ pub async fn count_admin_logs(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
         .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
+
+#[derive(Debug, Default, Clone)]
+pub struct PhpAdminLogFilter {
+    pub ukeyword: Option<String>,
+    pub keyword: Option<String>,
+    pub ctime_from: Option<i64>,
+    pub ctime_to: Option<i64>,
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct PhpAdminLogRow {
+    pub id: u64,
+    pub uid: i64,
+    pub username: String,
+    pub content: String,
+    pub ctime: i64,
+    pub ip: String,
+    pub did: i32,
+}
+
+fn push_admin_log_where(qb: &mut sqlx::QueryBuilder<'_, sqlx::MySql>, f: &PhpAdminLogFilter) {
+    qb.push(" FROM phpyun_admin_log WHERE 1=1");
+    if let Some(kw) = f.ukeyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND content LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(v) = f.ctime_from {
+        qb.push(" AND ctime >= ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.ctime_to {
+        qb.push(" AND ctime <= ");
+        qb.push_bind(v);
+    }
+}
+
+pub async fn php_list_admin_logs(
+    pool: &MySqlPool,
+    f: &PhpAdminLogFilter,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpAdminLogRow>, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS SIGNED) AS uid, \
+         COALESCE(username,'') AS username, COALESCE(content,'') AS content, \
+         CAST(COALESCE(ctime,0) AS SIGNED) AS ctime, COALESCE(ip,'') AS ip, \
+         CAST(COALESCE(did,0) AS SIGNED) AS did",
+    );
+    push_admin_log_where(&mut qb, f);
+    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_admin_logs(pool: &MySqlPool, f: &PhpAdminLogFilter) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new("SELECT COUNT(*)");
+    push_admin_log_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

@@ -9,6 +9,10 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_gap::repo as gap_repo;
+use phpyun_models::admin_rbac::php as rbac_php;
+use phpyun_models::admin_rbac::php_power;
+use phpyun_models::nav_menu::php as nav_php;
+use phpyun_models::seo as seo_repo;
 use phpyun_models::company_tpl::repo as company_tpl_repo;
 use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::company_statis::repo as cstatis_repo;
@@ -398,6 +402,49 @@ pub async fn dispatch(
         ("email-set", "ceshi") => email_set_ceshi(state, body).await,
         ("email-set", "gettpl") => Ok(PhpOut::Data(email_set_gettpl(state, body).await?)),
         ("email-set", "savetpl") => email_set_savetpl(state, body).await,
+        ("role-user", "index") => Ok(PhpOut::Data(role_user_index(state, body).await?)),
+        ("role-user", "save") => role_user_save(state, body).await,
+        ("role-user", "delete") => role_user_del(state, user, body).await,
+        ("role-ugroup", "index") => Ok(PhpOut::Data(role_ugroup_index(state, body).await?)),
+        ("role-ugroup", "info") => Ok(PhpOut::Data(role_ugroup_info(state, body).await?)),
+        ("role-ugroup", "save") => role_ugroup_save(state, body).await,
+        ("role-ugroup", "delete") => role_ugroup_del(state, user, body).await,
+        ("role-myuser", "index") => Ok(PhpOut::Data(role_myuser_index(state, user).await?)),
+        ("role-myuser", "delAdminQyUserId") => role_myuser_del_qy(state, user).await,
+        ("role-myuser", "qwcallback") => Ok(PhpOut::Message("admin_system_00023")),
+        ("admin-nav", "index") => Ok(PhpOut::Data(admin_nav_index(state, body).await?)),
+        ("admin-nav", "info") => Ok(PhpOut::Data(admin_nav_info(state, body).await?)),
+        ("admin-nav", "add") => admin_nav_add(state, body).await,
+        ("admin-nav", "delete") => admin_nav_del(state, user, body).await,
+        ("admin-nav", "changeDisplay") => admin_nav_change_display(state, body).await,
+        ("admin-nav", "version") => Ok(PhpOut::Data(admin_nav_version(state).await?)),
+        ("front-nav", "index") => Ok(PhpOut::Data(front_nav_index(state, body).await?)),
+        ("front-nav", "add") => Ok(PhpOut::Data(front_nav_add(state, body).await?)),
+        ("front-nav", "save") => front_nav_save(state, body).await,
+        ("front-nav", "delete") => front_nav_del(state, user, body).await,
+        ("front-nav", "navset") => front_nav_navset(state, body).await,
+        ("front-nav", "navsort") => front_nav_navsort(state, body).await,
+        ("front-nav", "type") => Ok(PhpOut::Data(front_nav_type(state).await?)),
+        ("front-nav", "typeadd") => front_nav_typeadd(state, body).await,
+        ("front-nav", "typename") => front_nav_typename(state, body).await,
+        ("front-nav", "typedel") => front_nav_typedel(state, user, body).await,
+        ("navmap", "index") => Ok(PhpOut::Data(navmap_index(state, body).await?)),
+        ("navmap", "getTypes") => Ok(PhpOut::Data(navmap_get_types(state).await?)),
+        ("navmap", "save") => navmap_save(state, body).await,
+        ("navmap", "delete") => navmap_del(state, user, body).await,
+        ("navmap", "nav_xianshi") => navmap_xianshi(state, body).await,
+        ("set-module", "index") => Ok(PhpOut::Data(set_module_index(state).await?)),
+        ("set-module", "save") => set_module_save(state, user, body).await,
+        ("set-module", "navset") => Ok(PhpOut::Data(set_module_navset(state, body).await?)),
+        ("set-module", "navsetSave") => set_module_navset_save(state, body).await,
+        ("set-module", "getseo") => Ok(PhpOut::Data(set_module_getseo(state, body).await?)),
+        ("set-module", "seoshezhi") => set_module_seoshezhi(state, body).await,
+        ("sysmsg", "index") => Ok(PhpOut::Data(sysmsg_index(state, body).await?)),
+        ("sysmsg", "delete") => sysmsg_del(state, user, body).await,
+        ("sysmsg", "sendSys") => sysmsg_send(state, body).await,
+        ("error-log", "index") => Ok(PhpOut::Data(error_log_index(state, body).await?)),
+        ("error-log", "delete") => error_log_del(state, user, body).await,
+        ("admin-log", "index") => Ok(PhpOut::Data(admin_log_index(state, body).await?)),
         _ => Err(ApiError::param_invalid("unknown_php_action")),
     }
 }
@@ -10074,4 +10121,1198 @@ async fn friend_link_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         msg_t("wap_js_00104"),
     );
     Ok(PhpOut::Text("wap_js_00104", msg))
+}
+
+fn php_flag_filter(body: &Value, key: &str) -> Option<i32> {
+    match body.get(key) {
+        None | Some(Value::Null) => None,
+        Some(Value::String(s)) if s.trim().is_empty() => None,
+        _ => {
+            let n = json_i32(body, key);
+            if n == 2 {
+                Some(0)
+            } else if n > 0 {
+                Some(n)
+            } else {
+                None
+            }
+        }
+    }
+}
+
+fn php_days_ago(body: &Value, key: &str) -> Option<i64> {
+    let n = json_i32(body, key);
+    if n <= 0 {
+        return None;
+    }
+    let now = clock::now_ts();
+    if n == 1 {
+        Some(now - (now % 86_400))
+    } else {
+        Some(now - i64::from(n) * 86_400)
+    }
+}
+
+fn strip_a_tags(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    while let Some(start) = rest.find('<') {
+        out.push_str(&rest[..start]);
+        if rest[start..].to_ascii_lowercase().starts_with("<a") {
+            if let Some(gt) = rest[start..].find('>') {
+                rest = &rest[start + gt + 1..];
+                if let Some(end) = rest.to_ascii_lowercase().find("</a>") {
+                    out.push_str(&rest[..end]);
+                    rest = &rest[end + 4..];
+                    continue;
+                }
+            }
+        }
+        if let Some(gt) = rest[start..].find('>') {
+            rest = &rest[start + gt + 1..];
+        } else {
+            rest = &rest[start + 1..];
+        }
+    }
+    out.push_str(rest);
+    out.replace("\r\n", "<br/>")
+        .replace('\n', "<br/>")
+        .replace('\r', "<br/>")
+}
+
+fn admin_nav_json(r: &rbac_php::PhpAdminNavRow, has_children: bool) -> Value {
+    json!({
+        "id": r.id,
+        "keyid": r.keyid,
+        "name": r.name,
+        "url": r.url,
+        "path": r.path,
+        "classname": r.classname,
+        "menu": r.menu.to_string(),
+        "sort": r.sort.to_string(),
+        "display": r.display.to_string(),
+        "dids": r.dids.to_string(),
+        "hasChildren": has_children,
+    })
+}
+
+fn admin_nav_tree(rows: &[rbac_php::PhpAdminNavRow], keyid: i64) -> Vec<Value> {
+    rows.iter()
+        .filter(|r| r.keyid == keyid)
+        .map(|r| {
+            let children = admin_nav_tree(rows, r.id);
+            let mut v = admin_nav_json(r, !children.is_empty());
+            if !children.is_empty() {
+                v["children"] = Value::Array(children);
+            }
+            v
+        })
+        .collect()
+}
+
+const PHP_MODULE_KEYS: &[(&str, &str)] = &[
+    ("job", "找工作"),
+    ("resume", "找人才"),
+    ("part", "兼职"),
+    ("company", "找企业"),
+    ("wap", "手机端"),
+    ("article", "资讯"),
+    ("announcement", "公告"),
+    ("hr", "工具箱"),
+    ("zph", "招聘会"),
+    ("ask", "问答"),
+    ("evaluate", "测评"),
+    ("once", "店铺招聘"),
+    ("tiny", "普工简历"),
+    ("redeem", "商城"),
+    ("map", "地图"),
+    ("special", "专题招聘"),
+    ("login", "登录"),
+    ("register", "注册"),
+    ("gongzhao", "公招"),
+];
+
+async fn role_user_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let m_id = json_present_i32(body, "m_id").filter(|n| *n > 0);
+    let db = state.db.reader();
+    let rows = rbac_php::php_list_users(db, if kw.is_empty() { None } else { Some(&kw) }, m_id, offset, limit).await?;
+    let total = rbac_php::php_count_users(db, if kw.is_empty() { None } else { Some(&kw) }, m_id).await?;
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let groups = rbac_php::php_list_groups(db, 0, 500).await?;
+    let group: Vec<Value> = groups
+        .into_iter()
+        .map(|g| json!({ "id": g.id, "group_name": g.group_name, "group_type": g.group_type }))
+        .collect();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let parts: Vec<&str> = r.control_login.split(" - ").collect();
+            json!({
+                "uid": r.uid,
+                "username": r.username,
+                "group_name": r.group_name,
+                "name": r.name,
+                "mobile": r.mobile,
+                "weixin": r.weixin,
+                "qq": r.qq,
+                "num": r.num,
+                "call_num": r.call_num,
+                "tuoxin_num": r.tuoxin_num,
+                "follow_num": r.follow_num,
+                "deal_num": r.deal_num,
+                "month_deal_num": r.month_deal_num,
+                "jobtai_ranking": r.jobtai_ranking,
+                "is_crm": r.is_crm.to_string(),
+                "isdid": r.isdid.to_string(),
+                "m_id": r.m_id.to_string(),
+                "crm_city": if r.crm_city.is_empty() { json!([]) } else { json!(r.crm_city.split(',').collect::<Vec<_>>()) },
+                "crm_duty": if r.crm_duty.is_empty() { json!([]) } else { json!(r.crm_duty.split(',').collect::<Vec<_>>()) },
+                "control_login": if r.control_login.is_empty() { json!("") } else { json!(parts) },
+                "login_start": parts.first().copied().unwrap_or(""),
+                "login_end": parts.get(1).copied().unwrap_or(""),
+                "index_lookstatistc": r.index_lookstatistc.to_string(),
+                "photo": checkpic_url(&cfg, &r.photo),
+                "ewm": checkpic_url(&cfg, &r.ewm),
+            })
+        })
+        .collect();
+    let mut data = paged(Value::Array(list), total, page, per);
+    data["group"] = Value::Array(group);
+    data["week"] = json!({
+        "1": "admin_system_00031",
+        "2": "admin_system_00033",
+        "3": "admin_system_00032",
+        "4": "admin_system_00036",
+        "5": "admin_system_00034",
+        "6": "admin_system_00035",
+        "7": "admin_system_00037",
+    });
+    Ok(data)
+}
+
+async fn role_user_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let username = json_str(body, "username");
+    if username.is_empty() {
+        return Err(ApiError::business("admin_system_00010"));
+    }
+    let uid = json_u64(body, "uid");
+    if rbac_php::php_username_taken(state.db.pool(), &username, uid).await? {
+        return Err(ApiError::business("admin_system_00027"));
+    }
+    let password = json_str(body, "password");
+    let password_hash = if password.is_empty() {
+        None
+    } else {
+        Some(md5_hex(&md5_hex(&password)))
+    };
+    let login_start = json_str(body, "login_start");
+    let login_end = json_str(body, "login_end");
+    let control_login = if !login_start.is_empty() && !login_end.is_empty() {
+        format!("{login_start} - {login_end}")
+    } else {
+        json_str(body, "control_login")
+    };
+    let photo = json_str(body, "photo");
+    let ewm = json_str(body, "ewm");
+    let n = rbac_php::php_save_user(
+        state.db.pool(),
+        rbac_php::PhpAdminUserSave {
+            uid: if uid > 0 { Some(uid) } else { None },
+            username: &username,
+            name: &json_str(body, "name"),
+            m_id: json_i32(body, "m_id"),
+            mobile: &json_str(body, "mobile"),
+            weixin: &json_str(body, "weixin"),
+            qq: &json_str(body, "qq"),
+            is_crm: json_i32(body, "is_crm"),
+            num: &json_str(body, "num"),
+            call_num: &json_str(body, "call_num"),
+            tuoxin_num: &json_str(body, "tuoxin_num"),
+            follow_num: &json_str(body, "follow_num"),
+            deal_num: &json_str(body, "deal_num"),
+            month_deal_num: &json_str(body, "month_deal_num"),
+            jobtai_ranking: json_i32(body, "jobtai_ranking"),
+            crm_duty: &json_csv(body, "crm_duty"),
+            crm_city: &json_csv(body, "crm_city"),
+            photo: if photo.is_empty() { None } else { Some(photo.as_str()) },
+            ewm: if ewm.is_empty() { None } else { Some(ewm.as_str()) },
+            control_login: &control_login,
+            index_lookstatistc: json_i32(body, "index_lookstatistc"),
+            isdid: json_i32(body, "isdid"),
+            password_hash: password_hash.as_deref(),
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06357"));
+    }
+    Ok(PhpOut::Message(if uid > 0 { "wap_js_00073" } else { "wap_js_00091" }))
+}
+
+async fn role_user_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "del").max(json_u64(body, "id"));
+    if uid == 0 {
+        return Err(ApiError::business("common_01237"));
+    }
+    if uid == user.uid {
+        return Err(ApiError::business("common_00747"));
+    }
+    let n = rbac_php::php_delete_user(state.db.pool(), uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00137"));
+    }
+    Ok(PhpOut::Message("model_00112"))
+}
+
+async fn role_ugroup_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let db = state.db.reader();
+    let rows = rbac_php::php_list_groups(db, offset, limit).await?;
+    let total = rbac_php::php_count_groups(db).await?;
+    let type1 = msg_t("admin_system_00029");
+    let type2 = msg_t("admin_system_00028");
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|g| {
+            json!({
+                "id": g.id,
+                "group_name": g.group_name,
+                "group_type": g.group_type,
+                "group_type_n": if g.group_type == 1 { type1.clone() } else { type2.clone() },
+                "num": g.num,
+                "did": g.did,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn role_ugroup_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let rows = rbac_php::php_list_admin_nav(state.db.reader(), None).await?;
+    let mut navigation = Vec::new();
+    let mut one_menu = serde_json::Map::new();
+    let mut two_menu = serde_json::Map::new();
+    let mut three_menu = serde_json::Map::new();
+    let mut one_children = serde_json::Map::new();
+    let mut two_children = serde_json::Map::new();
+    let top: Vec<i64> = rows.iter().filter(|r| r.keyid == 0).map(|r| r.id).collect();
+    for r in &rows {
+        if r.keyid == 0 {
+            navigation.push(json!({
+                "id": r.id, "name": r.name, "classname": r.classname, "sort": r.sort
+            }));
+        }
+    }
+    let one_ids: Vec<i64> = rows
+        .iter()
+        .filter(|r| top.contains(&r.keyid))
+        .map(|r| r.id)
+        .collect();
+    for r in &rows {
+        if top.contains(&r.keyid) {
+            one_menu
+                .entry(r.keyid.to_string())
+                .or_insert_with(|| json!([]))
+                .as_array_mut()
+                .unwrap()
+                .push(json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}));
+            one_children
+                .entry(r.keyid.to_string())
+                .or_insert_with(|| json!([]))
+                .as_array_mut()
+                .unwrap()
+                .push(json!(r.id));
+        }
+    }
+    let two_ids: Vec<i64> = rows
+        .iter()
+        .filter(|r| one_ids.contains(&r.keyid))
+        .map(|r| r.id)
+        .collect();
+    for r in &rows {
+        if one_ids.contains(&r.keyid) {
+            two_menu
+                .entry(r.keyid.to_string())
+                .or_insert_with(|| json!([]))
+                .as_array_mut()
+                .unwrap()
+                .push(json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}));
+            two_children
+                .entry(r.keyid.to_string())
+                .or_insert_with(|| json!([]))
+                .as_array_mut()
+                .unwrap()
+                .push(json!(r.id));
+        }
+        if two_ids.contains(&r.keyid) {
+            three_menu
+                .entry(r.keyid.to_string())
+                .or_insert_with(|| json!([]))
+                .as_array_mut()
+                .unwrap()
+                .push(json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}));
+        }
+    }
+    let mut power = Vec::new();
+    let mut group = json!({});
+    if id > 0 {
+        if let Some(g) = rbac_php::php_get_group(state.db.reader(), id).await? {
+            power = php_power::parse_group_power(&g.group_power);
+            group = json!({ "id": g.id, "group_name": g.group_name, "group_type": g.group_type, "did": g.did });
+        }
+    }
+    let power_set: std::collections::HashSet<i64> = power.iter().copied().collect();
+    let mut checked_three = Vec::new();
+    let mut checked_four = Vec::new();
+    for r in &rows {
+        if one_ids.contains(&r.keyid) && power_set.contains(&r.id) {
+            checked_three.push(r.id);
+        }
+        if two_ids.contains(&r.keyid) && power_set.contains(&r.id) {
+            checked_four.push(r.id);
+        }
+    }
+    Ok(json!({
+        "one_menu": one_menu,
+        "two_menu": two_menu,
+        "three_menu": three_menu,
+        "navigation": navigation,
+        "one_children_ids": one_children,
+        "two_children_ids": two_children,
+        "checked_three_ids": checked_three,
+        "checked_four_ids": checked_four,
+        "admin_group": group,
+        "power": power,
+    }))
+}
+
+async fn role_ugroup_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "group_name");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_system_00010"));
+    }
+    let mut ids = ids_named(body, "one_ids");
+    ids.extend(ids_named(body, "two_ids"));
+    ids.extend(ids_named(body, "three_ids"));
+    ids.extend(ids_named(body, "four_ids"));
+    ids.sort_unstable();
+    ids.dedup();
+    if ids.is_empty() {
+        return Err(ApiError::business("admin_system_00009"));
+    }
+    let gid = json_u64(body, "groupid");
+    if rbac_php::php_group_name_taken(state.db.pool(), &name, gid).await? {
+        return Err(ApiError::business("admin_system_00027"));
+    }
+    let power_i: Vec<i64> = ids.iter().map(|n| *n as i64).collect();
+    let ser = php_power::serialize_group_power(&power_i);
+    let n = rbac_php::php_save_group(state.db.pool(), if gid > 0 { Some(gid) } else { None }, &name, &ser, 0).await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06357"));
+    }
+    if name == "admin_system_00011" || name == msg_t("admin_system_00011") {
+        let _ = rbac_php::php_mark_admin_nav_dids(state.db.pool(), &power_i, 1).await;
+    }
+    Ok(PhpOut::Message("common_06360"))
+}
+
+async fn role_ugroup_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("common_01237"));
+    }
+    if rbac_php::php_count_group_users(state.db.pool(), id).await? > 0 {
+        return Err(ApiError::business("common_00307"));
+    }
+    recycle_ids(state, user, "admin_user_group", &[id], "/v1/admin/php-content/role-ugroup/delete").await;
+    let n = rbac_php::php_delete_group(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00137"));
+    }
+    Ok(PhpOut::Message("model_00112"))
+}
+
+async fn role_myuser_index(state: &AppState, user: &AuthenticatedUser) -> AppResult<Value> {
+    let row = rbac_php::php_get_user(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    let group = rbac_php::php_get_group(state.db.reader(), row.m_id as u64)
+        .await?
+        .map(|g| g.group_name)
+        .unwrap_or_default();
+    let last = phpyun_models::admin_rbac::repo::user_lasttime(state.db.reader(), user.uid).await?;
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let qy = rbac_php::php_qy_userid(state.db.reader(), user.uid).await?;
+    let agent = {
+        let a = cfg_pick(&cfg, "wx_photo_agentId");
+        if a.is_empty() {
+            cfg_pick(&cfg, "wx_qy_agentid")
+        } else {
+            a
+        }
+    };
+    let qw_state = "weblogin@phpyun";
+    Ok(json!({
+        "username": row.username,
+        "mobile": row.mobile,
+        "real_name": row.name,
+        "wxid": row.wxid,
+        "qy_wxid": qy,
+        "last_login": if last > 0 { fmt_dt(last) } else { String::new() },
+        "group_name": group,
+        "qy_app_id": cfg_pick(&cfg, "wx_qy_corpid"),
+        "agent_id": agent,
+        "redirect_uri": "",
+        "state": qw_state,
+    }))
+}
+
+async fn role_myuser_del_qy(state: &AppState, user: &AuthenticatedUser) -> AppResult<PhpOut> {
+    let qy = rbac_php::php_qy_userid(state.db.pool(), user.uid).await?;
+    if qy.is_empty() {
+        return Err(ApiError::business("admin_system_00023"));
+    }
+    let n = rbac_php::php_clear_qy(state.db.pool(), user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01380"));
+    }
+    Ok(PhpOut::Message("admin_01379"))
+}
+
+async fn admin_nav_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    if body.get("keyid").is_some() {
+        let keyid = json_i64(body, "keyid");
+        let rows = rbac_php::php_list_admin_nav(state.db.reader(), Some(keyid)).await?;
+        let ids: Vec<i64> = rows.iter().map(|r| r.id).collect();
+        let kids = rbac_php::php_admin_nav_child_keyids(state.db.reader(), &ids).await?;
+        let set: std::collections::HashSet<i64> = kids.into_iter().collect();
+        let list: Vec<Value> = rows
+            .iter()
+            .map(|r| admin_nav_json(r, set.contains(&r.id)))
+            .collect();
+        return Ok(json!({ "list": list }));
+    }
+    let rows = rbac_php::php_list_admin_nav(state.db.reader(), None).await?;
+    Ok(json!({ "list": admin_nav_tree(&rows, 0) }))
+}
+
+async fn admin_nav_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_i64(body, "id");
+    let info = rbac_php::php_get_admin_nav(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    Ok(json!({ "info": admin_nav_json(&info, false) }))
+}
+
+async fn admin_nav_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_i64(body, "id");
+    let n = rbac_php::php_save_admin_nav(
+        state.db.pool(),
+        rbac_php::PhpAdminNavSave {
+            id: if id > 0 { Some(id) } else { None },
+            keyid: json_i64(body, "keyid"),
+            name: &json_str(body, "name"),
+            url: &json_str(body, "url"),
+            path: &json_str(body, "path"),
+            classname: &json_str(body, "classname"),
+            display: json_i32(body, "display"),
+            dids: json_i32(body, "dids"),
+            sort: json_i32(body, "sort"),
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business(if id > 0 { "admin_01364" } else { "admin_01366" }));
+    }
+    Ok(PhpOut::Message(if id > 0 { "admin_01363" } else { "admin_01365" }))
+}
+
+async fn admin_nav_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let id = json_i64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("common_01237"));
+    }
+    if rbac_php::php_count_admin_nav_children(state.db.pool(), id).await? > 0 {
+        return Err(ApiError::business("model_00031"));
+    }
+    recycle_ids(state, user, "admin_navigation", &[id as u64], "/v1/admin/php-content/admin-nav/delete").await;
+    let n = rbac_php::php_delete_admin_nav(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00033"));
+    }
+    Ok(PhpOut::Message("model_00032"))
+}
+
+async fn admin_nav_change_display(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_i64(body, "id");
+    let field = json_str(body, "field");
+    let n = rbac_php::php_set_admin_nav_field(state.db.pool(), id, &field, json_i32(body, "status")).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_model_00084"));
+    }
+    Ok(PhpOut::Message("admin_model_00083"))
+}
+
+async fn admin_nav_version(state: &AppState) -> AppResult<Value> {
+    let rows = rbac_php::php_list_versions(state.db.reader()).await.unwrap_or_default();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "version": r.version,
+                "code": r.code,
+                "ctime": r.ctime,
+                "ctime_n": if r.ctime > 0 { fmt_dt(r.ctime) } else { String::new() },
+            })
+        })
+        .collect();
+    Ok(json!({ "list": list }))
+}
+
+async fn front_nav_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let f = nav_php::PhpNavFilter {
+        type_eq: json_present_i32(body, "type"),
+        eject: php_flag_filter(body, "eject"),
+        display: php_flag_filter(body, "display"),
+        nid: json_present_i32(body, "nid"),
+        keyword: {
+            let s = json_str(body, "keyword");
+            if s.is_empty() { None } else { Some(s) }
+        },
+    };
+    let order = json_str(body, "order");
+    let t = json_str(body, "t");
+    let db = state.db.reader();
+    let rows = nav_php::php_list_nav(db, &f, offset, limit, &t, &order).await?;
+    let total = nav_php::php_count_nav(db, &f).await?;
+    let types = nav_php::php_list_nav_types(db).await?;
+    let mut nclass = serde_json::Map::new();
+    let mut type_map = std::collections::HashMap::new();
+    for ty in &types {
+        nclass.insert(ty.id.to_string(), json!(ty.typename));
+        type_map.insert(ty.id as i32, ty.typename.clone());
+    }
+    let type1 = msg_t("admin_00198");
+    let type2 = msg_t("admin_system_00663");
+    let nav: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "nid": r.nid.to_string(),
+                "name": r.name,
+                "url": r.url,
+                "furl": r.furl,
+                "sort": r.sort.to_string(),
+                "display": r.display.to_string(),
+                "eject": r.eject.to_string(),
+                "type": r.r#type.to_string(),
+                "type_n": if r.r#type == 1 { type1.clone() } else { type2.clone() },
+                "typename": type_map.get(&r.nid).cloned().unwrap_or_default(),
+                "color": r.color,
+                "model": r.model,
+                "bold": r.bold.to_string(),
+                "pic": r.pic,
+                "config": r.config,
+            })
+        })
+        .collect();
+    let mut data = paged(Value::Array(nav.clone()), total, page, per);
+    data["nav"] = Value::Array(nav);
+    data["nclass"] = Value::Object(nclass);
+    Ok(data)
+}
+
+async fn front_nav_add(state: &AppState, body: &Value) -> AppResult<Value> {
+    let types = nav_php::php_list_nav_types(state.db.reader()).await?;
+    let type_v: Vec<Value> = types
+        .into_iter()
+        .map(|t| json!({ "id": t.id, "typename": t.typename }))
+        .collect();
+    let mut info = json!({});
+    let id = json_u64(body, "id");
+    if id > 0 {
+        if let Some(r) = nav_php::php_get_nav(state.db.reader(), id).await? {
+            info = json!({
+                "id": r.id, "nid": r.nid.to_string(), "name": r.name, "url": r.url, "furl": r.furl,
+                "sort": r.sort.to_string(), "display": r.display.to_string(), "eject": r.eject.to_string(),
+                "type": r.r#type.to_string(), "color": r.color, "model": r.model, "bold": r.bold.to_string(),
+                "pic": r.pic, "config": r.config,
+            });
+        }
+    }
+    Ok(json!({ "type": type_v, "info": info, "picMaxSize": 5, "picType": "jpg,png,jpeg,bmp,gif" }))
+}
+
+async fn front_nav_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let name = json_str(body, "name");
+    let nid = json_i32(body, "nid");
+    if id == 0 && nav_php::php_nav_name_taken(state.db.pool(), &name, nid).await? {
+        return Err(ApiError::business("admin_neirong_00021"));
+    }
+    let url = json_str(body, "url").replace("amp;", "");
+    let pic = json_str(body, "pic");
+    let n = nav_php::php_save_nav(
+        state.db.pool(),
+        nav_php::PhpNavSave {
+            id: if id > 0 { Some(id) } else { None },
+            nid,
+            eject: json_i32(body, "eject"),
+            display: json_i32(body, "display"),
+            name: &name,
+            url: &url,
+            furl: &json_str(body, "furl"),
+            sort: json_i32(body, "sort"),
+            color: &json_str(body, "color"),
+            model: &json_str(body, "model"),
+            bold: json_i32(body, "bold"),
+            r#type: json_i32(body, "type"),
+            pic: if pic.is_empty() { None } else { Some(pic.as_str()) },
+            config: &json_str(body, "config"),
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business(if id > 0 { "admin_01389" } else { "admin_01390" }));
+    }
+    Ok(PhpOut::Message(if id > 0 { "admin_model_00085" } else { "admin_model_00086" }))
+}
+
+async fn front_nav_clear_links(state: &AppState, rows: &[nav_php::PhpNavRow]) {
+    let desc_ids: Vec<u64> = rows.iter().filter_map(|r| r.desc.parse().ok()).filter(|n: &u64| *n > 0).collect();
+    let news_ids: Vec<u64> = rows.iter().filter_map(|r| r.news.parse().ok()).filter(|n: &u64| *n > 0).collect();
+    let _ = nav_php::php_clear_desc_menu(state.db.pool(), &desc_ids).await;
+    for id in news_ids {
+        let _ = article_repo::set_group_is_menu(state.db.pool(), id, 0).await;
+    }
+}
+
+async fn front_nav_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01063"));
+    }
+    let rows = nav_php::php_navs_with_links(state.db.pool(), &ids).await.unwrap_or_default();
+    front_nav_clear_links(state, &rows).await;
+    recycle_ids(state, user, "navigation", &ids, "/v1/admin/php-content/front-nav/delete").await;
+    let n = nav_php::php_delete_navs(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00033"));
+    }
+    Ok(PhpOut::Message("admin_model_00087"))
+}
+
+async fn front_nav_navset(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let field = json_str(body, "type");
+    let n = nav_php::php_set_nav_field(state.db.pool(), id, &field, json_i32(body, "rec")).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01388"));
+    }
+    Ok(PhpOut::Message(if field == "display" { "admin_model_00088" } else { "admin_model_00089" }))
+}
+
+async fn front_nav_navsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let n = nav_php::php_set_nav_field(state.db.pool(), id, "sort", json_i32(body, "sort")).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01392"));
+    }
+    Ok(PhpOut::Message("admin_model_00090"))
+}
+
+async fn front_nav_type(state: &AppState) -> AppResult<Value> {
+    let list = nav_php::php_list_nav_types(state.db.reader()).await?;
+    Ok(json!({ "list": list }))
+}
+
+async fn front_nav_typeadd(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "typename");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_01393"));
+    }
+    if nav_php::php_nav_type_taken(state.db.pool(), &name).await? {
+        return Err(ApiError::business("admin_system_00049"));
+    }
+    let n = nav_php::php_add_nav_type(state.db.pool(), &name).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01394"));
+    }
+    Ok(PhpOut::Message("admin_model_00091"))
+}
+
+async fn front_nav_typename(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "typename");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_01393"));
+    }
+    let id = json_u64(body, "id");
+    let n = nav_php::php_up_nav_type(state.db.pool(), id, &name).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01395"));
+    }
+    Ok(PhpOut::Message("admin_model_00092"))
+}
+
+async fn front_nav_typedel(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("member_com_00320"));
+    }
+    let rows = nav_php::php_navs_by_nid_with_links(state.db.pool(), id as i32).await.unwrap_or_default();
+    front_nav_clear_links(state, &rows).await;
+    recycle_ids(state, user, "navigation_type", &[id], "/v1/admin/php-content/front-nav/typedel").await;
+    let _ = nav_php::php_delete_navs_by_nid(state.db.pool(), id as i32).await;
+    let n = nav_php::php_delete_nav_type(state.db.pool(), id).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01396"));
+    }
+    Ok(PhpOut::Message("admin_model_00093"))
+}
+
+async fn navmap_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let f = gap_repo::PhpNavmapFilter {
+        keyword: {
+            let s = json_str(body, "keyword");
+            if s.is_empty() { None } else { Some(s) }
+        },
+        ktype: json_present_i32(body, "type"),
+        eject: php_flag_filter(body, "eject"),
+        display: php_flag_filter(body, "display"),
+        ctype: json_present_i32(body, "ctype"),
+    };
+    let db = state.db.reader();
+    let rows = gap_repo::php_list_navmap(db, &f, offset, limit).await?;
+    let total = gap_repo::php_count_navmap(db, &f).await?;
+    let mut names: std::collections::HashMap<i32, String> = std::collections::HashMap::new();
+    for r in &rows {
+        names.insert(r.id as i32, r.name.clone());
+    }
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "nid": r.nid,
+                "name": r.name,
+                "url": r.url,
+                "furl": r.furl,
+                "sort": r.sort,
+                "display": r.display,
+                "display_n": r.display == 1,
+                "eject": r.eject,
+                "type": r.r#type,
+                "typename": names.get(&r.nid).cloned().unwrap_or_default(),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn navmap_get_types(state: &AppState) -> AppResult<Value> {
+    let rows = gap_repo::php_list_navmap_types(state.db.reader()).await?;
+    let type_v: Vec<Value> = rows
+        .into_iter()
+        .map(|(id, name)| json!({ "label": name, "value": id }))
+        .collect();
+    Ok(json!({ "type": type_v }))
+}
+
+async fn navmap_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let n = gap_repo::upsert_navmap(
+        state.db.pool(),
+        if id > 0 { Some(id) } else { None },
+        json_i32(body, "nid"),
+        &json_str(body, "name"),
+        &json_str(body, "url").replace("amp;", ""),
+        json_i32(body, "sort"),
+        json_i32(body, "display"),
+        json_i32(body, "eject"),
+        json_i32(body, "type"),
+        &json_str(body, "furl"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_model_00097"));
+    }
+    Ok(PhpOut::Message(if id > 0 { "admin_model_00094" } else { "admin_model_00095" }))
+}
+
+async fn navmap_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01237"));
+    }
+    recycle_ids(state, user, "navmap", &ids, "/v1/admin/php-content/navmap/delete").await;
+    let n = gap_repo::delete_navmap(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00033"));
+    }
+    Ok(PhpOut::Message("admin_model_00087"))
+}
+
+async fn navmap_xianshi(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let n = gap_repo::php_set_navmap_field(state.db.pool(), id, &json_str(body, "type"), json_i32(body, "rec")).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01388"));
+    }
+    Ok(PhpOut::Message("ok"))
+}
+
+async fn set_module_index(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let mut module = serde_json::Map::new();
+    for (key, label) in PHP_MODULE_KEYS {
+        module.insert(
+            (*key).to_string(),
+            json!({
+                "value": label,
+                "web": cfg.get(&format!("sy_{key}_web")).cloned().unwrap_or_default(),
+                "ssl": cfg.get(&format!("sy_{key}ssl")).cloned().unwrap_or_default(),
+                "domain": cfg.get(&format!("sy_{key}domain")).cloned().unwrap_or_default(),
+                "dir": cfg.get(&format!("sy_{key}dir")).cloned().unwrap_or_default(),
+            }),
+        );
+    }
+    Ok(json!({ "module": module }))
+}
+
+async fn set_module_save(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let obj = match body {
+        Value::Object(m) => m,
+        _ => return Err(ApiError::param_invalid("param_invalid")),
+    };
+    for (key, _) in PHP_MODULE_KEYS {
+        let Some(item) = obj.get(*key) else { continue };
+        let web = json_i32(item, "web");
+        let ssl = json_i32(item, "ssl");
+        let domain = json_str(item, "domain");
+        let dir = json_str(item, "dir");
+        let display = if web == 1 { 1 } else { 0 };
+        let _ = nav_php::php_set_nav_display_by_config(state.db.pool(), key, display).await;
+        let ssl_s = if ssl == 0 || domain.is_empty() { "0" } else { "1" };
+        for (k, v) in [
+            (format!("sy_{key}_web"), web.to_string()),
+            (format!("sy_{key}ssl"), ssl_s.to_string()),
+            (format!("sy_{key}domain"), domain.clone()),
+            (format!("sy_{key}dir"), dir),
+        ] {
+            setting_repo::upsert(state.db.pool(), &k, &v, "", true, clock::now_ts()).await?;
+        }
+        let _ = user;
+    }
+    Ok(PhpOut::Message("admin_01386"))
+}
+
+async fn set_module_navset(state: &AppState, body: &Value) -> AppResult<Value> {
+    let config = json_str(body, "config");
+    let types = nav_php::php_list_nav_types(state.db.reader()).await?;
+    let type_v: Vec<Value> = types
+        .into_iter()
+        .map(|t| json!({ "id": t.id, "typename": t.typename }))
+        .collect();
+    let nav = if let Some(r) = nav_php::php_get_nav_by_config(state.db.reader(), &config).await? {
+        json!({
+            "id": r.id, "nid": r.nid.to_string(), "name": r.name, "url": r.url,
+            "sort": r.sort.to_string(), "display": r.display.to_string(), "eject": r.eject.to_string(),
+            "model": r.model, "bold": r.bold.to_string(), "config": r.config,
+        })
+    } else {
+        json!({ "name": json_str(body, "name"), "config": config, "nid": "1" })
+    };
+    Ok(json!({ "type": type_v, "nav": nav }))
+}
+
+async fn set_module_navset_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let config = json_str(body, "config");
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let url = cfg.get(&format!("sy_{config}dir")).cloned().unwrap_or_default();
+    let id = json_u64(body, "id");
+    let n = nav_php::php_save_nav(
+        state.db.pool(),
+        nav_php::PhpNavSave {
+            id: if id > 0 { Some(id) } else { None },
+            nid: json_i32(body, "nid"),
+            eject: json_i32(body, "eject"),
+            display: json_i32(body, "display"),
+            name: &json_str(body, "name"),
+            url: &url,
+            furl: "",
+            sort: json_i32(body, "sort"),
+            color: "",
+            model: &json_str(body, "model"),
+            bold: json_i32(body, "bold"),
+            r#type: 1,
+            pic: None,
+            config: &config,
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01388"));
+    }
+    Ok(PhpOut::Message("admin_01387"))
+}
+
+async fn set_module_getseo(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let seo = seo_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    Ok(json!({
+        "seoname": seo.seoname,
+        "ident": seo.ident,
+        "rewrite_url": seo.rewrite_url,
+        "php_url": seo.php_url,
+        "title": seo.title,
+        "keywords": seo.keywords,
+        "description": seo.description,
+        "did": seo.did,
+        "php_wap_url": seo.php_wap_url,
+        "rewrite_wap_url": seo.rewrite_wap_url,
+    }))
+}
+
+async fn set_module_seoshezhi(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id > 0 && body.get("title").is_some() {
+        seo_repo::upsert(
+            state.db.pool(),
+            id,
+            &json_str(body, "seoname"),
+            &json_str(body, "ident"),
+            &json_str(body, "seomodel"),
+            &json_str(body, "title"),
+            &json_str(body, "keywords"),
+            &json_str(body, "php_url"),
+            &json_str(body, "rewrite_url"),
+            &json_str(body, "php_wap_url"),
+            &json_str(body, "rewrite_wap_url"),
+            &json_str(body, "description"),
+            json_i32(body, "did"),
+            clock::now_ts(),
+        )
+        .await?;
+        return Ok(PhpOut::Message("admin_model_00217"));
+    }
+    let config = json_str(body, "config");
+    let seo = seo_repo::list_by_model(state.db.reader(), &config).await?;
+    let domains = phpyun_models::domain::repo::list_all(state.db.reader()).await.unwrap_or_default();
+    Ok(PhpOut::Data(json!({
+        "seo": seo,
+        "Dname": domain_object(&domains),
+        "seoconfig": { "public": {
+            "webname": "网站名称", "webkeyword": "网站关键字", "webdesc": "网站描述", "weburl": "网址"
+        }}
+    })))
+}
+
+async fn sysmsg_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let f = gap_repo::PhpSysmsgFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw) },
+        ktype: json_present_i32(body, "type"),
+        ctime_from: php_days_ago(body, "end").or_else(|| php_days_ago(body, "ectime")),
+    };
+    let db = state.db.reader();
+    let rows = gap_repo::php_list_sysmsgs(db, &f, offset, limit).await?;
+    let total = gap_repo::php_count_sysmsgs(db, &f).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "fa_uid": r.fa_uid,
+                "username": r.username,
+                "content": r.content,
+                "content_all": strip_a_tags(&r.content),
+                "usertype": r.usertype,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn sysmsg_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01237"));
+    }
+    recycle_ids(state, user, "sysmsg", &ids, "/v1/admin/php-content/sysmsg/delete").await;
+    let n = gap_repo::php_delete_sysmsgs(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00033"));
+    }
+    Ok(PhpOut::Message("model_00112"))
+}
+
+async fn sysmsg_send(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let utype = json_i32(body, "utype");
+    if utype == 0 {
+        return Err(ApiError::business("admin_system_00210"));
+    }
+    let content = json_str(body, "content");
+    if content.is_empty() {
+        return Err(ApiError::business("admin_system_00016"));
+    }
+    let now = clock::now_ts();
+    let members = if utype == 5 {
+        let names: Vec<String> = json_str(body, "userarr")
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
+        gap_repo::php_members_by_usernames(state.db.pool(), &names).await?
+    } else {
+        let page = json_u64(body, "page").max(1);
+        let offset = (page - 1) * 1000;
+        gap_repo::php_list_members_by_usertype(state.db.pool(), utype, offset, 1000).await?
+    };
+    if members.is_empty() {
+        return Err(ApiError::business("wap_js_00060"));
+    }
+    for (uid, username, ut) in &members {
+        gap_repo::php_insert_sysmsg(state.db.pool(), *uid, username, *ut, &content, now).await?;
+    }
+    if utype != 5 {
+        let count = gap_repo::php_count_members_by_usertype(state.db.pool(), utype).await?;
+        let page = json_u64(body, "page").max(1);
+        let size = 1000u64;
+        if count > page * size {
+            return Ok(PhpOut::Text(
+                "admin_system_00017",
+                format!("{}{count}{}{}{}", msg_t("admin_system_00017"), page * size, msg_t("ok"), ""),
+            ));
+        }
+    }
+    Ok(PhpOut::Message("admin_system_00018"))
+}
+
+fn error_type_n(t: i32) -> String {
+    let key = match t {
+        1 => "wap_00242",
+        2 => "admin_user_00296",
+        3 => "wap_00794",
+        4 => "wap_00322",
+        5 => "common_06479",
+        6 => "wap_00451",
+        7 => "resume_00029",
+        8 => "admin_user_00166",
+        9 => "admin_user_00167",
+        _ => return String::new(),
+    };
+    msg_t(key)
+}
+
+async fn error_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let f = gap_repo::PhpErrorLogFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw) },
+        ktype: json_present_i32(body, "type"),
+        logtype: json_present_i32(body, "logtype"),
+        ctime_from: php_days_ago(body, "ctime"),
+    };
+    let db = state.db.reader();
+    let rows = gap_repo::php_list_error_logs(db, &f, offset, limit).await?;
+    let total = gap_repo::php_count_error_logs(db, &f).await?;
+    let ids: Vec<u64> = rows.iter().map(|r| r.id).collect();
+    let _ = gap_repo::php_mark_error_read(state.db.pool(), &ids).await;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "type": r.r#type,
+                "type_n": error_type_n(r.r#type),
+                "content": r.content,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+                "isread": r.isread,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn error_log_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    if json_str(body, "id") == "all" {
+        let n = gap_repo::delete_error_logs(state.db.pool(), &[]).await?;
+        let _ = n;
+        return Ok(PhpOut::Message("admin_01376"));
+    }
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01237"));
+    }
+    recycle_ids(state, user, "error_log", &ids, "/v1/admin/php-content/error-log/delete").await;
+    let n = gap_repo::delete_error_logs(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00033"));
+    }
+    Ok(PhpOut::Message("admin_01376"))
+}
+
+async fn admin_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let mut ctime_from = php_days_ago(body, "end");
+    let mut ctime_to = None;
+    let time = json_str(body, "time");
+    if !time.is_empty() {
+        let parts: Vec<&str> = time.split('~').collect();
+        if parts.len() == 2 {
+            let a = clock::parse_site_date(parts[0].trim()).unwrap_or(0);
+            let b = clock::parse_site_date(parts[1].trim()).unwrap_or(0);
+            if a > 0 {
+                ctime_from = Some(a);
+            }
+            if b > 0 {
+                ctime_to = Some(b + 86_399);
+            }
+        }
+    }
+    let uk = json_str(body, "ukeyword");
+    let kw = json_str(body, "keyword");
+    let f = admin_msg_repo::PhpAdminLogFilter {
+        ukeyword: if uk.is_empty() { None } else { Some(uk) },
+        keyword: if kw.is_empty() { None } else { Some(kw) },
+        ctime_from,
+        ctime_to,
+    };
+    let db = state.db.reader();
+    let rows = admin_msg_repo::php_list_admin_logs(db, &f, offset, limit).await?;
+    let total = admin_msg_repo::php_count_admin_logs(db, &f).await?;
+    let domains = phpyun_models::domain::repo::list_all(db).await.unwrap_or_default();
+    let dmap = domain_object(&domains);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let did_name = dmap.get(&r.did.to_string()).cloned().unwrap_or(json!(""));
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "username": r.username,
+                "content": r.content,
+                "ip": r.ip,
+                "did": r.did,
+                "did_name": did_name,
+                "ctime": r.ctime,
+                "ctime_n": fmt_dt(r.ctime),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
 }

@@ -2,6 +2,20 @@
 
 /// Extract integer nav ids from a PHP serialized array such as
 /// `a:2:{i:0;i:216;i:1;s:3:"226";}`. Nested arrays are flattened.
+/// PHP `serialize(array_filter($power))` of integer nav ids.
+pub fn serialize_group_power(ids: &[i64]) -> String {
+    let mut uniq = ids.to_vec();
+    uniq.sort_unstable();
+    uniq.dedup();
+    uniq.retain(|n| *n > 0);
+    let mut out = format!("a:{}:{{", uniq.len());
+    for (i, id) in uniq.iter().enumerate() {
+        out.push_str(&format!("i:{i};i:{id};"));
+    }
+    out.push('}');
+    out
+}
+
 pub fn parse_group_power(raw: &str) -> Vec<i64> {
     let s = raw.trim();
     if s.is_empty() || s == "N;" {
@@ -147,5 +161,11 @@ mod tests {
     fn php_null() {
         assert!(parse_group_power("N;").is_empty());
         assert!(parse_group_power("").is_empty());
+    }
+
+    #[test]
+    fn serialize_roundtrip() {
+        let raw = super::serialize_group_power(&[226, 40, 216, 40]);
+        assert_eq!(parse_group_power(&raw), vec![40, 216, 226]);
     }
 }

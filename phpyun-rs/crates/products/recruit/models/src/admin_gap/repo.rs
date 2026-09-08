@@ -1357,16 +1357,294 @@ pub async fn insert_sysmsg(
     content: &str,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
+    php_insert_sysmsg(pool, fa_uid, "", usertype, content, now).await
+}
+
+pub async fn php_insert_sysmsg(
+    pool: &MySqlPool,
+    fa_uid: u64,
+    username: &str,
+    usertype: i32,
+    content: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
     Ok(sqlx::query(
-        "INSERT INTO phpyun_sysmsg (fa_uid, usertype, content, remind_status, ctime) VALUES (?, ?, ?, 1, ?)",
+        "INSERT INTO phpyun_sysmsg (fa_uid, username, usertype, content, remind_status, ctime) VALUES (?, ?, ?, ?, 1, ?)",
     )
     .bind(fa_uid)
+    .bind(username)
     .bind(usertype)
     .bind(content)
     .bind(now)
     .execute(pool)
     .await?
     .last_insert_id())
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct PhpSysmsgFilter {
+    pub keyword: Option<String>,
+    pub ktype: Option<i32>,
+    pub ctime_from: Option<i64>,
+}
+
+fn push_sysmsg_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpSysmsgFilter) {
+    qb.push(" FROM phpyun_sysmsg WHERE 1=1");
+    if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        match f.ktype.unwrap_or(1) {
+            2 => {
+                qb.push(" AND content LIKE ");
+                qb.push_bind(like);
+            }
+            3 => {
+                qb.push(" AND fa_uid = ");
+                qb.push_bind(kw.parse::<u64>().unwrap_or(0));
+            }
+            _ => {
+                qb.push(" AND username LIKE ");
+                qb.push_bind(like);
+            }
+        }
+    }
+    if let Some(v) = f.ctime_from {
+        qb.push(" AND ctime >= ");
+        qb.push_bind(v);
+    }
+}
+
+pub async fn php_list_sysmsgs(
+    pool: &MySqlPool,
+    f: &PhpSysmsgFilter,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<SysmsgAdminRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(fa_uid,0) AS UNSIGNED) AS fa_uid, \
+         COALESCE(username,'') AS username, COALESCE(content,'') AS content, \
+         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, CAST(COALESCE(ctime,0) AS SIGNED) AS ctime",
+    );
+    push_sysmsg_where(&mut qb, f);
+    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_sysmsgs(pool: &MySqlPool, f: &PhpSysmsgFilter) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_sysmsg_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_delete_sysmsgs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    delete_in(pool, "DELETE FROM phpyun_sysmsg WHERE id IN (", ids).await
+}
+
+pub async fn php_list_members_by_usertype(
+    pool: &MySqlPool,
+    usertype: i32,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<(u64, String, i32)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED), COALESCE(username,''), CAST(COALESCE(usertype,0) AS SIGNED) \
+         FROM phpyun_member WHERE usertype = ? ORDER BY uid ASC LIMIT ? OFFSET ?",
+    )
+    .bind(usertype)
+    .bind(limit as i64)
+    .bind(offset as i64)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn php_count_members_by_usertype(pool: &MySqlPool, usertype: i32) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_member WHERE usertype = ?")
+        .bind(usertype)
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_members_by_usernames(
+    pool: &MySqlPool,
+    names: &[String],
+) -> Result<Vec<(u64, String, i32)>, sqlx::Error> {
+    if names.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED), COALESCE(username,''), CAST(COALESCE(usertype,0) AS SIGNED) \
+         FROM phpyun_member WHERE username IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for n in names {
+        sep.push_bind(n.clone());
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct PhpErrorLogFilter {
+    pub keyword: Option<String>,
+    pub ktype: Option<i32>,
+    pub logtype: Option<i32>,
+    pub ctime_from: Option<i64>,
+}
+
+fn push_error_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpErrorLogFilter) {
+    qb.push(" FROM phpyun_error_log WHERE 1=1");
+    if let Some(t) = f.logtype.filter(|v| *v > 0) {
+        qb.push(" AND `type` = ");
+        qb.push_bind(t);
+    }
+    if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        if f.ktype.unwrap_or(1) == 2 {
+            qb.push(" AND content LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        } else {
+            qb.push(" AND uid = ");
+            qb.push_bind(kw.parse::<i64>().unwrap_or(0));
+        }
+    }
+    if let Some(v) = f.ctime_from {
+        qb.push(" AND ctime >= ");
+        qb.push_bind(v);
+    }
+}
+
+pub async fn php_list_error_logs(
+    pool: &MySqlPool,
+    f: &PhpErrorLogFilter,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<ErrorLogRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS SIGNED) AS uid, \
+         CAST(COALESCE(`type`,0) AS SIGNED) AS `type`, COALESCE(content,'') AS content, \
+         CAST(COALESCE(ctime,0) AS SIGNED) AS ctime, CAST(COALESCE(isread,0) AS SIGNED) AS isread",
+    );
+    push_error_where(&mut qb, f);
+    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_error_logs(pool: &MySqlPool, f: &PhpErrorLogFilter) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_error_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_mark_error_read(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_error_log SET isread = 1 WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct PhpNavmapFilter {
+    pub keyword: Option<String>,
+    pub ktype: Option<i32>,
+    pub eject: Option<i32>,
+    pub display: Option<i32>,
+    pub ctype: Option<i32>,
+}
+
+fn push_navmap_php_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpNavmapFilter) {
+    qb.push(" FROM phpyun_navmap WHERE ");
+    qb.push(PREDICATE);
+    if let Some(v) = f.eject {
+        qb.push(" AND eject = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.display {
+        qb.push(" AND display = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.ctype.filter(|n| *n > 0) {
+        qb.push(" AND `type` = ");
+        qb.push_bind(v);
+    }
+    if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        if f.ktype.unwrap_or(1) == 2 {
+            qb.push(" AND url LIKE ");
+            qb.push_bind(like);
+        } else {
+            qb.push(" AND name LIKE ");
+            qb.push_bind(like);
+        }
+    }
+}
+
+pub async fn php_list_navmap(
+    pool: &MySqlPool,
+    f: &PhpNavmapFilter,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<NavmapRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT ");
+    qb.push(NAVMAP_FIELDS);
+    push_navmap_php_where(&mut qb, f);
+    qb.push(" ORDER BY sort ASC, id ASC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_navmap(pool: &MySqlPool, f: &PhpNavmapFilter) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_navmap_php_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_list_navmap_types(pool: &MySqlPool) -> Result<Vec<(u64, String)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED), COALESCE(name,'') FROM phpyun_navmap \
+         WHERE COALESCE(deleted,0)=0 ORDER BY sort ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn php_set_navmap_field(
+    pool: &MySqlPool,
+    id: u64,
+    field: &str,
+    rec: i32,
+) -> Result<u64, sqlx::Error> {
+    let col = match field {
+        "display" => "display",
+        "eject" => "eject",
+        "sort" => "sort",
+        _ => return Ok(0),
+    };
+    let sql = format!("UPDATE phpyun_navmap SET `{col}` = ? WHERE id = ?");
+    Ok(sqlx::query(&sql)
+        .bind(rec)
+        .bind(id)
+        .execute(pool)
+        .await?
+        .rows_affected())
 }
 
 pub async fn list_member_uids_by_usertype(
