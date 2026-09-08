@@ -2123,6 +2123,7 @@ version = "0.1.2"
 dependencies = [
  "arc-swap",
  "base64 0.22.1",
+ "bytes",
  "captcha",
  "chrono",
  "md-5",

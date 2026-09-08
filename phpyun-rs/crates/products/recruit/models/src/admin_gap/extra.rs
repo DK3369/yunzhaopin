@@ -3544,3 +3544,619 @@ pub async fn php_count_user_members(
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
+
+pub async fn php_find_wxpub_temp(pool: &MySqlPool, id: u64) -> Result<Option<WxpubTempRow>, sqlx::Error> {
+    sqlx::query_as(&format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, COALESCE(header,'') AS header, \
+         COALESCE(body,'') AS body, COALESCE(footer,'') AS footer, COALESCE(`type`,'') AS `type`, \
+         CAST(COALESCE(temptype,0) AS SIGNED) AS temptype, CAST(COALESCE(time,0) AS SIGNED) AS time \
+         FROM phpyun_wxpub_temps WHERE id = ? AND {PREDICATE} LIMIT 1"
+    ))
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn php_count_wxpub_title(
+    pool: &MySqlPool,
+    title: &str,
+    except: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(&format!(
+        "SELECT COUNT(*) FROM phpyun_wxpub_temps WHERE title = ? AND id <> ? AND {PREDICATE}"
+    ))
+    .bind(title)
+    .bind(except)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_list_wxpub_temps_php(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    temptype: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<WxpubTempRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb = QueryBuilder::new(format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, COALESCE(header,'') AS header, \
+         COALESCE(body,'') AS body, COALESCE(footer,'') AS footer, COALESCE(`type`,'') AS `type`, \
+         CAST(COALESCE(temptype,0) AS SIGNED) AS temptype, CAST(COALESCE(time,0) AS SIGNED) AS time \
+         FROM phpyun_wxpub_temps WHERE {PREDICATE}"
+    ));
+    if let Some(t) = temptype {
+        qb.push(" AND temptype = ");
+        qb.push_bind(t);
+    }
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(
+        " ORDER BY CASE WHEN `type`='job' THEN 1 WHEN `type`='company' THEN 2 WHEN `type`='resume' THEN 3 ELSE 9 END ASC, id DESC LIMIT ",
+    );
+    qb.push_bind(l);
+    qb.push(" OFFSET ");
+    qb.push_bind(o);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpIdName {
+    pub id: u64,
+    pub name: String,
+}
+
+pub async fn php_list_rating_names(pool: &MySqlPool) -> Result<Vec<PhpIdName>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(`name`,'') AS `name` \
+         FROM phpyun_company_rating WHERE category = 1 AND COALESCE(deleted,0)=0 ORDER BY sort ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpAdminName {
+    pub uid: u64,
+    pub username: String,
+    pub name: String,
+}
+
+pub async fn php_list_admin_names(pool: &MySqlPool) -> Result<Vec<PhpAdminName>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(username,'') AS username, COALESCE(`name`,'') AS `name` \
+         FROM phpyun_admin_user ORDER BY uid ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPubSearchRow {
+    pub value: u64,
+    pub name: String,
+    pub upname: String,
+}
+
+pub async fn php_search_wxpub_jobs(
+    pool: &MySqlPool,
+    keyword: &str,
+) -> Result<Vec<PhpPubSearchRow>, sqlx::Error> {
+    let kw = keyword.trim();
+    if kw.is_empty() {
+        return Ok(Vec::new());
+    }
+    if let Ok(id) = kw.parse::<u64>() {
+        return sqlx::query_as(
+            "SELECT CAST(id AS UNSIGNED) AS value, COALESCE(`name`,'') AS `name`, COALESCE(com_name,'') AS upname \
+             FROM phpyun_company_job WHERE id = ? AND state = 1 AND status = 0 AND r_status = 1 LIMIT 20",
+        )
+        .bind(id)
+        .fetch_all(pool)
+        .await;
+    }
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS value, COALESCE(`name`,'') AS `name`, COALESCE(com_name,'') AS upname \
+         FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 \
+         AND (`name` LIKE ? OR com_name LIKE ?) ORDER BY lastupdate DESC LIMIT 20",
+    )
+    .bind(format!("%{kw}%"))
+    .bind(format!("%{kw}%"))
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn php_search_wxpub_coms(
+    pool: &MySqlPool,
+    keyword: &str,
+) -> Result<Vec<PhpPubSearchRow>, sqlx::Error> {
+    let kw = keyword.trim();
+    if kw.is_empty() {
+        return Ok(Vec::new());
+    }
+    sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) AS value, COALESCE(`name`,'') AS `name`, '' AS upname \
+         FROM phpyun_company WHERE r_status = 1 AND `name` LIKE ? ORDER BY uid DESC LIMIT 10",
+    )
+    .bind(format!("%{kw}%"))
+    .fetch_all(pool)
+    .await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpTwTaskRow {
+    pub id: u64,
+    pub jobid: u64,
+    pub cuid: u64,
+    pub jobname: String,
+    pub comname: String,
+    pub jobsdate: i64,
+    pub auid: u64,
+    pub content: String,
+    pub urgent: i32,
+    pub wcmoments: i32,
+    pub status: i32,
+    pub ctime: i64,
+    pub gzh: i32,
+    pub r#type: i32,
+    pub etime: i64,
+    pub job_off: i32,
+    pub com_r_status: i32,
+    pub admin_username: String,
+}
+
+pub struct PhpTwTaskFilter<'a> {
+    pub kind: i32,
+    pub keyword: Option<&'a str>,
+    pub welfare: Option<&'a str>,
+    pub auid: Option<u64>,
+    pub status: Option<i32>,
+    pub urgent: Option<i32>,
+    pub wcmoments: Option<i32>,
+    pub gzh: Option<i32>,
+    pub order_t: &'a str,
+    pub order_dir: &'a str,
+}
+
+fn push_twtask_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpTwTaskFilter<'a>) {
+    qb.push(" AND t.`type` = ");
+    qb.push_bind(f.kind);
+    if let Some(uid) = f.auid.filter(|v| *v > 0) {
+        qb.push(" AND t.auid = ");
+        qb.push_bind(uid);
+    }
+    if let Some(st) = f.status {
+        qb.push(" AND t.status = ");
+        qb.push_bind(st);
+    }
+    if let Some(v) = f.urgent.filter(|n| *n > 0) {
+        qb.push(" AND t.urgent = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.wcmoments.filter(|n| *n > 0) {
+        qb.push(" AND t.wcmoments = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.gzh.filter(|n| *n > 0) {
+        qb.push(" AND t.gzh = ");
+        qb.push_bind(v);
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        if let Ok(id) = kw.parse::<u64>() {
+            if f.kind == 1 {
+                qb.push(" AND (t.jobid = ");
+                qb.push_bind(id);
+                qb.push(" OR t.content LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            } else {
+                qb.push(" AND (t.cuid = ");
+                qb.push_bind(id);
+                qb.push(" OR t.content LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+                qb.push(")");
+            }
+        } else if f.kind == 1 {
+            qb.push(" AND (t.jobname LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR t.comname LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR t.content LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        } else {
+            qb.push(" AND (t.comname LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR t.content LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        }
+    }
+    if let Some(w) = f.welfare.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND t.jobid IN (SELECT id FROM phpyun_company_job WHERE 1=1");
+        for part in w.split_whitespace() {
+            qb.push(" AND FIND_IN_SET(");
+            qb.push_bind(part);
+            qb.push(", REPLACE(welfare,'，',','))");
+        }
+        qb.push(")");
+    }
+}
+
+const TWTASK_FIELDS: &str = "SELECT CAST(t.id AS UNSIGNED) AS id, CAST(COALESCE(t.jobid,0) AS UNSIGNED) AS jobid, \
+ CAST(COALESCE(t.cuid,0) AS UNSIGNED) AS cuid, COALESCE(t.jobname,'') AS jobname, \
+ COALESCE(t.comname,'') AS comname, CAST(COALESCE(t.jobsdate,0) AS SIGNED) AS jobsdate, \
+ CAST(COALESCE(t.auid,0) AS UNSIGNED) AS auid, COALESCE(t.content,'') AS content, \
+ CAST(COALESCE(t.urgent,0) AS SIGNED) AS urgent, CAST(COALESCE(t.wcmoments,0) AS SIGNED) AS wcmoments, \
+ CAST(COALESCE(t.status,0) AS SIGNED) AS status, CAST(COALESCE(t.ctime,0) AS SIGNED) AS ctime, \
+ CAST(COALESCE(t.gzh,0) AS SIGNED) AS gzh, CAST(COALESCE(t.`type`,1) AS SIGNED) AS `type`, \
+ CAST(COALESCE(t.etime,0) AS SIGNED) AS etime, \
+ CAST(CASE WHEN j.id IS NULL THEN 1 WHEN j.status = 1 THEN 2 ELSE 0 END AS SIGNED) AS job_off, \
+ CAST(COALESCE(c.r_status,0) AS SIGNED) AS com_r_status, \
+ COALESCE(NULLIF(a.name,''), a.username, '') AS admin_username \
+ FROM phpyun_wxpub_twtask t \
+ LEFT JOIN phpyun_company_job j ON j.id = t.jobid \
+ LEFT JOIN phpyun_company c ON c.uid = t.cuid \
+ LEFT JOIN phpyun_admin_user a ON a.uid = t.auid WHERE 1=1";
+
+pub async fn php_list_twtasks(
+    pool: &MySqlPool,
+    f: &PhpTwTaskFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpTwTaskRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb = QueryBuilder::new(TWTASK_FIELDS);
+    push_twtask_filters(&mut qb, f);
+    let col = match f.order_t {
+        "jobsdate" => "t.jobsdate",
+        "id" => "t.id",
+        _ => "t.ctime",
+    };
+    let dir = if f.order_dir.eq_ignore_ascii_case("asc") {
+        " ASC"
+    } else {
+        " DESC"
+    };
+    qb.push(" ORDER BY ");
+    qb.push(col);
+    qb.push(dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(l);
+    qb.push(" OFFSET ");
+    qb.push_bind(o);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_twtasks(pool: &MySqlPool, f: &PhpTwTaskFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_wxpub_twtask t WHERE 1=1");
+    push_twtask_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_delete_twtasks(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_wxpub_twtask WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_finish_twtasks(pool: &MySqlPool, ids: &[u64], now: i64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_wxpub_twtask SET status = 1, etime = ");
+    qb.push_bind(now);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPubJobRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub com_name: String,
+    pub minsalary: i32,
+    pub maxsalary: i32,
+    pub number: i32,
+    pub age: String,
+    pub sex: i32,
+    pub exp: i32,
+    pub edu: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub description: String,
+    pub welfare: String,
+    pub content: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub address: String,
+}
+
+pub struct PhpPubJobFilter<'a> {
+    pub ids: Option<&'a [u64]>,
+    pub rating: Option<&'a str>,
+    pub keyword: Option<&'a str>,
+    pub provinceid: Option<i32>,
+    pub cityid: Option<i32>,
+    pub three_cityid: Option<i32>,
+    pub job1: Option<i32>,
+    pub job1_son: Option<i32>,
+    pub job_post: Option<i32>,
+    pub lastupdate_gt: Option<i64>,
+    pub sdate_gt: Option<i64>,
+    pub xsdate: bool,
+    pub urgent: bool,
+    pub rec: bool,
+    pub minsalary: Option<i32>,
+    pub maxsalary: Option<i32>,
+    pub welfare: Option<&'a str>,
+    pub now: i64,
+}
+
+fn push_pub_job_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpPubJobFilter<'a>) {
+    qb.push(" AND j.state = 1 AND j.status = 0 AND j.r_status = 1");
+    if let Some(ids) = f.ids.filter(|v| !v.is_empty()) {
+        qb.push(" AND j.id IN (");
+        let mut sep = qb.separated(", ");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    }
+    if let Some(r) = f.rating.map(str::trim).filter(|s| !s.is_empty()) {
+        let nums: Vec<i32> = r
+            .split([',', '，'])
+            .filter_map(|p| p.trim().parse::<i32>().ok())
+            .collect();
+        if !nums.is_empty() {
+            qb.push(" AND j.rating IN (");
+            let mut sep = qb.separated(", ");
+            for n in nums {
+                sep.push_bind(n);
+            }
+            qb.push(")");
+        }
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND (j.name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR j.com_name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(")");
+    }
+    if let Some(v) = f.provinceid.filter(|n| *n > 0) {
+        qb.push(" AND j.provinceid = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.cityid.filter(|n| *n > 0) {
+        qb.push(" AND j.cityid = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.three_cityid.filter(|n| *n > 0) {
+        qb.push(" AND j.three_cityid = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.job1.filter(|n| *n > 0) {
+        qb.push(" AND j.job1 = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.job1_son.filter(|n| *n > 0) {
+        qb.push(" AND j.job1_son = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.job_post.filter(|n| *n > 0) {
+        qb.push(" AND j.job_post = ");
+        qb.push_bind(v);
+    }
+    if let Some(ts) = f.lastupdate_gt {
+        qb.push(" AND j.lastupdate > ");
+        qb.push_bind(ts);
+    }
+    if let Some(ts) = f.sdate_gt {
+        qb.push(" AND j.sdate > ");
+        qb.push_bind(ts);
+    }
+    if f.xsdate {
+        qb.push(" AND j.xsdate > ");
+        qb.push_bind(f.now);
+    }
+    if f.urgent {
+        qb.push(" AND j.urgent_time > ");
+        qb.push_bind(f.now);
+    }
+    if f.rec {
+        qb.push(" AND j.rec_time > ");
+        qb.push_bind(f.now);
+    }
+    if let Some(v) = f.minsalary.filter(|n| *n > 0) {
+        qb.push(" AND j.minsalary > ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.maxsalary.filter(|n| *n > 0) {
+        qb.push(" AND j.maxsalary < ");
+        qb.push_bind(v);
+    }
+    if let Some(w) = f.welfare.map(str::trim).filter(|s| !s.is_empty()) {
+        for part in w.split(['|', ' ']).map(str::trim).filter(|s| !s.is_empty()) {
+            qb.push(" AND j.welfare LIKE ");
+            qb.push_bind(format!("%{part}%"));
+        }
+    }
+}
+
+const PUB_JOB_FIELDS: &str = "SELECT CAST(j.id AS UNSIGNED) AS id, CAST(j.uid AS UNSIGNED) AS uid, \
+ COALESCE(j.name,'') AS `name`, COALESCE(j.com_name,'') AS com_name, \
+ CAST(COALESCE(j.minsalary,0) AS SIGNED) AS minsalary, CAST(COALESCE(j.maxsalary,0) AS SIGNED) AS maxsalary, \
+ CAST(COALESCE(j.number,0) AS SIGNED) AS number, COALESCE(j.age,'') AS age, \
+ CAST(COALESCE(j.sex,0) AS SIGNED) AS sex, CAST(COALESCE(j.exp,0) AS SIGNED) AS exp, \
+ CAST(COALESCE(j.edu,0) AS SIGNED) AS edu, CAST(COALESCE(j.provinceid,0) AS SIGNED) AS provinceid, \
+ CAST(COALESCE(j.cityid,0) AS SIGNED) AS cityid, CAST(COALESCE(j.three_cityid,0) AS SIGNED) AS three_cityid, \
+ COALESCE(j.description,'') AS description, COALESCE(j.welfare,'') AS welfare, \
+ COALESCE(c.content,'') AS content, COALESCE(c.linktel,'') AS linktel, \
+ COALESCE(c.linkphone,'') AS linkphone, COALESCE(c.address,'') AS address \
+ FROM phpyun_company_job j LEFT JOIN phpyun_company c ON c.uid = j.uid WHERE 1=1";
+
+pub async fn php_list_pubtool_jobs(
+    pool: &MySqlPool,
+    f: &PhpPubJobFilter<'_>,
+    limit: u64,
+) -> Result<Vec<PhpPubJobRow>, sqlx::Error> {
+    let cap = if limit == 0 { 20 } else { limit.min(200) };
+    let mut qb = QueryBuilder::new(PUB_JOB_FIELDS);
+    push_pub_job_filters(&mut qb, f);
+    qb.push(" ORDER BY j.lastupdate DESC LIMIT ");
+    qb.push_bind(cap as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_list_pubtool_jobs_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    limit: u64,
+) -> Result<Vec<PhpPubJobRow>, sqlx::Error> {
+    let cap = if limit == 0 { 5 } else { limit.min(50) };
+    let mut qb = QueryBuilder::new(PUB_JOB_FIELDS);
+    qb.push(" AND j.state = 1 AND j.status = 0 AND j.r_status = 1 AND j.uid = ");
+    qb.push_bind(uid);
+    qb.push(" ORDER BY j.lastupdate DESC LIMIT ");
+    qb.push_bind(cap as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPubResumeRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub uname: String,
+    pub edu: i32,
+    pub exp: i32,
+    pub salary: String,
+    pub birthday: String,
+    pub photo: String,
+}
+
+pub async fn php_list_pubtool_resumes(
+    pool: &MySqlPool,
+    limit: u64,
+    lastupdate_gt: Option<i64>,
+    ctime_gt: Option<i64>,
+    integrity: Option<i32>,
+) -> Result<Vec<PhpPubResumeRow>, sqlx::Error> {
+    let cap = if limit == 0 { 20 } else { limit.min(200) };
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(e.id AS UNSIGNED) AS id, CAST(e.uid AS UNSIGNED) AS uid, \
+         COALESCE(e.name,'') AS `name`, COALESCE(r.name,'') AS uname, \
+         CAST(COALESCE(e.edu,0) AS SIGNED) AS edu, CAST(COALESCE(e.exp,0) AS SIGNED) AS exp, \
+         COALESCE(e.salary,'') AS salary, COALESCE(r.birthday,'') AS birthday, \
+         COALESCE(r.photo,'') AS photo \
+         FROM phpyun_resume_expect e INNER JOIN phpyun_resume r ON r.uid = e.uid \
+         WHERE e.defaults = 1 AND e.state = 1 AND e.status = 1 AND e.r_status = 1",
+    );
+    if let Some(ts) = lastupdate_gt {
+        qb.push(" AND e.lastupdate > ");
+        qb.push_bind(ts);
+    }
+    if let Some(ts) = ctime_gt {
+        qb.push(" AND e.ctime > ");
+        qb.push_bind(ts);
+    }
+    if let Some(n) = integrity.filter(|v| *v > 0) {
+        qb.push(" AND e.integrity >= ");
+        qb.push_bind(n);
+    }
+    qb.push(" ORDER BY e.lastupdate DESC LIMIT ");
+    qb.push_bind(cap as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPubComRow {
+    pub uid: u64,
+    pub name: String,
+    pub content: String,
+    pub linkman: String,
+    pub linktel: String,
+    pub address: String,
+    pub welfare: String,
+}
+
+pub async fn php_list_pubtool_companies(
+    pool: &MySqlPool,
+    uids: &[u64],
+    rating: Option<&str>,
+    limit: u64,
+) -> Result<Vec<PhpPubComRow>, sqlx::Error> {
+    let cap = if limit == 0 { 20 } else { limit.min(200) };
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(`name`,'') AS `name`, \
+         COALESCE(content,'') AS content, COALESCE(linkman,'') AS linkman, \
+         COALESCE(linktel,'') AS linktel, COALESCE(address,'') AS address, \
+         COALESCE(welfare,'') AS welfare FROM phpyun_company WHERE r_status = 1 AND `name` <> ''",
+    );
+    if !uids.is_empty() {
+        qb.push(" AND uid IN (");
+        let mut sep = qb.separated(", ");
+        for id in uids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    }
+    if let Some(r) = rating.map(str::trim).filter(|s| !s.is_empty()) {
+        let nums: Vec<i32> = r
+            .split([',', '，'])
+            .filter_map(|p| p.trim().parse::<i32>().ok())
+            .collect();
+        if !nums.is_empty() {
+            qb.push(" AND rating IN (");
+            let mut sep = qb.separated(", ");
+            for n in nums {
+                sep.push_bind(n);
+            }
+            qb.push(")");
+        }
+    }
+    qb.push(" ORDER BY uid DESC LIMIT ");
+    qb.push_bind(cap as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_list_wxpub_temp_titles(
+    pool: &MySqlPool,
+    temptype: i32,
+    types: &[&str],
+) -> Result<Vec<PhpIdName>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS `name` \
+         FROM phpyun_wxpub_temps WHERE {PREDICATE} AND temptype = "
+    ));
+    qb.push_bind(temptype);
+    if !types.is_empty() {
+        qb.push(" AND `type` IN (");
+        let mut sep = qb.separated(", ");
+        for t in types {
+            sep.push_bind(*t);
+        }
+        qb.push(")");
+    }
+    qb.push(" ORDER BY id ASC");
+    qb.build_query_as().fetch_all(pool).await
+}

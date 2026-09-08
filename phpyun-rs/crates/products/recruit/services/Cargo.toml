@@ -16,6 +16,7 @@ base64.workspace = true
 sha1.workspace = true
 md-5.workspace = true
 sqlx.workspace = true
+bytes.workspace = true
 phpyun_core.workspace = true
 phpyun_auth.workspace = true
 phpyun_models.workspace = true

@@ -119,6 +119,8 @@ export async function httpPost(
       return { data: { error: action.phpError, msg: phpMsg(env.msg || 'ok'), data } }
     }
     if (action.rawBody) {
+      // PHP msgNum / echo HTML: Vue reads `result.data` as the payload itself.
+      if (typeof data === 'string') return { data: data as unknown as Record<string, unknown> }
       return { data: (data && typeof data === 'object' ? data : {}) as Record<string, unknown> }
     }
     return { data: { error: 0, msg: phpMsg(env.msg || 'ok'), data } }

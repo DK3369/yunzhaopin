@@ -166,6 +166,36 @@ impl Http {
         .await
     }
 
+    /// GET raw bytes (WeChat mmbiz images and other binary fetches).
+    pub async fn get_bytes(&self, url: &str) -> AppResult<bytes::Bytes> {
+        let host = host_of(url);
+        let span = tracing::info_span!("http.get_bytes", url = %url, host = %host);
+        async move {
+            let started = Instant::now();
+            let res = self
+                .inner
+                .get(url)
+                .send()
+                .await
+                .and_then(|r| r.error_for_status());
+            match res {
+                Ok(resp) => {
+                    let status = resp.status().as_u16();
+                    let b = resp.bytes().await.map_err(map_reqwest_err)?;
+                    m::histogram_ms(
+                        "http.client.latency_ms",
+                        started.elapsed().as_secs_f64() * 1000.0,
+                    );
+                    record_status(&host, status);
+                    Ok(b)
+                }
+                Err(e) => Err(map_reqwest_err(e)),
+            }
+        }
+        .instrument(span)
+        .await
+    }
+
     /// POST a plain-text body and read text in return (common for SMS /
     /// payment XML gateways).
     pub async fn post_text(&self, url: &str, body: String) -> AppResult<String> {

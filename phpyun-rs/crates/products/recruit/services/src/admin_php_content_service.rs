@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 
+use chrono::Datelike;
 use phpyun_core::i18n;
 use phpyun_core::utils::{fmt_date, fmt_dt, fmt_ts};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
@@ -511,6 +512,22 @@ pub async fn dispatch(
         ("zph-space", "up") => Ok(PhpOut::Data(zph_space_up(state, body).await?)),
         ("report-resume", "delresume") => report_delresume(state, user, body).await,
         ("report-resume", "delresumeall") => report_delresumeall(state, user, body).await,
+        ("fabutool", "index") => Ok(PhpOut::Data(fabutool_index(state, body).await?)),
+        ("fabutool", "wxPubTemp") => Ok(PhpOut::Data(fabutool_wx_pub_temp(state, body).await?)),
+        ("fabutool", "wxPubTempSave") => fabutool_wx_pub_temp_save(state, body).await,
+        ("fabutool", "wxPubTempDel") => fabutool_wx_pub_temp_del(state, user, body).await,
+        ("fabutool", "pubtool") => Ok(PhpOut::Data(fabutool_pubtool(state).await?)),
+        ("fabutool", "getWxpubJob") => Ok(PhpOut::Data(fabutool_get_wxpub_job(state, body).await?)),
+        ("fabutool", "getComBySearch") => Ok(PhpOut::Data(fabutool_get_com_search(state, body).await?)),
+        ("fabutool", "Getpubtool") => Ok(PhpOut::Data(Value::String(fabutool_get_pubtool(state, body).await?))),
+        ("fabutool", "getTW") => Ok(PhpOut::Data(Value::String(fabutool_get_tw(state, body).await?))),
+        ("fabutool", "getComTW") => Ok(PhpOut::Data(Value::String(fabutool_get_com_tw(state, body).await?))),
+        ("fabutool", "twTask") => Ok(PhpOut::Data(fabutool_tw_task(state, body, 1).await?)),
+        ("fabutool", "comtwTask") => Ok(PhpOut::Data(fabutool_tw_task(state, body, 2).await?)),
+        ("fabutool", "twTask_base_data") => Ok(PhpOut::Data(fabutool_tw_base(state, true).await?)),
+        ("fabutool", "comtwTask_base_data") => Ok(PhpOut::Data(fabutool_tw_base(state, false).await?)),
+        ("fabutool", "delTwTask") => fabutool_del_tw(state, user, body).await,
+        ("fabutool", "taskFinish") => fabutool_task_finish(state, body).await,
         ("shop-set", "index") => Ok(PhpOut::Data(shop_set_index(state).await?)),
         ("shop-set", "saveset") => shop_set_saveset(state, user, body).await,
         ("shop-set", "get_redeem_option") => Ok(PhpOut::Data(shop_set_redeem_option(state, body).await?)),
@@ -13656,4 +13673,841 @@ async fn company_export_check(state: &AppState, body: &Value) -> AppResult<PhpOu
 fn company_admin_logo_hb(body: &Value) -> AppResult<PhpOut> {
     let _ = json_str(body, "name");
     Err(ApiError::business("admin_user_00035"))
+}
+
+fn strip_yun_tags(mut s: String) -> String {
+    loop {
+        let Some(a) = s.find("{yun:}") else {
+            break;
+        };
+        let Some(rel) = s[a..].find("{/yun}") else {
+            break;
+        };
+        s.replace_range(a..a + rel + 6, "");
+    }
+    s
+}
+
+fn column_form(items: &[(&str, &str, &str, &str)]) -> Vec<Value> {
+    items
+        .iter()
+        .map(|(key, a, b, c)| {
+            json!({
+                "key": key,
+                "data": [a, b, c],
+            })
+        })
+        .collect()
+}
+
+fn map_pairs(items: &[(&str, &str)]) -> Vec<Value> {
+    items
+        .iter()
+        .map(|(search, replace)| json!({ "search": search, "replace": replace }))
+        .collect()
+}
+
+async fn fabutool_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let temptype = json_opt_i32(body, "temptype");
+    let db = state.db.reader();
+    let total = gap_repo::count_wxpub_temps(
+        db,
+        if kw.is_empty() { None } else { Some(kw.as_str()) },
+        temptype,
+    )
+    .await?;
+    let rows = if total > 0 {
+        gap_extra::php_list_wxpub_temps_php(
+            db,
+            if kw.is_empty() { None } else { Some(kw.as_str()) },
+            temptype,
+            offset,
+            limit,
+        )
+        .await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "type": r.r#type,
+                "temptype": r.temptype.to_string(),
+                "time": r.time,
+                "time_n": if r.time > 0 { fmt_dt(r.time) } else { String::new() },
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn fabutool_wx_pub_temp(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    let mut info = json!({});
+    let mut temptype = json_str(body, "temptype");
+    if id > 0 {
+        if let Some(t) = gap_extra::php_find_wxpub_temp(state.db.reader(), id).await? {
+            let ty = if t.r#type == "onejob" {
+                "job".into()
+            } else {
+                t.r#type.clone()
+            };
+            temptype = t.temptype.to_string();
+            let base = web_base(state);
+            let style = format!("{base}/app/template/admin");
+            info = json!({
+                "id": t.id,
+                "title": t.title,
+                "header": t.header.replace("{admin_style}", &style),
+                "body": t.body.replace("{admin_style}", &style),
+                "footer": t.footer.replace("{admin_style}", &style),
+                "type": ty,
+                "temptype": t.temptype.to_string(),
+            });
+        }
+    }
+    let job_cols = column_form(&[
+        ("jobcolumn_name", "wap_com_00288", "{职位名称}", "job_column"),
+        ("jobcolumn_jobwapurl", "common_06663", "{职位网址}", "job_column"),
+        ("jobcolumn_comname", "wap_com_00157", "{企业名称}", "job_column"),
+        ("jobcolumn_comdesc", "common_01338", "{str|企业描述|length:200}", "job_column"),
+        ("jobcolumn_comwapurl", "wap_com_00162", "{企业网址}", "job_column"),
+        ("jobcolumn_salary", "wap_com_00290", "{薪资待遇}", "job_column"),
+        ("jobcolumn_number", "wap_com_00333", "{招聘人数}", "job_column"),
+        ("jobcolumn_age", "wap_com_00284", "{年龄要求}", "job_column"),
+        ("jobcolumn_sex", "wap_com_00332", "{性别要求}", "job_column"),
+        ("jobcolumn_exp", "wap_com_00287", "{经验要求}", "job_column"),
+        ("jobcolumn_edu", "wap_com_00283", "{学历要求}", "job_column"),
+        ("jobcolumn_city", "wap_js_00082", "{一级城市}{二级城市}{三级城市}", "job_column"),
+        ("jobcolumn_address", "admin_system_00690", "{工作地点}", "job_column"),
+        ("jobcolumn_phone", "wap_user_00265", "{联系电话}", "job_column"),
+        ("jobcolumn_welfare", "wap_00286", "{职位福利}", "job_column"),
+        ("jobcolumn_description", "common_01395", "{str|职位描述|length:200}", "job_column"),
+    ]);
+    let resume_cols = column_form(&[
+        ("resumecolumn_username", "admin_00429", "{姓名}", "resume_column"),
+        ("resumecolumn_age", "wap_com_00302", "{年龄}", "resume_column"),
+        ("resumecolumn_exp", "wap_01424", "{经验}", "resume_column"),
+        ("resumecolumn_edu", "wap_com_00301", "{学历}", "resume_column"),
+        ("resumecolumn_name", "wap_user_00015", "{期望职位}", "resume_column"),
+        ("resumecolumn_wapurl", "common_06666", "{简历网址}", "resume_column"),
+        ("resumecolumn_salary", "wap_user_00016", "{期望薪资}", "resume_column"),
+    ]);
+    let company_cols = column_form(&[
+        ("companycolumn_name", "wap_com_00157", "{企业名称}", "company_column"),
+        ("companycolumn_desc", "common_01338", "{str|企业描述|length:200}", "company_column"),
+        ("companycolumn_comwapurl", "wap_com_00162", "{企业网址}", "company_column"),
+        ("companycolumn_linkman", "wap_js_00058", "{企业联系人}", "company_column"),
+        ("companycolumn_linktel", "common_06667", "{企业联系电话}", "company_column"),
+        ("companycolumn_jobname", "wap_com_00288", "{职位名称}", "company_column"),
+        ("companycolumn_jobwapurl", "common_06663", "{职位网址}", "company_column"),
+        ("companycolumn_jobsalary", "common_06669", "{职位薪资}", "company_column"),
+    ]);
+    let public_cols = column_form(&[
+        ("wapewm", "common_06673", "{移动端二维码}", "public_column"),
+        ("xcxurl", "common_01600", "{小程序外链}", "public_column"),
+    ]);
+    let total_cols = column_form(&[
+        ("webname", "admin_system_00331", "{网站名称}", "total_column"),
+        ("weburl", "admin_01014", "{网站地址}", "total_column"),
+        ("datetime", "member_com_00309", "{当前日期}", "total_column"),
+    ]);
+    let mut typecolumn = job_cols.clone();
+    typecolumn.extend(resume_cols);
+    typecolumn.extend(company_cols);
+    typecolumn.extend(public_cols.clone());
+    typecolumn.extend(total_cols.clone());
+    if temptype == "1" {
+        typecolumn.retain(|v| {
+            let data = v.get("data").and_then(|x| x.as_array());
+            !data
+                .and_then(|a| a.get(1))
+                .and_then(|x| x.as_str())
+                .map(|s| s.contains("{img") || s.contains("H5xcx_"))
+                .unwrap_or(false)
+        });
+    }
+    Ok(json!({
+        "info": info,
+        "temptype": temptype,
+        "typecolumn": typecolumn,
+        "totalcolumn": total_cols,
+        "job_map": map_pairs(&[
+            ("{职位名称}", "xx职位"),
+            ("{职位网址}", "#"),
+            ("{企业名称}", "xx企业"),
+            ("{企业描述}", "企业简介"),
+            ("{企业网址}", "#"),
+            ("{薪资待遇}", "10000-15000"),
+            ("{招聘人数}", "若干"),
+            ("{年龄要求}", "不限"),
+            ("{性别要求}", "不限"),
+            ("{经验要求}", "不限"),
+            ("{学历要求}", "不限"),
+            ("{一级城市}", "省"),
+            ("{二级城市}", "市"),
+            ("{三级城市}", "区"),
+            ("{联系电话}", "0527-83698666"),
+            ("{工作地点}", "地址"),
+            ("{职位福利}", "五险一金"),
+            ("{职位描述}", "职位描述"),
+        ]),
+        "resume_map": map_pairs(&[
+            ("{期望职位}", "xx职位"),
+            ("{简历网址}", "#"),
+            ("{姓名}", "张三"),
+            ("{年龄}", "25"),
+            ("{经验}", "3年"),
+            ("{学历}", "本科"),
+            ("{期望薪资}", "10000-18000"),
+        ]),
+        "company_map": map_pairs(&[
+            ("{企业名称}", "xx企业"),
+            ("{企业描述}", "企业简介"),
+            ("{企业网址}", "#"),
+            ("{职位名称}", "xx职位"),
+            ("{职位网址}", "#"),
+            ("{职位薪资}", "15000-25000"),
+            ("{企业联系人}", "联系人"),
+            ("{企业联系电话}", "18888888888"),
+        ]),
+        "public_map": map_pairs(&[
+            ("{移动端二维码}", "#"),
+            ("{小程序外链}", "https://wxaurl.cn/xxx"),
+        ]),
+        "total_map": map_pairs(&[
+            ("{网站名称}", "网站名称"),
+            ("{网站地址}", "https://zzzz.com"),
+            ("{当前日期}", "2026-01-01"),
+        ]),
+    }))
+}
+
+fn replace_admin_style(s: &str, weburl: &str) -> String {
+    let style = format!("{weburl}/app/template/admin");
+    s.replace(&style, "{admin_style}")
+        .replace("http://www.yunjob.com/app/template/admin", "{admin_style}")
+}
+
+async fn rewrite_mmbiz(state: &AppState, html: &str) -> String {
+    if !html.contains("mmbiz.qpic.cn") || html.contains("mmbiz_svg") {
+        return html.to_string();
+    }
+    let mut urls = Vec::new();
+    let mut i = 0;
+    while let Some(p) = html[i..].find("mmbiz.qpic.cn") {
+        let abs = i + p;
+        let start = html[..abs].rfind("http").unwrap_or(abs);
+        let slice = &html[start..];
+        let end = slice
+            .find(|c: char| matches!(c, '"' | '\'' | ' ' | '>' | ')'))
+            .unwrap_or(slice.len());
+        let raw = &slice[..end];
+        let clean = raw.split('?').next().unwrap_or(raw).to_string();
+        if !clean.is_empty() && !urls.iter().any(|(a, _)| a == &clean) {
+            urls.push((clean, raw.to_string()));
+        }
+        i = start + end;
+        if i <= abs {
+            i = abs + 1;
+        }
+    }
+    let mut out = html.to_string();
+    for (clean, raw) in urls {
+        match state.http.get_bytes(&clean).await {
+            Ok(bytes) => {
+                let key = format!("wx/{}/{}", clock::now_ts(), Uuid::now_v7());
+                if let Ok(stored) = state.storage.put(&key, "image/jpeg", bytes).await {
+                    out = out.replace(&raw, &stored);
+                }
+            }
+            Err(e) => tracing::warn!(error = %e, url = %clean, "mmbiz image fetch skipped"),
+        }
+    }
+    out
+}
+
+async fn fabutool_wx_pub_temp_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let title = json_str(body, "title");
+    if title.is_empty() {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let id = json_u64(body, "id");
+    if gap_extra::php_count_wxpub_title(state.db.reader(), &title, id).await? > 0 {
+        return Err(ApiError::business("admin_tool_00031"));
+    }
+    let web = web_base(state);
+    let mut header = rewrite_mmbiz(state, &json_str(body, "header")).await;
+    let mut body_html = rewrite_mmbiz(state, &json_str(body, "body")).await;
+    let mut footer = rewrite_mmbiz(state, &json_str(body, "footer")).await;
+    header = strip_yun_tags(replace_admin_style(&header, &web));
+    body_html = strip_yun_tags(replace_admin_style(&body_html, &web));
+    footer = strip_yun_tags(replace_admin_style(&footer, &web));
+    let mut ty = json_str(body, "type");
+    if id > 0 {
+        if let Some(old) = gap_extra::php_find_wxpub_temp(state.db.reader(), id).await? {
+            if old.r#type == "onejob" {
+                ty = "onejob".into();
+            }
+        }
+    }
+    if ty.is_empty() {
+        ty = "job".into();
+    }
+    gap_repo::upsert_wxpub_temp(
+        state.db.pool(),
+        if id > 0 { Some(id) } else { None },
+        &title,
+        &header,
+        &body_html,
+        &footer,
+        &ty,
+        json_i32(body, "temptype"),
+        clock::now_ts(),
+    )
+    .await?;
+    Ok(PhpOut::Message("api_wxapp_00007"))
+}
+
+async fn fabutool_wx_pub_temp_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01066"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "wxpub_temps",
+        &ids,
+        "/v1/admin/php-content/fabutool/wxPubTempDel",
+    )
+    .await;
+    let n = gap_repo::delete_wxpub_temps(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Text(
+        "admin_user_00187",
+        del_ids_msg("admin_model_00241", &ids),
+    ))
+}
+
+async fn fabutool_pubtool(state: &AppState) -> AppResult<Value> {
+    let db = state.db.reader();
+    let temps = gap_extra::php_list_wxpub_temps_php(db, None, None, 0, 500).await?;
+    let temps: Vec<Value> = temps
+        .into_iter()
+        .map(|t| {
+            let ty = if t.r#type == "onejob" {
+                "job".to_string()
+            } else {
+                t.r#type
+            };
+            json!({
+                "id": t.id,
+                "title": t.title,
+                "type": ty,
+                "temptype": t.temptype.to_string(),
+            })
+        })
+        .collect();
+    let rating: Vec<Value> = gap_extra::php_list_rating_names(db)
+        .await?
+        .into_iter()
+        .map(|r| json!({ "id": r.id, "name": r.name }))
+        .collect();
+    let domains = domain_repo::list_all(db).await?;
+    Ok(json!({
+        "temps": temps,
+        "rating": rating,
+        "domain": domain_object(&domains),
+    }))
+}
+
+async fn fabutool_get_wxpub_job(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kw = json_str(body, "keyword");
+    let rows = gap_extra::php_search_wxpub_jobs(state.db.reader(), &kw).await?;
+    Ok(Value::Array(
+        rows.into_iter()
+            .map(|r| json!({ "name": r.name, "value": r.value, "upname": r.upname }))
+            .collect(),
+    ))
+}
+
+async fn fabutool_get_com_search(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kw = json_str(body, "keyword");
+    let rows = gap_extra::php_search_wxpub_coms(state.db.reader(), &kw).await?;
+    Ok(Value::Array(
+        rows.into_iter()
+            .map(|r| json!({ "name": r.name, "value": r.value }))
+            .collect(),
+    ))
+}
+
+fn days_gt(code: i32) -> Option<i64> {
+    if code <= 0 {
+        return None;
+    }
+    let now = clock::now_ts();
+    if code == 1 {
+        Some(clock::start_of_day(now))
+    } else {
+        Some(now - i64::from(code) * 86_400)
+    }
+}
+
+fn job_salary(min: i32, max: i32) -> String {
+    if min <= 0 && max <= 0 {
+        "面议".into()
+    } else if max <= 0 || max == min {
+        min.to_string()
+    } else {
+        format!("{min}-{max}")
+    }
+}
+
+fn clip(s: &str, n: usize) -> String {
+    let t = s.chars().take(n).collect::<String>();
+    if s.chars().count() > n {
+        format!("{t}...")
+    } else {
+        t
+    }
+}
+
+fn apply_tokens(mut html: String, map: &[(&str, String)]) -> String {
+    for (k, v) in map {
+        html = html.replace(k, v);
+    }
+    html
+}
+
+async fn site_name(state: &AppState) -> String {
+    setting_repo::find(state.db.reader(), "sy_webname")
+        .await
+        .ok()
+        .flatten()
+        .map(|s| s.value)
+        .unwrap_or_else(|| "zzzz".into())
+}
+
+fn job_body_html(
+    j: &gap_extra::PhpPubJobRow,
+    dicts: &dict_service::LocalizedDicts,
+    web: &str,
+    tpl_body: &str,
+) -> String {
+    let phone = if j.linktel.is_empty() {
+        j.linkphone.clone()
+    } else {
+        j.linktel.clone()
+    };
+    let desc = clip(&html_plain(&j.description), 200);
+    let com_desc = clip(&html_plain(&j.content), 200);
+    let welfare = dicts.welfare_labels(&j.welfare).join(" ");
+    let sex = match j.sex {
+        1 => "男",
+        2 => "女",
+        _ => "不限",
+    };
+    let map = vec![
+        ("{职位名称}", j.name.clone()),
+        (
+            "{职位网址}",
+            format!("{web}/index.php?m=wap&c=job&a=comapply&id={}", j.id),
+        ),
+        ("{企业名称}", j.com_name.clone()),
+        ("{企业描述}", com_desc.clone()),
+        ("{str|企业描述|length:200}", com_desc),
+        (
+            "{企业网址}",
+            format!("{web}/index.php?m=wap&c=company&a=show&id={}", j.uid),
+        ),
+        ("{薪资待遇}", job_salary(j.minsalary, j.maxsalary)),
+        ("common_01436", job_salary(j.minsalary, j.maxsalary)),
+        ("{招聘人数}", if j.number > 0 { j.number.to_string() } else { "若干".into() }),
+        ("{年龄要求}", if j.age.is_empty() { "不限".into() } else { j.age.clone() }),
+        ("{性别要求}", sex.to_string()),
+        ("{经验要求}", dicts.user_or_com(j.exp).to_string()),
+        ("{学历要求}", dicts.user_or_com(j.edu).to_string()),
+        ("{一级城市}", dicts.city(j.provinceid).to_string()),
+        ("{二级城市}", dicts.city(j.cityid).to_string()),
+        ("{三级城市}", dicts.city(j.three_cityid).to_string()),
+        ("{联系电话}", phone),
+        ("{工作地点}", j.address.clone()),
+        ("common_01435", j.address.clone()),
+        ("{职位福利}", welfare),
+        ("{职位描述}", desc.clone()),
+        ("{str|职位描述|length:200}", desc),
+    ];
+    strip_yun_tags(apply_tokens(tpl_body.to_string(), &map))
+}
+
+fn html_plain(s: &str) -> String {
+    let mut out = String::new();
+    let mut skip = false;
+    for c in s.chars() {
+        match c {
+            '<' => skip = true,
+            '>' => skip = false,
+            _ if !skip => out.push(c),
+            _ => {}
+        }
+    }
+    out.replace("&nbsp;", " ").replace("&quot;", "\"")
+}
+
+async fn fabutool_get_pubtool(state: &AppState, body: &Value) -> AppResult<String> {
+    let kind = json_str(body, "type");
+    let tpl_id = json_u64(body, "tpl");
+    if tpl_id == 0 {
+        return Ok(msg_t("common_02409"));
+    }
+    let temp = match gap_extra::php_find_wxpub_temp(state.db.reader(), tpl_id).await? {
+        Some(t) => t,
+        None => return Ok(msg_t("common_02409")),
+    };
+    let dicts = dict_service::get(state).await?;
+    let web = web_base(state);
+    let num = json_u64(body, "num");
+    let mut bodies = Vec::new();
+    match kind.as_str() {
+        "job" => {
+            let param = json_str(body, "param");
+            let ids = gap_extra::parse_id_csv(&json_str(body, "jobcopos").replace('，', ","));
+            let rating = json_str(body, "rating");
+            let keyword = json_str(body, "keyword");
+            let welfare = json_str(body, "welfare");
+            let f = gap_extra::PhpPubJobFilter {
+                ids: if ids.is_empty() { None } else { Some(&ids) },
+                rating: if rating.is_empty() { None } else { Some(rating.as_str()) },
+                keyword: if keyword.is_empty() { None } else { Some(keyword.as_str()) },
+                provinceid: json_opt_i32(body, "provinceid"),
+                cityid: json_opt_i32(body, "cityid"),
+                three_cityid: json_opt_i32(body, "three_cityid"),
+                job1: json_opt_i32(body, "job1"),
+                job1_son: json_opt_i32(body, "job1_son"),
+                job_post: json_opt_i32(body, "job_post"),
+                lastupdate_gt: days_gt(json_i32(body, "times")),
+                sdate_gt: days_gt(json_i32(body, "ftimes")),
+                xsdate: param.split(',').any(|x| x.trim() == "0"),
+                urgent: param.split(',').any(|x| x.trim() == "1"),
+                rec: param.split(',').any(|x| x.trim() == "2"),
+                minsalary: json_opt_i32(body, "minsalary"),
+                maxsalary: json_opt_i32(body, "maxsalary"),
+                welfare: if welfare.is_empty() { None } else { Some(welfare.as_str()) },
+                now: clock::now_ts(),
+            };
+            let rows = gap_extra::php_list_pubtool_jobs(state.db.reader(), &f, num).await?;
+            for j in &rows {
+                bodies.push(job_body_html(j, &dicts, &web, &temp.body));
+            }
+        }
+        "resume" => {
+            let rows = gap_extra::php_list_pubtool_resumes(
+                state.db.reader(),
+                num,
+                days_gt(json_i32(body, "rltimes")),
+                days_gt(json_i32(body, "rtimes")),
+                json_opt_i32(body, "whole"),
+            )
+            .await?;
+            for r in &rows {
+                let age = age_of(&r.birthday);
+                let map = vec![
+                    ("{期望职位}", r.name.clone()),
+                    (
+                        "{简历网址}",
+                        format!("{web}/index.php?m=wap&c=resume&a=show&id={}", r.id),
+                    ),
+                    ("{姓名}", r.uname.clone()),
+                    ("{年龄}", age),
+                    ("{经验}", dicts.user_or_com(r.exp).to_string()),
+                    ("{学历}", dicts.user_or_com(r.edu).to_string()),
+                    ("{期望薪资}", r.salary.clone()),
+                    ("{头像}", r.photo.clone()),
+                ];
+                bodies.push(strip_yun_tags(apply_tokens(temp.body.clone(), &map)));
+            }
+        }
+        "company" => {
+            let cuids = gap_extra::parse_id_csv(
+                &json_str(body, "copos").replace('，', ","),
+            );
+            let rating = json_str(body, "rating");
+            let rows = gap_extra::php_list_pubtool_companies(
+                state.db.reader(),
+                &cuids,
+                if rating.is_empty() { None } else { Some(rating.as_str()) },
+                num,
+            )
+            .await?;
+            let rule = json_u64(body, "rule");
+            for c in &rows {
+                let jobs = gap_extra::php_list_pubtool_jobs_by_uid(
+                    state.db.reader(),
+                    c.uid,
+                    if rule == 0 { 5 } else { rule },
+                )
+                .await?;
+                let desc = clip(&html_plain(&c.content), 200);
+                let mut job_html = String::new();
+                for j in &jobs {
+                    job_html.push_str(&format!(
+                        "{} {} {}\n",
+                        j.name,
+                        job_salary(j.minsalary, j.maxsalary),
+                        format!("{web}/index.php?m=wap&c=job&a=comapply&id={}", j.id)
+                    ));
+                }
+                let map = vec![
+                    ("{企业名称}", c.name.clone()),
+                    ("{企业描述}", desc.clone()),
+                    ("{str|企业描述|length:200}", desc),
+                    (
+                        "{企业网址}",
+                        format!("{web}/index.php?m=wap&c=company&a=show&id={}", c.uid),
+                    ),
+                    ("{企业联系人}", c.linkman.clone()),
+                    ("{企业联系电话}", c.linktel.clone()),
+                    ("{工作地点}", c.address.clone()),
+                    ("common_01197", c.address.clone()),
+                    ("{职位名称}", jobs.first().map(|j| j.name.clone()).unwrap_or_default()),
+                    ("{职位网址}", jobs.first().map(|j| format!("{web}/index.php?m=wap&c=job&a=comapply&id={}", j.id)).unwrap_or_default()),
+                    ("{职位薪资}", jobs.first().map(|j| job_salary(j.minsalary, j.maxsalary)).unwrap_or_default()),
+                    ("{职位描述}", job_html),
+                ];
+                bodies.push(strip_yun_tags(apply_tokens(temp.body.clone(), &map)));
+            }
+        }
+        _ => return Ok(msg_t("common_02409")),
+    }
+    render_wxpub_assembled(state, &temp, &bodies).await
+}
+
+fn age_of(birthday: &str) -> String {
+    let y = birthday.get(0..4).and_then(|s| s.parse::<i32>().ok()).unwrap_or(0);
+    let now_y = chrono::Local::now().year();
+    if y > 1900 && y <= now_y {
+        (now_y - y).to_string()
+    } else {
+        String::new()
+    }
+}
+
+async fn render_wxpub_assembled(
+    state: &AppState,
+    temp: &phpyun_models::admin_gap::entity::WxpubTempRow,
+    bodies: &[String],
+) -> AppResult<String> {
+    let web = web_base(state);
+    let name = site_name(state).await;
+    let today = fmt_ts(clock::now_ts(), "%Y-%m-%d");
+    let style = format!("{web}/app/template/admin");
+    let globals = vec![
+        ("{admin_style}", style),
+        ("{网站名称}", name),
+        ("{网站地址}", web),
+        ("{当前日期}", today.clone()),
+        ("common_01432", today),
+    ];
+    let header = strip_yun_tags(apply_tokens(temp.header.clone(), &globals));
+    let footer = strip_yun_tags(apply_tokens(temp.footer.clone(), &globals));
+    let mut html = header;
+    let enter = if temp.temptype == 1 { "\r\n" } else { "" };
+    for b in bodies {
+        html.push_str(b);
+        html.push_str(enter);
+    }
+    html.push_str(&footer);
+    if temp.temptype == 1 {
+        html = html.replace('\n', "</br>");
+    }
+    Ok(html)
+}
+
+async fn fabutool_get_tw(state: &AppState, body: &Value) -> AppResult<String> {
+    let tpl = json_u64(body, "tpl");
+    let ids = gap_extra::parse_id_csv(&json_str(body, "jobids"));
+    if tpl == 0 || ids.is_empty() {
+        return Ok(String::new());
+    }
+    let temp = match gap_extra::php_find_wxpub_temp(state.db.reader(), tpl).await? {
+        Some(t) => t,
+        None => return Ok(String::new()),
+    };
+    let dicts = dict_service::get(state).await?;
+    let web = web_base(state);
+    let f = gap_extra::PhpPubJobFilter {
+        ids: Some(&ids),
+        rating: None,
+        keyword: None,
+        provinceid: None,
+        cityid: None,
+        three_cityid: None,
+        job1: None,
+        job1_son: None,
+        job_post: None,
+        lastupdate_gt: None,
+        sdate_gt: None,
+        xsdate: false,
+        urgent: false,
+        rec: false,
+        minsalary: None,
+        maxsalary: None,
+        welfare: None,
+        now: clock::now_ts(),
+    };
+    let rows = gap_extra::php_list_pubtool_jobs(state.db.reader(), &f, 200).await?;
+    let mut by_id = std::collections::HashMap::new();
+    for j in rows {
+        by_id.insert(j.id, j);
+    }
+    let mut bodies = Vec::new();
+    for id in ids {
+        if let Some(j) = by_id.get(&id) {
+            bodies.push(job_body_html(j, &dicts, &web, &temp.body));
+        }
+    }
+    render_wxpub_assembled(state, &temp, &bodies).await
+}
+
+async fn fabutool_get_com_tw(state: &AppState, body: &Value) -> AppResult<String> {
+    let tpl = json_u64(body, "tpl");
+    let cuids = gap_extra::parse_id_csv(&json_str(body, "cuids").replace('，', ","));
+    if tpl == 0 || cuids.is_empty() {
+        return Ok(String::new());
+    }
+    let mut b = body.clone();
+    if let Some(obj) = b.as_object_mut() {
+        obj.insert("type".into(), json!("company"));
+        obj.insert("copos".into(), json!(cuids.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(",")));
+        obj.insert("tpl".into(), json!(tpl));
+    }
+    fabutool_get_pubtool(state, &b).await
+}
+
+async fn fabutool_tw_task(state: &AppState, body: &Value, kind: i32) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let welfare = json_str(body, "welfarekeyword");
+    let status_in = json_i32(body, "status");
+    let status = match status_in {
+        1 => Some(1),
+        2 => Some(0),
+        _ => None,
+    };
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gap_extra::PhpTwTaskFilter {
+        kind,
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        welfare: if welfare.is_empty() { None } else { Some(welfare.as_str()) },
+        auid: {
+            let n = json_u64(body, "auid");
+            if n > 0 { Some(n) } else { None }
+        },
+        status,
+        urgent: json_opt_i32(body, "urgent"),
+        wcmoments: json_opt_i32(body, "wcmoments"),
+        gzh: json_opt_i32(body, "gzh"),
+        order_t: &order_t,
+        order_dir: &order_dir,
+    };
+    let db = state.db.reader();
+    let total = gap_extra::php_count_twtasks(db, &f).await?;
+    let rows = if total > 0 {
+        gap_extra::php_list_twtasks(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let base = web_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "jobid": r.jobid,
+                "cuid": r.cuid,
+                "jobname": r.jobname,
+                "comname": r.comname,
+                "jobsdate": r.jobsdate,
+                "jobsdate_n": if r.jobsdate > 0 { fmt_ts(r.jobsdate, "%Y-%m-%d %H:%M") } else { String::new() },
+                "auid": r.auid,
+                "content": r.content,
+                "urgent": r.urgent.to_string(),
+                "wcmoments": r.wcmoments.to_string(),
+                "gzh": r.gzh.to_string(),
+                "status": r.status.to_string(),
+                "ctime": r.ctime,
+                "ctime_n": if r.ctime > 0 { fmt_ts(r.ctime, "%Y-%m-%d %H:%M") } else { String::new() },
+                "type": r.r#type,
+                "etime": r.etime,
+                "jobstatus": r.job_off.to_string(),
+                "comstatus": if r.com_r_status == 1 { 1 } else { 2 },
+                "admin_username": r.admin_username,
+                "comurl": format!("{base}/index.php?m=company&c=show&id={}", r.cuid),
+                "joburl": format!("{base}/index.php?m=job&c=comapply&look=admin&id={}", r.jobid),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn fabutool_tw_base(state: &AppState, job: bool) -> AppResult<Value> {
+    let db = state.db.reader();
+    let types: &[&str] = if job { &["job", "onejob"] } else { &["company"] };
+    let temps = gap_extra::php_list_wxpub_temp_titles(db, 1, types).await?;
+    let temps2 = gap_extra::php_list_wxpub_temp_titles(db, 0, if job { &["job"] } else { &["company"] }).await?;
+    let admins = gap_extra::php_list_admin_names(db).await?;
+    Ok(json!({
+        "temps": temps.into_iter().map(|t| json!({ "id": t.id, "title": t.name })).collect::<Vec<_>>(),
+        "temps2": temps2.into_iter().map(|t| json!({ "id": t.id, "title": t.name })).collect::<Vec<_>>(),
+        "adminList": admins.into_iter().map(|a| json!({ "uid": a.uid, "username": a.username, "name": a.name })).collect::<Vec<_>>(),
+    }))
+}
+
+async fn fabutool_del_tw(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "del");
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01066"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "wxpub_twtask",
+        &ids,
+        "/v1/admin/php-content/fabutool/delTwTask",
+    )
+    .await;
+    let n = gap_extra::php_delete_twtasks(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("wap_user_00147"))
+}
+
+async fn fabutool_task_finish(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_00556"));
+    }
+    let n = gap_extra::php_finish_twtasks(state.db.pool(), &ids, clock::now_ts()).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_system_00397"));
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
 }
