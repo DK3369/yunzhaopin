@@ -3,7 +3,7 @@
 use super::entity::*;
 use super::repo::{delete_in, lim};
 use crate::soft_delete::{self, PREDICATE};
-use sqlx::{FromRow, MySqlPool, QueryBuilder};
+use sqlx::{FromRow, MySqlPool, QueryBuilder, Row};
 
 pub fn parse_id_csv(raw: &str) -> Vec<u64> {
     raw.split(|c: char| c == ',' || c == ';' || c.is_whitespace())
@@ -4642,4 +4642,395 @@ pub async fn php_expect_city_hy(
     );
     push_uid_in(&mut qb, uids);
     qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpAdminTplRow {
+    pub id: u64,
+    pub name: String,
+    pub url: String,
+    pub pic: String,
+    pub status: i32,
+    pub price: String,
+    pub service_uid: String,
+    pub height: i32,
+    pub se: i32,
+    pub stime: i64,
+    pub etime: i64,
+}
+
+const TPL_FIELDS: &str = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(`name`,'') AS `name`, \
+ COALESCE(url,'') AS url, COALESCE(pic,'') AS pic, CAST(COALESCE(status,0) AS SIGNED) AS status, \
+ COALESCE(CAST(price AS CHAR),'0') AS price, COALESCE(CAST(service_uid AS CHAR),'0') AS service_uid, \
+ CAST(0 AS SIGNED) AS height, CAST(0 AS SIGNED) AS se, CAST(0 AS SIGNED) AS stime, CAST(0 AS SIGNED) AS etime";
+
+pub async fn php_list_company_tpls(pool: &MySqlPool) -> Result<Vec<PhpAdminTplRow>, sqlx::Error> {
+    sqlx::query_as(&format!("{TPL_FIELDS} FROM phpyun_company_tpl ORDER BY id DESC"))
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn php_upsert_company_tpl(
+    pool: &MySqlPool,
+    id: u64,
+    name: &str,
+    url: &str,
+    pic: Option<&str>,
+    status: i32,
+    price: &str,
+    service_uid: &str,
+) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        if let Some(p) = pic {
+            sqlx::query(
+                "UPDATE phpyun_company_tpl SET name=?, url=?, pic=?, status=?, price=?, service_uid=? WHERE id=?",
+            )
+            .bind(name)
+            .bind(url)
+            .bind(p)
+            .bind(status)
+            .bind(price)
+            .bind(service_uid)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        } else {
+            sqlx::query(
+                "UPDATE phpyun_company_tpl SET name=?, url=?, status=?, price=?, service_uid=? WHERE id=?",
+            )
+            .bind(name)
+            .bind(url)
+            .bind(status)
+            .bind(price)
+            .bind(service_uid)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        }
+        return Ok(id);
+    }
+    Ok(sqlx::query(
+        "INSERT INTO phpyun_company_tpl (name, url, pic, status, price, service_uid) VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(name)
+    .bind(url)
+    .bind(pic.unwrap_or(""))
+    .bind(status)
+    .bind(price)
+    .bind(service_uid)
+    .execute(pool)
+    .await?
+    .last_insert_id())
+}
+
+pub async fn php_delete_company_tpls(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_company_tpl WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+const RESUME_TPL_FIELDS: &str = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(`name`,'') AS `name`, \
+ COALESCE(url,'') AS url, COALESCE(pic,'') AS pic, CAST(COALESCE(status,0) AS SIGNED) AS status, \
+ COALESCE(CAST(price AS CHAR),'0') AS price, COALESCE(CAST(service_uid AS CHAR),'0') AS service_uid, \
+ CAST(0 AS SIGNED) AS height, CAST(0 AS SIGNED) AS se, CAST(0 AS SIGNED) AS stime, CAST(0 AS SIGNED) AS etime";
+
+pub async fn php_list_resume_tpls(pool: &MySqlPool) -> Result<Vec<PhpAdminTplRow>, sqlx::Error> {
+    sqlx::query_as(&format!("{RESUME_TPL_FIELDS} FROM phpyun_resumetpl ORDER BY id DESC"))
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn php_upsert_resume_tpl(
+    pool: &MySqlPool,
+    id: u64,
+    name: &str,
+    url: &str,
+    pic: Option<&str>,
+    status: i32,
+    price: &str,
+    service_uid: &str,
+) -> Result<u64, sqlx::Error> {
+    php_upsert_named(
+        pool,
+        "phpyun_resumetpl",
+        id,
+        name,
+        url,
+        pic,
+        status,
+        price,
+        service_uid,
+    )
+    .await
+}
+
+pub async fn php_delete_resume_tpls(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_named(pool, "phpyun_resumetpl", ids).await
+}
+
+const INDEX_TPL_FIELDS: &str = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(`name`,'') AS `name`, \
+ COALESCE(url,'') AS url, COALESCE(pic,'') AS pic, CAST(COALESCE(status,0) AS SIGNED) AS status, \
+ '0' AS price, '0' AS service_uid, CAST(COALESCE(height,0) AS SIGNED) AS height, \
+ CAST(COALESCE(se,0) AS SIGNED) AS se, CAST(COALESCE(stime,0) AS SIGNED) AS stime, \
+ CAST(COALESCE(etime,0) AS SIGNED) AS etime";
+
+pub async fn php_list_index_tpls(pool: &MySqlPool) -> Result<Vec<PhpAdminTplRow>, sqlx::Error> {
+    sqlx::query_as(&format!("{INDEX_TPL_FIELDS} FROM phpyun_tplindex ORDER BY id DESC"))
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn php_upsert_index_tpl(
+    pool: &MySqlPool,
+    id: u64,
+    name: &str,
+    pic: Option<&str>,
+    status: i32,
+    height: i32,
+    se: i32,
+    stime: i64,
+    etime: i64,
+) -> Result<u64, sqlx::Error> {
+    if id > 0 {
+        if let Some(p) = pic {
+            sqlx::query(
+                "UPDATE phpyun_tplindex SET name=?, pic=?, status=?, height=?, se=?, stime=?, etime=? WHERE id=?",
+            )
+            .bind(name)
+            .bind(p)
+            .bind(status)
+            .bind(height)
+            .bind(se)
+            .bind(stime)
+            .bind(etime)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        } else {
+            sqlx::query(
+                "UPDATE phpyun_tplindex SET name=?, status=?, height=?, se=?, stime=?, etime=? WHERE id=?",
+            )
+            .bind(name)
+            .bind(status)
+            .bind(height)
+            .bind(se)
+            .bind(stime)
+            .bind(etime)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        }
+        return Ok(id);
+    }
+    Ok(sqlx::query(
+        "INSERT INTO phpyun_tplindex (name, pic, status, height, se, stime, etime) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(name)
+    .bind(pic.unwrap_or(""))
+    .bind(status)
+    .bind(height)
+    .bind(se)
+    .bind(stime)
+    .bind(etime)
+    .execute(pool)
+    .await?
+    .last_insert_id())
+}
+
+pub async fn php_delete_index_tpls(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_named(pool, "phpyun_tplindex", ids).await
+}
+
+async fn php_upsert_named(
+    pool: &MySqlPool,
+    table: &str,
+    id: u64,
+    name: &str,
+    url: &str,
+    pic: Option<&str>,
+    status: i32,
+    price: &str,
+    service_uid: &str,
+) -> Result<u64, sqlx::Error> {
+    let sql_up_pic = format!(
+        "UPDATE `{table}` SET name=?, url=?, pic=?, status=?, price=?, service_uid=? WHERE id=?"
+    );
+    let sql_up = format!("UPDATE `{table}` SET name=?, url=?, status=?, price=?, service_uid=? WHERE id=?");
+    let sql_ins = format!(
+        "INSERT INTO `{table}` (name, url, pic, status, price, service_uid) VALUES (?, ?, ?, ?, ?, ?)"
+    );
+    if id > 0 {
+        if let Some(p) = pic {
+            sqlx::query(&sql_up_pic)
+                .bind(name)
+                .bind(url)
+                .bind(p)
+                .bind(status)
+                .bind(price)
+                .bind(service_uid)
+                .bind(id)
+                .execute(pool)
+                .await?;
+        } else {
+            sqlx::query(&sql_up)
+                .bind(name)
+                .bind(url)
+                .bind(status)
+                .bind(price)
+                .bind(service_uid)
+                .bind(id)
+                .execute(pool)
+                .await?;
+        }
+        return Ok(id);
+    }
+    Ok(sqlx::query(&sql_ins)
+        .bind(name)
+        .bind(url)
+        .bind(pic.unwrap_or(""))
+        .bind(status)
+        .bind(price)
+        .bind(service_uid)
+        .execute(pool)
+        .await?
+        .last_insert_id())
+}
+
+async fn delete_named(pool: &MySqlPool, table: &str, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(format!("DELETE FROM `{table}` WHERE id IN ("));
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Clone)]
+pub struct PhpTableStatus {
+    pub name: String,
+    pub engine: String,
+    pub rows: i64,
+    pub data_length: i64,
+    pub index_length: i64,
+    pub data_free: i64,
+    pub collation: String,
+}
+
+pub async fn php_show_table_status(pool: &MySqlPool) -> Result<Vec<PhpTableStatus>, sqlx::Error> {
+    let rows = sqlx::query("SHOW TABLE STATUS LIKE 'phpyun_%'")
+        .fetch_all(pool)
+        .await?;
+    let mut out = Vec::new();
+    for row in rows {
+        out.push(PhpTableStatus {
+            name: show_str(&row, "Name"),
+            engine: show_str(&row, "Engine"),
+            rows: show_i64(&row, "Rows"),
+            data_length: show_i64(&row, "Data_length"),
+            index_length: show_i64(&row, "Index_length"),
+            data_free: show_i64(&row, "Data_free"),
+            collation: show_str(&row, "Collation"),
+        });
+    }
+    Ok(out)
+}
+
+fn show_str(row: &sqlx::mysql::MySqlRow, col: &str) -> String {
+    row.try_get::<String, _>(col)
+        .or_else(|_| {
+            row.try_get::<Option<String>, _>(col)
+                .map(|v| v.unwrap_or_default())
+        })
+        .unwrap_or_default()
+}
+
+fn show_i64(row: &sqlx::mysql::MySqlRow, col: &str) -> i64 {
+    if let Ok(v) = row.try_get::<i64, _>(col) {
+        return v.max(0);
+    }
+    if let Ok(v) = row.try_get::<u64, _>(col) {
+        return i64::try_from(v).unwrap_or(i64::MAX);
+    }
+    if let Ok(Some(v)) = row.try_get::<Option<i64>, _>(col) {
+        return v.max(0);
+    }
+    if let Ok(Some(v)) = row.try_get::<Option<u64>, _>(col) {
+        return i64::try_from(v).unwrap_or(i64::MAX);
+    }
+    0
+}
+
+pub fn is_safe_phpyun_table(name: &str) -> bool {
+    name.starts_with("phpyun_")
+        && name.len() <= 64
+        && name.bytes().all(|c| c == b'_' || c.is_ascii_alphanumeric())
+}
+
+pub async fn php_optimize_table(pool: &MySqlPool, name: &str, repair: bool) -> Result<u64, sqlx::Error> {
+    if !is_safe_phpyun_table(name) {
+        return Ok(0);
+    }
+    let sql = if repair {
+        format!("REPAIR TABLE `{name}`")
+    } else {
+        format!("OPTIMIZE TABLE `{name}`")
+    };
+    sqlx::query(&sql).execute(pool).await?;
+    Ok(1)
+}
+
+pub async fn php_clear_old(
+    pool: &MySqlPool,
+    table: &str,
+    before: i64,
+    limit: u64,
+) -> Result<(u64, u64), sqlx::Error> {
+    let (full, col) = match table {
+        "userid_job" => ("phpyun_userid_job", "datetime"),
+        "userid_msg" => ("phpyun_userid_msg", "datetime"),
+        "down_resume" => ("phpyun_down_resume", "downtime"),
+        "talent_pool" => ("phpyun_talent_pool", "ctime"),
+        "look_resume" => ("phpyun_look_resume", "datetime"),
+        "look_job" => ("phpyun_look_job", "datetime"),
+        "email_msg" => ("phpyun_email_msg", "ctime"),
+        "moblie_msg" => ("phpyun_moblie_msg", "ctime"),
+        "member_log" => ("phpyun_member_log", "ctime"),
+        "recycle" => ("phpyun_recycle", "ctime"),
+        "sysmsg" => ("phpyun_sysmsg", "ctime"),
+        _ => return Ok((0, 0)),
+    };
+    let (n,): (i64,) = sqlx::query_as(&format!("SELECT COUNT(*) FROM `{full}` WHERE `{col}` < ?"))
+        .bind(before)
+        .fetch_one(pool)
+        .await?;
+    let total = phpyun_core::numeric::nonnegative_count(n);
+    if total == 0 {
+        return Ok((0, 0));
+    }
+    let cap = limit.clamp(1, 1000);
+    let n = sqlx::query(&format!("DELETE FROM `{full}` WHERE `{col}` < ? LIMIT {cap}"))
+        .bind(before)
+        .execute(pool)
+        .await?
+        .rows_affected();
+    Ok((n, total))
+}
+
+pub async fn php_list_desc_names(pool: &MySqlPool) -> Result<Vec<(u64, String)>, sqlx::Error> {
+    sqlx::query_as(&format!(
+        "SELECT CAST(id AS UNSIGNED), COALESCE(`name`,'') FROM phpyun_description WHERE {PREDICATE} ORDER BY id ASC"
+    ))
+    .fetch_all(pool)
+    .await
 }

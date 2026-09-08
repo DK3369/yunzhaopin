@@ -535,6 +535,36 @@ pub async fn dispatch(
         ("tuiguang", "getjob") => Ok(PhpOut::Data(json!(tuiguang_getjob(state, body).await?))),
         ("tuiguang", "sendresume") => Ok(PhpOut::Data(tuiguang_sendresume(state, body).await?)),
         ("tuiguang", "sendjob") => Ok(PhpOut::Data(tuiguang_sendjob(state, body).await?)),
+        ("tplset", "index") => Ok(PhpOut::Data(tplset_index(state).await?)),
+        ("tplset", "stylesave") => tplset_stylesave(body),
+        ("tplset", "check_style") => tplset_check_style(state, body).await,
+        ("tplset", "comtpl") => Ok(PhpOut::Data(tplset_comtpl(state).await?)),
+        ("tplset", "comptplsave") => tplset_com_save(state, body).await,
+        ("tplset", "comtpldel") => tplset_com_del(state, user, body).await,
+        ("tplset", "resumetpl") => Ok(PhpOut::Data(tplset_resume_list(state).await?)),
+        ("tplset", "resumetplsave") => tplset_resume_save(state, body).await,
+        ("tplset", "resumetpldel") => tplset_resume_del(state, user, body).await,
+        ("tplset", "pcindextpl") => Ok(PhpOut::Data(tplset_index_list(state).await?)),
+        ("tplset", "indextplsave") => tplset_index_save(state, body).await,
+        ("tplset", "indextpldel") => tplset_index_del(state, user, body).await,
+        ("database", "getOptTable") => Ok(PhpOut::Data(db_opt_table(state).await?)),
+        ("database", "optimizeTable") => db_optimize(state, body).await,
+        ("database", "clearData") => Ok(PhpOut::Data(db_clear(state, body).await?)),
+        ("database", "getDbTable") => Ok(PhpOut::Data(db_table_names(state).await?)),
+        ("database", "getBackFile") => Ok(PhpOut::Data(json!([]))),
+        ("database", "backUp") => Err(ApiError::business("admin_tool_00510")),
+        ("database", "delBack") => Err(ApiError::business("admin_tool_00510")),
+        ("database", "backIn") => Err(ApiError::business("admin_tool_00510")),
+        ("generate-page", "baseData") => Ok(PhpOut::Data(gen_page_base(state).await?)),
+        ("generate-page", "index") => gen_page_index(state, user, body).await,
+        ("generate-page", "news") => gen_page_news(state, user, body).await,
+        ("generate-page", "archive") => Ok(PhpOut::Data(gen_ssr_ok())),
+        ("generate-page", "once") => Ok(PhpOut::Message("admin_01465")),
+        ("generate-page", "newsclass") => Ok(PhpOut::Data(gen_ssr_ok())),
+        ("generate-page", "all") => Ok(PhpOut::Data(gen_ssr_ok())),
+        ("generate-cache", "index") => Ok(PhpOut::Data(gen_cache_index())),
+        ("generate-cache", "cache") => gen_cache_run(state, user, body).await,
+        ("generate-xml", "archive") => Ok(PhpOut::Message("admin_01465")),
         ("shop-set", "index") => Ok(PhpOut::Data(shop_set_index(state).await?)),
         ("shop-set", "saveset") => shop_set_saveset(state, user, body).await,
         ("shop-set", "get_redeem_option") => Ok(PhpOut::Data(shop_set_redeem_option(state, body).await?)),
@@ -14857,4 +14887,427 @@ fn job_promo_html(
     }
     html.push_str("</table>");
     html
+}
+
+fn is_alnum_dir(s: &str) -> bool {
+    !s.is_empty() && s.len() <= 64 && s.chars().all(|c| c.is_ascii_alphanumeric())
+}
+
+fn pic_opt(body: &Value) -> Option<String> {
+    let p = json_str(body, "pic");
+    if p.is_empty() {
+        None
+    } else {
+        Some(p)
+    }
+}
+
+fn parse_ymd_start(s: &str) -> i64 {
+    chrono::NaiveDate::parse_from_str(s.trim(), "%Y-%m-%d")
+        .ok()
+        .and_then(|d| d.and_hms_opt(0, 0, 0))
+        .map(|dt| dt.and_utc().timestamp())
+        .unwrap_or(0)
+}
+
+async fn tplset_index(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let sy_style = cfg_pick(&cfg, "style");
+    let mut list = Vec::new();
+    let mut imgarr = Vec::new();
+    for mut row in domain_style_list() {
+        let dir = row
+            .get("dir")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .to_string();
+        let img = row
+            .get("img")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .to_string();
+        let img = if img.is_empty() {
+            format!("../app/template/{dir}/images/preview.jpg")
+        } else {
+            img
+        };
+        let img_n = checkpic_url(&cfg, &img);
+        if let Some(obj) = row.as_object_mut() {
+            obj.insert("img".into(), json!(img_n));
+        }
+        imgarr.push(json!(img_n));
+        list.push(row);
+    }
+    Ok(json!({
+        "list": list,
+        "sy_style": sy_style,
+        "imgarr": imgarr,
+    }))
+}
+
+fn tplset_stylesave(body: &Value) -> AppResult<PhpOut> {
+    let dir = json_str(body, "dir");
+    if !is_alnum_dir(&dir) {
+        return Err(ApiError::business("admin_system_00055"));
+    }
+    Ok(PhpOut::Message("admin_01399"))
+}
+
+async fn tplset_check_style(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let dir = json_str(body, "dir");
+    if dir.is_empty() {
+        return Err(ApiError::business("admin_system_00057"));
+    }
+    if !is_alnum_dir(&dir) {
+        return Err(ApiError::business("admin_system_00055"));
+    }
+    setting_repo::upsert(state.db.pool(), "style", &dir, "", true, clock::now_ts()).await?;
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("admin_system_00056"))
+}
+
+fn tpl_row_json(cfg: &HashMap<String, String>, r: &gap_extra::PhpAdminTplRow, index: bool) -> Value {
+    let pic_n = checkpic_url(cfg, &r.pic);
+    let mut out = json!({
+        "id": r.id,
+        "name": r.name,
+        "url": r.url,
+        "pic": r.pic,
+        "pic_n": pic_n,
+        "status": r.status,
+        "price": r.price,
+        "service_uid": r.service_uid,
+    });
+    if index {
+        let st = if r.stime > 0 { fmt_date(r.stime) } else { String::new() };
+        let et = if r.etime > 0 { fmt_date(r.etime) } else { String::new() };
+        out["height"] = json!(r.height);
+        out["se"] = json!(r.se);
+        out["stime"] = json!(r.stime);
+        out["etime"] = json!(r.etime);
+        out["strtimes"] = if st.is_empty() {
+            json!([])
+        } else {
+            json!([st, et])
+        };
+    }
+    out
+}
+
+async fn tplset_comtpl(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let rows = gap_extra::php_list_company_tpls(state.db.reader()).await?;
+    let list: Vec<Value> = rows.iter().map(|r| tpl_row_json(&cfg, r, false)).collect();
+    let imgarr: Vec<Value> = list.iter().map(|v| v["pic_n"].clone()).collect();
+    Ok(json!({ "list": list, "imgarr": imgarr }))
+}
+
+async fn tplset_resume_list(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let rows = gap_extra::php_list_resume_tpls(state.db.reader()).await?;
+    let list: Vec<Value> = rows.iter().map(|r| tpl_row_json(&cfg, r, false)).collect();
+    let imgarr: Vec<Value> = list.iter().map(|v| v["pic_n"].clone()).collect();
+    Ok(json!({ "list": list, "imgarr": imgarr }))
+}
+
+async fn tplset_index_list(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let rows = gap_extra::php_list_index_tpls(state.db.reader()).await?;
+    let list: Vec<Value> = rows.iter().map(|r| tpl_row_json(&cfg, r, true)).collect();
+    let imgarr: Vec<Value> = list.iter().map(|v| v["pic_n"].clone()).collect();
+    Ok(json!({ "list": list, "imgarr": imgarr }))
+}
+
+async fn tplset_com_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let url = json_str(body, "url");
+    if !is_alnum_dir(&url) {
+        return Err(ApiError::business("admin_system_00055"));
+    }
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let pic = pic_opt(body);
+    gap_extra::php_upsert_company_tpl(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &name,
+        &url,
+        pic.as_deref(),
+        json_i32(body, "status"),
+        &json_str(body, "price"),
+        &json_str(body, "service_uid"),
+    )
+    .await?;
+    Ok(PhpOut::Message("api_wxapp_00007"))
+}
+
+async fn tplset_resume_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let url = json_str(body, "url");
+    if !is_alnum_dir(&url) {
+        return Err(ApiError::business("admin_system_00055"));
+    }
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let pic = pic_opt(body);
+    gap_extra::php_upsert_resume_tpl(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &name,
+        &url,
+        pic.as_deref(),
+        json_i32(body, "status"),
+        &json_str(body, "price"),
+        &json_str(body, "service_uid"),
+    )
+    .await?;
+    Ok(PhpOut::Message("api_wxapp_00007"))
+}
+
+async fn tplset_index_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let times = json_str_list(body, "time");
+    let stime = times.first().map(|s| parse_ymd_start(s)).unwrap_or(0);
+    let etime = times
+        .get(1)
+        .or(times.first())
+        .map(|s| parse_ymd_start(s))
+        .unwrap_or(0);
+    let etime = if etime > 0 { etime + 86399 } else { 0 };
+    let pic = pic_opt(body);
+    gap_extra::php_upsert_index_tpl(
+        state.db.pool(),
+        json_u64(body, "id"),
+        &name,
+        pic.as_deref(),
+        json_i32(body, "status"),
+        json_i32(body, "height"),
+        json_i32(body, "se"),
+        stime,
+        etime,
+    )
+    .await?;
+    Ok(PhpOut::Message("api_wxapp_00007"))
+}
+
+async fn tplset_com_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01843"));
+    }
+    recycle_ids(state, user, "company_tpl", &ids, "/admin/api/php-admin").await;
+    gap_extra::php_delete_company_tpls(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("wap_user_00147"))
+}
+
+async fn tplset_resume_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01843"));
+    }
+    recycle_ids(state, user, "resumetpl", &ids, "/admin/api/php-admin").await;
+    gap_extra::php_delete_resume_tpls(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("wap_user_00147"))
+}
+
+async fn tplset_index_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("common_01843"));
+    }
+    recycle_ids(state, user, "tplindex", &ids, "/admin/api/php-admin").await;
+    gap_extra::php_delete_index_tpls(state.db.pool(), &ids).await?;
+    Ok(PhpOut::Message("wap_user_00147"))
+}
+
+async fn db_opt_table(state: &AppState) -> AppResult<Value> {
+    let rows = gap_extra::php_show_table_status(state.db.reader()).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "name": r.name,
+                "type": r.engine,
+                "num": r.rows,
+                "size": format!(" {:.2} KB", r.data_length as f64 / 1024.0),
+                "rec_index": r.index_length,
+                "chip": r.data_free,
+                "status": "",
+                "charset": r.collation,
+            })
+        })
+        .collect();
+    Ok(json!(list))
+}
+
+async fn db_table_names(state: &AppState) -> AppResult<Value> {
+    let rows = gap_extra::php_show_table_status(state.db.reader()).await?;
+    let names: Vec<Value> = rows.into_iter().map(|r| json!({ "name": r.name })).collect();
+    let db_length = names.len();
+    let db_table: Vec<Value> = names.chunks(4).map(|c| json!(c)).collect();
+    Ok(json!({ "dbTable": db_table, "dbLength": db_length }))
+}
+
+async fn db_optimize(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "name");
+    if !gap_extra::is_safe_phpyun_table(&name) {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let ty = json_i32(body, "type");
+    let repair = ty == 2;
+    if ty != 2 && ty != 3 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = gap_extra::php_optimize_table(state.db.pool(), &name, repair).await?;
+    let prefix = if repair {
+        "admin_tool_00008"
+    } else {
+        "admin_tool_00007"
+    };
+    let suffix = if n > 0 {
+        "admin_tool_00502"
+    } else {
+        "admin_tool_00501"
+    };
+    let msg = format!("{}{}{}", msg_t(prefix), name, msg_t(suffix));
+    if n > 0 {
+        Ok(PhpOut::Text(prefix, msg))
+    } else {
+        Err(ApiError::business(suffix))
+    }
+}
+
+async fn db_clear(state: &AppState, body: &Value) -> AppResult<Value> {
+    let table = json_str(body, "clearTable");
+    let days = json_i64(body, "clearTime");
+    if table.is_empty() || days <= 0 {
+        return Ok(json!({
+            "error": 1,
+            "msg": msg_t("admin_tool_00002"),
+        }));
+    }
+    let before = clock::now_ts() - days * 86400;
+    let (deleted, total) = gap_extra::php_clear_old(state.db.pool(), &table, before, 1000).await?;
+    let label = format!(
+        "{}{}{}",
+        msg_t("admin_tool_00012"),
+        table,
+        if deleted == 0 {
+            msg_t("admin_tool_00002")
+        } else {
+            msg_t("admin_tool_00013")
+        }
+    );
+    if deleted == 0 {
+        Ok(json!({ "error": 1, "msg": label }))
+    } else if total.saturating_sub(1000) > 0 {
+        Ok(json!({ "error": 2, "msg": label }))
+    } else {
+        Ok(json!({ "error": 0, "msg": label }))
+    }
+}
+
+async fn gen_page_base(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let groups = article_repo::list_groups(state.db.reader()).await?;
+    let news_group_list: Vec<Value> = groups
+        .into_iter()
+        .map(|g| json!({ "id": g.id, "name": g.name, "keyid": g.keyid }))
+        .collect();
+    let descs = gap_extra::php_list_desc_names(state.db.reader()).await?;
+    let description_list: Vec<Value> = descs
+        .into_iter()
+        .map(|(id, name)| json!({ "id": id, "name": name }))
+        .collect();
+    Ok(json!({
+        "config": {
+            "make_index_url": cfg_pick(&cfg, "make_index_url"),
+            "make_new_url": cfg_pick(&cfg, "make_new_url"),
+        },
+        "news_group_list": news_group_list,
+        "description_list": description_list,
+    }))
+}
+
+async fn gen_page_index(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let url = json_str(body, "make_index_url");
+    if !url.is_empty() {
+        upsert_cfg(state, user, "make_index_url", &url).await?;
+    }
+    Ok(PhpOut::Message("admin_01465"))
+}
+
+async fn gen_page_news(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let url = json_str(body, "make_new_url");
+    if !url.is_empty() {
+        upsert_cfg(state, user, "make_new_url", &url).await?;
+    }
+    Ok(PhpOut::Message("admin_01465"))
+}
+
+fn gen_ssr_ok() -> Value {
+    json!({ "type": "ok", "value": 0 })
+}
+
+fn gen_cache_index() -> Value {
+    json!([
+        {"id": "1", "name": "区域分类"},
+        {"id": "2", "name": "行业分类"},
+        {"id": "3", "name": "职位分类"},
+        {"id": "4", "name": "个人分类"},
+        {"id": "5", "name": "企业分类"},
+        {"id": "6", "name": "分站缓存"},
+        {"id": "7", "name": "网站缓存"},
+        {"id": "8", "name": "SEO设置"},
+        {"id": "9", "name": "网站导航"},
+        {"id": "10", "name": "兼职分类"},
+        {"id": "11", "name": "友情链接"},
+        {"id": "12", "name": "新闻分类"},
+        {"id": "13", "name": "商品分类"},
+        {"id": "14", "name": "广告缓存"},
+        {"id": "15", "name": "举报原因"},
+        {"id": "16", "name": "积分优惠"},
+        {"id": "18", "name": "自定义WAP导航"},
+        {"id": "19", "name": "网站地图"},
+        {"id": "20", "name": "问答分类"},
+        {"id": "23", "name": "自我介绍"},
+        {"id": "24", "name": "关键字"},
+        {"id": "25", "name": "单页面分类"},
+        {"id": "26", "name": "数据库"},
+        {"id": "27", "name": "邮件服务器"},
+        {"id": "29", "name": "计划任务"}
+    ])
+}
+
+async fn gen_cache_run(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    _body: &Value,
+) -> AppResult<PhpOut> {
+    let code = format!("{}", 1000 + (clock::now_ts() % 9000));
+    upsert_cfg(state, user, "cachecode", &code).await?;
+    dict_service::reload(state).await?;
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("admin_system_00064"))
 }
