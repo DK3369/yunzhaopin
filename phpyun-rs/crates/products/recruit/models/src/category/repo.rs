@@ -763,6 +763,13 @@ pub async fn city_clear_pinyin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     Ok(res.rows_affected())
 }
 
+pub async fn job_clear_pinyin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_job_class SET e_name = '' WHERE COALESCE(deleted,0)=0")
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 #[derive(Debug, Clone, FromRow, Serialize)]
 pub struct CityDupRow {
     pub id: u64,

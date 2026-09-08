@@ -56,12 +56,16 @@ use serde_json::{json, Value};
 
 use crate::admin_cms_service;
 use crate::admin_longtail_service;
+use crate::admin_report_service;
 use crate::description_service;
 use crate::dict_service;
 use crate::friend_link_service;
+use crate::home_service;
 use crate::redeem_service;
 use crate::site_setting_service;
 use crate::wechat_api_service;
+use phpyun_models::entrust_record;
+use phpyun_models::report::repo as report_repo;
 use uuid::Uuid;
 
 pub enum PhpOut {
@@ -121,6 +125,12 @@ pub async fn dispatch(
         ("news", "delpro") => news_delpro(state, body).await,
         ("news", "delmenu") => news_delmenu(state, body).await,
         ("news", "changeSon") => news_change_son(state, body).await,
+        ("news", "ajax_menu") => Ok(PhpOut::Data(news_ajax_menu(state, body).await?)),
+        ("news", "set_menu") => news_set_menu(state, body).await,
+        ("news", "make_cache") => {
+            home_service::invalidate_all().await;
+            Ok(PhpOut::Message("admin_system_00064"))
+        },
         ("gongzhao", "index") => Ok(PhpOut::Data(gongzhao_index(state, body).await?)),
         ("gongzhao", "getGroup") => Ok(PhpOut::Data(gongzhao_get_group(state).await?)),
         ("gongzhao", "add") => gongzhao_add(state, user, body).await,
@@ -130,6 +140,7 @@ pub async fn dispatch(
         ("gongzhao", "whb") => Ok(PhpOut::Data(gongzhao_whb(state).await?)),
         ("announce", "getGroup") => Ok(PhpOut::Data(announce_get_group(state).await?)),
         ("announce", "checksitedid") => announce_checksitedid(state, body).await,
+        ("announce", "index") => Ok(PhpOut::Data(announce_index(state, body).await?)),
         ("ads", "index") => Ok(PhpOut::Data(ads_index(state, body).await?)),
         ("ads", "get_base_data") => Ok(PhpOut::Data(ads_get_base(state).await?)),
         ("ads", "info") => Ok(PhpOut::Data(ads_info(state, body).await?)),
@@ -161,6 +172,7 @@ pub async fn dispatch(
         ("comset", "rating") => Ok(PhpOut::Data(comset_rating(state, body).await?)),
         ("comset", "comspend") => Ok(PhpOut::Data(comset_comspend(state).await?)),
         ("userset", "userspend") => Ok(PhpOut::Data(userset_userspend(state).await?)),
+        ("userset", "saveLogo") => userset_save_logo(state, user, body).await,
         ("rating", "ajax") => rating_ajax(state, body).await,
         ("rating", "zzData") => Ok(PhpOut::Data(rating_zz_data(state).await?)),
         ("rating", "edittc") => Ok(PhpOut::Data(rating_edittc(state, body).await?)),
@@ -176,6 +188,7 @@ pub async fn dispatch(
         ("warning", "config") => warning_config_save(state, user, body).await,
         ("cron-log", "index") => Ok(PhpOut::Data(cron_log_index(state, body).await?)),
         ("cron-log", "delete") => cron_log_del(state, user, body).await,
+        ("cron", "index") => Ok(PhpOut::Data(cron_index(state, body).await?)),
         ("shop-reward", "index") => Ok(PhpOut::Data(shop_reward_index(state, body).await?)),
         ("shop-reward", "rec") => shop_reward_flag(state, user, body, true).await,
         ("shop-reward", "hot") => shop_reward_flag(state, user, body, false).await,
@@ -265,6 +278,7 @@ pub async fn dispatch(
         ("part", "del") => part_del(state, body).await,
         ("part", "checkstate") => part_checkstate(state, body).await,
         ("hotjob", "save") => hotjob_save(state, user, body).await,
+        ("hotjob", "index") => Ok(PhpOut::Data(hotjob_index(state, body).await?)),
         ("hotjob", "getComList") => Ok(PhpOut::Data(hotjob_com_list(state, body).await?)),
         ("hotjob", "gethotjob") => Ok(PhpOut::Data(hotjob_get(state, body).await?)),
         ("hotjob", "hotjobinfo") => Ok(PhpOut::Data(hotjob_info(state, body).await?)),
@@ -320,7 +334,7 @@ pub async fn dispatch(
         ("cat-class", "up_single") => cat_class_up_single(state, body).await,
         ("cat-class", "upp") => cat_class_upp(state, body).await,
         ("cat-class", "ajaxpinyin") => Ok(PhpOut::Message("admin_system_00081")),
-        ("cat-class", "clearpinyin") => cat_class_clearpinyin(state).await,
+        ("cat-class", "clearpinyin") => cat_class_clearpinyin(state, body).await,
         ("cat-class", "ajaxchachong") => Ok(PhpOut::Data(cat_class_chachong(state, body).await?)),
         ("cat-class", "classadd") => Ok(PhpOut::Data(cat_class_one(state, body).await?)),
         ("user-gap", "company-num") => Ok(PhpOut::Data(user_gap_company_num(state).await?)),
@@ -445,6 +459,23 @@ pub async fn dispatch(
         ("error-log", "index") => Ok(PhpOut::Data(error_log_index(state, body).await?)),
         ("error-log", "delete") => error_log_del(state, user, body).await,
         ("admin-log", "index") => Ok(PhpOut::Data(admin_log_index(state, body).await?)),
+        ("zph-space", "ajax") => zph_space_ajax(state, body).await,
+        ("zph-space", "ajaxspace") => Ok(PhpOut::Data(zph_space_ajaxspace(state, body).await?)),
+        ("zph-space", "up") => Ok(PhpOut::Data(zph_space_up(state, body).await?)),
+        ("report-resume", "delresume") => report_delresume(state, user, body).await,
+        ("report-resume", "delresumeall") => report_delresumeall(state, user, body).await,
+        ("shop-set", "index") => Ok(PhpOut::Data(shop_set_index(state).await?)),
+        ("shop-set", "saveset") => shop_set_saveset(state, user, body).await,
+        ("shop-set", "get_redeem_option") => Ok(PhpOut::Data(shop_set_redeem_option(state, body).await?)),
+        ("hbconfig", "saveWhb") => hbconfig_save_whb(state, user, body).await,
+        ("hbconfig", "delWhb") => hbconfig_del_whb(state, user, body).await,
+        ("hrlog", "editsave") => hrlog_editsave(state, body).await,
+        ("hrlog", "rehrlog") => hrlog_rehrlog(state, body).await,
+        ("hrlog", "set") => Ok(PhpOut::Data(hrlog_set(state).await?)),
+        ("hrlog", "setSave") => hrlog_set_save(state, user, body).await,
+        ("hrlog", "getHb") => Ok(PhpOut::Data(hrlog_get_hb(state, body).await?)),
+        ("trust", "recom") => Ok(PhpOut::Data(trust_recom(state, body).await?)),
+        ("trust", "directrecom") => trust_directrecom(state, body).await,
         _ => Err(ApiError::param_invalid("unknown_php_action")),
     }
 }
@@ -5474,7 +5505,12 @@ async fn cat_class_upp(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     Ok(PhpOut::Message("admin_system_00002"))
 }
 
-async fn cat_class_clearpinyin(state: &AppState) -> AppResult<PhpOut> {
+async fn cat_class_clearpinyin(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let kind = cat_kind(body);
+    if kind == "job" {
+        cat_repo::job_clear_pinyin(state.db.pool()).await?;
+        return Ok(PhpOut::Message("admin_01370"));
+    }
     cat_repo::city_clear_pinyin(state.db.pool()).await?;
     Ok(PhpOut::Message("admin_01369"))
 }
@@ -11315,4 +11351,662 @@ async fn admin_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
         })
         .collect();
     Ok(paged(Value::Array(list), total, page, per))
+}
+
+fn php_serialize_strs(items: &[String]) -> String {
+    let mut inner = String::new();
+    for (i, s) in items.iter().enumerate() {
+        inner.push_str(&format!("i:{i};s:{}:\"{s}\";", s.len()));
+    }
+    format!("a:{}:{{{inner}}}", items.len())
+}
+
+fn parse_lastwork(s: &str) -> i64 {
+    let s = s.trim();
+    if s.is_empty() {
+        return 0;
+    }
+    parse_date_ts(s.get(..10).unwrap_or(s))
+}
+
+fn cron_type_n(t: i32) -> String {
+    msg_t(match t {
+        1 => "admin_system_00268",
+        2 => "admin_system_00270",
+        3 => "admin_system_00269",
+        4 => "admin_00894",
+        5 => "admin_system_00261",
+        _ => "",
+    })
+}
+
+fn job_salary_n(min: i32, max: i32) -> String {
+    if max > 0 {
+        format!("{min}-{max}")
+    } else if min > 0 {
+        min.to_string()
+    } else {
+        String::new()
+    }
+}
+
+async fn news_ajax_menu(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Ok(json!({}));
+    }
+    let Some(row) = article_repo::get_group_admin(state.db.reader(), id).await? else {
+        return Ok(json!({}));
+    };
+    if row.is_menu == 1 {
+        if let Some(nav) = nav_php::php_get_nav_by_news(state.db.reader(), id as i64).await? {
+            let types = nav_php::php_list_nav_types(state.db.reader()).await?;
+            let typename = types
+                .iter()
+                .find(|t| t.id == nav.nid as u64)
+                .map(|t| t.typename.clone())
+                .unwrap_or_default();
+            return Ok(json!({
+                "id": nav.id,
+                "nid": nav.nid,
+                "name": nav.name,
+                "typename": typename,
+                "color": nav.color,
+                "url": nav.url,
+                "furl": nav.furl,
+                "type": nav.r#type,
+                "sort": nav.sort,
+                "eject": nav.eject,
+                "model": nav.model,
+                "bold": nav.bold,
+                "display": nav.display,
+            }));
+        }
+    }
+    Ok(json!({
+        "name": row.name,
+        "url": format!("news/{}/", row.id),
+        "furl": format!("article/c_list-nid_{}.html", row.id),
+    }))
+}
+
+async fn news_set_menu(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if !has_flag(body, "submit") {
+        return Err(ApiError::business("wap_01298"));
+    }
+    let name = json_str(body, "name");
+    let nid = json_i32(body, "nid");
+    let nav_id = json_u64(body, "id");
+    let did = json_u64(body, "did");
+    if name.is_empty() {
+        return Err(ApiError::business("wap_01298"));
+    }
+    if nav_id == 0 && nav_php::php_nav_name_taken(state.db.pool(), &name, nid).await? {
+        return Err(ApiError::business("admin_neirong_00018"));
+    }
+    let url = json_str(body, "url").replace("amp;", "");
+    let pic = json_str(body, "pic");
+    let saved = nav_php::php_save_nav(
+        state.db.pool(),
+        nav_php::PhpNavSave {
+            id: if nav_id > 0 { Some(nav_id) } else { None },
+            nid,
+            eject: json_i32(body, "eject"),
+            display: json_i32(body, "display"),
+            name: &name,
+            url: &url,
+            furl: &json_str(body, "furl"),
+            sort: json_i32(body, "sort"),
+            color: &json_str(body, "color"),
+            model: &json_str(body, "model"),
+            bold: json_i32(body, "bold"),
+            r#type: json_i32(body, "type"),
+            pic: if pic.is_empty() { None } else { Some(pic.as_str()) },
+            config: &json_str(body, "config"),
+        },
+    )
+    .await?;
+    if saved == 0 {
+        return Err(ApiError::business(if nav_id > 0 {
+            "admin_01389"
+        } else {
+            "admin_01390"
+        }));
+    }
+    if did > 0 {
+        nav_php::php_set_nav_news(state.db.pool(), saved, did as i64).await?;
+        if nav_id == 0 {
+            article_repo::set_group_is_menu(state.db.pool(), did, 1).await?;
+        }
+    }
+    let key = if nav_id > 0 {
+        "admin_01337"
+    } else {
+        "admin_01338"
+    };
+    Ok(PhpOut::Text(key, format!("{}{}", msg_t(key), msg_t("wap_js_00104"))))
+}
+
+async fn announce_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let f = announcement_repo::PhpAnnounceFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw) },
+        since: php_days_ago(body, "end"),
+    };
+    let db = state.db.reader();
+    let rows = announcement_repo::php_list_admin(db, &f, offset, limit).await?;
+    let total = announcement_repo::php_count_admin(db, &f).await?;
+    let domains = domain_repo::list_all(db).await.unwrap_or_default();
+    let dmap = domain_object(&domains);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let dname = dmap.get(&r.did.to_string()).cloned().unwrap_or(json!(""));
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "keyword": r.keyword,
+                "description": r.description,
+                "content": r.content,
+                "view_num": r.view_num,
+                "datetime": r.datetime,
+                "datetime_n": fmt_dt(r.datetime),
+                "startime": r.startime.to_string(),
+                "startime_n": fmt_dt(r.startime),
+                "endtime": r.endtime.to_string(),
+                "endtime_n": fmt_dt(r.endtime),
+                "did": r.did,
+                "dname": dname,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn hotjob_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let rating_s = json_str(body, "rating");
+    let rating_n = json_i32(body, "rating");
+    let f = company_repo::PhpHotJobFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        ctype: json_i32(body, "ctype"),
+        rating: if rating_n > 0 { Some(rating_n) } else { None },
+        rating_name: if rating_s.parse::<i32>().is_ok() {
+            None
+        } else if rating_s.is_empty() {
+            None
+        } else {
+            Some(rating_s.as_str())
+        },
+        time_mode: json_i32(body, "time"),
+        now: clock::now_ts(),
+    };
+    let db = state.db.reader();
+    let rows = company_repo::php_hotjob_list(db, &f, offset, limit).await?;
+    let total = company_repo::php_hotjob_count(db, &f).await?;
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let now = clock::now_ts();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let expired = r.time_end > 0 && r.time_end < now;
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "name": r.username,
+                "username": r.username,
+                "rating": r.rating,
+                "rating_id": r.rating_id,
+                "hot_pic": checkpic_url(&cfg, &r.hot_pic),
+                "service_price": r.service_price,
+                "time_start": r.time_start,
+                "time_start_n": fmt_dt(r.time_start),
+                "time_end": r.time_end,
+                "time_end_n": if expired { "wap_com_00319".to_string() } else { fmt_dt(r.time_end) },
+                "sort": r.sort,
+                "beizhu": r.beizhu,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn cron_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let db = state.db.reader();
+    let rows = gap_repo::list_cron(db, offset, limit).await?;
+    let total = gap_repo::count_cron(db).await?;
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let src = format!("{base}/index.php?m=cron&id={}", r.id);
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "dir": r.dir,
+                "type": r.r#type,
+                "type_n": cron_type_n(r.r#type),
+                "week": r.week,
+                "month": r.month,
+                "hour": r.hour,
+                "minute": r.minute,
+                "display": r.display,
+                "display_n": msg_t(if r.display == 1 { "common_02085" } else { "common_02063" }),
+                "nowtime": r.nowtime,
+                "nowtime_n": if r.nowtime > 0 { fmt_dt(r.nowtime) } else { "-".into() },
+                "nexttime": r.nexttime,
+                "nexttime_n": if r.nexttime > 0 { fmt_dt(r.nexttime) } else { "-".into() },
+                "src": src,
+                "waibu": src,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn zph_space_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    if body.get("sort").is_some() {
+        zph_repo::patch_space_field(state.db.pool(), id, "sort", &json_str(body, "sort")).await?;
+    }
+    if body.get("name").is_some() {
+        zph_repo::patch_space_field(state.db.pool(), id, "name", &json_str(body, "name")).await?;
+    }
+    if body.get("price").is_some() {
+        zph_repo::patch_space_field(state.db.pool(), id, "price", &json_str(body, "price")).await?;
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+async fn zph_space_ajaxspace(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_i32(body, "id");
+    if id == 0 {
+        return Ok(json!([]));
+    }
+    let rows = zph_repo::list_spaces(state.db.reader(), Some(i64::from(id)), None).await?;
+    Ok(serde_json::to_value(rows).unwrap_or(json!([])))
+}
+
+async fn zph_space_up(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_i32(body, "id");
+    if id == 0 {
+        return Ok(json!([]));
+    }
+    let Some(one) = zph_repo::find_space_by_id(state.db.reader(), id).await? else {
+        return Ok(json!([]));
+    };
+    let two = zph_repo::list_spaces(state.db.reader(), Some(i64::from(id)), None).await?;
+    let mut children = Vec::new();
+    for row in two {
+        let mut v = serde_json::to_value(&row).unwrap_or(json!({}));
+        let grand = zph_repo::list_spaces(state.db.reader(), Some(row.id as i64), None).await?;
+        if !grand.is_empty() {
+            v["children"] = serde_json::to_value(grand).unwrap_or(json!([]));
+        }
+        children.push(v);
+    }
+    let mut one_v = serde_json::to_value(&one).unwrap_or(json!({}));
+    one_v["children"] = Value::Array(children);
+    Ok(json!([one_v]))
+}
+
+async fn report_delresume(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let eid = json_u64(body, "eid");
+    let rid = json_u64(body, "id");
+    if eid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let expect = expect_repo::find_by_id(state.db.reader(), eid).await?;
+    let uid = expect
+        .as_ref()
+        .map(|e| e.uid)
+        .filter(|u| *u > 0)
+        .unwrap_or_else(|| json_u64(body, "uid"));
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "resume_expect",
+        &[eid],
+        "/v1/admin/php-content/report-resume/delresume",
+    )
+    .await;
+    let n = expect_repo::delete(state.db.pool(), eid, uid).await?;
+    if n == 0 {
+        let msg = format!("{}{}{}", msg_t("admin_00387"), eid, msg_t("admin_01425"));
+        return Ok(PhpOut::Text("admin_01425", msg));
+    }
+    if let Some(row) = report_repo::find_refund_row(state.db.reader(), rid).await? {
+        if row.datafh != 1 {
+            let _ = admin_report_service::refund_unpaid_resume_reports(state, &[row]).await;
+        }
+    }
+    let msg = format!("{}{}{}", msg_t("admin_00387"), eid, msg_t("admin_01291"));
+    Ok(PhpOut::Text("admin_01291", msg))
+}
+
+async fn report_delresumeall(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let rids = ids_named(body, "rid");
+    if rids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let rows = report_repo::find_refund_rows(state.db.reader(), &rids).await?;
+    let mut eids: Vec<u64> = rows.iter().map(|r| r.eid).filter(|e| *e > 0).collect();
+    eids.sort_unstable();
+    eids.dedup();
+    if !eids.is_empty() {
+        recycle_ids(
+            state,
+            user,
+            "resume_expect",
+            &eids,
+            "/v1/admin/php-content/report-resume/delresumeall",
+        )
+        .await;
+    }
+    for eid in &eids {
+        if let Some(ex) = expect_repo::find_by_id(state.db.reader(), *eid).await? {
+            let _ = expect_repo::delete(state.db.pool(), *eid, ex.uid).await;
+        }
+    }
+    let unpaid: Vec<_> = rows.into_iter().filter(|r| r.datafh != 1).collect();
+    if !unpaid.is_empty() {
+        let _ = admin_report_service::refund_unpaid_resume_reports(state, &unpaid).await;
+    }
+    let joined = eids.iter().map(u64::to_string).collect::<Vec<_>>().join(",");
+    let msg = format!("{}{}{}", msg_t("admin_00387"), joined, msg_t("admin_01291"));
+    Ok(PhpOut::Text("admin_01291", msg))
+}
+
+async fn shop_set_index(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    let pic = cfg.get("sy_imgsc_mr").cloned().unwrap_or_default();
+    Ok(json!({ "sy_imgsc_mr": checkpic_url(&cfg, &pic) }))
+}
+
+async fn shop_set_saveset(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let path = json_str(body, "sy_imgsc_mr");
+    let url = json_str(body, "url");
+    let picurl = json_str(body, "picurl");
+    let val = [path, url, picurl]
+        .into_iter()
+        .find(|s| !s.is_empty())
+        .unwrap_or_default();
+    if val.is_empty() {
+        return Err(ApiError::business("ajax_00015"));
+    }
+    upsert_cfg(state, user, "sy_imgsc_mr", &val).await?;
+    Ok(PhpOut::Message("admin_01437"))
+}
+
+async fn shop_set_redeem_option(state: &AppState, body: &Value) -> AppResult<Value> {
+    let tnid = json_u64(body, "tnid");
+    let mut html = format!("<option value=\"\">{}</option>", msg_t("admin_model_00228"));
+    if tnid > 0 {
+        let rows = redeem_repo::list_classes(state.db.reader(), Some(tnid)).await?;
+        for c in rows {
+            html.push_str(&format!("<option value='{}'>{}</option>", c.id, c.name));
+        }
+    }
+    Ok(json!({ "html": html }))
+}
+
+async fn hbconfig_save_whb(
+    state: &AppState,
+    _user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::business("wap_01298"));
+    }
+    let pic = json_str(body, "pic");
+    let id = json_u64(body, "id");
+    let n = whb_repo::upsert_whb(
+        state.db.pool(),
+        whb_repo::WhbSave {
+            id: if id > 0 { Some(id) } else { None },
+            name: &name,
+            pic: if pic.is_empty() { None } else { Some(pic.as_str()) },
+            sort: json_i32(body, "sort"),
+            isopen: json_i32(body, "isopen"),
+            r#type: json_i32(body, "type"),
+            num: json_i32(body, "num"),
+            style: json_i32(body, "style"),
+        },
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06357"));
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+async fn hbconfig_del_whb(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "admin_jobwhb",
+        &ids,
+        "/v1/admin/php-content/hbconfig/delWhb",
+    )
+    .await;
+    let mut n = 0u64;
+    for id in &ids {
+        n += whb_repo::delete_whb(state.db.pool(), *id).await?;
+    }
+    if n == 0 {
+        return Err(ApiError::business("model_00033"));
+    }
+    Ok(PhpOut::Text(
+        "admin_model_00242",
+        format!(
+            "{}{}{}",
+            msg_t("admin_model_00242").split('(').next().unwrap_or(""),
+            ids.iter().map(u64::to_string).collect::<Vec<_>>().join(","),
+            msg_t("admin_01291")
+        ),
+    ))
+}
+
+async fn hrlog_editsave(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let mut fields: Vec<(&str, i64)> = Vec::new();
+    for key in [
+        "job", "lookjob", "lookresume", "sqjob", "yq", "login", "nightwork", "chatnum", "chatuser",
+    ] {
+        if body.get(key).is_some() {
+            fields.push((key, i64::from(json_i32(body, key))));
+        }
+    }
+    if body.get("lastwork").is_some() {
+        fields.push(("lastwork", parse_lastwork(&json_str(body, "lastwork"))));
+    }
+    let n = gap_repo::php_update_hr_log(state.db.pool(), id, &fields, clock::now_ts()).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01453"));
+    }
+    Ok(PhpOut::Text(
+        "admin_model_00003",
+        format!("{}{}", msg_t("admin_model_00003"), ""),
+    ))
+}
+
+async fn hrlog_rehrlog(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    if gap_repo::php_get_hr_log(state.db.reader(), id).await?.is_none() {
+        return Err(ApiError::business("admin_01453"));
+    }
+    let n = gap_repo::php_update_hr_log(state.db.pool(), id, &[], clock::now_ts()).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01453"));
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+async fn hrlog_set(state: &AppState) -> AppResult<Value> {
+    let cfg = settings_hash(state).await?;
+    let isopen = cfg.get("sy_yearreport_isopen").cloned().unwrap_or_else(|| "0".into());
+    Ok(json!({
+        "set": {
+            "sy_yearreport_isopen": if isopen.is_empty() { "0".into() } else { isopen },
+            "sy_yearreport_ewmtype": cfg.get("sy_yearreport_ewmtype").cloned().unwrap_or_default(),
+            "sy_yearreport_tip_n": checkpic_url(&cfg, cfg.get("sy_yearreport_tip").map(|s| s.as_str()).unwrap_or("")),
+            "sy_yearreport_pic_n": checkpic_url(&cfg, cfg.get("sy_yearreport_pic").map(|s| s.as_str()).unwrap_or("")),
+        }
+    }))
+}
+
+async fn hrlog_set_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let isopen = if has_flag(body, "sy_yearreport_isopen") { "1" } else { "0" };
+    upsert_cfg(state, user, "sy_yearreport_isopen", isopen).await?;
+    if body.get("sy_yearreport_ewmtype").is_some() {
+        upsert_cfg(
+            state,
+            user,
+            "sy_yearreport_ewmtype",
+            &json_str(body, "sy_yearreport_ewmtype"),
+        )
+        .await?;
+    }
+    let pic = json_str(body, "sy_yearreport_pic");
+    if !pic.is_empty() {
+        upsert_cfg(state, user, "sy_yearreport_pic", &pic).await?;
+    }
+    let tip = json_str(body, "sy_yearreport_tip");
+    if !tip.is_empty() {
+        upsert_cfg(state, user, "sy_yearreport_tip", &tip).await?;
+    }
+    Ok(PhpOut::Message("admin_01452"))
+}
+
+async fn hrlog_get_hb(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "uid");
+    let base = preview_base(state);
+    let hb_url = format!("{base}/index.php?c=ajax&a=lastYearReport&uid={uid}");
+    Ok(json!({ "hbUrl": hb_url }))
+}
+
+async fn trust_recom(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let f = job_repo::AdminJobFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        keyword_type: Some(json_i32(body, "type")).filter(|n| *n > 0),
+        state: Some(1),
+        status: None,
+        ..Default::default()
+    };
+    let db = state.db.reader();
+    let rows = job_repo::admin_list_filtered(db, &f, offset, limit).await?;
+    let total = job_repo::admin_count_filtered(db, &f).await?;
+    let dicts = dict_service::get(state).await?;
+    let base = preview_base(state);
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let job_three = {
+                let a = dicts.job(r.job_post);
+                if !a.is_empty() {
+                    a.to_string()
+                } else {
+                    let b = dicts.job(r.job1_son);
+                    if !b.is_empty() {
+                        b.to_string()
+                    } else {
+                        dicts.job(r.job1).to_string()
+                    }
+                }
+            };
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "com_name": r.com_name.clone().unwrap_or_default(),
+                "name": r.name,
+                "job_comapply": format!("{base}/index.php?m=job&c=comapply&id={}&look=admin", r.id),
+                "job_city_one": dicts.city(r.provinceid),
+                "job_city_two": dicts.city(r.cityid),
+                "job_three_n": job_three,
+                "job_salary": job_salary_n(r.minsalary, r.maxsalary),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn trust_directrecom(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let eid = json_u64(body, "eid");
+    let jobid = json_u64(body, "jobid");
+    let comid = json_u64(body, "comid");
+    if eid == 0 || jobid == 0 || comid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    if entrust_record::exists_record(state.db.reader(), eid, jobid, comid).await? {
+        return Err(ApiError::business("admin_01339"));
+    }
+    let uid = match expect_repo::find_by_id(state.db.reader(), eid).await? {
+        Some(ex) => ex.uid,
+        None => json_u64(body, "uid"),
+    };
+    if uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    entrust_record::insert_record(state.db.pool(), uid, eid, jobid, comid, clock::now_ts()).await?;
+    Ok(PhpOut::Message("wap_01720"))
+}
+
+async fn userset_save_logo(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    if !has_flag(body, "submit") {
+        return Err(ApiError::business("wap_01298"));
+    }
+    let mut man = json_str_list(body, "manicon_sys");
+    man.extend(json_str_list(body, "man_files"));
+    man.truncate(6);
+    let mut woman = json_str_list(body, "womanicon_sys");
+    woman.extend(json_str_list(body, "woman_files"));
+    woman.truncate(6);
+    if man.is_empty() || woman.is_empty() {
+        return Err(ApiError::business("admin_user_00100"));
+    }
+    upsert_cfg(state, user, "sy_member_icon_arr", &php_serialize_strs(&man)).await?;
+    upsert_cfg(state, user, "sy_member_icon", man.first().map(|s| s.as_str()).unwrap_or("")).await?;
+    upsert_cfg(state, user, "sy_member_iconv_arr", &php_serialize_strs(&woman)).await?;
+    upsert_cfg(
+        state,
+        user,
+        "sy_member_iconv",
+        woman.first().map(|s| s.as_str()).unwrap_or(""),
+    )
+    .await?;
+    Ok(PhpOut::Message("admin_user_00098"))
 }

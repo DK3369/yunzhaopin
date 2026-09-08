@@ -947,6 +947,113 @@ pub async fn hotjob_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct PhpHotJobAdmin {
+    pub id: u64,
+    pub uid: u64,
+    pub username: String,
+    pub rating: String,
+    pub hot_pic: String,
+    pub service_price: i32,
+    pub time_start: i64,
+    pub time_end: i64,
+    pub sort: i32,
+    pub beizhu: String,
+    pub rating_id: i32,
+}
+
+const PHP_HOTJOB_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
+    COALESCE(username,'') AS username, COALESCE(rating,'') AS rating, COALESCE(hot_pic,'') AS hot_pic, \
+    CAST(COALESCE(service_price,0) AS SIGNED) AS service_price, \
+    CAST(COALESCE(time_start,0) AS SIGNED) AS time_start, CAST(COALESCE(time_end,0) AS SIGNED) AS time_end, \
+    CAST(COALESCE(sort,0) AS SIGNED) AS sort, COALESCE(beizhu,'') AS beizhu, \
+    CAST(COALESCE(rating_id,0) AS SIGNED) AS rating_id";
+
+pub struct PhpHotJobFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub ctype: i32,
+    pub rating: Option<i32>,
+    pub rating_name: Option<&'a str>,
+    pub time_mode: i32,
+    pub now: i64,
+}
+
+fn push_hotjob_where(qb: &mut sqlx::QueryBuilder<'_, sqlx::MySql>, f: &PhpHotJobFilter<'_>) {
+    qb.push(" FROM phpyun_hotjob WHERE COALESCE(deleted,0)=0");
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        if f.ctype == 2 {
+            qb.push(" AND beizhu LIKE ");
+            qb.push_bind(like);
+        } else {
+            qb.push(" AND username LIKE ");
+            qb.push_bind(like);
+        }
+    }
+    if let Some(r) = f.rating.filter(|n| *n > 0) {
+        qb.push(" AND uid IN (SELECT uid FROM phpyun_company WHERE rating = ");
+        qb.push_bind(r);
+        qb.push(")");
+    }
+    if let Some(name) = f.rating_name.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND rating = ");
+        qb.push_bind(name.to_string());
+    }
+    match f.time_mode {
+        1 => {
+            qb.push(" AND time_end > ");
+            qb.push_bind(f.now);
+            qb.push(" AND time_end < ");
+            qb.push_bind(f.now + 7 * 86400);
+        }
+        2 => {
+            qb.push(" AND time_end > ");
+            qb.push_bind(f.now);
+            qb.push(" AND time_end < ");
+            qb.push_bind(f.now + 30 * 86400);
+        }
+        3 => {
+            qb.push(" AND time_end > ");
+            qb.push_bind(f.now);
+            qb.push(" AND time_end < ");
+            qb.push_bind(f.now + 182 * 86400);
+        }
+        4 => {
+            qb.push(" AND time_end > ");
+            qb.push_bind(f.now);
+            qb.push(" AND time_end < ");
+            qb.push_bind(f.now + 365 * 86400);
+        }
+        5 => {
+            qb.push(" AND time_end < ");
+            qb.push_bind(f.now);
+        }
+        _ => {}
+    }
+}
+
+pub async fn php_hotjob_list(
+    pool: &MySqlPool,
+    f: &PhpHotJobFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpHotJobAdmin>, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new(format!("SELECT {PHP_HOTJOB_FIELDS}"));
+    push_hotjob_where(&mut qb, f);
+    qb.push(" ORDER BY time_start DESC, id DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_hotjob_count(pool: &MySqlPool, f: &PhpHotJobFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::new("SELECT COUNT(*)");
+    push_hotjob_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub struct HotJobUpsert<'a> {
     pub id: Option<u64>,
     pub uid: u64,

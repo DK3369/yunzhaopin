@@ -76,3 +76,43 @@ pub async fn delete_by_com(pool: &MySqlPool, comid: u64, ids: &[u64]) -> Result<
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
+
+pub async fn exists_record(
+    pool: &MySqlPool,
+    eid: u64,
+    jobid: u64,
+    comid: u64,
+) -> Result<bool, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_user_entrust_record WHERE eid = ? AND jobid = ? AND comid = ?",
+    )
+    .bind(eid)
+    .bind(jobid)
+    .bind(comid)
+    .fetch_one(pool)
+    .await?;
+    Ok(n > 0)
+}
+
+pub async fn insert_record(
+    pool: &MySqlPool,
+    uid: u64,
+    eid: u64,
+    jobid: u64,
+    comid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query(
+            "INSERT INTO phpyun_user_entrust_record (uid, eid, jobid, comid, ctime) VALUES (?, ?, ?, ?, ?)",
+        )
+        .bind(uid)
+        .bind(eid)
+        .bind(jobid)
+        .bind(comid)
+        .bind(now)
+        .execute(pool)
+        .await?
+        .last_insert_id(),
+    )
+}

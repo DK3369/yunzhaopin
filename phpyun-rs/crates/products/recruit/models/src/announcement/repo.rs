@@ -5,7 +5,7 @@
 
 use super::entity::Announcement;
 use crate::soft_delete::{self, PREDICATE};
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 /// Map PHPYun columns to Rust Announcement struct fields via aliases.
 const SELECT_FIELDS: &str = "\
@@ -220,4 +220,43 @@ pub async fn neighbors(
         .fetch_optional(pool)
         .await?;
     Ok((prev, next))
+}
+
+pub struct PhpAnnounceFilter {
+    pub keyword: Option<String>,
+    pub since: Option<i64>,
+}
+
+fn push_announce_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpAnnounceFilter) {
+    qb.push(format!(" FROM phpyun_admin_announcement WHERE {PREDICATE}"));
+    if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND title LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    if let Some(since) = f.since {
+        qb.push(" AND datetime >= ");
+        qb.push_bind(since);
+    }
+}
+
+pub async fn php_list_admin(
+    pool: &MySqlPool,
+    f: &PhpAnnounceFilter,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Announcement>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(format!("SELECT {SELECT_FIELDS}"));
+    push_announce_where(&mut qb, f);
+    qb.push(" ORDER BY datetime DESC, id DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_admin(pool: &MySqlPool, f: &PhpAnnounceFilter) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_announce_where(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

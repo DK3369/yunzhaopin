@@ -129,6 +129,23 @@ pub async fn php_get_nav_by_config(
         .await
 }
 
+pub async fn php_get_nav_by_news(pool: &MySqlPool, news_id: i64) -> Result<Option<PhpNavRow>, sqlx::Error> {
+    let sql = format!("SELECT {NAV_FIELDS} FROM phpyun_navigation WHERE news = ? LIMIT 1");
+    sqlx::query_as::<_, PhpNavRow>(&sql)
+        .bind(news_id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn php_set_nav_news(pool: &MySqlPool, id: u64, news: i64) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query("UPDATE phpyun_navigation SET news = ? WHERE id = ?")
+        .bind(news)
+        .bind(id)
+        .execute(pool)
+        .await?
+        .rows_affected())
+}
+
 pub async fn php_nav_name_taken(pool: &MySqlPool, name: &str, nid: i32) -> Result<bool, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_navigation WHERE name = ? AND nid = ?",

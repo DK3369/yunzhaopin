@@ -946,3 +946,33 @@ pub async fn taken_bids(pool: &MySqlPool, zid: u64) -> Result<Vec<i32>, sqlx::Er
             .await?;
     Ok(rows.into_iter().map(|(b,)| b).filter(|b| *b > 0).collect())
 }
+
+pub async fn patch_space_field(pool: &MySqlPool, id: u64, field: &str, value: &str) -> Result<u64, sqlx::Error> {
+    match field {
+        "name" => Ok(sqlx::query("UPDATE phpyun_zhaopinhui_space SET name = ? WHERE id = ?")
+            .bind(value)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected()),
+        "sort" => {
+            let n: i32 = value.parse().unwrap_or(0);
+            Ok(sqlx::query("UPDATE phpyun_zhaopinhui_space SET sort = ? WHERE id = ?")
+                .bind(n)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected())
+        }
+        "price" => {
+            let n: i32 = value.parse().unwrap_or(0);
+            Ok(sqlx::query("UPDATE phpyun_zhaopinhui_space SET price = ? WHERE id = ?")
+                .bind(n)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected())
+        }
+        _ => Ok(0),
+    }
+}

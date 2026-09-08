@@ -2193,6 +2193,45 @@ pub async fn list_hr_logs(
     qb.build_query_as().fetch_all(pool).await
 }
 
+pub async fn php_get_hr_log(pool: &MySqlPool, id: u64) -> Result<Option<HrLogRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
+         CAST(COALESCE(job,0) AS SIGNED) AS job, CAST(COALESCE(lookjob,0) AS SIGNED) AS lookjob, \
+         CAST(COALESCE(lookresume,0) AS SIGNED) AS lookresume, CAST(COALESCE(sqjob,0) AS SIGNED) AS sqjob, \
+         CAST(COALESCE(yq,0) AS SIGNED) AS yq, CAST(COALESCE(login,0) AS SIGNED) AS login, \
+         CAST(COALESCE(ctime,0) AS SIGNED) AS ctime, CAST(COALESCE(uptime,0) AS SIGNED) AS uptime \
+         FROM phpyun_hr_log WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn php_update_hr_log(
+    pool: &MySqlPool,
+    id: u64,
+    fields: &[(&str, i64)],
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if id == 0 {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_hr_log SET uptime = ");
+    qb.push_bind(now);
+    for (col, val) in fields {
+        let c = match *col {
+            "job" | "lookjob" | "lookresume" | "sqjob" | "yq" | "login" | "nightwork"
+            | "lastwork" | "chatnum" | "chatuser" => *col,
+            _ => continue,
+        };
+        qb.push(format!(", `{c}` = "));
+        qb.push_bind(*val);
+    }
+    qb.push(" WHERE id = ");
+    qb.push_bind(id);
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
 pub async fn count_hr_logs(pool: &MySqlPool, uid: Option<u64>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new("SELECT COUNT(*) FROM phpyun_hr_log WHERE 1=1");

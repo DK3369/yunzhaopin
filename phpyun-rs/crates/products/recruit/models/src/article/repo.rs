@@ -441,6 +441,22 @@ pub async fn find_content(pool: &MySqlPool, id: u64) -> Result<Option<String>, s
     Ok(row.map(|(s,)| s))
 }
 
+pub async fn get_group_admin(
+    pool: &MySqlPool,
+    id: u64,
+) -> Result<Option<super::entity::NewsGroupAdmin>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, \
+         CAST(COALESCE(keyid,0) AS SIGNED) AS keyid, CAST(COALESCE(sort,0) AS SIGNED) AS sort, \
+         CAST(COALESCE(rec,0) AS SIGNED) AS rec, CAST(COALESCE(rec_news,0) AS SIGNED) AS rec_news, \
+         CAST(COALESCE(is_menu,0) AS SIGNED) AS is_menu \
+         FROM phpyun_news_group WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
 pub async fn list_groups_admin(
     pool: &MySqlPool,
 ) -> Result<Vec<super::entity::NewsGroupAdmin>, sqlx::Error> {

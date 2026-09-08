@@ -448,6 +448,13 @@ async fn pay_back(state: &AppState, r: &ReportRefundRow, owed: &Owed) -> AppResu
 /// Refund every report in `rows` that hasn't been refunded yet. Returns the
 /// employer uids that actually received something, which PHP names in its
 /// admin log.
+pub async fn refund_unpaid_resume_reports(
+    state: &AppState,
+    rows: &[ReportRefundRow],
+) -> AppResult<Vec<u64>> {
+    refund_rows(state, rows).await
+}
+
 async fn refund_rows(
     state: &AppState,
     rows: &[ReportRefundRow],

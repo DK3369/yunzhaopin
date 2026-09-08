@@ -98,3 +98,61 @@ pub async fn delete_whb(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
         .await?;
     Ok(res.rows_affected())
 }
+
+pub struct WhbSave<'a> {
+    pub id: Option<u64>,
+    pub name: &'a str,
+    pub pic: Option<&'a str>,
+    pub sort: i32,
+    pub isopen: i32,
+    pub r#type: i32,
+    pub num: i32,
+    pub style: i32,
+}
+
+pub async fn upsert_whb(pool: &MySqlPool, s: WhbSave<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = s.id.filter(|n| *n > 0) {
+        if let Some(pic) = s.pic.filter(|p| !p.is_empty()) {
+            sqlx::query(
+                "UPDATE phpyun_admin_jobwhb SET name=?, pic=?, sort=?, isopen=?, `type`=?, num=?, style=? WHERE id=?",
+            )
+            .bind(s.name)
+            .bind(pic)
+            .bind(s.sort)
+            .bind(s.isopen)
+            .bind(s.r#type)
+            .bind(s.num)
+            .bind(s.style)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        } else {
+            sqlx::query(
+                "UPDATE phpyun_admin_jobwhb SET name=?, sort=?, isopen=?, `type`=?, num=?, style=? WHERE id=?",
+            )
+            .bind(s.name)
+            .bind(s.sort)
+            .bind(s.isopen)
+            .bind(s.r#type)
+            .bind(s.num)
+            .bind(s.style)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        }
+        return Ok(id);
+    }
+    Ok(sqlx::query(
+        "INSERT INTO phpyun_admin_jobwhb (name, pic, sort, isopen, `type`, num, style) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(s.name)
+    .bind(s.pic.unwrap_or(""))
+    .bind(s.sort)
+    .bind(s.isopen)
+    .bind(s.r#type)
+    .bind(s.num)
+    .bind(s.style)
+    .execute(pool)
+    .await?
+    .last_insert_id())
+}
