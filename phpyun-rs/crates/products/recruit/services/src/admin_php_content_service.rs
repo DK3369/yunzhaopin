@@ -66,6 +66,7 @@ use crate::description_service;
 use crate::dict_service;
 use crate::friend_link_service;
 use crate::home_service;
+use crate::mail_service;
 use crate::redeem_service;
 use crate::site_setting_service;
 use crate::wechat_api_service;
@@ -528,6 +529,12 @@ pub async fn dispatch(
         ("fabutool", "comtwTask_base_data") => Ok(PhpOut::Data(fabutool_tw_base(state, false).await?)),
         ("fabutool", "delTwTask") => fabutool_del_tw(state, user, body).await,
         ("fabutool", "taskFinish") => fabutool_task_finish(state, body).await,
+        ("tuiguang", "getBirthday") => Ok(PhpOut::Data(tuiguang_birthday(state, body).await?)),
+        ("tuiguang", "getcom") => Ok(PhpOut::Data(json!(tuiguang_getcom(state, body).await?))),
+        ("tuiguang", "getuser") => Ok(PhpOut::Data(json!(tuiguang_getuser(state, body).await?))),
+        ("tuiguang", "getjob") => Ok(PhpOut::Data(json!(tuiguang_getjob(state, body).await?))),
+        ("tuiguang", "sendresume") => Ok(PhpOut::Data(tuiguang_sendresume(state, body).await?)),
+        ("tuiguang", "sendjob") => Ok(PhpOut::Data(tuiguang_sendjob(state, body).await?)),
         ("shop-set", "index") => Ok(PhpOut::Data(shop_set_index(state).await?)),
         ("shop-set", "saveset") => shop_set_saveset(state, user, body).await,
         ("shop-set", "get_redeem_option") => Ok(PhpOut::Data(shop_set_redeem_option(state, body).await?)),
@@ -14510,4 +14517,344 @@ async fn fabutool_task_finish(state: &AppState, body: &Value) -> AppResult<PhpOu
         return Err(ApiError::business("admin_system_00397"));
     }
     Ok(PhpOut::Message("wap_user_00264"))
+}
+
+async fn tuiguang_birthday(state: &AppState, body: &Value) -> AppResult<Value> {
+    let now = clock::now_ts();
+    let day7 = clock::start_of_day(now - 7 * 86_400);
+    let email = json_str(body, "type") != "moblie";
+    let n = gap_extra::php_promo_birthday(state.db.reader(), email, now, day7, day7 + 86_400 - 1)
+        .await?;
+    if email {
+        Ok(json!({
+            "anniversary_e": n.anniversary,
+            "todaydue_e": n.todaydue,
+            "sevendue_e": n.sevendue,
+            "useradd_e": n.useradd,
+            "userup_e": n.userup,
+            "addjob_e": n.addjob,
+            "upjob_e": n.upjob,
+        }))
+    } else {
+        Ok(json!({
+            "anniversary_m": n.anniversary,
+            "todaydue_m": n.todaydue,
+            "sevendue_m": n.sevendue,
+            "useradd_m": n.useradd,
+            "userup_m": n.userup,
+            "addjob_m": n.addjob,
+            "upjob_m": n.upjob,
+        }))
+    }
+}
+
+async fn tuiguang_getcom(state: &AppState, body: &Value) -> AppResult<u64> {
+    let email = json_i32(body, "msgType") != 2;
+    Ok(gap_extra::php_count_promo_com(
+        state.db.reader(),
+        json_i32(body, "com"),
+        email,
+        clock::now_ts(),
+    )
+    .await?)
+}
+
+async fn tuiguang_getuser(state: &AppState, body: &Value) -> AppResult<u64> {
+    let email = json_i32(body, "msgType") == 1;
+    Ok(gap_extra::php_count_promo_user(
+        state.db.reader(),
+        json_i32(body, "user"),
+        email,
+        clock::now_ts(),
+    )
+    .await?)
+}
+
+async fn tuiguang_getjob(state: &AppState, body: &Value) -> AppResult<u64> {
+    Ok(gap_extra::php_count_promo_job(state.db.reader(), json_i32(body, "job"), clock::now_ts()).await?)
+}
+
+fn promo_progress(total: usize, pagesize: usize, value: usize, sendok: u64, sendno: u64, email: bool) -> Value {
+    let page = if value == 0 { 1 } else { value + 1 };
+    if total > pagesize * page {
+        let spage = page * pagesize + 1;
+        let topage = (page + 1) * pagesize;
+        let unit = if email {
+            msg_t("admin_01409")
+        } else {
+            msg_t("admin_01410")
+        };
+        json!({
+            "error": 3,
+            "msg": format!("{}{spage}-{topage}{unit}", msg_t("admin_user_00374")),
+            "data": { "value": page, "sendok": sendok, "sendno": sendno }
+        })
+    } else {
+        json!({
+            "error": 0,
+            "msg": format!(
+                "{}{}{}{}",
+                msg_t("admin_user_00013"),
+                sendok,
+                msg_t("admin_user_00014"),
+                sendno
+            ),
+            "data": { "value": 0, "sendok": sendok, "sendno": sendno }
+        })
+    }
+}
+
+fn city_ids_of(raw: &str) -> Vec<i32> {
+    raw.split(|c: char| c == ',' || c == '，' || c.is_whitespace())
+        .filter_map(|p| p.trim().parse::<i32>().ok())
+        .filter(|n| *n > 0)
+        .collect()
+}
+
+async fn tuiguang_sendresume(state: &AppState, body: &Value) -> AppResult<Value> {
+    let stype = json_i32(body, "stype");
+    let email = stype == 1;
+    if !email {
+        let cfg = settings_hash(state).await.unwrap_or_default();
+        if cfg_pick(&cfg, "sy_msg_isopen") != "1" {
+            return Err(ApiError::business("admin_user_00011"));
+        }
+    }
+    let now = clock::now_ts();
+    let sendnum = json_u64(body, "sendnum").clamp(1, 500);
+    let coms = gap_extra::php_list_promo_coms(
+        state.db.reader(),
+        json_i32(body, "com"),
+        sendnum,
+        email,
+        now,
+    )
+    .await?;
+    if coms.is_empty() {
+        return Err(ApiError::business(if email {
+            "admin_user_00003"
+        } else {
+            "admin_user_00004"
+        }));
+    }
+    let pagesize = json_u64(body, "pagelimit").clamp(1, 100) as usize;
+    let value = json_u64(body, "value") as usize;
+    let mut sendok = json_u64(body, "sendok");
+    let mut sendno = json_u64(body, "sendno");
+    let start = if value == 0 { 0 } else { value * pagesize };
+    let title = json_str(body, "email_title");
+    let content = json_str(body, "content");
+    let resume_kind = json_i32(body, "resume");
+    let num = json_u64(body, "num");
+    let dicts = dict_service::get(state).await?;
+    let web = web_base(state);
+    let tel = setting_repo::find(state.db.reader(), "sy_freewebtel")
+        .await
+        .ok()
+        .flatten()
+        .map(|s| s.value)
+        .unwrap_or_default();
+    for c in coms.iter().skip(start).take(pagesize) {
+        if email {
+            let expects =
+                gap_extra::php_list_expects_by_hy(state.db.reader(), c.hy, resume_kind, num).await?;
+            let html = resume_promo_html(&expects, &dicts, &web, &tel);
+            if html.is_empty() {
+                continue;
+            }
+            let ok = mail_service::send_text(state, &c.linkmail, &title, &html)
+                .await
+                .is_ok();
+            let _ = gap_repo::insert_email_log(
+                state.db.pool(),
+                c.uid,
+                &c.linkmail,
+                &title,
+                &html,
+                now,
+                if ok { 1 } else { 0 },
+            )
+            .await;
+            if ok {
+                sendok += 1;
+            } else {
+                sendno += 1;
+            }
+        } else {
+            let _ = gap_repo::insert_sms_log(state.db.pool(), c.uid, &c.linktel, &content, now, 1)
+                .await;
+            let _ = state
+                .events
+                .publish_json(
+                    "sms.admin_queued",
+                    &json!({"kind": "tuiguang_resume", "uid": c.uid, "mobile": c.linktel}),
+                )
+                .await;
+            sendok += 1;
+        }
+    }
+    Ok(promo_progress(coms.len(), pagesize, value, sendok, sendno, email))
+}
+
+async fn tuiguang_sendjob(state: &AppState, body: &Value) -> AppResult<Value> {
+    let stype = json_i32(body, "stype");
+    let email = stype == 1;
+    if !email {
+        let cfg = settings_hash(state).await.unwrap_or_default();
+        if cfg_pick(&cfg, "sy_msg_isopen") != "1" {
+            return Err(ApiError::business("admin_user_00011"));
+        }
+    }
+    let now = clock::now_ts();
+    let sendnum = json_u64(body, "sendnum").clamp(1, 500);
+    let users = gap_extra::php_list_promo_users(
+        state.db.reader(),
+        json_i32(body, "user"),
+        sendnum,
+        email,
+        now,
+    )
+    .await?;
+    if users.is_empty() {
+        return Err(ApiError::business(if email {
+            "admin_user_00003"
+        } else {
+            "admin_user_00004"
+        }));
+    }
+    let pagesize = json_u64(body, "pagelimit").clamp(1, 100) as usize;
+    let value = json_u64(body, "value") as usize;
+    let mut sendok = json_u64(body, "sendok");
+    let mut sendno = json_u64(body, "sendno");
+    let start = if value == 0 { 0 } else { value * pagesize };
+    let title = json_str(body, "email_title");
+    let content = json_str(body, "content");
+    let job_kind = json_i32(body, "job");
+    let num = json_u64(body, "num");
+    let dicts = dict_service::get(state).await?;
+    let web = web_base(state);
+    let tel = setting_repo::find(state.db.reader(), "sy_freewebtel")
+        .await
+        .ok()
+        .flatten()
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let uids: Vec<u64> = users.iter().map(|u| u.uid).collect();
+    let prefs = gap_extra::php_expect_city_hy(state.db.reader(), &uids).await?;
+    let mut hy_city = std::collections::HashMap::new();
+    for (uid, hy, city) in prefs {
+        hy_city.insert(uid, (hy, city));
+    }
+    for u in users.iter().skip(start).take(pagesize) {
+        if email {
+            let (hy, city) = hy_city.get(&u.uid).cloned().unwrap_or((0, String::new()));
+            let cities = city_ids_of(&city);
+            let jobs =
+                gap_extra::php_list_jobs_by_hy_city(state.db.reader(), hy, &cities, job_kind, num, now)
+                    .await?;
+            let html = job_promo_html(&jobs, &dicts, &web, &tel);
+            if html.is_empty() {
+                continue;
+            }
+            let ok = mail_service::send_text(state, &u.email, &title, &html)
+                .await
+                .is_ok();
+            let _ = gap_repo::insert_email_log(
+                state.db.pool(),
+                u.uid,
+                &u.email,
+                &title,
+                &html,
+                now,
+                if ok { 1 } else { 0 },
+            )
+            .await;
+            if ok {
+                sendok += 1;
+            } else {
+                sendno += 1;
+            }
+        } else {
+            let _ = gap_repo::insert_sms_log(state.db.pool(), u.uid, &u.telphone, &content, now, 1)
+                .await;
+            let _ = state
+                .events
+                .publish_json(
+                    "sms.admin_queued",
+                    &json!({"kind": "tuiguang_job", "uid": u.uid, "mobile": u.telphone}),
+                )
+                .await;
+            sendok += 1;
+        }
+    }
+    Ok(promo_progress(users.len(), pagesize, value, sendok, sendno, email))
+}
+
+fn resume_promo_html(
+    rows: &[gap_extra::PhpPromoExpectRow],
+    dicts: &dict_service::LocalizedDicts,
+    web: &str,
+    tel: &str,
+) -> String {
+    if rows.is_empty() {
+        return String::new();
+    }
+    let mut html = format!(
+        "<table width=\"800\" border=\"0\" style=\"border:1px solid #ddd\" cellpadding=\"5\" cellspacing=\"0\">\
+         <tr><td colspan=\"6\">{web} {tel}</td></tr>\
+         <tr style=\"background:#f8f8f8;font-weight:bold\"><td>姓名</td><td>年龄</td><td>学历</td><td>经验</td><td>性别</td><td>操作</td></tr>"
+    );
+    for r in rows {
+        let sex = match r.sex {
+            1 => "男",
+            2 => "女",
+            _ => "不限",
+        };
+        html.push_str(&format!(
+            "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{sex}</td>\
+             <td><a href=\"{web}/index.php?m=resume&c=show&id={}\">查看</a></td></tr>",
+            r.uname,
+            age_of(&r.birthday),
+            dicts.user_or_com(r.edu),
+            dicts.user_or_com(r.exp),
+            r.id
+        ));
+    }
+    html.push_str("</table>");
+    html
+}
+
+fn job_promo_html(
+    rows: &[gap_extra::PhpPromoJobMini],
+    dicts: &dict_service::LocalizedDicts,
+    web: &str,
+    tel: &str,
+) -> String {
+    if rows.is_empty() {
+        return String::new();
+    }
+    let mut html = format!(
+        "<table width=\"800\" border=\"0\" style=\"border:1px solid #ddd\" cellpadding=\"5\" cellspacing=\"0\">\
+         <tr><td colspan=\"7\">{web} {tel}</td></tr>\
+         <tr style=\"background:#f8f8f8;font-weight:bold\"><td>职位</td><td>地点</td><td>薪资</td><td>学历</td><td>经验</td><td>性别</td><td>操作</td></tr>"
+    );
+    for j in rows {
+        let sex = match j.sex {
+            1 => "男",
+            2 => "女",
+            _ => "不限",
+        };
+        html.push_str(&format!(
+            "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{sex}</td>\
+             <td><a href=\"{web}/index.php?m=job&c=comapply&id={}\">查看</a></td></tr>",
+            clip(&j.name, 12),
+            dicts.city(j.cityid),
+            job_salary(j.minsalary, j.maxsalary),
+            dicts.user_or_com(j.edu),
+            dicts.user_or_com(j.exp),
+            j.id
+        ));
+    }
+    html.push_str("</table>");
+    html
 }

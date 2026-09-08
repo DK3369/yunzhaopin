@@ -339,6 +339,7 @@
     "wap_00556": "Parameter error, please try again",
     "admin_user_00007": "Please enter the email subject and body",
     "admin_user_00010": "SMS is not enabled",
+    "admin_user_00011": "SMS is not configured",
     "admin_01299": "Please enter the SMS content",
     "wap_00399": "Please enter a mobile number",
     "admin_user_00003": "No email addresses to send",
@@ -643,7 +644,12 @@
     "common_02063": "No",
     "admin_model_00228": "Please select",
     "wap_01720": "Recommended",
-    "wap_com_00319": "Expired"
+    "wap_com_00319": "Expired",
+    "admin_user_00013": "Sent:",
+    "admin_user_00014": ", failed:",
+    "admin_user_00374": "Sending ",
+    "admin_01409": " emails",
+    "admin_01410": " messages"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

@@ -4160,3 +4160,486 @@ pub async fn php_list_wxpub_temp_titles(
     qb.push(" ORDER BY id ASC");
     qb.build_query_as().fetch_all(pool).await
 }
+
+fn push_uid_in(qb: &mut QueryBuilder<'_, sqlx::MySql>, uids: &[u64]) {
+    qb.push(" IN (");
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+}
+
+async fn fetch_uids(pool: &MySqlPool, sql: &str, a: i64, b: i64) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(u64,)> = sqlx::query_as(sql).bind(a).bind(b).fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|r| r.0).collect())
+}
+
+async fn fetch_uids1(pool: &MySqlPool, sql: &str, a: i64) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(u64,)> = sqlx::query_as(sql).bind(a).fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|r| r.0).collect())
+}
+
+async fn count_company_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+    email: bool,
+    r_status_ok: bool,
+    name_ok: bool,
+    jobtime0: bool,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE uid");
+    push_uid_in(&mut qb, uids);
+    if r_status_ok {
+        qb.push(" AND r_status <> 2");
+    }
+    if name_ok {
+        qb.push(" AND `name` <> ''");
+    }
+    if jobtime0 {
+        qb.push(" AND COALESCE(jobtime,0) = 0");
+    }
+    if email {
+        qb.push(" AND email_status = 1 AND linkmail <> ''");
+    } else {
+        qb.push(" AND moblie_status = 1 AND linktel <> ''");
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct PhpPromoBirthday {
+    pub anniversary: u64,
+    pub todaydue: u64,
+    pub sevendue: u64,
+    pub useradd: u64,
+    pub userup: u64,
+    pub addjob: u64,
+    pub upjob: u64,
+}
+
+pub async fn php_promo_birthday(
+    pool: &MySqlPool,
+    email: bool,
+    now: i64,
+    day7_start: i64,
+    day7_end: i64,
+) -> Result<PhpPromoBirthday, sqlx::Error> {
+    let anniversary = if email {
+        count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_member WHERE email <> '' AND status = 1",
+        )
+        .await?
+    } else {
+        count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_member WHERE moblie <> '' AND status = 1",
+        )
+        .await?
+    };
+    let today = fetch_uids(
+        pool,
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_statis WHERE vip_etime > ? AND vip_etime < ?",
+        now,
+        now + 86_400,
+    )
+    .await?;
+    let seven = fetch_uids(
+        pool,
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_statis WHERE vip_etime > ? AND vip_etime < ?",
+        now,
+        now + 7 * 86_400,
+    )
+    .await?;
+    let regs = fetch_uids(
+        pool,
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE reg_date >= ? AND reg_date <= ?",
+        day7_start,
+        day7_end,
+    )
+    .await?;
+    let stale: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_job \
+         WHERE r_status <> 2 GROUP BY uid HAVING MAX(lastupdate) < ?",
+    )
+    .bind(now - 7 * 86_400)
+    .fetch_all(pool)
+    .await?;
+    let stale_uids: Vec<u64> = stale.into_iter().map(|r| r.0).collect();
+    let mut out = PhpPromoBirthday {
+        anniversary,
+        todaydue: count_company_uids(pool, &today, email, true, false, false).await?,
+        sevendue: count_company_uids(pool, &seven, email, true, false, false).await?,
+        addjob: count_company_uids(pool, &regs, email, true, false, true).await?,
+        upjob: count_company_uids(pool, &stale_uids, email, true, false, false).await?,
+        ..PhpPromoBirthday::default()
+    };
+    if email {
+        if regs.is_empty() {
+            out.useradd = 0;
+        } else {
+            let mut qb = QueryBuilder::new(
+                "SELECT COUNT(*) FROM phpyun_resume WHERE email_status = 1 AND r_status = 1 \
+                 AND COALESCE(def_job,0) = 0 AND COALESCE(resumetime,0) = 0 AND email <> '' AND uid",
+            );
+            push_uid_in(&mut qb, &regs);
+            let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+            out.useradd = phpyun_core::numeric::nonnegative_count(n);
+        }
+        out.userup = count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_resume WHERE email_status = 1 AND def_job > 0 \
+             AND r_status = 1 AND email <> '' AND lastupdate < UNIX_TIMESTAMP() - 7*86400",
+        )
+        .await?;
+    } else {
+        if regs.is_empty() {
+            out.useradd = 0;
+        } else {
+            let mut qb = QueryBuilder::new(
+                "SELECT COUNT(*) FROM phpyun_resume WHERE moblie_status = 1 AND r_status = 1 \
+                 AND COALESCE(def_job,0) = 0 AND COALESCE(resumetime,0) = 0 AND telphone <> '' AND uid",
+            );
+            push_uid_in(&mut qb, &regs);
+            let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+            out.useradd = phpyun_core::numeric::nonnegative_count(n);
+        }
+        out.userup = count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_resume WHERE moblie_status = 1 AND def_job > 0 \
+             AND r_status = 1 AND telphone <> '' AND lastupdate < UNIX_TIMESTAMP() - 7*86400",
+        )
+        .await?;
+    }
+    Ok(out)
+}
+
+pub async fn php_count_promo_com(
+    pool: &MySqlPool,
+    kind: i32,
+    email: bool,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let uids = match kind {
+        1 => {
+            let day = now - ((now + 8 * 3600) % 86_400);
+            fetch_uids1(
+                pool,
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_statis WHERE vip_etime >= ?",
+                day,
+            )
+            .await?
+        }
+        2 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT DISTINCT CAST(uid AS UNSIGNED) FROM phpyun_company_job \
+                 WHERE lastupdate > ? AND r_status <> 2",
+            )
+            .bind(now - 7 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        3 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE reg_date > ? AND usertype = 2",
+            )
+            .bind(now - 3 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        _ => Vec::new(),
+    };
+    count_company_uids(pool, &uids, email, false, true, false).await
+}
+
+pub async fn php_count_promo_user(
+    pool: &MySqlPool,
+    kind: i32,
+    email: bool,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let uids: Vec<u64> = match kind {
+        1 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_resume_expect \
+                 WHERE lastupdate > ? AND status = 1 AND r_status = 1 AND defaults = 1",
+            )
+            .bind(now - 7 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        2 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE reg_date > ? AND usertype = 1",
+            )
+            .bind(now - 3 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        _ => Vec::new(),
+    };
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_resume WHERE uid");
+    push_uid_in(&mut qb, &uids);
+    if email {
+        qb.push(" AND email <> '' AND email_status = 1");
+    } else {
+        qb.push(" AND telphone <> '' AND moblie_status = 1");
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_count_promo_job(pool: &MySqlPool, kind: i32, now: i64) -> Result<u64, sqlx::Error> {
+    let sql = match kind {
+        2 => "SELECT COUNT(*) FROM phpyun_company_job WHERE rec_time > ? AND state = 1",
+        3 => "SELECT COUNT(*) FROM phpyun_company_job WHERE urgent_time > ? AND state = 1",
+        _ => return Ok(0),
+    };
+    let (n,): (i64,) = sqlx::query_as(sql).bind(now).fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPromoComRow {
+    pub uid: u64,
+    pub name: String,
+    pub hy: i32,
+    pub cityid: i32,
+    pub linkmail: String,
+    pub linktel: String,
+}
+
+pub async fn php_list_promo_coms(
+    pool: &MySqlPool,
+    kind: i32,
+    sendnum: u64,
+    email: bool,
+    now: i64,
+) -> Result<Vec<PhpPromoComRow>, sqlx::Error> {
+    let uids = match kind {
+        1 => {
+            let day = now - ((now + 8 * 3600) % 86_400);
+            fetch_uids1(
+                pool,
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_statis WHERE vip_etime >= ?",
+                day,
+            )
+            .await?
+        }
+        2 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT DISTINCT CAST(uid AS UNSIGNED) FROM phpyun_company_job \
+                 WHERE lastupdate > ? AND r_status <> 2",
+            )
+            .bind(now - 7 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        3 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE reg_date > ? AND usertype = 2",
+            )
+            .bind(now - 3 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        _ => Vec::new(),
+    };
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let cap = sendnum.clamp(1, 500) as i64;
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(`name`,'') AS `name`, \
+         CAST(COALESCE(hy,0) AS SIGNED) AS hy, CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, \
+         COALESCE(linkmail,'') AS linkmail, COALESCE(linktel,'') AS linktel \
+         FROM phpyun_company WHERE r_status <> 2 AND uid",
+    );
+    push_uid_in(&mut qb, &uids);
+    if email {
+        qb.push(" AND linkmail <> '' AND email_status = 1");
+    } else {
+        qb.push(" AND linktel <> '' AND moblie_status = 1");
+    }
+    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push_bind(cap);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPromoUserRow {
+    pub uid: u64,
+    pub name: String,
+    pub email: String,
+    pub telphone: String,
+}
+
+pub async fn php_list_promo_users(
+    pool: &MySqlPool,
+    kind: i32,
+    sendnum: u64,
+    email: bool,
+    now: i64,
+) -> Result<Vec<PhpPromoUserRow>, sqlx::Error> {
+    let uids: Vec<u64> = match kind {
+        1 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_resume_expect \
+                 WHERE lastupdate > ? AND status <> 2 AND r_status <> 2 \
+                 AND job_classid <> '' AND defaults = 1",
+            )
+            .bind(now - 7 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        2 => {
+            let rows: Vec<(u64,)> = sqlx::query_as(
+                "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE reg_date > ? AND usertype = 1",
+            )
+            .bind(now - 3 * 86_400)
+            .fetch_all(pool)
+            .await?;
+            rows.into_iter().map(|r| r.0).collect()
+        }
+        _ => Vec::new(),
+    };
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let cap = sendnum.clamp(1, 500) as i64;
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(`name`,'') AS `name`, \
+         COALESCE(email,'') AS email, COALESCE(telphone,'') AS telphone \
+         FROM phpyun_resume WHERE r_status = 1 AND uid",
+    );
+    push_uid_in(&mut qb, &uids);
+    if email {
+        qb.push(" AND email <> '' AND email_status = 1");
+    } else {
+        qb.push(" AND telphone <> '' AND moblie_status = 1");
+    }
+    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push_bind(cap);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPromoExpectRow {
+    pub id: u64,
+    pub uid: u64,
+    pub uname: String,
+    pub birthday: String,
+    pub edu: i32,
+    pub exp: i32,
+    pub sex: i32,
+    pub height_status: i32,
+}
+
+pub async fn php_list_expects_by_hy(
+    pool: &MySqlPool,
+    hy: i32,
+    resume_kind: i32,
+    num: u64,
+) -> Result<Vec<PhpPromoExpectRow>, sqlx::Error> {
+    let cap = if num == 0 { 5 } else { num.min(50) } as i64;
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(uid AS UNSIGNED) AS uid, \
+         COALESCE(uname,'') AS uname, COALESCE(birthday,'') AS birthday, \
+         CAST(COALESCE(edu,0) AS SIGNED) AS edu, CAST(COALESCE(exp,0) AS SIGNED) AS exp, \
+         CAST(COALESCE(sex,0) AS SIGNED) AS sex, CAST(COALESCE(height_status,0) AS SIGNED) AS height_status \
+         FROM phpyun_resume_expect WHERE status <> 2 AND r_status = 1 AND job_classid <> '' AND defaults = 1 AND hy = ",
+    );
+    qb.push_bind(hy);
+    if resume_kind == 1 {
+        qb.push(" AND height_status = 2");
+    } else if resume_kind == 3 {
+        qb.push(" AND whour > 12 AND exp > 18");
+    }
+    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push_bind(cap);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPromoJobMini {
+    pub id: u64,
+    pub name: String,
+    pub cityid: i32,
+    pub minsalary: i32,
+    pub maxsalary: i32,
+    pub edu: i32,
+    pub exp: i32,
+    pub sex: i32,
+}
+
+pub async fn php_list_jobs_by_hy_city(
+    pool: &MySqlPool,
+    hy: i32,
+    city_ids: &[i32],
+    job_kind: i32,
+    num: u64,
+    now: i64,
+) -> Result<Vec<PhpPromoJobMini>, sqlx::Error> {
+    if city_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let cap = if num == 0 { 5 } else { num.min(50) } as i64;
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(`name`,'') AS `name`, \
+         CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, CAST(COALESCE(minsalary,0) AS SIGNED) AS minsalary, \
+         CAST(COALESCE(maxsalary,0) AS SIGNED) AS maxsalary, CAST(COALESCE(edu,0) AS SIGNED) AS edu, \
+         CAST(COALESCE(exp,0) AS SIGNED) AS exp, CAST(COALESCE(sex,0) AS SIGNED) AS sex \
+         FROM phpyun_company_job WHERE state = 1 AND hy = ",
+    );
+    qb.push_bind(hy);
+    qb.push(" AND cityid IN (");
+    let mut sep = qb.separated(", ");
+    for id in city_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    match job_kind {
+        2 => {
+            qb.push(" AND rec_time > ");
+            qb.push_bind(now);
+        }
+        3 => {
+            qb.push(" AND urgent_time > ");
+            qb.push_bind(now);
+        }
+        _ => {}
+    }
+    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push_bind(cap);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_expect_city_hy(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<Vec<(u64, i32, String)>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS UNSIGNED), CAST(COALESCE(hy,0) AS SIGNED), COALESCE(city_classid,'') \
+         FROM phpyun_resume_expect WHERE defaults = 1 AND uid",
+    );
+    push_uid_in(&mut qb, uids);
+    qb.build_query_as().fetch_all(pool).await
+}
