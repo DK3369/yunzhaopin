@@ -119,6 +119,12 @@ fn decorate_msg(row: &mut UserMsgRow) {
         String::new()
     };
     row.content = row.content.trim().to_string();
+    if row.job_uid > 0 {
+        row.com_url = format!(
+            "/index.php?m=company&c=show&id={}&look=admin",
+            row.job_uid
+        );
+    }
 }
 
 pub async fn list_user_msgs(

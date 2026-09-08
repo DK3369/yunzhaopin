@@ -2608,6 +2608,39 @@ pub struct TuiWenTaskIn {
     pub urgent: i32,
     pub wcmoments: i32,
     pub gzh: i32,
+    pub jobid: u64,
+    pub jobname: String,
+    pub kind: i32,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct TuiWenJobRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub com_name: String,
+    pub sdate: i64,
+}
+
+pub async fn tuiwen_jobs(
+    pool: &MySqlPool,
+    ids: &[u64],
+) -> Result<Vec<TuiWenJobRow>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(uid AS UNSIGNED) AS uid, \
+         COALESCE(`name`,'') AS `name`, COALESCE(com_name,'') AS com_name, \
+         CAST(COALESCE(sdate,0) AS SIGNED) AS sdate \
+         FROM phpyun_company_job WHERE id IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    qb.build_query_as().fetch_all(pool).await
 }
 
 // ---------- 企业暂停 / 恢复配额快照 ----------
@@ -2905,7 +2938,7 @@ pub async fn insert_tuiwen_tasks(
     }
     let mut qb = QueryBuilder::new(
         "INSERT INTO phpyun_wxpub_twtask \
-         (cuid, comname, jobsdate, auid, content, urgent, wcmoments, gzh, ctime, status, `type`) ",
+         (cuid, comname, jobsdate, auid, content, urgent, wcmoments, gzh, ctime, status, `type`, jobid, jobname) ",
     );
     qb.push_values(rows, |mut b, r| {
         b.push_bind(r.cuid)
@@ -2918,7 +2951,9 @@ pub async fn insert_tuiwen_tasks(
             .push_bind(r.gzh)
             .push_bind(now)
             .push_bind(0)
-            .push_bind(2);
+            .push_bind(r.kind)
+            .push_bind(r.jobid)
+            .push_bind(r.jobname.clone());
     });
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
@@ -3119,4 +3154,393 @@ pub async fn php_list_members_by_mobiles(
     }
     qb.push(")");
     qb.build_query_as().fetch_all(pool).await
+}
+
+async fn count_in_ids(
+    pool: &MySqlPool,
+    all_sql: &str,
+    in_sql: &str,
+    ids: &[u64],
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        let (n,): (i64,) = sqlx::query_as(all_sql).fetch_one(pool).await?;
+        return Ok(phpyun_core::numeric::nonnegative_count(n));
+    }
+    let mut qb = QueryBuilder::new(in_sql);
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_count_jobs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    count_in_ids(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_company_job",
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE id IN (",
+        ids,
+    )
+    .await
+}
+
+pub async fn php_count_expects(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    count_in_ids(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_resume_expect",
+        "SELECT COUNT(*) FROM phpyun_resume_expect WHERE id IN (",
+        ids,
+    )
+    .await
+}
+
+pub async fn php_count_companies(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    count_in_ids(
+        pool,
+        "SELECT COUNT(*) FROM phpyun_company",
+        "SELECT COUNT(*) FROM phpyun_company WHERE uid IN (",
+        uids,
+    )
+    .await
+}
+
+pub async fn php_update_job_class(
+    pool: &MySqlPool,
+    ids: &[u64],
+    hy: i32,
+    job1: i32,
+    job1_son: i32,
+    job_post: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET hy = ");
+    qb.push_bind(hy)
+        .push(", job1 = ")
+        .push_bind(job1)
+        .push(", job1_son = ")
+        .push_bind(job1_son)
+        .push(", job_post = ")
+        .push_bind(job_post)
+        .push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpJobExportRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub com_name: String,
+    pub minsalary: i32,
+    pub maxsalary: i32,
+    pub lastupdate: i64,
+}
+
+pub async fn php_list_jobs_export(
+    pool: &MySqlPool,
+    ids: &[u64],
+    limit: u64,
+) -> Result<Vec<PhpJobExportRow>, sqlx::Error> {
+    let cap = if limit == 0 { 5000 } else { limit.min(5000) };
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(uid AS UNSIGNED) AS uid, \
+         COALESCE(`name`,'') AS `name`, COALESCE(com_name,'') AS com_name, \
+         CAST(COALESCE(minsalary,0) AS SIGNED) AS minsalary, \
+         CAST(COALESCE(maxsalary,0) AS SIGNED) AS maxsalary, \
+         CAST(COALESCE(lastupdate,0) AS SIGNED) AS lastupdate \
+         FROM phpyun_company_job",
+    );
+    if !ids.is_empty() {
+        qb.push(" WHERE id IN (");
+        let mut sep = qb.separated(", ");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    }
+    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push_bind(cap as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_set_expect_label(
+    pool: &MySqlPool,
+    id: u64,
+    label: &str,
+    content: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume_expect SET label = ?, content = ? WHERE id = ?",
+    )
+    .bind(label)
+    .bind(content)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_delete_expects(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_resume_expect WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_delete_expect_children(pool: &MySqlPool, eids: &[u64]) -> Result<(), sqlx::Error> {
+    if eids.is_empty() {
+        return Ok(());
+    }
+    for table in [
+        "phpyun_resume_work",
+        "phpyun_resume_edu",
+        "phpyun_resume_training",
+        "phpyun_resume_skill",
+        "phpyun_resume_project",
+        "phpyun_resume_other",
+    ] {
+        let mut qb = QueryBuilder::new(format!("DELETE FROM {table} WHERE eid IN ("));
+        let mut sep = qb.separated(", ");
+        for id in eids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+        qb.build().execute(pool).await?;
+    }
+    Ok(())
+}
+
+pub async fn php_set_fact_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company SET fact_status = ? WHERE uid = ?")
+        .bind(status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_insert_fact_pic(
+    pool: &MySqlPool,
+    uid: u64,
+    picurl: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_fact (uid, picurl, ctime) VALUES (?, ?, ?)",
+    )
+    .bind(uid)
+    .bind(picurl)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn php_delete_fact_pics(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_company_fact WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_member_wxid(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(wxid,'') FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).unwrap_or_default())
+}
+
+/// PHP `users_member::index_action` — resume rows joined with member.
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpUserMemberRow {
+    pub uid: u64,
+    pub username: String,
+    pub email: String,
+    pub moblie: String,
+    pub login_ip: String,
+    pub login_date: i64,
+    pub reg_date: i64,
+    pub source: i32,
+    pub status: i32,
+    pub usertype: i32,
+    pub username_n: String,
+    pub telphone: String,
+    pub r_status: i32,
+    pub idcard_status: i32,
+    pub email_status: i32,
+    pub moblie_status: i32,
+    pub def_job: i32,
+    pub wxid: String,
+    pub wxopenid: String,
+    pub unionid: String,
+    pub login_address: String,
+    pub moblie_address: String,
+    pub sq_num: i64,
+}
+
+pub struct PhpUserMemberFilter<'a> {
+    pub keyword: Option<&'a str>,
+    pub kw_type: i32,
+    pub r_status: Option<i32>,
+    pub source: Option<i32>,
+    pub def_job: Option<i32>,
+    pub login_from: Option<i64>,
+    pub login_to: Option<i64>,
+    pub reg_from: Option<i64>,
+    pub reg_to: Option<i64>,
+    pub order_t: &'a str,
+    pub order_dir: &'a str,
+}
+
+const PHP_USER_MEMBER_FIELDS: &str = "SELECT CAST(r.uid AS UNSIGNED) AS uid, \
+ COALESCE(m.username,'') AS username, COALESCE(r.email, m.email, '') AS email, \
+ COALESCE(m.moblie,'') AS moblie, COALESCE(m.login_ip,'') AS login_ip, \
+ CAST(COALESCE(m.login_date, r.login_date, 0) AS SIGNED) AS login_date, \
+ CAST(COALESCE(m.reg_date,0) AS SIGNED) AS reg_date, \
+ CAST(COALESCE(m.source,0) AS SIGNED) AS source, \
+ CAST(COALESCE(m.status,0) AS SIGNED) AS status, \
+ CAST(COALESCE(m.usertype,1) AS SIGNED) AS usertype, \
+ COALESCE(r.name,'') AS username_n, \
+ COALESCE(NULLIF(r.telphone,''), m.moblie, '') AS telphone, \
+ CAST(COALESCE(r.r_status,1) AS SIGNED) AS r_status, \
+ CAST(COALESCE(r.idcard_status,0) AS SIGNED) AS idcard_status, \
+ CAST(COALESCE(r.email_status,0) AS SIGNED) AS email_status, \
+ CAST(COALESCE(r.moblie_status,0) AS SIGNED) AS moblie_status, \
+ CAST(COALESCE(r.def_job,0) AS SIGNED) AS def_job, \
+ COALESCE(m.wxid,'') AS wxid, COALESCE(m.wxopenid,'') AS wxopenid, \
+ COALESCE(m.unionid,'') AS unionid, \
+ COALESCE(m.login_address,'') AS login_address, \
+ COALESCE(m.moblie_address,'') AS moblie_address, \
+ CAST((SELECT COUNT(*) FROM phpyun_userid_job j WHERE j.uid = r.uid) AS SIGNED) AS sq_num \
+ FROM phpyun_resume r INNER JOIN phpyun_member m ON m.uid = r.uid WHERE 1=1";
+
+fn push_php_user_member_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpUserMemberFilter<'a>) {
+    match f.def_job {
+        Some(1) => {
+            qb.push(" AND COALESCE(r.def_job,0) > 0");
+        }
+        Some(2) => {
+            qb.push(" AND COALESCE(r.def_job,0) = 0");
+        }
+        _ => {}
+    }
+    if let Some(st) = f.r_status.filter(|v| *v > 0) {
+        qb.push(" AND r.r_status = ");
+        qb.push_bind(st);
+    }
+    if let Some(src) = f.source.filter(|v| *v > 0) {
+        qb.push(" AND m.source = ");
+        qb.push_bind(src);
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        match f.kw_type {
+            2 => {
+                qb.push(" AND r.name LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            3 => {
+                qb.push(" AND r.telphone LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            4 => {
+                qb.push(" AND r.email LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            5 => {
+                let uid: u64 = kw.parse().unwrap_or(0);
+                qb.push(" AND r.uid = ");
+                qb.push_bind(uid);
+            }
+            6 => {
+                qb.push(" AND m.login_ip LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+            _ => {
+                qb.push(" AND m.username LIKE ");
+                qb.push_bind(format!("%{kw}%"));
+            }
+        }
+    }
+    if let Some(from) = f.login_from {
+        qb.push(" AND COALESCE(r.login_date, m.login_date, 0) >= ");
+        qb.push_bind(from);
+    }
+    if let Some(to) = f.login_to {
+        qb.push(" AND COALESCE(r.login_date, m.login_date, 0) <= ");
+        qb.push_bind(to);
+    }
+    if let Some(from) = f.reg_from {
+        qb.push(" AND COALESCE(m.reg_date,0) >= ");
+        qb.push_bind(from);
+    }
+    if let Some(to) = f.reg_to {
+        qb.push(" AND COALESCE(m.reg_date,0) <= ");
+        qb.push_bind(to);
+    }
+}
+
+pub async fn php_list_user_members(
+    pool: &MySqlPool,
+    f: &PhpUserMemberFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpUserMemberRow>, sqlx::Error> {
+    let (l, o) = lim(limit, offset)?;
+    let mut qb = QueryBuilder::new(PHP_USER_MEMBER_FIELDS);
+    push_php_user_member_filters(&mut qb, f);
+    let col = match f.order_t {
+        "time" => "r.lastupdate",
+        "login_date" => "m.login_date",
+        "reg_date" => "m.reg_date",
+        _ => "r.uid",
+    };
+    let dir = if f.order_dir.eq_ignore_ascii_case("asc") {
+        " ASC"
+    } else {
+        " DESC"
+    };
+    qb.push(" ORDER BY ");
+    qb.push(col);
+    qb.push(dir);
+    qb.push(" LIMIT ");
+    qb.push_bind(l);
+    qb.push(" OFFSET ");
+    qb.push_bind(o);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_user_members(
+    pool: &MySqlPool,
+    f: &PhpUserMemberFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_resume r INNER JOIN phpyun_member m ON m.uid = r.uid WHERE 1=1",
+    );
+    push_php_user_member_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

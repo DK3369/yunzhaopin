@@ -43,6 +43,10 @@ use phpyun_models::resume::project as project_repo;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::recycle_bin::php_repo as recycle_php;
 use phpyun_models::resume::skill as skill_repo;
+use phpyun_models::resume::work as work_repo;
+use phpyun_models::resume::edu as edu_repo;
+use phpyun_models::resume::training as training_repo;
+use phpyun_models::company_address::repo as address_repo;
 use phpyun_models::site_page::repo as site_page_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::special::repo as special_repo;
@@ -289,6 +293,11 @@ pub async fn dispatch(
         ("resume", "rec") => resume_rec(state, body).await,
         ("resume", "top") => resume_top(state, body).await,
         ("resume", "refresh") => resume_refresh(state, body).await,
+        ("resume", "delResume") => resume_del(state, user, body).await,
+        ("resume", "delResumeFb") => resume_del_fb(state, body).await,
+        ("resume", "label") => resume_label(state, body).await,
+        ("resume", "resumePreview") => Ok(PhpOut::Data(resume_preview(state, body).await?)),
+        ("resume", "export_check") => resume_export_check(state, body).await,
         ("interview", "index") => Ok(PhpOut::Data(interview_index(state, body).await?)),
         ("interview", "save") => interview_save(state, body).await,
         ("interview", "status") => interview_status(state, body).await,
@@ -376,6 +385,12 @@ pub async fn dispatch(
         ("company-job", "close-reserve") => company_job_close_reserve(state, body).await,
         ("company-job", "close-stale-reserve") => company_job_close_stale_reserve(state).await,
         ("company-job", "up-reserve") => company_job_up_reserve(state, body).await,
+        ("company-job", "saveAddress") => company_job_save_address(state, body).await,
+        ("company-job", "saveclass") => company_job_saveclass(state, body).await,
+        ("company-job", "getJobHtml") => Ok(PhpOut::Data(company_job_get_html(state, body).await?)),
+        ("company-job", "addTuiWenTask") => company_job_add_tuiwen(state, user, body).await,
+        ("company-job", "whb") => Ok(PhpOut::Data(company_whb(state, 1).await?)),
+        ("company-job", "xls") => Ok(PhpOut::Data(company_job_xls(state, body).await?)),
 
         ("company", "bind-package") => company_bind_package(state, body).await,
         ("company", "set-logo") => company_set_logo(state, body).await,
@@ -387,6 +402,11 @@ pub async fn dispatch(
         ("company", "mcomtpl") => Ok(PhpOut::Data(company_mcomtpl(state, body).await?)),
         ("company", "msettpl") => company_msettpl(state, body).await,
         ("company", "add-tuiwen-task") => company_add_tuiwen_task(state, user, body).await,
+        ("company", "savefact") => company_savefact(state, user, body).await,
+        ("company", "getacbindstatus") => company_getacbindstatus(state, body).await,
+        ("company", "export_check") => company_export_check(state, body).await,
+        ("company", "mwhb") => Ok(PhpOut::Data(company_whb(state, 2).await?)),
+        ("company", "adminLogoHb") => company_admin_logo_hb(body),
         ("user-gap", "mem-imitate") => Ok(PhpOut::Data(user_gap_mem_imitate(state, body).await?)),
         ("user-gap", "mem-lock") => user_gap_mem_lock(state, body).await,
         ("user-gap", "mem-edit") => user_gap_mem_edit(state, body).await,
@@ -406,6 +426,7 @@ pub async fn dispatch(
         ("user-gap", "matching") => Ok(PhpOut::Data(user_gap_matching(state, body).await?)),
         ("user-gap", "company-index") => Ok(PhpOut::Data(user_gap_company_index(state, body).await?)),
         ("user-gap", "resume-index") => Ok(PhpOut::Data(user_gap_resume_index(state, body).await?)),
+        ("user-gap", "user-index") => Ok(PhpOut::Data(user_gap_user_index(state, body).await?)),
         ("user-gap", "job-refresh-index") => {
             Ok(PhpOut::Data(user_gap_job_refresh_index(state, body).await?))
         }
@@ -710,6 +731,74 @@ fn php_data_table(data: Vec<Value>, total: u64) -> Value {
         "pageSizes": sizes,
         "page_sizes": sizes,
     })
+}
+
+fn json_ms_day_range(body: &Value, key: &str) -> (Option<i64>, Option<i64>) {
+    let arr = match body.get(key) {
+        Some(Value::Array(a)) if a.len() >= 2 => a,
+        _ => return (None, None),
+    };
+    let mut a = match &arr[0] {
+        Value::Number(n) => n
+            .as_i64()
+            .or_else(|| n.as_f64().map(|f| f as i64))
+            .unwrap_or(0),
+        Value::String(s) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    };
+    let mut b = match &arr[1] {
+        Value::Number(n) => n
+            .as_i64()
+            .or_else(|| n.as_f64().map(|f| f as i64))
+            .unwrap_or(0),
+        Value::String(s) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    };
+    if a <= 0 || b <= 0 {
+        return (None, None);
+    }
+    if a > 10_000_000_000 {
+        a /= 1000;
+    }
+    if b > 10_000_000_000 {
+        b /= 1000;
+    }
+    (
+        Some(clock::start_of_day(a)),
+        Some(clock::start_of_day(b) + 86_400 - 1),
+    )
+}
+
+fn php_preset_days(code: i32) -> (Option<i64>, Option<i64>) {
+    if code == 0 {
+        return (None, None);
+    }
+    let now = clock::now_ts();
+    let today = clock::start_of_day(now);
+    match code {
+        -1 => (Some(today - 86_400), Some(today)),
+        1 => (Some(today), Some(now)),
+        2 => (Some(now - 7 * 86_400), Some(now)),
+        3 => (Some(now - 30 * 86_400), Some(now)),
+        4 => (Some(now - 180 * 86_400), Some(now)),
+        5 => (Some(now - 365 * 86_400), Some(now)),
+        _ => (None, None),
+    }
+}
+
+fn merge_ts_range(
+    a: (Option<i64>, Option<i64>),
+    b: (Option<i64>, Option<i64>),
+) -> (Option<i64>, Option<i64>) {
+    let from = match (a.0, b.0) {
+        (Some(x), Some(y)) => Some(x.max(y)),
+        (x, y) => x.or(y),
+    };
+    let to = match (a.1, b.1) {
+        (Some(x), Some(y)) => Some(x.min(y)),
+        (x, y) => x.or(y),
+    };
+    (from, to)
 }
 
 fn json_day_range(body: &Value, key: &str) -> (Option<i64>, Option<i64>) {
@@ -8231,6 +8320,84 @@ async fn user_gap_company_index(state: &AppState, body: &Value) -> AppResult<Val
     Ok(paged(Value::Array(list), total, page, per))
 }
 
+/// PHP `users_member::index_action` — `{list,total,page_sizes,limit,page}`.
+async fn user_gap_user_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let time_type = json_str(body, "time_type");
+    let times = json_day_range(body, "times");
+    let mut login = php_preset_days(json_i32(body, "login_days"));
+    login = merge_ts_range(login, json_ms_day_range(body, "login_time"));
+    let mut reg = php_preset_days(json_i32(body, "reg_days"));
+    reg = merge_ts_range(reg, json_ms_day_range(body, "reg_time"));
+    match time_type.as_str() {
+        "adtime" => {
+            reg = merge_ts_range(reg, times);
+        }
+        "lotime" => {
+            login = merge_ts_range(login, times);
+        }
+        _ => {}
+    }
+    let order_t = json_str(body, "t");
+    let order_dir = json_str(body, "order");
+    let f = gap_extra::PhpUserMemberFilter {
+        keyword: if kw.is_empty() { None } else { Some(kw.as_str()) },
+        kw_type: json_i32(body, "type"),
+        r_status: json_opt_i32(body, "status"),
+        source: json_opt_i32(body, "source"),
+        def_job: json_opt_i32(body, "def_job"),
+        login_from: login.0,
+        login_to: login.1,
+        reg_from: reg.0,
+        reg_to: reg.1,
+        order_t: &order_t,
+        order_dir: &order_dir,
+    };
+    let db = state.db.reader();
+    let total = gap_extra::php_count_user_members(db, &f).await?;
+    let rows = if total > 0 {
+        gap_extra::php_list_user_members(db, &f, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "uid": r.uid,
+                "username": r.username,
+                "username_n": r.username_n,
+                "email": r.email,
+                "telphone": r.telphone,
+                "moblie": r.moblie,
+                "moblie_status": r.moblie_status,
+                "idcard_status": r.idcard_status,
+                "email_status": r.email_status,
+                "email_status_n": r.email_status,
+                "r_status": r.r_status.to_string(),
+                "def_job": r.def_job.to_string(),
+                "usertype": r.usertype,
+                "status": r.status,
+                "source": r.source,
+                "wxid": r.wxid,
+                "wxopenid": r.wxopenid,
+                "unionid": r.unionid,
+                "wxBindmsg": wx_bind_msg(&r.wxid, &r.unionid),
+                "login_ip": r.login_ip,
+                "login_address": r.login_address,
+                "moblie_address": r.moblie_address,
+                "login_date": r.login_date,
+                "login_date_n": if r.login_date > 0 { fmt_ts(r.login_date, "%Y-%m-%d %H:%M") } else { String::new() },
+                "reg_date": r.reg_date,
+                "reg_date_n": if r.reg_date > 0 { fmt_ts(r.reg_date, "%Y-%m-%d %H:%M") } else { String::new() },
+                "sq_num": r.sq_num,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
 /// PHP `users_resume::index_action` — `{list,total,page_sizes,limit,page}`.
 async fn user_gap_resume_index(state: &AppState, body: &Value) -> AppResult<Value> {
     let (page, per, offset, limit) = page_of(body);
@@ -8620,6 +8787,9 @@ async fn company_add_tuiwen_task(
             urgent: json_i32(body, "twtask_urgent"),
             wcmoments: json_i32(body, "twtask_wcmoments"),
             gzh: json_i32(body, "twtask_gzh"),
+            jobid: 0,
+            jobname: String::new(),
+            kind: 2,
         })
         .collect();
     if gap_extra::insert_tuiwen_tasks(state.db.pool(), &rows, clock::now_ts()).await? == 0 {
@@ -12915,4 +13085,575 @@ async fn weixinrecord_delkeyword(
     }
     home_service::invalidate_all().await;
     Ok(PhpOut::Message("model_00112"))
+}
+
+fn strip_html(raw: &str) -> String {
+    let mut out = String::with_capacity(raw.len());
+    let mut in_tag = false;
+    for c in raw.chars() {
+        match c {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => out.push(c),
+            _ => {}
+        }
+    }
+    out.replace("&nbsp;", " ").replace("&quot;", "\"").replace("&amp;", "&")
+}
+
+fn resume_age(birthday: Option<&str>) -> i32 {
+    let s = birthday.unwrap_or("");
+    if s.len() < 4 {
+        return 0;
+    }
+    let y: i32 = s[..4].parse().unwrap_or(0);
+    if y < 1920 {
+        return 0;
+    }
+    let cy = 1970 + (clock::now_ts() / 31_557_600) as i32;
+    (cy - y).max(0)
+}
+
+fn range_n(sdate: i64, edate: i64) -> (String, String) {
+    let start = if sdate > 0 { fmt_date(sdate) } else { String::new() };
+    let end = if edate > 0 {
+        fmt_date(edate)
+    } else if sdate > 0 {
+        String::from("至今")
+    } else {
+        String::new()
+    };
+    (start, end)
+}
+
+async fn company_job_save_address(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let man = json_str(body, "link_man");
+    let mobile = json_str(body, "link_moblie");
+    let phone = json_str(body, "link_phone");
+    let email = json_str(body, "email");
+    let address = json_str(body, "link_address");
+    let x = json_str(body, "x");
+    let y = json_str(body, "y");
+    let f = address_repo::AddressFields {
+        link_man: &man,
+        link_moblie: &mobile,
+        link_phone: &phone,
+        email: &email,
+        link_address: &address,
+        provinceid: json_i32(body, "provinceid"),
+        cityid: json_i32(body, "cityid"),
+        three_cityid: json_i32(body, "three_cityid"),
+        x: &x,
+        y: &y,
+    };
+    let link_id = if json_u64(body, "id") > 0 {
+        let n = address_repo::update(state.db.pool(), json_u64(body, "id"), uid, &f).await?;
+        if n == 0 {
+            return Err(ApiError::business("api_wxapp_00006"));
+        }
+        json_u64(body, "id")
+    } else {
+        address_repo::create(state.db.pool(), uid, &f).await?
+    };
+    if json_i32(body, "is_link") == 2 {
+        let list = address_repo::list_by_uid(state.db.reader(), uid, 0, 100).await?;
+        return Ok(PhpOut::Data(json!({
+            "addressList": list,
+            "link_id": link_id,
+        })));
+    }
+    Ok(PhpOut::Message("api_wxapp_00007"))
+}
+
+async fn company_job_saveclass(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if json_str(body, "hy").is_empty() {
+        return Err(ApiError::business("admin_01283"));
+    }
+    if json_str(body, "job1").is_empty() {
+        return Err(ApiError::business("admin_user_company_00023"));
+    }
+    let ids = gap_extra::parse_id_csv(&json_csv(body, "jobid"));
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let n = gap_extra::php_update_job_class(
+        state.db.pool(),
+        &ids,
+        json_i32(body, "hy"),
+        json_i32(body, "job1"),
+        json_i32(body, "job1_son"),
+        json_i32(body, "job_post"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("member_user_00603"));
+    }
+    let jobs = job_repo::list_by_ids(state.db.reader(), &ids).await?;
+    let now = clock::now_ts();
+    for j in &jobs {
+        let notice = format!("{}{}", msg_t("admin_model_00127"), j.name);
+        gap_repo::insert_sysmsg(state.db.pool(), j.uid, 2, &notice, now).await?;
+    }
+    Ok(PhpOut::Text(
+        "admin_model_00128",
+        format!("{}{}", msg_t("admin_model_00128"), json_csv(body, "jobid")),
+    ))
+}
+
+async fn company_job_get_html(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let Some(job) = job_repo::find_by_id(state.db.reader(), id).await? else {
+        return Err(ApiError::business("model_00008"));
+    };
+    let com = company_repo::find_by_uid(state.db.reader(), job.uid).await?;
+    let phone = com
+        .as_ref()
+        .and_then(|c| c.linktel.clone().filter(|s| !s.is_empty()).or(c.linkphone.clone()))
+        .unwrap_or_default();
+    let addr = com.as_ref().and_then(|c| c.address.clone()).unwrap_or_default();
+    let com_name = job
+        .com_name
+        .clone()
+        .or_else(|| com.as_ref().and_then(|c| c.name.clone()))
+        .unwrap_or_default();
+    let desc = strip_html(job.description.as_deref().unwrap_or(""));
+    let salary = if job.maxsalary > 0 {
+        format!("{}-{}", job.minsalary, job.maxsalary)
+    } else if job.minsalary > 0 {
+        job.minsalary.to_string()
+    } else {
+        String::from("面议")
+    };
+    Ok(Value::String(format!(
+        "<div><p><b>{}</b> · {}</p><p>薪资：{}</p><p>{}</p><p>电话：{}</p><p>地址：{}</p></div>",
+        job.name, com_name, salary, desc, phone, addr
+    )))
+}
+
+async fn company_job_add_tuiwen(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = gap_extra::parse_id_csv(&json_csv(body, "twtask_jobid"));
+    let content = json_str(body, "twtask_content");
+    if ids.is_empty() || user.uid == 0 {
+        return Err(ApiError::param_invalid("common_01238"));
+    }
+    let jobs = gap_extra::tuiwen_jobs(state.db.reader(), &ids).await?;
+    if jobs.is_empty() {
+        return Err(ApiError::business("common_06677"));
+    }
+    let rows: Vec<gap_extra::TuiWenTaskIn> = jobs
+        .iter()
+        .map(|j| gap_extra::TuiWenTaskIn {
+            cuid: j.uid,
+            comname: j.com_name.clone(),
+            jobsdate: j.sdate,
+            auid: user.uid,
+            content: content.clone(),
+            urgent: json_i32(body, "twtask_urgent"),
+            wcmoments: json_i32(body, "twtask_wcmoments"),
+            gzh: json_i32(body, "twtask_gzh"),
+            jobid: j.id,
+            jobname: j.name.clone(),
+            kind: 1,
+        })
+        .collect();
+    if gap_extra::insert_tuiwen_tasks(state.db.pool(), &rows, clock::now_ts()).await? == 0 {
+        return Err(ApiError::business("common_06677"));
+    }
+    Ok(PhpOut::Message("common_06676"))
+}
+
+async fn company_whb(state: &AppState, typ: i32) -> AppResult<Value> {
+    let base = preview_base(state);
+    let rows = whb_repo::list_admin_by_type(state.db.reader(), typ).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .filter(|r| r.isopen == 1)
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "pic": r.pic,
+                "pic_n": pic_url(&base, &r.pic),
+                "sort": r.sort,
+                "isopen": r.isopen,
+                "style": r.style,
+            })
+        })
+        .collect();
+    let hburl = if typ == 2 {
+        format!("{base}/index.php?m=ajax&c=getComHb")
+    } else {
+        format!("{base}/index.php?m=ajax&c=getJobHb")
+    };
+    Ok(json!({ "comHb": list, "hburl": hburl }))
+}
+
+async fn company_job_xls(state: &AppState, body: &Value) -> AppResult<Value> {
+    let ids = ids_of(body);
+    let limit = json_u64(body, "limit");
+    let rows = gap_extra::php_list_jobs_export(state.db.reader(), &ids, limit).await?;
+    if rows.is_empty() {
+        return Err(ApiError::business("admin_01308"));
+    }
+    let mut csv = String::from("id,uid,name,com_name,minsalary,maxsalary,lastupdate\n");
+    for r in &rows {
+        csv.push_str(&format!(
+            "{},{},{},{},{},{},{}\n",
+            r.id,
+            r.uid,
+            csv_cell(&r.name),
+            csv_cell(&r.com_name),
+            r.minsalary,
+            r.maxsalary,
+            fmt_dt(r.lastupdate),
+        ));
+    }
+    let file = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, csv.as_bytes());
+    Ok(json!({
+        "file": file,
+        "file_name": format!("jobs-{}.csv", fmt_date(clock::now_ts())),
+        "status": 1,
+    }))
+}
+
+async fn resume_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "del");
+    let ids = if ids.is_empty() { ids_of(body) } else { ids };
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    recycle_ids(
+        state,
+        user,
+        "resume_expect",
+        &ids,
+        "/v1/admin/php-content/resume/delResume",
+    )
+    .await;
+    gap_extra::php_delete_expect_children(state.db.pool(), &ids).await?;
+    let n = gap_extra::php_delete_expects(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Text(
+        "admin_user_00187",
+        format!("{}{}{}", msg_t("common_06284"), json_csv(body, "del"), msg_t("model_00112")),
+    ))
+}
+
+async fn resume_del_fb(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let table = json_str(body, "table");
+    let id = json_u64(body, "id");
+    let uid = json_u64(body, "uid");
+    if id == 0 || uid == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let n = match table.as_str() {
+        "skill" => skill_repo::delete(state.db.pool(), id, uid).await?,
+        "work" => work_repo::delete(state.db.pool(), id, uid).await?,
+        "project" => project_repo::delete(state.db.pool(), id, uid).await?,
+        "edu" => edu_repo::delete(state.db.pool(), id, uid).await?,
+        "training" => training_repo::delete(state.db.pool(), id, uid).await?,
+        "other" => other_repo::delete(state.db.pool(), id, uid).await?,
+        _ => return Err(ApiError::business("admin_01321")),
+    };
+    if n == 0 {
+        return Err(ApiError::business("admin_01321"));
+    }
+    Ok(PhpOut::Message("wap_user_00147"))
+}
+
+async fn resume_label(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let n = gap_extra::php_set_expect_label(
+        state.db.pool(),
+        id,
+        &json_str(body, "label"),
+        &json_str(body, "content"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("wap_01715"));
+    }
+    Ok(PhpOut::Message("model_00011"))
+}
+
+async fn resume_preview(state: &AppState, body: &Value) -> AppResult<Value> {
+    let mut eid = json_u64(body, "id");
+    let mut uid = json_u64(body, "uid");
+    let db = state.db.reader();
+    if eid == 0 && uid > 0 {
+        if let Some(r) = resume_repo::find_by_uid(db, uid).await? {
+            eid = u64::try_from(r.def_job.max(0)).unwrap_or(0);
+            uid = r.uid;
+        }
+    }
+    let mut expect = if eid > 0 {
+        expect_repo::find_by_id(db, eid).await?
+    } else {
+        None
+    };
+    if expect.is_none() && uid > 0 {
+        expect = expect_repo::list_by_uid(db, uid).await?.into_iter().next();
+    }
+    if let Some(e) = expect.as_ref() {
+        uid = e.uid;
+        eid = e.id;
+    }
+    let resumeinfo = if uid > 0 {
+        resume_repo::find_by_uid(db, uid).await?
+    } else {
+        None
+    };
+    let dict = dict_service::get(state).await?;
+    let expect_json = if let Some(e) = expect.as_ref() {
+        let job_name = dict.job(e.job_classid as i32).to_string();
+        json!({
+            "id": e.id,
+            "uid": e.uid,
+            "name": e.name,
+            "hy": e.hy,
+            "hy_n": dict.industry(e.hy),
+            "job_classid": e.job_classid,
+            "city_classid": e.city_classid,
+            "city_classname": dict.city(e.city_classid as i32),
+            "report": e.report,
+            "report_n": dict.user_or_com(e.report),
+            "type": e.r#type,
+            "type_n": dict.user_or_com(e.r#type),
+            "jobstatus": e.jobstatus,
+            "jobstatus_n": dict.user_or_com(e.jobstatus),
+            "expectjob": if job_name.is_empty() { Vec::<String>::new() } else { vec![job_name] },
+            "add_ip": "",
+        })
+    } else {
+        json!({})
+    };
+    let map_dates = |sdate: i64, edate: i64, extra: Value| {
+        let (sdate_n, edate_n) = range_n(sdate, edate);
+        let mut o = extra;
+        if let Some(m) = o.as_object_mut() {
+            m.insert("sdate_n".into(), json!(sdate_n));
+            m.insert("edate_n".into(), json!(edate_n));
+        }
+        o
+    };
+    let work: Vec<Value> = if uid > 0 {
+        work_repo::list_by_uid(db, uid)
+            .await?
+            .into_iter()
+            .filter(|w| eid == 0 || w.eid == eid)
+            .map(|w| {
+                map_dates(
+                    w.sdate,
+                    w.edate,
+                    json!({
+                        "id": w.id, "uid": w.uid, "eid": w.eid, "name": w.name,
+                        "title": w.title, "content": w.content, "department": w.department,
+                    }),
+                )
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let edu: Vec<Value> = if uid > 0 {
+        edu_repo::list_by_uid(db, uid)
+            .await?
+            .into_iter()
+            .filter(|w| eid == 0 || w.eid == eid)
+            .map(|w| {
+                map_dates(
+                    w.sdate,
+                    w.edate,
+                    json!({
+                        "id": w.id, "uid": w.uid, "eid": w.eid, "name": w.name,
+                        "specialty": w.specialty, "education": w.education,
+                    }),
+                )
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let training: Vec<Value> = if uid > 0 {
+        training_repo::list_by_uid(db, uid)
+            .await?
+            .into_iter()
+            .filter(|w| eid == 0 || w.eid == eid)
+            .map(|w| {
+                map_dates(
+                    w.sdate,
+                    w.edate,
+                    json!({
+                        "id": w.id, "uid": w.uid, "eid": w.eid, "name": w.name,
+                        "title": w.title, "content": w.content,
+                    }),
+                )
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let skill: Vec<Value> = if uid > 0 {
+        skill_repo::list_by_uid(db, uid)
+            .await?
+            .into_iter()
+            .filter(|w| eid == 0 || w.eid == eid)
+            .map(|w| {
+                json!({
+                    "id": w.id, "uid": w.uid, "eid": w.eid, "name": w.name,
+                    "longtime": w.years, "pic": "",
+                })
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let project: Vec<Value> = if uid > 0 {
+        project_repo::list_by_uid(db, uid)
+            .await?
+            .into_iter()
+            .filter(|w| eid == 0 || w.eid == eid)
+            .map(|w| {
+                map_dates(
+                    w.sdate,
+                    w.edate,
+                    json!({
+                        "id": w.id, "uid": w.uid, "eid": w.eid, "name": w.name,
+                        "title": w.role, "content": w.content,
+                    }),
+                )
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let other: Vec<Value> = if uid > 0 {
+        other_repo::list_by_uid(db, uid)
+            .await?
+            .into_iter()
+            .filter(|w| eid == 0 || w.eid == eid)
+            .map(|w| json!({"id": w.id, "uid": w.uid, "eid": w.eid, "name": w.name, "content": w.content}))
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let base = preview_base(state);
+    let resume_json = if let Some(r) = resumeinfo.as_ref() {
+        json!({
+            "uid": r.uid,
+            "name": r.name,
+            "telphone": r.telphone,
+            "email": r.email,
+            "description": r.description,
+            "photo": pic_url(&base, r.photo.as_deref().unwrap_or("")),
+            "exp_n": dict.user_or_com(r.exp),
+            "edu_n": dict.user_or_com(r.education),
+            "age": resume_age(r.birthday.as_deref()),
+            "def_job": r.def_job,
+        })
+    } else {
+        json!({})
+    };
+    Ok(json!({
+        "Info": expect_json,
+        "expect": expect_json,
+        "edu": edu,
+        "other": other,
+        "project": project,
+        "skill": skill,
+        "training": training,
+        "work": work,
+        "resumeinfo": resume_json,
+        "cionly": 0,
+        "jionly": 0,
+    }))
+}
+
+async fn resume_export_check(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if json_str_list(body, "type").is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let ids = ids_named(body, "ids");
+    let ids = if ids.is_empty() { ids_of(body) } else { ids };
+    let n = gap_extra::php_count_expects(state.db.reader(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00095"));
+    }
+    Ok(PhpOut::Data(json!({ "field": "id" })))
+}
+
+async fn company_savefact(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let del_ids = gap_extra::parse_id_csv(&json_csv(body, "fact_delid"));
+    if !del_ids.is_empty() {
+        recycle_ids(
+            state,
+            user,
+            "company_fact",
+            &del_ids,
+            "/v1/admin/php-content/company/savefact",
+        )
+        .await;
+        gap_extra::php_delete_fact_pics(state.db.pool(), &del_ids).await?;
+    }
+    let now = clock::now_ts();
+    for pic in json_str_list(body, "newpic") {
+        if !pic.is_empty() {
+            gap_extra::php_insert_fact_pic(state.db.pool(), uid, &pic, now).await?;
+        }
+    }
+    gap_extra::php_set_fact_status(state.db.pool(), uid, json_i32(body, "fact_status")).await?;
+    Ok(PhpOut::Message("admin_user_00033"))
+}
+
+async fn company_getacbindstatus(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "comid");
+    if uid == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let wxid = gap_extra::php_member_wxid(state.db.reader(), uid).await?;
+    if wxid.is_empty() {
+        return Err(ApiError::business("admin_user_00040"));
+    }
+    Ok(PhpOut::Data(json!({ "wxid": wxid })))
+}
+
+async fn company_export_check(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if json_str_list(body, "type").is_empty() {
+        return Err(ApiError::business("wap_com_00228"));
+    }
+    let uids = gap_extra::parse_id_csv(&json_csv(body, "uid"));
+    let n = gap_extra::php_count_companies(state.db.reader(), &uids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_01308"));
+    }
+    Ok(PhpOut::Data(json!({ "field": "uid" })))
+}
+
+fn company_admin_logo_hb(body: &Value) -> AppResult<PhpOut> {
+    let _ = json_str(body, "name");
+    Err(ApiError::business("admin_user_00035"))
 }

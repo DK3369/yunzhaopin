@@ -47,6 +47,9 @@ pub struct UserMsgRow {
     #[sqlx(skip)]
     #[serde(default)]
     pub reply_time_n: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub com_url: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
