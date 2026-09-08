@@ -459,6 +459,16 @@ pub async fn dispatch(
         ("error-log", "index") => Ok(PhpOut::Data(error_log_index(state, body).await?)),
         ("error-log", "delete") => error_log_del(state, user, body).await,
         ("admin-log", "index") => Ok(PhpOut::Data(admin_log_index(state, body).await?)),
+        ("domain-group", "groupList") => Ok(PhpOut::Data(domain_group_list(state, body).await?)),
+        ("domain-group", "groupInfo") => Ok(PhpOut::Data(domain_group_info(state, body).await?)),
+        ("domain-group", "saveGroup") => domain_group_save(state, body).await,
+        ("domain-group", "delGroup") => domain_group_del(state, user, body).await,
+        ("domain-group", "adminList") => Ok(PhpOut::Data(domain_admin_list(state, body).await?)),
+        ("domain-group", "adminInfo") => Ok(PhpOut::Data(domain_admin_info(state, body).await?)),
+        ("domain-list", "index") => Ok(PhpOut::Data(domain_list_index(state, body).await?)),
+        ("domain-list", "changeDomainType") => domain_list_change_type(state, body).await,
+        ("domain-list", "configSave") => domain_list_config_save(state, user, body).await,
+        ("domain-list", "getDomainCache") => Ok(PhpOut::Data(domain_list_get_cache(state).await?)),
         ("zph-space", "ajax") => zph_space_ajax(state, body).await,
         ("zph-space", "ajaxspace") => Ok(PhpOut::Data(zph_space_ajaxspace(state, body).await?)),
         ("zph-space", "up") => Ok(PhpOut::Data(zph_space_up(state, body).await?)),
@@ -10545,7 +10555,7 @@ async fn role_ugroup_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     let power_i: Vec<i64> = ids.iter().map(|n| *n as i64).collect();
     let ser = php_power::serialize_group_power(&power_i);
-    let n = rbac_php::php_save_group(state.db.pool(), if gid > 0 { Some(gid) } else { None }, &name, &ser, 0).await?;
+    let n = rbac_php::php_save_group(state.db.pool(), if gid > 0 { Some(gid) } else { None }, &name, &ser, 0, 1).await?;
     if n == 0 {
         return Err(ApiError::business("common_06357"));
     }
@@ -12009,4 +12019,391 @@ async fn userset_save_logo(
     )
     .await?;
     Ok(PhpOut::Message("admin_user_00098"))
+}
+
+async fn domain_group_list(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let db = state.db.reader();
+    let total = rbac_php::php_count_groups_of_type(db, 2, keyword).await?;
+    let rows = if total > 0 {
+        rbac_php::php_list_groups_of_type(db, 2, keyword, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let titles: HashMap<i32, String> = domain_repo::list_all(db)
+        .await?
+        .into_iter()
+        .map(|d| (d.id as i32, d.title))
+        .collect();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|g| {
+            json!({
+                "id": g.id,
+                "group_name": g.group_name,
+                "did": g.did,
+                "num": g.num,
+                "domain_name": titles.get(&g.did).cloned().unwrap_or_else(|| "--".to_string()),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn domain_group_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let mut data = role_ugroup_info(state, body).await?;
+    let group = data.get("admin_group").cloned().unwrap_or(json!({}));
+    data["groupInfo"] = group;
+    let domains = domain_repo::list_all(state.db.reader()).await?;
+    data["domain"] = Value::Array(
+        domains
+            .into_iter()
+            .map(|d| json!({ "id": d.id, "title": d.title }))
+            .collect(),
+    );
+    Ok(data)
+}
+
+async fn domain_group_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let name = json_str(body, "group_name");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_system_00010"));
+    }
+    let three = ids_named(body, "three_ids");
+    if three.is_empty() {
+        return Err(ApiError::business("admin_system_00009"));
+    }
+    let mut ids = ids_named(body, "one_ids");
+    ids.extend(ids_named(body, "two_ids"));
+    ids.extend(three);
+    ids.extend(ids_named(body, "four_ids"));
+    ids.sort_unstable();
+    ids.dedup();
+    let gid = json_u64(body, "groupid");
+    if rbac_php::php_group_name_taken(state.db.pool(), &name, gid).await? {
+        return Err(ApiError::business("admin_system_00027"));
+    }
+    let power_i: Vec<i64> = ids.iter().map(|n| *n as i64).collect();
+    let ser = php_power::serialize_group_power(&power_i);
+    let did = json_i32(body, "did");
+    let n = rbac_php::php_save_group(
+        state.db.pool(),
+        if gid > 0 { Some(gid) } else { None },
+        &name,
+        &ser,
+        did,
+        2,
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("common_06357"));
+    }
+    let _ = rbac_php::php_mark_admin_nav_dids(state.db.pool(), &power_i, 1).await;
+    Ok(PhpOut::Message("common_06360"))
+}
+
+async fn domain_group_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "id");
+    if ids.is_empty() {
+        return Err(ApiError::business("wap_00203"));
+    }
+    for id in &ids {
+        if rbac_php::php_count_group_users(state.db.pool(), *id).await? > 0 {
+            return Err(ApiError::business("common_00307"));
+        }
+    }
+    recycle_ids(
+        state,
+        user,
+        "admin_user_group",
+        &ids,
+        "/v1/admin/php-content/domain-group/delGroup",
+    )
+    .await;
+    for id in ids {
+        let n = rbac_php::php_delete_group(state.db.pool(), id).await?;
+        if n == 0 {
+            return Err(ApiError::business("model_00137"));
+        }
+    }
+    Ok(PhpOut::Message("model_00112"))
+}
+
+async fn domain_admin_list(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let db = state.db.reader();
+    let total = rbac_php::php_count_site_admins(db, keyword).await?;
+    let rows = if total > 0 {
+        rbac_php::php_list_site_admins(db, keyword, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let titles: HashMap<i32, String> = domain_repo::list_all(db)
+        .await?
+        .into_iter()
+        .map(|d| (d.id as i32, d.title))
+        .collect();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|u| {
+            json!({
+                "uid": u.uid,
+                "username": u.username,
+                "name": u.name,
+                "m_id": u.m_id,
+                "did": u.did,
+                "group_name": u.group_name,
+                "domain_name": titles.get(&u.did).cloned().unwrap_or_else(|| "--".to_string()),
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn domain_admin_info(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Ok(json!({}));
+    }
+    Ok(match rbac_php::php_get_user(state.db.reader(), uid).await? {
+        Some(u) => json!({
+            "uid": u.uid,
+            "username": u.username,
+            "name": u.name,
+            "m_id": u.m_id,
+            "did": u.did,
+        }),
+        None => json!({}),
+    })
+}
+
+fn php_domain_city_label(
+    dicts: &dict_service::LocalizedDicts,
+    province: i32,
+    cityid: i32,
+    three: i32,
+) -> String {
+    let pair = |a: i32, b: i32| -> String {
+        let left = dicts.city(a);
+        let right = dicts.city(b);
+        if left.is_empty() && right.is_empty() {
+            "--".to_string()
+        } else if left.is_empty() {
+            right.to_string()
+        } else if right.is_empty() {
+            left.to_string()
+        } else {
+            format!("{left} - {right}")
+        }
+    };
+    if three > 0 {
+        pair(cityid, three)
+    } else if cityid > 0 {
+        pair(province, cityid)
+    } else if province > 0 {
+        let n = dicts.city(province);
+        if n.is_empty() {
+            "--".to_string()
+        } else {
+            n.to_string()
+        }
+    } else {
+        "--".to_string()
+    }
+}
+
+async fn domain_list_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let db = state.db.reader();
+    let total = gap_repo::count_domains(db, keyword).await?;
+    let rows = if total > 0 {
+        gap_repo::list_domains(db, keyword, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let dicts = dict_service::get(state).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let name = if r.mode == 2 {
+                r.indexdir.clone()
+            } else {
+                r.domain.clone()
+            };
+            let (city, hy_n) = if r.fz_type == 1 {
+                (
+                    php_domain_city_label(&dicts, r.province, r.cityid, r.three_cityid),
+                    "--".to_string(),
+                )
+            } else if r.fz_type == 2 {
+                let hy = dicts.industry(r.hy);
+                (
+                    "--".to_string(),
+                    if hy.is_empty() {
+                        "--".to_string()
+                    } else {
+                        hy.to_string()
+                    },
+                )
+            } else {
+                ("--".to_string(), "--".to_string())
+            };
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "name": name,
+                "domain": r.domain,
+                "indexdir": r.indexdir,
+                "city": city,
+                "hy_n": hy_n,
+                "style": r.style,
+                "type": r.r#type,
+                "typeStatus": r.r#type == 1,
+                "fz_type": r.fz_type,
+                "mode": r.mode,
+                "hy": r.hy,
+                "cityid": r.cityid,
+                "province": r.province,
+                "three_cityid": r.three_cityid,
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+async fn domain_list_change_type(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let typ = json_i32(body, "type");
+    if id == 0 || typ == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let n = gap_repo::php_set_domain_type(state.db.pool(), id, typ).await?;
+    if n == 0 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    home_service::invalidate_all().await;
+    if typ == 1 {
+        Ok(PhpOut::Message("admin_01372"))
+    } else {
+        Ok(PhpOut::Message("admin_01373"))
+    }
+}
+
+async fn domain_list_config_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    if json_i32(body, "domainConfig") != 1 {
+        return Err(ApiError::business("wap_00203"));
+    }
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let mut indexdomain = json_str(body, "sy_indexdomain");
+    if !indexdomain.is_empty() {
+        let lower = indexdomain.to_ascii_lowercase();
+        if !lower.contains("http") {
+            let weburl = cfg_pick(&cfg, "sy_weburl");
+            let proto = if weburl.to_ascii_lowercase().contains("https://") {
+                "https://"
+            } else {
+                "http://"
+            };
+            indexdomain = format!("{proto}{indexdomain}");
+        }
+    }
+    upsert_cfg(state, user, "sy_web_site", &json_str(body, "sy_web_site")).await?;
+    upsert_cfg(state, user, "sy_gotocity", &json_str(body, "sy_gotocity")).await?;
+    upsert_cfg(state, user, "sy_indexcity", &json_str(body, "sy_indexcity")).await?;
+    upsert_cfg(state, user, "sy_indexdomain", &indexdomain).await?;
+    upsert_cfg(state, user, "sy_onedomain", &json_str(body, "sy_onedomain")).await?;
+    home_service::invalidate_all().await;
+    Ok(PhpOut::Message("admin_01371"))
+}
+
+fn domain_style_list() -> Vec<Value> {
+    const SKIP: &[&str] = &[
+        "admin", "ask", "chat", "company", "lietou", "member", "promoter", "resume", "school",
+        "shop", "siteadmin", "train", "im", "wap", "wapadmin",
+    ];
+    let path = std::path::Path::new("/www/wwwroot/zzzz.com/uploads/app/template");
+    let Ok(rd) = std::fs::read_dir(path) else {
+        return Vec::new();
+    };
+    let mut names: Vec<String> = rd
+        .flatten()
+        .filter(|e| e.path().is_dir())
+        .map(|e| e.file_name().to_string_lossy().into_owned())
+        .filter(|n| !n.starts_with('.') && !SKIP.contains(&n.as_str()))
+        .collect();
+    names.sort();
+    names
+        .into_iter()
+        .map(|dir| {
+            let text = std::fs::read_to_string(path.join(&dir).join("info.txt")).unwrap_or_default();
+            let parts: Vec<&str> = text.split("||").collect();
+            let name = parts
+                .first()
+                .map(|s| s.trim())
+                .filter(|s| !s.is_empty())
+                .unwrap_or(dir.as_str());
+            let author = parts.get(1).map(|s| s.trim()).unwrap_or("");
+            let dir_n = parts
+                .get(2)
+                .map(|s| s.trim())
+                .filter(|s| !s.is_empty())
+                .unwrap_or(dir.as_str());
+            let img = parts.get(3).map(|s| s.trim()).unwrap_or("");
+            json!({
+                "name": name,
+                "author": author,
+                "dir": dir_n,
+                "img": img,
+            })
+        })
+        .collect()
+}
+
+async fn domain_list_get_cache(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let mut province_arr = Vec::new();
+    let mut city_arr = Vec::new();
+    for (pid, pname) in dicts.city_provinces() {
+        province_arr.push(json!({ "id": pid, "name": pname }));
+        for (cid, cname) in dicts.city_of_parent(pid) {
+            city_arr.push(json!({ "id": cid, "pid": pid, "name": cname }));
+            for (tid, tname) in dicts.city_of_parent(cid) {
+                city_arr.push(json!({ "id": tid, "pid": cid, "name": tname }));
+            }
+        }
+    }
+    let industry_arr: Vec<Value> = dicts
+        .industry_all()
+        .into_iter()
+        .map(|(id, name)| json!({ "id": id, "name": name }))
+        .collect();
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let pic_max = cfg_pick(&cfg, "pic_maxsize");
+    let pic_maxsize = if pic_max.is_empty() {
+        json!(5)
+    } else {
+        pic_max
+            .parse::<i64>()
+            .map(Value::from)
+            .unwrap_or_else(|_| json!(pic_max))
+    };
+    let pic_type = cfg_pick(&cfg, "pic_type");
+    Ok(json!({
+        "styleList": domain_style_list(),
+        "industryArr": industry_arr,
+        "provinceArr": province_arr,
+        "cityArr": city_arr,
+        "picMaxSize": pic_maxsize,
+        "picType": if pic_type.is_empty() { "jpg,png,jpeg,bmp,gif".to_string() } else { pic_type },
+    }))
 }

@@ -312,6 +312,8 @@ pub struct DomainAdminRow {
     pub hy: i32,
     pub cityid: i32,
     pub province: i32,
+    pub three_cityid: i32,
+    pub r#type: i32,
     pub tpl: String,
     #[sqlx(skip)]
     #[serde(default)]

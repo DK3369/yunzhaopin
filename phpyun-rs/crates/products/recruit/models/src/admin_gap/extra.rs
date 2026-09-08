@@ -959,6 +959,8 @@ const DOMAIN_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS t
     COALESCE(webtitle,'') AS web_title, COALESCE(indexdir,'') AS indexdir, \
     COALESCE(style,'') AS style, CAST(COALESCE(hy,0) AS SIGNED) AS hy, \
     CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, CAST(COALESCE(province,0) AS SIGNED) AS province, \
+    CAST(COALESCE(three_cityid,0) AS SIGNED) AS three_cityid, \
+    CAST(COALESCE(`type`,0) AS SIGNED) AS type, \
     COALESCE(tpl,'') AS tpl";
 
 pub async fn find_domain(pool: &MySqlPool, id: u64) -> Result<Option<DomainAdminRow>, sqlx::Error> {

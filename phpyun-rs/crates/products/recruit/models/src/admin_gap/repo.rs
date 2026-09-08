@@ -1771,6 +1771,8 @@ pub async fn list_domains(
          COALESCE(webtitle,'') AS web_title, COALESCE(indexdir,'') AS indexdir, \
          COALESCE(style,'') AS style, CAST(COALESCE(hy,0) AS SIGNED) AS hy, \
          CAST(COALESCE(cityid,0) AS SIGNED) AS cityid, CAST(COALESCE(province,0) AS SIGNED) AS province, \
+         CAST(COALESCE(three_cityid,0) AS SIGNED) AS three_cityid, \
+         CAST(COALESCE(`type`,0) AS SIGNED) AS type, \
          COALESCE(tpl,'') AS tpl \
          FROM phpyun_domain WHERE {PREDICATE}"
     ));
@@ -1843,6 +1845,16 @@ pub async fn upsert_domain(
 
 pub async fn delete_domains(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
     soft_delete::mark_ids(pool, "phpyun_domain", ids).await
+}
+
+pub async fn php_set_domain_type(pool: &MySqlPool, id: u64, r#type: i32) -> Result<u64, sqlx::Error> {
+    let sql = format!("UPDATE phpyun_domain SET `type` = ? WHERE id = ? AND {PREDICATE}");
+    Ok(sqlx::query(&sql)
+        .bind(r#type)
+        .bind(id)
+        .execute(pool)
+        .await?
+        .rows_affected())
 }
 
 pub async fn list_domain_admins(

@@ -62,6 +62,15 @@ const USER_FIELDS: &str = "\
     COALESCE(u.wxid,'') AS wxid";
 
 fn push_user_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, keyword: Option<&str>, m_id: Option<i32>) {
+    push_user_where_ext(qb, keyword, m_id, false);
+}
+
+fn push_user_where_ext(
+    qb: &mut QueryBuilder<'_, sqlx::MySql>,
+    keyword: Option<&str>,
+    m_id: Option<i32>,
+    did_gt: bool,
+) {
     qb.push(" FROM phpyun_admin_user u LEFT JOIN phpyun_admin_user_group g ON g.id = u.m_id WHERE 1=1");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         let like = format!("%{kw}%");
@@ -74,6 +83,9 @@ fn push_user_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, keyword: Option<&str>
     if let Some(mid) = m_id.filter(|n| *n > 0) {
         qb.push(" AND u.m_id = ");
         qb.push_bind(mid);
+    }
+    if did_gt {
+        qb.push(" AND u.did > 0");
     }
 }
 
@@ -101,6 +113,29 @@ pub async fn php_count_users(
 ) -> Result<u64, sqlx::Error> {
     let mut qb = QueryBuilder::new("SELECT COUNT(*)");
     push_user_where(&mut qb, keyword, m_id);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn php_list_site_admins(
+    pool: &MySqlPool,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpAdminUserRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT ");
+    qb.push(USER_FIELDS);
+    push_user_where_ext(&mut qb, keyword, None, true);
+    qb.push(" ORDER BY u.uid ASC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_site_admins(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_user_where_ext(&mut qb, keyword, None, true);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
@@ -278,6 +313,49 @@ pub async fn php_count_groups(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+const GROUP_FIELDS: &str = "CAST(g.id AS UNSIGNED) AS id, COALESCE(g.group_name,'') AS group_name, \
+         CAST(COALESCE(g.group_type,0) AS SIGNED) AS group_type, \
+         COALESCE(g.group_power,'') AS group_power, \
+         CAST(COALESCE(g.did,0) AS SIGNED) AS did, \
+         CAST((SELECT COUNT(*) FROM phpyun_admin_user u WHERE u.m_id = g.id) AS SIGNED) AS num";
+
+pub async fn php_list_groups_of_type(
+    pool: &MySqlPool,
+    group_type: i32,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpAdminGroupRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT ");
+    qb.push(GROUP_FIELDS);
+    qb.push(" FROM phpyun_admin_user_group g WHERE g.group_type = ");
+    qb.push_bind(group_type);
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND g.group_name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    qb.push(" ORDER BY g.id ASC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_groups_of_type(
+    pool: &MySqlPool,
+    group_type: i32,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_admin_user_group g WHERE g.group_type = ");
+    qb.push_bind(group_type);
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND g.group_name LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn php_get_group(pool: &MySqlPool, id: u64) -> Result<Option<PhpAdminGroupRow>, sqlx::Error> {
     sqlx::query_as::<_, PhpAdminGroupRow>(
         "SELECT CAST(g.id AS UNSIGNED) AS id, COALESCE(g.group_name,'') AS group_name, \
@@ -313,21 +391,37 @@ pub async fn php_save_group(
     name: &str,
     power: &str,
     did: i32,
+    group_type: i32,
 ) -> Result<u64, sqlx::Error> {
+    let gt = if group_type > 0 { group_type } else { 1 };
     if let Some(id) = id.filter(|n| *n > 0) {
-        sqlx::query("UPDATE phpyun_admin_user_group SET group_name=?, group_power=? WHERE id=?")
+        if gt == 2 {
+            sqlx::query(
+                "UPDATE phpyun_admin_user_group SET group_name=?, group_power=?, did=?, group_type=? WHERE id=?",
+            )
             .bind(name)
             .bind(power)
+            .bind(did)
+            .bind(gt)
             .bind(id)
             .execute(pool)
             .await?;
+        } else {
+            sqlx::query("UPDATE phpyun_admin_user_group SET group_name=?, group_power=? WHERE id=?")
+                .bind(name)
+                .bind(power)
+                .bind(id)
+                .execute(pool)
+                .await?;
+        }
         return Ok(id);
     }
     Ok(sqlx::query(
-        "INSERT INTO phpyun_admin_user_group (group_name, group_power, group_type, did) VALUES (?, ?, 1, ?)",
+        "INSERT INTO phpyun_admin_user_group (group_name, group_power, group_type, did) VALUES (?, ?, ?, ?)",
     )
     .bind(name)
     .bind(power)
+    .bind(gt)
     .bind(did)
     .execute(pool)
     .await?
