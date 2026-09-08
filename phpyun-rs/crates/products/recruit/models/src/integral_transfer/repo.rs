@@ -404,6 +404,59 @@ pub async fn php_delete_pay(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
+/// pay_type PHP uses for admin-issued refunds (`company_invtal(..., 99)`).
+pub const PAY_TYPE_ADMIN_REFUND: i32 = 99;
+
+/// `type` column: 1 = points ledger, 2 = cash/package ledger. PHP derives this
+/// from which balance column it just bumped.
+pub const LEDGER_KIND_INTEGRAL: i32 = 1;
+pub const LEDGER_KIND_PACKPAY: i32 = 2;
+
+/// One credit row for an admin-issued refund, mirroring the ledger half of
+/// `integral.model::company_invtal`. Unlike [`php_insert_pay`] this carries the
+/// `pay_type`, `did` and `eid` that PHP fills in, so the refund is traceable
+/// back to the resume it reverses.
+#[derive(Debug, Clone, Copy)]
+pub struct RefundLedgerRow<'a> {
+    /// Credited user, PHP `com_id`.
+    pub uid: u64,
+    pub did: i64,
+    /// The resume the refunded download was for.
+    pub eid: u64,
+    /// Positive amount; the caller has already credited the balance column.
+    pub amount: f64,
+    /// i18n key, stored raw the way PHP stores `admin_01423` / `admin_01424`.
+    pub remark: &'a str,
+    pub kind: i32,
+    pub usertype: i32,
+}
+
+/// Append the ledger row for a refund. Returns the new `phpyun_company_pay.id`.
+pub async fn insert_refund_row(
+    pool: &MySqlPool,
+    row: &RefundLedgerRow<'_>,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_pay \
+         (order_id, order_price, pay_time, pay_state, com_id, pay_remark, `type`, pay_type, did, eid, usertype, coupon_id) \
+         VALUES (?, ?, ?, 2, ?, ?, ?, ?, ?, ?, ?, 0)",
+    )
+    .bind(gen_order_id(now))
+    .bind(row.amount)
+    .bind(now)
+    .bind(row.uid)
+    .bind(row.remark)
+    .bind(row.kind)
+    .bind(PAY_TYPE_ADMIN_REFUND)
+    .bind(row.did)
+    .bind(row.eid)
+    .bind(row.usertype)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 pub async fn php_insert_pay(
     pool: &MySqlPool,
     order_id: &str,

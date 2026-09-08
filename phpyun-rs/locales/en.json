@@ -308,7 +308,9 @@
     "common_06585": "Select Records Delete",
     "common_06677": "Post Tasks Add failed",
     "wap_00203": "Parameter error, please try again!",
-    "wap_js_00141": "Actions failed"
+    "wap_js_00141": "Actions failed",
+    "admin_01422": "Update failed",
+    "common_01266": "Operation failed. Please try again"
   },
   "validation": {
     "username": {
@@ -400,7 +402,12 @@
     "common_00802": "The manager assigned a recruitment consultant to you:",
     "common_06401": "Assign successful!",
     "common_06676": "Post Tasks Add successful",
-    "wap_user_00264": "Operation successful"
+    "wap_user_00264": "Operation successful",
+    "admin_01421": "Update successful",
+    "admin_model_00009": "Q&A (ID:%{ids}) deleted successfully",
+    "common_01477": "Reason has been deleted",
+    "common_01552": "Question has been deleted",
+    "wap_com_00350": "Reports"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

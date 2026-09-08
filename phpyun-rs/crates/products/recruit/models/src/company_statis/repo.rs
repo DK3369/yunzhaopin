@@ -8,13 +8,23 @@
 
 use sqlx::MySqlPool;
 
-/// INSERT IGNORE — create the per-company counter row if it doesn't already
-/// exist. Idempotent.
+/// Create the per-company counter row if it doesn't already exist.
+///
+/// The guard has to be a `NOT EXISTS` rather than `INSERT IGNORE`: PHP's
+/// `uid` index on this table is a plain `KEY`, not `UNIQUE`, so `INSERT
+/// IGNORE` has nothing to collide with and appends a second row every call.
+/// Two rows for one company means the balance updates below hit both and the
+/// reads pick whichever comes first.
 pub async fn ensure_row(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
-    sqlx::query("INSERT IGNORE INTO phpyun_company_statis (uid) VALUES (?)")
-        .bind(uid)
-        .execute(pool)
-        .await?;
+    sqlx::query(
+        "INSERT INTO phpyun_company_statis (uid) \
+         SELECT ? FROM (SELECT 1) AS seed \
+         WHERE NOT EXISTS (SELECT 1 FROM phpyun_company_statis WHERE uid = ?)",
+    )
+    .bind(uid)
+    .bind(uid)
+    .execute(pool)
+    .await?;
     Ok(())
 }
 
@@ -397,6 +407,41 @@ pub async fn try_consume_down_resume(pool: &MySqlPool, uid: u64) -> Result<bool,
     .execute(pool)
     .await?;
     Ok(res.rows_affected() > 0)
+}
+
+/// Give a resume-download credit back, for when an upheld resume report means
+/// the employer should not have been charged. PHP:
+/// `statis.model::upInfo(['down_resume' => ['+', 1]], ...)`.
+pub async fn refund_down_resume(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    ensure_row(pool, uid).await?;
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET down_resume = COALESCE(down_resume, 0) + 1 \
+         WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// Credit the employer's cash balance (`packpay`, a DECIMAL column, unlike the
+/// VARCHAR `integral`). PHP reaches this through
+/// `integral.model::company_invtal(..., type: 'packpay')`, whose `$type`
+/// argument is literally the column name to bump.
+pub async fn add_packpay(pool: &MySqlPool, uid: u64, amount: f64) -> Result<u64, sqlx::Error> {
+    if !(amount.is_finite() && amount > 0.0) {
+        return Err(sqlx::Error::Protocol(format!(
+            "phpyun_company_statis.packpay: credit must be finite and positive, got {amount}"
+        )));
+    }
+    ensure_row(pool, uid).await?;
+    let res =
+        sqlx::query("UPDATE phpyun_company_statis SET packpay = COALESCE(packpay, 0) + ? WHERE uid = ?")
+            .bind(amount)
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn try_consume_breakpart(pool: &MySqlPool, uid: u64, n: i32) -> Result<bool, sqlx::Error> {

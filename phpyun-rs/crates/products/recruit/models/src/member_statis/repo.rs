@@ -171,15 +171,20 @@ pub async fn add_balance(
 // Counter columns + ensure-row.
 // ============================================================================
 
-/// INSERT IGNORE — create the per-user counter row with zeros if it doesn't
-/// already exist. Idempotent; safe to call from multiple registration / role-
-/// upgrade paths.
+/// Create the per-user counter row with zeros if it doesn't already exist.
+/// Safe to call from multiple registration / role-upgrade paths.
+///
+/// `INSERT IGNORE` would not do: PHP's `uid` index here is a plain `KEY`, so
+/// there is no uniqueness for the ignore to trigger on and every call would
+/// append another row for the same user.
 pub async fn ensure_row(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
     sqlx::query(
-        "INSERT IGNORE INTO phpyun_member_statis \
+        "INSERT INTO phpyun_member_statis \
             (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num) \
-         VALUES (?, '', 0, 0, 0, 0, 0)",
+         SELECT ?, '', 0, 0, 0, 0, 0 FROM (SELECT 1) AS seed \
+         WHERE NOT EXISTS (SELECT 1 FROM phpyun_member_statis WHERE uid = ?)",
     )
+    .bind(uid)
     .bind(uid)
     .execute(pool)
     .await?;

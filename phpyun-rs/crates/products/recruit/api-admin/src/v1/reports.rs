@@ -1,12 +1,14 @@
 //! Report queue (admin).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 use phpyun_core::{
     dto::{BatchResult, StatusFilterBody},
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_services::admin_service;
+use phpyun_models::report::repo::ReportQueue;
+use phpyun_services::{admin_report_service, admin_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -16,6 +18,249 @@ pub fn routes() -> Router<AppState> {
         .route("/reports", post(list))
         .route("/reports/status", post(set_status))
         .route("/reports/batch/status", post(batch_set_status))
+        // PHP-shaped admin queues (yunying/report_*). Separate from the three
+        // routes above, which keep the older generic report shape.
+        .route("/reports/job", post(php_list_job))
+        .route("/reports/resume", post(php_list_resume))
+        .route("/reports/ask", post(php_list_ask))
+        .route("/reports/advise", post(php_list_advise))
+        .route("/reports/saveresult", post(php_saveresult))
+        .route("/reports/delete", post(php_delete))
+        .route("/reports/resume/saveresult", post(php_resume_saveresult))
+        .route("/reports/resume/saveresult-all", post(php_resume_saveresult_all))
+        .route("/reports/ask/classes", post(php_ask_classes))
+        .route("/reports/ask/edit", post(php_ask_edit))
+        .route("/reports/ask/save", post(php_ask_save))
+        .route("/reports/ask/delete-question", post(php_ask_delete_question))
+}
+
+// ---------- PHP-shaped admin report queues ----------
+//
+// The Vue grids post PHP's own parameter names, and everything arrives as a
+// string because the pages build `FormData`. So these handlers read an
+// untyped body and coerce, rather than deriving `Deserialize` on typed forms.
+
+fn body_str(v: &serde_json::Value, key: &str) -> String {
+    match v.get(key) {
+        Some(serde_json::Value::String(s)) => s.trim().to_string(),
+        Some(serde_json::Value::Number(n)) => n.to_string(),
+        _ => String::new(),
+    }
+}
+
+fn body_i32(v: &serde_json::Value, key: &str) -> i32 {
+    match v.get(key) {
+        Some(serde_json::Value::Number(n)) => n.as_i64().unwrap_or(0) as i32,
+        Some(serde_json::Value::String(s)) => s.trim().parse().unwrap_or(0),
+        Some(serde_json::Value::Bool(true)) => 1,
+        _ => 0,
+    }
+}
+
+fn body_u64(v: &serde_json::Value, key: &str) -> u64 {
+    match v.get(key) {
+        Some(serde_json::Value::Number(n)) => n.as_u64().unwrap_or(0),
+        Some(serde_json::Value::String(s)) => s.trim().parse().unwrap_or(0),
+        _ => 0,
+    }
+}
+
+/// PHP treats a missing / empty `status` as "no filter", and `0` as
+/// "unhandled" — so an absent key and `"0"` must not collapse together.
+fn body_opt_i32(v: &serde_json::Value, key: &str) -> Option<i32> {
+    match v.get(key) {
+        None | Some(serde_json::Value::Null) => None,
+        Some(serde_json::Value::String(s)) if s.trim().is_empty() => None,
+        _ => Some(body_i32(v, key)),
+    }
+}
+
+/// The grids post ids as `del` / `rid`, either scalar or array.
+fn body_ids(v: &serde_json::Value, key: &str) -> Vec<u64> {
+    let one = |x: &serde_json::Value| -> u64 {
+        match x {
+            serde_json::Value::Number(n) => n.as_u64().unwrap_or(0),
+            serde_json::Value::String(s) => s.trim().parse().unwrap_or(0),
+            _ => 0,
+        }
+    };
+    match v.get(key) {
+        Some(serde_json::Value::Array(a)) => a.iter().map(one).filter(|n| *n > 0).collect(),
+        // A comma-joined string is how PHP's own batch buttons pass ids.
+        Some(serde_json::Value::String(s)) => s
+            .split(',')
+            .filter_map(|p| p.trim().parse::<u64>().ok())
+            .filter(|n| *n > 0)
+            .collect(),
+        Some(x) => Vec::from([one(x)]).into_iter().filter(|n| *n > 0).collect(),
+        None => Vec::new(),
+    }
+}
+
+fn list_query(body: &serde_json::Value) -> admin_report_service::ListQuery {
+    let order_by = body_str(body, "t");
+    let order = body_str(body, "order");
+    admin_report_service::ListQuery {
+        ftype: body_i32(body, "ftype"),
+        keyword: body_str(body, "keyword"),
+        status: body_opt_i32(body, "status"),
+        order_by: (!order_by.is_empty()).then_some(order_by),
+        order: (!order.is_empty()).then_some(order),
+    }
+}
+
+async fn php_list(
+    state: AppState,
+    user: AuthenticatedUser,
+    page: Pagination,
+    body: serde_json::Value,
+    queue: ReportQueue,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let q = list_query(&body);
+    let data = admin_report_service::list(&state, &user, queue, &q, page).await?;
+    Ok(ApiResponse::data(data))
+}
+
+pub async fn php_list_job(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    php_list(state, user, page, body, ReportQueue::Job).await
+}
+
+pub async fn php_list_resume(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    php_list(state, user, page, body, ReportQueue::Resume).await
+}
+
+pub async fn php_list_ask(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    php_list(state, user, page, body, ReportQueue::Ask).await
+}
+
+pub async fn php_list_advise(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    php_list(state, user, page, body, ReportQueue::Advise).await
+}
+
+/// 职位/问答/投诉举报的处理结果，没有返还环节。
+pub async fn php_saveresult(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    admin_report_service::save_result(
+        &state,
+        &user,
+        body_u64(&body, "pid"),
+        &body_str(&body, "result"),
+    )
+    .await?;
+    Ok(ApiResponse::message("wap_user_00264"))
+}
+
+pub async fn php_delete(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiMessage> {
+    // `type = pldel` on the resume queue means "and every other report about
+    // this same resume".
+    let widen = body_str(&body, "type") == "pldel";
+    let msg = admin_report_service::delete(&state, &user, &body_ids(&body, "del"), widen).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
+
+pub async fn php_resume_saveresult(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    let f = admin_report_service::ResumeResultForm {
+        pid: body_u64(&body, "pid"),
+        result: body_str(&body, "result"),
+        datafh: body_opt_i32(&body, "datafh"),
+        tongbu: body_i32(&body, "tongbu") == 1,
+    };
+    admin_report_service::save_result_resume(&state, &user, &f).await?;
+    Ok(ApiResponse::message("wap_user_00264"))
+}
+
+pub async fn php_resume_saveresult_all(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    admin_report_service::save_result_resume_all(
+        &state,
+        &user,
+        &body_ids(&body, "rid"),
+        &body_str(&body, "result"),
+        body_opt_i32(&body, "datafh"),
+    )
+    .await?;
+    Ok(ApiResponse::message("wap_user_00264"))
+}
+
+pub async fn php_ask_classes(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        admin_report_service::ask_classes(&state, &user, body_i32(&body, "pid")).await?,
+    ))
+}
+
+pub async fn php_ask_edit(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    Ok(ApiResponse::data(
+        admin_report_service::ask_edit(&state, &user, body_u64(&body, "id")).await?,
+    ))
+}
+
+pub async fn php_ask_save(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    let f = admin_report_service::AskSaveForm {
+        id: body_u64(&body, "id"),
+        title: body_str(&body, "title"),
+        cid: body_i32(&body, "cid"),
+        visit: body_i32(&body, "visit").max(0) as u32,
+        is_recom: body_i32(&body, "is_recom"),
+        content: body_str(&body, "content"),
+    };
+    admin_report_service::ask_save(&state, &user, &f).await?;
+    Ok(ApiResponse::message("admin_01421"))
+}
+
+pub async fn php_ask_delete_question(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiMessage> {
+    let msg =
+        admin_report_service::delete_questions(&state, &user, &body_ids(&body, "del")).await?;
+    Ok(ApiMessage::new("admin_model_00009", msg))
 }
 
 fn report_kind_name(k: i32) -> &'static str {

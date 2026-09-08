@@ -434,6 +434,26 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'yunying/shop_reward/index_base_data': phpPage('shop_reward_base'),
   'yunying/shop_list/index_base_data': phpPage('shop_list_base'),
   'yunying/report_resume/index_base_data': phpPage('report_resume_base'),
+
+  // 举报队列（yunying/report_*）。四个页面同表异筛：职位 type=0/usertype=1、
+  // 简历 type=0/usertype=2、问答 type=1、投诉 type=2，所以列表各走一条路由。
+  'yunying/report_job/index': { path: '/v1/admin/reports/job', transformReq: pageQuery },
+  'yunying/report_job/saveresult': { path: '/v1/admin/reports/saveresult' },
+  'yunying/report_job/del': { path: '/v1/admin/reports/delete' },
+  'yunying/report_advise/index': { path: '/v1/admin/reports/advise', transformReq: pageQuery },
+  'yunying/report_advise/saveresult': { path: '/v1/admin/reports/saveresult' },
+  'yunying/report_advise/del': { path: '/v1/admin/reports/delete' },
+  'yunying/report_ask/index': { path: '/v1/admin/reports/ask', transformReq: pageQuery },
+  'yunying/report_ask/saveresult': { path: '/v1/admin/reports/saveresult' },
+  'yunying/report_ask/del': { path: '/v1/admin/reports/delete' },
+  'yunying/report_ask/delquestion': { path: '/v1/admin/reports/ask/delete-question' },
+  'yunying/report_ask/getclass': { path: '/v1/admin/reports/ask/classes' },
+  'yunying/report_ask/edit': { path: '/v1/admin/reports/ask/edit' },
+  'yunying/report_ask/save': { path: '/v1/admin/reports/ask/save' },
+  'yunying/report_resume/index': { path: '/v1/admin/reports/resume', transformReq: pageQuery },
+  'yunying/report_resume/saveresult': { path: '/v1/admin/reports/resume/saveresult' },
+  'yunying/report_resume/saveresultall': { path: '/v1/admin/reports/resume/saveresult-all' },
+  'yunying/report_resume/del': { path: '/v1/admin/reports/delete' },
   'tool/messagelog/index_base_data': phpPage('messagelog_base'),
   'tool/dataCall/index_base_data': phpPage('dataCall_base'),
   'user/users_member/getSearchData': phpPage('member_search'),
@@ -1122,10 +1142,10 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'yunying/special_special': { list: '/v1/admin/specials' },
   'yunying/ad': { list: '/v1/admin/php-content/ads/index' },
   'yunying/report': { list: '/v1/admin/reports', status: '/v1/admin/reports/status' },
-  'yunying/report_job': { list: '/v1/admin/reports', status: '/v1/admin/reports/status', del: '/v1/admin/reports/status' },
-  'yunying/report_resume': { list: '/v1/admin/reports', status: '/v1/admin/reports/status' },
-  'yunying/report_ask': { list: '/v1/admin/reports', status: '/v1/admin/reports/status' },
-  'yunying/report_advise': { list: '/v1/admin/reports', status: '/v1/admin/reports/status' },
+  // The four report queues resolve through PHP_ADMIN_MAP above — they need
+  // per-queue list routes and PHP-named actions, which this verb table can't
+  // express. (The old `del: '/reports/status'` here was also pointing a delete
+  // at a status endpoint.)
   'yunying/shop_reward': { list: '/v1/admin/rewards/list', del: '/v1/admin/rewards/delete', status: '/v1/admin/rewards/status', save: '/v1/admin/rewards' },
   'yunying/shop_class': { list: '/v1/admin/redeem-classes/list', del: '/v1/admin/redeem-classes/delete', save: '/v1/admin/redeem-classes' },
   'yunying/shop_list': { list: '/v1/admin/redeem-orders', status: '/v1/admin/redeem-orders/approve' },

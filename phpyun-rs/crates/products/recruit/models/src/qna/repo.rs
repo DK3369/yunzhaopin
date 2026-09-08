@@ -974,6 +974,60 @@ pub async fn admin_delete_questions(pool: &MySqlPool, ids: &[u64]) -> Result<u64
     soft_delete::mark_ids(pool, "phpyun_question", ids).await
 }
 
+/// The columns PHP `ask.model::upAskInfo` writes.
+pub struct AdminQuestionUpdate<'a> {
+    pub title: &'a str,
+    pub cid: i32,
+    pub visit: u32,
+    pub is_recom: i32,
+    pub content: &'a str,
+}
+
+/// PHP `ask.model::upAskInfo`. PHP also stamps `ip` with the admin's address;
+/// we leave the asker's original `ip` alone, since overwriting it would lose
+/// where the question actually came from.
+pub async fn admin_update_question(
+    pool: &MySqlPool,
+    id: u64,
+    u: &AdminQuestionUpdate<'_>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_question \
+         SET title = ?, cid = ?, visit = ?, is_recom = ?, content = ? \
+         WHERE id = ?",
+    )
+    .bind(u.title)
+    .bind(u.cid)
+    .bind(u.visit)
+    .bind(u.is_recom)
+    .bind(u.content)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// Clear the answers hanging off deleted questions, the way PHP's
+/// `ask.model::delquestion` does. `phpyun_answer` and `phpyun_answer_review`
+/// have no soft-delete column, so these are real deletes even though the
+/// question itself is only marked.
+pub async fn admin_delete_answers_of(pool: &MySqlPool, qids: &[u64]) -> Result<u64, sqlx::Error> {
+    if qids.is_empty() {
+        return Ok(0);
+    }
+    let mut affected = 0;
+    for table in ["phpyun_answer_review", "phpyun_answer"] {
+        let mut qb = QueryBuilder::new(format!("DELETE FROM {table} WHERE qid IN ("));
+        let mut sep = qb.separated(",");
+        for id in qids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+        affected += qb.build().execute(pool).await?.rows_affected();
+    }
+    Ok(affected)
+}
+
 pub async fn list_answers_admin(
     pool: &MySqlPool,
     qid: Option<u64>,
