@@ -616,6 +616,66 @@ biz_pair!(list_part_apply, count_part_apply, PART_APPLY_INNER);
 biz_pair!(list_fav_job, count_fav_job, FAV_JOB_INNER);
 biz_pair!(list_job_tellog, count_job_tellog, JOB_TELLOG_INNER);
 
+/// Admin-side removal for the biz-log queues above.
+///
+/// PHP keeps two branches per log: the member/employer one flips `isdel` /
+/// `status` / `com_status` so the row stays visible to the other party, and the
+/// admin one calls `delete_all`, which is a real `DELETE`. These queues are only
+/// reachable from the console, so only the admin branch is ported.
+///
+/// `phpyun_user_entrust_record` is absent from this schema (and from the
+/// official installer dump), so the trust queue degrades to 0 rows instead of
+/// erroring — same outcome as PHP, whose `delete_all` just returns false there.
+macro_rules! biz_del {
+    ($fn:ident, $table:literal) => {
+        pub async fn $fn(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+            phpyun_core::db::ok_default_if_object_missing(
+                delete_in(
+                    pool,
+                    concat!("DELETE FROM ", $table, " WHERE id IN ("),
+                    ids,
+                )
+                .await,
+            )
+        }
+    };
+}
+
+biz_del!(delete_down, "phpyun_down_resume");
+biz_del!(delete_freedown, "phpyun_freedown_resume");
+biz_del!(delete_look_resume, "phpyun_look_resume");
+biz_del!(delete_talent, "phpyun_talent_pool");
+biz_del!(delete_trust, "phpyun_user_entrust_record");
+biz_del!(delete_refresh_resume, "phpyun_resume_refresh_log");
+biz_del!(delete_userid_msg, "phpyun_userid_msg");
+biz_del!(delete_look_job, "phpyun_look_job");
+biz_del!(delete_job_tellog, "phpyun_job_tellog");
+biz_del!(delete_fav_job, "phpyun_fav_job");
+
+/// How many of `ids` each member owns, so `member_statis.fav_jobnum` can be
+/// corrected after the rows go away.
+///
+/// PHP means to do this but groups by `zid`, a column `phpyun_fav_job` does not
+/// have, so its query errors out and the counter is never touched. Grouping by
+/// `uid` is the intended behaviour.
+pub async fn fav_job_owner_counts(
+    pool: &MySqlPool,
+    ids: &[u64],
+) -> Result<Vec<(u64, i64)>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(COALESCE(uid,0) AS UNSIGNED), COUNT(*) FROM phpyun_fav_job WHERE id IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(") GROUP BY uid");
+    qb.build_query_as::<(u64, i64)>().fetch_all(pool).await
+}
+
 const SVC_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, \
     CAST(COALESCE(display,1) AS SIGNED) AS display, CAST(COALESCE(sort,0) AS SIGNED) AS sort";
 

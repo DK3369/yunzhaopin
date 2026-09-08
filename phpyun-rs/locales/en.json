@@ -310,7 +310,10 @@
     "wap_00203": "Parameter error, please try again!",
     "wap_js_00141": "Actions failed",
     "admin_01422": "Update failed",
-    "common_01266": "Operation failed. Please try again"
+    "common_01266": "Operation failed. Please try again",
+    "common_00921": "Select the data to delete!",
+    "common_00818": "Select valid data to restore.",
+    "admin_tool_00019": "Error clearing recycle bin!"
   },
   "validation": {
     "username": {
@@ -407,7 +410,24 @@
     "admin_model_00009": "Q&A (ID:%{ids}) deleted successfully",
     "common_01477": "Reason has been deleted",
     "common_01552": "Question has been deleted",
-    "wap_com_00350": "Reports"
+    "wap_com_00350": "Reports",
+    "model_00112": ") deleted successfully",
+    "model_00130": ")",
+    "model_00123": "Interview invitation record (ID:",
+    "model_00124": "Job view record (ID:",
+    "model_00146": "Resume favorite record (ID:",
+    "model_00179": "Part-time application record (ID:",
+    "model_00213": "Download record (ID:",
+    "model_00214": "Free resume download record (ID:",
+    "model_00224": "Resume push (ID:",
+    "model_00226": "Recycle bin data (ID:",
+    "model_00227": "Resume view record (ID:",
+    "common_06531": "Resume Refreshes Logs",
+    "admin_user_company_00009": "Call Records",
+    "common_06572": "Restore Data successful!",
+    "admin_01458": "Recycle Bin Clear Already!",
+    "admin_user_00047": "Operation Platform",
+    "member_user_00163": "Mobile"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

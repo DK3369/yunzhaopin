@@ -1,4 +1,6 @@
 //! PHP `serialize()` for string lists (`fromscore` / `option` / `score`).
+//!
+//! Reading is delegated to [`crate::php_ser`], which the recycle bin shares.
 
 pub fn serialize_strings(items: &[String]) -> String {
     let mut out = format!("a:{}:{{", items.len());
@@ -28,7 +30,7 @@ pub fn unserialize_strings(raw: &str) -> Vec<String> {
                 .collect();
         }
     }
-    parse_php_array(s)
+    crate::php_ser::unserialize_values(s)
 }
 
 pub fn json_to_strings(v: &serde_json::Value) -> Vec<String> {
@@ -43,98 +45,5 @@ pub fn json_to_strings(v: &serde_json::Value) -> Vec<String> {
             })
             .collect(),
         other => unserialize_strings(&other.to_string()),
-    }
-}
-
-fn parse_php_array(s: &str) -> Vec<String> {
-    let b = s.as_bytes();
-    let mut i = 0;
-    if b.len() >= 2 && b[0] == b'a' && b[1] == b':' {
-        while i < b.len() && b[i] != b'{' {
-            i += 1;
-        }
-        if i < b.len() {
-            i += 1;
-        }
-    }
-    let mut out = Vec::new();
-    while i < b.len() {
-        if b[i] == b'}' {
-            break;
-        }
-        if parse_php_value(b, &mut i).is_none() {
-            break;
-        }
-        match parse_php_value(b, &mut i) {
-            Some(v) => out.push(v),
-            None => break,
-        }
-    }
-    out
-}
-
-fn parse_php_value(b: &[u8], i: &mut usize) -> Option<String> {
-    if *i >= b.len() {
-        return None;
-    }
-    match b[*i] {
-        b's' => {
-            *i += 1;
-            if *i >= b.len() || b[*i] != b':' {
-                return None;
-            }
-            *i += 1;
-            let mut n = 0usize;
-            while *i < b.len() && b[*i].is_ascii_digit() {
-                n = n * 10 + (b[*i] - b'0') as usize;
-                *i += 1;
-            }
-            if *i < b.len() && b[*i] == b':' {
-                *i += 1;
-            }
-            if *i < b.len() && b[*i] == b'"' {
-                *i += 1;
-            }
-            let end = (*i + n).min(b.len());
-            let s = std::str::from_utf8(&b[*i..end]).ok()?.to_string();
-            *i = end;
-            if *i < b.len() && b[*i] == b'"' {
-                *i += 1;
-            }
-            if *i < b.len() && b[*i] == b';' {
-                *i += 1;
-            }
-            Some(s)
-        }
-        b'i' => {
-            *i += 1;
-            if *i >= b.len() || b[*i] != b':' {
-                return None;
-            }
-            *i += 1;
-            let start = *i;
-            if *i < b.len() && b[*i] == b'-' {
-                *i += 1;
-            }
-            while *i < b.len() && b[*i].is_ascii_digit() {
-                *i += 1;
-            }
-            let s = std::str::from_utf8(&b[start..*i]).ok()?.to_string();
-            if *i < b.len() && b[*i] == b';' {
-                *i += 1;
-            }
-            Some(s)
-        }
-        b'N' => {
-            *i += 1;
-            if *i < b.len() && b[*i] == b';' {
-                *i += 1;
-            }
-            Some(String::new())
-        }
-        _ => {
-            *i += 1;
-            None
-        }
     }
 }

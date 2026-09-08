@@ -52,6 +52,7 @@ pub mod admin_longtail_service;
 pub mod admin_ops_gap_service;
 pub mod admin_php_page_service;
 pub mod admin_php_content_service;
+pub mod admin_recycle_service;
 pub mod admin_report_service;
 pub mod admin_system_gap_service;
 pub mod admin_service;

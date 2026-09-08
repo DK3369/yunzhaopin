@@ -62,6 +62,7 @@ pub mod moblie_msg;
 pub mod nav_menu;
 pub mod once_job;
 pub mod part;
+pub mod php_ser;
 pub mod poster_template;
 pub mod qna;
 pub mod rating;

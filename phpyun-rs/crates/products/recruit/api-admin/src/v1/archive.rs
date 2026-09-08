@@ -1,9 +1,13 @@
 //! PHP user/company archive long-tail.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::{OriginalUri, State},
+    routing::post,
+    Router,
+};
 use phpyun_core::dto::{CreatedId, IdBody, IdsBody};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
+    ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::admin_gap::entity::*;
 use phpyun_models::admin_gap::extra::RatingDetailIn;
@@ -37,6 +41,12 @@ pub fn routes() -> Router<AppState> {
         .route("/user-logs/talent-pool", post(list_talent_logs))
         .route("/user-logs/trust", post(list_trust_logs))
         .route("/user-logs/refresh", post(list_refresh_resume_logs))
+        .route("/user-logs/down/delete", post(delete_down_logs))
+        .route("/user-logs/freedown/delete", post(delete_freedown_logs))
+        .route("/user-logs/look-resume/delete", post(delete_look_resume_logs))
+        .route("/user-logs/talent-pool/delete", post(delete_talent_logs))
+        .route("/user-logs/trust/delete", post(delete_trust_logs))
+        .route("/user-logs/refresh/delete", post(delete_refresh_resume_logs))
         .route("/company-photos", post(list_company_photos))
         .route("/company-photos/status", post(set_logo_status))
         .route("/company-photos/statist", post(company_photo_statist))
@@ -66,6 +76,15 @@ pub fn routes() -> Router<AppState> {
         .route("/company-logs/part-apply", post(list_part_apply_logs))
         .route("/company-logs/fav-job", post(list_fav_job_logs))
         .route("/company-logs/job-tellog", post(list_job_tellog_logs))
+        .route("/company-logs/userid-msg/delete", post(delete_userid_msg_logs))
+        .route("/company-logs/look-job/delete", post(delete_look_job_logs))
+        .route("/company-logs/part-apply/delete", post(delete_part_apply_logs))
+        .route("/company-logs/fav-job/delete", post(delete_fav_job_logs))
+        .route("/company-logs/job-tellog/delete", post(delete_job_tellog_logs))
+        .route(
+            "/company-logs/job-tellog/search-list",
+            post(job_tellog_search_list),
+        )
         .route("/company-statis", post(list_statis))
         .route("/company-statis/save", post(save_statis))
         .route("/job-refresh-logs", post(list_refresh))
@@ -918,6 +937,49 @@ biz_handler!(list_look_job_logs, "/v1/admin/company-logs/look-job", admin_archiv
 biz_handler!(list_part_apply_logs, "/v1/admin/company-logs/part-apply", admin_archive_service::list_part_apply_logs);
 biz_handler!(list_fav_job_logs, "/v1/admin/company-logs/fav-job", admin_archive_service::list_fav_job_logs);
 biz_handler!(list_job_tellog_logs, "/v1/admin/company-logs/job-tellog", admin_archive_service::list_job_tellog_logs);
+
+/// The grids post `{id}` for one row and `{del: [...]}` for a selection; the
+/// web adapter normalises both onto `ids`. The request path is forwarded
+/// because PHP stamps the recycle-bin snapshot with the page that caused the
+/// delete — `OriginalUri`, since `Uri` inside a nested router has lost the
+/// `/v1/admin` prefix.
+macro_rules! biz_delete_handler {
+    ($fn:ident, $path:expr, $svc:path) => {
+        #[utoipa::path(post, path = $path, tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+        pub async fn $fn(
+            State(state): State<AppState>,
+            user: AuthenticatedUser,
+            OriginalUri(uri): OriginalUri,
+            ValidatedJson(f): ValidatedJson<IdsBody>,
+        ) -> AppResult<ApiMessage> {
+            user.require_admin()?;
+            let msg = $svc(&state, &user, &f.ids, uri.path()).await?;
+            Ok(ApiMessage::new("admin_user_00187", msg))
+        }
+    };
+}
+
+biz_delete_handler!(delete_down_logs, "/v1/admin/user-logs/down/delete", admin_archive_service::delete_down_logs);
+biz_delete_handler!(delete_freedown_logs, "/v1/admin/user-logs/freedown/delete", admin_archive_service::delete_freedown_logs);
+biz_delete_handler!(delete_look_resume_logs, "/v1/admin/user-logs/look-resume/delete", admin_archive_service::delete_look_resume_logs);
+biz_delete_handler!(delete_talent_logs, "/v1/admin/user-logs/talent-pool/delete", admin_archive_service::delete_talent_logs);
+biz_delete_handler!(delete_trust_logs, "/v1/admin/user-logs/trust/delete", admin_archive_service::delete_trust_logs);
+biz_delete_handler!(delete_refresh_resume_logs, "/v1/admin/user-logs/refresh/delete", admin_archive_service::delete_refresh_resume_logs);
+biz_delete_handler!(delete_userid_msg_logs, "/v1/admin/company-logs/userid-msg/delete", admin_archive_service::delete_userid_msg_logs);
+biz_delete_handler!(delete_look_job_logs, "/v1/admin/company-logs/look-job/delete", admin_archive_service::delete_look_job_logs);
+biz_delete_handler!(delete_part_apply_logs, "/v1/admin/company-logs/part-apply/delete", admin_archive_service::delete_part_apply_logs);
+biz_delete_handler!(delete_fav_job_logs, "/v1/admin/company-logs/fav-job/delete", admin_archive_service::delete_fav_job_logs);
+biz_delete_handler!(delete_job_tellog_logs, "/v1/admin/company-logs/job-tellog/delete", admin_archive_service::delete_job_tellog_logs);
+
+/// PHP `company_comlog::jobtellog_search_list_action` — the one dropdown on the
+/// 拨号记录 grid. Static, so it needs neither the database nor a page.
+#[utoipa::path(post, path = "/v1/admin/company-logs/job-tellog/search-list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn job_tellog_search_list(user: AuthenticatedUser) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::job_tellog_search_list(),
+    ))
+}
 
 #[utoipa::path(post, path = "/v1/admin/rating-packages/base-data", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn rating_base_data(

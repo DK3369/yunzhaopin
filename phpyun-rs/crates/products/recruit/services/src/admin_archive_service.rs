@@ -3,9 +3,11 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::utils::fmt_date;
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use md5::{Digest, Md5};
 use phpyun_models::admin_gap::entity::*;
 use phpyun_models::admin_gap::extra as gap2;
 use phpyun_models::admin_gap::repo as gap;
+use phpyun_models::recycle_bin::php_repo as recycle;
 
 async fn audit_write(state: &AppState, actor: &AuthenticatedUser, action: &'static str, target: String) {
     let _ = audit::emit(
@@ -647,6 +649,195 @@ biz_list!(list_look_job_logs, gap2::list_look_job, gap2::count_look_job);
 biz_list!(list_part_apply_logs, gap2::list_part_apply, gap2::count_part_apply);
 biz_list!(list_fav_job_logs, gap2::list_fav_job, gap2::count_fav_job);
 biz_list!(list_job_tellog_logs, gap2::list_job_tellog, gap2::count_job_tellog);
+
+// ---------- 行为记录删除（PHP users_userlog / company_comlog） ----------
+//
+// PHP words these out of fragment keys — a `…(ID:` prefix, the ids, then a
+// `)删除成功` / `)删除失败` tail, or a plain label plus `admin_user_00187`. The
+// parenthesised run never reaches the browser: `render_json` strips it (and
+// `httpPost.ts` repeats that strip), so the ids survive only in the admin log.
+// The fragments are kept as PHP has them so both packs stay comparable.
+//
+// Every grid here posts a single `id`/`del` or an array of them and reads only
+// `error`, printing its own success text, so the message matters for the log
+// rather than the toast.
+
+fn tr(key: &str) -> String {
+    phpyun_core::i18n::t(
+        &format!("messages.{key}"),
+        phpyun_core::i18n::current_lang(),
+    )
+}
+
+/// `prefix` + the id list + every `suffix` key, glued the way PHP glues them.
+/// Queues whose label has no `(ID:` pass `ids = None`.
+fn php_msg(prefix: &str, ids: Option<&[u64]>, suffixes: &[&str]) -> String {
+    let mut out = tr(prefix);
+    if let Some(ids) = ids {
+        out.push_str(
+            &ids.iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(","),
+        );
+    }
+    for key in suffixes {
+        out.push_str(&tr(key));
+    }
+    out
+}
+
+/// PHP returns 0 rows and the empty-selection wording; the grids can only send
+/// ids they rendered, so this is the guard rather than a real branch.
+fn clean_ids(ids: &[u64]) -> AppResult<Vec<u64>> {
+    let out: Vec<u64> = ids.iter().copied().filter(|v| *v > 0).collect();
+    if out.is_empty() {
+        return Err(ApiError::param_invalid("common_00921"));
+    }
+    Ok(out)
+}
+
+/// Copy the doomed rows into the recycle bin, the way PHP's `delete_all` does
+/// before every `DELETE` it runs.
+///
+/// PHP ignores the outcome — a table it cannot snapshot still gets deleted — so
+/// a failure here is logged and the delete proceeds. `ident` groups one
+/// operation so the bin's 恢复本次操作 button can put the whole batch back;
+/// PHP derives it from `md5(table . where)` and shares it across every table
+/// touched by one request, which for these single-table queues is the same set.
+async fn snapshot(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    table: &str,
+    ids: &[u64],
+    uri: &str,
+) {
+    let pool = state.db.pool();
+    let username = recycle::admin_username(pool, actor.uid)
+        .await
+        .unwrap_or_default();
+    let ident = {
+        let joined = ids.iter().map(u64::to_string).collect::<Vec<_>>().join(",");
+        format!("{:x}", Md5::digest(format!("{table}{joined}").as_bytes()))
+    };
+    if let Err(e) = recycle::archive(pool, table, ids, actor.uid, &username, &ident, uri).await {
+        tracing::warn!(table, error = %e, "recycle snapshot skipped");
+    }
+}
+
+/// Hard-delete one log queue by id and report it in PHP's wording.
+///
+/// A delete that matched nothing comes back as a failure carrying the shared
+/// `删除失败！` rather than PHP's `<label>(ID:…)删除失败`, because the error
+/// envelope holds a key instead of free text.
+macro_rules! log_delete {
+    ($fn:ident, $del:path, $table:literal, $action:literal, |$ids:ident| $msg:expr) => {
+        pub async fn $fn(
+            state: &AppState,
+            actor: &AuthenticatedUser,
+            ids: &[u64],
+            uri: &str,
+        ) -> AppResult<String> {
+            let $ids = clean_ids(ids)?;
+            snapshot(state, actor, $table, &$ids, uri).await;
+            if $del(state.db.pool(), &$ids).await? == 0 {
+                return Err(ApiError::param_invalid("admin_user_00186"));
+            }
+            let msg = $msg;
+            audit_write(state, actor, $action, msg.clone()).await;
+            Ok(msg)
+        }
+    };
+}
+
+// 会员-个人-行为记录
+log_delete!(delete_down_logs, gap2::delete_down, "down_resume", "admin.userlog.down.delete",
+    |ids| php_msg("model_00213", Some(&ids), &["model_00112"]));
+log_delete!(delete_freedown_logs, gap2::delete_freedown, "freedown_resume", "admin.userlog.freedown.delete",
+    |ids| php_msg("model_00214", Some(&ids), &["model_00112"]));
+log_delete!(delete_look_resume_logs, gap2::delete_look_resume, "look_resume", "admin.userlog.lookresume.delete",
+    |ids| php_msg("model_00227", Some(&ids), &["model_00112"]));
+log_delete!(delete_talent_logs, gap2::delete_talent, "talent_pool", "admin.userlog.talentpool.delete",
+    |ids| php_msg("model_00146", Some(&ids), &["model_00130", "admin_user_00187"]));
+log_delete!(delete_refresh_resume_logs, gap2::delete_refresh_resume, "resume_refresh_log", "admin.userlog.refresh.delete",
+    |ids| php_msg("common_06531", None, &["admin_user_00187"]));
+
+// PHP `deltrust` targets `user_entrust_record`, a table neither this schema nor
+// the installer dump defines, so `delete_all` finds nothing to remove and the
+// caller always lands on the failure branch. Same outcome here; the queue's list
+// endpoint degrades the same way. Worth noting that PHP words both branches of
+// `userEntrust::delRecord` with `)删除成功` — only `errcode` tells them apart.
+log_delete!(delete_trust_logs, gap2::delete_trust, "user_entrust_record", "admin.userlog.trust.delete",
+    |ids| php_msg("model_00224", Some(&ids), &["model_00112"]));
+
+// 会员-企业-行为记录
+log_delete!(delete_userid_msg_logs, gap2::delete_userid_msg, "userid_msg", "admin.comlog.useridmsg.delete",
+    |ids| php_msg("model_00123", Some(&ids), &["model_00130", "admin_user_00187"]));
+log_delete!(delete_look_job_logs, gap2::delete_look_job, "look_job", "admin.comlog.lookjob.delete",
+    |ids| php_msg("model_00124", Some(&ids), &["model_00130", "admin_user_00187"]));
+log_delete!(delete_job_tellog_logs, gap2::delete_job_tellog, "job_tellog", "admin.comlog.jobtellog.delete",
+    |ids| php_msg("admin_user_company_00009", None, &["admin_user_00187"]));
+
+/// PHP `delpartapply` → `part::delPartApply`, whose admin branch is a plain
+/// delete by id; the repo already has that query for the member paths.
+pub async fn delete_part_apply_logs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+    uri: &str,
+) -> AppResult<String> {
+    let ids = clean_ids(ids)?;
+    snapshot(state, actor, "part_apply", &ids, uri).await;
+    let affected =
+        phpyun_models::part::repo::delete_applies(state.db.pool(), &ids, None, None).await?;
+    if affected == 0 {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    let msg = php_msg("model_00179", Some(&ids), &["model_00130", "admin_user_00187"]);
+    audit_write(state, actor, "admin.comlog.partapply.delete", msg.clone()).await;
+    Ok(msg)
+}
+
+/// PHP `delfavjob` → `job::delFavJob`, which also means to walk the rows it is
+/// about to delete and take them off each member's `fav_jobnum`.
+///
+/// Its lookup groups by `zid`, a column `phpyun_fav_job` has never had, so the
+/// query errors and the counter is left stale. Grouping by `uid` — the intent —
+/// is what happens here, and the counts are read before the rows go away.
+pub async fn delete_fav_job_logs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+    uri: &str,
+) -> AppResult<String> {
+    let ids = clean_ids(ids)?;
+    let pool = state.db.pool();
+    let owners = gap2::fav_job_owner_counts(pool, &ids).await?;
+    snapshot(state, actor, "fav_job", &ids, uri).await;
+    if gap2::delete_fav_job(pool, &ids).await? == 0 {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    for (uid, num) in owners {
+        let delta = i32::try_from(num).unwrap_or(i32::MAX);
+        // Denormalised counter: a stale total must not fail the delete.
+        let _ = phpyun_models::member_statis::repo::bump_fav_jobnum(pool, uid, -delta).await;
+    }
+    audit_write(state, actor, "admin.comlog.favjob.delete", format!("{ids:?}")).await;
+    Ok(tr("admin_user_00187"))
+}
+
+/// PHP `jobtellog_search_list_action`: the 拨号记录 grid's only dropdown.
+///
+/// PHP keeps `$arr_data['source']` entries whose key is in `2,3,13,19,22`, and
+/// the dictionary only defines `2`, so the filter really does offer one option.
+/// Kept as-is; widening it would filter on values no row can hold.
+pub fn job_tellog_search_list() -> serde_json::Value {
+    serde_json::json!([{
+        "param": "source",
+        "name": "admin_user_00047",
+        "value": { "2": "member_user_00163" },
+    }])
+}
 
 pub async fn rating_base_data(state: &AppState) -> AppResult<serde_json::Value> {
     let name = phpyun_models::site_setting::repo::find(state.db.reader(), "integral_pricename")

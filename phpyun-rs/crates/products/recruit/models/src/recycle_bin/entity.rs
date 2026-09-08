@@ -13,3 +13,18 @@ pub struct RecycleEntry {
     pub note: String,
     pub created_at: i64,
 }
+
+/// `phpyun_recycle` with its own column names, for the console's recycle-bin
+/// page. PHP writes these rows from `insert_recycle`, so `body` is a
+/// `serialize()`d table row and `ident` is the md5 that groups one operation.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct PhpRecycleRow {
+    pub id: u64,
+    pub uid: u64,
+    pub username: String,
+    pub tablename: String,
+    pub body: String,
+    pub ctime: i64,
+    pub ident: String,
+    pub uri: String,
+}
