@@ -738,6 +738,7 @@ pub struct AdminMemberExtras {
     pub wxid: String,
     pub wxopenid: String,
     pub login_date: i64,
+    pub login_address: String,
 }
 
 pub async fn find_admin_extras(
@@ -750,7 +751,8 @@ pub async fn find_admin_extras(
          CAST(COALESCE(reg_date,0) AS SIGNED) AS reg_date, \
          CAST(COALESCE(source,0) AS SIGNED) AS source, \
          COALESCE(wxid,'') AS wxid, COALESCE(wxopenid,'') AS wxopenid, \
-         CAST(COALESCE(login_date,0) AS SIGNED) AS login_date \
+         CAST(COALESCE(login_date,0) AS SIGNED) AS login_date, \
+         COALESCE(login_address,'') AS login_address \
          FROM phpyun_member WHERE uid = ? LIMIT 1",
     )
     .bind(uid)

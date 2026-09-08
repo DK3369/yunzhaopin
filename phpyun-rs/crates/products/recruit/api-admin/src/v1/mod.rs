@@ -17,6 +17,7 @@ pub mod cron;
 pub mod dashboard;
 pub mod descriptions;
 pub mod dict_i18n;
+pub mod entrusts;
 pub mod evaluate;
 pub mod feedback;
 pub mod finance;
@@ -75,6 +76,7 @@ pub fn router() -> Router<AppState> {
         .merge(regions::routes())
         .merge(countries::routes())
         .merge(descriptions::routes())
+        .merge(entrusts::routes())
         .merge(merge::routes())
         .merge(account_logout::routes())
         .merge(usertype_change::routes())

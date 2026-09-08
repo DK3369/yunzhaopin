@@ -487,6 +487,56 @@ pub async fn gallery_statusbody(state: &AppState, kind: &str, id: u64) -> AppRes
     Ok(gap2::gallery_statusbody(state.db.reader(), kind, id).await?)
 }
 
+pub async fn banner_statusbody(state: &AppState, id: u64) -> AppResult<String> {
+    Ok(gap2::banner_statusbody(state.db.reader(), id).await?)
+}
+
+pub async fn content_statusbody(state: &AppState, kind: &str, id: u64) -> AppResult<String> {
+    Ok(gap::content_statusbody(state.db.reader(), kind, id).await?)
+}
+
+pub async fn gallery_stat(state: &AppState, kind: &str) -> AppResult<PhotoStat> {
+    let db = state.db.reader();
+    Ok(PhotoStat {
+        num_all: gap::count_gallery(db, kind, None).await?,
+        num_audited: gap::count_gallery(db, kind, Some(0)).await?,
+        num_unaudited: gap::count_gallery(db, kind, Some(1)).await?,
+        num_failed: None,
+    })
+}
+
+pub async fn banner_stat(state: &AppState) -> AppResult<PhotoStat> {
+    let db = state.db.reader();
+    Ok(PhotoStat {
+        num_all: gap2::count_banners(db, None, None).await?,
+        num_audited: gap2::count_banners(db, Some(0), None).await?,
+        num_unaudited: gap2::count_banners(db, Some(1), None).await?,
+        num_failed: None,
+    })
+}
+
+pub async fn company_content_stat(state: &AppState, kind: &str) -> AppResult<PhotoStat> {
+    let db = state.db.reader();
+    Ok(PhotoStat {
+        num_all: gap::count_company_content(db, kind, None).await?,
+        num_audited: gap::count_company_content(db, kind, Some(1)).await?,
+        num_unaudited: gap::count_company_content(db, kind, Some(3)).await?,
+        num_failed: Some(gap::count_company_content(db, kind, Some(2)).await?),
+    })
+}
+
+pub async fn com_cert_stat(state: &AppState) -> AppResult<ComCertStat> {
+    Ok(gap2::com_cert_stat(state.db.reader()).await?)
+}
+
+pub async fn com_cert_statusbody(state: &AppState, uid: u64) -> AppResult<String> {
+    Ok(gap2::com_cert_statusbody(state.db.reader(), uid).await?)
+}
+
+pub async fn part_stat(state: &AppState) -> AppResult<PartStat> {
+    Ok(gap2::part_stat(state.db.reader()).await?)
+}
+
 pub async fn save_user_photo(
     state: &AppState,
     actor: &AuthenticatedUser,

@@ -56,18 +56,26 @@ pub fn routes() -> Router<AppState> {
         .route("/company-shows", post(list_company_shows))
         .route("/company-shows/status", post(set_company_shows))
         .route("/company-shows/status-body", post(company_show_status_body))
+        .route("/company-shows/statist", post(company_show_statist))
         .route("/resume-shows", post(list_resume_shows))
         .route("/resume-shows/status", post(set_resume_shows))
         .route("/resume-shows/status-body", post(resume_show_status_body))
+        .route("/resume-shows/statist", post(resume_show_statist))
         .route("/resume-shows/save", post(save_resume_show))
         .route("/resume-shows/delete", post(delete_resume_shows))
         .route("/company-banners", post(list_banners))
         .route("/company-banners/status", post(set_banner_status))
+        .route("/company-banners/statist", post(banner_statist))
+        .route("/company-banners/status-body", post(banner_status_body))
         .route("/company-banners/save", post(save_banner))
         .route("/company-products", post(list_products))
         .route("/company-products/status", post(set_products))
+        .route("/company-products/statist", post(product_statist))
+        .route("/company-products/status-body", post(product_status_body))
         .route("/company-news", post(list_news))
         .route("/company-news/status", post(set_news))
+        .route("/company-news/statist", post(news_statist))
+        .route("/company-news/status-body", post(news_status_body))
         .route("/company-interviews", post(list_interviews))
         .route("/company-logs", post(list_company_logs))
         .route("/company-logs/userid-job", post(list_userid_job_logs))
@@ -100,6 +108,9 @@ pub fn routes() -> Router<AppState> {
         .route("/rating-services/delete", post(delete_rating_services))
         .route("/rating-services/details", post(list_rating_details))
         .route("/rating-services/details/save", post(save_rating_detail))
+        .route("/company-certs/statist", post(com_cert_statist))
+        .route("/company-certs/status-body", post(com_cert_status_body))
+        .route("/parts/statist", post(part_statist))
 }
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
@@ -778,6 +789,131 @@ pub async fn resume_show_status_body(
     user.require_admin()?;
     Ok(ApiResponse::data(
         admin_archive_service::gallery_statusbody(&state, "resume", pick_uid(f.uid, f.id)).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-shows/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn company_show_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PhotoStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::gallery_stat(&state, "company").await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/resume-shows/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn resume_show_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PhotoStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::gallery_stat(&state, "resume").await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-banners/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn banner_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PhotoStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::banner_stat(&state).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-banners/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, responses((status = 200, description = "ok")))]
+pub async fn banner_status_body(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<UidOrIdForm>,
+) -> AppResult<ApiResponse<String>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::banner_statusbody(&state, pick_uid(f.uid, f.id)).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-news/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn news_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PhotoStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::company_content_stat(&state, "news").await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-news/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, responses((status = 200, description = "ok")))]
+pub async fn news_status_body(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<UidOrIdForm>,
+) -> AppResult<ApiResponse<String>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::content_statusbody(&state, "news", pick_uid(f.uid, f.id)).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-products/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn product_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PhotoStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::company_content_stat(&state, "product").await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-products/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, responses((status = 200, description = "ok")))]
+pub async fn product_status_body(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<UidOrIdForm>,
+) -> AppResult<ApiResponse<String>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::content_statusbody(&state, "product", pick_uid(f.uid, f.id)).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-certs/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn com_cert_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<ComCertStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::com_cert_stat(&state).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-certs/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, responses((status = 200, description = "ok")))]
+pub async fn com_cert_status_body(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<UidOrIdForm>,
+) -> AppResult<ApiResponse<String>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::com_cert_statusbody(&state, pick_uid(f.uid, f.id)).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/parts/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn part_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PartStat>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::part_stat(&state).await?,
     ))
 }
 

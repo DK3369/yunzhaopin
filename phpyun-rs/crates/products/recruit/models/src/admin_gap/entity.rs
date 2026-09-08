@@ -382,6 +382,30 @@ pub struct PhotoStat {
     pub num_failed: Option<u64>,
 }
 
+/// PHP `company_cert::getCertStatist_action` / `msgNum::comCertNum`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComCertStat {
+    #[serde(rename = "comCertAll")]
+    pub com_cert_all: u64,
+    #[serde(rename = "comCert1")]
+    pub com_cert1: u64,
+    #[serde(rename = "comCert2")]
+    pub com_cert2: u64,
+}
+
+/// PHP `partjob::partNum_action` / `msgNum::partNum`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PartStat {
+    #[serde(rename = "partAllNum")]
+    pub part_all_num: u64,
+    #[serde(rename = "partStatusNum1")]
+    pub part_status_num1: u64,
+    #[serde(rename = "partStatusNum2")]
+    pub part_status_num2: u64,
+    #[serde(rename = "partStatusNum3")]
+    pub part_status_num3: u64,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct BannerAdminRow {
     pub id: u64,

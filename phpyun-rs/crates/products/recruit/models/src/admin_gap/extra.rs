@@ -155,6 +155,47 @@ pub async fn banner_statusbody(pool: &MySqlPool, id: u64) -> Result<String, sqlx
     .await
 }
 
+pub async fn com_cert_stat(pool: &MySqlPool) -> Result<ComCertStat, sqlx::Error> {
+    Ok(ComCertStat {
+        com_cert_all: count_sql(pool, "SELECT COUNT(*) FROM phpyun_company_cert WHERE type=3")
+            .await?,
+        com_cert1: count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_company_cert WHERE type=3 AND status=0",
+        )
+        .await?,
+        com_cert2: count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_company_cert WHERE type=3 AND status=2",
+        )
+        .await?,
+    })
+}
+
+pub async fn com_cert_statusbody(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    scalar_str(
+        pool,
+        "SELECT COALESCE(statusbody,'') FROM phpyun_company_cert WHERE type=3 AND uid=? LIMIT 1",
+        uid,
+    )
+    .await
+}
+
+pub async fn part_stat(pool: &MySqlPool) -> Result<PartStat, sqlx::Error> {
+    Ok(PartStat {
+        part_all_num: count_sql(pool, "SELECT COUNT(*) FROM phpyun_partjob").await?,
+        part_status_num1: count_sql(pool, "SELECT COUNT(*) FROM phpyun_partjob WHERE state=0")
+            .await?,
+        part_status_num2: count_sql(pool, "SELECT COUNT(*) FROM phpyun_partjob WHERE state=3")
+            .await?,
+        part_status_num3: count_sql(
+            pool,
+            "SELECT COUNT(*) FROM phpyun_partjob WHERE edate>0 AND edate<UNIX_TIMESTAMP()",
+        )
+        .await?,
+    })
+}
+
 pub async fn set_photo_review(
     pool: &MySqlPool,
     uid: u64,

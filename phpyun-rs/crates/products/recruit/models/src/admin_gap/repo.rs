@@ -611,6 +611,17 @@ pub async fn count_company_content(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub async fn content_statusbody(
+    pool: &MySqlPool,
+    kind: &str,
+    id: u64,
+) -> Result<String, sqlx::Error> {
+    let table = content_table(kind);
+    let sql = format!("SELECT COALESCE(statusbody,'') FROM {table} WHERE id=? LIMIT 1");
+    let v: Option<String> = sqlx::query_scalar(&sql).bind(id).fetch_optional(pool).await?;
+    Ok(v.unwrap_or_default().trim().to_string())
+}
+
 pub async fn set_company_content_status(
     pool: &MySqlPool,
     kind: &str,

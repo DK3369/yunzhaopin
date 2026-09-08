@@ -91,6 +91,7 @@ pub mod talent_pool;
 pub mod temporary_resume;
 pub mod tiny;
 pub mod user;
+pub mod user_entrust;
 pub mod user_session;
 pub mod usertype_change;
 pub mod view;

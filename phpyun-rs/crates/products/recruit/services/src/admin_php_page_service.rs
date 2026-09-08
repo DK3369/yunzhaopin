@@ -344,7 +344,9 @@ pub async fn php_page(
         "trust_search" => Ok(json!({
             "search_list": [
                 search_kv("status", "wap_com_00406", str_map(&[
-                    ("1", "wap_user_00165"), ("2", "wap_user_00166"),
+                    ("0", "wap_user_00166"),
+                    ("1", "wap_com_00191"),
+                    ("2", "admin_user_00234"),
                 ])),
                 search_kv("end", "member_user_00241", time_search()),
             ]

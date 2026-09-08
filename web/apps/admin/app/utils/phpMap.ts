@@ -207,6 +207,20 @@ function phpPage(kind: string): PhpAction {
   }
 }
 
+function certConfigShape(data: unknown): Record<string, unknown> {
+  const cfg = asRecord(asRecord(data).config)
+  const n = (k: string) => {
+    const v = Number(cfg[k])
+    return Number.isFinite(v) ? v : 0
+  }
+  return {
+    com_social_credit: n('com_social_credit'),
+    com_cert_owner: n('com_cert_owner'),
+    com_cert_wt: n('com_cert_wt'),
+    com_cert_other: n('com_cert_other'),
+  }
+}
+
 function phpContent(mod: string, act: string): PhpAction {
   return { path: `/v1/admin/php-content/${mod}/${act}`, transformReq: pageQuery }
 }
@@ -459,6 +473,22 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_member/getSearchData': phpPage('member_search'),
   'user/hotjob/getSearchData': phpPage('hotjob_search'),
   'user/users_trust/getSearchData': phpPage('trust_search'),
+  'user/users_trust': { path: '/v1/admin/user-entrusts', transformReq: pageQuery },
+  'user/users_trust/index': { path: '/v1/admin/user-entrusts', transformReq: pageQuery },
+  'user/users_trust/del': { path: '/v1/admin/user-entrusts/delete', transformReq: idsFromDel },
+  'user/users_trust/status': { path: '/v1/admin/user-entrusts/status' },
+  'user/users_trust/trustNum': { path: '/v1/admin/user-entrusts/statist', rawBody: true },
+  'user/partjob/partNum': { path: '/v1/admin/parts/statist' },
+  'user/company_cert/getCertStatist': { path: '/v1/admin/company-certs/statist' },
+  'user/company_cert/sbody': { path: '/v1/admin/company-certs/status-body' },
+  'user/company_cert/getConfigData': {
+    ...phpPage('comset_index'),
+    transformRes: certConfigShape,
+  },
+  'user/company_company/compreview': {
+    path: '/v1/admin/companies/php-getinfo',
+    transformReq: (b) => ({ comid: Number(b.uid || b.comid || 0) }),
+  },
 
   'user/users_resume': phpContent('user-gap', 'resume-index'),
   'user/users_resume/index': phpContent('user-gap', 'resume-index'),
@@ -712,13 +742,16 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_pic/show': { path: '/v1/admin/resume-shows', transformReq: pageQuery },
   'user/users_pic/showStatus': { path: '/v1/admin/resume-shows/status' },
   'user/users_pic/getShowStatusBody': { path: '/v1/admin/resume-shows/status-body' },
+  'user/users_pic/getShowStatist': { path: '/v1/admin/resume-shows/statist' },
   'user/users_pic/saveShow': { path: '/v1/admin/resume-shows/save' },
   'user/users_pic/delShow': { path: '/v1/admin/resume-shows/delete', transformReq: idsFromDel },
   'user/users_usercert': { path: '/v1/admin/user-certs', transformReq: pageQuery },
   'user/users_usercert/index': { path: '/v1/admin/user-certs', transformReq: pageQuery },
   'user/users_usercert/status': { path: '/v1/admin/user-certs/status' },
   'user/users_usercert/getStatist': { path: '/v1/admin/user-certs/statist' },
+  'user/users_usercert/getSfStatist': { path: '/v1/admin/user-certs/statist' },
   'user/users_usercert/getStatusBody': { path: '/v1/admin/user-certs/status-body' },
+  'user/users_usercert/sbody': { path: '/v1/admin/user-certs/status-body' },
   'user/users_msg/getStatist': { path: '/v1/admin/user-msgs/statist' },
   'user/users_msg': { path: '/v1/admin/user-msgs', transformReq: pageQuery },
   'user/users_msg/index': { path: '/v1/admin/user-msgs', transformReq: pageQuery },
@@ -741,6 +774,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_pic/index': { path: '/v1/admin/company-photos', transformReq: pageQuery },
   'user/company_pic/status': { path: '/v1/admin/company-photos/status' },
   'user/company_pic/getStatist': { path: '/v1/admin/company-photos/statist' },
+  'user/company_pic/getLogoStatist': { path: '/v1/admin/company-photos/statist' },
   'user/company_pic/getStatusBody': { path: '/v1/admin/company-photos/status-body' },
   'user/company_pic/savePhoto': {
     path: '/v1/admin/company-photos/save',
@@ -756,7 +790,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_pic/show': { path: '/v1/admin/company-shows', transformReq: pageQuery },
   'user/company_pic/showStatus': { path: '/v1/admin/company-shows/status' },
   'user/company_pic/getShowStatusBody': { path: '/v1/admin/company-shows/status-body' },
+  'user/company_pic/getHjStatist': { path: '/v1/admin/company-shows/statist' },
   'user/company_pic/banner': { path: '/v1/admin/company-banners', transformReq: pageQuery },
+  'user/company_pic/getBannerStatist': { path: '/v1/admin/company-banners/statist' },
+  'user/company_pic/getBannerStatusBody': { path: '/v1/admin/company-banners/status-body' },
   'user/company_pic/bannerStatus': {
     path: '/v1/admin/company-banners/status',
     transformReq: (b) => ({
@@ -779,9 +816,13 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_product': { path: '/v1/admin/company-products', transformReq: pageQuery },
   'user/company_product/index': { path: '/v1/admin/company-products', transformReq: pageQuery },
   'user/company_product/status': { path: '/v1/admin/company-products/status' },
+  'user/company_product/getProductStatist': { path: '/v1/admin/company-products/statist' },
+  'user/company_product/statusbody': { path: '/v1/admin/company-products/status-body' },
   'user/company_news': { path: '/v1/admin/company-news', transformReq: pageQuery },
   'user/company_news/index': { path: '/v1/admin/company-news', transformReq: pageQuery },
   'user/company_news/status': { path: '/v1/admin/company-news/status' },
+  'user/company_news/getNewsStatist': { path: '/v1/admin/company-news/statist' },
+  'user/company_news/statusbody': { path: '/v1/admin/company-news/status-body' },
   'user/company_interview': phpContent('interview', 'index'),
   'user/company_interview/index': phpContent('interview', 'index'),
   'user/company_interview/save': phpContent('interview', 'save'),
@@ -1195,7 +1236,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/company_pic': { list: '/v1/admin/company-photos', status: '/v1/admin/company-photos/status' },
   'user/users_pic': { list: '/v1/admin/user-photos', status: '/v1/admin/user-photos/status' },
   'user/users_msg': { list: '/v1/admin/user-msgs', del: '/v1/admin/user-msgs/delete' },
-  'user/users_trust': { list: '/v1/admin/resumes' },
+  'user/users_trust': { list: '/v1/admin/user-entrusts', del: '/v1/admin/user-entrusts/delete', status: '/v1/admin/user-entrusts/status' },
   'user/users_userset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'user/company_comset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'user/company_news': { list: '/v1/admin/company-news', status: '/v1/admin/company-news/status' },

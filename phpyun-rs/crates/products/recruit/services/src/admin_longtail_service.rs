@@ -946,6 +946,14 @@ pub async fn company_php_getinfo(
     } else {
         json!(c.linktel)
     };
+    let dicts = crate::dict_service::get(state).await?;
+    info["hy_n"] = json!(dicts.industry(c.hy).to_string());
+    info["pr_n"] = json!(dicts.comclass(c.pr).to_string());
+    info["mun_n"] = json!(dicts.comclass(c.mun).to_string());
+    info["login_address"] = json!(mem
+        .as_ref()
+        .map(|m| m.login_address.as_str())
+        .unwrap_or(""));
     info["vipetime_n"] = json!(phpyun_core::utils::fmt_date(c.vipetime));
     let db = state.db.reader();
     // PHP `package` is a CSV of extra `company_rating` ids; the bind-package
