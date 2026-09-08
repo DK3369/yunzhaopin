@@ -1,12 +1,14 @@
 //! PHP user/company archive long-tail (photos, certs, msgs, logs, statis).
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::utils::fmt_date;
+use phpyun_core::clock;
+use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use md5::{Digest, Md5};
 use phpyun_models::admin_gap::entity::*;
 use phpyun_models::admin_gap::extra as gap2;
 use phpyun_models::admin_gap::repo as gap;
+use phpyun_models::admin_gap::repo::MsgFilter;
 use phpyun_models::recycle_bin::php_repo as recycle;
 
 async fn audit_write(state: &AppState, actor: &AuthenticatedUser, action: &'static str, target: String) {
@@ -88,25 +90,169 @@ pub async fn set_idcard_status(
     Ok(())
 }
 
+pub struct MsgListFilter<'a> {
+    pub status: Option<i32>,
+    pub keyword: Option<&'a str>,
+    pub name_kind: i32,
+    pub job: Option<i32>,
+    pub zx: Option<i32>,
+    pub hf: Option<i32>,
+    pub sort: &'a str,
+    pub dir: &'a str,
+}
+
+fn since_from_days(days: Option<i32>) -> Option<i64> {
+    let days = days.filter(|d| *d > 0)?;
+    let now = clock::now_ts();
+    Some(if days == 1 {
+        clock::start_of_day(now)
+    } else {
+        now.saturating_sub(i64::from(days) * 86_400)
+    })
+}
+
+fn decorate_msg(row: &mut UserMsgRow) {
+    row.datetime_n = fmt_dt(row.datetime);
+    row.reply_time_n = if row.reply_time > 0 {
+        fmt_dt(row.reply_time)
+    } else {
+        String::new()
+    };
+    row.content = row.content.trim().to_string();
+}
+
 pub async fn list_user_msgs(
     state: &AppState,
-    keyword: Option<&str>,
+    f: MsgListFilter<'_>,
     page: Pagination,
 ) -> AppResult<Paged<UserMsgRow>> {
     let db = state.db.reader();
-    let list = gap::list_user_msgs(db, keyword, page.offset, page.limit).await?;
-    let total = gap::count_user_msgs(db, keyword).await?;
+    let kw = f.keyword.map(str::trim).filter(|s| !s.is_empty());
+    let mut uid_buf = Vec::new();
+    if f.name_kind <= 1 {
+        if let Some(k) = kw {
+            uid_buf = gap::find_msg_uids_by_name(db, k).await?;
+        }
+    }
+    let filter = MsgFilter {
+        status: f.status,
+        keyword: kw,
+        name_kind: f.name_kind,
+        job: f.job,
+        since_zx: since_from_days(f.zx),
+        since_hf: since_from_days(f.hf),
+        uid_in: if f.name_kind <= 1 && kw.is_some() {
+            Some(uid_buf.as_slice())
+        } else {
+            None
+        },
+        sort: f.sort,
+        dir: f.dir,
+    };
+    let mut list = gap::list_user_msgs(db, &filter, page.offset, page.limit).await?;
+    for row in &mut list {
+        decorate_msg(row);
+    }
+    let total = gap::count_user_msgs(db, &filter).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
-pub async fn delete_user_msgs(
+pub async fn user_msg_lockinfo(state: &AppState, id: u64) -> AppResult<String> {
+    let Some(row) = gap::find_user_msg(state.db.reader(), id).await? else {
+        return Ok(String::new());
+    };
+    Ok(row.statusbody.trim().to_string())
+}
+
+pub async fn user_msg_show(state: &AppState, id: u64) -> AppResult<UserMsgRow> {
+    let Some(mut row) = gap::find_user_msg(state.db.reader(), id).await? else {
+        return Err(ApiError::param_invalid("not_found"));
+    };
+    decorate_msg(&mut row);
+    Ok(row)
+}
+
+pub async fn edit_user_msg(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    id: u64,
+    content: &str,
+    reply: &str,
+) -> AppResult<String> {
+    if id == 0 {
+        return Err(ApiError::param_invalid("common_01161"));
+    }
+    let n = gap::edit_user_msg(
+        state.db.pool(),
+        id,
+        content.trim(),
+        reply.trim(),
+        clock::now_ts(),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("common_06540"));
+    }
+    let msg = php_msg("model_00113", Some(&[id]), &["model_00114"]);
+    audit_write(state, actor, "admin.user.msg.edit", msg.clone()).await;
+    Ok(msg)
+}
+
+pub async fn set_user_msg_status(
     state: &AppState,
     actor: &AuthenticatedUser,
     ids: &[u64],
-) -> AppResult<()> {
-    gap::delete_user_msgs(state.db.pool(), ids).await?;
-    audit_write(state, actor, "admin.user.msg.delete", format!("{ids:?}")).await;
-    Ok(())
+    status: i32,
+    statusbody: &str,
+) -> AppResult<String> {
+    let ids = clean_ids(ids)?;
+    if status != 1 && status != 2 {
+        return Err(ApiError::param_invalid("admin_01311"));
+    }
+    let n = gap::set_user_msg_status(state.db.pool(), &ids, status, statusbody.trim()).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("model_00001"));
+    }
+    let msg = php_msg("model_00108", Some(&ids), &["model_00109"]);
+    audit_write(state, actor, "admin.user.msg.status", msg.clone()).await;
+    Ok(msg)
+}
+
+pub async fn delete_user_certs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    uids: &[u64],
+) -> AppResult<String> {
+    let uids = clean_ids(uids)?;
+    let n = gap2::clear_idcard_certs(state.db.pool(), &uids).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    let msg = php_msg("model_00139", Some(&uids), &["model_00112"]);
+    audit_write(state, actor, "admin.user.cert.delete", msg.clone()).await;
+    Ok(msg)
+}
+
+pub async fn delete_com_certs(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    uids: &[u64],
+    uri: &str,
+) -> AppResult<String> {
+    let uids = clean_ids(uids)?;
+    let pool = state.db.pool();
+    let cert_ids = gap2::cert_ids_by_uids(pool, &uids).await?;
+    if cert_ids.is_empty() {
+        return Err(ApiError::business("common_06400"));
+    }
+    snapshot(state, actor, "company_cert", &cert_ids, uri).await;
+    gap2::clear_yyzz_status(pool, &uids).await?;
+    if gap2::delete_com_certs_by_uids(pool, &uids).await? == 0 {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    let msg = php_msg("model_00148", Some(&uids), &["model_00112"]);
+    audit_write(state, actor, "admin.company.cert.delete", msg.clone()).await;
+    Ok(msg)
 }
 
 pub async fn list_member_logs(
@@ -827,6 +973,40 @@ log_delete!(delete_look_job_logs, gap2::delete_look_job, "look_job", "admin.coml
     |ids| php_msg("model_00124", Some(&ids), &["model_00130", "admin_user_00187"]));
 log_delete!(delete_job_tellog_logs, gap2::delete_job_tellog, "job_tellog", "admin.comlog.jobtellog.delete",
     |ids| php_msg("admin_user_company_00009", None, &["admin_user_00187"]));
+log_delete!(delete_user_msgs, gap::delete_user_msgs, "msg", "admin.user.msg.delete",
+    |ids| php_msg("model_00108", Some(&ids), &["model_00112"]));
+
+pub async fn delete_news(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+    uri: &str,
+) -> AppResult<String> {
+    let ids = clean_ids(ids)?;
+    snapshot(state, actor, "company_news", &ids, uri).await;
+    if gap::delete_company_content(state.db.pool(), "news", &ids).await? == 0 {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    let msg = php_msg("model_00152", Some(&ids), &["model_00112"]);
+    audit_write(state, actor, "admin.company.news.delete", msg.clone()).await;
+    Ok(msg)
+}
+
+pub async fn delete_products(
+    state: &AppState,
+    actor: &AuthenticatedUser,
+    ids: &[u64],
+    uri: &str,
+) -> AppResult<String> {
+    let ids = clean_ids(ids)?;
+    snapshot(state, actor, "company_product", &ids, uri).await;
+    if gap::delete_company_content(state.db.pool(), "product", &ids).await? == 0 {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    let msg = php_msg("model_00151", Some(&ids), &["model_00112"]);
+    audit_write(state, actor, "admin.company.product.delete", msg.clone()).await;
+    Ok(msg)
+}
 
 /// PHP `delpartapply` → `part::delPartApply`, whose admin branch is a plain
 /// delete by id; the repo already has that query for the member paths.

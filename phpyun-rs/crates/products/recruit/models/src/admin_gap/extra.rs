@@ -63,25 +63,10 @@ pub async fn cert_stat(pool: &MySqlPool) -> Result<PhotoStat, sqlx::Error> {
 
 pub async fn msg_stat(pool: &MySqlPool) -> Result<PhotoStat, sqlx::Error> {
     Ok(PhotoStat {
-        num_all: count_sql(pool, "SELECT COUNT(*) FROM phpyun_msg WHERE COALESCE(del_status,0)=0")
-            .await?,
-        num_audited: count_sql(
-            pool,
-            "SELECT COUNT(*) FROM phpyun_msg WHERE COALESCE(del_status,0)=0 AND status=1",
-        )
-        .await?,
-        num_unaudited: count_sql(
-            pool,
-            "SELECT COUNT(*) FROM phpyun_msg WHERE COALESCE(del_status,0)=0 AND status=0",
-        )
-        .await?,
-        num_failed: Some(
-            count_sql(
-                pool,
-                "SELECT COUNT(*) FROM phpyun_msg WHERE COALESCE(del_status,0)=0 AND status=2",
-            )
-            .await?,
-        ),
+        num_all: count_sql(pool, "SELECT COUNT(*) FROM phpyun_msg").await?,
+        num_audited: count_sql(pool, "SELECT COUNT(*) FROM phpyun_msg WHERE status=1").await?,
+        num_unaudited: count_sql(pool, "SELECT COUNT(*) FROM phpyun_msg WHERE status=0").await?,
+        num_failed: Some(count_sql(pool, "SELECT COUNT(*) FROM phpyun_msg WHERE status=2").await?),
     })
 }
 
@@ -246,6 +231,50 @@ pub async fn set_idcard_review(
             .await?
             .rows_affected(),
     )
+}
+
+/// PHP `resume::delResumeCert` — clear the id-card fields, do not drop the resume row.
+pub async fn clear_idcard_certs(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(
+        pool,
+        "UPDATE phpyun_resume SET idcard_pic='', idcard_status=0, cert_time=0, statusbody='' WHERE uid IN (",
+        uids,
+    )
+    .await
+}
+
+pub async fn cert_ids_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<Vec<u64>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_company_cert WHERE type=3 AND uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+pub async fn delete_com_certs_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(
+        pool,
+        "DELETE FROM phpyun_company_cert WHERE type=3 AND uid IN (",
+        uids,
+    )
+    .await
+}
+
+pub async fn clear_yyzz_status(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(
+        pool,
+        "UPDATE phpyun_company SET yyzz_status=0 WHERE uid IN (",
+        uids,
+    )
+    .await
 }
 
 pub async fn set_logo_review(

@@ -31,9 +31,14 @@ pub fn routes() -> Router<AppState> {
         .route("/user-certs/status", post(set_cert_status))
         .route("/user-certs/statist", post(cert_statist))
         .route("/user-certs/status-body", post(cert_status_body))
+        .route("/user-certs/delete", post(delete_user_certs))
         .route("/user-msgs", post(list_user_msgs))
         .route("/user-msgs/delete", post(delete_user_msgs))
         .route("/user-msgs/statist", post(msg_statist))
+        .route("/user-msgs/status", post(set_user_msg_status))
+        .route("/user-msgs/status-body", post(user_msg_lockinfo))
+        .route("/user-msgs/show", post(user_msg_show))
+        .route("/user-msgs/edit", post(edit_user_msg))
         .route("/user-logs", post(list_user_logs))
         .route("/user-logs/down", post(list_down_logs))
         .route("/user-logs/freedown", post(list_freedown_logs))
@@ -72,10 +77,12 @@ pub fn routes() -> Router<AppState> {
         .route("/company-products/status", post(set_products))
         .route("/company-products/statist", post(product_statist))
         .route("/company-products/status-body", post(product_status_body))
+        .route("/company-products/delete", post(delete_products))
         .route("/company-news", post(list_news))
         .route("/company-news/status", post(set_news))
         .route("/company-news/statist", post(news_statist))
         .route("/company-news/status-body", post(news_status_body))
+        .route("/company-news/delete", post(delete_news))
         .route("/company-interviews", post(list_interviews))
         .route("/company-logs", post(list_company_logs))
         .route("/company-logs/userid-job", post(list_userid_job_logs))
@@ -110,6 +117,7 @@ pub fn routes() -> Router<AppState> {
         .route("/rating-services/details/save", post(save_rating_detail))
         .route("/company-certs/statist", post(com_cert_statist))
         .route("/company-certs/status-body", post(com_cert_status_body))
+        .route("/company-certs/delete", post(delete_com_certs))
         .route("/parts/statist", post(part_statist))
 }
 
@@ -125,20 +133,84 @@ pub struct KwQuery {
     pub r#type: Option<i32>,
 }
 
+#[derive(Debug, Default, Deserialize, Validate, ToSchema)]
+pub struct MsgListQuery {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub status: Option<i32>,
+    #[validate(length(max = 80))]
+    pub keyword: Option<String>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub r#type: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub job: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub zx: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub hf: Option<i32>,
+    #[validate(length(max = 20))]
+    pub t: Option<String>,
+    #[validate(length(max = 10))]
+    pub order: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct MsgIdForm {
+    #[validate(range(min = 1))]
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
+    pub id: u64,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct MsgEditForm {
+    #[validate(range(min = 1))]
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
+    pub id: u64,
+    #[validate(length(max = 4000))]
+    pub content: String,
+    #[serde(default)]
+    #[validate(length(max = 4000))]
+    pub reply: String,
+}
+
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UidStatusForm {
     #[validate(range(min = 1))]
-    #[serde(alias = "id")]
+    #[serde(alias = "id", deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
     pub uid: u64,
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub status: i32,
     #[serde(default)]
     pub statusbody: String,
 }
 
+fn de_u64_list<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<u64>, D::Error> {
+    let v = serde_json::Value::deserialize(d)?;
+    let one = |v: &serde_json::Value| -> Option<u64> {
+        match v {
+            serde_json::Value::Number(n) => n.as_u64(),
+            serde_json::Value::String(s) => s.trim().parse().ok(),
+            _ => None,
+        }
+        .filter(|n| *n > 0)
+    };
+    Ok(match v {
+        serde_json::Value::Array(a) => a.iter().filter_map(one).collect(),
+        serde_json::Value::String(s) => s
+            .split([',', ';'])
+            .filter_map(|x| x.trim().parse().ok())
+            .filter(|n: &u64| *n > 0)
+            .collect(),
+        serde_json::Value::Number(n) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
+        _ => Vec::new(),
+    })
+}
+
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct IdsStatusForm {
     #[validate(length(min = 1, max = 200))]
+    #[serde(default, alias = "pid", alias = "id", deserialize_with = "de_u64_list")]
     pub ids: Vec<u64>,
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub status: i32,
     #[serde(default)]
     pub statusbody: String,
@@ -198,11 +270,25 @@ pub async fn list_user_msgs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<KwQuery>,
+    ValidatedJson(q): ValidatedJson<MsgListQuery>,
 ) -> AppResult<ApiResponse<AdminPaged<UserMsgRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_user_msgs(&state, q.keyword.as_deref(), page).await?,
+        admin_archive_service::list_user_msgs(
+            &state,
+            admin_archive_service::MsgListFilter {
+                status: q.status,
+                keyword: q.keyword.as_deref(),
+                name_kind: q.r#type.unwrap_or(1),
+                job: q.job,
+                zx: q.zx,
+                hf: q.hf,
+                sort: q.t.as_deref().unwrap_or("id"),
+                dir: q.order.as_deref().unwrap_or("desc"),
+            },
+            page,
+        )
+        .await?,
     )))
 }
 
@@ -210,11 +296,71 @@ pub async fn list_user_msgs(
 pub async fn delete_user_msgs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
     ValidatedJson(f): ValidatedJson<IdsBody>,
-) -> AppResult<ApiResponse> {
+) -> AppResult<ApiMessage> {
     user.require_admin()?;
-    admin_archive_service::delete_user_msgs(&state, &user, &f.ids).await?;
-    Ok(ApiResponse::message("ok"))
+    let msg = admin_archive_service::delete_user_msgs(&state, &user, &f.ids, uri.path()).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
+
+#[utoipa::path(post, path = "/v1/admin/user-msgs/status-body", tag = "admin", security(("bearer" = [])), request_body = MsgIdForm, responses((status = 200, description = "ok")))]
+pub async fn user_msg_lockinfo(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<MsgIdForm>,
+) -> AppResult<ApiResponse<String>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::user_msg_lockinfo(&state, f.id).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/user-msgs/show", tag = "admin", security(("bearer" = [])), request_body = MsgIdForm, responses((status = 200, description = "ok")))]
+pub async fn user_msg_show(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<MsgIdForm>,
+) -> AppResult<ApiResponse<UserMsgRow>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(
+        admin_archive_service::user_msg_show(&state, f.id).await?,
+    ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/user-msgs/edit", tag = "admin", security(("bearer" = [])), request_body = MsgEditForm, responses((status = 200, description = "ok")))]
+pub async fn edit_user_msg(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<MsgEditForm>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let msg = admin_archive_service::edit_user_msg(&state, &user, f.id, &f.content, &f.reply).await?;
+    Ok(ApiMessage::new("wap_user_00264", msg))
+}
+
+#[utoipa::path(post, path = "/v1/admin/user-msgs/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, responses((status = 200, description = "ok")))]
+pub async fn set_user_msg_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdsStatusForm>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let msg =
+        admin_archive_service::set_user_msg_status(&state, &user, &f.ids, f.status, &f.statusbody)
+            .await?;
+    Ok(ApiMessage::new("wap_user_00264", msg))
+}
+
+#[utoipa::path(post, path = "/v1/admin/user-certs/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+pub async fn delete_user_certs(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<IdsBody>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let msg = admin_archive_service::delete_user_certs(&state, &user, &f.ids).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
 }
 
 #[utoipa::path(post, path = "/v1/admin/user-logs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
@@ -860,6 +1006,18 @@ pub async fn news_status_body(
     ))
 }
 
+#[utoipa::path(post, path = "/v1/admin/company-news/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+pub async fn delete_news(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
+    ValidatedJson(f): ValidatedJson<IdsBody>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let msg = admin_archive_service::delete_news(&state, &user, &f.ids, uri.path()).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
+
 #[utoipa::path(post, path = "/v1/admin/company-products/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn product_statist(
     State(state): State<AppState>,
@@ -883,6 +1041,18 @@ pub async fn product_status_body(
     ))
 }
 
+#[utoipa::path(post, path = "/v1/admin/company-products/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+pub async fn delete_products(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
+    ValidatedJson(f): ValidatedJson<IdsBody>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let msg = admin_archive_service::delete_products(&state, &user, &f.ids, uri.path()).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
+
 #[utoipa::path(post, path = "/v1/admin/company-certs/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn com_cert_statist(
     State(state): State<AppState>,
@@ -904,6 +1074,18 @@ pub async fn com_cert_status_body(
     Ok(ApiResponse::data(
         admin_archive_service::com_cert_statusbody(&state, pick_uid(f.uid, f.id)).await?,
     ))
+}
+
+#[utoipa::path(post, path = "/v1/admin/company-certs/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+pub async fn delete_com_certs(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
+    ValidatedJson(f): ValidatedJson<IdsBody>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let msg = admin_archive_service::delete_com_certs(&state, &user, &f.ids, uri.path()).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
 }
 
 #[utoipa::path(post, path = "/v1/admin/parts/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]

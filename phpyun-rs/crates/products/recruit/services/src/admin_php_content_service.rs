@@ -3045,6 +3045,8 @@ async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
     } else {
         None
     };
+    let sort = json_str(body, "t");
+    let dir = json_str(body, "order");
     let f = pay_repo::PhpPayFilter {
         com_id: Some(json_u64(body, "comid")).filter(|n| *n > 0),
         usertype: if json_u64(body, "comid") > 0 {
@@ -3057,6 +3059,8 @@ async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
         uid_in: if uid_in.is_empty() { None } else { Some(uid_in.as_slice()) },
         pay_state: json_present_i32(body, "pay_state"),
         time_min,
+        sort: &sort,
+        dir: &dir,
     };
     let db = state.db.reader();
     let rows = pay_repo::php_list_pay(db, &f, offset, limit).await?;
@@ -3079,6 +3083,7 @@ async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
                 "order_price": r.order_price,
                 "price_str": price_str,
                 "pay_time": fmt_dt(r.pay_time),
+                "pay_time_n": fmt_dt(r.pay_time),
                 "pay_state": r.pay_state.to_string(),
                 "pay_state_n": pay_state_html(r.pay_state),
                 "pay_remark": r.pay_remark,
@@ -3090,20 +3095,33 @@ async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
         .collect();
     Ok(json!({
         "data": list,
+        "list": list,
         "total": total,
         "pageSizes": [10, 20, 50, 100],
         "perPage": per,
         "page": page,
+        "integral_pricename": pricename,
     }))
 }
 
 async fn finance_pay_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let ids = ids_of(body);
     if ids.is_empty() {
-        return Err(ApiError::business("common_01237"));
+        return Err(ApiError::business("common_01164"));
     }
-    pay_repo::php_delete_pay(state.db.pool(), &ids).await?;
-    Ok(PhpOut::Message("ok"))
+    let n = pay_repo::php_delete_pay(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    let lang = i18n::current_lang();
+    let joined = ids.iter().map(u64::to_string).collect::<Vec<_>>().join(",");
+    let msg = format!(
+        "{}{}{}",
+        i18n::t("messages.model_00216", lang),
+        joined,
+        i18n::t("messages.model_00112", lang),
+    );
+    Ok(PhpOut::Text("admin_user_00187", msg))
 }
 
 async fn finance_recharge_index(state: &AppState) -> AppResult<Value> {
@@ -5883,6 +5901,8 @@ async fn user_gap_pay_log(state: &AppState, body: &Value) -> AppResult<Value> {
         uid_in: None,
         pay_state: None,
         time_min: None,
+        sort: "id",
+        dir: "desc",
     };
     let db = state.db.reader();
     let total = pay_repo::php_count_pay(db, &f).await?;

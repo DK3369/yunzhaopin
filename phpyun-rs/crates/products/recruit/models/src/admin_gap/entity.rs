@@ -38,6 +38,15 @@ pub struct UserMsgRow {
     pub datetime: i64,
     pub reply_time: i64,
     pub status: i32,
+    pub statusbody: String,
+    pub job_uid: u64,
+    pub r#type: i32,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub datetime_n: String,
+    #[sqlx(skip)]
+    #[serde(default)]
+    pub reply_time_n: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]

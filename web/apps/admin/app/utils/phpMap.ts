@@ -68,8 +68,21 @@ function jobStatsToPhp(data: unknown): Record<string, unknown> {
 
 function idsFromDel(body: Record<string, unknown>): Record<string, unknown> {
   const del = body.del ?? body.id ?? body.ids
-  const ids = Array.isArray(del) ? del : del != null ? [del] : []
-  return { ids: ids.map((x) => Number(x)).filter((n) => n > 0) }
+  const raw = Array.isArray(del) ? del : csvList(del)
+  return { ids: raw.map((x) => Number(x)).filter((n) => n > 0) }
+}
+
+/** PHP `status` posts `id`/`pid` as csv and radio values as strings. */
+function idsStatusFromPhp(body: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ids: idsFromDel({
+      del: body.del,
+      id: body.pid ?? body.id ?? body.uid,
+      ids: body.ids,
+    }).ids,
+    status: Number(body.status),
+    statusbody: String(body.statusbody || ''),
+  }
 }
 
 function csvList(v: unknown): string[] {
@@ -481,6 +494,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/partjob/partNum': { path: '/v1/admin/parts/statist' },
   'user/company_cert/getCertStatist': { path: '/v1/admin/company-certs/statist' },
   'user/company_cert/sbody': { path: '/v1/admin/company-certs/status-body' },
+  'user/company_cert/del': {
+    path: '/v1/admin/company-certs/delete',
+    transformReq: (b) => idsFromDel({ ...b, id: b.uid ?? b.id ?? b.del }),
+  },
   'user/company_cert/getConfigData': {
     ...phpPage('comset_index'),
     transformRes: certConfigShape,
@@ -752,10 +769,15 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_usercert/getSfStatist': { path: '/v1/admin/user-certs/statist' },
   'user/users_usercert/getStatusBody': { path: '/v1/admin/user-certs/status-body' },
   'user/users_usercert/sbody': { path: '/v1/admin/user-certs/status-body' },
+  'user/users_usercert/del': { path: '/v1/admin/user-certs/delete', transformReq: idsFromDel },
   'user/users_msg/getStatist': { path: '/v1/admin/user-msgs/statist' },
   'user/users_msg': { path: '/v1/admin/user-msgs', transformReq: pageQuery },
   'user/users_msg/index': { path: '/v1/admin/user-msgs', transformReq: pageQuery },
   'user/users_msg/del': { path: '/v1/admin/user-msgs/delete', transformReq: idsFromDel },
+  'user/users_msg/lockinfo': { path: '/v1/admin/user-msgs/status-body' },
+  'user/users_msg/msgshow': { path: '/v1/admin/user-msgs/show' },
+  'user/users_msg/msgedit': { path: '/v1/admin/user-msgs/edit' },
+  'user/users_msg/status': { path: '/v1/admin/user-msgs/status', transformReq: idsStatusFromPhp },
   'user/users_userlog': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
   'user/users_userlog/index': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
   'user/users_userlog/down': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
@@ -815,14 +837,19 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   },
   'user/company_product': { path: '/v1/admin/company-products', transformReq: pageQuery },
   'user/company_product/index': { path: '/v1/admin/company-products', transformReq: pageQuery },
-  'user/company_product/status': { path: '/v1/admin/company-products/status' },
+  'user/company_product/status': { path: '/v1/admin/company-products/status', transformReq: idsStatusFromPhp },
   'user/company_product/getProductStatist': { path: '/v1/admin/company-products/statist' },
   'user/company_product/statusbody': { path: '/v1/admin/company-products/status-body' },
+  'user/company_product/del': { path: '/v1/admin/company-products/delete', transformReq: idsFromDel },
   'user/company_news': { path: '/v1/admin/company-news', transformReq: pageQuery },
   'user/company_news/index': { path: '/v1/admin/company-news', transformReq: pageQuery },
-  'user/company_news/status': { path: '/v1/admin/company-news/status' },
+  'user/company_news/status': { path: '/v1/admin/company-news/status', transformReq: idsStatusFromPhp },
   'user/company_news/getNewsStatist': { path: '/v1/admin/company-news/statist' },
   'user/company_news/statusbody': { path: '/v1/admin/company-news/status-body' },
+  'user/company_news/del': { path: '/v1/admin/company-news/delete', transformReq: idsFromDel },
+  'user/company_pay': phpContent('finance-pay', 'index'),
+  'user/company_pay/index': phpContent('finance-pay', 'index'),
+  'user/company_pay/del': phpContent('finance-pay', 'delete'),
   'user/company_interview': phpContent('interview', 'index'),
   'user/company_interview/index': phpContent('interview', 'index'),
   'user/company_interview/save': phpContent('interview', 'save'),
@@ -1182,7 +1209,7 @@ type ModuleRoutes = { list: string; del?: string; status?: string; save?: string
 const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/company_job': { list: '/v1/admin/jobs', del: '/v1/admin/jobs/delete', status: '/v1/admin/jobs/state' },
   'user/company': { list: '/v1/admin/companies', del: '/v1/admin/companies/status', status: '/v1/admin/companies/status' },
-  'user/company_cert': { list: '/v1/admin/company-certs', status: '/v1/admin/company-certs/review' },
+  'user/company_cert': { list: '/v1/admin/company-certs', status: '/v1/admin/company-certs/review', del: '/v1/admin/company-certs/delete' },
   'user/company_expire': { list: '/v1/admin/company-expire' },
   'user/company_order': { list: '/v1/admin/orders', status: '/v1/admin/orders/status' },
   'user/hotjob': { list: '/v1/admin/hotjobs/list', del: '/v1/admin/hotjobs/delete' },
@@ -1192,7 +1219,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/weipin_tiny': { list: '/v1/admin/php-content/tiny/index' },
   'user/users_resume': { list: '/v1/admin/resumes', status: '/v1/admin/resumes/status' },
   'user/users_member': { list: '/v1/admin/users', status: '/v1/admin/users/status', del: '/v1/admin/users/status' },
-  'user/users_usercert': { list: '/v1/admin/user-certs', status: '/v1/admin/user-certs/status' },
+  'user/users_usercert': { list: '/v1/admin/user-certs', status: '/v1/admin/user-certs/status', del: '/v1/admin/user-certs/delete' },
   'neirong/question': { list: '/v1/admin/questions', del: '/v1/admin/questions/delete', status: '/v1/admin/questions/state' },
   'neirong/question_class': { list: '/v1/admin/question-classes/list', del: '/v1/admin/question-classes/delete', save: '/v1/admin/question-classes' },
   'neirong/zhaopinhui': { list: '/v1/admin/fairs' },
@@ -1239,10 +1266,10 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/users_trust': { list: '/v1/admin/user-entrusts', del: '/v1/admin/user-entrusts/delete', status: '/v1/admin/user-entrusts/status' },
   'user/users_userset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'user/company_comset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
-  'user/company_news': { list: '/v1/admin/company-news', status: '/v1/admin/company-news/status' },
-  'user/company_product': { list: '/v1/admin/company-products', status: '/v1/admin/company-products/status' },
+  'user/company_news': { list: '/v1/admin/company-news', status: '/v1/admin/company-news/status', del: '/v1/admin/company-news/delete' },
+  'user/company_product': { list: '/v1/admin/company-products', status: '/v1/admin/company-products/status', del: '/v1/admin/company-products/delete' },
   'user/company_interview': { list: '/v1/admin/php-content/interview/index' },
-  'user/company_pay': { list: '/v1/admin/orders' },
+  'user/company_pay': { list: '/v1/admin/php-content/finance-pay/index', del: '/v1/admin/php-content/finance-pay/delete' },
   'user/company_job_refresh_log': { list: '/v1/admin/job-refresh-logs' },
   'user/company_company': { list: '/v1/admin/companies' },
   'user/admin_member': { list: '/v1/admin/php-content/user-gap/mem-index' },

@@ -155,60 +155,203 @@ pub async fn set_idcard_status(pool: &MySqlPool, uid: u64, status: i32) -> Resul
 
 // ---------- job consult msgs ----------
 
+const MSG_FIELDS: &str = "CAST(m.id AS UNSIGNED) AS id, CAST(COALESCE(m.uid,0) AS UNSIGNED) AS uid, \
+    COALESCE(NULLIF(r.name,''), m.username, '') AS username, \
+    COALESCE(m.job_name,'') AS job_name, COALESCE(m.com_name,'') AS com_name, \
+    COALESCE(m.content,'') AS content, COALESCE(m.reply,'') AS reply, \
+    CAST(COALESCE(m.datetime,0) AS SIGNED) AS datetime, \
+    CAST(COALESCE(m.reply_time,0) AS SIGNED) AS reply_time, \
+    CAST(COALESCE(m.status,0) AS SIGNED) AS status, \
+    COALESCE(m.statusbody,'') AS statusbody, \
+    CAST(COALESCE(m.job_uid,0) AS UNSIGNED) AS job_uid, \
+    CAST(COALESCE(m.type,0) AS SIGNED) AS `type`";
+
+const MSG_FROM: &str = " FROM phpyun_msg m \
+    LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_resume GROUP BY uid) r ON r.uid = m.uid \
+    WHERE 1=1";
+
+pub struct MsgFilter<'a> {
+    pub status: Option<i32>,
+    pub keyword: Option<&'a str>,
+    /// PHP `type`: 1 咨询人, 2 职位, 3 公司, 4 内容, 5 回复.
+    pub name_kind: i32,
+    pub job: Option<i32>,
+    pub since_zx: Option<i64>,
+    pub since_hf: Option<i64>,
+    pub uid_in: Option<&'a [u64]>,
+    pub sort: &'a str,
+    pub dir: &'a str,
+}
+
+fn apply_msg_filter(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &MsgFilter<'_>) {
+    if let Some(s) = f.status {
+        qb.push(" AND m.status = ");
+        qb.push_bind(s);
+    }
+    if let Some(job) = f.job.filter(|n| *n > 0) {
+        qb.push(" AND m.type = ");
+        qb.push_bind(job);
+    }
+    if let Some(ts) = f.since_zx {
+        qb.push(" AND m.datetime >= ");
+        qb.push_bind(ts);
+    }
+    if let Some(ts) = f.since_hf {
+        qb.push(" AND m.reply_time >= ");
+        qb.push_bind(ts);
+    }
+    if let Some(ids) = f.uid_in {
+        if ids.is_empty() {
+            qb.push(" AND 1=0");
+            return;
+        }
+        qb.push(" AND m.uid IN (");
+        let mut sep = qb.separated(", ");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        let like = format!("%{kw}%");
+        match f.name_kind {
+            2 => {
+                qb.push(" AND m.job_name LIKE ");
+                qb.push_bind(like);
+            }
+            3 => {
+                qb.push(" AND m.com_name LIKE ");
+                qb.push_bind(like);
+            }
+            4 => {
+                qb.push(" AND m.content LIKE ");
+                qb.push_bind(like);
+            }
+            5 => {
+                qb.push(" AND m.reply LIKE ");
+                qb.push_bind(like);
+            }
+            _ => {}
+        }
+    }
+}
+
+fn msg_order(sort: &str, dir: &str) -> (&'static str, &'static str) {
+    let col = match sort {
+        "datetime" => "datetime",
+        "reply_time" => "reply_time",
+        "status" => "status",
+        _ => "id",
+    };
+    let dir = if dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
+    (col, dir)
+}
+
 pub async fn list_user_msgs(
     pool: &MySqlPool,
-    keyword: Option<&str>,
+    f: &MsgFilter<'_>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<UserMsgRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
-         COALESCE(username,'') AS username, COALESCE(job_name,'') AS job_name, \
-         COALESCE(com_name,'') AS com_name, COALESCE(content,'') AS content, \
-         COALESCE(reply,'') AS reply, CAST(COALESCE(datetime,0) AS SIGNED) AS datetime, \
-         CAST(COALESCE(reply_time,0) AS SIGNED) AS reply_time, \
-         CAST(COALESCE(status,0) AS SIGNED) AS status \
-         FROM phpyun_msg WHERE COALESCE(del_status,0) = 0",
-    );
-    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND (username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR job_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR com_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR content LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(")");
-    }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new(format!("SELECT {MSG_FIELDS}{MSG_FROM}"));
+    apply_msg_filter(&mut qb, f);
+    let (col, dir) = msg_order(f.sort, f.dir);
+    qb.push(" ORDER BY m.");
+    qb.push(col);
+    qb.push(" ");
+    qb.push(dir);
+    qb.push(" LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);
     qb.build_query_as().fetch_all(pool).await
 }
 
-pub async fn count_user_msgs(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
+pub async fn count_user_msgs(pool: &MySqlPool, f: &MsgFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_msg WHERE COALESCE(del_status,0) = 0");
-    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND (username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR job_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR com_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR content LIKE ");
-        qb.push_bind(format!("%{kw}%"));
-        qb.push(")");
-    }
+        QueryBuilder::new(format!("SELECT COUNT(*){MSG_FROM}"));
+    apply_msg_filter(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub async fn find_user_msg(pool: &MySqlPool, id: u64) -> Result<Option<UserMsgRow>, sqlx::Error> {
+    let sql = format!("SELECT {MSG_FIELDS}{MSG_FROM} AND m.id = ? LIMIT 1");
+    sqlx::query_as(&sql).bind(id).fetch_optional(pool).await
+}
+
+pub async fn find_msg_uids_by_name(
+    pool: &MySqlPool,
+    keyword: &str,
+) -> Result<Vec<u64>, sqlx::Error> {
+    let like = format!("%{keyword}%");
+    let rows: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) AS uid FROM ( \
+            SELECT uid FROM phpyun_resume WHERE name LIKE ? GROUP BY uid \
+            UNION \
+            SELECT uid FROM phpyun_member WHERE username LIKE ? \
+         ) t LIMIT 200",
+    )
+    .bind(&like)
+    .bind(&like)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+pub async fn edit_user_msg(
+    pool: &MySqlPool,
+    id: u64,
+    content: &str,
+    reply: &str,
+    reply_time: i64,
+) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query(
+        "UPDATE phpyun_msg SET content=?, reply=?, reply_time=?, status=1 WHERE id=?",
+    )
+    .bind(content)
+    .bind(reply)
+    .bind(reply_time)
+    .bind(id)
+    .execute(pool)
+    .await?
+    .rows_affected())
+}
+
+pub async fn set_user_msg_status(
+    pool: &MySqlPool,
+    ids: &[u64],
+    status: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_msg SET status = ");
+    qb.push_bind(status);
+    qb.push(", statusbody = ");
+    qb.push_bind(statusbody);
+    if status == 1 {
+        qb.push(", issys = 1");
+    }
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
 pub async fn delete_user_msgs(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    delete_in(pool, "UPDATE phpyun_msg SET del_status = 1 WHERE id IN (", ids).await
+    delete_in(pool, "DELETE FROM phpyun_msg WHERE id IN (", ids).await
 }
 
 // ---------- member logs ----------
@@ -645,6 +788,15 @@ pub async fn set_company_content_status(
     }
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn delete_company_content(
+    pool: &MySqlPool,
+    kind: &str,
+    ids: &[u64],
+) -> Result<u64, sqlx::Error> {
+    let table = content_table(kind);
+    delete_in(pool, &format!("DELETE FROM {table} WHERE id IN ("), ids).await
 }
 
 pub async fn list_interviews(

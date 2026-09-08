@@ -311,6 +311,8 @@ pub struct PhpPayFilter<'a> {
     pub uid_in: Option<&'a [u64]>,
     pub pay_state: Option<i32>,
     pub time_min: Option<i64>,
+    pub sort: &'a str,
+    pub dir: &'a str,
 }
 
 fn push_php_pay_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpPayFilter<'_>) {
@@ -373,7 +375,22 @@ pub async fn php_list_pay(
          COALESCE(m.username,'') AS username, COALESCE(c.name,'') AS comname",
     );
     push_php_pay_where(&mut qb, f);
-    qb.push(" ORDER BY p.id DESC LIMIT ");
+    let col = match f.sort {
+        "pay_time" | "order_time" => "pay_time",
+        "order_price" => "order_price",
+        "pay_state" => "pay_state",
+        _ => "id",
+    };
+    let dir = if f.dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
+    qb.push(" ORDER BY p.");
+    qb.push(col);
+    qb.push(" ");
+    qb.push(dir);
+    qb.push(" LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
