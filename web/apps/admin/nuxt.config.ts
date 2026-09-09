@@ -83,6 +83,8 @@ function phpAdminEpCompat() {
       // Auto-import bypasses vueApp.component('ElSwitch'/'ElTooltip'); rename so php-compat wrap applies.
       out = out.replace(/<(\/?)el-switch\b/gi, '<$1PhpElSwitch')
       out = out.replace(/<(\/?)el-tooltip\b/gi, '<$1PhpElTooltip')
+      // Do not eat el-checkbox-group / el-checkbox-button.
+      out = out.replace(/<(\/?)el-checkbox(?!-group|-button)\b/gi, '<$1PhpElCheckbox')
       out = out.replace(/^\s*console\.log\(\s*tab\s*,\s*event\s*\)\s*;?\s*$/gm, '')
       if (out === code) return
       return { code: out, map: null }

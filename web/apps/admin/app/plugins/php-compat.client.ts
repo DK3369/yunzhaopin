@@ -4,6 +4,7 @@ import {
   ElMessageBox,
   ElLoading,
   ElNotification,
+  ElCheckbox as ElCheckboxBase,
   ElSwitch as ElSwitchBase,
   ElTooltip as ElTooltipBase,
 } from 'element-plus'
@@ -91,6 +92,30 @@ function phpTooltipVNode(attrs: Record<string, unknown>, slots: Record<string, u
     ...slots,
     content,
     default: () => wrapped,
+  })
+}
+
+/**
+ * PHP Element UI 2: empty `<el-checkbox :label="lc('…')">` shows that string.
+ * EP 3 only paints the default slot, so auto-imported ElCheckbox stayed blank.
+ */
+function phpCheckboxVNode(attrs: Record<string, unknown>, slots: Record<string, unknown>) {
+  const kids = flattenVNodes((slots.default as (() => unknown[]) | undefined)?.() || [])
+  const rawValue = attrOf(attrs, 'value', 'value')
+  const rawLabel = attrOf(attrs, 'label', 'label')
+  const display = kids.length ? null : (rawValue !== undefined && rawValue !== '' ? rawValue : rawLabel)
+  if (display == null || display === '') {
+    return h(ElCheckboxBase, attrs, slots)
+  }
+  const model = attrOf(attrs, 'modelValue', 'model-value')
+  const nextAttrs = { ...attrs }
+  if (typeof model === 'boolean') {
+    delete nextAttrs.label
+    delete nextAttrs.value
+  }
+  return h(ElCheckboxBase, nextAttrs, {
+    ...slots,
+    default: () => [display],
   })
 }
 
@@ -368,6 +393,15 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   }
   nuxtApp.vueApp.component('ElTooltip', tooltipCompat)
   nuxtApp.vueApp.component('PhpElTooltip', tooltipCompat)
+  const checkboxCompat = {
+    name: 'PhpElCheckbox',
+    inheritAttrs: false,
+    setup(_props: unknown, { attrs, slots }: { attrs: Record<string, unknown>; slots: Record<string, unknown> }) {
+      return () => phpCheckboxVNode(attrs, slots)
+    },
+  }
+  nuxtApp.vueApp.component('ElCheckbox', checkboxCompat)
+  nuxtApp.vueApp.component('PhpElCheckbox', checkboxCompat)
 
   const loc = readStoredLocale()
   persistLocale(loc)
