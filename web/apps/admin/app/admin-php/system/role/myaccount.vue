@@ -1,83 +1,53 @@
 <template>
-<div id="moduapp" class="moduleDome">
-    <div class="moduleElTable">
-        <template>
-            <el-descriptions :title="lc('admin_system_00224')" direction="vertical" :column="4" border>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-user"></i>
-                        {{ lc('admin_user_00140') }}
-                    </template>
-                    {{user.username}}
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-mobile-phone"></i>
-                        {{ lc('wap_01619') }}
-                    </template>
-                    {{user.mobile}}
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-postcard"></i>
-                        {{ lc('member_user_00230') }}
-                    </template>
-                    {{user.real_name}}
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-alarm-clock"></i>
-                        {{ lc('admin_system_00222') }}
-                    </template>
-                    {{user.last_login}}
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-tickets"></i>
-                        {{ lc('admin_user_company_00372') }}
-                    </template>
-                    <el-tag size="small" type="warning">{{user.group_name}}</el-tag>
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-alarm-clock"></i>
-                        {{ lc('wap_user_00371') }}
-                    </template>
-                    <div class="admin_item">
-                        <div class=""> *********</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">{{ lc('wap_js_00073') }}</el-button>
-                    </div>
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-link"></i>
-                        {{ lc('wap_user_00115') }}
-                    </template>
-                    <div class="admin_item" v-if="!user.wxid">
-                        <div class="">{{ lc('admin_system_00225') }}</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">{{ lc('member_user_00234') }}</el-button>
-                    </div>
-                    <div class="admin_item" v-else>
-                        <div class="">{{ lc('wap_user_00127') }}</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="delwxid()">{{ lc('wap_js_00080') }}</el-button>
-                    </div>
-                </el-descriptions-item>
-                <el-descriptions-item>
-                    <template #label>
-                        <i class="el-icon-link"></i>
-                        {{ lc('admin_system_00223') }}
-                    </template>
-                    <div class="admin_item" v-if="!user.qy_wxid">
-                        <div class="">{{ lc('admin_system_00225') }}</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">{{ lc('member_user_00234') }}</el-button>
-                    </div>
-                    <div class="admin_item" v-else>
-                        <div class="">{{ lc('wap_user_00127') }}</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="delQyuserid()">{{ lc('wap_js_00080') }}</el-button>
-                    </div>
-                </el-descriptions-item>
-            </el-descriptions>
-        </template>
+<div id="moduapp" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="">{{ lc('admin_system_00224') }}</div>
+    </div>
+    <div class="moduleElTable" style="height: auto; overflow: auto;" v-loading="loading">
+        <el-empty v-if="!loading && loadError && !user.username" :description="loadError" />
+        <el-form v-else label-width="140px" style="max-width: 640px; padding: 8px 8px 24px;">
+            <el-form-item :label="lc('admin_user_00140')">
+                <span>{{ user.username || '—' }}</span>
+            </el-form-item>
+            <el-form-item :label="lc('wap_01619')">
+                <span>{{ user.mobile || '—' }}</span>
+            </el-form-item>
+            <el-form-item :label="lc('member_user_00230')">
+                <span>{{ user.real_name || '—' }}</span>
+            </el-form-item>
+            <el-form-item :label="lc('admin_system_00222')">
+                <span>{{ user.last_login || '—' }}</span>
+            </el-form-item>
+            <el-form-item :label="lc('admin_user_company_00372')">
+                <el-tag size="small" type="warning">{{ user.group_name || '—' }}</el-tag>
+            </el-form-item>
+            <el-form-item :label="lc('wap_user_00371')">
+                <div class="admin_item">
+                    <div class=""> *********</div>
+                    <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">{{ lc('wap_js_00073') }}</el-button>
+                </div>
+            </el-form-item>
+            <el-form-item :label="lc('wap_user_00115')">
+                <div class="admin_item" v-if="!user.wxid">
+                    <div class="">{{ lc('admin_system_00225') }}</div>
+                    <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">{{ lc('member_user_00234') }}</el-button>
+                </div>
+                <div class="admin_item" v-else>
+                    <div class="">{{ lc('wap_user_00127') }}</div>
+                    <el-button type="text" size="small" icon="el-icon-edit" @click="delwxid()">{{ lc('wap_js_00080') }}</el-button>
+                </div>
+            </el-form-item>
+            <el-form-item :label="lc('admin_system_00223')">
+                <div class="admin_item" v-if="!user.qy_wxid">
+                    <div class="">{{ lc('admin_system_00225') }}</div>
+                    <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">{{ lc('member_user_00234') }}</el-button>
+                </div>
+                <div class="admin_item" v-else>
+                    <div class="">{{ lc('wap_user_00127') }}</div>
+                    <el-button type="text" size="small" icon="el-icon-edit" @click="delQyuserid()">{{ lc('wap_js_00080') }}</el-button>
+                </div>
+            </el-form-item>
+        </el-form>
     </div>
     <div class="modluDrawer">
         <el-dialog :title="lc('member_user_00222')" v-model="code" :with-header="true" :modal-append-to-body="false"
@@ -172,6 +142,8 @@ export default {
                     redirect_uri: '',
                     state: ''
                 },
+                loadError: '',
+                loading: false,
                 old_pwd: '',
                 new_pwd: '',
                 re_pwd: '',
@@ -201,6 +173,23 @@ export default {
         },
         methods: {
             handleClick() {},
+            applyUser(src) {
+                if (!src || typeof src !== 'object') return false
+                this.user = Object.assign({}, this.user, {
+                    username: src.username || '',
+                    mobile: src.mobile || this.user.mobile,
+                    real_name: src.real_name || src.name || '',
+                    wxid: src.wxid || '',
+                    qy_wxid: src.qy_wxid || '',
+                    last_login: src.last_login || '',
+                    group_name: src.group_name || '',
+                    qy_app_id: src.qy_app_id || this.user.qy_app_id,
+                    agent_id: src.agent_id || this.user.agent_id,
+                    redirect_uri: src.redirect_uri || this.user.redirect_uri,
+                    state: src.state || this.user.state
+                })
+                return !!this.user.username
+            },
             async getInfo() {
                 let that = this;
                 let query = {}
@@ -211,16 +200,34 @@ export default {
                 if (query.ly) {
                     this.ly = query.ly;
                 }
+                if (this.$route && this.$route.query && this.$route.query.ly) {
+                    this.ly = this.$route.query.ly
+                }
+                that.loading = true
                 httpPost('m=system&c=role_myuser&a=index', {}).then(function (result) {
                     var res = result.data
-                    if (res.error == 0 && res.data && typeof res.data === 'object') {
-                        that.user = Object.assign({}, that.user, res.data)
+                    if (res.error == 0 && that.applyUser(res.data)) {
+                        that.loadError = ''
+                        return
                     }
-                    if (that.ly == 'pass') { // 弹出修改密码框
-                        that.drawer = true;
-                    }
+                    that.loadError = (res && res.msg) || window.lc('wap_js_00113')
+                    return httpPost('m=system&c=role_myuser&a=me', {}).then(function (r2) {
+                        var d = r2.data
+                        if (d.error == 0 && that.applyUser(d.data)) {
+                            that.loadError = ''
+                            return
+                        }
+                        message.error(that.loadError)
+                    })
                 }).catch(function (e) {
                     console.log(e)
+                    that.loadError = window.lc('wap_js_00113')
+                    message.error(that.loadError)
+                }).finally(function () {
+                    that.loading = false
+                    if (that.ly == 'pass') {
+                        that.drawer = true;
+                    }
                 })
             },
             //修改密码

@@ -49,9 +49,10 @@ pub async fn create(pool: &MySqlPool, c: MessageCreate<'_>, now: i64) -> Result<
     let _ = (c.category, c.ref_kind, c.ref_id); // intentionally unused
     let res = sqlx::query(
         r#"INSERT INTO phpyun_sysmsg
-              (fa_uid, usertype, content, remind_status, ctime)
-           VALUES (?, ?, ?, 1, ?)"#,
+              (fa_uid, username, usertype, content, remind_status, ctime)
+           VALUES (?, COALESCE((SELECT username FROM phpyun_member WHERE uid = ? LIMIT 1), ''), ?, ?, 1, ?)"#,
     )
+    .bind(c.uid)
     .bind(c.uid)
     .bind(i32::from(c.recipient_usertype))
     .bind(&merged)
@@ -162,9 +163,10 @@ pub async fn insert_simple(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
-        "INSERT INTO phpyun_sysmsg (fa_uid, usertype, content, remind_status, ctime) \
-         VALUES (?, ?, ?, 1, ?)",
+        "INSERT INTO phpyun_sysmsg (fa_uid, username, usertype, content, remind_status, ctime) \
+         VALUES (?, COALESCE((SELECT username FROM phpyun_member WHERE uid = ? LIMIT 1), ''), ?, ?, 1, ?)",
     )
+    .bind(uid)
     .bind(uid)
     .bind(usertype)
     .bind(content)

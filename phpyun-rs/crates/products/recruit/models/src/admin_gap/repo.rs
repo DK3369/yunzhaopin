@@ -1317,19 +1317,22 @@ pub async fn list_sysmsgs(
 ) -> Result<Vec<SysmsgAdminRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(fa_uid,0) AS UNSIGNED) AS fa_uid, \
-         COALESCE(username,'') AS username, COALESCE(content,'') AS content, \
-         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, CAST(COALESCE(ctime,0) AS SIGNED) AS ctime \
-         FROM phpyun_sysmsg WHERE 1=1",
+        "SELECT CAST(s.id AS UNSIGNED) AS id, CAST(COALESCE(s.fa_uid,0) AS UNSIGNED) AS fa_uid, \
+         COALESCE(NULLIF(m.username,''), COALESCE(s.username,''), '') AS username, \
+         COALESCE(s.content,'') AS content, \
+         CAST(COALESCE(s.usertype,0) AS SIGNED) AS usertype, CAST(COALESCE(s.ctime,0) AS SIGNED) AS ctime \
+         FROM phpyun_sysmsg s LEFT JOIN phpyun_member m ON m.uid = s.fa_uid WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND (username LIKE ");
+        qb.push(" AND (m.username LIKE ");
         qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR content LIKE ");
+        qb.push(" OR s.username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR s.content LIKE ");
         qb.push_bind(format!("%{kw}%"));
         qb.push(")");
     }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push(" ORDER BY s.id DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);
@@ -1338,11 +1341,13 @@ pub async fn list_sysmsgs(
 
 pub async fn count_sysmsgs(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_sysmsg WHERE 1=1");
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_sysmsg s LEFT JOIN phpyun_member m ON m.uid = s.fa_uid WHERE 1=1");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND (username LIKE ");
+        qb.push(" AND (m.username LIKE ");
         qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR content LIKE ");
+        qb.push(" OR s.username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR s.content LIKE ");
         qb.push_bind(format!("%{kw}%"));
         qb.push(")");
     }
@@ -1368,11 +1373,22 @@ pub async fn php_insert_sysmsg(
     content: &str,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
+    let uname = if username.trim().is_empty() {
+        let row: Option<(String,)> = sqlx::query_as(
+            "SELECT COALESCE(username,'') FROM phpyun_member WHERE uid = ? LIMIT 1",
+        )
+        .bind(fa_uid)
+        .fetch_optional(pool)
+        .await?;
+        row.map(|r| r.0).unwrap_or_default()
+    } else {
+        username.to_string()
+    };
     Ok(sqlx::query(
         "INSERT INTO phpyun_sysmsg (fa_uid, username, usertype, content, remind_status, ctime) VALUES (?, ?, ?, ?, 1, ?)",
     )
     .bind(fa_uid)
-    .bind(username)
+    .bind(&uname)
     .bind(usertype)
     .bind(content)
     .bind(now)
@@ -1389,26 +1405,29 @@ pub struct PhpSysmsgFilter {
 }
 
 fn push_sysmsg_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpSysmsgFilter) {
-    qb.push(" FROM phpyun_sysmsg WHERE 1=1");
+    qb.push(" FROM phpyun_sysmsg s LEFT JOIN phpyun_member m ON m.uid = s.fa_uid WHERE 1=1");
     if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
         let like = format!("%{kw}%");
         match f.ktype.unwrap_or(1) {
             2 => {
-                qb.push(" AND content LIKE ");
+                qb.push(" AND s.content LIKE ");
                 qb.push_bind(like);
             }
             3 => {
-                qb.push(" AND fa_uid = ");
+                qb.push(" AND s.fa_uid = ");
                 qb.push_bind(kw.parse::<u64>().unwrap_or(0));
             }
             _ => {
-                qb.push(" AND username LIKE ");
+                qb.push(" AND (m.username LIKE ");
+                qb.push_bind(like.clone());
+                qb.push(" OR s.username LIKE ");
                 qb.push_bind(like);
+                qb.push(")");
             }
         }
     }
     if let Some(v) = f.ctime_from {
-        qb.push(" AND ctime >= ");
+        qb.push(" AND s.ctime >= ");
         qb.push_bind(v);
     }
 }
@@ -1420,12 +1439,13 @@ pub async fn php_list_sysmsgs(
     limit: u64,
 ) -> Result<Vec<SysmsgAdminRow>, sqlx::Error> {
     let mut qb = QueryBuilder::new(
-        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(fa_uid,0) AS UNSIGNED) AS fa_uid, \
-         COALESCE(username,'') AS username, COALESCE(content,'') AS content, \
-         CAST(COALESCE(usertype,0) AS SIGNED) AS usertype, CAST(COALESCE(ctime,0) AS SIGNED) AS ctime",
+        "SELECT CAST(s.id AS UNSIGNED) AS id, CAST(COALESCE(s.fa_uid,0) AS UNSIGNED) AS fa_uid, \
+         COALESCE(NULLIF(m.username,''), COALESCE(s.username,''), '') AS username, \
+         COALESCE(s.content,'') AS content, \
+         CAST(COALESCE(s.usertype,0) AS SIGNED) AS usertype, CAST(COALESCE(s.ctime,0) AS SIGNED) AS ctime",
     );
     push_sysmsg_where(&mut qb, f);
-    qb.push(" ORDER BY id DESC LIMIT ");
+    qb.push(" ORDER BY s.id DESC LIMIT ");
     qb.push_bind(limit as i64);
     qb.push(" OFFSET ");
     qb.push_bind(offset as i64);

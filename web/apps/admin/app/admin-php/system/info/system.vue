@@ -35,6 +35,14 @@
 
                 <el-table-column prop="username" :label="lc('admin_user_00140')" width="130">
                 </el-table-column>
+                <el-table-column :label="lc('admin_user_00162')" width="110">
+                    <template #default="scope">
+                        <span v-if="Number(scope.row.usertype) === 1">{{ lc('admin_user_00122') }}</span>
+                        <span v-else-if="Number(scope.row.usertype) === 2">{{ lc('admin_user_00124') }}</span>
+                        <span v-else-if="Number(scope.row.usertype) === 5">{{ lc('admin_system_00206') }}</span>
+                        <span v-else>{{ scope.row.usertype }}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column :label="lc('wap_user_00102')">
                     <template #default="scope">
                         <span class="content_all" v-html="scope.row.content_all"></span>

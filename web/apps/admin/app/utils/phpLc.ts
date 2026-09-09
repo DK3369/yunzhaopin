@@ -97,7 +97,7 @@ function replaceParams(text: string, params: unknown): string {
 }
 
 type I18nComposer = {
-  t: (key: string) => unknown
+  t: (key: string, values?: Record<string, unknown>) => unknown
   te: (key: string) => boolean
   locale: { value: string }
   messages?: { value?: Record<string, Record<string, unknown>> }
@@ -136,18 +136,37 @@ function lookupRaw(i18n: I18nComposer, key: string): string | undefined {
   return typeof cur === 'string' ? cur : undefined
 }
 
-function messageOf(i18n: I18nComposer, key: string): string | undefined {
+function i18nValues(params?: unknown): Record<string, unknown> | undefined {
+  if (params == null) return undefined
+  const arr = Array.isArray(params) ? params : [params]
+  const o: Record<string, unknown> = {}
+  arr.forEach((v, i) => {
+    o[String(i)] = v ?? ''
+  })
+  return o
+}
+
+function translatedOf(i18n: I18nComposer, key: string, params?: unknown): string | undefined {
+  if (!i18n.te(key)) return undefined
+  const values = i18nValues(params)
+  const t = String(values ? i18n.t(key, values) : i18n.t(key))
+  if (!t || t === key) return undefined
+  return t
+}
+
+function messageOf(i18n: I18nComposer, key: string, params?: unknown): string | undefined {
   const loc = activeLocale(i18n)
   const pinned = LC_FIRST_WINS[loc]?.[key]
   if (pinned) return pinned
   const raw = lookupRaw(i18n, key)
-  if (raw != null) return raw
+  if (typeof raw === 'string' && raw.length > 0) return raw
   if (key.indexOf('.') === -1) {
     const nested = lookupRaw(i18n, `lc.${key}`)
-    if (nested != null) return nested
+    if (typeof nested === 'string' && nested.length > 0) return nested
   }
-  if (i18n.te(key)) return String(i18n.t(key))
-  if (key.indexOf('.') === -1 && i18n.te(`lc.${key}`)) return String(i18n.t(`lc.${key}`))
+  const t = translatedOf(i18n, key, params)
+  if (t) return t
+  if (key.indexOf('.') === -1) return translatedOf(i18n, `lc.${key}`, params)
   return undefined
 }
 
@@ -178,9 +197,10 @@ export function lc(key: string, params?: unknown, fallback?: string): string {
   if (i18n && k) {
     void i18n.locale.value
     applyPhpLcFixes()
-    text = messageOf(i18n, k)
+    text = messageOf(i18n, k, params)
   }
-  return replaceParams(text ?? fallback ?? k, params)
+  const base = text && text.length > 0 ? text : fallback || k
+  return replaceParams(base, params)
 }
 
 /**
