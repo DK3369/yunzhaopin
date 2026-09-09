@@ -1,139 +1,34 @@
 <template>
-  <!-- PC 顶栏 + 导航，对齐原版 header.htm / index_header.htm -->
+  <!-- PC：深色单行顶栏 -->
   <div class="site-pc">
-    <div class="yun_new_top">
-      <div class="yun_new_cont">
-        <div class="yun_new_left">{{ $t('common.phone') }}：{{ phone || '—' }}</div>
-        <div class="yun_new_right" id="login_head_div">
-          <div
-            class="yun_topNav fr"
-            @mouseenter="navMore = true"
-            @mouseleave="navMore = false"
-          >
-            <a
-              class="yun_navMore"
-              :class="{ yun_webMorecurrent: navMore }"
-              href="javascript:;"
-            >{{ $t('common.website_nav') }}</a>
-            <div v-show="navMore" class="yun_webMoredown">
-              <div class="yun_top_nav_box">
-                <ul class="yun_top_nav_box_l">
-                  <li v-for="item in nav" :key="'map-' + String(item.id || item.to)">
-                    <NuxtLink :to="item.to">{{ item.label }}</NuxtLink>
-                  </li>
-                </ul>
-                <ul v-if="appNav.length || wxQr || wapQr" class="yun_top_nav_box_wx">
-                  <li v-for="item in appNav" :key="'app-' + String(item.id || item.to)">
-                    <NuxtLink :to="item.to">{{ item.label }}</NuxtLink>
-                  </li>
-                  <li v-if="wapQr">
-                    <img :src="wapQr" width="70" height="70" alt="" />
-                  </li>
-                  <li v-if="wxQr">
-                    <img :src="wxQr" width="70" height="70" alt="" />
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <span class="yun_new_right_we">{{ $t('common.welcome', { site: siteName }) }}</span>
-          <NuxtLink v-if="sitePickOn" to="/site" class="yun_new_right_wap">{{ $t('ui.pick_site') }}</NuxtLink>
-          <NuxtLink to="/" class="yun_new_right_wap">{{ $t('common.mobile_site') }}</NuxtLink>
-          <span class="login_head_id">
-            <template v-if="me">
-              <NuxtLink :to="memberHome">{{ me.username }}</NuxtLink>
-              <a href="javascript:;" @click.prevent="logout">{{ $t('common.logout') }}</a>
-            </template>
-            <template v-else>
-              <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
-              <NuxtLink to="/register">{{ $t('common.register') }}</NuxtLink>
-            </template>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="isHome" class="yunheader_60">
-      <div class="w1200">
-        <div class="yunheader_60logo fl">
-          <NuxtLink to="/" :title="siteName">
-            <img v-if="logoPc" :src="logoPc" :alt="siteName" />
-            <span v-else class="site-wordmark">{{ siteName }}</span>
+    <header class="pc-topbar">
+      <div class="pc-topbar__inner">
+        <NuxtLink to="/" class="pc-topbar__logo" :title="siteName">
+          <img v-if="logoPc" :src="logoPc" :alt="siteName" />
+          <span v-else class="site-wordmark">{{ siteName }}</span>
+        </NuxtLink>
+        <nav class="pc-topbar__nav" aria-label="site">
+          <NuxtLink
+            v-for="item in nav"
+            :key="String(item.id || item.to) + item.label"
+            :to="item.to"
+            class="pc-topbar__link"
+            :class="{ 'is-on': navActive(item.to) }"
+          >{{ item.label }}</NuxtLink>
+        </nav>
+        <div class="pc-topbar__actions">
+          <NuxtLink :to="hireTo" class="pc-topbar__text">{{ $t('common.publish_job') }}</NuxtLink>
+          <NuxtLink to="/jobs" class="pc-topbar__text">{{ $t('common.job') }}</NuxtLink>
+          <template v-if="me">
+            <NuxtLink :to="memberHome" class="pc-topbar__text">{{ me.username }}</NuxtLink>
+            <a href="javascript:;" class="pc-topbar__text" @click.prevent="logout">{{ $t('common.logout') }}</a>
+          </template>
+          <NuxtLink v-else to="/login" class="pc-topbar__pill">
+            {{ $t('common.login') }}/{{ $t('common.register') }}
           </NuxtLink>
         </div>
-        <div class="hp_head_search fl">
-          <div class="hp_head_searchbor">
-            <form :action="searchAction" method="get">
-              <div class="hp_head_search_job fl" @click.stop="searchMenu = !searchMenu">
-                <span class="hp_head_search_job_b">{{ searchKindLabel }}</span>
-                <div v-show="searchMenu" class="index_header_seach_find_list yunHeaderSearch_list_box">
-                  <a href="javascript:;" @click.prevent="setSearchKind('job')">{{ $t('default_00246') }}</a>
-                  <a href="javascript:;" @click.prevent="setSearchKind('resume')">{{ $t('default_00312') }}</a>
-                  <a href="javascript:;" @click.prevent="setSearchKind('tiny')">{{ $t('wap_js_00066') }}</a>
-                  <a href="javascript:;" @click.prevent="setSearchKind('once')">{{ $t('wap_js_00130') }}</a>
-                </div>
-              </div>
-              <input
-                class="hp_head_search_text fl"
-                type="text"
-                name="keyword"
-                :value="String(route.query.keyword || '')"
-                :placeholder="searchPlaceholder"
-              />
-              <input class="hp_head_search_sr fl" type="submit" :value="$t('common.search')" />
-            </form>
-          </div>
-          <div class="clear" />
-          <div class="hp_head_search_bom">
-            <div class="hp_head_search_bom_left">
-              <span style="color: #a4a1a1">{{ $t('common_02507') }}</span>
-              <NuxtLink
-                v-for="k in hotSearches"
-                :key="k.keyword"
-                :to="`/jobs?keyword=${encodeURIComponent(k.keyword)}`"
-                :title="k.keyword"
-              >{{ k.keyword }}</NuxtLink>
-            </div>
-            <div class="yun_new_header_search_more moreOptions">
-              <div>
-                <NuxtLink to="/jobs">{{ $t('default_00246') }}</NuxtLink>
-                <NuxtLink to="/map">{{ $t('default_00139') }}</NuxtLink>
-                <NuxtLink to="/jobs">{{ $t('common.search') }}</NuxtLink>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="yunheader_60nav">
-          <ul>
-            <li v-for="item in nav" :key="String(item.id || item.to) + item.label" :class="{ nav_list_hover: navActive(item.to) }">
-              <NuxtLink :to="item.to" class="png">{{ item.label }}</NuxtLink>
-              <i class="yun_new_headernav_list_line" />
-            </li>
-          </ul>
-        </div>
       </div>
-    </div>
-
-    <div v-else class="hp_head hp_head_box">
-      <div class="w1200">
-        <div class="hp_head_ft fl">
-          <div class="phpyun_logo fl">
-            <NuxtLink to="/" :title="siteName">
-              <img v-if="logoPc" :src="logoPc" :alt="siteName" />
-              <span v-else class="site-wordmark">{{ siteName }}</span>
-            </NuxtLink>
-          </div>
-        </div>
-        <div class="yun_header_nav_box">
-          <ul>
-            <li v-for="item in nav" :key="String(item.id || item.to) + item.label" :class="{ nav_list_hover: navActive(item.to) }">
-              <NuxtLink :to="item.to" class="png">{{ item.label }}</NuxtLink>
-              <i class="yun_new_headernav_list_line" />
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    </header>
   </div>
 
   <!-- H5：首页 yunTop；内页蓝条返回 -->
@@ -170,50 +65,20 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const { t } = useI18n()
 const {
   siteName,
-  phone,
   logoPc,
   logoH5,
   nav,
-  appNav,
   me,
   isHome,
   memberHome,
   h5Title,
   logout,
   navActive,
-  hotSearches,
-  wxQr,
-  wapQr,
-  settings,
 } = useSiteChrome()
-const sitePickOn = computed(() => String(settings.value.sy_web_site || '') === '1')
 
-type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
-const searchKind = ref<SearchKind>('job')
-const searchMenu = ref(false)
-const navMore = ref(false)
-const searchAction = computed(() => {
-  if (searchKind.value === 'resume') return '/resumes'
-  if (searchKind.value === 'tiny') return '/tiny'
-  if (searchKind.value === 'once') return '/once'
-  return '/jobs'
-})
-const searchKindLabel = computed(() => {
-  if (searchKind.value === 'resume') return t('default_00312')
-  if (searchKind.value === 'tiny') return t('wap_js_00066')
-  if (searchKind.value === 'once') return t('wap_js_00130')
-  return t('default_00246')
-})
-const searchPlaceholder = computed(() => t('default_00348'))
-
-function setSearchKind(kind: SearchKind) {
-  searchKind.value = kind
-  searchMenu.value = false
-}
+const hireTo = computed(() => (me.value ? '/com' : '/login?next=/com'))
 
 function goBack() {
   if (window.history.length > 1) {
@@ -222,10 +87,4 @@ function goBack() {
   }
   navigateTo('/')
 }
-
-onMounted(() => {
-  document.addEventListener('click', () => {
-    searchMenu.value = false
-  })
-})
 </script>

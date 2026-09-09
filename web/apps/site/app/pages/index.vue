@@ -15,8 +15,34 @@ type ArticleLike = {
 type FriendLink = { id: number; name: string; url: string; logo?: string; category?: string }
 
 const api = useApi()
+const route = useRoute()
 const { t, te } = useI18n()
-const { siteName, me, h5Nav, settings } = useSiteChrome()
+const { siteName, me, h5Nav, settings, hotSearches } = useSiteChrome()
+
+type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
+const searchKind = ref<SearchKind>('job')
+const searchMenu = ref(false)
+const searchAction = computed(() => {
+  if (searchKind.value === 'resume') return '/resumes'
+  if (searchKind.value === 'tiny') return '/tiny'
+  if (searchKind.value === 'once') return '/once'
+  return '/jobs'
+})
+const searchKindLabel = computed(() => {
+  if (searchKind.value === 'resume') return t('default_00312')
+  if (searchKind.value === 'tiny') return t('wap_js_00066')
+  if (searchKind.value === 'once') return t('wap_js_00130')
+  return t('default_00246')
+})
+const searchPlaceholder = computed(() => t('default_00348'))
+
+function setSearchKind(kind: SearchKind) {
+  searchKind.value = kind
+  searchMenu.value = false
+}
+function closeSearchMenu() {
+  searchMenu.value = false
+}
 const { applyToQuery, didNum, gotocity } = useSubSite()
 const pcBannerFlag = useCookie('pc_bannerFlag', { path: '/', maxAge: 3600 })
 const wapBannerFlag = useCookie('wap_bannerFlag', { path: '/', maxAge: 3600 })
@@ -276,6 +302,13 @@ async function homeLogin() {
   }
 }
 
+onMounted(() => {
+  document.addEventListener('click', closeSearchMenu)
+})
+onUnmounted(() => {
+  document.removeEventListener('click', closeSearchMenu)
+})
+
 useSeoMeta({
   title: () => (siteName.value ? `${siteName.value} - ${t('common.home')}` : t('common.home')),
   description: () => `${t('common.job')} / ${t('common.company')} / ${t('common.article')}`,
@@ -307,6 +340,38 @@ useHead({
       <a v-for="(ad, i) in ads72" :key="'72-' + i" :href="adHref(ad) || '/jobs'">
         <img v-if="ad.image_n || ad.image" :src="mediaUrl(ad.image_n || ad.image)" :alt="ad.title || ''" />
       </a>
+    </div>
+    <div class="pc-home-search">
+      <div class="pc-home-search__inner">
+        <form class="pc-home-search__bar" :action="searchAction" method="get">
+          <div class="pc-home-search__kind" @click.stop="searchMenu = !searchMenu">
+            <span>{{ searchKindLabel }}</span>
+            <div v-show="searchMenu" class="pc-home-search__menu">
+              <a href="javascript:;" @click.prevent="setSearchKind('job')">{{ $t('default_00246') }}</a>
+              <a href="javascript:;" @click.prevent="setSearchKind('resume')">{{ $t('default_00312') }}</a>
+              <a href="javascript:;" @click.prevent="setSearchKind('tiny')">{{ $t('wap_js_00066') }}</a>
+              <a href="javascript:;" @click.prevent="setSearchKind('once')">{{ $t('wap_js_00130') }}</a>
+            </div>
+          </div>
+          <input
+            class="pc-home-search__input"
+            type="text"
+            name="keyword"
+            :value="String(route.query.keyword || '')"
+            :placeholder="searchPlaceholder"
+          />
+          <button class="pc-home-search__btn" type="submit">{{ $t('common.search') }}</button>
+        </form>
+        <div v-if="hotSearches?.length" class="pc-home-search__hot">
+          <span>{{ $t('common_02507') }}</span>
+          <NuxtLink
+            v-for="k in hotSearches"
+            :key="k.keyword"
+            :to="`/jobs?keyword=${encodeURIComponent(k.keyword)}`"
+            :title="k.keyword"
+          >{{ k.keyword }}</NuxtLink>
+        </div>
+      </div>
     </div>
     <div class="w1200">
       <div class="first_floor">
