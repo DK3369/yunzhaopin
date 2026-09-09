@@ -18,6 +18,7 @@ use super::entity::Category;
 use crate::soft_delete;
 use serde::Serialize;
 use sqlx::{FromRow, MySqlPool, QueryBuilder};
+use std::collections::HashSet;
 
 /// Resolve `kind` to (real PHPYun table, parent id column).
 fn resolve(kind: &str) -> Option<(&'static str, &'static str)> {
@@ -484,6 +485,37 @@ pub async fn list_php(
         q.fetch_all(pool).await
     };
     phpyun_core::db::ok_default_if_object_missing(rows)
+}
+
+/// Parent ids that actually have at least one child (`keyid` / `pid` in `parent_ids`).
+pub async fn ids_with_children(
+    pool: &MySqlPool,
+    kind: &str,
+    parent_ids: &[u64],
+) -> Result<HashSet<u64>, sqlx::Error> {
+    if parent_ids.is_empty() {
+        return Ok(HashSet::new());
+    }
+    let Some((table, pc)) = resolve(kind) else {
+        return Ok(HashSet::new());
+    };
+    if is_flat(kind) {
+        return Ok(HashSet::new());
+    }
+    let pred = deleted_pred(kind);
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT DISTINCT CAST({pc} AS UNSIGNED) FROM {table} WHERE {pred} AND {pc} IN ("
+    ));
+    {
+        let mut sep = qb.separated(",");
+        for id in parent_ids {
+            sep.push_bind(*id);
+        }
+    }
+    qb.push(")");
+    let rows = qb.build_query_as::<(u64,)>().fetch_all(pool).await;
+    let rows = phpyun_core::db::ok_default_if_object_missing(rows)?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
 }
 
 pub async fn get_php(

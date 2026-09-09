@@ -1,7 +1,7 @@
 //! PHP admin named actions for 招聘会 / 新闻 / 问答 / 专题.
 //! SQL stays in repos. Routes are `php-*` and stay out of AdminDoc.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use chrono::{Datelike, TimeZone};
 use phpyun_core::i18n;
@@ -5568,7 +5568,7 @@ fn cat_row_json(kind: &str, r: &cat_repo::CatPhpRow, level: i32) -> Value {
         v["display"] = json!(r.display.to_string());
         v["code"] = json!(r.code.clone());
         v["level"] = json!(level);
-        v["hasChildren"] = json!(level < 3);
+        v["hasChildren"] = json!(false);
     }
     if kind == "job" {
         v["e_name"] = json!(r.e_name.clone());
@@ -5581,15 +5581,34 @@ fn cat_row_json(kind: &str, r: &cat_repo::CatPhpRow, level: i32) -> Value {
     v
 }
 
+async fn cat_rows_json(
+    state: &AppState,
+    kind: &str,
+    rows: &[cat_repo::CatPhpRow],
+    level: i32,
+) -> AppResult<Vec<Value>> {
+    let has = if kind == "city" && !rows.is_empty() {
+        let ids: Vec<u64> = rows.iter().map(|r| r.id).collect();
+        cat_repo::ids_with_children(state.db.reader(), kind, &ids).await?
+    } else {
+        HashSet::new()
+    };
+    Ok(rows
+        .iter()
+        .map(|r| {
+            let mut v = cat_row_json(kind, r, level);
+            if kind == "city" {
+                v["hasChildren"] = json!(has.contains(&r.id));
+            }
+            v
+        })
+        .collect())
+}
+
 async fn cat_class_list(state: &AppState, body: &Value) -> AppResult<Value> {
     let kind = cat_kind(body);
     let rows = cat_repo::list_php(state.db.reader(), &kind, None).await?;
-    let level = 1;
-    Ok(Value::Array(
-        rows.iter()
-            .map(|r| cat_row_json(&kind, r, level))
-            .collect(),
-    ))
+    Ok(Value::Array(cat_rows_json(state, &kind, &rows, 1).await?))
 }
 
 async fn cat_class_children(state: &AppState, body: &Value) -> AppResult<Value> {
@@ -5600,10 +5619,7 @@ async fn cat_class_children(state: &AppState, body: &Value) -> AppResult<Value> 
     }
     let level = json_i32(body, "level").max(1);
     let rows = cat_repo::list_php(state.db.reader(), &kind, Some(keyid)).await?;
-    let list: Vec<Value> = rows
-        .iter()
-        .map(|r| cat_row_json(&kind, r, level))
-        .collect();
+    let list = cat_rows_json(state, &kind, &rows, level).await?;
     Ok(json!({ "list": list }))
 }
 
@@ -5635,6 +5651,7 @@ async fn cat_class_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             },
         )
         .await?;
+        dict_service::reload(state).await?;
         return Ok(PhpOut::Message("ok"));
     }
     let names = dash_names(&name_owned);
@@ -5669,6 +5686,7 @@ async fn cat_class_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             .await?;
         }
     }
+    dict_service::reload(state).await?;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5682,6 +5700,7 @@ async fn cat_class_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
     cat_repo::delete_php_ids(state.db.pool(), &kind, &ids).await?;
+    dict_service::reload(state).await?;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5715,6 +5734,7 @@ async fn cat_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         None,
     )
     .await?;
+    dict_service::reload(state).await?;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5751,6 +5771,7 @@ async fn cat_class_add_single(state: &AppState, body: &Value) -> AppResult<PhpOu
         &json_str(body, "code"),
     )
     .await?;
+    dict_service::reload(state).await?;
     Ok(PhpOut::Message("admin_01367"))
 }
 
@@ -5771,6 +5792,7 @@ async fn cat_class_up_single(state: &AppState, body: &Value) -> AppResult<PhpOut
         &json_str(body, "code"),
     )
     .await?;
+    dict_service::reload(state).await?;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5800,6 +5822,7 @@ async fn cat_class_upp(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         )
         .await?;
     }
+    dict_service::reload(state).await?;
     Ok(PhpOut::Message("admin_system_00002"))
 }
 

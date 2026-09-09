@@ -28,7 +28,7 @@
                     <template #default="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="small" @click="openManage(scope)">{{ lc('wap_com_00304') }}</el-button>
-                            <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
+                            <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>

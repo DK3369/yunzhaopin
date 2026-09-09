@@ -38,7 +38,7 @@
                 <el-table-column fixed="right" :label="lc('member_user_00048')" width="70">
                     <template #default="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
+                            <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>

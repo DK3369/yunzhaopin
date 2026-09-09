@@ -31,7 +31,7 @@ async function load() {
     await nextTick()
     restoreSelection()
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : lc('common_00001', null, '加载失败')
+    const msg = e instanceof Error ? e.message : lc('admin_user_weipin_00026', null, '加载失败')
     ElMessage.error(msg)
   } finally {
     loading.value = false
@@ -92,7 +92,7 @@ async function addCountry() {
     ElMessage.success(lc('admin_00197', null, '已添加'))
     await load()
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : lc('common_00001', null, '添加失败')
+    const msg = e instanceof Error ? e.message : lc('admin_00187', null, '添加失败')
     ElMessage.error(msg)
   } finally {
     loading.value = false
@@ -115,7 +115,7 @@ async function removeRow(row: Row) {
     ElMessage.success(lc('wap_js_00077', null, '已删除'))
     await load()
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : lc('common_00001', null, '删除失败')
+    const msg = e instanceof Error ? e.message : lc('admin_user_00186', null, '删除失败')
     ElMessage.error(msg)
   } finally {
     loading.value = false
@@ -154,7 +154,7 @@ onMounted(load)
         height="100%"
         row-key="id"
         :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
-        :empty-text="lc('common_00002', null, '暂无数据')"
+        :empty-text="lc('wap_js_00113', null, '暂无数据')"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="ID" width="80" />
@@ -166,7 +166,7 @@ onMounted(load)
         <el-table-column prop="name_en" :label="lc('admin_system_00104', null, '英文名')" />
         <el-table-column :label="lc('member_com_00023', null, '前台显示')" width="110">
           <template #default="{ row }">
-            {{ Number(row.status) === 1 ? lc('common_00003', null, '是') : lc('common_00004', null, '否') }}
+            {{ Number(row.status) === 1 ? lc('common_02085', null, '是') : lc('common_02063', null, '否') }}
           </template>
         </el-table-column>
         <el-table-column

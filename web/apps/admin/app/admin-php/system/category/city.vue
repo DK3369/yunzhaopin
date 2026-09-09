@@ -1,7 +1,16 @@
 <template>
 <div id="cityfl" class="moduleElenAl">
     <div class="moduleSeachs">
-        <div class="">{{ lc('admin_system_00067') }}</div>
+        <div class="">
+            {{ lc('admin_system_00067') }}
+            <el-input
+                v-model="filterKw"
+                clearable
+                size="small"
+                style="width: 240px; margin-left: 12px;"
+                :placeholder="lc('admin_system_00068') + ' / ' + lc('admin_system_00104') + ' / ' + lc('admin_system_00066')"
+            ></el-input>
+        </div>
         <div class="nrtopbtn">
             <el-button size="small" icon="el-icon-plus" @click="handleAdd('0','top')">{{ lc('admin_00197') }}</el-button>
             <el-button size="small" icon="el-icon-refresh" @click="pinyin">{{ lc('admin_system_00073') }}</el-button>
@@ -11,7 +20,7 @@
     </div>
 
     <div class="moduleElTable">
-        <el-table :data="tableData" border style="width: 100%;" height="100%" row-key="id"
+        <el-table :data="shownTableData" border style="width: 100%;" height="100%" row-key="id"
             :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" lazy :load="load"
             :tree-props="{children: 'children', hasChildren: 'hasChildren'}" ref="multipleTable"
             v-loading="loading"
@@ -21,40 +30,75 @@
 			<el-table-column label="ID" property="id" width="150"></el-table-column>
             <el-table-column :label="lc('admin_system_00069')" width="100" property="sort" style="display: flex; align-items: center;">
                 <template #default="scope">
-                    <el-input v-model="scope.row.sort"></el-input>
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                        :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                        v-model="scope.row.sort" @blur="alterData(scope, 'int')"
+                        onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                    <span v-else>
+                        {{ scope.row.sort }}<img @click="editData(scope)" class="editIcon"
+                        src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column :label="lc('admin_system_00068')" property="name">
                 <template #default="scope">
-                    <el-input v-model="scope.row.name"></el-input>
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                        :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                        v-model="scope.row.name" @blur="alterData(scope)"></el-input>
+                    <span v-else>
+                        {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
+                        src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column :label="lc('admin_system_00104')" property="e_name">
                 <template #default="scope">
-                    <el-input v-model="scope.row.e_name"></el-input>
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                        :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                        v-model="scope.row.e_name" @blur="alterData(scope)"></el-input>
+                    <span v-else>
+                        {{ scope.row.e_name }}<img @click="editData(scope)" class="editIcon"
+                        src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column :label="lc('common_01973')" property="letter" width="110">
                 <template #default="scope">
-                    <el-select v-model="scope.row.letter" :placeholder="lc('wap_user_00100')">
+                    <el-select v-if="scope.row[scope.column.property + 'isShow']" v-model="scope.row.letter"
+                        :placeholder="lc('wap_user_00100')" @change="alterData(scope)">
                         <el-option v-for="item in letterOptions" :key="item" :label="item"
                             :value="item">
                         </el-option>
                     </el-select>
+                    <span v-else>
+                        {{ scope.row.letter }}<img @click="editData(scope)" class="editIcon"
+                        src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                    </span>
                 </template>
             </el-table-column>
-            <el-table-column :label="lc('member_com_00023')" property="show" width="110">
+            <el-table-column :label="lc('member_com_00023')" property="display" width="110">
                 <template #default="scope">
-                    <el-select v-model="scope.row.display" :placeholder="lc('wap_user_00100')">
+                    <el-select v-if="scope.row[scope.column.property + 'isShow']" v-model="scope.row.display"
+                        :placeholder="lc('wap_user_00100')" @change="alterData(scope)">
                         <el-option v-for="item in displayOptions" :key="item.value" :label="item.label"
                             :value="item.value">
                         </el-option>
                     </el-select>
+                    <span v-else>
+                        {{ displayLabel(scope.row.display) }}<img @click="editData(scope)" class="editIcon"
+                        src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column :label="lc('admin_system_00066')" property="code">
                 <template #default="scope">
-                    <el-input v-model="scope.row.code"></el-input>
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                        :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                        v-model="scope.row.code" @blur="alterData(scope)"></el-input>
+                    <span v-else>
+                        {{ scope.row.code }}<img @click="editData(scope)" class="editIcon"
+                        src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" header-align="center" align="right" :label="lc('member_user_00048')" width="210">
@@ -134,7 +178,21 @@ export default {
                 letterOptions: Object.freeze(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",]),
                 displayOptions: Object.freeze([{"label": window.lc('common_02085'), "value": "1"}, {"label": window.lc('common_02063'), "value": "0"}]),
                 maps: new Map(),
+                filterKw: '',
+                oldData: null,
             }
+        },
+        computed: {
+            shownTableData() {
+                const q = String(this.filterKw || '').trim().toLowerCase();
+                if (!q) return this.tableData;
+                return this.tableData.filter((r) => {
+                    const name = String(r.name || '').toLowerCase();
+                    const en = String(r.e_name || '').toLowerCase();
+                    const code = String(r.code || '').toLowerCase();
+                    return name.indexOf(q) >= 0 || en.indexOf(q) >= 0 || code.indexOf(q) >= 0;
+                });
+            },
         },
         mounted() {
             this.getList();
@@ -229,7 +287,7 @@ export default {
                     this.isIndeterminate = false;
                     this.checked = false;
                 } else {
-                    if (this.selectedItem.length == this.tableData.length) {
+                    if (this.selectedItem.length == this.shownTableData.length) {
                         this.isIndeterminate = false;
                         this.checked = true;
                     } else {
@@ -240,6 +298,37 @@ export default {
             },
             selectAllBottom(value) {
                 value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            displayLabel(val) {
+                const hit = this.displayOptions.find((item) => String(item.value) === String(val));
+                return hit ? hit.label : val;
+            },
+            editData(scope) {
+                const row = scope.row;
+                const column = scope.column;
+                this.oldData = JSON.parse(JSON.stringify(row));
+                this.$set(row, column.property + 'isShow', true);
+                this.$nextTick(() => {
+                    const el = document.getElementById(column.property + scope.$index);
+                    if (el) el.focus();
+                });
+            },
+            alterData(scope, type) {
+                if (this.oldData == null) {
+                    return false;
+                }
+                const row = scope.row;
+                const column = scope.column;
+                if (type === 'int') {
+                    row[column.property] = String(row[column.property] == null ? '' : row[column.property]).replace(/[^0-9]/g, '');
+                }
+                this.$set(row, column.property + 'isShow', false);
+                if (String(row[column.property]) === String(this.oldData[column.property])) {
+                    this.oldData = null;
+                    return false;
+                }
+                this.oldData = null;
+                this.handleSingle(scope);
             },
             load(tree, treeNode, resolve) {
                 let _this = this;

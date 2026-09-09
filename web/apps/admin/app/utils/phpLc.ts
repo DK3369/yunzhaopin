@@ -52,10 +52,12 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
   zh: {
     admin_yunying_00201: '短信',
     admin_vue_00137: '确定移除 {0}？',
+    admin_level1_category_value: '一级分类：{0}',
   },
   en: {
     admin_yunying_00201: 'SMS',
     admin_vue_00137: 'Remove {0}?',
+    admin_level1_category_value: 'Level 1 Category: {0}',
   },
 }
 
@@ -157,11 +159,13 @@ export function applyPhpLcFixes(): void {
   i18n.mergeLocaleMessage('zh', {
     admin_yunying_00201: LC_FIRST_WINS.zh.admin_yunying_00201,
     admin_vue_00137: LC_FIRST_WINS.zh.admin_vue_00137,
+    admin_level1_category_value: LC_FIRST_WINS.zh.admin_level1_category_value,
     nav: { '123': NAV_LABEL.zh[123], '186': NAV_LABEL.zh[186] },
   })
   i18n.mergeLocaleMessage('en', {
     admin_yunying_00201: LC_FIRST_WINS.en.admin_yunying_00201,
     admin_vue_00137: LC_FIRST_WINS.en.admin_vue_00137,
+    admin_level1_category_value: LC_FIRST_WINS.en.admin_level1_category_value,
     nav: { '123': NAV_LABEL.en[123], '186': NAV_LABEL.en[186] },
   })
   mergedFixes = true
