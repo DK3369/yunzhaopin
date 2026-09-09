@@ -4,6 +4,7 @@
 # Environment configuration is intentionally versioned for this deployment.
 /dist/
 /uploads-dev/
+/uploads/
 /sqlx-data.json
 **/*.rs.bk
 Cargo.lock.backup

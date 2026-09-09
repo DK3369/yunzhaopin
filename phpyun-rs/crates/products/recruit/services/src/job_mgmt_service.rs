@@ -71,6 +71,7 @@ async fn ensure_can_publish(state: &AppState, user: &AuthenticatedUser) -> AppRe
         return Err(ApiError::business("member_com_00071"));
     }
     if setting_on(state, "com_enforce_licensecert").await && company.yyzz_status != 1 {
+        // PHP jobadd: empty cert or status=2 (rejected) blocks publish.
         let cert = company_cert_repo::find(state.db.reader(), user.uid).await?;
         let deny = match cert {
             None => true,

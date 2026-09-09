@@ -1,106 +1,119 @@
-//! `phpyun_company_cert` repository — company verification queue.
+//! `phpyun_company_cert` — qualification (`type=3`) and claim-code (`type=6`).
 //!
-//! PHP schema (truth): `id, uid, usertype, type, status, step, check, check2,
+//! PHP schema: `id, uid, usertype, type, status, step, check, check2,
 //! social_credit, owner_cert, wt_cert, other_cert, ctime, statusbody, did`.
 //!
-//! Mapping (Rust entity → PHP column):
-//! - `license_photo` → `social_credit`  (营业执照照片)
-//! - `id_photo`      → `owner_cert`     (法人身份证照片)
-//! - `status`        → `status`
-//! - `note`          → `statusbody`     (审核备注)
-//! - `submitted_at`  → `ctime`
-//! - `reviewed_at`   → no PHP column    (always 0)
-//! - `reviewer_uid`  → no PHP column    (always 0)
-//! - `created_at`    → `ctime`
-//! - `updated_at`    → `ctime`
-//!
-//! Caveats:
-//! - PHP table has no UNIQUE on `uid`, so `ON DUPLICATE KEY UPDATE` would
-//!   never fire. Implement upsert as `find → UPDATE or INSERT` instead.
+//! `uid` is not UNIQUE (one uid can have type 3 and type 6). Upsert is
+//! find-by-type then UPDATE / INSERT. Never `ON DUPLICATE KEY`.
 
-use super::entity::CompanyCert;
-use sqlx::MySqlPool;
+use super::entity::{CompanyCert, TYPE_LICENSE};
+use sqlx::{MySqlPool, QueryBuilder};
 
-const SELECT_FIELDS: &str = "CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
-                             COALESCE(social_credit, '') AS license_photo, \
-                             COALESCE(owner_cert, '') AS id_photo, \
-                             COALESCE(status, 0) AS status, \
-                             COALESCE(statusbody, '') AS note, \
-                             COALESCE(ctime, 0) AS submitted_at, \
-                             0 AS reviewed_at, \
-                             CAST(0 AS UNSIGNED) AS reviewer_uid, \
-                             COALESCE(ctime, 0) AS created_at, \
-                             COALESCE(ctime, 0) AS updated_at";
+const SELECT_FIELDS: &str = "CAST(COALESCE(id, 0) AS UNSIGNED) AS id, \
+                             CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
+                             CAST(COALESCE(usertype, 0) AS SIGNED) AS usertype, \
+                             CAST(COALESCE(type, 0) AS SIGNED) AS cert_type, \
+                             CAST(COALESCE(status, 0) AS SIGNED) AS status, \
+                             CAST(COALESCE(step, 0) AS SIGNED) AS step, \
+                             COALESCE(`check`, '') AS `check`, \
+                             COALESCE(check2, '') AS check2, \
+                             COALESCE(social_credit, '') AS social_credit, \
+                             COALESCE(owner_cert, '') AS owner_cert, \
+                             COALESCE(wt_cert, '') AS wt_cert, \
+                             COALESCE(other_cert, '') AS other_cert, \
+                             COALESCE(ctime, 0) AS ctime, \
+                             COALESCE(statusbody, '') AS statusbody, \
+                             CAST(COALESCE(did, 0) AS UNSIGNED) AS did";
 
+/// Latest type=3 (企业资质) row for this uid.
 pub async fn find(pool: &MySqlPool, uid: u64) -> Result<Option<CompanyCert>, sqlx::Error> {
-    let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_company_cert WHERE uid = ? LIMIT 1");
+    let sql = format!(
+        "SELECT {SELECT_FIELDS} FROM phpyun_company_cert \
+         WHERE uid = ? AND type = {TYPE_LICENSE} ORDER BY id DESC LIMIT 1"
+    );
     sqlx::query_as::<_, CompanyCert>(&sql)
         .bind(uid)
         .fetch_optional(pool)
         .await
 }
 
-/// Company submits/updates verification info. PHP table has no UNIQUE on
-/// `uid` so we explicitly check + UPDATE / INSERT.
-pub async fn upsert(
-    pool: &MySqlPool,
-    uid: u64,
-    license_photo: &str,
-    id_photo: &str,
-    now: i64,
-) -> Result<(), sqlx::Error> {
-    let exists: Option<(i64,)> =
-        sqlx::query_as("SELECT 1 FROM phpyun_company_cert WHERE uid = ? LIMIT 1")
-            .bind(uid)
-            .fetch_optional(pool)
-            .await?;
-    if exists.is_some() {
-        sqlx::query(
-            r#"UPDATE phpyun_company_cert
-               SET social_credit = ?, owner_cert = ?, status = 1,
-                   statusbody = '', ctime = ?
-               WHERE uid = ?"#,
-        )
-        .bind(license_photo)
-        .bind(id_photo)
-        .bind(now)
-        .bind(uid)
-        .execute(pool)
-        .await?;
+pub struct CertWrite<'a> {
+    pub uid: u64,
+    pub did: u32,
+    pub status: i32,
+    pub social_credit: &'a str,
+    pub check: Option<&'a str>,
+    pub owner_cert: Option<&'a str>,
+    pub wt_cert: Option<&'a str>,
+    pub other_cert: Option<&'a str>,
+    pub now: i64,
+}
+
+/// Insert or update the type=3 row. Optional pics only overwrite when `Some`.
+pub async fn upsert_type3(pool: &MySqlPool, w: &CertWrite<'_>) -> Result<(), sqlx::Error> {
+    if let Some(row) = find(pool, w.uid).await? {
+        let mut qb = QueryBuilder::new("UPDATE phpyun_company_cert SET status = ");
+        qb.push_bind(w.status);
+        qb.push(", statusbody = ''");
+        qb.push(", ctime = ");
+        qb.push_bind(w.now);
+        qb.push(", social_credit = ");
+        qb.push_bind(w.social_credit);
+        if let Some(v) = w.check {
+            qb.push(", `check` = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = w.owner_cert {
+            qb.push(", owner_cert = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = w.wt_cert {
+            qb.push(", wt_cert = ");
+            qb.push_bind(v);
+        }
+        if let Some(v) = w.other_cert {
+            qb.push(", other_cert = ");
+            qb.push_bind(v);
+        }
+        qb.push(" WHERE id = ");
+        qb.push_bind(row.id);
+        qb.build().execute(pool).await?;
     } else {
         sqlx::query(
             r#"INSERT INTO phpyun_company_cert
-               (uid, social_credit, owner_cert, status, statusbody, ctime)
-               VALUES (?, ?, ?, 1, '', ?)"#,
+               (uid, usertype, type, status, step, `check`, check2, social_credit,
+                owner_cert, wt_cert, other_cert, ctime, statusbody, did)
+               VALUES (?, 2, '3', ?, 1, ?, '0', ?, ?, ?, ?, ?, '', ?)"#,
         )
-        .bind(uid)
-        .bind(license_photo)
-        .bind(id_photo)
-        .bind(now)
+        .bind(w.uid)
+        .bind(w.status)
+        .bind(w.check.unwrap_or(""))
+        .bind(w.social_credit)
+        .bind(w.owner_cert.unwrap_or(""))
+        .bind(w.wt_cert.unwrap_or(""))
+        .bind(w.other_cert.unwrap_or(""))
+        .bind(w.now)
+        .bind(w.did)
         .execute(pool)
         .await?;
     }
     Ok(())
 }
 
+/// Admin REST: only rows still waiting (`status=0`).
 pub async fn review(
     pool: &MySqlPool,
     uid: u64,
     status: i32,
     note: &str,
-    _reviewer_uid: u64,
-    now: i64,
 ) -> Result<u64, sqlx::Error> {
-    // PHP table has no `reviewed_at` / `reviewer_uid` columns — those are
-    // dropped silently. Audit info still goes through `audit::emit()`.
     let res = sqlx::query(
         r#"UPDATE phpyun_company_cert
-           SET status = ?, statusbody = ?, ctime = ?
-           WHERE uid = ? AND status = 1"#,
+           SET status = ?, statusbody = ?
+           WHERE uid = ? AND type = 3 AND status = 0"#,
     )
     .bind(status)
     .bind(note)
-    .bind(now)
     .bind(uid)
     .execute(pool)
     .await?;
@@ -114,7 +127,8 @@ pub async fn list_pending(
 ) -> Result<Vec<CompanyCert>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_company_cert \
-         WHERE status = 1 ORDER BY ctime ASC, id ASC LIMIT ? OFFSET ?"
+         WHERE type = {TYPE_LICENSE} AND status = 0 \
+         ORDER BY ctime ASC, id ASC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, CompanyCert>(&sql)
         .bind(limit)
@@ -151,9 +165,11 @@ pub async fn update_admin_type3(
 }
 
 pub async fn count_pending(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_cert WHERE status = 1")
-        .fetch_one(pool)
-        .await?;
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_cert WHERE type = 3 AND status = 0",
+    )
+    .fetch_one(pool)
+    .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

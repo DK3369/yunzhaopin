@@ -1444,6 +1444,22 @@ pub async fn set_yyzz(
     Ok(res.rows_affected())
 }
 
+/// PHP `company` name uniqueness used by 企业资质 (`uid <> self`).
+pub async fn count_name_except(
+    pool: &MySqlPool,
+    name: &str,
+    except_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company WHERE name = ? AND uid <> ?",
+    )
+    .bind(name)
+    .bind(except_uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn set_email_lock(
     pool: &MySqlPool,
     uid: u64,

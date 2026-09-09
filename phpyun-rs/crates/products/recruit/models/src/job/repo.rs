@@ -1700,3 +1700,27 @@ pub async fn get_company_contact(
         },
     ))
 }
+
+/// PHP `upCertYyzz` / `addCertInfo`: sync `company_job.yyzz_status` (+ optional `com_name`).
+pub async fn set_yyzz_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    yyzz_status: i32,
+    com_name: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let res = if let Some(n) = com_name.filter(|s| !s.is_empty()) {
+        sqlx::query("UPDATE phpyun_company_job SET yyzz_status = ?, com_name = ? WHERE uid = ?")
+            .bind(yyzz_status)
+            .bind(n)
+            .bind(uid)
+            .execute(pool)
+            .await?
+    } else {
+        sqlx::query("UPDATE phpyun_company_job SET yyzz_status = ? WHERE uid = ?")
+            .bind(yyzz_status)
+            .bind(uid)
+            .execute(pool)
+            .await?
+    };
+    Ok(res.rows_affected())
+}

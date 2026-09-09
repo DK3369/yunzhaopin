@@ -92,7 +92,7 @@ async fn audit_underlying_table_counts() {
         ("/v1/admin/audit-log", &[("phpyun_rs_audit_log", "1=1")]),
         (
             "/v1/admin/company-certs",
-            &[("phpyun_company_cert", "status = 1")],
+            &[("phpyun_company_cert", "type = 3 AND status = 0")],
         ),
         (
             "/v1/mcenter/sessions",
