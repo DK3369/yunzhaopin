@@ -8,8 +8,54 @@ use md5::{Digest, Md5};
 use phpyun_models::admin_gap::entity::*;
 use phpyun_models::admin_gap::extra as gap2;
 use phpyun_models::admin_gap::repo as gap;
-use phpyun_models::admin_gap::repo::MsgFilter;
+use phpyun_models::admin_gap::repo::{CompanyContentFilter, MsgFilter};
 use phpyun_models::recycle_bin::php_repo as recycle;
+use phpyun_models::site_setting::repo as setting_repo;
+use std::collections::HashMap;
+
+fn checkpic_url(cfg: &HashMap<String, String>, path: &str) -> String {
+    let p = path.trim();
+    if p.is_empty() {
+        return String::new();
+    }
+    if p.starts_with("http://") || p.starts_with("https://") {
+        return p.to_string();
+    }
+    let base = cfg
+        .get("sy_ossurl")
+        .filter(|s| !s.is_empty())
+        .or_else(|| cfg.get("sy_weburl"))
+        .cloned()
+        .unwrap_or_default();
+    if base.is_empty() {
+        return p.to_string();
+    }
+    format!(
+        "{}/{}",
+        base.trim_end_matches('/'),
+        p.trim_start_matches('/')
+    )
+}
+
+async fn site_pic_cfg(state: &AppState) -> AppResult<HashMap<String, String>> {
+    Ok(setting_repo::find_many(state.db.reader(), &["sy_ossurl", "sy_weburl"]).await?)
+}
+
+fn map_content_status(status: Option<i32>) -> Option<i32> {
+    match status {
+        Some(3) => Some(0),
+        other => other,
+    }
+}
+
+fn content_ctime_min(time_days: Option<i32>) -> Option<i64> {
+    let days = time_days.filter(|d| *d > 0)?;
+    if days <= 1 {
+        Some(clock::start_of_today())
+    } else {
+        Some(clock::now_ts() - i64::from(days) * 86_400)
+    }
+}
 
 async fn audit_write(state: &AppState, actor: &AuthenticatedUser, action: &'static str, target: String) {
     let _ = audit::emit(
@@ -280,7 +326,11 @@ pub async fn list_company_photos(
     page: Pagination,
 ) -> AppResult<Paged<CompanyPhotoRow>> {
     let db = state.db.reader();
-    let list = gap::list_company_photos(db, status, keyword, page.offset, page.limit).await?;
+    let mut list = gap::list_company_photos(db, status, keyword, page.offset, page.limit).await?;
+    let cfg = site_pic_cfg(state).await?;
+    for r in &mut list {
+        r.logo = checkpic_url(&cfg, &r.logo);
+    }
     let total = gap::count_company_photos(db, status, keyword).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -288,19 +338,22 @@ pub async fn list_company_photos(
 pub async fn set_logo_status(
     state: &AppState,
     actor: &AuthenticatedUser,
-    uid: u64,
+    uids: &[u64],
     status: i32,
     statusbody: &str,
 ) -> AppResult<()> {
+    if uids.is_empty() {
+        return Err(ApiError::param_invalid("uid"));
+    }
     let n = if statusbody.is_empty() {
-        gap::set_logo_status(state.db.pool(), uid, status).await?
+        gap::set_logo_status_many(state.db.pool(), uids, status).await?
     } else {
-        gap2::set_logo_review(state.db.pool(), uid, status, statusbody).await?
+        gap2::set_logo_review_many(state.db.pool(), uids, status, statusbody).await?
     };
     if n == 0 {
         return Err(ApiError::param_invalid("company_not_found"));
     }
-    audit_write(state, actor, "admin.company.logo", format!("uid:{uid}")).await;
+    audit_write(state, actor, "admin.company.logo", format!("uid:{uids:?}")).await;
     Ok(())
 }
 
@@ -308,11 +361,19 @@ pub async fn list_gallery(
     state: &AppState,
     kind: &str,
     status: Option<i32>,
+    keyword: Option<&str>,
+    keyword_type: Option<i32>,
     page: Pagination,
 ) -> AppResult<Paged<GalleryAdminRow>> {
     let db = state.db.reader();
-    let list = gap::list_gallery(db, kind, status, page.offset, page.limit).await?;
-    let total = gap::count_gallery(db, kind, status).await?;
+    let kt = keyword_type.unwrap_or(0);
+    let mut list =
+        gap::list_gallery(db, kind, status, keyword, kt, page.offset, page.limit).await?;
+    let cfg = site_pic_cfg(state).await?;
+    for r in &mut list {
+        r.picurl = checkpic_url(&cfg, &r.picurl);
+    }
+    let total = gap::count_gallery(db, kind, status, keyword, kt).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
@@ -337,11 +398,37 @@ pub async fn list_content(
     state: &AppState,
     kind: &str,
     status: Option<i32>,
+    keyword: Option<&str>,
+    keyword_type: Option<i32>,
+    time_days: Option<i32>,
     page: Pagination,
 ) -> AppResult<Paged<CompanyContentAdminRow>> {
     let db = state.db.reader();
-    let list = gap::list_company_content(db, kind, status, page.offset, page.limit).await?;
-    let total = gap::count_company_content(db, kind, status).await?;
+    let filter = CompanyContentFilter {
+        status: map_content_status(status),
+        keyword,
+        keyword_type: keyword_type.unwrap_or(0),
+        ctime_min: content_ctime_min(time_days),
+    };
+    let mut list =
+        gap::list_company_content(db, kind, &filter, page.offset, page.limit).await?;
+    let cfg = site_pic_cfg(state).await?;
+    let web = cfg
+        .get("sy_weburl")
+        .cloned()
+        .unwrap_or_default()
+        .trim_end_matches('/')
+        .to_string();
+    for r in &mut list {
+        r.ctime_n = fmt_dt(r.ctime);
+        r.pic = checkpic_url(&cfg, &r.pic);
+        r.previewurl = if kind == "product" {
+            format!("{web}/company?c=productshow&id={}&pid={}", r.uid, r.id)
+        } else {
+            format!("{web}/company?c=newsshow&id={}&nid={}", r.uid, r.id)
+        };
+    }
+    let total = gap::count_company_content(db, kind, &filter).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
@@ -650,9 +737,9 @@ pub async fn content_statusbody(state: &AppState, kind: &str, id: u64) -> AppRes
 pub async fn gallery_stat(state: &AppState, kind: &str) -> AppResult<PhotoStat> {
     let db = state.db.reader();
     Ok(PhotoStat {
-        num_all: gap::count_gallery(db, kind, None).await?,
-        num_audited: gap::count_gallery(db, kind, Some(0)).await?,
-        num_unaudited: gap::count_gallery(db, kind, Some(1)).await?,
+        num_all: gap::count_gallery(db, kind, None, None, 0).await?,
+        num_audited: gap::count_gallery(db, kind, Some(0), None, 0).await?,
+        num_unaudited: gap::count_gallery(db, kind, Some(1), None, 0).await?,
         num_failed: None,
     })
 }
@@ -669,11 +756,17 @@ pub async fn banner_stat(state: &AppState) -> AppResult<PhotoStat> {
 
 pub async fn company_content_stat(state: &AppState, kind: &str) -> AppResult<PhotoStat> {
     let db = state.db.reader();
+    let only = |status: Option<i32>| CompanyContentFilter {
+        status,
+        keyword: None,
+        keyword_type: 0,
+        ctime_min: None,
+    };
     Ok(PhotoStat {
-        num_all: gap::count_company_content(db, kind, None).await?,
-        num_audited: gap::count_company_content(db, kind, Some(1)).await?,
-        num_unaudited: gap::count_company_content(db, kind, Some(3)).await?,
-        num_failed: Some(gap::count_company_content(db, kind, Some(2)).await?),
+        num_all: gap::count_company_content(db, kind, &only(None)).await?,
+        num_audited: gap::count_company_content(db, kind, &only(Some(1))).await?,
+        num_unaudited: gap::count_company_content(db, kind, &only(Some(0))).await?,
+        num_failed: Some(gap::count_company_content(db, kind, &only(Some(2))).await?),
     })
 }
 
@@ -788,7 +881,11 @@ pub async fn list_banners(
     page: Pagination,
 ) -> AppResult<Paged<BannerAdminRow>> {
     let db = state.db.reader();
-    let list = gap2::list_banners(db, status, keyword, page.offset, page.limit).await?;
+    let mut list = gap2::list_banners(db, status, keyword, page.offset, page.limit).await?;
+    let cfg = site_pic_cfg(state).await?;
+    for r in &mut list {
+        r.pic = checkpic_url(&cfg, &r.pic);
+    }
     let total = gap2::count_banners(db, status, keyword).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }

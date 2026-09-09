@@ -77,7 +77,7 @@ function idsStatusFromPhp(body: Record<string, unknown>): Record<string, unknown
   return {
     ids: idsFromDel({
       del: body.del,
-      id: body.pid ?? body.id ?? body.uid,
+      id: body.pid ?? body.id ?? body.uid ?? body.sid,
       ids: body.ids,
     }).ids,
     status: Number(body.status),
@@ -881,7 +881,15 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
     transformReq: (b) => ({ ...idsFromDel(b), type: String(b.type || 'logo') }),
   },
   'user/company_pic/show': { path: '/v1/admin/company-shows', transformReq: pageQuery },
-  'user/company_pic/showStatus': { path: '/v1/admin/company-shows/status' },
+  'user/company_pic/showStatus': {
+    path: '/v1/admin/company-shows/status',
+    transformReq: (b) => ({
+      ...b,
+      ids: idsFromDel({ ...b, id: b.sid ?? b.id ?? b.del }).ids,
+      status: Number(b.status || 0),
+      statusbody: String(b.statusbody || ''),
+    }),
+  },
   'user/company_pic/getShowStatusBody': { path: '/v1/admin/company-shows/status-body' },
   'user/company_pic/getHjStatist': { path: '/v1/admin/company-shows/statist' },
   'user/company_pic/banner': { path: '/v1/admin/company-banners', transformReq: pageQuery },

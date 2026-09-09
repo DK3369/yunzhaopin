@@ -622,14 +622,27 @@ pub async fn count_company_photos(
 }
 
 pub async fn set_logo_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<u64, sqlx::Error> {
-    Ok(
-        sqlx::query("UPDATE phpyun_company SET logo_status = ? WHERE uid = ?")
-            .bind(status)
-            .bind(uid)
-            .execute(pool)
-            .await?
-            .rows_affected(),
-    )
+    set_logo_status_many(pool, &[uid], status).await
+}
+
+pub async fn set_logo_status_many(
+    pool: &MySqlPool,
+    uids: &[u64],
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_company SET logo_status = ");
+    qb.push_bind(status);
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
 fn gallery_table(kind: &str) -> &'static str {
@@ -640,26 +653,68 @@ fn gallery_table(kind: &str) -> &'static str {
     }
 }
 
+fn gallery_list_from(kind: &str) -> &'static str {
+    if kind == "resume" {
+        " FROM phpyun_resume_show t \
+         LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_resume GROUP BY uid) r \
+         ON r.uid = t.uid WHERE COALESCE(t.deleted,0)=0"
+    } else {
+        " FROM phpyun_company_show t \
+         LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_company GROUP BY uid) c \
+         ON c.uid = t.uid WHERE COALESCE(t.deleted,0)=0"
+    }
+}
+
+fn gallery_name_expr(kind: &str) -> &'static str {
+    if kind == "resume" {
+        "r.name"
+    } else {
+        "c.name"
+    }
+}
+
+fn apply_gallery_keyword(
+    qb: &mut QueryBuilder<'_, sqlx::MySql>,
+    kind: &str,
+    keyword: Option<&str>,
+    keyword_type: i32,
+) {
+    let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) else {
+        return;
+    };
+    if keyword_type == 2 {
+        qb.push(" AND t.uid = ");
+        qb.push_bind(kw.parse::<u64>().unwrap_or(0));
+    } else {
+        qb.push(format!(" AND {} LIKE ", gallery_name_expr(kind)));
+        qb.push_bind(format!("%{kw}%"));
+    }
+}
+
 pub async fn list_gallery(
     pool: &MySqlPool,
     kind: &str,
     status: Option<i32>,
+    keyword: Option<&str>,
+    keyword_type: i32,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<GalleryAdminRow>, sqlx::Error> {
-    let table = gallery_table(kind);
     let (l, o) = lim(limit, offset)?;
+    let name_expr = gallery_name_expr(kind);
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
-        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
-         COALESCE(title,'') AS title, COALESCE(picurl,'') AS picurl, \
-         CAST(COALESCE(status,0) AS SIGNED) AS status, CAST(COALESCE(sort,0) AS SIGNED) AS sort \
-         FROM {table} WHERE status != 2 AND COALESCE(deleted,0)=0"
+        "SELECT CAST(t.id AS UNSIGNED) AS id, CAST(COALESCE(t.uid,0) AS UNSIGNED) AS uid, \
+         COALESCE(t.title,'') AS title, COALESCE(t.picurl,'') AS picurl, \
+         CAST(COALESCE(t.status,0) AS SIGNED) AS status, CAST(COALESCE(t.sort,0) AS SIGNED) AS sort, \
+         COALESCE({name_expr},'') AS name{}",
+        gallery_list_from(kind)
     ));
     if let Some(s) = status {
-        qb.push(" AND status = ");
+        qb.push(" AND t.status = ");
         qb.push_bind(s);
     }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    apply_gallery_keyword(&mut qb, kind, keyword, keyword_type);
+    qb.push(" ORDER BY t.status DESC, t.id DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);
@@ -670,14 +725,16 @@ pub async fn count_gallery(
     pool: &MySqlPool,
     kind: &str,
     status: Option<i32>,
+    keyword: Option<&str>,
+    keyword_type: i32,
 ) -> Result<u64, sqlx::Error> {
-    let table = gallery_table(kind);
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new(format!("SELECT COUNT(*) FROM {table} WHERE status != 2 AND COALESCE(deleted,0)=0"));
+        QueryBuilder::new(format!("SELECT COUNT(*){}", gallery_list_from(kind)));
     if let Some(s) = status {
-        qb.push(" AND status = ");
+        qb.push(" AND t.status = ");
         qb.push_bind(s);
     }
+    apply_gallery_keyword(&mut qb, kind, keyword, keyword_type);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
@@ -712,26 +769,64 @@ fn content_table(kind: &str) -> &'static str {
     }
 }
 
+pub struct CompanyContentFilter<'a> {
+    pub status: Option<i32>,
+    pub keyword: Option<&'a str>,
+    /// PHP `type`: 1 企业名/uid，2 标题。
+    pub keyword_type: i32,
+    pub ctime_min: Option<i64>,
+}
+
+fn apply_company_content_filter(
+    qb: &mut QueryBuilder<'_, sqlx::MySql>,
+    f: &CompanyContentFilter<'_>,
+) {
+    if let Some(s) = f.status {
+        qb.push(" AND t.status = ");
+        qb.push_bind(s);
+    }
+    if let Some(ts) = f.ctime_min {
+        qb.push(" AND CAST(COALESCE(t.ctime,0) AS SIGNED) >= ");
+        qb.push_bind(ts);
+    }
+    if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        if f.keyword_type == 2 {
+            qb.push(" AND t.title LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        } else {
+            qb.push(" AND (c.name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR t.uid = ");
+            qb.push_bind(kw.parse::<u64>().unwrap_or(0));
+            qb.push(")");
+        }
+    }
+}
+
 pub async fn list_company_content(
     pool: &MySqlPool,
     kind: &str,
-    status: Option<i32>,
+    filter: &CompanyContentFilter<'_>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<CompanyContentAdminRow>, sqlx::Error> {
     let table = content_table(kind);
     let (l, o) = lim(limit, offset)?;
+    let pic_expr = if kind == "product" {
+        "COALESCE(t.pic,'') AS pic"
+    } else {
+        "'' AS pic"
+    };
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
-        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
-         COALESCE(title,'') AS title, CAST(COALESCE(status,0) AS SIGNED) AS status, \
-         COALESCE(statusbody,'') AS statusbody, CAST(COALESCE(ctime,0) AS SIGNED) AS ctime \
-         FROM {table} WHERE 1=1"
+        "SELECT CAST(t.id AS UNSIGNED) AS id, CAST(COALESCE(t.uid,0) AS UNSIGNED) AS uid, \
+         COALESCE(t.title,'') AS title, CAST(COALESCE(t.status,0) AS SIGNED) AS status, \
+         COALESCE(t.statusbody,'') AS statusbody, CAST(COALESCE(t.ctime,0) AS SIGNED) AS ctime, \
+         COALESCE(c.name,'') AS name, {pic_expr} \
+         FROM {table} t LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_company GROUP BY uid) c \
+         ON c.uid = t.uid WHERE 1=1"
     ));
-    if let Some(s) = status {
-        qb.push(" AND status = ");
-        qb.push_bind(s);
-    }
-    qb.push(" ORDER BY id DESC LIMIT ");
+    apply_company_content_filter(&mut qb, filter);
+    qb.push(" ORDER BY t.status ASC, t.id DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);
@@ -741,15 +836,14 @@ pub async fn list_company_content(
 pub async fn count_company_content(
     pool: &MySqlPool,
     kind: &str,
-    status: Option<i32>,
+    filter: &CompanyContentFilter<'_>,
 ) -> Result<u64, sqlx::Error> {
     let table = content_table(kind);
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new(format!("SELECT COUNT(*) FROM {table} WHERE 1=1"));
-    if let Some(s) = status {
-        qb.push(" AND status = ");
-        qb.push_bind(s);
-    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT COUNT(*) FROM {table} t LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_company GROUP BY uid) c \
+         ON c.uid = t.uid WHERE 1=1"
+    ));
+    apply_company_content_filter(&mut qb, filter);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }

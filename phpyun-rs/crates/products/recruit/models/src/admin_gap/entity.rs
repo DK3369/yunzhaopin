@@ -100,6 +100,8 @@ pub struct GalleryAdminRow {
     pub picurl: String,
     pub status: i32,
     pub sort: i32,
+    #[serde(default)]
+    pub name: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -110,6 +112,16 @@ pub struct CompanyContentAdminRow {
     pub status: i32,
     pub statusbody: String,
     pub ctime: i64,
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub pic: String,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub ctime_n: String,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub previewurl: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]

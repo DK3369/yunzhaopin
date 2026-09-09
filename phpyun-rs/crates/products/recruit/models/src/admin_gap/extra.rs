@@ -284,15 +284,30 @@ pub async fn set_logo_review(
     status: i32,
     body: &str,
 ) -> Result<u64, sqlx::Error> {
-    Ok(
-        sqlx::query("UPDATE phpyun_company SET logo_status=?, logo_statusbody=? WHERE uid=?")
-            .bind(status)
-            .bind(body)
-            .bind(uid)
-            .execute(pool)
-            .await?
-            .rows_affected(),
-    )
+    set_logo_review_many(pool, &[uid], status, body).await
+}
+
+pub async fn set_logo_review_many(
+    pool: &MySqlPool,
+    uids: &[u64],
+    status: i32,
+    body: &str,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_company SET logo_status=");
+    qb.push_bind(status);
+    qb.push(", logo_statusbody=");
+    qb.push_bind(body);
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
 pub async fn save_company_logo(pool: &MySqlPool, uid: u64, logo: &str) -> Result<u64, sqlx::Error> {
@@ -387,7 +402,8 @@ pub async fn list_banners(
     let (l, o) = lim(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
         "SELECT {BANNER_FIELDS} FROM phpyun_banner b \
-         LEFT JOIN phpyun_company c ON c.uid=b.uid WHERE COALESCE(b.deleted,0)=0"
+         LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_company GROUP BY uid) c \
+         ON c.uid=b.uid WHERE COALESCE(b.deleted,0)=0"
     ));
     if let Some(s) = status {
         qb.push(" AND b.status=");
@@ -413,7 +429,9 @@ pub async fn count_banners(
     keyword: Option<&str>,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_banner b LEFT JOIN phpyun_company c ON c.uid=b.uid WHERE COALESCE(b.deleted,0)=0",
+        "SELECT COUNT(*) FROM phpyun_banner b \
+         LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_company GROUP BY uid) c \
+         ON c.uid=b.uid WHERE COALESCE(b.deleted,0)=0",
     );
     if let Some(s) = status {
         qb.push(" AND b.status=");

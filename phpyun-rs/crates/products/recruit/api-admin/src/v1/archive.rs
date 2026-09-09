@@ -131,6 +131,8 @@ pub struct KwQuery {
     pub uid: Option<u64>,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     pub r#type: Option<i32>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub time: Option<i32>,
 }
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
@@ -183,6 +185,17 @@ pub struct UidStatusForm {
     pub statusbody: String,
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct LogoStatusForm {
+    #[validate(length(min = 1, max = 200))]
+    #[serde(default, alias = "id", deserialize_with = "de_u64_list")]
+    pub uid: Vec<u64>,
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
+    pub status: i32,
+    #[serde(default)]
+    pub statusbody: String,
+}
+
 fn de_u64_list<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<u64>, D::Error> {
     let v = serde_json::Value::deserialize(d)?;
     let one = |v: &serde_json::Value| -> Option<u64> {
@@ -208,7 +221,7 @@ fn de_u64_list<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<u64>, D::Er
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct IdsStatusForm {
     #[validate(length(min = 1, max = 200))]
-    #[serde(default, alias = "pid", alias = "id", deserialize_with = "de_u64_list")]
+    #[serde(default, alias = "pid", alias = "id", alias = "sid", deserialize_with = "de_u64_list")]
     pub ids: Vec<u64>,
     #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
     pub status: i32,
@@ -390,14 +403,14 @@ pub async fn list_company_photos(
     )))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-photos/status", tag = "admin", security(("bearer" = [])), request_body = UidStatusForm, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/company-photos/status", tag = "admin", security(("bearer" = [])), request_body = LogoStatusForm, responses((status = 200, description = "ok")))]
 pub async fn set_logo_status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<UidStatusForm>,
+    ValidatedJson(f): ValidatedJson<LogoStatusForm>,
 ) -> AppResult<ApiResponse> {
     user.require_admin()?;
-    admin_archive_service::set_logo_status(&state, &user, f.uid, f.status, &f.statusbody).await?;
+    admin_archive_service::set_logo_status(&state, &user, &f.uid, f.status, &f.statusbody).await?;
     Ok(ApiResponse::message("ok"))
 }
 
@@ -410,7 +423,15 @@ pub async fn list_company_shows(
 ) -> AppResult<ApiResponse<AdminPaged<GalleryAdminRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_gallery(&state, "company", q.status, page).await?,
+        admin_archive_service::list_gallery(
+            &state,
+            "company",
+            q.status,
+            q.keyword.as_deref(),
+            q.r#type,
+            page,
+        )
+        .await?,
     )))
 }
 
@@ -435,7 +456,15 @@ pub async fn list_resume_shows(
 ) -> AppResult<ApiResponse<AdminPaged<GalleryAdminRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_gallery(&state, "resume", q.status, page).await?,
+        admin_archive_service::list_gallery(
+            &state,
+            "resume",
+            q.status,
+            q.keyword.as_deref(),
+            q.r#type,
+            page,
+        )
+        .await?,
     )))
 }
 
@@ -460,7 +489,16 @@ pub async fn list_products(
 ) -> AppResult<ApiResponse<AdminPaged<CompanyContentAdminRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_content(&state, "product", q.status, page).await?,
+        admin_archive_service::list_content(
+            &state,
+            "product",
+            q.status,
+            q.keyword.as_deref(),
+            q.r#type,
+            q.time,
+            page,
+        )
+        .await?,
     )))
 }
 
@@ -485,7 +523,16 @@ pub async fn list_news(
 ) -> AppResult<ApiResponse<AdminPaged<CompanyContentAdminRow>>> {
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_content(&state, "news", q.status, page).await?,
+        admin_archive_service::list_content(
+            &state,
+            "news",
+            q.status,
+            q.keyword.as_deref(),
+            q.r#type,
+            q.time,
+            page,
+        )
+        .await?,
     )))
 }
 
