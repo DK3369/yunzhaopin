@@ -122,8 +122,8 @@ html.force-pc .site-h5 {
 }
 
 .pc-home-search {
-  background: #f5f6f8;
-  padding: 28px 0 20px;
+  background: transparent;
+  padding: 16px 0;
 }
 .pc-home-search__inner {
   width: 1200px;
@@ -204,23 +204,6 @@ html.force-pc .site-h5 {
 }
 .pc-home-search__btn:hover {
   background: #009395;
-}
-.pc-home-search__hot {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #999;
-  line-height: 1.6;
-}
-.pc-home-search__hot span {
-  margin-right: 8px;
-}
-.pc-home-search__hot a {
-  color: #666;
-  margin-right: 14px;
-  text-decoration: none;
-}
-.pc-home-search__hot a:hover {
-  color: #00a6a7;
 }
 
 @media (min-width: 1200px) {

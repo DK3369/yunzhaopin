@@ -29,7 +29,7 @@ const rec = computed(() => route.query.rec === '1')
 const cert = computed(() => route.query.cert === '1')
 const order = computed(() => String(route.query.order || ''))
 const salaryBound = computed(() => (salaryId.value ? SALARY_BOUNDS[salaryId.value] : undefined))
-const { settings, hotSearches } = useSiteChrome()
+const { settings } = useSiteChrome()
 const { applyToQuery } = useSubSite()
 const sexSwitch = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
 const hiddenFilters = computed(() => {
@@ -323,15 +323,6 @@ function goPage(p: number) {
                   <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('default_00348')" />
                 </div>
                 <input class="Search_jobs_submit yun_bg_color jobsSubmit" type="submit" :value="$t('common.search')" />
-              </div>
-              <div v-if="hotSearches?.length" class="jobs_tag">
-                {{ $t('wap_00385') }}：
-                <NuxtLink
-                  v-for="k in hotSearches"
-                  :key="k.keyword"
-                  :to="`/jobs?keyword=${encodeURIComponent(k.keyword)}`"
-                  class="jos_tag_a"
-                >{{ k.keyword }}</NuxtLink>
               </div>
             </div>
           </div>

@@ -19,7 +19,7 @@ type IndexTpl = { id?: number; pic?: string; height?: number; se?: number }
 const api = useApi()
 const route = useRoute()
 const { t, te } = useI18n()
-const { siteName, me, h5Nav, settings, hotSearches } = useSiteChrome()
+const { siteName, me, h5Nav, settings } = useSiteChrome()
 
 type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
 const searchKind = ref<SearchKind>('job')
@@ -390,15 +390,6 @@ useHead({
           />
           <button class="pc-home-search__btn" type="submit">{{ $t('common.search') }}</button>
         </form>
-        <div v-if="hotSearches?.length" class="pc-home-search__hot">
-          <span>{{ $t('common_02507') }}</span>
-          <NuxtLink
-            v-for="k in hotSearches"
-            :key="k.keyword"
-            :to="`/jobs?keyword=${encodeURIComponent(k.keyword)}`"
-            :title="k.keyword"
-          >{{ k.keyword }}</NuxtLink>
-        </div>
       </div>
     </div>
     <div class="w1200">
