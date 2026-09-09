@@ -165,21 +165,79 @@ export function useSiteChrome() {
     { default: () => ({ list: [] as DescRow[] }) },
   )
 
+  const FOOTER_NAME_KEY: Record<string, string> = {
+    关于我们: 'wap_00218',
+    注册协议: 'wap_00219',
+    隐私政策: 'wap_00313',
+    联系我们: 'wap_00220',
+    产品与服务: 'common_01579',
+    招聘会: 'member_com_00293',
+    店铺招聘: 'wap_js_00130',
+    普工专区: 'default_00331',
+    收费与推广: 'common_01615',
+    网站特色: 'common_01834',
+    排行榜: 'default_00156',
+    求职测评: 'common_01801',
+    地图搜索: 'default_00139',
+    咨询反馈: 'common_01727',
+    客服中心: 'common_01745',
+    常见问题: 'common_01760',
+    友情链接: 'default_00256',
+    积分兑换: 'common_06524',
+    人力资源许可证: 'common_01336',
+    ICP经营许可证: 'default_00128',
+    经营许可证: 'default_00128',
+    法律声明: 'ui.legal_notice',
+    经营资源: 'ui.business_resources',
+    品牌推广: 'ui.brand_promotion',
+    广告投放: 'ui.ad_placement',
+    收费标准: 'ui.fee_standards',
+    订阅服务: 'ui.subscribe_svc',
+    职场指南: 'ui.career_guide',
+    服务流程: 'ui.service_process',
+    银行帐户: 'ui.bank_account',
+    银行账户: 'ui.bank_account',
+  }
+
+  const FOOTER_PATH_KEY: Record<string, string> = {
+    '/fairs': 'member_com_00293',
+    '/once': 'wap_js_00130',
+    '/tiny': 'default_00331',
+    '/map': 'default_00139',
+    '/eval': 'common_01801',
+    '/links': 'default_00256',
+    '/redeem': 'common_06524',
+  }
+
+  function labelForFooter(name: string, to: string) {
+    const byName = FOOTER_NAME_KEY[name]
+    if (byName && te(byName)) return t(byName)
+    const path = String(to || '').split('?')[0]
+    const byPath = FOOTER_PATH_KEY[path]
+    if (byPath && te(byPath)) return t(byPath)
+    if (name && te(name)) return t(name)
+    return name
+  }
+
   const footerNav = computed(() => {
     const classes = descClasses.value || []
     const rows = descRows.value?.list || []
     return classes
       .map((c) => ({
         id: c.id,
-        name: c.name,
+        name: labelForFooter(c.name, ''),
         list: rows
           .filter((r) => r.class_id === c.id)
           .slice(0, 5)
-          .map((r) => ({
-            id: r.id,
-            title: String(r.name || '').trim() || r.title,
-            to: descHref(r),
-          })),
+          .map((r) => {
+            const title = String(r.name || '').trim() || r.title
+            const to = descHref(r)
+            return {
+              id: r.id,
+              title: labelForFooter(title, to),
+              to,
+            }
+          }),
       }))
       .filter((c) => c.list.length)
   })
