@@ -18,7 +18,7 @@ type IndexTpl = { id?: number; pic?: string; height?: number; se?: number }
 
 const api = useApi()
 const route = useRoute()
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 const { siteName, me, h5Nav, settings } = useSiteChrome()
 
 type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
@@ -114,11 +114,13 @@ const { data: home, error } = await useAsyncData(
   },
   { watch: [homeTpltype] },
 )
-const { data: cats } = await useAsyncData('job-cats', () =>
-  api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
+const { data: cats } = await useAsyncData(
+  () => `job-cats-${locale.value}`,
+  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
 )
-const { data: hotClass } = await useAsyncData('hot-job-class', () =>
-  api.get<CatNode[]>('/v1/wap/categories/recommended', { kind: 'job', limit: 20 }).catch(() => [] as CatNode[]),
+const { data: hotClass } = await useAsyncData(
+  () => `hot-job-class-${locale.value}`,
+  () => api.get<CatNode[]>('/v1/wap/categories/recommended', { kind: 'job', limit: 20 }).catch(() => [] as CatNode[]),
 )
 const { data: adsPc } = await useAsyncData('ads-3', () =>
   api.get<Banner[]>('/v1/wap/ads', { slot: '3', limit: 5 }).catch(() => [] as Banner[]),

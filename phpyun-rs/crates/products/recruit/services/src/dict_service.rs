@@ -15,6 +15,10 @@
 //!   → 5. miss → empty string
 //! ```
 //!
+//! English job names: `phpyun_dict_i18n` wins; remaining ids use bundled
+//! `data/job-en.json` then the legacy `e_name` column.
+//! City English uses `e_name` (country tree) then `dict_i18n`.
+//!
 //! ## Caching
 //!
 //! At startup we load every primary table + every translation into an in-memory `Arc<Dicts>` map.
@@ -629,7 +633,14 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
         load_class_rows(db, "phpyun_userclass"),
     );
 
-    let i18n = load_i18n(db).await.unwrap_or_default();
+    let mut i18n = load_i18n(db).await.unwrap_or_default();
+    merge_bundled_job_en(i18n.entry("job".into()).or_default());
+    let (job_ename, city_ename) = tokio::join!(
+        load_ename(db, "phpyun_job_class"),
+        load_ename(db, "phpyun_city_class"),
+    );
+    merge_ename(i18n.entry("job".into()).or_default(), job_ename?);
+    merge_ename(i18n.entry("city".into()).or_default(), city_ename?);
     let (comclass, comclass_var, comclass_children) = split_class_rows(com_rows?);
     let (userclass, userclass_var, userclass_children) = split_class_rows(user_rows?);
 
@@ -642,11 +653,11 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
     }
 
     Ok(Dicts {
-        job: build_table(job?, i18n.get("job").cloned().unwrap_or_default()),
+        job: build_table(job?, i18n.remove("job").unwrap_or_default()),
         industry: build_table(ind?, i18n.get("industry").cloned().unwrap_or_default()),
         comclass: build_table(comclass, i18n.get("comclass").cloned().unwrap_or_default()),
         userclass: build_table(userclass, i18n.get("userclass").cloned().unwrap_or_default()),
-        city: build_table(city_zh, i18n.get("city").cloned().unwrap_or_default()),
+        city: build_table(city_zh, i18n.remove("city").unwrap_or_default()),
         part: build_table(part?, i18n.get("part").cloned().unwrap_or_default()),
         question: build_table(q?, i18n.get("question").cloned().unwrap_or_default()),
         comclass_var,
@@ -875,6 +886,39 @@ async fn load_default(pool: &sqlx::MySqlPool, table: &str) -> AppResult<HashMap<
         .into_iter()
         .map(|(id, name)| (id, name.unwrap_or_default()))
         .collect())
+}
+
+async fn load_ename(pool: &sqlx::MySqlPool, table: &str) -> AppResult<Vec<(i32, String)>> {
+    phpyun_models::dict_i18n::repo::list_ename(pool, table)
+        .await
+        .map_err(phpyun_core::ApiError::internal)
+}
+
+/// Fill English from the legacy `e_name` column when `phpyun_dict_i18n` has no row.
+fn merge_ename(dst: &mut HashMap<(i32, Lang), String>, rows: Vec<(i32, String)>) {
+    for (id, name) in rows {
+        dst.entry((id, Lang::En)).or_insert(name);
+    }
+}
+
+/// Seed English job titles compiled into the binary. Does not override DB rows.
+fn merge_bundled_job_en(dst: &mut HashMap<(i32, Lang), String>) {
+    const RAW: &str = include_str!("../data/job-en.json");
+    let Ok(map) = serde_json::from_str::<HashMap<String, String>>(RAW) else {
+        tracing::warn!("bundled job-en.json is not valid JSON");
+        return;
+    };
+    for (id, name) in map {
+        let Some(id) = id.parse::<i32>().ok() else {
+            continue;
+        };
+        let name = name.trim();
+        if name.is_empty() {
+            continue;
+        }
+        dst.entry((id, Lang::En))
+            .or_insert_with(|| name.to_string());
+    }
 }
 
 /// Load the entire phpyun_dict_i18n table, bucketed by `kind`. If the table is missing we return Err so the caller can downgrade.
