@@ -148,7 +148,6 @@ html.force-pc .site-h5 {
   font-size: 14px;
   color: #333;
   cursor: pointer;
-  border-right: 1px solid #eee;
 }
 .pc-home-search__kind span::after {
   content: "";
@@ -742,7 +741,19 @@ html.force-pc .site-h5 {
     overflow: visible;
     z-index: 20;
   }
-  /* part.css loads after job.css and puts border:#ddd on .Search_jobs_text */
+  /* part.css is loaded after job.css and restyles the shared search classes
+     for 兼职: 660px + padding, and .Search_jobs_text { border:#ddd }.
+     That padding is the grey block beside the blue pill (page bg shows through). */
+  .jobsearch_newbox .yun_job_search {
+    width: 980px;
+    float: none;
+    margin: 0 auto;
+    padding: 0;
+  }
+  .yun_job_search_textcont {
+    background-image: none;
+    padding-left: 20px;
+  }
   .yun_job_search_cont .Search_jobs_text {
     width: 100%;
     border: 0;
