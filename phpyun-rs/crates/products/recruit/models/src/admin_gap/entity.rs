@@ -262,6 +262,15 @@ pub struct WxQrcodeRow {
     pub status: i32,
     pub wxid: String,
     pub uid: u64,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub username: String,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub usertype: i32,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub time_n: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -286,6 +295,12 @@ pub struct OutsideRow {
     pub num: i32,
     pub code: String,
     pub lasttime: i64,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub type_n: String,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub time_n: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]

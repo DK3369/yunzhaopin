@@ -1116,6 +1116,21 @@ pub async fn hotjob_delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error
     Ok(res.rows_affected())
 }
 
+pub async fn hotjob_delete_by_uids(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_hotjob SET deleted=1 WHERE COALESCE(deleted,0)=0 AND uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
 pub async fn hotjob_find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<HotJobRow>, sqlx::Error> {
     sqlx::query_as::<_, HotJobRow>(
         r#"SELECT CAST(id AS UNSIGNED) AS id,
@@ -1160,10 +1175,16 @@ pub async fn hotjob_find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<HotJo
 pub struct CompanyExpireRow {
     pub uid: u64,
     pub name: String,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub username: String,
     pub rating: i32,
     pub rating_name: String,
     pub vip_stime: i64,
     pub vip_etime: i64,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub vip_etime_n: String,
 }
 
 pub async fn list_expire(
@@ -1176,24 +1197,30 @@ pub async fn list_expire(
     let sql = if expired_only {
         r#"SELECT CAST(c.uid AS UNSIGNED) AS uid,
                   COALESCE(c.name, '') AS name,
+                  COALESCE(m.username, '') AS username,
                   CAST(COALESCE(s.rating, 0) AS SIGNED) AS rating,
                   COALESCE(s.rating_name, '') AS rating_name,
                   CAST(COALESCE(s.vip_stime, 0) AS SIGNED) AS vip_stime,
-                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime
+                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime,
+                  CAST('' AS CHAR) AS vip_etime_n
            FROM phpyun_company c
            INNER JOIN phpyun_company_statis s ON s.uid = c.uid
+           LEFT JOIN phpyun_member m ON m.uid = c.uid
            WHERE s.vip_etime > 0 AND s.vip_etime < ?
            ORDER BY s.vip_etime ASC
            LIMIT ? OFFSET ?"#
     } else {
         r#"SELECT CAST(c.uid AS UNSIGNED) AS uid,
                   COALESCE(c.name, '') AS name,
+                  COALESCE(m.username, '') AS username,
                   CAST(COALESCE(s.rating, 0) AS SIGNED) AS rating,
                   COALESCE(s.rating_name, '') AS rating_name,
                   CAST(COALESCE(s.vip_stime, 0) AS SIGNED) AS vip_stime,
-                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime
+                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime,
+                  CAST('' AS CHAR) AS vip_etime_n
            FROM phpyun_company c
            INNER JOIN phpyun_company_statis s ON s.uid = c.uid
+           LEFT JOIN phpyun_member m ON m.uid = c.uid
            WHERE s.vip_etime > 0
            ORDER BY s.vip_etime ASC
            LIMIT ? OFFSET ?"#
@@ -1361,6 +1388,22 @@ pub async fn set_r_status(pool: &MySqlPool, uid: u64, r_status: i32) -> Result<u
         .execute(pool)
         .await?;
     Ok(res.rows_affected())
+}
+
+pub async fn next_r_status_uid(
+    pool: &MySqlPool,
+    r_status: i32,
+    except_uid: u64,
+) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE r_status = ? AND uid <> ? \
+         ORDER BY uid DESC LIMIT 1",
+    )
+    .bind(r_status)
+    .bind(except_uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
 }
 
 pub async fn count_r_status_except(

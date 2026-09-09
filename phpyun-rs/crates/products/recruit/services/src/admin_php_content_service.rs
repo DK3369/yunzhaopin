@@ -14,6 +14,7 @@ use phpyun_models::admin_gap::repo as gap_repo;
 use phpyun_models::admin_gap::tongji as gap_tongji;
 use phpyun_models::admin_rbac::php as rbac_php;
 use phpyun_models::admin_rbac::php_power;
+use phpyun_models::admin_rbac::repo as admin_user_repo;
 use phpyun_models::nav_menu::php as nav_php;
 use phpyun_models::seo as seo_repo;
 use phpyun_models::company_tpl::repo as company_tpl_repo;
@@ -149,6 +150,7 @@ pub async fn dispatch(
         ("announce", "getGroup") => Ok(PhpOut::Data(announce_get_group(state).await?)),
         ("announce", "checksitedid") => announce_checksitedid(state, body).await,
         ("announce", "index") => Ok(PhpOut::Data(announce_index(state, body).await?)),
+        ("announce", "delete") => announce_del(state, user, body).await,
         ("ads", "index") => Ok(PhpOut::Data(ads_index(state, body).await?)),
         ("ads", "get_base_data") => Ok(PhpOut::Data(ads_get_base(state).await?)),
         ("ads", "info") => Ok(PhpOut::Data(ads_info(state, body).await?)),
@@ -184,6 +186,7 @@ pub async fn dispatch(
         ("rating", "ajax") => rating_ajax(state, body).await,
         ("rating", "zzData") => Ok(PhpOut::Data(rating_zz_data(state).await?)),
         ("rating", "edittc") => Ok(PhpOut::Data(rating_edittc(state, body).await?)),
+        ("rating", "del") => rating_del_detail(state, body).await,
         ("email-log", "index") => Ok(PhpOut::Data(email_log_index(state, body).await?)),
         ("email-log", "delete") => email_log_del(state, user, body).await,
         ("email-log", "repeat") => email_log_repeat(state, body).await,
@@ -291,6 +294,7 @@ pub async fn dispatch(
         ("hotjob", "gethotjob") => Ok(PhpOut::Data(hotjob_get(state, body).await?)),
         ("hotjob", "hotjobinfo") => Ok(PhpOut::Data(hotjob_info(state, body).await?)),
         ("hotjob", "hotNum") => Ok(PhpOut::Data(hotjob_num(state).await?)),
+        ("hotjob", "delete") => hotjob_del(state, user, body).await,
         ("resume", "skill") => resume_skill(state, body).await,
         ("resume", "project") => resume_project(state, body).await,
         ("resume", "other") => resume_other(state, body).await,
@@ -394,6 +398,7 @@ pub async fn dispatch(
         ("company-job", "getJobHtml") => Ok(PhpOut::Data(company_job_get_html(state, body).await?)),
         ("company-job", "addTuiWenTask") => company_job_add_tuiwen(state, user, body).await,
         ("company-job", "whb") => Ok(PhpOut::Data(company_whb(state, 1).await?)),
+        ("company-job", "getHbData") => Ok(PhpOut::Data(company_job_hb_data(state).await?)),
         ("company-job", "xls") => Ok(PhpOut::Data(company_job_xls(state, body).await?)),
 
         ("company", "bind-package") => company_bind_package(state, body).await,
@@ -415,6 +420,9 @@ pub async fn dispatch(
         ("user-gap", "mem-lock") => user_gap_mem_lock(state, body).await,
         ("user-gap", "mem-edit") => user_gap_mem_edit(state, body).await,
         ("user-gap", "mem-del") => user_gap_mem_del(state, body).await,
+        ("user-gap", "company-del") => user_gap_company_del(state, body).await,
+        ("user-gap", "user-del") => user_gap_user_del(state, body).await,
+        ("user-gap", "company-status") => user_gap_company_status(state, body).await,
         ("user-gap", "appeal-info") => Ok(PhpOut::Data(user_gap_appeal_info(state, body).await?)),
         ("user-gap", "appeal-success") => user_gap_appeal_success(state, body).await,
         ("user-gap", "appeal-del") => user_gap_appeal_del(state, body).await,
@@ -453,6 +461,7 @@ pub async fn dispatch(
         ("admin-member", "send") => admin_member_send_email(state, body).await,
         ("admin-member", "msgsave") => admin_member_send_sms(state, body).await,
         ("weixinrecord", "clearwx") => weixinrecord_clearwx(state).await,
+        ("weixinrecord", "index") => Ok(PhpOut::Data(weixinrecord_index(state, body).await?)),
         ("weixinrecord", "userbd") => Ok(PhpOut::Data(weixinrecord_userbd(state, body).await?)),
         ("weixinrecord", "deluser") => weixinrecord_deluser(state, body).await,
         ("weixinrecord", "keyword") => Ok(PhpOut::Data(weixinrecord_keyword(state, body).await?)),
@@ -513,6 +522,9 @@ pub async fn dispatch(
         ("zph-space", "ajax") => zph_space_ajax(state, body).await,
         ("zph-space", "ajaxspace") => Ok(PhpOut::Data(zph_space_ajaxspace(state, body).await?)),
         ("zph-space", "up") => Ok(PhpOut::Data(zph_space_up(state, body).await?)),
+        ("zph-space", "index") => Ok(PhpOut::Data(zph_space_index(state, body).await?)),
+        ("zph-space", "add") => zph_space_add(state, body).await,
+        ("zph-space", "delete") => zph_space_del(state, body).await,
         ("report-resume", "delresume") => report_delresume(state, user, body).await,
         ("report-resume", "delresumeall") => report_delresumeall(state, user, body).await,
         ("fabutool", "index") => Ok(PhpOut::Data(fabutool_index(state, body).await?)),
@@ -585,6 +597,11 @@ pub async fn dispatch(
         ("data-board", "getAuth") => Ok(PhpOut::Data(data_board_get_auth(state, user, body).await?)),
         ("data-call", "getPreviewData") => Ok(PhpOut::Data(data_call_preview(state, body).await?)),
         ("data-collection", "getRating") => Ok(PhpOut::Data(data_collection_rating(state).await?)),
+        ("data-collection", "index") => Ok(PhpOut::Data(data_collection_index(state).await?)),
+        ("index", "getIpAddress") => index_get_ip_address(state, body).await,
+        ("index", "getMobileAddress") => index_get_mobile_address(state, body).await,
+        ("index", "wxbind") => Ok(PhpOut::Data(index_wxbind(state, user).await?)),
+        ("index", "getwxbindstatus") => index_wxbind_status(state, user).await,
         _ => Err(ApiError::param_invalid("unknown_php_action")),
     }
 }
@@ -3687,6 +3704,18 @@ async fn rating_edittc(state: &AppState, body: &Value) -> AppResult<Value> {
         Some(r) => Ok(serde_json::to_value(r).unwrap_or(json!({}))),
         None => Ok(json!({})),
     }
+}
+
+async fn rating_del_detail(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = gap_extra::delete_rating_details(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
 }
 
 async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
@@ -16428,11 +16457,450 @@ async fn data_call_preview(state: &AppState, body: &Value) -> AppResult<Value> {
     Ok(json!({"list": html}))
 }
 
-async fn data_collection_rating(state: &AppState) -> AppResult<Value> {
+async fn data_collection_rating(state: &AppState, ) -> AppResult<Value> {
     let rows = company_repo::list_rating_options(state.db.reader()).await?;
     let rating_arr: Vec<Value> = rows
         .into_iter()
         .map(|r| json!({"id": r.id, "name": r.name}))
         .collect();
     Ok(json!({"ratingArr": rating_arr}))
+}
+
+const LOCOY_KEYS: &[&str] = &[
+    "locoy_online",
+    "locoy_key",
+    "locoy_rate",
+    "locoy_keyword",
+    "locoy_rand",
+    "locoy_sort",
+    "locoy_length",
+    "locoy_name",
+    "locoy_pwd",
+    "locoy_user_status",
+    "locoy_rating",
+    "locoy_resume_status",
+];
+
+fn locoy_php_defaults() -> std::collections::HashMap<String, String> {
+    let mut m = std::collections::HashMap::new();
+    for (k, v) in [
+        ("locoy_online", "2"),
+        ("locoy_key", ""),
+        ("locoy_rate", ""),
+        ("locoy_keyword", "2"),
+        ("locoy_rand", ""),
+        ("locoy_sort", ""),
+        ("locoy_length", ""),
+        ("locoy_name", ""),
+        ("locoy_pwd", ""),
+        ("locoy_user_status", "2"),
+        ("locoy_rating", "1"),
+        ("locoy_resume_status", "1"),
+    ] {
+        m.insert(k.into(), v.into());
+    }
+    if let Ok(text) =
+        std::fs::read_to_string("/www/wwwroot/zzzz.com/uploads/data/api/locoy/locoy_config.php")
+    {
+        for part in text.split(',') {
+            let Some((k, v)) = part.split_once("=>") else {
+                continue;
+            };
+            let k = k.trim().trim_matches(|c| c == '"' || c == '\'' || c == '{' || c == '(');
+            let k = k.trim_start_matches('$').trim();
+            if !k.starts_with("locoy_") {
+                continue;
+            }
+            let v = v
+                .trim()
+                .trim_matches(|c| c == '"' || c == '\'' || c == ')' || c == ';' || c == '}');
+            m.insert(k.to_string(), v.to_string());
+        }
+    }
+    m
+}
+
+async fn data_collection_index(state: &AppState) -> AppResult<Value> {
+    let mut out = locoy_php_defaults();
+    if let Ok(rows) = setting_repo::find_many(state.db.reader(), LOCOY_KEYS).await {
+        for (k, v) in rows {
+            if !v.is_empty() {
+                out.insert(k, v);
+            }
+        }
+    }
+    let mut map = serde_json::Map::new();
+    for k in LOCOY_KEYS {
+        map.insert(
+            (*k).into(),
+            Value::String(out.get(*k).cloned().unwrap_or_default()),
+        );
+    }
+    Ok(Value::Object(map))
+}
+
+async fn user_gap_del_info(
+    state: &AppState,
+    body: &Value,
+    usertype: i32,
+) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "del");
+    ids.extend(ids_of(body));
+    ids.sort_unstable();
+    ids.dedup();
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let del_account = json_str(body, "delAccount") == "1" || json_i32(body, "delAccount") == 1;
+    let pool = state.db.pool();
+    let n = if del_account {
+        gap_extra::php_del_member_account(pool, &ids).await?
+    } else if usertype == 2 {
+        let n = gap_extra::php_del_com(pool, &ids).await?;
+        if n > 0 {
+            let _ = gap_extra::php_clear_member_usertype(pool, &ids).await?;
+        }
+        n
+    } else {
+        let n = gap_extra::php_del_user(pool, &ids).await?;
+        if n > 0 {
+            let _ = gap_extra::php_clear_member_usertype(pool, &ids).await?;
+        }
+        n
+    };
+    if n == 0 {
+        return Err(ApiError::business("common_06641"));
+    }
+    if del_account {
+        Ok(PhpOut::Message("common_06640"))
+    } else {
+        Ok(PhpOut::Message("common_01459"))
+    }
+}
+
+async fn user_gap_company_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    user_gap_del_info(state, body, 2).await
+}
+
+async fn user_gap_user_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    user_gap_del_info(state, body, 1).await
+}
+
+async fn user_gap_company_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "uid");
+    ids.extend(ids_of(body));
+    ids.sort_unstable();
+    ids.dedup();
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    let lock_info = json_str(body, "statusbody");
+    let pool = state.db.pool();
+    for uid in &ids {
+        let n = company_repo::set_r_status(pool, *uid, status).await?;
+        if n == 0 {
+            return Err(ApiError::business("common_01071"));
+        }
+        let _ = user_repo::update_lock_info_only(pool, *uid, &lock_info).await?;
+        user_repo::lock_related_r_status(pool, *uid, status).await?;
+    }
+    let single = json_i32(body, "single") == 1 || json_str(body, "single") == "1";
+    let atype = json_i32(body, "atype");
+    if single && atype != 1 {
+        if let Some(next) = company_repo::next_r_status_uid(pool, 0, ids[0]).await? {
+            return Ok(PhpOut::Data(json!({ "uid": next })));
+        }
+    }
+    Ok(PhpOut::Message("common_01944"))
+}
+
+async fn company_job_hb_data(state: &AppState) -> AppResult<Value> {
+    let rows = whb_repo::list_admin_by_type(state.db.reader(), 1).await?;
+    let hb_num = rows.iter().filter(|r| r.isopen == 1).count();
+    let hb_isopen = cfg_of(state, "sy_haibao_isopen").await;
+    Ok(json!({
+        "hbNum": hb_num,
+        "hb_isopen": if hb_isopen.is_empty() { "0".into() } else { hb_isopen },
+    }))
+}
+
+async fn weixinrecord_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let mut status = json_opt_i32(body, "status");
+    if status == Some(2) {
+        status = Some(0);
+    }
+    let since = match json_i32(body, "time") {
+        0 => None,
+        1 => Some(clock::start_of_today()),
+        n if n > 0 => Some(clock::now_ts() - i64::from(n) * 86_400),
+        _ => None,
+    };
+    let db = state.db.reader();
+    let total = gap_extra::php_count_wxqrcodes_admin(db, status, keyword, since).await?;
+    let rows = if total > 0 {
+        gap_extra::php_list_wxqrcodes_admin(db, status, keyword, since, offset, limit).await?
+    } else {
+        Vec::new()
+    };
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "wxloginid": r.wxloginid,
+                "ticket": r.ticket,
+                "time": r.time,
+                "status": r.status,
+                "wxid": r.wxid,
+                "uid": r.uid,
+                "username": r.username,
+                "usertype": r.usertype,
+                "time_n": if r.time > 0 { fmt_dt(r.time) } else { String::new() },
+            })
+        })
+        .collect();
+    Ok(paged(Value::Array(list), total, page, per))
+}
+
+#[derive(serde::Deserialize)]
+struct Ov6Resp {
+    #[serde(default)]
+    code: i32,
+    #[serde(default)]
+    data: Option<Ov6Data>,
+}
+
+#[derive(serde::Deserialize, Default)]
+struct Ov6Data {
+    #[serde(default)]
+    addr: Option<String>,
+    #[serde(default)]
+    location: Option<String>,
+}
+
+async fn index_get_ip_address(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let ip = json_str(body, "ip");
+    if uid == 0 || ip.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let on = cfg_of(state, "sy_ip").await;
+    if on != "1" {
+        let key = if on == "2" {
+            "admin_user_00008"
+        } else {
+            "admin_user_00016"
+        };
+        return Err(ApiError::business(key));
+    }
+    let appkey = cfg_of(state, "sy_ip_appkey").await;
+    let secret = cfg_of(state, "sy_ip_appsecret").await;
+    let url = format!(
+        "https://u.ov6.com/ip2addr?appSecret={secret}&appKey={appkey}&ip={ip}"
+    );
+    let addr = match state.http.get_json::<Ov6Resp>(&url).await {
+        Ok(res) if res.code == 200 => res
+            .data
+            .and_then(|d| d.addr)
+            .unwrap_or_default(),
+        _ => String::new(),
+    };
+    let _ = user_repo::update_login_address(state.db.pool(), uid, &addr).await?;
+    if addr.is_empty() {
+        return Err(ApiError::business("admin_user_00016"));
+    }
+    Ok(PhpOut::Text("ok", addr))
+}
+
+async fn index_get_mobile_address(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let uid = json_u64(body, "uid");
+    let phone = json_str(body, "moblie");
+    if uid == 0 || phone.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let on = cfg_of(state, "sy_mobile").await;
+    if on != "1" {
+        return Err(ApiError::business("admin_user_00016"));
+    }
+    let appkey = cfg_of(state, "sy_mobile_appkey").await;
+    let secret = cfg_of(state, "sy_mobile_appsecret").await;
+    let url = format!(
+        "https://u.ov6.com/mlocation?appSecret={secret}&appKey={appkey}&phone={phone}"
+    );
+    let loc = match state.http.get_json::<Ov6Resp>(&url).await {
+        Ok(res) if res.code == 200 => res
+            .data
+            .and_then(|d| d.location)
+            .unwrap_or_default(),
+        _ => String::new(),
+    };
+    let _ = user_repo::update_moblie_address(state.db.pool(), uid, &loc).await?;
+    if loc.is_empty() {
+        return Err(ApiError::business("admin_user_00016"));
+    }
+    Ok(PhpOut::Text("ok", loc))
+}
+
+async fn index_wxbind(state: &AppState, user: &AuthenticatedUser) -> AppResult<Value> {
+    let author = cfg_of(state, "wx_author").await;
+    if author != "1" {
+        return Err(ApiError::business("common_01335"));
+    }
+    let login_id = format!("{}{:04}", clock::now_ts(), (uuid::Uuid::now_v7().as_u128() % 10_000));
+    let qr = wechat_api_service::create_qr_scene(state, &login_id, 86_400).await?;
+    gap_extra::php_insert_wxqrcode(
+        state.db.pool(),
+        &login_id,
+        &qr.ticket,
+        clock::now_ts(),
+        user.uid,
+        0,
+    )
+    .await?;
+    Ok(json!({ "code_url": qr.show_url }))
+}
+
+async fn index_wxbind_status(state: &AppState, user: &AuthenticatedUser) -> AppResult<PhpOut> {
+    match admin_user_repo::admin_wxid(state.db.reader(), user.uid).await? {
+        Some(wxid) => Ok(PhpOut::Data(json!({ "wxid": wxid }))),
+        None => Err(ApiError::business("admin_system_00225")),
+    }
+}
+
+async fn hotjob_del(state: &AppState, _user: &AuthenticatedUser, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = company_repo::hotjob_delete_by_uids(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_model_00150"))
+}
+
+async fn announce_del(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let mut n = 0u64;
+    for id in ids {
+        if admin_cms_service::delete_announcement(state, user, id)
+            .await
+            .is_ok()
+        {
+            n += 1;
+        }
+    }
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
+}
+
+async fn zph_space_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let kw = json_str(body, "keyword");
+    let keyword = if kw.is_empty() { None } else { Some(kw.as_str()) };
+    let rows = zph_repo::list_spaces(state.db.reader(), Some(0), keyword).await?;
+    let mut pics = Vec::new();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let pic_n = if r.pic.is_empty() {
+                String::new()
+            } else {
+                r.pic.clone()
+            };
+            if !pic_n.is_empty() {
+                pics.push(json!(pic_n));
+            }
+            json!({
+                "id": r.id,
+                "name": r.name,
+                "sort": r.sort,
+                "keyid": r.keyid,
+                "pic": r.pic,
+                "pic_n": pic_n,
+                "content": r.content,
+                "price": r.price,
+            })
+        })
+        .collect();
+    Ok(json!({ "list": list, "pics": pics }))
+}
+
+async fn zph_space_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    if body.get("add").is_some() && json_u64(body, "id") == 0 && json_str(body, "name").is_empty() {
+        return Ok(PhpOut::Message("ok"));
+    }
+    let name = json_str(body, "name");
+    if name.is_empty() {
+        return Err(ApiError::business("admin_01357"));
+    }
+    let id = json_u64(body, "id");
+    let keyid = json_i64(body, "keyid");
+    let sort = json_i32(body, "sort");
+    let price = json_i32(body, "price");
+    let pic = json_str(body, "pic");
+    let content = json_str(body, "content").replace("&amp;", "&");
+    if id > 0 {
+        zph_repo::upsert_space(
+            state.db.pool(),
+            zph_repo::SpaceUpsert {
+                id: Some(id),
+                name: &name,
+                sort,
+                keyid,
+                pic: &pic,
+                content: &content,
+                price,
+            },
+        )
+        .await?;
+        return Ok(PhpOut::Message("wap_00225"));
+    }
+    for part in name.split([',', '，']) {
+        let n = part.trim();
+        if n.is_empty() {
+            continue;
+        }
+        zph_repo::upsert_space(
+            state.db.pool(),
+            zph_repo::SpaceUpsert {
+                id: None,
+                name: n,
+                sort,
+                keyid,
+                pic: &pic,
+                content: &content,
+                price,
+            },
+        )
+        .await?;
+    }
+    Ok(PhpOut::Message("wap_js_00091"))
+}
+
+async fn zph_space_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_of(body);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let mut n = 0u64;
+    for id in ids {
+        n += zph_repo::delete_space(state.db.pool(), id).await?;
+    }
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_user_00187"))
 }

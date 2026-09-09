@@ -287,6 +287,7 @@ pub async fn php_page(
     match kind {
         "resume_getCache" => resume_get_cache(state).await,
         "job_getCacheData" => job_get_cache_data(state).await,
+        "part_getCacheData" => part_get_cache_data(state).await,
         "tiny_getCache" => tiny_get_cache(state).await,
         "once_getCache" => once_get_cache(state).await,
         "friendlink_getCache" => friendlink_get_cache(state).await,
@@ -404,6 +405,75 @@ async fn job_get_cache_data(state: &AppState) -> AppResult<Value> {
         "comclass_name": comclass_name,
         "job_name": job_name,
         "city_name": city_name,
+    });
+    let map_key = setting_repo::find(state.db.reader(), "map_key")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let map_secret = setting_repo::find(state.db.reader(), "map_secret")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    admin_dashboard_service::attach_amap(&mut payload, &map_key, &map_secret);
+    Ok(payload)
+}
+
+fn city_cascader(nodes: &[(u64, u64, String)]) -> Vec<Value> {
+    let mut by_parent: HashMap<u64, Vec<&(u64, u64, String)>> = HashMap::new();
+    for n in nodes {
+        by_parent.entry(n.1).or_default().push(n);
+    }
+    fn rec(
+        pid: u64,
+        by_parent: &HashMap<u64, Vec<&(u64, u64, String)>>,
+    ) -> Vec<Value> {
+        let Some(kids) = by_parent.get(&pid) else {
+            return Vec::new();
+        };
+        kids.iter()
+            .map(|n| {
+                let children = rec(n.0, by_parent);
+                let mut o = json!({ "value": n.0, "label": n.2 });
+                if !children.is_empty() {
+                    o["children"] = Value::Array(children);
+                }
+                o
+            })
+            .collect()
+    }
+    rec(0, &by_parent)
+}
+
+async fn part_get_cache_data(state: &AppState) -> AppResult<Value> {
+    let cities = cat_nodes(state, "city").await?;
+    let citys = city_cascader(&cities);
+    let part_rows = gap_extra::php_list_partclass(state.db.reader())
+        .await
+        .unwrap_or_default();
+    let billing_parent = part_rows
+        .iter()
+        .find(|r| r.variable == "part_billing_cycle")
+        .map(|r| r.id);
+    let mut billing = Map::new();
+    let mut partclass_name = Map::new();
+    for r in &part_rows {
+        partclass_name.insert(r.id.to_string(), Value::String(r.name.clone()));
+        if billing_parent == Some(r.keyid) {
+            billing.insert(r.id.to_string(), Value::String(r.name.clone()));
+        }
+    }
+    let mut payload = json!({
+        "cache": {
+            "citys": citys,
+            "partclass_name": partclass_name,
+        },
+        "search_list": {
+            "state": { "name": "wap_com_00406", "value": { "1": "wap_user_00165", "4": "wap_user_00166", "3": "wap_user_00167", "2": "member_com_00304", "5": "admin_user_00138" } },
+            "status": { "name": "member_user_00178", "value": { "1": "wap_com_00242", "2": "wap_com_00243" } },
+            "lastupdate": { "name": "wap_00326", "value": { "1": "common_01940", "3": "admin_user_00179", "7": "admin_user_00178", "15": "admin_user_00180", "30": "admin_user_00175" } },
+            "edate": { "name": "admin_00344", "value": { "1": "wap_com_00319", "3": "admin_user_00179", "7": "admin_user_00178", "15": "admin_user_00180", "30": "admin_user_00175" } },
+            "billing_cycle": { "name": "member_user_00199", "value": billing },
+        },
     });
     let map_key = setting_repo::find(state.db.reader(), "map_key")
         .await?

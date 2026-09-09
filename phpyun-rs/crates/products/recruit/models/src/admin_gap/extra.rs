@@ -3,6 +3,7 @@
 use super::entity::*;
 use super::repo::{delete_in, lim};
 use crate::soft_delete::{self, PREDICATE};
+use phpyun_core::db;
 use sqlx::{FromRow, MySqlPool, QueryBuilder, Row};
 
 pub fn parse_id_csv(raw: &str) -> Vec<u64> {
@@ -831,6 +832,11 @@ pub async fn set_rating_service_display(
 pub async fn delete_rating_services(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
     soft_delete::mark_col_in(pool, "phpyun_company_service_detail", "type", ids).await?;
     soft_delete::mark_ids(pool, "phpyun_company_service", ids).await
+}
+
+/// PHP `rating::delComSerDetail` — delete package *detail* rows by id.
+pub async fn delete_rating_details(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    soft_delete::mark_ids(pool, "phpyun_company_service_detail", ids).await
 }
 
 pub async fn find_rating_service(
@@ -5031,6 +5037,376 @@ pub async fn php_list_desc_names(pool: &MySqlPool) -> Result<Vec<(u64, String)>,
     sqlx::query_as(&format!(
         "SELECT CAST(id AS UNSIGNED), COALESCE(`name`,'') FROM phpyun_description WHERE {PREDICATE} ORDER BY id ASC"
     ))
+    .fetch_all(pool)
+    .await
+}
+
+async fn del_in(pool: &MySqlPool, prefix: &str, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    db::ok_default_if_object_missing(delete_in(pool, prefix, ids).await)
+}
+
+async fn del_or_cols(
+    pool: &MySqlPool,
+    table: &str,
+    col_a: &str,
+    col_b: &str,
+    ids: &[u64],
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(format!("DELETE FROM {table} WHERE {col_a} IN ("));
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(format!(") OR {col_b} IN ("));
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    db::ok_default_if_object_missing(
+        qb.build()
+            .execute(pool)
+            .await
+            .map(|r| r.rows_affected()),
+    )
+}
+
+/// PHP `userinfo::delUser` — seeker identity tables. Does not delete `member`.
+pub async fn php_del_user(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let n = del_in(pool, "DELETE FROM phpyun_resume WHERE uid IN (", uids).await?;
+    if n == 0 {
+        return Ok(0);
+    }
+    let uid_only: &[(&str, &str)] = &[
+        ("phpyun_attention", "uid"),
+        ("phpyun_evaluate_log", "uid"),
+        ("phpyun_fav_job", "uid"),
+        ("phpyun_job_tellog", "uid"),
+        ("phpyun_look_job", "uid"),
+        ("phpyun_look_resume", "uid"),
+        ("phpyun_member_statis", "uid"),
+        ("phpyun_msg", "uid"),
+        ("phpyun_part_apply", "uid"),
+        ("phpyun_part_collect", "uid"),
+        ("phpyun_question", "uid"),
+        ("phpyun_resume_expect", "uid"),
+        ("phpyun_resume_city_job_class", "uid"),
+        ("phpyun_resume_cityclass", "uid"),
+        ("phpyun_resume_doc", "uid"),
+        ("phpyun_resume_edu", "uid"),
+        ("phpyun_resume_jobclass", "uid"),
+        ("phpyun_resume_other", "uid"),
+        ("phpyun_resume_project", "uid"),
+        ("phpyun_resume_refresh_log", "uid"),
+        ("phpyun_resume_remark", "uid"),
+        ("phpyun_resume_show", "uid"),
+        ("phpyun_resume_skill", "uid"),
+        ("phpyun_resume_training", "uid"),
+        ("phpyun_resume_trainging", "uid"),
+        ("phpyun_resume_work", "uid"),
+        ("phpyun_talent_pool", "uid"),
+        ("phpyun_user_entrust", "uid"),
+        ("phpyun_user_entrust_record", "uid"),
+        ("phpyun_user_resume", "uid"),
+        ("phpyun_userid_job", "uid"),
+        ("phpyun_userid_msg", "uid"),
+        ("phpyun_down_resume", "uid"),
+        ("phpyun_blacklist", "p_uid"),
+    ];
+    for (table, col) in uid_only {
+        let _ = del_in(
+            pool,
+            &format!("DELETE FROM {table} WHERE {col} IN ("),
+            uids,
+        )
+        .await?;
+    }
+    for (table, ut) in [
+        ("phpyun_answer", 1),
+        ("phpyun_answer_review", 1),
+        ("phpyun_change", 1),
+        ("phpyun_company_cert", 1),
+        ("phpyun_company_order", 1),
+        ("phpyun_login_log", 1),
+        ("phpyun_member_log", 1),
+    ] {
+        let _ = del_in(
+            pool,
+            &format!("DELETE FROM {table} WHERE usertype = {ut} AND uid IN ("),
+            uids,
+        )
+        .await?;
+    }
+    let _ = del_in(
+        pool,
+        "DELETE FROM phpyun_company_pay WHERE usertype = 1 AND com_id IN (",
+        uids,
+    )
+    .await?;
+    let _ = del_or_cols(pool, "phpyun_atn", "uid", "sc_uid", uids).await?;
+    let _ = del_or_cols(pool, "phpyun_report", "p_uid", "c_uid", uids).await?;
+    Ok(n)
+}
+
+/// PHP `userinfo::delCom` — company identity tables. Does not delete `member`.
+pub async fn php_del_com(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let n = del_in(pool, "DELETE FROM phpyun_company WHERE uid IN (", uids).await?;
+    if n == 0 {
+        return Ok(0);
+    }
+    let uid_only: &[(&str, &str)] = &[
+        ("phpyun_attention", "uid"),
+        ("phpyun_banner", "uid"),
+        ("phpyun_company_job", "uid"),
+        ("phpyun_company_job_link", "uid"),
+        ("phpyun_company_news", "uid"),
+        ("phpyun_company_product", "uid"),
+        ("phpyun_company_show", "uid"),
+        ("phpyun_company_statis", "uid"),
+        ("phpyun_evaluate_log", "uid"),
+        ("phpyun_hotjob", "uid"),
+        ("phpyun_look_job", "com_id"),
+        ("phpyun_msg", "job_uid"),
+        ("phpyun_partjob", "uid"),
+        ("phpyun_part_apply", "comid"),
+        ("phpyun_part_collect", "comid"),
+        ("phpyun_question", "uid"),
+        ("phpyun_resume_remark", "comid"),
+        ("phpyun_special_com", "uid"),
+        ("phpyun_talent_pool", "cuid"),
+        ("phpyun_user_entrust_record", "comid"),
+        ("phpyun_userid_job", "com_id"),
+        ("phpyun_userid_msg", "fid"),
+        ("phpyun_zhaopinhui_com", "uid"),
+        ("phpyun_yqmb", "uid"),
+        ("phpyun_job_tellog", "comid"),
+        ("phpyun_fav_job", "com_id"),
+        ("phpyun_blacklist", "c_uid"),
+        ("phpyun_down_resume", "comid"),
+    ];
+    for (table, col) in uid_only {
+        let _ = del_in(
+            pool,
+            &format!("DELETE FROM {table} WHERE {col} IN ("),
+            uids,
+        )
+        .await?;
+    }
+    for (table, ut) in [
+        ("phpyun_answer", 2),
+        ("phpyun_answer_review", 2),
+        ("phpyun_change", 2),
+        ("phpyun_company_cert", 2),
+        ("phpyun_company_order", 2),
+        ("phpyun_job_refresh_log", 2),
+        ("phpyun_login_log", 2),
+        ("phpyun_member_log", 2),
+        ("phpyun_look_resume", 2),
+    ] {
+        let sql = if table == "phpyun_look_resume" {
+            format!("DELETE FROM {table} WHERE usertype = {ut} AND com_id IN (")
+        } else {
+            format!("DELETE FROM {table} WHERE usertype = {ut} AND uid IN (")
+        };
+        let _ = del_in(pool, &sql, uids).await?;
+    }
+    let _ = del_in(
+        pool,
+        "DELETE FROM phpyun_company_pay WHERE usertype = 2 AND com_id IN (",
+        uids,
+    )
+    .await?;
+    let _ = del_or_cols(pool, "phpyun_atn", "uid", "sc_uid", uids).await?;
+    let _ = del_or_cols(pool, "phpyun_email_msg", "uid", "cuid", uids).await?;
+    let _ = del_or_cols(pool, "phpyun_report", "p_uid", "c_uid", uids).await?;
+    Ok(n)
+}
+
+/// PHP `userinfo::delMember` — drop the account row, then both identities.
+pub async fn php_del_member_account(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let n = del_in(pool, "DELETE FROM phpyun_member WHERE uid IN (", uids).await?;
+    if n == 0 {
+        return Ok(0);
+    }
+    let _ = php_del_user(pool, uids).await?;
+    let _ = php_del_com(pool, uids).await?;
+    Ok(n)
+}
+
+pub async fn php_clear_member_usertype(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_member SET usertype = 0 WHERE uid IN (");
+    let mut sep = qb.separated(", ");
+    for id in uids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpWxqrcodeRow {
+    pub id: u64,
+    pub wxloginid: String,
+    pub ticket: String,
+    pub time: i64,
+    pub status: i32,
+    pub wxid: String,
+    pub uid: u64,
+    pub auid: u64,
+    pub username: String,
+    pub usertype: i32,
+}
+
+pub async fn php_find_wxqrcode(
+    pool: &MySqlPool,
+    login_id: &str,
+    status: i32,
+) -> Result<Option<PhpWxqrcodeRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(wxloginid,'') AS wxloginid, \
+         COALESCE(ticket,'') AS ticket, CAST(COALESCE(`time`,0) AS SIGNED) AS time, \
+         CAST(COALESCE(status,0) AS SIGNED) AS status, COALESCE(wxid,'') AS wxid, \
+         CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, CAST(COALESCE(auid,0) AS UNSIGNED) AS auid, \
+         CAST('' AS CHAR) AS username, CAST(0 AS SIGNED) AS usertype \
+         FROM phpyun_wxqrcode WHERE wxloginid = ? AND status = ? LIMIT 1",
+    )
+    .bind(login_id)
+    .bind(status)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn php_insert_wxqrcode(
+    pool: &MySqlPool,
+    login_id: &str,
+    ticket: &str,
+    now: i64,
+    auid: u64,
+    uid: u64,
+) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query(
+        "INSERT INTO phpyun_wxqrcode (wxloginid, ticket, `time`, status, auid, uid) \
+         VALUES (?, ?, ?, 0, ?, ?)",
+    )
+    .bind(login_id)
+    .bind(ticket)
+    .bind(now)
+    .bind(auid)
+    .bind(uid)
+    .execute(pool)
+    .await?
+    .last_insert_id())
+}
+
+pub async fn php_mark_wxqrcode_scan(
+    pool: &MySqlPool,
+    login_id: &str,
+    wxid: &str,
+) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_wxqrcode SET status = 1, wxid = ? WHERE wxloginid = ?")
+            .bind(wxid)
+            .bind(login_id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn php_list_wxqrcodes_admin(
+    pool: &MySqlPool,
+    status: Option<i32>,
+    keyword: Option<&str>,
+    since: Option<i64>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PhpWxqrcodeRow>, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(q.id AS UNSIGNED) AS id, COALESCE(q.wxloginid,'') AS wxloginid, \
+         COALESCE(q.ticket,'') AS ticket, CAST(COALESCE(q.`time`,0) AS SIGNED) AS time, \
+         CAST(COALESCE(q.status,0) AS SIGNED) AS status, COALESCE(q.wxid,'') AS wxid, \
+         CAST(COALESCE(q.uid,0) AS UNSIGNED) AS uid, CAST(COALESCE(q.auid,0) AS UNSIGNED) AS auid, \
+         COALESCE(m.username,'') AS username, CAST(COALESCE(m.usertype,0) AS SIGNED) AS usertype \
+         FROM phpyun_wxqrcode q \
+         LEFT JOIN phpyun_member m ON m.wxid <> '' AND m.wxid = q.wxid WHERE 1=1",
+    );
+    push_wxqrcode_filters(&mut qb, status, keyword, since);
+    qb.push(" ORDER BY q.time DESC LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_count_wxqrcodes_admin(
+    pool: &MySqlPool,
+    status: Option<i32>,
+    keyword: Option<&str>,
+    since: Option<i64>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new(
+        "SELECT COUNT(*) FROM phpyun_wxqrcode q \
+         LEFT JOIN phpyun_member m ON m.wxid <> '' AND m.wxid = q.wxid WHERE 1=1",
+    );
+    push_wxqrcode_filters(&mut qb, status, keyword, since);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+fn push_wxqrcode_filters(
+    qb: &mut QueryBuilder<'_, sqlx::MySql>,
+    status: Option<i32>,
+    keyword: Option<&str>,
+    since: Option<i64>,
+) {
+    if let Some(s) = status {
+        qb.push(" AND q.status = ");
+        qb.push_bind(s);
+    }
+    if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
+        qb.push(" AND (q.wxloginid LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR q.wxid LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR m.username LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(")");
+    }
+    if let Some(ts) = since {
+        qb.push(" AND q.`time` > ");
+        qb.push_bind(ts);
+    }
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpPartClassRow {
+    pub id: u64,
+    pub keyid: u64,
+    pub name: String,
+    pub variable: String,
+}
+
+pub async fn php_list_partclass(pool: &MySqlPool) -> Result<Vec<PhpPartClassRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(keyid,0) AS UNSIGNED) AS keyid, \
+         COALESCE(`name`,'') AS `name`, COALESCE(variable,'') AS variable \
+         FROM phpyun_partclass ORDER BY sort ASC, id ASC",
+    )
     .fetch_all(pool)
     .await
 }

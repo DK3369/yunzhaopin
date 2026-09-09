@@ -710,5 +710,16 @@ pub async fn list_company_expire(
     let db = state.db.reader();
     let list = company_repo::list_expire(db, expired_only, now, page.offset, page.limit).await?;
     let total = company_repo::count_expire(db, expired_only, now).await?;
+    let list = list
+        .into_iter()
+        .map(|mut r| {
+            r.vip_etime_n = if r.vip_etime > 0 {
+                phpyun_core::utils::fmt_dt(r.vip_etime)
+            } else {
+                String::new()
+            };
+            r
+        })
+        .collect();
     Ok(Paged::new(list, total, page.page, page.page_size))
 }

@@ -206,6 +206,13 @@ pub async fn list_wx_records(
     let db = state.db.reader();
     let list = gap::list_wxqrcodes(db, status, keyword, page.offset, page.limit).await?;
     let total = gap::count_wxqrcodes(db, status, keyword).await?;
+    let list = list
+        .into_iter()
+        .map(|mut r| {
+            r.time_n = if r.time > 0 { fmt_dt(r.time) } else { String::new() };
+            r
+        })
+        .collect();
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
@@ -265,7 +272,36 @@ pub async fn list_data_call(state: &AppState, page: Pagination) -> AppResult<Pag
     let db = state.db.reader();
     let list = gap::list_outside(db, page.offset, page.limit).await?;
     let total = gap::count_outside(db).await?;
+    let list = list
+        .into_iter()
+        .map(|mut r| {
+            r.type_n = datacall_type_n(&r.r#type);
+            r.time_n = if r.lasttime > 0 {
+                fmt_dt(r.lasttime)
+            } else {
+                String::new()
+            };
+            r
+        })
+        .collect();
     Ok(Paged::new(list, total, page.page, page.page_size))
+}
+
+fn datacall_type_n(t: &str) -> String {
+    match t {
+        "resume" => "简历".into(),
+        "member" => "用户".into(),
+        "company" => "公司".into(),
+        "job" => "职位".into(),
+        "zph" => "招聘会".into(),
+        "news" => "新闻".into(),
+        "ask" => "问答".into(),
+        "link" => "友情链接".into(),
+        "once" => "店铺招聘".into(),
+        "tiny" => "普工简历".into(),
+        "keyword" => "热门关键字".into(),
+        other => other.to_string(),
+    }
 }
 
 pub async fn upsert_data_call(

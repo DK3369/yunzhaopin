@@ -216,6 +216,39 @@ pub async fn clear_wxid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> 
     )
 }
 
+pub async fn clear_wxid_value(pool: &MySqlPool, wxid: &str) -> Result<u64, sqlx::Error> {
+    if wxid.is_empty() {
+        return Ok(0);
+    }
+    Ok(
+        sqlx::query("UPDATE phpyun_admin_user SET wxid = '' WHERE wxid = ?")
+            .bind(wxid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn set_wxid(pool: &MySqlPool, uid: u64, wxid: &str) -> Result<u64, sqlx::Error> {
+    Ok(
+        sqlx::query("UPDATE phpyun_admin_user SET wxid = ? WHERE uid = ?")
+            .bind(wxid)
+            .bind(uid)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
+}
+
+pub async fn admin_wxid(pool: &MySqlPool, uid: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> =
+        sqlx::query_as("SELECT COALESCE(wxid,'') FROM phpyun_admin_user WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.map(|r| r.0).filter(|s| !s.is_empty()))
+}
+
 pub async fn update_profile(
     pool: &MySqlPool,
     uid: u64,

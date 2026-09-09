@@ -5,6 +5,8 @@
 //! pending id in Redis, and complete login when the OA `SCAN`/`subscribe` event arrives.
 
 use phpyun_core::{clock, ApiError, AppResult, AppState};
+use phpyun_models::admin_gap::extra as gap_extra;
+use phpyun_models::admin_rbac::repo as admin_user_repo;
 use phpyun_models::user::repo as user_repo;
 use serde::{Deserialize, Serialize};
 
@@ -128,15 +130,23 @@ pub async fn on_oa_event(state: &AppState, msg: &IncomingMessage) {
     if login_id.is_empty() || login_id.len() > 32 {
         return;
     }
+    let openid = msg.from_user.trim();
+    if openid.is_empty() {
+        return;
+    }
+    if let Ok(Some(row)) = gap_extra::php_find_wxqrcode(state.db.reader(), login_id, 0).await {
+        if row.auid > 0 {
+            let _ = admin_user_repo::clear_wxid_value(state.db.pool(), openid).await;
+            let _ = admin_user_repo::set_wxid(state.db.pool(), row.auid, openid).await;
+            let _ = gap_extra::php_mark_wxqrcode_scan(state.db.pool(), login_id, openid).await;
+            return;
+        }
+    }
     let key = redis_key(login_id);
     let Ok(Some(mut slot)) = state.redis.get_json::<Slot>(&key).await else {
         return;
     };
     if slot.status != "pending" {
-        return;
-    }
-    let openid = msg.from_user.trim();
-    if openid.is_empty() {
         return;
     }
     let member = match user_repo::find_by_oauth_id(state.db.reader(), "wxid", openid).await {

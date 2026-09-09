@@ -1138,3 +1138,42 @@ pub async fn anonymize_logout_member(
     .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn update_login_address(
+    pool: &MySqlPool,
+    uid: u64,
+    addr: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET login_address = ? WHERE uid = ?")
+        .bind(addr)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn update_moblie_address(
+    pool: &MySqlPool,
+    uid: u64,
+    addr: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET moblie_address = ? WHERE uid = ?")
+        .bind(addr)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn update_lock_info_only(
+    pool: &MySqlPool,
+    uid: u64,
+    lock_info: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET lock_info = ? WHERE uid = ?")
+        .bind(lock_info)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}

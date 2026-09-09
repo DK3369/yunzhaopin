@@ -1966,24 +1966,30 @@ pub async fn list_wxqrcodes(
 ) -> Result<Vec<WxQrcodeRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(wxloginid,'') AS wxloginid, \
-         COALESCE(ticket,'') AS ticket, CAST(COALESCE(`time`,0) AS SIGNED) AS time, \
-         CAST(COALESCE(status,0) AS SIGNED) AS status, COALESCE(wxid,'') AS wxid, \
-         CAST(COALESCE(uid,0) AS UNSIGNED) AS uid \
-         FROM phpyun_wxqrcode WHERE 1=1",
+        "SELECT CAST(q.id AS UNSIGNED) AS id, COALESCE(q.wxloginid,'') AS wxloginid, \
+         COALESCE(q.ticket,'') AS ticket, CAST(COALESCE(q.`time`,0) AS SIGNED) AS time, \
+         CAST(COALESCE(q.status,0) AS SIGNED) AS status, COALESCE(q.wxid,'') AS wxid, \
+         CAST(COALESCE(q.uid,0) AS UNSIGNED) AS uid, \
+         COALESCE(m.username,'') AS username, \
+         CAST(COALESCE(m.usertype,0) AS SIGNED) AS usertype, \
+         CAST('' AS CHAR) AS time_n \
+         FROM phpyun_wxqrcode q \
+         LEFT JOIN phpyun_member m ON m.wxid <> '' AND m.wxid = q.wxid WHERE 1=1",
     );
     if let Some(s) = status {
-        qb.push(" AND status = ");
+        qb.push(" AND q.status = ");
         qb.push_bind(s);
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        qb.push(" AND (wxloginid LIKE ");
+        qb.push(" AND (q.wxloginid LIKE ");
         qb.push_bind(format!("%{kw}%"));
-        qb.push(" OR wxid LIKE ");
+        qb.push(" OR q.wxid LIKE ");
+        qb.push_bind(format!("%{kw}%"));
+        qb.push(" OR m.username LIKE ");
         qb.push_bind(format!("%{kw}%"));
         qb.push(")");
     }
-    qb.push(" ORDER BY time DESC LIMIT ");
+    qb.push(" ORDER BY q.time DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
     qb.push_bind(o);
