@@ -27,15 +27,22 @@ function attrOf(attrs: Record<string, unknown>, camel: string, kebab: string) {
 function phpSwitchVNode(attrs: Record<string, unknown>, slots: Record<string, unknown>) {
   const active = attrOf(attrs, 'activeValue', 'active-value') ?? true
   const inactive = attrOf(attrs, 'inactiveValue', 'inactive-value') ?? false
-  const model = attrOf(attrs, 'modelValue', 'model-value')
-  return h(
-    ElSwitchBase,
-    {
-      ...attrs,
-      modelValue: coerceSwitchValue(model, active, inactive),
-    },
-    slots,
-  )
+  const model = coerceSwitchValue(attrOf(attrs, 'modelValue', 'model-value'), active, inactive)
+  const activeText = attrOf(attrs, 'activeText', 'active-text')
+  const inactiveText = attrOf(attrs, 'inactiveText', 'inactive-text')
+  const on = Object.is(model, active) || String(model) === String(active)
+  const next: Record<string, unknown> = { ...attrs, modelValue: model }
+  // PHP Element UI 2 used v-show so only the current side's text is visible.
+  // Element Plus paints both labels at once; they wrap into 不通知/通知.
+  if (activeText != null || inactiveText != null) {
+    const shownActive = on ? activeText : ''
+    const shownInactive = on ? '' : inactiveText
+    delete next['active-text']
+    delete next['inactive-text']
+    next.activeText = shownActive
+    next.inactiveText = shownInactive
+  }
+  return h(ElSwitchBase, next, slots)
 }
 
 function unwrapMaybeRef(v: unknown): unknown {

@@ -263,9 +263,11 @@ textarea::-webkit-input-placeholder {
     height: 18px;
 }
 
+/* Element UI 2 drew the knob with :after; Element Plus uses .el-switch__action.
+   Keep the old rule from painting a second box that looks like a checkbox. */
 .el-switch__core:after {
-    width: 14px;
-    height: 14px;
+    content: none;
+    display: none;
 }
 
 /* .el-input-group__prepend{
