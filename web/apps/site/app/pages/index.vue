@@ -187,11 +187,6 @@ const companies = computed(() => (home.value?.rec_companies || []) as CompanyLik
 const announcements = computed(() => (home.value?.announcements || []) as Array<{ id: number; title: string }>)
 const keywords = computed(() => (home.value?.hot_keywords || []) as Array<{ keyword: string }>)
 const articles = computed(() => (home.value?.new_articles || []) as ArticleLike[])
-const indexTpl = computed(() => ((home.value as { index_tpl?: IndexTpl | null } | null)?.index_tpl || null))
-const indexTplPic = computed(() => {
-  const p = String(indexTpl.value?.pic || '').trim()
-  return p ? mediaUrl(p) : ''
-})
 const featuredArticles = computed(() => {
   const tagged = (home.value?.featured_articles || []) as ArticleLike[]
   if (tagged.length) return tagged.slice(0, 2)
@@ -332,19 +327,6 @@ useSeoMeta({
 })
 useHead({
   link: [{ rel: 'canonical', href: '/' }],
-  bodyAttrs: {
-    style: () => {
-      const pic = indexTplPic.value
-      if (!pic) return undefined
-      const gray = Number(indexTpl.value?.se) === 1 ? 'filter:grayscale(100%);' : ''
-      return `background:#f8f8f8 url(${pic}) no-repeat center top;${gray}`
-    },
-  },
-  style: () => {
-    const h = Number(indexTpl.value?.height || 0)
-    if (h <= 0) return []
-    return [{ innerHTML: `.pc-topbar{margin-top:${h}px}` }]
-  },
 })
 </script>
 
@@ -452,7 +434,7 @@ useHead({
                 />
               </div>
             </div>
-            <div class="yunheader_60jpbox">
+            <div v-if="urgentList.length" class="yunheader_60jpbox">
               <div v-for="job in urgentList" :key="job.id" class="js_new">
                 <NuxtLink :to="`/jobs/${job.id}`" class="yunheader_60jp" :title="job.name">
                   <i class="yunheader_60jpicon" />
@@ -464,7 +446,6 @@ useHead({
                 </NuxtLink>
                 <div class="yunheader_60jpcom">{{ job.com_name }}</div>
               </div>
-              <p v-if="!urgentList.length" class="muted" style="padding: 16px 8px">{{ $t('default_00033') }}</p>
             </div>
           </div>
 
