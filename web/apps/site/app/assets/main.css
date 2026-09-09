@@ -219,8 +219,43 @@ html.force-pc .site-h5 {
   body.comapply_bg {
     min-width: 1200px;
   }
+  /* Flyout is position:absolute;top:0 on each <li>. Without PHP index.js
+     (negative top), hovering a lower row dumps the panel off the bottom.
+     Pin it to .leftNav (450px first-floor column) and scroll inside. */
+  .yunheader_60zwlb {
+    overflow: visible;
+  }
+  .yunheader_60zwlb .leftNav {
+    height: 100%;
+  }
+  .menuLst ul li,
+  .menuLst ul:hover li {
+    display: none;
+    position: static;
+  }
+  .menuLst ul li:nth-child(-n+10),
+  .menuLst ul:hover li:nth-child(-n+10) {
+    display: block;
+  }
+  .menuLst ul li:hover > a.link {
+    color: #2778f8;
+    text-decoration: none;
+    box-shadow: inset 0 -2px 0 #2778f8;
+  }
   .menuLst ul li:hover .lstCon {
     display: block !important;
+    top: 0;
+    bottom: 0;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: hidden;
+  }
+  .menuLst ul li .lstCon .lstConClass {
+    max-height: calc(100% - 12px);
+    margin-top: 8px;
+    margin-bottom: 8px;
+    overflow: auto;
   }
   .yun_new_right .login_head_id a {
     color: #fff;
