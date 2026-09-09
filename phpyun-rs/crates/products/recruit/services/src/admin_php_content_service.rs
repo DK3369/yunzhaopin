@@ -3,13 +3,15 @@
 
 use std::collections::HashMap;
 
-use chrono::Datelike;
+use chrono::{Datelike, TimeZone};
 use phpyun_core::i18n;
 use phpyun_core::utils::{fmt_date, fmt_dt, fmt_ts};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
+use phpyun_models::admin_gap::datacall as gap_datacall;
 use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_gap::repo as gap_repo;
+use phpyun_models::admin_gap::tongji as gap_tongji;
 use phpyun_models::admin_rbac::php as rbac_php;
 use phpyun_models::admin_rbac::php_power;
 use phpyun_models::nav_menu::php as nav_php;
@@ -577,6 +579,12 @@ pub async fn dispatch(
         ("hrlog", "getHb") => Ok(PhpOut::Data(hrlog_get_hb(state, body).await?)),
         ("trust", "recom") => Ok(PhpOut::Data(trust_recom(state, body).await?)),
         ("trust", "directrecom") => trust_directrecom(state, body).await,
+        ("data-board", "index") => Ok(PhpOut::Data(data_board_index(state, body).await?)),
+        ("data-board", "class") => Ok(PhpOut::Data(data_board_class(state, body).await?)),
+        ("data-board", "fenxiabiao") => Ok(PhpOut::Data(data_board_fenxiabiao(state, body).await?)),
+        ("data-board", "getAuth") => Ok(PhpOut::Data(data_board_get_auth(state, user, body).await?)),
+        ("data-call", "getPreviewData") => Ok(PhpOut::Data(data_call_preview(state, body).await?)),
+        ("data-collection", "getRating") => Ok(PhpOut::Data(data_collection_rating(state).await?)),
         _ => Err(ApiError::param_invalid("unknown_php_action")),
     }
 }
@@ -15310,4 +15318,1121 @@ async fn gen_cache_run(
     dict_service::reload(state).await?;
     home_service::invalidate_all().await;
     Ok(PhpOut::Message("admin_system_00064"))
+}
+
+fn json_ms_pair(body: &Value) -> Option<(i64, i64)> {
+    match body.get("time") {
+        Some(Value::Array(a)) if a.len() >= 2 => {
+            let n = |v: &Value| {
+                v.as_i64()
+                    .or_else(|| v.as_f64().map(|f| f as i64))
+                    .or_else(|| v.as_str().and_then(|s| s.trim().parse().ok()))
+                    .unwrap_or(0)
+            };
+            let a0 = n(&a[0]);
+            let a1 = n(&a[1]);
+            if a0 > 0 && a1 > 0 {
+                Some((a0, a1))
+            } else {
+                None
+            }
+        }
+        _ => None,
+    }
+}
+
+fn board_win(body: &Value) -> gap_tongji::TjWindow {
+    gap_tongji::tj_window(json_i32(body, "days"), json_ms_pair(body), clock::now_ts())
+}
+
+fn points_json(s: &gap_tongji::TjSeries) -> Value {
+    Value::Array(
+        s.list
+            .iter()
+            .map(|p| json!({"tjtime": p.tjtime, "date": p.date, "count": p.count}))
+            .collect(),
+    )
+}
+
+fn named_list(name_key: &str, s: &gap_tongji::TjSeries) -> Value {
+    json!({"name": msg_t(name_key), "list": points_json(s)})
+}
+
+async fn get_tj(
+    state: &AppState,
+    table: &str,
+    field: &str,
+    win: &gap_tongji::TjWindow,
+    extra: &[gap_tongji::Extra],
+    sum_price: bool,
+) -> AppResult<gap_tongji::TjSeries> {
+    Ok(gap_tongji::get_tj(state.db.reader(), table, field, win, extra, sum_price).await?)
+}
+
+fn source_name(id: i32) -> String {
+    match id {
+        1 => "网页".into(),
+        2 => "手机".into(),
+        4 => "微信".into(),
+        6 => "采集".into(),
+        8 => "QQ登录".into(),
+        9 => "微信扫一扫".into(),
+        10 => "微博".into(),
+        11 => "PC快速投递".into(),
+        12 => "WAP快速投递".into(),
+        21 => "账户分离".into(),
+        26 => "预留信息".into(),
+        _ => String::new(),
+    }
+}
+
+fn sex_name(id: i32) -> String {
+    match id {
+        1 => "男".into(),
+        2 => "女".into(),
+        _ => String::new(),
+    }
+}
+
+fn salary_bucket(min: i32, max: i32) -> (String, String) {
+    let v = if max > 0 { max } else { min };
+    if v <= 2000 {
+        ("common_06589".into(), msg_t("common_06589"))
+    } else if v <= 4000 {
+        ("2000-4000".into(), "2000-4000".into())
+    } else if v <= 6000 {
+        ("4000-6000".into(), "4000-6000".into())
+    } else if v <= 8000 {
+        ("6000-8000".into(), "6000-8000".into())
+    } else if v <= 10000 {
+        ("8000-10000".into(), "8000-10000".into())
+    } else {
+        ("common_06590".into(), msg_t("common_06590"))
+    }
+}
+
+fn bump(map: &mut serde_json::Map<String, Value>, group: &str, id: &str, name: &str) {
+    if id.is_empty() {
+        return;
+    }
+    let slot = map
+        .entry(group.to_string())
+        .or_insert_with(|| json!({}));
+    if let Some(obj) = slot.as_object_mut() {
+        let cur = obj
+            .get(id)
+            .and_then(|v| v.get("count"))
+            .and_then(Value::as_f64)
+            .unwrap_or(0.0)
+            + 1.0;
+        obj.insert(id.to_string(), json!({"name": name, "count": cur}));
+    }
+}
+
+fn pie_muti(v: &Value) -> Value {
+    let mut items: Vec<Value> = match v {
+        Value::Object(m) => m.values().cloned().collect(),
+        Value::Array(a) => a.clone(),
+        _ => return json!({}),
+    };
+    if items.is_empty() {
+        return json!({});
+    }
+    items.sort_by(|a, b| {
+        let ca = a.get("count").and_then(Value::as_f64).unwrap_or(0.0);
+        let cb = b.get("count").and_then(Value::as_f64).unwrap_or(0.0);
+        cb.partial_cmp(&ca).unwrap_or(std::cmp::Ordering::Equal)
+    });
+    if items.len() > 10 {
+        let rest: f64 = items[10..]
+            .iter()
+            .map(|x| x.get("count").and_then(Value::as_f64).unwrap_or(0.0))
+            .sum();
+        items.truncate(10);
+        items.push(json!({"name": msg_t("member_com_00038"), "count": rest}));
+    }
+    Value::Array(items)
+}
+
+fn empty_job_tj() -> Value {
+    json!({
+        "job1": {},
+        "provinceid": {},
+        "salary": {},
+        "edu": {},
+        "exp": {},
+    })
+}
+
+fn csv_i32(s: &str) -> Vec<i32> {
+    s.split(',')
+        .filter_map(|x| x.trim().parse().ok())
+        .filter(|n: &i32| *n > 0)
+        .collect()
+}
+
+fn csv_names(s: &str, lookup: impl Fn(i32) -> String) -> String {
+    csv_i32(s)
+        .into_iter()
+        .map(&lookup)
+        .filter(|n| !n.is_empty())
+        .collect::<Vec<_>>()
+        .join(",")
+}
+
+async fn data_tj_job(state: &AppState, ids: &[u64]) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let rows = gap_tongji::job_slices(state.db.reader(), ids).await?;
+    let mut map = serde_json::Map::new();
+    for r in rows {
+        bump(&mut map, "edu", &r.edu.to_string(), dicts.comclass(r.edu));
+        bump(&mut map, "exp", &r.exp.to_string(), dicts.comclass(r.exp));
+        bump(&mut map, "job1", &r.job1.to_string(), dicts.job(r.job1));
+        bump(
+            &mut map,
+            "provinceid",
+            &r.provinceid.to_string(),
+            dicts.city(r.provinceid),
+        );
+        let (k, n) = salary_bucket(r.minsalary, r.maxsalary);
+        bump(&mut map, "salary", &k, &n);
+    }
+    if !map.contains_key("job1") {
+        return Ok(empty_job_tj());
+    }
+    for k in ["job1", "provinceid", "salary", "edu", "exp"] {
+        map.entry(k.to_string()).or_insert_with(|| json!({}));
+    }
+    Ok(Value::Object(map))
+}
+
+async fn data_tj_expect(state: &AppState, ids: &[u64]) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let parents = gap_tongji::job_parents(state.db.reader()).await?;
+    let rows = gap_tongji::expect_slices(state.db.reader(), ids).await?;
+    let cities = gap_tongji::expect_cities(state.db.reader(), ids).await?;
+    let mut city_map = HashMap::new();
+    for c in cities {
+        city_map.insert(c.eid, c.provinceid);
+    }
+    let mut map = serde_json::Map::new();
+    for r in rows {
+        bump(&mut map, "sex", &r.sex.to_string(), &sex_name(r.sex));
+        bump(&mut map, "source", &r.source.to_string(), &source_name(r.source));
+        bump(&mut map, "edu", &r.edu.to_string(), dicts.user_or_com(r.edu));
+        bump(&mut map, "exp", &r.exp.to_string(), dicts.user_or_com(r.exp));
+        for cid in csv_i32(&r.job_classid) {
+            let root = parents.get(&cid).copied().unwrap_or(cid);
+            if root > 0 {
+                bump(&mut map, "job1", &root.to_string(), dicts.job(root));
+            }
+        }
+        if let Some(pid) = city_map.get(&r.id) {
+            bump(&mut map, "provinceid", &pid.to_string(), dicts.city(*pid));
+        }
+        let (k, n) = salary_bucket(r.minsalary, r.maxsalary);
+        bump(&mut map, "salary", &k, &n);
+    }
+    for k in ["job1", "provinceid", "salary", "edu", "exp"] {
+        map.entry(k.to_string()).or_insert_with(|| json!({}));
+    }
+    Ok(Value::Object(map))
+}
+
+async fn data_tj_reg(state: &AppState, ids: &[u64]) -> AppResult<Value> {
+    let rows = gap_tongji::source_counts(state.db.reader(), ids).await?;
+    let mut source = serde_json::Map::new();
+    for r in rows {
+        source.insert(
+            r.source.to_string(),
+            json!({"name": source_name(r.source), "count": r.count}),
+        );
+    }
+    Ok(json!({"source": Value::Object(source)}))
+}
+
+async fn data_tj_order(state: &AppState, ids: &[u64]) -> AppResult<Value> {
+    let rows = gap_tongji::order_slices(state.db.reader(), ids).await?;
+    let mut map = serde_json::Map::new();
+    for r in rows {
+        let ot = if r.order_type.is_empty() {
+            "0".to_string()
+        } else {
+            r.order_type.clone()
+        };
+        let on = pay_name(&ot);
+        let on = if on.is_empty() {
+            msg_t("member_com_00038")
+        } else {
+            on.to_string()
+        };
+        bump(&mut map, "ordertype", &ot, &on);
+        let tn = order_kind_name(r.kind);
+        let tn = if tn.is_empty() {
+            msg_t("member_com_00038")
+        } else {
+            tn.to_string()
+        };
+        bump(&mut map, "type", &r.kind.to_string(), &tn);
+    }
+    map.entry("type".to_string()).or_insert_with(|| json!({}));
+    map.entry("ordertype".to_string()).or_insert_with(|| json!({}));
+    Ok(Value::Object(map))
+}
+
+async fn data_tj_company(state: &AppState, ids: &[u64]) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
+    let coms = gap_tongji::com_slices(state.db.reader(), ids).await?;
+    let ratings = gap_tongji::com_ratings(state.db.reader(), ids).await?;
+    let mut map = serde_json::Map::new();
+    for r in ratings {
+        let name = if r.rating_name.is_empty() {
+            r.rating.to_string()
+        } else {
+            r.rating_name
+        };
+        bump(&mut map, "rating", &r.rating.to_string(), &name);
+    }
+    for r in coms {
+        if r.hy <= 0 {
+            bump(&mut map, "hy", "0", &msg_t("member_com_00038"));
+            bump(&mut map, "is", "0", &msg_t("common_01680"));
+        } else {
+            bump(&mut map, "hy", &r.hy.to_string(), dicts.industry(r.hy));
+            bump(&mut map, "is", "1", &msg_t("admin_tool_00124"));
+        }
+    }
+    for k in ["hy", "rating", "is"] {
+        map.entry(k.to_string()).or_insert_with(|| json!({}));
+    }
+    Ok(Value::Object(map))
+}
+
+async fn top_list(
+    state: &AppState,
+    table: &str,
+    time_field: &str,
+    group_field: &str,
+    win: &gap_tongji::TjWindow,
+    extra: &[gap_tongji::Extra],
+    kind: &str,
+    sum_price: bool,
+) -> AppResult<Value> {
+    let pairs =
+        gap_tongji::group_top(state.db.reader(), table, time_field, group_field, win, extra, 10, sum_price)
+            .await?;
+    let ids: Vec<u64> = pairs.iter().map(|p| p.id).collect();
+    let count_of = |id: u64| pairs.iter().find(|p| p.id == id).map(|p| p.count).unwrap_or(0.0);
+    let dicts = dict_service::get(state).await?;
+    let list: Vec<Value> = match kind {
+        "job" => {
+            let rows = gap_tongji::jobs_by_ids(state.db.reader(), &ids).await?;
+            let mut by = HashMap::new();
+            for r in rows {
+                by.insert(r.id, r);
+            }
+            ids.iter()
+                .filter_map(|id| {
+                    let r = by.get(id)?;
+                    Some(json!({"id": r.id, "uid": r.uid, "name": r.name, "count": count_of(*id)}))
+                })
+                .collect()
+        }
+        "company" => {
+            let rows = gap_tongji::companies_by_uids(state.db.reader(), &ids).await?;
+            let mut by = HashMap::new();
+            for r in rows {
+                by.insert(r.uid, r);
+            }
+            ids.iter()
+                .filter_map(|id| {
+                    let r = by.get(id)?;
+                    Some(json!({"uid": r.uid, "name": r.name, "count": count_of(*id)}))
+                })
+                .collect()
+        }
+        "expect" => {
+            let rows = gap_tongji::expects_by_ids(state.db.reader(), &ids).await?;
+            let mut by = HashMap::new();
+            for r in rows {
+                by.insert(r.id, r);
+            }
+            ids.iter()
+                .filter_map(|id| {
+                    let r = by.get(id)?;
+                    Some(json!({
+                        "id": r.id,
+                        "uid": r.uid,
+                        "uname": r.uname,
+                        "jobclassname": csv_names(&r.job_classid, |i| dicts.job(i).to_string()),
+                        "cityclassname": csv_names(&r.city_classid, |i| dicts.city(i).to_string()),
+                        "eduname": dicts.user_or_com(r.edu),
+                        "expname": dicts.user_or_com(r.exp),
+                        "count": count_of(*id),
+                    }))
+                })
+                .collect()
+        }
+        "resume" => {
+            let rows = gap_tongji::resumes_by_uids(state.db.reader(), &ids).await?;
+            let eids = gap_tongji::default_eids(state.db.reader(), &ids).await?;
+            let mut by = HashMap::new();
+            for r in rows {
+                by.insert(r.uid, r);
+            }
+            ids.iter()
+                .filter_map(|id| {
+                    let r = by.get(id)?;
+                    Some(json!({
+                        "uid": r.uid,
+                        "name": r.name,
+                        "count": count_of(*id),
+                        "eid": eids.get(id).copied().unwrap_or(0),
+                    }))
+                })
+                .collect()
+        }
+        "order" => {
+            let rows = gap_tongji::members_by_uids(state.db.reader(), &ids).await?;
+            let mut by = HashMap::new();
+            for r in rows {
+                by.insert(r.uid, r);
+            }
+            ids.iter()
+                .filter_map(|id| {
+                    let r = by.get(id)?;
+                    Some(json!({
+                        "uid": r.uid,
+                        "username": r.username,
+                        "usertype": r.usertype,
+                        "count": count_of(*id),
+                    }))
+                })
+                .collect()
+        }
+        "ad" => {
+            let rows = gap_tongji::ads_by_ids(state.db.reader(), &ids).await?;
+            let mut by = HashMap::new();
+            for r in rows {
+                by.insert(r.id, r);
+            }
+            ids.iter()
+                .filter_map(|id| {
+                    let r = by.get(id)?;
+                    Some(json!({"aid": r.id, "name": r.ad_name, "count": count_of(*id)}))
+                })
+                .collect()
+        }
+        _ => Vec::new(),
+    };
+    Ok(Value::Array(list))
+}
+
+fn merge_series(a: &gap_tongji::TjSeries, b: &gap_tongji::TjSeries) -> gap_tongji::TjSeries {
+    let mut map: HashMap<String, f64> = HashMap::new();
+    for p in &a.list {
+        map.insert(p.tjtime.clone(), p.count);
+    }
+    for p in &b.list {
+        *map.entry(p.tjtime.clone()).or_insert(0.0) += p.count;
+    }
+    gap_tongji::TjSeries {
+        allnum: a.allnum + b.allnum,
+        list: a
+            .list
+            .iter()
+            .map(|p| gap_tongji::TjPoint {
+                tjtime: p.tjtime.clone(),
+                date: p.date.clone(),
+                count: map.get(&p.tjtime).copied().unwrap_or(0.0),
+            })
+            .collect(),
+    }
+}
+
+fn merge_top(a: Value, b: Value) -> Value {
+    let mut map: HashMap<String, Value> = HashMap::new();
+    let take = |v: Value, map: &mut HashMap<String, Value>| {
+        if let Value::Array(arr) = v {
+            for item in arr {
+                let uid = item
+                    .get("uid")
+                    .and_then(Value::as_u64)
+                    .or_else(|| item.get("id").and_then(Value::as_u64))
+                    .unwrap_or(0);
+                if uid == 0 {
+                    continue;
+                }
+                let key = uid.to_string();
+                if let Some(old) = map.get(&key) {
+                    let c = old.get("count").and_then(Value::as_f64).unwrap_or(0.0)
+                        + item.get("count").and_then(Value::as_f64).unwrap_or(0.0);
+                    let mut n = old.clone();
+                    if let Some(obj) = n.as_object_mut() {
+                        obj.insert("count".into(), json!(c));
+                    }
+                    map.insert(key, n);
+                } else {
+                    map.insert(key, item);
+                }
+            }
+        }
+    };
+    take(a, &mut map);
+    take(b, &mut map);
+    let mut items: Vec<Value> = map.into_values().collect();
+    items.sort_by(|x, y| {
+        let cx = x.get("count").and_then(Value::as_f64).unwrap_or(0.0);
+        let cy = y.get("count").and_then(Value::as_f64).unwrap_or(0.0);
+        cb_cmp(cy, cx)
+    });
+    items.truncate(10);
+    Value::Array(items)
+}
+
+fn cb_cmp(a: f64, b: f64) -> std::cmp::Ordering {
+    a.partial_cmp(&b).unwrap_or(std::cmp::Ordering::Equal)
+}
+
+async fn data_board_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let win = board_win(body);
+    let pool = state.db.reader();
+    let specs: [(&str, &str, &str, &str, Option<i32>); 9] = [
+        ("adduser", "member", "reg_date", "admin_user_00305", Some(1)),
+        ("addexpect", "resume_expect", "ctime", "admin_user_00193", None),
+        ("resumeDelivery", "userid_job", "datetime", "member_com_00152", None),
+        ("resumeRefresh", "resume_refresh_log", "r_time", "admin_tool_00176", None),
+        ("addcom", "member", "reg_date", "admin_user_company_00162", Some(2)),
+        ("addjob", "company_job", "sdate", "member_com_00250", None),
+        ("downResume", "down_resume", "downtime", "wap_com_00042", None),
+        ("jobRefresh", "job_refresh_log", "r_time", "wap_com_00045", None),
+        ("inviteInterview", "userid_msg", "datetime", "resume_00029", None),
+    ];
+    let mut all_num = serde_json::Map::new();
+    let mut list = serde_json::Map::new();
+    for (key, table, field, name, usertype) in specs {
+        let extra = match usertype {
+            Some(u) => vec![gap_tongji::Extra::Eq("usertype", u)],
+            None => Vec::new(),
+        };
+        let s = gap_tongji::get_tj(pool, table, field, &win, &extra, false).await?;
+        all_num.insert(key.to_string(), json!(s.allnum));
+        list.insert(key.to_string(), named_list(name, &s));
+    }
+    Ok(json!({"allNum": Value::Object(all_num), "list": Value::Object(list)}))
+}
+
+async fn data_board_class(state: &AppState, body: &Value) -> AppResult<Value> {
+    let win = board_win(body);
+    let t = json_i32(body, "type");
+    let t = if t == 0 { 1 } else { t };
+    let pool = state.db.reader();
+    let mut all_num = serde_json::Map::new();
+    let mut list = serde_json::Map::new();
+    let mut top = serde_json::Map::new();
+    let count_tj: Value;
+    match t {
+        2 => {
+            let job = get_tj(state, "look_job", "datetime", &win, &[], false).await?;
+            all_num.insert("job".into(), json!(job.allnum));
+            list.insert("job".into(), named_list("admin_01455", &job));
+            top.insert(
+                "jobList".into(),
+                top_list(state, "look_job", "datetime", "jobid", &win, &[], "job", false).await?,
+            );
+            top.insert(
+                "jobComList".into(),
+                top_list(state, "look_job", "datetime", "com_id", &win, &[], "company", false).await?,
+            );
+            let resume = get_tj(state, "look_resume", "datetime", &win, &[], false).await?;
+            all_num.insert("resume".into(), json!(resume.allnum));
+            list.insert("resume".into(), named_list("weixin_00010", &resume));
+            top.insert(
+                "resumeList".into(),
+                top_list(state, "look_resume", "datetime", "resume_id", &win, &[], "expect", false).await?,
+            );
+            top.insert(
+                "resumeComList".into(),
+                top_list(state, "look_resume", "datetime", "com_id", &win, &[], "company", false).await?,
+            );
+            count_tj = json!({});
+        }
+        3 => {
+            let invite = get_tj(state, "userid_msg", "datetime", &win, &[], false).await?;
+            all_num.insert("invite".into(), json!(invite.allnum));
+            list.insert("invite".into(), named_list("resume_00029", &invite));
+            top.insert(
+                "inviteCom".into(),
+                top_list(state, "userid_msg", "datetime", "fid", &win, &[], "company", false).await?,
+            );
+            top.insert(
+                "inviteResume".into(),
+                top_list(state, "userid_msg", "datetime", "uid", &win, &[], "resume", false).await?,
+            );
+            let invite_ids =
+                gap_tongji::list_ids(pool, "userid_msg", "jobid", "datetime", &win, &[]).await?;
+            let mut invite_tj = data_tj_job(state, &invite_ids).await?;
+            if let Some(obj) = invite_tj.as_object_mut() {
+                if let Some(j) = obj.get("job1").cloned() {
+                    obj.insert("job1".into(), pie_muti(&j));
+                }
+            }
+            let down = get_tj(state, "down_resume", "downtime", &win, &[], false).await?;
+            let free = get_tj(state, "freedown_resume", "downtime", &win, &[], false).await?;
+            let merged = merge_series(&down, &free);
+            all_num.insert("down".into(), json!(merged.allnum));
+            list.insert("down".into(), named_list("wap_com_00042", &merged));
+            let down_com = top_list(state, "down_resume", "downtime", "comid", &win, &[], "company", false).await?;
+            let free_com =
+                top_list(state, "freedown_resume", "downtime", "comid", &win, &[], "company", false).await?;
+            top.insert("downCom".into(), merge_top(down_com, free_com));
+            let down_re = top_list(state, "down_resume", "downtime", "uid", &win, &[], "resume", false).await?;
+            let free_re =
+                top_list(state, "freedown_resume", "downtime", "uid", &win, &[], "resume", false).await?;
+            top.insert("downResume".into(), merge_top(down_re, free_re));
+            let down_ids =
+                gap_tongji::list_ids(pool, "down_resume", "eid", "downtime", &win, &[]).await?;
+            let mut down_tj = data_tj_expect(state, &down_ids).await?;
+            if let Some(obj) = down_tj.as_object_mut() {
+                if let Some(j) = obj.get("job1").cloned() {
+                    obj.insert("job1".into(), pie_muti(&j));
+                }
+            }
+            count_tj = json!([invite_tj, down_tj]);
+        }
+        4 => {
+            let extra = vec![gap_tongji::Extra::Eq("order_state", 2)];
+            let order = get_tj(state, "company_order", "order_time", &win, &extra, true).await?;
+            let all = (order.allnum * 100.0).round() / 100.0;
+            all_num.insert("order".into(), json!(all));
+            list.insert("order".into(), named_list("wap_user_00312", &order));
+            top.insert(
+                "orderCom".into(),
+                top_list(
+                    state,
+                    "company_order",
+                    "order_time",
+                    "uid",
+                    &win,
+                    &extra,
+                    "order",
+                    true,
+                )
+                .await?,
+            );
+            let ids = gap_tongji::list_ids(pool, "company_order", "id", "order_time", &win, &extra).await?;
+            let tj = data_tj_order(state, &ids).await?;
+            let ad = get_tj(state, "adclick", "addtime", &win, &[], false).await?;
+            all_num.insert("ad".into(), json!(ad.allnum));
+            list.insert("ad".into(), named_list("admin_yunying_00049", &ad));
+            top.insert(
+                "adClick".into(),
+                top_list(state, "adclick", "addtime", "aid", &win, &[], "ad", false).await?,
+            );
+            count_tj = tj;
+        }
+        5 => {
+            let add_job = get_tj(state, "company_job", "sdate", &win, &[], false).await?;
+            all_num.insert("addJob".into(), json!(add_job.allnum));
+            list.insert("addJob".into(), named_list("wap_00322", &add_job));
+            let up_job = get_tj(state, "job_refresh_log", "r_time", &win, &[], false).await?;
+            all_num.insert("upJob".into(), json!(up_job.allnum));
+            list.insert("upJob".into(), named_list("wap_com_00029", &up_job));
+            top.insert(
+                "addJobCom".into(),
+                top_list(state, "company_job", "sdate", "uid", &win, &[], "company", false).await?,
+            );
+            let job_ids = gap_tongji::list_ids(pool, "company_job", "id", "sdate", &win, &[]).await?;
+            let mut job_tj = data_tj_job(state, &job_ids).await?;
+            if let Some(obj) = job_tj.as_object_mut() {
+                if let Some(j) = obj.get("job1").cloned() {
+                    obj.insert("job1".into(), pie_muti(&j));
+                }
+            }
+            let add_re = get_tj(state, "resume_expect", "ctime", &win, &[], false).await?;
+            all_num.insert("addResume".into(), json!(add_re.allnum));
+            list.insert("addResume".into(), named_list("admin_tool_00016", &add_re));
+            let up_re = get_tj(state, "resume_refresh_log", "r_time", &win, &[], false).await?;
+            all_num.insert("upResume".into(), json!(up_re.allnum));
+            list.insert("upResume".into(), named_list("admin_tool_00176", &up_re));
+            let re_ids = gap_tongji::list_ids(pool, "resume_expect", "id", "ctime", &win, &[]).await?;
+            let mut re_tj = data_tj_expect(state, &re_ids).await?;
+            if let Some(obj) = re_tj.as_object_mut() {
+                if let Some(j) = obj.get("job1").cloned() {
+                    obj.insert("job1".into(), pie_muti(&j));
+                }
+            }
+            count_tj = json!([job_tj, re_tj]);
+        }
+        6 => {
+            let extra2 = vec![gap_tongji::Extra::Eq("usertype", 2)];
+            let com = get_tj(state, "member", "reg_date", &win, &extra2, false).await?;
+            all_num.insert("comOne".into(), json!(com.allnum));
+            list.insert("comOne".into(), named_list("admin_tool_00123", &com));
+            let extra_st = vec![
+                gap_tongji::Extra::Eq("usertype", 2),
+                gap_tongji::Extra::Eq("status", 0),
+            ];
+            let com2 = get_tj(state, "member", "reg_date", &win, &extra_st, false).await?;
+            all_num.insert("comTwo".into(), json!(com2.allnum));
+            list.insert("comTwo".into(), named_list("admin_00316", &com2));
+            let uids = gap_tongji::list_ids(pool, "member", "uid", "reg_date", &win, &extra2).await?;
+            let mut com_tj = data_tj_company(state, &uids).await?;
+            if let Some(obj) = com_tj.as_object_mut() {
+                if let Some(j) = obj.get("hy").cloned() {
+                    obj.insert("hy".into(), pie_muti(&j));
+                }
+            }
+            let apply = get_tj(state, "userid_job", "datetime", &win, &[], false).await?;
+            all_num.insert("apply".into(), json!(apply.allnum));
+            list.insert("apply".into(), named_list("member_com_00152", &apply));
+            top.insert(
+                "applyCom".into(),
+                top_list(state, "userid_job", "datetime", "com_id", &win, &[], "company", false).await?,
+            );
+            top.insert(
+                "applyResume".into(),
+                top_list(state, "userid_job", "datetime", "eid", &win, &[], "expect", false).await?,
+            );
+            let eids = gap_tongji::list_ids(pool, "userid_job", "eid", "datetime", &win, &[]).await?;
+            let mut re_tj = data_tj_expect(state, &eids).await?;
+            if let Some(obj) = re_tj.as_object_mut() {
+                if let Some(j) = obj.get("job1").cloned() {
+                    obj.insert("job1".into(), pie_muti(&j));
+                }
+            }
+            count_tj = json!([com_tj, re_tj]);
+        }
+        _ => {
+            let all = get_tj(state, "member", "reg_date", &win, &[], false).await?;
+            all_num.insert("allReg".into(), json!(all.allnum));
+            list.insert("allReg".into(), named_list("admin_tool_00015", &all));
+            let extra2 = vec![gap_tongji::Extra::Eq("usertype", 2)];
+            let com = get_tj(state, "member", "reg_date", &win, &extra2, false).await?;
+            all_num.insert("comReg".into(), json!(com.allnum));
+            list.insert("comReg".into(), named_list("admin_user_company_00281", &com));
+            let extra1 = vec![gap_tongji::Extra::Eq("usertype", 1)];
+            let user = get_tj(state, "member", "reg_date", &win, &extra1, false).await?;
+            all_num.insert("userReg".into(), json!(user.allnum));
+            list.insert("userReg".into(), named_list("admin_system_00129", &user));
+            let uids = gap_tongji::list_ids(pool, "member", "uid", "reg_date", &win, &[]).await?;
+            let tj = data_tj_reg(state, &uids).await?;
+            let login_in = vec![gap_tongji::Extra::In("usertype", vec![1, 2])];
+            let login = get_tj(state, "login_log", "ctime", &win, &login_in, false).await?;
+            all_num.insert("allLogin".into(), json!(login.allnum));
+            list.insert("allLogin".into(), named_list("admin_tool_00015", &login));
+            let com_l = get_tj(state, "login_log", "ctime", &win, &extra2, false).await?;
+            all_num.insert("comLogin".into(), json!(com_l.allnum));
+            list.insert("comLogin".into(), named_list("admin_user_company_00281", &com_l));
+            let user_l = get_tj(state, "login_log", "ctime", &win, &extra1, false).await?;
+            all_num.insert("userLogin".into(), json!(user_l.allnum));
+            list.insert("userLogin".into(), named_list("admin_system_00129", &user_l));
+            count_tj = tj;
+        }
+    }
+    Ok(json!({
+        "AllNum": Value::Object(all_num),
+        "List": Value::Object(list),
+        "topList": Value::Object(top),
+        "CountTj": count_tj,
+    }))
+}
+
+async fn data_board_fenxiabiao(state: &AppState, body: &Value) -> AppResult<Value> {
+    let start = json_str(body, "startTime");
+    let end = json_str(body, "endTime");
+    if start.is_empty() || end.is_empty() {
+        return Err(ApiError::business("admin_tool_00014"));
+    }
+    let fx = json_i32(body, "type");
+    let fx = if fx == 0 { 1 } else { fx };
+    let (s1, e1, month) = gap_tongji::fenxiabiao_range(fx, &start)
+        .ok_or_else(|| ApiError::business("admin_tool_00014"))?;
+    let (s2, e2, _) = gap_tongji::fenxiabiao_range(fx, &end)
+        .ok_or_else(|| ApiError::business("admin_tool_00014"))?;
+    let first = gap_tongji::fenxiabiao_month(state.db.reader(), s1, e1).await?;
+    let second = gap_tongji::fenxiabiao_month(state.db.reader(), s2, e2).await?;
+    let keys = [
+        ("member", "gerezce"),
+        ("login_log", "login_log"),
+        ("resume_expect", "jilizce"),
+        ("company", "comzce"),
+        ("company_login_log", "company_login_log"),
+        ("company_job", "fabuzhw"),
+        ("userid_job", "jilitod"),
+        ("chat_log", "liaotan"),
+        ("userid_msg", "yaoqms"),
+        ("down_resume", "jilixza"),
+    ];
+    let steps = if month > 1 { month + 1 } else { month };
+    let mut first_rows = Vec::new();
+    let mut second_rows = Vec::new();
+    for i in 0..steps {
+        let last = i == steps - 1;
+        let on1 = if last {
+            "sum".to_string()
+        } else {
+            gap_tongji::ym_of(gap_tongji::add_months(s1, i))
+        };
+        let on2 = if last {
+            "sum".to_string()
+        } else {
+            gap_tongji::ym_of(gap_tongji::add_months(s2, i))
+        };
+        let years = if last {
+            msg_t("member_com_00348")
+        } else {
+            on1.clone()
+        };
+        let years2 = if last {
+            msg_t("member_com_00348")
+        } else {
+            on2.clone()
+        };
+        let mut r1 = serde_json::Map::new();
+        let mut r2 = serde_json::Map::new();
+        r1.insert("years".into(), json!(years));
+        r2.insert("years".into(), json!(years2));
+        for (src, dst) in keys {
+            let mut n1 = first.get(src).and_then(|m| m.get(&on1)).copied().unwrap_or(0);
+            let mut n2 = second.get(src).and_then(|m| m.get(&on2)).copied().unwrap_or(0);
+            if src == "down_resume" {
+                n1 += first.get("freedown_resume").and_then(|m| m.get(&on1)).copied().unwrap_or(0);
+                n2 += second.get("freedown_resume").and_then(|m| m.get(&on2)).copied().unwrap_or(0);
+            }
+            r1.insert(dst.to_string(), json!(n1));
+            r2.insert(dst.to_string(), json!(n2));
+            let pct = if n1 == 0 {
+                0.0
+            } else {
+                ((n2 as f64 - n1 as f64) / n1 as f64 * 100.0 * 100.0).round() / 100.0
+            };
+            r2.insert(format!("{dst}_percent"), json!(pct));
+        }
+        first_rows.push(Value::Object(r1));
+        second_rows.push(Value::Object(r2));
+    }
+    Ok(json!({"firstResult": first_rows, "secondResult": second_rows}))
+}
+
+async fn data_board_get_auth(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<Value> {
+    let navi = json_i64(body, "navi_id");
+    if navi == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let row = rbac_php::php_get_user(state.db.reader(), user.uid).await?;
+    let status = if let Some(u) = row {
+        let powers = phpyun_models::admin_rbac::repo::group_power_ids(state.db.reader(), u.m_id).await?;
+        powers.iter().any(|p| *p == navi)
+    } else {
+        false
+    };
+    Ok(json!({"status": status}))
+}
+
+fn php_date(ts: i64, fmt: &str) -> String {
+    if ts <= 0 {
+        return String::new();
+    }
+    let Some(dt) = clock::tz().timestamp_opt(ts, 0).single() else {
+        return String::new();
+    };
+    let pat = if fmt.trim().is_empty() { "Y-m-d" } else { fmt };
+    let mut out = String::new();
+    for c in pat.chars() {
+        match c {
+            'Y' => out.push_str(&dt.format("%Y").to_string()),
+            'm' => out.push_str(&dt.format("%m").to_string()),
+            'd' => out.push_str(&dt.format("%d").to_string()),
+            'H' => out.push_str(&dt.format("%H").to_string()),
+            'i' => out.push_str(&dt.format("%M").to_string()),
+            's' => out.push_str(&dt.format("%S").to_string()),
+            other => out.push(other),
+        }
+    }
+    out
+}
+
+fn site_url(web: &str, path: &str) -> String {
+    format!(
+        "{}/{}",
+        web.trim_end_matches('/'),
+        path.trim_start_matches('/')
+    )
+}
+
+fn render_loop(code: &str, items: &[HashMap<String, String>], urltype: i32) -> String {
+    let code = code
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"");
+    let lower = code.to_ascii_lowercase();
+    let Some(a) = lower.find("<loop>") else {
+        return String::new();
+    };
+    let Some(rel) = lower[a + 6..].find("</loop>") else {
+        return String::new();
+    };
+    let body_start = a + 6;
+    let body_end = body_start + rel;
+    let prefix = &code[..a];
+    let tpl = &code[body_start..body_end];
+    let suffix = &code[body_end + 7..];
+    let target = if urltype == 1 {
+        " target=\"_blank\""
+    } else {
+        ""
+    };
+    let mut mid = String::new();
+    for item in items {
+        let mut row = tpl.to_string();
+        for (k, v) in item {
+            row = row.replace(&format!("{{{k}}}"), v);
+        }
+        row = row.replace("{target}", target);
+        mid.push_str(&row);
+    }
+    let mut out = format!("{prefix}{mid}{suffix}");
+    out = out.replace("<!--循环开始-->", "");
+    out = out.replace("<!--循环结束-->", "");
+    out = out.replace('\n', "").replace('\r', "");
+    out
+}
+
+async fn data_call_preview(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Ok(json!({"list": ""}));
+    }
+    let Some(row) = gap_datacall::find_outside(state.db.reader(), id).await? else {
+        return Ok(json!({"list": ""}));
+    };
+    let dicts = dict_service::get(state).await?;
+    let cfg = settings_hash(state).await.unwrap_or_default();
+    let web = cfg.get("sy_weburl").cloned().unwrap_or_default();
+    let n = if row.num > 0 { row.num } else { 10 };
+    let title = if row.titlelen > 0 { row.titlelen as usize } else { 0 };
+    let info = if row.infolen > 0 { row.infolen as usize } else { 0 };
+    let tf = row.timetype.clone();
+    let mut items: Vec<HashMap<String, String>> = Vec::new();
+    match row.r#type.as_str() {
+        "resume" => {
+            let rows = gap_datacall::list_resume(state.db.reader(), &row.byorder, n).await?;
+            let icon = cfg.get("sy_member_icon").cloned().unwrap_or_default();
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("resumename".into(), trunc_chars(&r.resumename, title));
+                m.insert("name".into(), trunc_chars(&r.name, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=resume&c=show&id={}", r.id)));
+                let y = r.birthday.chars().take(4).collect::<String>().parse::<i32>().unwrap_or(0);
+                let age = if y > 0 {
+                    (i32::from(clock::now_year()) - y).max(0).to_string()
+                } else {
+                    String::new()
+                };
+                m.insert("birthday".into(), age);
+                m.insert("edu".into(), dicts.user_or_com(r.edu).to_string());
+                m.insert("lastedit".into(), php_date(r.lastupdate, &tf));
+                m.insert("hits".into(), r.hits.to_string());
+                let pic = if r.photo.is_empty() { icon.clone() } else { r.photo.clone() };
+                m.insert("big_pic".into(), checkpic_url(&cfg, &pic));
+                m.insert("small_pic".into(), checkpic_url(&cfg, &pic));
+                m.insert("email".into(), r.email);
+                m.insert("tel".into(), r.telhome);
+                m.insert("moblie".into(), r.telphone);
+                m.insert("hy".into(), dicts.industry(r.hy).to_string());
+                m.insert("hyurl".into(), site_url(&web, &format!("index.php?m=company&hy={}", r.hy)));
+                m.insert("job_classid".into(), csv_names(&r.job_classid, |i| dicts.job(i).to_string()));
+                m.insert("report".into(), dicts.user_or_com(r.report).to_string());
+                m.insert("salary".into(), dicts.user_or_com(r.salary).to_string());
+                m.insert("type".into(), dicts.user_or_com(r.kind).to_string());
+                m.insert(
+                    "gz_city".into(),
+                    format!("{}-{}", dicts.city(r.qw_provinceid), dicts.city(r.qw_cityid)),
+                );
+                m.insert("domicile".into(), r.domicile);
+                m.insert("living".into(), r.living);
+                m.insert("exp".into(), dicts.user_or_com(r.exp).to_string());
+                m.insert("address".into(), r.address);
+                m.insert("description".into(), trunc_chars(&r.description, info));
+                m.insert("idcard".into(), r.idcard);
+                m.insert("homepage".into(), r.homepage);
+                items.push(m);
+            }
+        }
+        "company" => {
+            let rows = gap_datacall::list_company(state.db.reader(), &row.byorder, n).await?;
+            let uids: Vec<u64> = rows.iter().map(|r| r.uid).collect();
+            let jobs = gap_datacall::job_counts(state.db.reader(), &uids).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("uid".into(), r.uid.to_string());
+                m.insert("companyname".into(), trunc_chars(&r.name, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=company&c=show&id={}", r.uid)));
+                m.insert("hy".into(), dicts.industry(r.hy).to_string());
+                m.insert("hy_url".into(), site_url(&web, &format!("index.php?m=company&hy={}", r.hy)));
+                m.insert("pr".into(), dicts.comclass(r.pr).to_string());
+                m.insert("city".into(), format!("{}-{}", dicts.city(r.provinceid), dicts.city(r.cityid)));
+                m.insert("mun".into(), dicts.comclass(r.mun).to_string());
+                m.insert("address".into(), r.address);
+                m.insert("linkphone".into(), r.linkphone);
+                m.insert("linkmail".into(), r.linkmail);
+                m.insert("sdate".into(), r.sdate);
+                m.insert("money".into(), r.money);
+                m.insert("zip".into(), r.zip);
+                m.insert("linkman".into(), r.linkman);
+                m.insert("job_num".into(), jobs.get(&r.uid).copied().unwrap_or(0).to_string());
+                m.insert("linkqq".into(), r.linkqq);
+                m.insert("linktel".into(), r.linktel);
+                m.insert("website".into(), r.website);
+                m.insert("logo".into(), checkpic_url(&cfg, &r.logo));
+                items.push(m);
+            }
+        }
+        "job" => {
+            let rows = gap_datacall::list_job(state.db.reader(), &row.byorder, n).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("jobname".into(), trunc_chars(&r.name, title));
+                m.insert("companyname".into(), trunc_chars(&r.com_name, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=job&c=comapply&id={}", r.id)));
+                m.insert("com_url".into(), site_url(&web, &format!("index.php?m=company&c=show&id={}", r.uid)));
+                m.insert("hy".into(), dicts.industry(r.hy).to_string());
+                m.insert("hy_url".into(), site_url(&web, &format!("index.php?m=company&hy={}", r.hy)));
+                m.insert("city".into(), format!("{}-{}", dicts.city(r.provinceid), dicts.city(r.cityid)));
+                m.insert("num".into(), dicts.comclass(r.number).to_string());
+                m.insert("jobtype".into(), format!("{}-{}", dicts.job(r.job1_son), dicts.job(r.job_post)));
+                m.insert("edu".into(), dicts.comclass(r.edu).to_string());
+                m.insert("age".into(), dicts.comclass(r.age).to_string());
+                m.insert("report".into(), dicts.comclass(r.report).to_string());
+                m.insert("exp".into(), dicts.comclass(r.exp).to_string());
+                let salary = if r.minsalary > 0 && r.maxsalary > 0 {
+                    format!("{}-{}", r.minsalary, r.maxsalary)
+                } else if r.minsalary > 0 {
+                    format!("{}{}", r.minsalary, msg_t("common_01942"))
+                } else {
+                    msg_t("common_02045")
+                };
+                m.insert("salary".into(), salary);
+                m.insert(
+                    "lang".into(),
+                    csv_names(&r.lang, |i| dicts.comclass(i).to_string()),
+                );
+                m.insert("welfare".into(), r.welfare);
+                m.insert("time".into(), php_date(r.lastupdate, &tf));
+                items.push(m);
+            }
+        }
+        "zph" => {
+            let rows = gap_datacall::list_zph(state.db.reader(), &row.byorder, n).await?;
+            let zids: Vec<u64> = rows.iter().map(|r| r.id).collect();
+            let nums = gap_datacall::zph_com_counts(state.db.reader(), &zids).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("id".into(), r.id.to_string());
+                m.insert("title".into(), trunc_chars(&r.title, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=zph&c=show&id={}", r.id)));
+                m.insert("organizers".into(), r.organizers);
+                let time = if r.start_at > 0 {
+                    php_date(r.start_at, &tf)
+                } else {
+                    r.starttime.clone()
+                };
+                m.insert("time".into(), time);
+                m.insert("address".into(), r.address);
+                m.insert("phone".into(), r.phone);
+                m.insert("linkman".into(), r.user);
+                m.insert("website".into(), r.weburl);
+                m.insert("logo".into(), checkpic_url(&cfg, &r.pic));
+                m.insert("com_num".into(), nums.get(&r.id).copied().unwrap_or(0).to_string());
+                items.push(m);
+            }
+        }
+        "news" => {
+            let rows = gap_datacall::list_news(state.db.reader(), &row.byorder, n).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("title".into(), trunc_chars(&r.title, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=news&c=show&id={}", r.id)));
+                m.insert("keyword".into(), r.keyword);
+                m.insert("author".into(), r.author);
+                m.insert("time".into(), php_date(r.datetime, &tf));
+                m.insert("hits".into(), r.hits.to_string());
+                m.insert("description".into(), trunc_chars(&r.description, info));
+                m.insert("thumb".into(), checkpic_url(&cfg, &r.s_thumb));
+                m.insert("source".into(), r.source);
+                items.push(m);
+            }
+        }
+        "ask" => {
+            let rows = gap_datacall::list_ask(state.db.reader(), &row.byorder, n).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("title".into(), trunc_chars(&r.title, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=ask&c=content&id={}", r.id)));
+                m.insert("content".into(), r.content);
+                m.insert("name".into(), r.nickname);
+                m.insert("time".into(), php_date(r.add_time, &tf));
+                m.insert("answer_num".into(), r.answer_num.to_string());
+                items.push(m);
+            }
+        }
+        "link" => {
+            let rows = gap_datacall::list_link(state.db.reader(), &row.byorder, n).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("link_name".into(), trunc_chars(&r.link_name, title));
+                m.insert("link_url".into(), r.link_url);
+                m.insert("link_src".into(), checkpic_url(&cfg, &r.pic));
+                items.push(m);
+            }
+        }
+        "once" => {
+            let rows = gap_datacall::list_once(state.db.reader(), &row.byorder, n).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("jobname".into(), trunc_chars(&r.title, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=once&c=show&id={}", r.id)));
+                m.insert("companyname".into(), trunc_chars(&r.companyname, title));
+                m.insert("mans".into(), r.mans);
+                m.insert("require".into(), r.require);
+                m.insert("phone".into(), r.phone);
+                m.insert("linkman".into(), r.linkman);
+                m.insert("address".into(), r.address);
+                m.insert("time".into(), php_date(r.ctime, &tf));
+                items.push(m);
+            }
+        }
+        "tiny" => {
+            let rows = gap_datacall::list_tiny(state.db.reader(), &row.byorder, n).await?;
+            for r in rows {
+                let mut m = HashMap::new();
+                m.insert("name".into(), trunc_chars(&r.username, title));
+                m.insert("url".into(), site_url(&web, &format!("index.php?m=tiny&c=show&id={}", r.id)));
+                m.insert("sex".into(), sex_name(r.sex));
+                m.insert("exp".into(), dicts.user_or_com(r.exp).to_string());
+                m.insert("job".into(), r.job);
+                m.insert("mobile".into(), r.mobile);
+                m.insert("describe".into(), trunc_chars(&r.production, info));
+                m.insert("time".into(), php_date(r.time, &tf));
+                items.push(m);
+            }
+        }
+        _ => {}
+    }
+    let html = render_loop(&row.code, &items, row.urltype);
+    Ok(json!({"list": html}))
+}
+
+async fn data_collection_rating(state: &AppState) -> AppResult<Value> {
+    let rows = company_repo::list_rating_options(state.db.reader()).await?;
+    let rating_arr: Vec<Value> = rows
+        .into_iter()
+        .map(|r| json!({"id": r.id, "name": r.name}))
+        .collect();
+    Ok(json!({"ratingArr": rating_arr}))
 }
