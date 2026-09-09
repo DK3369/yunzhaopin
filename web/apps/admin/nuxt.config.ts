@@ -17,6 +17,40 @@ function rewriteChoiceLabelToValue(code: string) {
   )
 }
 
+/**
+ * PHP Element UI 2 used empty `<el-checkbox :label="lc('…')">` as display text.
+ * EP 3 only paints the default slot, so those boxes were blank. Fill the slot
+ * from value/label. Standalone `v-model` stays boolean (drop value).
+ */
+function fillEmptyChoiceText(code: string) {
+  const inject = (tag: string, attrs: string) => {
+    const boundM = attrs.match(/\s(?:v-bind:value|:value)\s*=\s*(?:"([^"]*)"|'([^']*)')/)
+    const staticM = boundM ? null : attrs.match(/\svalue\s*=\s*(?:"([^"]*)"|'([^']*)')/)
+    const expr = boundM?.[1] ?? boundM?.[2] ?? staticM?.[1] ?? staticM?.[2]
+    if (expr == null || expr === '') return `<${tag}${attrs}></${tag}>`
+    const hasVModel = /\sv-model(?:[.=:]|\s*=)/.test(attrs)
+    const isCheckbox = tag === 'el-checkbox' || tag === 'el-checkbox-button'
+    let nextAttrs = attrs
+    if (isCheckbox && hasVModel) {
+      nextAttrs = attrs.replace(/\s(?:v-bind:value|:value|value)\s*=\s*(?:"[^"]*"|'[^']*')/g, '')
+    }
+    const inner = boundM ? `{{ ${expr} }}` : expr
+    return `<${tag}${nextAttrs}>${inner}</${tag}>`
+  }
+  let out = code.replace(
+    /<(el-(?:radio|checkbox)(?:-button)?)(\s[^>]*?)>\s*<\/\1>/g,
+    (_full, tag: string, attrs: string) => inject(tag, attrs),
+  )
+  out = out.replace(
+    /<(el-(?:radio|checkbox)(?:-button)?)(\s[^>]*?)\/>/g,
+    (_full, tag: string, attrs: string) => {
+      if (!/\s(?:v-bind:value|:value|value)\s*=/.test(attrs)) return `<${tag}${attrs}/>`
+      return inject(tag, attrs)
+    },
+  )
+  return out
+}
+
 /** EP 3: el-button `type="text"` is deprecated; use `link`. Do not touch `<input type="text">`. */
 function rewriteButtonTypeText(code: string) {
   return code.replace(
@@ -44,6 +78,7 @@ function phpAdminEpCompat() {
       out = out.replaceAll(/(?<!v-model):current-page=/g, 'v-model:current-page=')
       out = out.replaceAll(/(?<!v-model):page-size=/g, 'v-model:page-size=')
       out = rewriteChoiceLabelToValue(out)
+      out = fillEmptyChoiceText(out)
       out = rewriteButtonTypeText(out)
       // Auto-import bypasses vueApp.component('ElSwitch'/'ElTooltip'); rename so php-compat wrap applies.
       out = out.replace(/<(\/?)el-switch\b/gi, '<$1PhpElSwitch')
