@@ -653,4 +653,16 @@ useHead({
   background: #f5f5f5;
   color: #333;
 }
+.com-skin-orange .com_details_top,
+.com-skin-orange .top_card {
+  background: linear-gradient(180deg, #e67e22 0%, #c45c26 100%);
+}
+.com-skin-dark .com_details_top,
+.com-skin-dark .top_card {
+  background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+}
+.com-skin-purple .com_details_top,
+.com-skin-purple .top_card {
+  background: linear-gradient(180deg, #8e44ad 0%, #6c3483 100%);
+}
 </style>

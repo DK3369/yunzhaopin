@@ -31,16 +31,31 @@ const blockHtml = computed(() => {
   return t('ui.module_closed')
 })
 
+const siteStyle = computed(() => {
+  const s = String(settings.value.style || 'default').trim()
+  if (!s || s === 'default') return ''
+  if (!/^[a-zA-Z0-9_]{1,64}$/.test(s)) return ''
+  return s
+})
+
 useHead({
   htmlAttrs: {
     lang: () => (locale.value === 'en' ? 'en' : 'zh-CN'),
-    class: () => (String(settings.value.sy_wap_web || '') === '2' ? 'force-pc' : ''),
+    class: () => {
+      const bits: string[] = []
+      if (String(settings.value.sy_wap_web || '') === '2') bits.push('force-pc')
+      if (siteStyle.value) bits.push(`site-skin-${siteStyle.value}`)
+      return bits.join(' ')
+    },
   },
   bodyAttrs: {
     class: () => (/^\/jobs\/\d+/.test(route.path) ? 'comapply_bg' : 'body_bg'),
   },
   link: () => [
     { rel: 'canonical', href: `${siteUrl}${route.path}` },
+    ...(siteStyle.value
+      ? [{ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css` }]
+      : []),
     ...(route.path.startsWith('/user') || route.path.startsWith('/com')
       ? [
           {

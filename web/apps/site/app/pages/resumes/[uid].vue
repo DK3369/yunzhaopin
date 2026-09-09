@@ -328,7 +328,7 @@ async function report() {
     <p class="muted">{{ $t('wap_00424') }}{{ row.visitor_max }}{{ $t('wap_00422') }}</p>
     <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
   </article>
-  <article v-else>
+  <article v-else :class="'resume-skin-' + String(row.tpl_url || 'default').replace(/[^a-zA-Z0-9_]/g, '')">
     <div class="site-pc">
       <div class="yun_newedition_resume_top">
         <div class="w1200">
@@ -755,3 +755,30 @@ async function report() {
     />
   </article>
 </template>
+
+<style scoped>
+.resume-skin-jianli_a .yun_newedition_resume_top,
+.resume-skin-jianli_a .Edit_your_resume_header {
+  background: #c0392b;
+}
+.resume-skin-jianli_a .yun_newedition_resume_left,
+.resume-skin-jianli_a .resume_body_card {
+  border-top: 4px solid #c0392b;
+}
+.resume-skin-jianli_b .yun_newedition_resume_top,
+.resume-skin-jianli_b .Edit_your_resume_header {
+  background: #1e8449;
+}
+.resume-skin-jianli_b .yun_newedition_resume_left,
+.resume-skin-jianli_b .resume_body_card {
+  border-top: 4px solid #1e8449;
+}
+.resume-skin-jianli_c .yun_newedition_resume_top,
+.resume-skin-jianli_c .Edit_your_resume_header {
+  background: #1f618d;
+}
+.resume-skin-jianli_c .yun_newedition_resume_left,
+.resume-skin-jianli_c .resume_body_card {
+  border-top: 4px solid #1f618d;
+}
+</style>

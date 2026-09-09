@@ -1,0 +1,24 @@
+:root {
+  --yun-blue: #7aa2ff;
+  --yun-blue-2: #4d74d9;
+}
+html.site-skin-dark body.body_bg {
+  background: #12151a !important;
+}
+.pc-topbar {
+  background: #0b0d10;
+}
+.pc-topbar__link.is-on,
+.pc-topbar__link:hover,
+.pc-topbar__text:hover {
+  color: #9bb8ff;
+}
+.pc-home-search {
+  background: #1a1e24;
+}
+.pc-home-search__btn {
+  background: #7aa2ff;
+}
+.pc-home-search__btn:hover {
+  background: #4d74d9;
+}

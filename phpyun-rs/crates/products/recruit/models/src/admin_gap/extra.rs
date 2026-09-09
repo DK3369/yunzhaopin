@@ -4854,6 +4854,44 @@ pub async fn php_delete_index_tpls(pool: &MySqlPool, ids: &[u64]) -> Result<u64,
     delete_named(pool, "phpyun_tplindex", ids).await
 }
 
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpIndexTplActive {
+    pub id: u64,
+    pub pic: String,
+    pub height: i32,
+    pub se: i32,
+}
+
+const INDEX_ACTIVE_FIELDS: &str = "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(pic,'') AS pic, \
+ CAST(COALESCE(height,0) AS SIGNED) AS height, CAST(COALESCE(se,0) AS SIGNED) AS se \
+ FROM phpyun_tplindex";
+
+pub async fn php_find_index_tpl(
+    pool: &MySqlPool,
+    id: u64,
+) -> Result<Option<PhpIndexTplActive>, sqlx::Error> {
+    if id == 0 {
+        return Ok(None);
+    }
+    sqlx::query_as(&format!("{INDEX_ACTIVE_FIELDS} WHERE id = ? LIMIT 1"))
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn php_active_index_tpl(
+    pool: &MySqlPool,
+    now: i64,
+) -> Result<Option<PhpIndexTplActive>, sqlx::Error> {
+    sqlx::query_as(&format!(
+        "{INDEX_ACTIVE_FIELDS} WHERE status = 1 AND stime < ? AND etime > ? ORDER BY id DESC LIMIT 1"
+    ))
+    .bind(now)
+    .bind(now)
+    .fetch_optional(pool)
+    .await
+}
+
 async fn php_upsert_named(
     pool: &MySqlPool,
     table: &str,

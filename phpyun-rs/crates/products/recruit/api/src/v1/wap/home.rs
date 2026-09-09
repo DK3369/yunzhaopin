@@ -21,6 +21,9 @@ pub struct HomeQuery {
     #[serde(default = "default_did")]
     #[validate(range(max = 999))]
     pub did: u32,
+    /// PHP `?tpltype=` homepage theme preview id.
+    #[serde(default)]
+    pub tpltype: u64,
 }
 fn default_did() -> u32 {
     0
@@ -73,6 +76,15 @@ pub struct HomeData {
     /// PHP `{yun:}article type=indextj limit=10{/yun}`
     pub hot_articles: Vec<super::articles::ArticleSummary>,
     pub hot_keywords: Vec<HotKeyword>,
+    pub index_tpl: Option<IndexTplView>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct IndexTplView {
+    pub id: u64,
+    pub pic: String,
+    pub height: i32,
+    pub se: i32,
 }
 
 /// Home page
@@ -87,6 +99,17 @@ pub async fn home(
     // Take ownership for `into_iter`; HomePayload is small (5 short vecs of entities)
     // so this clone is cheaper than refactoring all the From conversions to borrow.
     let p = (*p).clone();
+    let index_row = if q.tpltype > 0 {
+        phpyun_models::admin_gap::extra::php_find_index_tpl(state.db.reader(), q.tpltype)
+            .await
+            .ok()
+            .flatten()
+    } else {
+        phpyun_models::admin_gap::extra::php_active_index_tpl(state.db.reader(), now)
+            .await
+            .ok()
+            .flatten()
+    };
 
     let data = HomeData {
         announcements: p
@@ -169,6 +192,12 @@ pub async fn home(
                 hits: h.hits,
             })
             .collect(),
+        index_tpl: index_row.map(|r| IndexTplView {
+            id: r.id,
+            pic: r.pic,
+            height: r.height,
+            se: r.se,
+        }),
     };
     Ok(ApiResponse::data(data))
 }

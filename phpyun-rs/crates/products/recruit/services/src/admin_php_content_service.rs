@@ -13369,47 +13369,78 @@ async fn domain_list_config_save(
     Ok(PhpOut::Message("admin_01371"))
 }
 
-fn domain_style_list() -> Vec<Value> {
-    const SKIP: &[&str] = &[
-        "admin", "ask", "chat", "company", "lietou", "member", "promoter", "resume", "school",
-        "shop", "siteadmin", "train", "im", "wap", "wapadmin",
-    ];
-    let path = std::path::Path::new("/www/wwwroot/zzzz.com/uploads/app/template");
-    let Ok(rd) = std::fs::read_dir(path) else {
+const SKIP_STYLE_DIRS: &[&str] = &[
+    "admin", "ask", "chat", "company", "lietou", "member", "promoter", "resume", "school",
+    "shop", "siteadmin", "train", "im", "wap", "wapadmin", "com", "indextpl",
+];
+
+fn style_info_row(root: &std::path::Path, dir: &str) -> Value {
+    let text = std::fs::read_to_string(root.join(dir).join("info.txt")).unwrap_or_default();
+    let parts: Vec<&str> = text.split("||").collect();
+    let name = parts
+        .first()
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .unwrap_or(dir);
+    let author = parts.get(1).map(|s| s.trim()).unwrap_or("");
+    let dir_n = parts
+        .get(2)
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .unwrap_or(dir);
+    let img = parts.get(3).map(|s| s.trim()).unwrap_or("");
+    json!({
+        "name": name,
+        "author": author,
+        "dir": dir_n,
+        "img": img,
+    })
+}
+
+fn collect_style_dirs(root: &std::path::Path) -> Vec<String> {
+    let Ok(rd) = std::fs::read_dir(root) else {
         return Vec::new();
     };
     let mut names: Vec<String> = rd
         .flatten()
         .filter(|e| e.path().is_dir())
         .map(|e| e.file_name().to_string_lossy().into_owned())
-        .filter(|n| !n.starts_with('.') && !SKIP.contains(&n.as_str()))
+        .filter(|n| !n.starts_with('.'))
         .collect();
     names.sort();
     names
-        .into_iter()
-        .map(|dir| {
-            let text = std::fs::read_to_string(path.join(&dir).join("info.txt")).unwrap_or_default();
-            let parts: Vec<&str> = text.split("||").collect();
-            let name = parts
-                .first()
-                .map(|s| s.trim())
-                .filter(|s| !s.is_empty())
-                .unwrap_or(dir.as_str());
-            let author = parts.get(1).map(|s| s.trim()).unwrap_or("");
-            let dir_n = parts
-                .get(2)
-                .map(|s| s.trim())
-                .filter(|s| !s.is_empty())
-                .unwrap_or(dir.as_str());
-            let img = parts.get(3).map(|s| s.trim()).unwrap_or("");
-            json!({
-                "name": name,
-                "author": author,
-                "dir": dir_n,
-                "img": img,
-            })
-        })
-        .collect()
+}
+
+fn domain_style_list() -> Vec<Value> {
+    let php = std::path::Path::new("/www/wwwroot/zzzz.com/uploads/app/template");
+    let web = std::path::Path::new("/www/wwwroot/zzzz.com/web/apps/site/public/skins");
+    let mut seen = std::collections::HashSet::new();
+    let mut out = Vec::new();
+    for dir in collect_style_dirs(php) {
+        if SKIP_STYLE_DIRS.contains(&dir.as_str()) {
+            continue;
+        }
+        if seen.insert(dir.clone()) {
+            out.push(style_info_row(php, &dir));
+        }
+    }
+    for dir in collect_style_dirs(web) {
+        if SKIP_STYLE_DIRS.contains(&dir.as_str()) {
+            continue;
+        }
+        if seen.insert(dir.clone()) {
+            out.push(style_info_row(web, &dir));
+        }
+    }
+    out
+}
+
+fn tpl_preview_url(cfg: &HashMap<String, String>, img: &str) -> String {
+    if img.starts_with("/skins/") {
+        img.to_string()
+    } else {
+        checkpic_url(cfg, img)
+    }
 }
 
 async fn domain_list_get_cache(state: &AppState) -> AppResult<Value> {
@@ -15692,7 +15723,7 @@ fn job_promo_html(
 }
 
 fn is_alnum_dir(s: &str) -> bool {
-    !s.is_empty() && s.len() <= 64 && s.chars().all(|c| c.is_ascii_alphanumeric())
+    !s.is_empty() && s.len() <= 64 && s.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
 fn pic_opt(body: &Value) -> Option<String> {
@@ -15733,7 +15764,7 @@ async fn tplset_index(state: &AppState) -> AppResult<Value> {
         } else {
             img
         };
-        let img_n = checkpic_url(&cfg, &img);
+        let img_n = tpl_preview_url(&cfg, &img);
         if let Some(obj) = row.as_object_mut() {
             obj.insert("img".into(), json!(img_n));
         }
@@ -15752,6 +15783,14 @@ fn tplset_stylesave(body: &Value) -> AppResult<PhpOut> {
     if !is_alnum_dir(&dir) {
         return Err(ApiError::business("admin_system_00055"));
     }
+    let root = std::path::Path::new("/www/wwwroot/zzzz.com/web/apps/site/public/skins").join(&dir);
+    if root.is_dir() {
+        let name = json_str(body, "name");
+        let author = json_str(body, "author");
+        let img = format!("/skins/{dir}/preview.svg");
+        let text = format!("{name}||{author}||{dir}||{img}");
+        std::fs::write(root.join("info.txt"), text).map_err(ApiError::internal)?;
+    }
     Ok(PhpOut::Message("admin_01399"))
 }
 
@@ -15769,7 +15808,7 @@ async fn tplset_check_style(state: &AppState, body: &Value) -> AppResult<PhpOut>
 }
 
 fn tpl_row_json(cfg: &HashMap<String, String>, r: &gap_extra::PhpAdminTplRow, index: bool) -> Value {
-    let pic_n = checkpic_url(cfg, &r.pic);
+    let pic_n = tpl_preview_url(cfg, &r.pic);
     let mut out = json!({
         "id": r.id,
         "name": r.name,
@@ -15777,6 +15816,7 @@ fn tpl_row_json(cfg: &HashMap<String, String>, r: &gap_extra::PhpAdminTplRow, in
         "pic": r.pic,
         "pic_n": pic_n,
         "status": r.status,
+        "status_n": if r.status == 1 { "开启" } else { "关闭" },
         "price": r.price,
         "service_uid": r.service_uid,
     });

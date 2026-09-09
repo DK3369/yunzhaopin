@@ -1,0 +1,24 @@
+:root {
+  --yun-blue: #e67e22;
+  --yun-blue-2: #c45c26;
+}
+.pc-topbar {
+  background: #4a2a14;
+}
+.pc-topbar__link.is-on,
+.pc-topbar__link:hover,
+.pc-topbar__text:hover,
+.pc-topbar__pill:hover {
+  color: #f0a35a;
+  border-color: #f0a35a;
+}
+.pc-home-search__btn {
+  background: #e67e22;
+}
+.pc-home-search__btn:hover {
+  background: #c45c26;
+}
+.pc-home-search__hot a:hover,
+.pc-home-search__menu a:hover {
+  color: #e67e22;
+}

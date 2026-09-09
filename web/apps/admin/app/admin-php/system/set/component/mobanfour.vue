@@ -170,7 +170,7 @@ export default {
 	},
 	methods: {
 		previewTpl(id){
-			window.open(this.sy_weburl + '/index.php?tpltype=' + id);
+			window.open('/?tpltype=' + id);
 		},
 		addTplBox() {
 			this.indexTplInfo.name = '';

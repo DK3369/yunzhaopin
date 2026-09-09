@@ -860,6 +860,8 @@ pub struct ResumeDetail {
     /// Guest exceeded daily view cap (PHP `resumevisitors` cookie).
     #[serde(default)]
     pub visitor_blocked: bool,
+    /// Applied resume skin dir (`phpyun_resumetpl.url`).
+    pub tpl_url: String,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -1114,6 +1116,9 @@ pub async fn resume_detail(
     } else {
         (false, false)
     };
+    let tpl_url = phpyun_models::resume_tpl::repo::fetch_applied_url(state.db.reader(), uid)
+        .await
+        .unwrap_or_default();
     Ok(ApiResponse::data(ResumeDetail {
         uid: r.uid,
         display_name,
@@ -1257,6 +1262,7 @@ pub async fn resume_detail(
         invited,
         visitor_max,
         visitor_blocked,
+        tpl_url,
     }))
 }
 

@@ -14,6 +14,8 @@ type ArticleLike = {
 }
 type FriendLink = { id: number; name: string; url: string; logo?: string; category?: string }
 
+type IndexTpl = { id?: number; pic?: string; height?: number; se?: number }
+
 const api = useApi()
 const route = useRoute()
 const { t, te } = useI18n()
@@ -44,6 +46,7 @@ function closeSearchMenu() {
   searchMenu.value = false
 }
 const { applyToQuery, didNum, gotocity } = useSubSite()
+const homeTpltype = computed(() => Number(route.query.tpltype || 0) || 0)
 const pcBannerFlag = useCookie('pc_bannerFlag', { path: '/', maxAge: 3600 })
 const wapBannerFlag = useCookie('wap_bannerFlag', { path: '/', maxAge: 3600 })
 const resumeGate = computed(() => {
@@ -79,8 +82,12 @@ watch(h5NavPages, (pages) => {
   if (h5NavPage.value >= pages.length) h5NavPage.value = 0
 })
 
-const { data: home, error } = await useAsyncData('home', async () => {
-  const h = (await api.get('/v1/wap/home', applyToQuery({}))) as {
+const { data: home, error } = await useAsyncData(
+  () => `home-${homeTpltype.value}`,
+  async () => {
+  const q = applyToQuery({}) as Record<string, unknown>
+  if (homeTpltype.value > 0) q.tpltype = homeTpltype.value
+  const h = (await api.get('/v1/wap/home', q)) as {
     hot_jobs?: JobLike[]
     rec_jobs?: JobLike[]
     latest_jobs?: JobLike[]
@@ -92,6 +99,7 @@ const { data: home, error } = await useAsyncData('home', async () => {
     new_articles?: ArticleLike[]
     featured_articles?: ArticleLike[]
     hot_articles?: ArticleLike[]
+    index_tpl?: IndexTpl | null
   }
   const bidList = h.bid_jobs || []
   const bidIds = new Set(bidList.map((j) => j.id))
@@ -103,7 +111,9 @@ const { data: home, error } = await useAsyncData('home', async () => {
     h5_latest_jobs: [...bidList, ...latest.filter((j) => !bidIds.has(j.id))],
     urgent_jobs: h.urgent_jobs || [],
   }
-})
+  },
+  { watch: [homeTpltype] },
+)
 const { data: cats } = await useAsyncData('job-cats', () =>
   api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
 )
@@ -175,6 +185,11 @@ const companies = computed(() => (home.value?.rec_companies || []) as CompanyLik
 const announcements = computed(() => (home.value?.announcements || []) as Array<{ id: number; title: string }>)
 const keywords = computed(() => (home.value?.hot_keywords || []) as Array<{ keyword: string }>)
 const articles = computed(() => (home.value?.new_articles || []) as ArticleLike[])
+const indexTpl = computed(() => ((home.value as { index_tpl?: IndexTpl | null } | null)?.index_tpl || null))
+const indexTplPic = computed(() => {
+  const p = String(indexTpl.value?.pic || '').trim()
+  return p ? mediaUrl(p) : ''
+})
 const featuredArticles = computed(() => {
   const tagged = (home.value?.featured_articles || []) as ArticleLike[]
   if (tagged.length) return tagged.slice(0, 2)
@@ -315,6 +330,19 @@ useSeoMeta({
 })
 useHead({
   link: [{ rel: 'canonical', href: '/' }],
+  bodyAttrs: {
+    style: () => {
+      const pic = indexTplPic.value
+      if (!pic) return undefined
+      const gray = Number(indexTpl.value?.se) === 1 ? 'filter:grayscale(100%);' : ''
+      return `background:#f8f8f8 url(${pic}) no-repeat center top;${gray}`
+    },
+  },
+  style: () => {
+    const h = Number(indexTpl.value?.height || 0)
+    if (h <= 0) return []
+    return [{ innerHTML: `.pc-topbar{margin-top:${h}px}` }]
+  },
 })
 </script>
 

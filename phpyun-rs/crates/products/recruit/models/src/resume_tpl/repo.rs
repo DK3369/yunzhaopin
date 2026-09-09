@@ -84,3 +84,15 @@ pub async fn set_applied_tpl(pool: &MySqlPool, uid: u64, tpl_id: u64) -> Result<
         .await?;
     Ok(res.rows_affected())
 }
+
+pub async fn fetch_applied_url(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    let row: Option<(Option<String>,)> = sqlx::query_as(
+        "SELECT t.url FROM phpyun_member_statis s \
+         LEFT JOIN phpyun_resumetpl t ON t.id = CAST(s.tpl AS UNSIGNED) \
+         WHERE s.uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.and_then(|(s,)| s).unwrap_or_default())
+}
