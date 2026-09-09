@@ -1,14 +1,24 @@
 <script setup lang="ts">
-const { siteName, logoPc, logoH5 } = useSiteChrome()
+const { siteName, logoPc, settings } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
+const smsLoginOn = computed(
+  () => String(settings.value.sy_msg_isopen) === '1' && String(settings.value.sy_msg_login) === '1',
+)
+const needImageCaptcha = computed(() => {
+  const web = String(settings.value.code_web || '')
+  return web.includes('前台登录') || web.includes('wap_js_00062')
+})
 const tab = ref<'pass' | 'sms' | 'email'>('pass')
 const username = ref('')
 const password = ref('')
+const showPwd = ref(false)
+const agreed = ref(true)
 const mobile = ref('')
 const smsCode = ref('')
 const email = ref('')
 const emailCode = ref('')
+const nextFrom = ref('')
 const { data: captcha } = await useAsyncData('login-captcha', () =>
   api.post<{ cid: string; image: string }>('/v1/wap/captcha').catch(() => null),
 )
@@ -20,6 +30,37 @@ const wxQrHint = ref('')
 let wxPoll: ReturnType<typeof setInterval> | null = null
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
 
+function loginNext(): string {
+  const q = String(useRoute().query.next || nextFrom.value || '')
+  if (q.startsWith('/') && !q.startsWith('//')) return q
+  return ''
+}
+
+function goBack() {
+  const n = loginNext()
+  if (n) return navigateTo(n)
+  if (import.meta.client && window.history.length > 1) {
+    window.history.back()
+    return
+  }
+  return navigateTo('/')
+}
+
+function rememberReferrer() {
+  if (useRoute().query.next) return
+  if (!import.meta.client) return
+  try {
+    const ref = document.referrer
+    if (!ref) return
+    const u = new URL(ref)
+    if (u.origin !== window.location.origin) return
+    if (!u.pathname || u.pathname === '/login' || u.pathname === '/register') return
+    nextFrom.value = `${u.pathname}${u.search}`
+  } catch {
+    /* ignore */
+  }
+}
+
 async function loadCaptcha() {
   try {
     captcha.value = await api.post('/v1/wap/captcha')
@@ -28,6 +69,10 @@ async function loadCaptcha() {
   }
 }
 onMounted(async () => {
+  rememberReferrer()
+  if (smsLoginOn.value && String(settings.value.sy_login_type) === '2') {
+    tab.value = 'sms'
+  }
   const q = useRoute().query
   const code = typeof q.code === 'string' ? q.code : ''
   const state = typeof q.state === 'string' ? q.state : ''
@@ -54,7 +99,7 @@ onMounted(async () => {
       err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
     }
   }
-  if (!captcha.value) await loadCaptcha()
+  if (needImageCaptcha.value && !captcha.value) await loadCaptcha()
   try {
     wxQr.value = await $fetch('/api/auth/login-wx-qr', { method: 'POST' })
     if (wxQr.value?.login_id) {
@@ -94,12 +139,12 @@ onMounted(async () => {
 })
 
 async function afterLogin(me: { uid: number; usertype: number }) {
-  const next = String(useRoute().query.next || '')
+  const next = loginNext()
   if (me.usertype === 0) {
-    await navigateTo({ path: '/utype', query: next.startsWith('/') && !next.startsWith('//') ? { next } : {} })
+    await navigateTo({ path: '/utype', query: next ? { next } : {} })
     return
   }
-  if (next.startsWith('/') && !next.startsWith('//')) {
+  if (next) {
     await navigateTo(next)
     return
   }
@@ -107,21 +152,26 @@ async function afterLogin(me: { uid: number; usertype: number }) {
 }
 async function submitPass() {
   err.value = ''
+  if (!agreed.value) {
+    err.value = t('wap_00309')
+    return
+  }
   try {
+    if (needImageCaptcha.value && !captcha.value) await loadCaptcha()
     const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/login', {
       method: 'POST',
       body: {
         username: username.value,
         password: password.value,
-        authcode: authcode.value,
-        captcha_cid: captcha.value?.cid,
+        authcode: needImageCaptcha.value ? authcode.value : undefined,
+        captcha_cid: needImageCaptcha.value ? captcha.value?.cid : undefined,
       },
     })
     await afterLogin(me)
   } catch (e: unknown) {
     const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
     err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
-    loadCaptcha()
+    if (needImageCaptcha.value) loadCaptcha()
   }
 }
 async function sendSms() {
@@ -207,7 +257,7 @@ onUnmounted(() => {
                 <li :class="{ login_box_h_list_cur: tab === 'pass' }" @click="tab = 'pass'">
                   {{ $t('common.login') }}<i class="login_box_h_icon" />
                 </li>
-                <li :class="{ login_box_h_list_cur: tab === 'sms' }" @click="tab = 'sms'">
+                <li v-if="smsLoginOn" :class="{ login_box_h_list_cur: tab === 'sms' }" @click="tab = 'sms'">
                   {{ $t('wap_00648') }}
                 </li>
                 <li :class="{ login_box_h_list_cur: tab === 'email' }" @click="tab = 'email'">
@@ -226,9 +276,9 @@ onUnmounted(() => {
                     <i class="login_box_icon loginpwd" />
                     <input v-model="password" type="password" class="login_box_bth placeholder loginname" autocomplete="current-password" :placeholder="$t('wap_user_00371')" />
                   </div>
-                  <div v-if="captcha?.image" class="login_box_list">
+                  <div v-if="needImageCaptcha && captcha?.image" class="login_box_list">
                     <img :src="captcha.image" alt="" @click="loadCaptcha" />
-                    <input v-model="authcode" class="login_box_bth" :placeholder="$t('wap_00110')" />
+                    <input v-model="authcode" class="login_box_bth" :placeholder="$t('wap_00262')" autocomplete="off" />
                   </div>
                 </div>
                 <div class="login_box_cz">
@@ -291,65 +341,127 @@ onUnmounted(() => {
 
   <div class="site-h5">
     <div class="Back_to_the_previous_level">
-      <NuxtLink to="/" class="login_back">
+      <a href="javascript:;" class="login_back" @click.prevent="goBack">
         <img src="/legacy/h5/images/return.png" alt="" width="100%" height="100%" />
-      </NuxtLink>
+      </a>
     </div>
     <div class="login_cont">
       <div class="bottom_nav_bom" style="padding-top: 0; text-align: right">
         <LangSwitch />
-        <NuxtLink to="/register" class="register_1" style="margin-left: 12px">{{ $t('common.register') }}</NuxtLink>
+        <i class="bottom_nav_bom_word">{{ $t('wap_00672') }}</i>
+        <NuxtLink to="/register" class="register_1" style="margin-left: 8px">{{ $t('wap_00673') }}</NuxtLink>
       </div>
       <div class="login_welcome">
-        <div>{{ $t('common.login') }}</div>
-        <div>{{ siteName }}</div>
+        <div>{{ $t('wap_00674') }}</div>
+        <div>{{ $t('wap_00675') }}</div>
       </div>
-      <p>
-        <a href="javascript:;" @click.prevent="tab = 'pass'">{{ $t('common.login') }}</a>
-        ·
-        <a href="javascript:;" @click.prevent="tab = 'sms'">{{ $t('common.phone') }}</a>
-        ·
-        <a href="javascript:;" @click.prevent="tab = 'email'">{{ $t('member_user_00282') }}</a>
-      </p>
       <form v-if="tab === 'pass'" @submit.prevent="submitPass">
         <div class="The_login_subject">
           <div class="login_textbox">
-            <input v-model="username" type="text" class="account_number" autocomplete="username" />
+            <input
+              v-model="username"
+              type="text"
+              class="account_number"
+              autocomplete="username"
+              :placeholder="`${$t('wap_00208')}/${$t('member_user_00282')}/${$t('wap_user_00180')}`"
+            />
           </div>
           <div class="login_textbox">
-            <input v-model="password" type="password" autocomplete="current-password" />
+            <input
+              v-model="password"
+              :type="showPwd ? 'text' : 'password'"
+              autocomplete="current-password"
+              :placeholder="$t('wap_js_00139')"
+            />
+            <div class="close_open" @click="showPwd = !showPwd">
+              <img
+                :src="showPwd ? '/legacy/h5/images/conceal_1.png' : '/legacy/h5/images/conceal.png'"
+                alt=""
+                width="100%"
+                height="100%"
+              />
+            </div>
           </div>
-          <div v-if="captcha?.image" class="login_textbox" style="display: flex; gap: 0.16rem; align-items: center">
-            <img :src="captcha.image" alt="" style="height: 0.8rem" @click="loadCaptcha" />
-            <input v-model="authcode" :placeholder="$t('wap_00110')" />
+          <div v-if="needImageCaptcha" class="login_textbox">
+            <input
+              v-model="authcode"
+              class="inputitemtxt"
+              type="text"
+              maxlength="6"
+              autocomplete="off"
+              :placeholder="$t('wap_00262')"
+            />
+            <img
+              v-if="captcha?.image"
+              class="authcode"
+              :src="captcha.image"
+              alt=""
+              @click="loadCaptcha"
+            />
           </div>
-        </div>
-        <p v-if="err" class="muted">{{ err }}</p>
-        <div class="login_bthbox">
-          <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0">
-            {{ $t('common.login') }}
-          </button>
+          <div class="login_xy">
+            <div class="login_xy_zx">
+              <input id="xieyicheck" v-model="agreed" type="checkbox" />
+            </div>
+            <div>
+              <i class="policy">{{ $t('wap_00309') }}</i>
+              <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+              <i class="policy">{{ $t('wap_00679') }}</i>
+              <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+            </div>
+          </div>
+          <p v-if="err" class="muted" style="padding-top: 0.16rem">{{ err }}</p>
+          <button type="submit" class="login_bth">{{ $t('common.login') }}</button>
         </div>
       </form>
       <form v-else-if="tab === 'sms'" @submit.prevent="submitSms">
-        <div class="login_textbox"><input v-model="mobile" :placeholder="$t('common.phone')" /></div>
-        <div class="login_textbox"><input v-model="smsCode" :placeholder="$t('wap_01371')" /><button type="button" @click="sendSms">{{ $t('common.submit') }}</button></div>
-        <p v-if="err" class="muted">{{ err }}</p>
-        <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0">
-          {{ $t('common.login') }}
-        </button>
+        <div class="The_login_subject">
+          <div class="login_textbox">
+            <input v-model="mobile" type="tel" :placeholder="$t('wap_user_00180')" />
+          </div>
+          <div v-if="needImageCaptcha" class="login_textbox">
+            <input v-model="authcode" class="inputitemtxt" maxlength="6" autocomplete="off" :placeholder="$t('wap_00262')" />
+            <img v-if="captcha?.image" class="authcode" :src="captcha.image" alt="" @click="loadCaptcha" />
+          </div>
+          <div class="login_textbox">
+            <input v-model="smsCode" maxlength="6" :placeholder="$t('wap_00677')" />
+            <div class="dx_yz_hq" @click="sendSms">{{ $t('wap_user_00144') }}</div>
+          </div>
+          <p v-if="err" class="muted">{{ err }}</p>
+          <button type="submit" class="login_bth">{{ $t('common.login') }}</button>
+        </div>
       </form>
-      <form v-else @submit.prevent="submitEmail">
-        <div class="login_textbox"><input v-model="email" :placeholder="$t('member_user_00282')" /></div>
-        <div class="login_textbox"><input v-model="emailCode" :placeholder="$t('wap_01371')" /><button type="button" @click="sendEmail">{{ $t('common.submit') }}</button></div>
-        <p v-if="err" class="muted">{{ err }}</p>
-        <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0">
-          {{ $t('common.login') }}
-        </button>
-      </form>
-      <p v-if="oauth.length" style="padding: 0.32rem">
-        <a v-for="o in oauth" :key="o.name" :href="o.path" @click="sessionStorage.setItem('oauth_provider', o.provider)">{{ o.name }}</a>
+      <div class="login_otherfs">
+        <div
+          v-if="smsLoginOn && tab === 'pass'"
+          class="verification_code_word"
+          @click="tab = 'sms'"
+        >
+          {{ $t('wap_00648') }}
+        </div>
+        <div
+          v-else-if="smsLoginOn && tab === 'sms'"
+          class="verification_code_word"
+          @click="tab = 'pass'"
+        >
+          {{ $t('wap_00308') }}
+        </div>
+        <NuxtLink to="/forgetpw" class="login_wjmm">{{ $t('wap_00680') }}</NuxtLink>
+      </div>
+      <p v-if="oauth.length" class="bottom_nav_top" style="padding: 0.48rem 0">
+        {{ $t('wap_00681') }}
       </p>
+      <div v-if="oauth.length" class="bottom_nav_center">
+        <a
+          v-for="o in oauth"
+          :key="o.name"
+          class="bottom_nav_center_logo"
+          :href="o.path"
+          @click="sessionStorage.setItem('oauth_provider', o.provider)"
+        >
+          {{ o.name }}
+        </a>
+      </div>
     </div>
   </div>
 </template>

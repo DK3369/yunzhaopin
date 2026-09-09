@@ -23,6 +23,7 @@ use phpyun_core::{
 };
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
+use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::user::{entity::Member, repo as user_repo};
 
 use crate::user_session_service::{self, LoginRecord};
@@ -50,6 +51,15 @@ const EMAIL_LOGIN_TTL_SECS: u64 = 600;
 const DEV_EMAIL_LOGIN_CODE: &str = "111111";
 
 // ==================== Login ====================
+
+/// PHP `jycheck(..., wap_js_00062)`：仅当 `code_web` 勾了「前台登录」才校验图形码。
+pub async fn password_login_needs_captcha(state: &AppState) -> AppResult<bool> {
+    let v = setting_repo::find(state.db.reader(), "code_web")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    Ok(v.contains("前台登录") || v.contains("wap_js_00062"))
+}
 
 pub struct LoginResult {
     pub access: String,

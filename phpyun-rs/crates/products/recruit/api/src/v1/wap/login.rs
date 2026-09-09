@@ -3,10 +3,8 @@
 //! Request parameters:
 //! - `username`    -- username / mobile / email (PHPYun supports any of the three)
 //! - `password`    -- password
-//! - `authcode`    -- image captcha (**mandatory**, PHP `wap/login::mlogin`)
+//! - `authcode`    -- image captcha when `code_web` includes 前台登录
 //! - `captcha_cid` -- image captcha cid (specific to phpyun-rs; PHP uses session)
-//!
-//! Note: SMS dynamic-code login (PHP's `act_login=1 + moblie + dynamiccode`) is not yet implemented; scheduled for the next round.
 
 use axum::{
     extract::State,
@@ -71,20 +69,22 @@ pub async fn mlogin(
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginForm>,
 ) -> AppResult<ApiResponse<AuthTokenData>> {
-    // Mandatory image captcha (PHP `wap/login::mlogin`).
-    let cid = form
-        .captcha_cid
-        .as_deref()
-        .filter(|s| !s.is_empty())
-        .ok_or_else(ApiError::captcha)?;
-    let code = form
-        .authcode
-        .as_deref()
-        .filter(|s| !s.is_empty())
-        .ok_or_else(ApiError::captcha)?;
-    let code_up = code.to_uppercase();
-    if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
-        return Err(ApiError::captcha());
+    // 与 PHP `notice::jycheck` + `code_web`「前台登录」一致：未勾选则不验图形码。
+    if user_service::password_login_needs_captcha(&state).await? {
+        let cid = form
+            .captcha_cid
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .ok_or_else(ApiError::captcha)?;
+        let code = form
+            .authcode
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .ok_or_else(ApiError::captcha)?;
+        let code_up = code.to_uppercase();
+        if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
+            return Err(ApiError::captcha());
+        }
     }
 
     let ua = ua_from(&headers);

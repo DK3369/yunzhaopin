@@ -481,6 +481,37 @@ html.force-pc .site-h5 {
   a.mqnewlist.site-h5 {
     display: inline-block;
   }
+  /* 底栏 5 项：不用 float，避免第 4/5 项被挤出可视区 */
+  .wap_footerbox {
+    display: flex !important;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+    overflow-y: visible;
+    box-sizing: border-box;
+  }
+  a.wap_footernav,
+  .wap_footernav {
+    float: none !important;
+    flex: 1 1 0;
+    width: auto !important;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .wap_footer_name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 0.04rem;
+  }
+  button.login_bth {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+  }
+  .login_textbox input.inputitemtxt {
+    padding-right: 2.6rem;
+  }
   body {
     background: #f4f4f4;
     padding-bottom: 1.9rem;
