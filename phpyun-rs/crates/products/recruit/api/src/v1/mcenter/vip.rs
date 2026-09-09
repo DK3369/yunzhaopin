@@ -3,7 +3,6 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
 use phpyun_core::utils::{fmt_dt, pay_order_status_name as order_status_name};
-#[cfg(debug_assertions)]
 use phpyun_core::ApiError;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
@@ -154,24 +153,21 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
 ) -> AppResult<ApiResponse<OrderCreated>> {
-    if f.channel == "alipay" {
-        payment_notify_service::ensure_alipay_page(&state).await?;
+    if f.channel != "alipay" {
+        return Err(ApiError::param_invalid("channel"));
     }
+    payment_notify_service::ensure_alipay_page(&state).await?;
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
-    let pay_url = if f.channel == "alipay" {
-        Some(
-            payment_notify_service::build_alipay_page_url(
-                &state,
-                &created.order_no,
-                &created.subject,
-                created.amount_cents,
-                None,
-            )
-            .await?,
+    let pay_url = Some(
+        payment_notify_service::build_alipay_page_url(
+            &state,
+            &created.order_no,
+            &created.subject,
+            created.amount_cents,
+            None,
         )
-    } else {
-        None
-    };
+        .await?,
+    );
     Ok(ApiResponse::data(OrderCreated {
         order_no: created.order_no,
         pay_url,

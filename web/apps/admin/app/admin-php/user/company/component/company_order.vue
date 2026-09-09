@@ -429,12 +429,7 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
                 }
                 that.loading = true;
                 that.emptytext = lc('admin_user_weipin_00026');
-				var url = '';
-				if(that.from=='persona'){
-					url='m=crm&c=crm_my_customer&a=company_order';
-				}else{
-					url='m=user&c=company_order&a=index';
-				}
+				var url = 'm=user&c=company_order&a=index';
                 httpPost(url, params).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {

@@ -20,8 +20,12 @@ useSeoMeta({ title: t('ui.poster') })
     <p>
       <NuxtLink v-for="row in tpls || []" :key="row.id" :to="{ query: { hb: row.id } }">{{ row.title }}</NuxtLink>
     </p>
-    <p v-if="spec?.template?.pic"><img :src="spec.template.pic" alt="" /></p>
-    <pre v-if="spec?.fields">{{ spec.fields }}</pre>
+    <PosterCanvas
+      v-if="spec?.fields"
+      :pic="spec.template?.pic"
+      :config-pos="spec.template?.config_pos"
+      :fields="spec.fields"
+    />
     <p v-else class="muted">{{ $t('common_02409') }}</p>
   </section>
 </template>

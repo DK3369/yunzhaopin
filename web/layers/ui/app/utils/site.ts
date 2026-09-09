@@ -114,7 +114,31 @@ const MODULE_PATH: Record<string, string> = {
   wap: '/',
   forgetpw: '/forgetpw',
   invitereg: '/invite',
+  services: '/services',
+  claim: '/claim',
+  search: '/search',
+  site: '/site',
+  download: '/download',
+  link: '/links',
+  links: '/links',
+  utype: '/utype',
 }
+
+/** PHP detail query (`id`/`eid`/`uid`) belongs on these modules. */
+const DETAIL_MODULES = new Set([
+  'job',
+  'resume',
+  'company',
+  'article',
+  'news',
+  'zph',
+  'part',
+  'once',
+  'tiny',
+  'ask',
+  'special',
+  'gongzhao',
+])
 
 /** Reverse of MODULE_PATH for `sy_{module}_web`. Home / custom links have no key. */
 const PATH_TO_MODULE: Record<string, string> = {
@@ -135,6 +159,13 @@ const PATH_TO_MODULE: Record<string, string> = {
   '/hr': 'hr',
   '/specials': 'special',
   '/gongzhao': 'gongzhao',
+  '/services': 'services',
+  '/claim': 'claim',
+  '/search': 'search',
+  '/site': 'site',
+  '/download': 'download',
+  '/links': 'link',
+  '/utype': 'utype',
 }
 
 /**
@@ -209,23 +240,44 @@ function modulePath(name?: string | null): string | undefined {
   return MODULE_PATH[key]
 }
 
+function queryDetailId(query: URLSearchParams): string {
+  for (const key of ['id', 'eid', 'uid']) {
+    const raw = String(query.get(key) || '').trim()
+    if (/^\d+$/.test(raw) && Number(raw) > 0) return raw
+  }
+  return ''
+}
+
+function withModuleId(moduleKey: string, base: string, query: URLSearchParams): string {
+  if (!DETAIL_MODULES.has(moduleKey)) return base
+  const id = queryDetailId(query)
+  return id ? `${base}/${id}` : base
+}
+
+function mapPhpQuery(query: URLSearchParams): string | undefined {
+  const m = (query.get('m') || '').toLowerCase()
+  const c = (query.get('c') || '').toLowerCase()
+  if (m === 'member') return '/user'
+  const key = m === 'wap' ? c : m
+  if (key && MODULE_PATH[key]) return withModuleId(key, MODULE_PATH[key], query)
+  if (c && MODULE_PATH[c]) return withModuleId(c, MODULE_PATH[c], query)
+  return undefined
+}
+
 /** `/wap/job/123` → `/jobs/123`. Unknown modules fall back to `/`. */
 export function mapWapPath(urlPath: string, search = ''): string {
   const [pathOnly, qs] = String(urlPath || '').split('?')
   const query = new URLSearchParams(search || qs || '')
   const rest = pathOnly.replace(/^\/wap\/?/i, '')
   if (!rest || /^index\.php$/i.test(rest)) {
-    const m = query.get('m') || ''
-    const c = query.get('c') || ''
-    if (m === 'wap' && c && MODULE_PATH[c]) return MODULE_PATH[c]
-    if (m && MODULE_PATH[m]) return MODULE_PATH[m]
-    return '/'
+    return mapPhpQuery(query) || '/'
   }
   const segs = rest.split('/').filter(Boolean)
   const mapped = modulePath(segs[0])
   if (!mapped) return '/'
   const extra = segs.slice(1)
-  return extra.length ? `${mapped}/${extra.join('/')}` : mapped
+  if (extra.length) return `${mapped}/${extra.join('/')}`
+  return withModuleId(segs[0].replace(/\.(html?|php)$/i, '').toLowerCase(), mapped, query)
 }
 
 /** PHP `phpyun_navigation.url` is often a relative module path (`job/`, `evaluate`). */
@@ -236,31 +288,38 @@ export function mapNavUrl(url?: string | null): string {
 
   if (raw.startsWith('/')) {
     const pathOnly = raw.split('?')[0]
+    const search = raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : ''
     if (pathOnly.startsWith('/about/')) {
       const code = pathOnly.replace(/^\/about\//, '').replace(/\.html?$/i, '')
       return code ? `/pages/${code}` : '/'
     }
     if (!pathOnly.toLowerCase().includes('index.php')) {
       if (pathOnly.toLowerCase() === '/wap' || pathOnly.toLowerCase().startsWith('/wap/')) {
-        return mapWapPath(pathOnly, raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : '')
+        return mapWapPath(pathOnly, search)
       }
-      const first = pathOnly.replace(/^\//, '').split('/')[0]
-      return modulePath(first) || pathOnly || '/'
+      const segs = pathOnly.replace(/^\//, '').split('/').filter(Boolean)
+      const mapped = modulePath(segs[0])
+      if (mapped) {
+        const extra = segs.slice(1)
+        if (extra.length) return `${mapped}/${extra.join('/')}`
+        return withModuleId(segs[0].replace(/\.(html?|php)$/i, '').toLowerCase(), mapped, new URLSearchParams(search))
+      }
+      return pathOnly || '/'
     }
   }
 
   try {
     const u = raw.includes('://') ? new URL(raw) : new URL(raw, 'http://local.invalid/')
-    const q = u.searchParams
-    const m = q.get('m') || ''
-    const c = q.get('c') || ''
-    if (m === 'member' || raw.includes('/member')) return '/user'
-    if (m === 'wap' && c && MODULE_PATH[c]) return MODULE_PATH[c]
-    if (m && MODULE_PATH[m]) return MODULE_PATH[m]
-    if (!m && c && MODULE_PATH[c]) return MODULE_PATH[c]
+    const fromQuery = mapPhpQuery(u.searchParams)
+    if (fromQuery) return fromQuery
+    if (raw.includes('/member')) return '/user'
     const segs = u.pathname.split('/').filter(Boolean)
     const fromPath = modulePath(segs[0])
-    if (fromPath) return fromPath
+    if (fromPath) {
+      const extra = segs.slice(1)
+      if (extra.length) return `${fromPath}/${extra.join('/')}`
+      return withModuleId(segs[0].replace(/\.(html?|php)$/i, '').toLowerCase(), fromPath, u.searchParams)
+    }
   } catch {
     /* ignore */
   }
@@ -268,9 +327,12 @@ export function mapNavUrl(url?: string | null): string {
   const first = raw.split(/[/?#]/).filter(Boolean)[0]
   const fromRel = modulePath(first)
   if (fromRel) return fromRel
-  const m = raw.match(/[?&]m=(\w+)/)
-  if (m?.[1] && MODULE_PATH[m[1]]) return MODULE_PATH[m[1]]
-  return '/'
+  try {
+    const q = new URLSearchParams(raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : raw)
+    return mapPhpQuery(q) || '/'
+  } catch {
+    return '/'
+  }
 }
 
 /** PHP footer `{yun:}desc{/yun}`: about/*.html is CMS detail; other urls follow nav mapping. */

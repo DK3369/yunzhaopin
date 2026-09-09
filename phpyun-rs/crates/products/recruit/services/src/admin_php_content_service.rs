@@ -84,6 +84,8 @@ pub enum PhpOut {
     /// Already-translated message, for PHP strings with runtime placeholders.
     /// The key still travels so clients can branch on it.
     Text(&'static str, String),
+    /// Success message plus payload (e.g. generate-page loop stopper `{type:ok}`).
+    MessageData(&'static str, Value),
 }
 
 pub async fn dispatch(
@@ -602,13 +604,14 @@ pub async fn dispatch(
         ("generate-page", "baseData") => Ok(PhpOut::Data(gen_page_base(state).await?)),
         ("generate-page", "index") => gen_page_index(state, user, body).await,
         ("generate-page", "news") => gen_page_news(state, user, body).await,
-        ("generate-page", "archive") => Ok(PhpOut::Data(gen_ssr_ok())),
-        ("generate-page", "once") => Ok(PhpOut::Message("admin_01465")),
-        ("generate-page", "newsclass") => Ok(PhpOut::Data(gen_ssr_ok())),
-        ("generate-page", "all") => Ok(PhpOut::Data(gen_ssr_ok())),
+        ("generate-page", "archive") => Ok(PhpOut::MessageData("admin_ssr_no_static", gen_ssr_ok())),
+        ("generate-page", "once") => Ok(PhpOut::Message("admin_ssr_no_static")),
+        ("generate-page", "newsclass") => Ok(PhpOut::MessageData("admin_ssr_no_static", gen_ssr_ok())),
+        ("generate-page", "all") => Ok(PhpOut::MessageData("admin_ssr_no_static", gen_ssr_ok())),
         ("generate-cache", "index") => Ok(PhpOut::Data(gen_cache_index())),
         ("generate-cache", "cache") => gen_cache_run(state, user, body).await,
-        ("generate-xml", "archive") => Ok(PhpOut::Message("admin_01465")),
+        ("generate-xml", "archive") => Ok(PhpOut::Message("admin_ssr_no_static")),
+        ("gap-skip", "crm") => Err(ApiError::business("admin_crm_unavailable")),
         ("shop-set", "index") => Ok(PhpOut::Data(shop_set_index(state).await?)),
         ("shop-set", "saveset") => shop_set_saveset(state, user, body).await,
         ("shop-set", "get_redeem_option") => Ok(PhpOut::Data(shop_set_redeem_option(state, body).await?)),

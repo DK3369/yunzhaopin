@@ -188,52 +188,32 @@ export default {
             let that = this;
             let url = '';
             let params = {};
-            if (this.is_graduate == 0){
-                if (!that.info.state) {
-                    message.error(lc('admin_user_weipin_00015'))
-                    return false;
-                }
-                params = {
-                    single: 1,
-                    status: that.info.state,
-                    pid: that.info.id,
-                    uid: that.info.uid,
-                    statusbody: that.info.statusbody,
-                    atype: atype
-                };
-                if (that.info.c_status == 2) {
-                    message.error(lc('admin_company_00001'))
-                    return false;
-                } else {
-                    params.lock_status = 1;
-                }
-                if (that.info.r_status == '0') {
-                    url = 'm=user&c=company_job&a=cjobstatus';
-                } else {
-                    url = 'm=user&c=company_job&a=status';
-                }
-            }else{
-                params = {
-                    single: 1,
-                    atype: atype,
-                };
-                if (that.submitLoading) {
-                    return;
-                }
-                that.submitLoading = true;
-                if (that.r_status != 1){
-                    params.r_status = that.info.r_status;
-                    params.job_status = 1;
-                    params.statusbody = that.info.statusbody;
-                    params.cid = that.info.id;
-                    params.cuid = that.info.uid;
-                    url = "m=user&c=school_graduate&a=cjobstatus";
-                }else{
-                    url = 'm=user&c=school_graduate&a=status';
-                    params.status = that.info.state;
-                    params.pid = that.info.id;
-                    params.statusbody = that.info.statusbody;
-                }
+            if (!that.info.state) {
+                message.error(lc('admin_user_weipin_00015'))
+                return false;
+            }
+            params = {
+                single: 1,
+                status: that.info.state,
+                pid: that.info.id,
+                uid: that.info.uid,
+                statusbody: that.info.statusbody,
+                atype: atype
+            };
+            if (that.info.c_status == 2) {
+                message.error(lc('admin_company_00001'))
+                return false;
+            } else {
+                params.lock_status = 1;
+            }
+            if (that.submitLoading) {
+                return;
+            }
+            that.submitLoading = true;
+            if (that.info.r_status == '0') {
+                url = 'm=user&c=company_job&a=cjobstatus';
+            } else {
+                url = 'm=user&c=company_job&a=status';
             }
             httpPost(url, params).then(function(response) {
                 let res = response.data;
@@ -244,9 +224,9 @@ export default {
                         that.$emit("confirm");
                     }else{
                         let id = '';
-                        if (that.is_graduate == 0){
+                        if (res.data && res.data.job){
                             id = res.data.job.id;
-                        }else{
+                        }else if (res.data){
                             id = res.data.id;
                         }
                         if(id){
@@ -256,17 +236,13 @@ export default {
                 }else{
                     message.error(res.msg);
                 }
+            }).catch(function() {
+                that.submitLoading = false;
             })
         },
         status(id){
             let that = this;
-            let url = '';
-            if (this.is_graduate == 0){
-                url = 'm=user&c=company_job&a=jobAudit';
-            }else {
-                url = "m=user&c=school_graduate&a=jobAudit";
-            }
-            httpPost(url, {id:id},{hideloading: true}).then(function(response) {
+            httpPost('m=user&c=company_job&a=jobAudit', {id:id},{hideloading: true}).then(function(response) {
                 let res = response.data;
                 that.info = res.data.info;
                 that.snum = res.data.snum;

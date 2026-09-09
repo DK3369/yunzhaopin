@@ -320,10 +320,16 @@ export default {
         methods: {
             downHb(hb) {
                 var that = this
+                var row = (that.hbarr || []).find(function (item) { return item.id == hb })
+                var src = row && (row.pic_n || row.pic)
+                if (!src) {
+                    message.error(lc('admin_user_00035'))
+                    return
+                }
                 let image = new Image()
                 image.setAttribute('crossOrigin', 'anonymous')
-                that.hburl = baseUrl + 'm=neirong&c=gongzhao&a=getgongzhaoHb&&id=' + this.gzid + '&hb=' + hb + '&pytoken=' + localStorage.getItem('pytoken')
-                image.src = that.hburl
+                that.hburl = src
+                image.src = src
                 image.onload = () => {
                     let canvas = document.createElement('canvas')
                     canvas.width = image.width
@@ -333,9 +339,11 @@ export default {
                     canvas.toBlob((blob) => {
                         let url = URL.createObjectURL(blob)
                         download(url, 'gzhb_' + that.gzid)
-                        // Revoke the URL object after use
                         URL.revokeObjectURL(url)
                     })
+                }
+                image.onerror = function () {
+                    message.error(lc('admin_user_00035'))
                 }
                 function download(href, name) {
                     let eleLink = document.createElement('a')
@@ -360,7 +368,8 @@ export default {
                 this.gzid = row.id
             },
             showHb(hb) {
-                this.hburl = baseUrl + 'm=neirong&c=gongzhao&a=getgongzhaoHb&&id=' + this.gzid + '&hb=' + hb + '&pytoken=' + localStorage.getItem('pytoken')
+                var row = (this.hbarr || []).find(function (item) { return item.id == hb })
+                this.hburl = row && (row.pic_n || row.pic) ? (row.pic_n || row.pic) : ''
                 this.hbkey = Math.random()
                 this.showhb = true
             },

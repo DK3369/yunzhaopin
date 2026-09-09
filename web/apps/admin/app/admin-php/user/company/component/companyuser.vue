@@ -3288,8 +3288,31 @@ export default {
                 message.error(lc('admin_user_company_00114'))
                 return false;
             }
-            that.logopreview = baseUrl + 'm=user&c=company&a=adminLogoHb&name=' + that.logocname + '&hb=' + that.logobg
-            that.drawerlogopreview = true
+            var bg = that.hbBgA[that.logobg - 1]
+            if (!bg) {
+                message.error(lc('admin_user_company_00114'))
+                return false
+            }
+            var img = new Image()
+            img.setAttribute('crossOrigin', 'anonymous')
+            img.onload = function () {
+                var canvas = document.createElement('canvas')
+                canvas.width = img.width || 200
+                canvas.height = img.height || 200
+                var ctx = canvas.getContext('2d')
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                ctx.fillStyle = '#ffffff'
+                ctx.font = 'bold 28px sans-serif'
+                ctx.textAlign = 'center'
+                ctx.textBaseline = 'middle'
+                ctx.fillText(that.logocname, canvas.width / 2, canvas.height / 2)
+                that.logopreview = canvas.toDataURL('image/png')
+                that.drawerlogopreview = true
+            }
+            img.onerror = function () {
+                message.error(lc('admin_user_00035'))
+            }
+            img.src = bg
         },
         makeLogoHb: function () {
             var that = this
@@ -3303,21 +3326,7 @@ export default {
                 message.error(lc('admin_user_company_00114'))
                 return false;
             }
-            httpPost('m=user&c=company&a=adminLogoHb', {
-                name: that.logocname,
-                hb: that.logobg,
-                out: 1
-            }).then(function (result) {
-                var res = result.data;
-                if (res.error == 0) {
-                    that.setLogo(res.data)
-                } else {
-                    message.error(res.msg)
-                    return false
-                }
-            }).catch(function (e) {
-
-            })
+            message.error(lc('admin_user_00035'))
         },
         setLogo: function (logo) {
             var that = this

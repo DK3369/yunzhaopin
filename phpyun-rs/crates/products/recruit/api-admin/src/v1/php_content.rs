@@ -26,6 +26,7 @@ pub async fn php_content(
         PhpOut::Data(v) => Ok(ApiResponse::data(v).into_response()),
         PhpOut::Message(k) => Ok(ApiResponse::message(k).into_response()),
         PhpOut::Text(k, msg) => Ok(ApiMessage::new(k, msg).into_response()),
+        PhpOut::MessageData(k, v) => Ok(ApiResponse::message_data(k, v).into_response()),
     }
 }
 

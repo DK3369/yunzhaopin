@@ -1003,6 +1003,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_integral': phpContent('set-integral', 'index'),
   'system/set_integral/index': phpContent('set-integral', 'index'),
   'system/set_integral/save': phpContent('set-integral', 'save'),
+  'system/set_integral/lietou_save': phpContent('set-integral', 'save'),
   'system/set_integral/saveSet': phpContent('set-integral', 'saveSet'),
   'system/set_integral/comjifen': phpContent('set-integral', 'comjifen'),
   'system/set_integral/class': phpContent('set-integral', 'class'),
@@ -1490,6 +1491,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/warning/getWarningConfig': phpContent('warning', 'getWarningConfig'),
   'system/warning/config': phpContent('warning', 'config'),
   'system/feedback': { path: '/v1/admin/feedback/php-index', transformReq: pageQuery },
+  'crm/crm_my_customer/company_order': phpContent('gap-skip', 'crm'),
+  'crm/salesman/saveCrm': phpContent('gap-skip', 'crm'),
 }
 
 type ModuleRoutes = { list: string; del?: string; status?: string; save?: string }

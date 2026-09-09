@@ -109,6 +109,11 @@ useSeoMeta({ title: t('ui.map_addr') })
         <input v-model="form.link_phone" :placeholder="$t('wap_com_00014')" />
         <input v-model="form.email" :placeholder="$t('member_user_00282')" />
         <input v-model="form.link_address" :placeholder="$t('ui.map_addr')" />
+        <LocationFields
+          v-model:province-id="form.province_id"
+          v-model:city-id="form.city_id"
+          v-model:district-id="form.three_city_id"
+        />
         <input v-model="form.x" :placeholder="$t('ui.lng')" />
         <input v-model="form.y" :placeholder="$t('ui.lat')" />
         <MapPick v-model:x="form.x" v-model:y="form.y" />
