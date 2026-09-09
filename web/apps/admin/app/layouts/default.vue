@@ -614,4 +614,7 @@ onMounted(() => {
   background: url(/admin/php-admin/images/notip.png) no-repeat center;
   background-size: contain;
 }
+.subContPageInfo > * {
+  height: 100%;
+}
 </style>

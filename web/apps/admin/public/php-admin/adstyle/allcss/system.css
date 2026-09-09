@@ -12,11 +12,14 @@
     position: relative;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .setDomeAll .el-tabs__header {
     position: relative;
     margin-bottom: 0;
+    flex: none;
 }
 
 .setDomeAll .el-tabs__nav-scroll {
@@ -49,6 +52,8 @@
     width: calc(100% - 24px);
     padding: 12px;
     height: calc(100% - (50px + 24px));
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .setDomeInte .el-tabs__content {
@@ -78,6 +83,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: none;
 }
 
 .setBasicButn .el-button {
@@ -424,14 +430,18 @@
     position: relative;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .uploadTable {
     overflow-y: auto;
     position: relative;
     width: 100%;
-    height: max-content;
-    max-height: calc(100% - 80px);
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    max-height: none;
 }
 
 .setDomeAll .el-tab-pane {
@@ -439,6 +449,7 @@
     position: relative;
     width: 100%;
     height: 100%;
+    min-height: 0;
 }
 
 
