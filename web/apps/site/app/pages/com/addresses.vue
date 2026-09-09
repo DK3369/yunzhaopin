@@ -111,6 +111,7 @@ useSeoMeta({ title: t('ui.map_addr') })
         <input v-model="form.link_address" :placeholder="$t('ui.map_addr')" />
         <input v-model="form.x" :placeholder="$t('ui.lng')" />
         <input v-model="form.y" :placeholder="$t('ui.lat')" />
+        <MapPick v-model:x="form.x" v-model:y="form.y" />
         <div class="row">
           <button type="submit">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
           <button v-if="editing" type="button" @click="reset">{{ $t('common.cancel') }}</button>

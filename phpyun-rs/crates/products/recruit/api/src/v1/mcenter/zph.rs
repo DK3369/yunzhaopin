@@ -2,7 +2,10 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::zph_service::{self, ReserveInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -74,6 +77,8 @@ pub struct MyReservation {
     pub mobile: String,
     pub status: i32,
     pub created_at: i64,
+    pub datetime_n: String,
+    pub title: String,
 }
 
 impl From<phpyun_models::zph::entity::ZphReservation> for MyReservation {
@@ -82,30 +87,60 @@ impl From<phpyun_models::zph::entity::ZphReservation> for MyReservation {
             id: r.id,
             zid: r.zid,
             job_ids: r.job_ids,
-            name: r.name,
+            name: r.name.clone(),
             mobile: r.mobile,
             status: r.status,
+            datetime_n: fmt_dt(r.created_at),
             created_at: r.created_at,
+            title: r.name,
         }
     }
 }
 
-/// My reservation for a specific job fair
+impl From<phpyun_models::zph::repo::ZphReservationListRow> for MyReservation {
+    fn from(r: phpyun_models::zph::repo::ZphReservationListRow) -> Self {
+        Self {
+            id: r.id,
+            zid: r.zid,
+            job_ids: r.job_ids,
+            name: r.name,
+            mobile: r.mobile,
+            status: r.status,
+            datetime_n: fmt_dt(r.created_at),
+            created_at: r.created_at,
+            title: r.title,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct MyReservationBody {
+    /// Optional fair id. `0` (default) lists every sign-up for this company.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub id: u64,
+}
+
+/// My job-fair sign-ups. Empty body returns `{list,total}`; `id` filters one fair.
 #[utoipa::path(post,
     path = "/v1/mcenter/zph/my-reservation",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = IdBody,
+    request_body = MyReservationBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn my_reservation(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiResponse<Option<MyReservation>>> {
-    let id = b.id;
-    let row = zph_service::my_reservation(&state, &user, id).await?;
-    Ok(ApiResponse::data(row.map(MyReservation::from)))
+    page: Pagination,
+    ValidatedJson(b): ValidatedJson<MyReservationBody>,
+) -> AppResult<ApiResponse<Paged<MyReservation>>> {
+    let r = zph_service::list_my_reservations(&state, &user, b.id, page).await?;
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list.into_iter().map(MyReservation::from).collect(),
+        r.total,
+        page,
+    )))
 }
 
 // ==================== Pre-apply status (counterpart of `wap/ajax::ajaxComjob`) ====================

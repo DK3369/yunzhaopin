@@ -113,6 +113,7 @@ const MODULE_PATH: Record<string, string> = {
   index: '/',
   wap: '/',
   forgetpw: '/forgetpw',
+  invitereg: '/invite',
 }
 
 /** Reverse of MODULE_PATH for `sy_{module}_web`. Home / custom links have no key. */
@@ -208,6 +209,25 @@ function modulePath(name?: string | null): string | undefined {
   return MODULE_PATH[key]
 }
 
+/** `/wap/job/123` → `/jobs/123`. Unknown modules fall back to `/`. */
+export function mapWapPath(urlPath: string, search = ''): string {
+  const [pathOnly, qs] = String(urlPath || '').split('?')
+  const query = new URLSearchParams(search || qs || '')
+  const rest = pathOnly.replace(/^\/wap\/?/i, '')
+  if (!rest || /^index\.php$/i.test(rest)) {
+    const m = query.get('m') || ''
+    const c = query.get('c') || ''
+    if (m === 'wap' && c && MODULE_PATH[c]) return MODULE_PATH[c]
+    if (m && MODULE_PATH[m]) return MODULE_PATH[m]
+    return '/'
+  }
+  const segs = rest.split('/').filter(Boolean)
+  const mapped = modulePath(segs[0])
+  if (!mapped) return '/'
+  const extra = segs.slice(1)
+  return extra.length ? `${mapped}/${extra.join('/')}` : mapped
+}
+
 /** PHP `phpyun_navigation.url` is often a relative module path (`job/`, `evaluate`). */
 export function mapNavUrl(url?: string | null): string {
   if (!url) return '/'
@@ -221,6 +241,9 @@ export function mapNavUrl(url?: string | null): string {
       return code ? `/pages/${code}` : '/'
     }
     if (!pathOnly.toLowerCase().includes('index.php')) {
+      if (pathOnly.toLowerCase() === '/wap' || pathOnly.toLowerCase().startsWith('/wap/')) {
+        return mapWapPath(pathOnly, raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : '')
+      }
       const first = pathOnly.replace(/^\//, '').split('/')[0]
       return modulePath(first) || pathOnly || '/'
     }

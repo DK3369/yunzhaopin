@@ -117,6 +117,7 @@ useSeoMeta({ title: t('member_com_00378') })
       <input v-model="form.linkmail" :placeholder="$t('member_user_00282')" />
       <input v-model="form.x" placeholder="x" />
       <input v-model="form.y" placeholder="y" />
+      <MapPick v-model:x="form.x" v-model:y="form.y" />
       <button type="submit">{{ $t('common.save') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>

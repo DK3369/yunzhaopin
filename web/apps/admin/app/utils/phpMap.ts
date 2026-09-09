@@ -325,7 +325,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_job': { path: '/v1/admin/jobs', transformReq: pageQuery },
   'user/company_job/index': { path: '/v1/admin/jobs', transformReq: pageQuery },
   'user/company_job/jobNum': { path: '/v1/admin/jobs/stats', transformRes: jobStatsToPhp },
-  'user/company_job/status': { path: '/v1/admin/jobs/state' },
+  'user/company_job/status': phpContent('company-job', 'status'),
+  'user/company_job/cjobstatus': phpContent('company-job', 'cjobstatus'),
+  'user/company_job/jobAudit': phpContent('company-job', 'jobAudit'),
   'user/company_job/checkstate': { path: '/v1/admin/jobs/state' },
   'user/company_job/del': { path: '/v1/admin/jobs/delete', transformReq: idsFromDel },
   'user/company_job/refresh': { path: '/v1/admin/jobs/refresh', transformReq: idsFromDel },
@@ -349,6 +351,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'common/cache/poi': { path: '/v1/admin/cache/php-dicts' },
   'common/cache/getJobChildIds': phpPage('job_child_ids'),
   'common/cache/getCityChildIds': phpPage('city_child_ids'),
+  'common/cache/getPriceName': phpContent('cache', 'getPriceName'),
 
   'user/company/companyNum': phpContent('user-gap', 'company-num'),
   'user/users_resume/resumeNum': phpContentRaw('user-gap', 'resume-num'),
@@ -360,6 +363,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/admin_member/Imitate': phpContent('user-gap', 'mem-imitate'),
   'user/admin_member/lock': phpContent('user-gap', 'mem-lock'),
   'user/admin_member/editSave': phpContent('user-gap', 'mem-edit'),
+  'user/admin_member/getIpAddress': phpContent('index', 'getIpAddress'),
+  'user/admin_member/getMobileAddress': phpContent('index', 'getMobileAddress'),
+  'user/admin_member/checksitedid': phpContent('user-gap', 'member-checksitedid'),
   'user/admin_member/del': phpContent('user-gap', 'mem-del'),
   'user/admin_member/reset_pw': phpContent('user-gap', 'reset-password'),
   'user/admin_member_logout/index': phpContent('user-gap', 'logout-index'),
@@ -425,6 +431,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_job/addTuiWenTask': phpContent('company-job', 'addTuiWenTask'),
   'user/company_job/whb': phpContent('company-job', 'whb'),
   'user/company_job/xls': phpContent('company-job', 'xls'),
+  'user/company_job/applyJob': phpContent('company-job', 'applyJob'),
   'user/users_resume/delResume': phpContent('resume', 'delResume'),
   'user/users_resume/delResumeFb': phpContent('resume', 'delResumeFb'),
   'user/users_resume/label': phpContent('resume', 'label'),
@@ -526,19 +533,13 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_trust/trustNum': { path: '/v1/admin/user-entrusts/statist', rawBody: true },
   'user/users_trust/recom': phpContent('trust', 'recom'),
   'user/users_trust/directrecom': phpContent('trust', 'directrecom'),
+  'user/company/directrecom': phpContent('trust', 'directrecom'),
   'user/partjob/partNum': { path: '/v1/admin/parts/statist' },
-  'user/company_cert': { path: '/v1/admin/company-certs', transformReq: pageQuery },
-  'user/company_cert/index': { path: '/v1/admin/company-certs', transformReq: pageQuery },
-  'user/company_cert/status': {
-    path: '/v1/admin/company-certs/review',
-    transformReq: (b) => ({
-      uid: Number(String(b.uid || '').split(',')[0]) || 0,
-      approve: String(b.status) === '1',
-      note: String(b.statusbody || ''),
-    }),
-  },
-  'user/company_cert/getCertStatist': { path: '/v1/admin/company-certs/statist' },
-  'user/company_cert/sbody': { path: '/v1/admin/company-certs/status-body' },
+  'user/company_cert': phpContent('company-cert', 'index'),
+  'user/company_cert/index': phpContent('company-cert', 'index'),
+  'user/company_cert/status': phpContent('company-cert', 'status'),
+  'user/company_cert/getCertStatist': phpContent('company-cert', 'getCertStatist'),
+  'user/company_cert/sbody': phpContent('company-cert', 'sbody'),
   'user/company_cert/del': {
     path: '/v1/admin/company-certs/delete',
     transformReq: (b) => idsFromDel({ ...b, id: b.uid ?? b.id ?? b.del }),
@@ -562,6 +563,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_config': { path: '/v1/admin/site-settings/list', transformRes: configIndexShape },
   'system/set_config/index': { path: '/v1/admin/site-settings/list', transformRes: configIndexShape },
   'system/set_config/save': { path: '/v1/admin/site-settings/batch' },
+  'system/set_config/save_logo': phpContent('set-config', 'save_logo'),
+  'system/set_config/settplcache': phpContent('set-config', 'settplcache'),
+  'system/set_config/savetplcache': phpContent('set-config', 'savetplcache'),
   'system/set_payset': { path: '/v1/admin/site-settings/payset' },
   'system/set_payset/index': { path: '/v1/admin/site-settings/payset' },
   'system/set_payset/save': { path: '/v1/admin/site-settings/batch' },
@@ -611,7 +615,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/part/index': { path: '/v1/admin/parts', transformReq: pageQuery },
   'user/partjob': { path: '/v1/admin/parts', transformReq: pageQuery },
   'user/partjob/index': { path: '/v1/admin/parts', transformReq: pageQuery },
-  'user/partjob/status': { path: '/v1/admin/parts/state' },
+  'user/partjob/status': phpContent('part', 'status'),
+  'user/partjob/tbStatus': phpContent('part', 'tbStatus'),
   'user/partjob/show': phpContent('part', 'show'),
   'user/partjob/partAudit': phpContent('part', 'partAudit'),
   'user/partjob/recommend': phpContent('part', 'recommend'),
@@ -662,7 +667,8 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_member/edit': { path: '/v1/admin/users/php-edit' },
   'user/users_member/editSave': { path: '/v1/admin/users/php-editsave' },
   'user/users_member/saveUser': { path: '/v1/admin/users/php-save-user' },
-  'user/users_resume/status': { path: '/v1/admin/resumes/status' },
+  'user/users_resume/status': phpContent('resume', 'status'),
+  'user/users_resume/resumestatus': phpContent('resume', 'resumestatus'),
   'user/users_resume/work': { path: '/v1/admin/resumes/works' },
   'user/users_resume/edu': { path: '/v1/admin/resumes/edus' },
   'user/users_resume/training': { path: '/v1/admin/resumes/trainings' },
@@ -987,6 +993,23 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_guanjianci/del': { path: '/v1/admin/keywords/delete', transformReq: idsFromDel },
   'system/set_guanjianci/recup': { path: '/v1/admin/keywords/recup' },
   'system/set_guanjianci/status': { path: '/v1/admin/keywords/status' },
+  'system/set_guanjianci/state': {
+    path: '/v1/admin/keywords/status',
+    transformReq: (b) => ({
+      pid: Array.isArray(b.sid) ? (b.sid as unknown[]).join(',') : String(b.sid || b.pid || ''),
+      check: Number(b.status ?? b.check ?? 0),
+    }),
+  },
+  'system/set_integral': phpContent('set-integral', 'index'),
+  'system/set_integral/index': phpContent('set-integral', 'index'),
+  'system/set_integral/save': phpContent('set-integral', 'save'),
+  'system/set_integral/saveSet': phpContent('set-integral', 'saveSet'),
+  'system/set_integral/comjifen': phpContent('set-integral', 'comjifen'),
+  'system/set_integral/class': phpContent('set-integral', 'class'),
+  'system/set_integral/ajax': phpContent('set-integral', 'ajax'),
+  'system/set_integral/del': phpContent('set-integral', 'del'),
+  'index/mapconfig': phpContent('index', 'mapconfig'),
+  'index/ajax/mapconfig': phpContent('index', 'mapconfig'),
   'system/set_web_config/index': phpContent('web-config', 'index'),
   'system/set_web_config/city': phpContent('web-config', 'city'),
   'system/set_web_config/save': { path: '/v1/admin/site-settings/batch' },
@@ -1279,6 +1302,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'yunying/special_special/set_comaddsearch': phpContent('special', 'set_comaddsearch'),
   'yunying/special_special/audit': phpContent('special', 'audit'),
   'yunying/special_special/comjob': phpContent('special', 'comjob'),
+  'yunying/special_special/savespecial': phpContent('special', 'savespecial'),
+  'yunying/special_special/mutiAddCom': phpContent('special', 'mutiAddCom'),
+  'yunying/special_special/comxls': phpContent('special', 'comxls'),
   'yunying/ad': phpContent('ads', 'index'),
   'yunying/ad/index': phpContent('ads', 'index'),
   'yunying/ad/info': phpContent('ads', 'info'),
@@ -1472,7 +1498,7 @@ type ModuleRoutes = { list: string; del?: string; status?: string; save?: string
 const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/company_job': { list: '/v1/admin/jobs', del: '/v1/admin/jobs/delete', status: '/v1/admin/jobs/state' },
   'user/company': { list: '/v1/admin/companies', del: '/v1/admin/php-content/user-gap/company-del', status: '/v1/admin/php-content/user-gap/company-status' },
-  'user/company_cert': { list: '/v1/admin/company-certs', status: '/v1/admin/company-certs/review', del: '/v1/admin/company-certs/delete' },
+  'user/company_cert': { list: '/v1/admin/php-content/company-cert/index', status: '/v1/admin/php-content/company-cert/status', del: '/v1/admin/company-certs/delete' },
   'user/company_expire': { list: '/v1/admin/company-expire' },
   'user/company_order': { list: '/v1/admin/php-content/finance-order/index', del: '/v1/admin/php-content/finance-order/delete' },
   'user/hotjob': { list: '/v1/admin/hotjobs/list', del: '/v1/admin/php-content/hotjob/delete' },
@@ -1541,7 +1567,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'yunying/yingxiao_hrlog': { list: '/v1/admin/hr-logs' },
   'yunying/shop_set': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'neirong/evaluate': { list: '/v1/admin/evaluate/papers/list', del: '/v1/admin/evaluate/papers/delete', save: '/v1/admin/evaluate/papers' },
-  'neirong/toolbox_doc': { list: '/v1/admin/toolbox/docs/list', del: '/v1/admin/toolbox/docs/delete', save: '/v1/admin/toolbox/docs', status: '/v1/admin/toolbox/docs/show' },
+  'neirong/toolbox_doc': { list: '/v1/admin/toolbox/docs/list', del: '/v1/admin/toolbox/docs/delete', save: '/v1/admin/toolbox/docs' },
   'neirong/toolbox_class': { list: '/v1/admin/toolbox/classes/list', del: '/v1/admin/toolbox/classes/delete', save: '/v1/admin/toolbox/classes' },
   'system/set_tplset': { list: '/v1/admin/php-content/tplset/index', save: '/v1/admin/php-content/tplset/check_style' },
   'system/domain_group': { list: '/v1/admin/php-content/domain-group/adminList' },
@@ -1578,6 +1604,18 @@ function isIndexAction(a: string): boolean {
   return !act || act === 'index'
 }
 
+const WRAP_SAVE_PATHS = new Set([
+  '/v1/admin/gsd-config/save',
+  '/v1/admin/oss-config/save',
+  '/v1/admin/fastlogin-config/save',
+])
+
+function wrapModuleSave(path: string): PhpAction {
+  return WRAP_SAVE_PATHS.has(path)
+    ? { path, transformReq: wrapItems }
+    : { path }
+}
+
 function moduleAction(mod: ModuleRoutes, a: string): PhpAction | undefined {
   const act = (a || 'index').toLowerCase()
   // Exact verbs only. Prefix matches (delStatisDetail, configSave) used to hit the
@@ -1589,10 +1627,10 @@ function moduleAction(mod: ModuleRoutes, a: string): PhpAction | undefined {
     return { path: mod.status }
   }
   if (act === 'save' && mod.save) {
-    return { path: mod.save }
+    return wrapModuleSave(mod.save)
   }
   if (act === 'add' && mod.save) {
-    return { path: mod.save }
+    return wrapModuleSave(mod.save)
   }
   if (isIndexAction(act)) {
     return { path: mod.list, transformReq: pageQuery }

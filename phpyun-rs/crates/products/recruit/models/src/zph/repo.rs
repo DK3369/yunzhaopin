@@ -325,6 +325,71 @@ pub async fn find_my_reservation(
         .await
 }
 
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct ZphReservationListRow {
+    pub id: u64,
+    pub zid: u64,
+    pub uid: u64,
+    pub job_ids: String,
+    pub name: String,
+    pub mobile: String,
+    pub status: i32,
+    pub created_at: i64,
+    pub title: String,
+}
+
+const ZR_FIELDS_ZR: &str = "\
+    CAST(zr.id AS UNSIGNED) AS id, \
+    CAST(COALESCE(zr.zid, 0) AS UNSIGNED) AS zid, \
+    CAST(COALESCE(zr.uid, 0) AS UNSIGNED) AS uid, \
+    COALESCE(zr.jobid, '') AS job_ids, \
+    COALESCE(zr.com_name, '') AS name, \
+    '' AS mobile, \
+    CAST(COALESCE(zr.status, 0) AS SIGNED) AS status, \
+    CAST(COALESCE(zr.ctime, 0) AS SIGNED) AS created_at";
+
+pub async fn list_my_reservations(
+    pool: &MySqlPool,
+    uid: u64,
+    zid: Option<u64>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<ZphReservationListRow>, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::<sqlx::MySql>::new(format!(
+        "SELECT {ZR_FIELDS_ZR}, COALESCE(z.title, '') AS title \
+         FROM phpyun_zhaopinhui_com zr \
+         LEFT JOIN phpyun_zhaopinhui z ON z.id = zr.zid \
+         WHERE zr.uid = "
+    ));
+    qb.push_bind(uid);
+    if let Some(zid) = zid.filter(|n| *n > 0) {
+        qb.push(" AND zr.zid = ");
+        qb.push_bind(zid);
+    }
+    qb.push(" ORDER BY zr.id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn count_my_reservations(
+    pool: &MySqlPool,
+    uid: u64,
+    zid: Option<u64>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = sqlx::QueryBuilder::<sqlx::MySql>::new(
+        "SELECT COUNT(*) FROM phpyun_zhaopinhui_com WHERE uid = ",
+    );
+    qb.push_bind(uid);
+    if let Some(zid) = zid.filter(|n| *n > 0) {
+        qb.push(" AND zid = ");
+        qb.push_bind(zid);
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 // ---------- admin PHP shapes ----------
 
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]

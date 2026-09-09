@@ -19,6 +19,7 @@ pub fn routes() -> Router<AppState> {
         .route("/resume-downloads", post(download))
         .route("/resume-downloads/outbox", post(list_outbox))
         .route("/resume-downloads/inbox", post(list_inbox))
+        .route("/resume-downloads/export", post(export_outbox))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -119,6 +120,60 @@ pub async fn list_inbox(
         r.total,
         page,
     )))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CsvExportView {
+    pub csv: String,
+    pub filename: String,
+    pub total: u64,
+}
+
+/// Company view: CSV of resumes I have downloaded (capped at 2000 rows).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume-downloads/export",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = CsvExportView))
+)]
+pub async fn export_outbox(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<CsvExportView>> {
+    let page = Pagination {
+        page: 1,
+        page_size: 200,
+        offset: 0,
+        limit: 2000,
+    };
+    let r = resume_download_service::list_mine_as_company(&state, &user, page).await?;
+    let items = with_names(&state, r.list).await?;
+    let total = items.len() as u64;
+    let mut csv = String::from("\u{feff}id,uid,eid,uname,datetime\n");
+    for it in &items {
+        csv.push_str(&format!(
+            "{},{},{},{},{}\n",
+            it.id,
+            it.uid,
+            it.eid,
+            csv_cell(&it.uname),
+            csv_cell(&it.datetime_n)
+        ));
+    }
+    Ok(ApiResponse::data(CsvExportView {
+        csv,
+        filename: "resume-downloads.csv".into(),
+        total,
+    }))
+}
+
+fn csv_cell(s: &str) -> String {
+    if s.contains([',', '"', '\n', '\r']) {
+        format!("\"{}\"", s.replace('"', "\"\""))
+    } else {
+        s.to_string()
+    }
 }
 
 async fn with_names(

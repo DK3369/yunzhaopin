@@ -294,6 +294,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::resume_downloads::download,
         v1::mcenter::resume_downloads::list_outbox,
         v1::mcenter::resume_downloads::list_inbox,
+        v1::mcenter::resume_downloads::export_outbox,
         // mcenter: resume sub-tables (project / skill / language)
         v1::mcenter::resume_project::list,
         v1::mcenter::resume_project::create,
@@ -366,6 +367,8 @@ impl Modify for UniqueOperationId {
         // mcenter: zph
         v1::mcenter::zph::reserve,
         v1::mcenter::zph::my_reservation,
+        v1::mcenter::specials::mine,
+        v1::mcenter::specials::delete,
         // wap: integral mall
         v1::wap::integral::list_items,
         v1::wap::integral::item_detail,
@@ -824,6 +827,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::messages::MessageItem,
             v1::mcenter::resume_downloads::DownloadForm,
             v1::mcenter::resume_downloads::DownloadItem,
+            v1::mcenter::resume_downloads::CsvExportView,
             v1::mcenter::resume_project::ProjectItem,
             v1::mcenter::resume_project::ProjectForm,
             v1::mcenter::resume_skill::SkillItem,
@@ -874,6 +878,8 @@ impl Modify for UniqueOperationId {
             v1::wap::qna::CommentItem,
             v1::mcenter::zph::ReserveForm,
             v1::mcenter::zph::MyReservation,
+            v1::mcenter::zph::MyReservationBody,
+            v1::mcenter::specials::MineSpecialView,
             v1::mcenter::qna::AskForm,
             v1::mcenter::qna::AnswerBody,
             v1::mcenter::qna::CommentBody,

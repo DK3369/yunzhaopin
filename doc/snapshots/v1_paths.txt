@@ -197,6 +197,7 @@
 /v1/mcenter/reports/list
 /v1/mcenter/resume
 /v1/mcenter/resume-downloads
+/v1/mcenter/resume-downloads/export
 /v1/mcenter/resume-downloads/inbox
 /v1/mcenter/resume-downloads/outbox
 /v1/mcenter/resume-outbox
@@ -253,6 +254,8 @@
 /v1/mcenter/sessions/revoke-others
 /v1/mcenter/sign
 /v1/mcenter/sign/status
+/v1/mcenter/specials/delete
+/v1/mcenter/specials/mine
 /v1/mcenter/talent-pool
 /v1/mcenter/talent-pool/delete
 /v1/mcenter/talent-pool/list

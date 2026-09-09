@@ -257,6 +257,96 @@ pub async fn insert_special_com(
     Ok(res.last_insert_id())
 }
 
+/// PHP admin `addSpecialCom` / `addSpecialMutiCom` — status 1, no integral deduct.
+pub async fn insert_admin_com(
+    pool: &MySqlPool,
+    sid: u64,
+    uid: u64,
+    status: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_special_com (sid, uid, integral, status, time, sort) \
+         VALUES (?, ?, 0, ?, ?, 0)",
+    )
+    .bind(sid)
+    .bind(uid)
+    .bind(status)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn list_uids_by_sid(pool: &MySqlPool, sid: u64) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_special_com \
+         WHERE sid = ? AND COALESCE(deleted,0)=0",
+    )
+    .bind(sid)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(u,)| u).collect())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct SpecialMineRow {
+    pub id: u64,
+    pub sid: u64,
+    pub uid: u64,
+    pub status: i32,
+    pub created_at: i64,
+    pub title: String,
+}
+
+pub async fn list_mine_coms(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<SpecialMineRow>, sqlx::Error> {
+    sqlx::query_as::<_, SpecialMineRow>(
+        "SELECT CAST(sc.id AS UNSIGNED) AS id, \
+                CAST(COALESCE(sc.sid, 0) AS UNSIGNED) AS sid, \
+                CAST(COALESCE(sc.uid, 0) AS UNSIGNED) AS uid, \
+                CAST(COALESCE(sc.status, 0) AS SIGNED) AS status, \
+                CAST(COALESCE(sc.`time`, 0) AS SIGNED) AS created_at, \
+                COALESCE(s.title, '') AS title \
+         FROM phpyun_special_com sc \
+         LEFT JOIN phpyun_special s ON s.id = sc.sid \
+         WHERE sc.uid = ? AND COALESCE(sc.deleted,0)=0 \
+         ORDER BY sc.id DESC LIMIT ? OFFSET ?",
+    )
+    .bind(uid)
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn count_mine_coms(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_special_com \
+         WHERE uid = ? AND COALESCE(deleted,0)=0",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn delete_com_for_uid(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_special_com SET deleted = 1 \
+         WHERE id = ? AND uid = ? AND COALESCE(deleted,0)=0",
+    )
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 /// Active job postings for multiple companies in a special event (batched via `IN(...)`).
 pub async fn list_jobs_for_uids(
     pool: &MySqlPool,

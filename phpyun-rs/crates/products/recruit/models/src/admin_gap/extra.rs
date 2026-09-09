@@ -5410,3 +5410,631 @@ pub async fn php_list_partclass(pool: &MySqlPool) -> Result<Vec<PhpPartClassRow>
     .fetch_all(pool)
     .await
 }
+
+/// PHP `job.model::statusJob` — write `state`+`statusbody`; approve only when `r_status=1`.
+pub async fn php_status_jobs(
+    pool: &MySqlPool,
+    ids: &[u64],
+    state: i32,
+    statusbody: &str,
+    lock_status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    if ids.len() == 1 && lock_status == 1 {
+        php_unlock_locked_employer(pool, "phpyun_company_job", ids[0], lock_status).await?;
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET state = ");
+    qb.push_bind(state);
+    qb.push(", statusbody = ");
+    qb.push_bind(statusbody);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(",");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    if state == 1 {
+        qb.push(" AND r_status = 1");
+    }
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// PHP `job.model::status` — sync-review a job whose company is not yet approved.
+pub async fn php_cjobstatus(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    state: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_job SET state = ?, statusbody = ? WHERE id = ? AND uid = ?",
+    )
+    .bind(state)
+    .bind(statusbody)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_next_pending_job(pool: &MySqlPool) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job WHERE state = 0 \
+         ORDER BY lastupdate DESC, id DESC LIMIT 1",
+    )
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpJobAuditRow {
+    pub id: u64,
+    pub uid: u64,
+    pub name: String,
+    pub state: i32,
+    pub status: i32,
+    pub r_status: i32,
+    pub is_link: i32,
+    pub link_id: u64,
+    pub job_statusbody: String,
+    pub c_status: i32,
+    pub lock_info: String,
+    pub reg_date: i64,
+    pub login_date: i64,
+    pub linkman: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub linkmail: String,
+    pub address: String,
+    pub rating_name: String,
+    pub crm_uid: u64,
+}
+
+pub async fn php_job_audit(pool: &MySqlPool, id: u64) -> Result<Option<PhpJobAuditRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(j.id AS UNSIGNED) AS id, CAST(j.uid AS UNSIGNED) AS uid, \
+         COALESCE(j.name,'') AS name, CAST(COALESCE(j.state,0) AS SIGNED) AS state, \
+         CAST(COALESCE(j.status,0) AS SIGNED) AS status, \
+         CAST(COALESCE(j.r_status,0) AS SIGNED) AS r_status, \
+         CAST(COALESCE(j.is_link,1) AS SIGNED) AS is_link, \
+         CAST(COALESCE(j.link_id,0) AS UNSIGNED) AS link_id, \
+         COALESCE(j.statusbody,'') AS job_statusbody, \
+         CAST(COALESCE(m.status,0) AS SIGNED) AS c_status, \
+         COALESCE(m.lock_info,'') AS lock_info, \
+         CAST(COALESCE(m.reg_date,0) AS SIGNED) AS reg_date, \
+         CAST(COALESCE(m.login_date,0) AS SIGNED) AS login_date, \
+         COALESCE(c.linkman,'') AS linkman, COALESCE(c.linktel,'') AS linktel, \
+         COALESCE(c.linkphone,'') AS linkphone, COALESCE(c.linkmail,'') AS linkmail, \
+         COALESCE(c.address,'') AS address, COALESCE(c.rating_name,'') AS rating_name, \
+         CAST(COALESCE(c.crm_uid,0) AS UNSIGNED) AS crm_uid \
+         FROM phpyun_company_job j \
+         LEFT JOIN phpyun_member m ON m.uid = j.uid \
+         LEFT JOIN phpyun_company c ON c.uid = j.uid \
+         WHERE j.id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpJobLinkRow {
+    pub link_man: String,
+    pub link_moblie: String,
+    pub link_phone: String,
+    pub link_address: String,
+}
+
+pub async fn php_job_link(pool: &MySqlPool, link_id: u64) -> Result<Option<PhpJobLinkRow>, sqlx::Error> {
+    if link_id == 0 {
+        return Ok(None);
+    }
+    sqlx::query_as(
+        "SELECT COALESCE(link_man,'') AS link_man, COALESCE(link_moblie,'') AS link_moblie, \
+         COALESCE(link_phone,'') AS link_phone, COALESCE(link_address,'') AS link_address \
+         FROM phpyun_company_job_link WHERE id = ? LIMIT 1",
+    )
+    .bind(link_id)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn php_admin_user_name(pool: &MySqlPool, uid: u64) -> Result<String, sqlx::Error> {
+    if uid == 0 {
+        return Ok(String::new());
+    }
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(name,'') FROM phpyun_admin_user WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).unwrap_or_default())
+}
+
+pub async fn php_job_pending_except(pool: &MySqlPool, except_id: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE state = 0 AND id <> ?",
+    )
+    .bind(except_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `resume.model::statusResume` — expect `state`+`statusbody` when `r_status=1`.
+pub async fn php_status_resumes(
+    pool: &MySqlPool,
+    ids: &[u64],
+    state: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_resume_expect SET state = ");
+    qb.push_bind(state);
+    qb.push(", statusbody = ");
+    qb.push_bind(statusbody);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(",");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(") AND r_status = 1");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+/// PHP `resume.model::status` — sync user lock then review one expect.
+pub async fn php_resume_status_one(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    state: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume_expect SET state = ?, statusbody = ? WHERE id = ? AND uid = ?",
+    )
+    .bind(state)
+    .bind(statusbody)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_next_pending_resume(pool: &MySqlPool) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_expect \
+         WHERE state = 0 AND r_status <> 2 ORDER BY lastupdate DESC, id DESC LIMIT 1",
+    )
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
+/// PHP `part.model::statusPartJob`.
+pub async fn php_status_parts(
+    pool: &MySqlPool,
+    ids: &[u64],
+    state: i32,
+    statusbody: &str,
+    lock_status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    if ids.len() == 1 && lock_status == 1 {
+        php_unlock_locked_employer(pool, "phpyun_partjob", ids[0], lock_status).await?;
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_partjob SET state = ");
+    qb.push_bind(state);
+    qb.push(", statusbody = ");
+    qb.push_bind(statusbody);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(",");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    if state == 1 {
+        qb.push(" AND r_status = 1");
+    }
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_tb_status_part(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    state: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    let res =
+        sqlx::query("UPDATE phpyun_partjob SET state = ?, statusbody = ? WHERE id = ? AND uid = ?")
+            .bind(state)
+            .bind(statusbody)
+            .bind(id)
+            .bind(uid)
+            .execute(pool)
+            .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn php_next_pending_part(pool: &MySqlPool) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_partjob WHERE state = 0 \
+         ORDER BY lastupdate DESC, id DESC LIMIT 1",
+    )
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
+async fn php_unlock_locked_employer(
+    pool: &MySqlPool,
+    table: &str,
+    id: u64,
+    lock_status: i32,
+) -> Result<(), sqlx::Error> {
+    let sql = format!(
+        "SELECT CAST(uid AS UNSIGNED), CAST(COALESCE(r_status,0) AS SIGNED) FROM {table} WHERE id = ? LIMIT 1"
+    );
+    let row: Option<(u64, i32)> = sqlx::query_as(&sql).bind(id).fetch_optional(pool).await?;
+    let Some((uid, r_status)) = row else {
+        return Ok(());
+    };
+    if r_status != 2 {
+        return Ok(());
+    }
+    sqlx::query("UPDATE phpyun_member SET status = ? WHERE uid = ? OR pid = ?")
+        .bind(lock_status)
+        .bind(uid)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_company SET r_status = ? WHERE uid = ?")
+        .bind(lock_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_company_job SET r_status = ? WHERE uid = ?")
+        .bind(lock_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_partjob SET r_status = ? WHERE uid = ?")
+        .bind(lock_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+#[derive(Debug, Clone)]
+pub struct PhpCertListFilter<'a> {
+    pub status: Option<i32>,
+    pub uids: Option<&'a [u64]>,
+    pub ctime_min: Option<i64>,
+    pub order_col: &'a str,
+    pub order_dir: &'a str,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct PhpCertListRow {
+    pub id: u64,
+    pub uid: u64,
+    pub status: i32,
+    pub check: String,
+    pub owner_cert: String,
+    pub wt_cert: String,
+    pub other_cert: String,
+    pub social_credit: String,
+    pub statusbody: String,
+    pub ctime: i64,
+    pub name: String,
+    pub logo: String,
+}
+
+fn php_cert_list_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpCertListFilter<'_>) {
+    qb.push(" FROM phpyun_company_cert sc LEFT JOIN phpyun_company c ON c.uid = sc.uid WHERE sc.type = 3");
+    if let Some(s) = f.status {
+        qb.push(" AND sc.status = ");
+        qb.push_bind(s);
+    }
+    if let Some(uids) = f.uids {
+        if !uids.is_empty() {
+            qb.push(" AND sc.uid IN (");
+            let mut sep = qb.separated(",");
+            for uid in uids {
+                sep.push_bind(*uid);
+            }
+            qb.push(")");
+        }
+    }
+    if let Some(ts) = f.ctime_min {
+        qb.push(" AND sc.ctime >= ");
+        qb.push_bind(ts);
+    }
+}
+
+pub async fn php_cert_list(
+    pool: &MySqlPool,
+    f: PhpCertListFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<(Vec<PhpCertListRow>, u64), sqlx::Error> {
+    let mut count_qb = QueryBuilder::new("SELECT COUNT(*)");
+    php_cert_list_where(&mut count_qb, &f);
+    let (total,): (i64,) = count_qb.build_query_as().fetch_one(pool).await?;
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(sc.id AS UNSIGNED) AS id, CAST(sc.uid AS UNSIGNED) AS uid, \
+         CAST(COALESCE(sc.status,0) AS SIGNED) AS status, COALESCE(sc.`check`,'') AS `check`, \
+         COALESCE(sc.owner_cert,'') AS owner_cert, COALESCE(sc.wt_cert,'') AS wt_cert, \
+         COALESCE(sc.other_cert,'') AS other_cert, COALESCE(sc.social_credit,'') AS social_credit, \
+         COALESCE(sc.statusbody,'') AS statusbody, CAST(COALESCE(sc.ctime,0) AS SIGNED) AS ctime, \
+         COALESCE(c.name,'') AS name, COALESCE(c.logo,'') AS logo",
+    );
+    php_cert_list_where(&mut qb, &f);
+    let col = match f.order_col {
+        "ctime" => "sc.ctime",
+        "uid" => "sc.uid",
+        "status" => "sc.status",
+        _ => "sc.status",
+    };
+    let dir = if f.order_dir.eq_ignore_ascii_case("asc") {
+        " ASC"
+    } else {
+        " DESC"
+    };
+    qb.push(" ORDER BY ");
+    qb.push(col);
+    qb.push(dir);
+    if col != "sc.id" {
+        qb.push(", sc.id DESC");
+    }
+    qb.push(" LIMIT ");
+    qb.push_bind(limit as i64);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset as i64);
+    let list = qb.build_query_as().fetch_all(pool).await?;
+    Ok((list, phpyun_core::numeric::nonnegative_count(total)))
+}
+
+pub async fn php_search_company_uids(
+    pool: &MySqlPool,
+    keyword: &str,
+) -> Result<Vec<u64>, sqlx::Error> {
+    let kw = format!("%{}%", keyword.trim());
+    let rows: Vec<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? LIMIT 500",
+    )
+    .bind(kw)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(u,)| u).collect())
+}
+
+pub async fn php_cert_name_taken(
+    pool: &MySqlPool,
+    name: &str,
+    except_uid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name = ? AND uid <> ? LIMIT 1",
+    )
+    .bind(name)
+    .bind(except_uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub async fn php_cert_review(
+    pool: &MySqlPool,
+    uids: &[u64],
+    status: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_cert SET status = ");
+    qb.push_bind(status);
+    qb.push(", statusbody = ");
+    qb.push_bind(statusbody);
+    qb.push(" WHERE type = 3 AND uid IN (");
+    let mut sep = qb.separated(",");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_jobs_approve_pending_for_uids(pool: &MySqlPool, uids: &[u64]) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_company_job SET state = 1, r_status = 1 WHERE state = 0 AND uid IN (",
+    );
+    let mut sep = qb.separated(",");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_jobs_set_yyzz(pool: &MySqlPool, uids: &[u64], yyzz: i32) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET yyzz_status = ");
+    qb.push_bind(yyzz);
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(",");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+pub async fn php_company_set_r_status_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+    r_status: i32,
+) -> Result<u64, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company SET r_status = ");
+    qb.push_bind(r_status);
+    qb.push(" WHERE uid IN (");
+    let mut sep = qb.separated(",");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
+#[derive(Debug, Clone, FromRow, serde::Serialize)]
+pub struct PhpIntegralClassRow {
+    pub id: u64,
+    pub integral: i32,
+    pub discount: i32,
+    pub state: i32,
+}
+
+pub async fn php_intclass_list(pool: &MySqlPool) -> Result<Vec<PhpIntegralClassRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(integral,0) AS SIGNED) AS integral, \
+         CAST(COALESCE(discount,0) AS SIGNED) AS discount, CAST(COALESCE(state,0) AS SIGNED) AS state \
+         FROM phpyun_admin_integralclass ORDER BY integral ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn php_intclass_del(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    delete_in(pool, "DELETE FROM phpyun_admin_integralclass WHERE id IN (", ids).await
+}
+
+pub async fn php_intclass_set_field(
+    pool: &MySqlPool,
+    id: u64,
+    field: &str,
+    value: i32,
+) -> Result<u64, sqlx::Error> {
+    let col = match field {
+        "state" => "state",
+        "integral" => "integral",
+        "discount" => "discount",
+        _ => return Ok(0),
+    };
+    let sql = format!("UPDATE phpyun_admin_integralclass SET {col} = ? WHERE id = ?");
+    Ok(sqlx::query(&sql)
+        .bind(value)
+        .bind(id)
+        .execute(pool)
+        .await?
+        .rows_affected())
+}
+
+pub async fn php_intclass_integral_taken(
+    pool: &MySqlPool,
+    integral: i32,
+    except_id: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_admin_integralclass WHERE integral = ? AND id <> ? LIMIT 1",
+    )
+    .bind(integral)
+    .bind(except_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub async fn php_list_special_coms_export(
+    pool: &MySqlPool,
+    sid: u64,
+    ids: &[u64],
+) -> Result<Vec<SpecialComAdminRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(sc.id AS UNSIGNED) AS id, CAST(COALESCE(sc.sid,0) AS UNSIGNED) AS sid, \
+         CAST(COALESCE(sc.uid,0) AS UNSIGNED) AS uid, CAST(COALESCE(sc.integral,0) AS SIGNED) AS integral, \
+         CAST(COALESCE(sc.status,0) AS SIGNED) AS status, COALESCE(sc.statusbody,'') AS statusbody, \
+         CAST(COALESCE(sc.sort,0) AS SIGNED) AS sort, CAST(COALESCE(sc.famous,0) AS SIGNED) AS famous, \
+         CAST(COALESCE(sc.`time`,0) AS SIGNED) AS created_at, \
+         COALESCE(c.name,'') AS name \
+         FROM phpyun_special_com sc \
+         LEFT JOIN phpyun_company c ON c.uid = sc.uid \
+         WHERE COALESCE(sc.deleted,0)=0",
+    );
+    if !ids.is_empty() {
+        qb.push(" AND sc.id IN (");
+        let mut sep = qb.separated(",");
+        for id in ids {
+            sep.push_bind(*id);
+        }
+        qb.push(")");
+    } else if sid > 0 {
+        qb.push(" AND sc.sid = ");
+        qb.push_bind(sid);
+    } else {
+        return Ok(Vec::new());
+    }
+    qb.push(" ORDER BY sc.id DESC LIMIT 5000");
+    qb.build_query_as().fetch_all(pool).await
+}
+
+pub async fn php_userid_job_exists(
+    pool: &MySqlPool,
+    eid: u64,
+    uid: u64,
+    job_id: u64,
+    com_id: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_userid_job \
+         WHERE eid = ? AND uid = ? AND job_id = ? AND com_id = ? AND isdel = 9 LIMIT 1",
+    )
+    .bind(eid)
+    .bind(uid)
+    .bind(job_id)
+    .bind(com_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub async fn php_inc_company_sq_job(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query(
+        "UPDATE phpyun_company_statis SET sq_job = COALESCE(sq_job,0) + 1 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?
+    .rows_affected())
+}
+
+pub async fn php_inc_member_sq_jobnum(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query(
+        "UPDATE phpyun_member_statis SET sq_jobnum = COALESCE(sq_jobnum,0) + 1 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?
+    .rows_affected())
+}

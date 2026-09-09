@@ -43,8 +43,6 @@ export default defineNuxtConfig({
   routeRules: {
     '/user/**': { ssr: false },
     '/com/**': { ssr: false },
-    '/wap': { redirect: { to: '/', statusCode: 301 } },
-    '/wap/**': { redirect: { to: '/', statusCode: 301 } },
     '/favicon.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
   app: {

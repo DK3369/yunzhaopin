@@ -53,6 +53,12 @@ const links = [
   { to: '/com/addresses', icon: '/legacy/h5/images/company.png' },
   { to: '/com/interview-tpls', icon: '/legacy/h5/images/icon_communication.png' },
   { to: '/com/integral', icon: '/legacy/h5/images/financial_management.png' },
+  { to: '/com/hrs', icon: '/legacy/h5/images/company.png' },
+  { to: '/com/recommend', icon: '/legacy/h5/images/Please_resume.png' },
+  { to: '/com/specials', icon: '/legacy/h5/images/diy_tit4_zph.png' },
+  { to: '/redeem/orders', icon: '/legacy/h5/images/financial_management.png' },
+  { to: '/com/broadcasts', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/com/warnings', icon: '/legacy/h5/images/fk.png' },
   { to: '/com/member-right', icon: '/legacy/h5/images/financial_management.png' },
   { to: '/advice', icon: '/legacy/h5/images/fk.png' },
 ]

@@ -66,6 +66,7 @@ pub mod saved_searches;
 pub mod search_history;
 pub mod sessions;
 pub mod sign;
+pub mod specials;
 pub mod talent_pool;
 pub mod transfer;
 pub mod username;
@@ -119,6 +120,7 @@ pub fn router() -> Router<AppState> {
         .merge(integral::routes())
         .merge(invite::routes())
         .merge(sign::routes())
+        .merge(specials::routes())
         .merge(dashboard::routes())
         .merge(company_sub::routes())
         .merge(interview_tpl::routes())

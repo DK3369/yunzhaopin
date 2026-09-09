@@ -132,7 +132,7 @@ pub struct PackOrderForm {
 }
 
 fn default_channel() -> String {
-    "stub".into()
+    "alipay".into()
 }
 
 #[derive(Debug, Serialize, ToSchema)]

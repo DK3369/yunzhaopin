@@ -178,13 +178,12 @@ export default {
 			}
         },
         openMap:function (){
-            x = this.list.map_x?this.list.map_x :116.404;
-            y = this.list.map_y?this.list.map_y :39.915;
+            var x = this.list.map_x?this.list.map_x :116.404;
+            var y = this.list.map_y?this.list.map_y :39.915;
             var _this = this;
-            var data=get_map_config();
-            if(data && data.indexOf('map_x')>-1){
-                var config=eval('('+data+')');
-                var rating,map_control_type,map_control_anchor;
+            httpPost('m=index&c=mapconfig', {}, {hideloading: true}).then(function (response) {
+                var config = (response.data && response.data.data) || {};
+                if (!config || typeof config !== 'object') return;
                 if (!x && !y) { x = config.map_x; y = config.map_y; }
 
                 var map = new AMap.Map('conrtainer', {
@@ -205,7 +204,7 @@ export default {
 					});
                     map.add(marker);
                 });
-            }
+            });
         },
         save:function (){
             let _this = this;
@@ -239,19 +238,5 @@ export default {
         }
     }
 };
-function get_map_config(){
-    var config="";
-    var weburl = localStorage.getItem("sy_weburl");
-    $.ajax( {
-        async : false,
-        type : "post",
-        url : weburl + '/index.php?m=ajax&c=mapconfig',
-        data : {id:""},
-        success : function(set) {
-            config=set;
-        }
-    });
-    return config;
-}
 </script>
 <style scoped></style>

@@ -379,35 +379,27 @@ export default {
         },
         export(params) {
             let _this = this;
-
-            let formElement = document.createElement('form');
-            document.body.appendChild(formElement);
-            formElement.id = 'comxls';
-            formElement.method = 'post';
-            formElement.action = baseUrl + 'm=yunying&c=special_special&a=comxls';
-            formElement._target = '_blank';
-
-            let pytokenElement = document.createElement('input');
-            pytokenElement.setAttribute('name', 'pytoken');
-            pytokenElement.setAttribute('type', 'hidden');
-            pytokenElement.setAttribute('value', this.pytoken);
-            formElement.appendChild(pytokenElement);
-
-            let zidElement = document.createElement('input');
-            zidElement.setAttribute('name', 'zid');
-            zidElement.setAttribute('type', 'hidden');
-            zidElement.setAttribute('value', this.id);
-            formElement.appendChild(zidElement);
+            let payload = { zid: this.id };
             if (params.cid) {
-                let cidElement = document.createElement('input');
-                cidElement.setAttribute('name', 'cid');
-                cidElement.setAttribute('type', 'hidden');
-                cidElement.setAttribute('value', params.cid);
-                formElement.appendChild(cidElement);
+                payload.cid = params.cid;
             }
-            formElement.submit();
-            formElement.remove();
-            message.success(lc('wap_01063'));
+            httpPost('m=yunying&c=special_special&a=comxls', payload).then(function (response) {
+                let res = response.data;
+                if (res.error === 0 && res.data && res.data.csv) {
+                    let blob = new Blob([res.data.csv], { type: 'text/csv;charset=utf-8;' });
+                    let a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = res.data.filename || 'special_com.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    message.success(lc('wap_01063'));
+                } else {
+                    message.error(res.msg || lc('model_00001'));
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
         }
     },
     components: {

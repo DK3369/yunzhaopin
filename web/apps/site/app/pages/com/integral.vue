@@ -24,6 +24,11 @@ const { t } = useI18n()
 const PAGE_SIZE = 20
 const consumePage = ref(1)
 const exchangePage = ref(1)
+const transferPage = ref(1)
+const toUid = ref(0)
+const points = ref(0)
+const note = ref('')
+const msg = ref('')
 
 const { data: bal, error } = await useAsyncData('com-integral-balance', () =>
   api.post<{ balance: number }>('/v1/mcenter/integral/balance', {}),
@@ -50,6 +55,35 @@ const { data: exchanges } = await useAsyncData(
       .catch(() => ({ list: [] as ExchangeRow[], total: 0 })),
   { watch: [exchangePage] },
 )
+const { data: transfers, refresh: refreshTransfers } = await useAsyncData(
+  'com-integral-transfers',
+  () =>
+    api
+      .post<{ list: Array<{ id: number; from_uid: number; to_uid: number; points: number; note: string; created_at: number }>; total: number }>(
+        '/v1/mcenter/integral/transfers',
+        { page: transferPage.value, page_size: PAGE_SIZE },
+      )
+      .catch(() => ({ list: [], total: 0 })),
+  { watch: [transferPage] },
+)
+
+async function transfer() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/integral/transfer', {
+      to_uid: toUid.value,
+      points: points.value,
+      note: note.value,
+    })
+    msg.value = t('common.success')
+    toUid.value = 0
+    points.value = 0
+    note.value = ''
+    await refreshTransfers()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 
 useSeoMeta({ title: t('wap_user_00008') })
 </script>
@@ -91,6 +125,24 @@ useSeoMeta({ title: t('wap_user_00008') })
         :page-size="PAGE_SIZE"
         :total="Number(exchanges?.total || 0)"
       />
+
+      <h2>{{ $t('common.submit') }}</h2>
+      <form class="form" @submit.prevent="transfer">
+        <input v-model.number="toUid" type="number" min="1" placeholder="uid" />
+        <input v-model.number="points" type="number" min="1" />
+        <input v-model="note" :placeholder="$t('ui.desc')" />
+        <button type="submit">{{ $t('common.submit') }}</button>
+      </form>
+      <article v-for="row in transfers?.list || []" :key="row.id" class="job-card">
+        <p>{{ row.from_uid }} → {{ row.to_uid }} · {{ row.points }}</p>
+        <p class="muted">{{ row.note }}</p>
+      </article>
+      <Pager
+        v-model:page="transferPage"
+        :page-size="PAGE_SIZE"
+        :total="Number(transfers?.total || 0)"
+      />
+      <p v-if="msg">{{ msg }}</p>
     </template>
     <p>
       <NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink>

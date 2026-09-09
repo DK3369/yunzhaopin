@@ -2,11 +2,13 @@
 const { siteName, logoPc, logoH5 } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
-const tab = ref<'pass' | 'sms'>('pass')
+const tab = ref<'pass' | 'sms' | 'email'>('pass')
 const username = ref('')
 const password = ref('')
 const mobile = ref('')
 const smsCode = ref('')
+const email = ref('')
+const emailCode = ref('')
 const { data: captcha } = await useAsyncData('login-captcha', () =>
   api.post<{ cid: string; image: string }>('/v1/wap/captcha').catch(() => null),
 )
@@ -149,6 +151,32 @@ async function submitSms() {
     err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
   }
 }
+async function sendEmail() {
+  err.value = ''
+  try {
+    await api.post('/v1/wap/login/email/code', {
+      email: email.value,
+      captcha_cid: captcha.value?.cid,
+      authcode: authcode.value,
+    })
+  } catch (e: unknown) {
+    err.value = e instanceof Error ? e.message : t('common_00888')
+    loadCaptcha()
+  }
+}
+async function submitEmail() {
+  err.value = ''
+  try {
+    const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/login-email', {
+      method: 'POST',
+      body: { email: email.value, code: emailCode.value },
+    })
+    await afterLogin(me)
+  } catch (e: unknown) {
+    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
+    err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
+  }
+}
 useSeoMeta({ title: t('common.login') })
 onUnmounted(() => {
   if (wxPoll) clearInterval(wxPoll)
@@ -181,6 +209,9 @@ onUnmounted(() => {
                 </li>
                 <li :class="{ login_box_h_list_cur: tab === 'sms' }" @click="tab = 'sms'">
                   {{ $t('wap_00648') }}
+                </li>
+                <li :class="{ login_box_h_list_cur: tab === 'email' }" @click="tab = 'email'">
+                  {{ $t('member_user_00282') }}
                 </li>
               </ul>
             </div>
@@ -218,7 +249,7 @@ onUnmounted(() => {
                 </div>
               </div>
             </form>
-            <form v-else class="login_t_box" @submit.prevent="submitSms">
+            <form v-else-if="tab === 'sms'" class="login_t_box" @submit.prevent="submitSms">
               <div class="login_box_list">
                 <input v-model="mobile" class="login_box_bth" :placeholder="$t('common.phone')" />
               </div>
@@ -229,6 +260,23 @@ onUnmounted(() => {
               <div class="login_box_list">
                 <input v-model="smsCode" class="login_box_bth" :placeholder="$t('wap_01371')" />
                 <button type="button" @click="sendSms">{{ $t('common.submit') }}</button>
+              </div>
+              <div class="login_box_cz">
+                <input type="submit" :value="$t('common.login')" class="login_box_bth2" />
+              </div>
+              <p v-if="err" class="muted">{{ err }}</p>
+            </form>
+            <form v-else class="login_t_box" @submit.prevent="submitEmail">
+              <div class="login_box_list">
+                <input v-model="email" class="login_box_bth" :placeholder="$t('member_user_00282')" />
+              </div>
+              <div v-if="captcha?.image" class="login_box_list">
+                <img :src="captcha.image" alt="" @click="loadCaptcha" />
+                <input v-model="authcode" class="login_box_bth" :placeholder="$t('wap_00110')" />
+              </div>
+              <div class="login_box_list">
+                <input v-model="emailCode" class="login_box_bth" :placeholder="$t('wap_01371')" />
+                <button type="button" @click="sendEmail">{{ $t('common.submit') }}</button>
               </div>
               <div class="login_box_cz">
                 <input type="submit" :value="$t('common.login')" class="login_box_bth2" />
@@ -260,6 +308,8 @@ onUnmounted(() => {
         <a href="javascript:;" @click.prevent="tab = 'pass'">{{ $t('common.login') }}</a>
         ·
         <a href="javascript:;" @click.prevent="tab = 'sms'">{{ $t('common.phone') }}</a>
+        ·
+        <a href="javascript:;" @click.prevent="tab = 'email'">{{ $t('member_user_00282') }}</a>
       </p>
       <form v-if="tab === 'pass'" @submit.prevent="submitPass">
         <div class="The_login_subject">
@@ -281,9 +331,17 @@ onUnmounted(() => {
           </button>
         </div>
       </form>
-      <form v-else @submit.prevent="submitSms">
+      <form v-else-if="tab === 'sms'" @submit.prevent="submitSms">
         <div class="login_textbox"><input v-model="mobile" :placeholder="$t('common.phone')" /></div>
         <div class="login_textbox"><input v-model="smsCode" :placeholder="$t('wap_01371')" /><button type="button" @click="sendSms">{{ $t('common.submit') }}</button></div>
+        <p v-if="err" class="muted">{{ err }}</p>
+        <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0">
+          {{ $t('common.login') }}
+        </button>
+      </form>
+      <form v-else @submit.prevent="submitEmail">
+        <div class="login_textbox"><input v-model="email" :placeholder="$t('member_user_00282')" /></div>
+        <div class="login_textbox"><input v-model="emailCode" :placeholder="$t('wap_01371')" /><button type="button" @click="sendEmail">{{ $t('common.submit') }}</button></div>
         <p v-if="err" class="muted">{{ err }}</p>
         <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0">
           {{ $t('common.login') }}

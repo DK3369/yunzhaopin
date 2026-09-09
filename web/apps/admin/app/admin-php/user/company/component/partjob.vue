@@ -961,10 +961,9 @@ export default {
         },
         openMap: function () {
             var that = this;
-            var data = get_map_config();
-            if (data && data.indexOf('map_x') > -1) {
-                var config = eval('(' + data + ')');
-                var rating, map_control_type, map_control_anchor;
+            httpPost('m=index&c=mapconfig', {}, {hideloading: true}).then(function (response) {
+                var config = (response.data && response.data.data) || {};
+                if (!config || typeof config !== 'object') return;
                 if (!that.curr_job.x && !that.curr_job.y) {
                     that.curr_job.x = config.map_x;
                     that.curr_job.y = config.map_y;
@@ -980,7 +979,7 @@ export default {
                     });
                     map.add(marker);
                 });
-            }
+            });
         },
         initEditor: function (content=null) {
             var that = this
@@ -1418,20 +1417,6 @@ export default {
         },
     },
 };
-function get_map_config(){
-    var config="";
-    var weburl = localStorage.getItem("sy_weburl");
-    $.ajax( {
-        async : false,
-        type : "post",
-        url : weburl + '/index.php?m=ajax&c=mapconfig',
-        data : {id:""},
-        success : function(set) {
-            config=set;
-        }
-    });
-    return config;
-}
 </script>
 <style scoped>
 .tjob_timetable {

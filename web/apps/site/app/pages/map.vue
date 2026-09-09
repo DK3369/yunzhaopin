@@ -91,15 +91,45 @@ function locate() {
     },
   )
 }
-onMounted(() => {
-  if (hasPoint.value) return
-  const mx = String(settings.value.map_x || '').trim()
-  const my = String(settings.value.map_y || '').trim()
-  if (mx && my) {
-    navigateTo({ path: '/map', query: { x: mx, y: my } })
-    return
+const { data: mapCfg } = await useAsyncData('map-config', () =>
+  api.post<{ map_x?: string; map_y?: string }>('/v1/wap/site/map-config', {}).catch(() => null),
+)
+const mapEl = ref<HTMLDivElement | null>(null)
+const mapReady = ref(false)
+
+onMounted(async () => {
+  if (!hasPoint.value) {
+    const mx = String(settings.value.map_x || mapCfg.value?.map_x || '').trim()
+    const my = String(settings.value.map_y || mapCfg.value?.map_y || '').trim()
+    if (mx && my) {
+      await navigateTo({ path: '/map', query: { x: mx, y: my } })
+      return
+    }
+    locate()
   }
-  locate()
+  const key = String(settings.value.map_key || '').trim()
+  const secret = String(settings.value.map_secret || settings.value.map_security || '').trim()
+  const ok = await loadAmap(key, secret)
+  mapReady.value = ok
+  await nextTick()
+  if (!ok || !mapEl.value) return
+  const AMap = (window as unknown as { AMap: { Map: new (...a: unknown[]) => { on: Function }; Marker: new (...a: unknown[]) => { setPosition: Function } } }).AMap
+  const center = mapCenter(settings.value, x.value, y.value)
+  const map = new AMap.Map(mapEl.value, { zoom: 13, center })
+  let marker: { setPosition: (pos: [number, number]) => void } | null = null
+  const put = (lng: number, lat: number) => {
+    const pos: [number, number] = [lng, lat]
+    if (marker) marker.setPosition(pos)
+    else marker = new AMap.Marker({ position: pos, map })
+  }
+  if (x.value && y.value) put(Number(x.value), Number(y.value))
+  map.on('click', (e: { lnglat: { getLng: () => number; getLat: () => number } }) => {
+    const lng = String(e.lnglat.getLng())
+    const lat = String(e.lnglat.getLat())
+    xInput.value = lng
+    yInput.value = lat
+    navigateTo({ path: '/map', query: { ...route.query, x: lng, y: lat, page: 1 } })
+  })
 })
 useSeoMeta({ title: t('default_00139') })
 </script>
@@ -119,6 +149,8 @@ useSeoMeta({ title: t('default_00139') })
       <input v-model="yInput" placeholder="y" />
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
+    <div ref="mapEl" class="map-pick" />
+    <p v-if="!mapReady" class="muted">{{ $t('ui.lng') }} / {{ $t('ui.lat') }}</p>
     <template v-if="hasPoint && !locFail">
       <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
       <template v-else-if="tab === 'companies'">
@@ -140,3 +172,12 @@ useSeoMeta({ title: t('default_00139') })
     />
   </section>
 </template>
+
+<style scoped>
+.map-pick {
+  height: 280px;
+  width: 100%;
+  margin: 0.5rem 0;
+  background: #f3f4f6;
+}
+</style>

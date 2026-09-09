@@ -202,6 +202,30 @@ pub async fn my_reservation(
     Ok(zph_repo::find_my_reservation(state.db.reader(), zid, user.uid).await?)
 }
 
+pub struct MyReservationPage {
+    pub list: Vec<phpyun_models::zph::repo::ZphReservationListRow>,
+    pub total: u64,
+}
+
+/// Company job-fair sign-ups. `zid = 0` lists every fair this uid joined.
+pub async fn list_my_reservations(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    zid: u64,
+    page: Pagination,
+) -> AppResult<MyReservationPage> {
+    user.require_employer()?;
+    let filter = (zid > 0).then_some(zid);
+    let (list, total) = tokio::join!(
+        zph_repo::list_my_reservations(state.db.reader(), user.uid, filter, page.offset, page.limit),
+        zph_repo::count_my_reservations(state.db.reader(), user.uid, filter),
+    );
+    Ok(MyReservationPage {
+        list: list?,
+        total: total?,
+    })
+}
+
 // ==================== Pre-apply status check (PHP `wap/ajax::ajaxComjob`) ====================
 
 pub enum ComStatusOutcome {

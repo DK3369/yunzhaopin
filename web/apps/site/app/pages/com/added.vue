@@ -26,22 +26,15 @@ const msg = ref('')
 async function buy(detailId: number) {
   msg.value = ''
   try {
-    const created = await api.post<{ order_no?: string; pay_url?: string }>('/v1/mcenter/packs/orders', {
+    const created = await api.post<{ order_no?: string; pay_url?: string; msg?: string }>('/v1/mcenter/packs/orders', {
       detail_id: detailId,
-      channel: 'stub',
+      channel: 'alipay',
     })
     if (created?.pay_url) {
       window.location.href = created.pay_url
       return
     }
-    if (created?.order_no) {
-      try {
-        await api.post('/v1/mcenter/packs/orders/mock-paid', { order_no: created.order_no })
-        msg.value = t('common.success')
-      } catch {
-        msg.value = created.order_no
-      }
-    }
+    msg.value = created?.msg || created?.order_no || t('ui.load_failed')
     await refresh()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')

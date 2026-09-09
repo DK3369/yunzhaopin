@@ -146,3 +146,34 @@ pub async fn apply(
         integral_spent: info.integral,
     })
 }
+
+pub struct SpecialMinePage {
+    pub list: Vec<phpyun_models::special::repo::SpecialMineRow>,
+    pub total: u64,
+}
+
+pub async fn list_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<SpecialMinePage> {
+    user.require_employer()?;
+    let db = state.db.reader();
+    let (list, total) = tokio::join!(
+        special_repo::list_mine_coms(db, user.uid, page.offset, page.limit),
+        special_repo::count_mine_coms(db, user.uid),
+    );
+    Ok(SpecialMinePage {
+        list: list?,
+        total: total?,
+    })
+}
+
+pub async fn delete_mine(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<u64> {
+    user.require_employer()?;
+    let n = special_repo::delete_com_for_uid(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::param_invalid("not_found"));
+    }
+    Ok(n)
+}

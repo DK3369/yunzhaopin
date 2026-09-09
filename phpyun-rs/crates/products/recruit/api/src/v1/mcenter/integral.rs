@@ -199,11 +199,7 @@ pub struct ConsumeItem {
     pub ctime_n: String,
 }
 
-/// Points ledger (non-exchange increments/decrements — sign-in, viewing resumes, downloading resumes, etc.).
-///
-/// **Currently**: PHPYun's ledger lives in `phpyun_member_log`/`phpyun_member_log_detail`,
-/// and the `opera` enum semantics are not yet fully aligned. Returns an empty list for now so the
-/// front-end UI can attach to it; real data will be filled in once batch 2 is wired up.
+/// Points ledger from `phpyun_company_pay` (sign-in, resume views, downloads, etc.).
 #[utoipa::path(
     post,
     path = "/v1/mcenter/integral/consumes",

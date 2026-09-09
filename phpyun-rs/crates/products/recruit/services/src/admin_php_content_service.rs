@@ -23,6 +23,7 @@ use phpyun_models::company_statis::repo as cstatis_repo;
 use phpyun_models::integral_transfer::repo as pay_repo;
 use phpyun_models::member_statis::repo as mstatis_repo;
 use phpyun_models::vip::repo as vip_repo;
+use phpyun_models::apply::repo as apply_repo;
 use phpyun_models::announcement::repo as announcement_repo;
 use phpyun_models::article::repo::{self as article_repo, ArticleFilter};
 use phpyun_auth::{argon2_hash_async, md5_hex};
@@ -257,6 +258,9 @@ pub async fn dispatch(
         ("special", "set_comaddsearch") => Ok(PhpOut::Data(special_comaddsearch(state).await?)),
         ("special", "audit") => Ok(PhpOut::Data(special_audit(state, body).await?)),
         ("special", "comjob") => Ok(PhpOut::Data(special_comjob(state, body).await?)),
+        ("special", "savespecial") => special_savespecial(state, body).await,
+        ("special", "mutiAddCom") => special_muti_add_com(state, body).await,
+        ("special", "comxls") => Ok(PhpOut::Data(special_comxls(state, body).await?)),
         ("once", "index") => Ok(PhpOut::Data(once_index(state, body).await?)),
         ("once", "once-num") => Ok(PhpOut::Data(once_num(state).await?)),
         ("once", "status") => Ok(PhpOut::Data(once_status(state, body).await?)),
@@ -400,6 +404,32 @@ pub async fn dispatch(
         ("company-job", "whb") => Ok(PhpOut::Data(company_whb(state, 1).await?)),
         ("company-job", "getHbData") => Ok(PhpOut::Data(company_job_hb_data(state).await?)),
         ("company-job", "xls") => Ok(PhpOut::Data(company_job_xls(state, body).await?)),
+        ("company-job", "status") => company_job_status(state, body).await,
+        ("company-job", "cjobstatus") => company_job_cjobstatus(state, body).await,
+        ("company-job", "jobAudit") => Ok(PhpOut::Data(company_job_audit(state, body).await?)),
+        ("company-job", "applyJob") => company_job_apply(state, body).await,
+        ("resume", "status") => resume_php_status(state, body).await,
+        ("resume", "resumestatus") => resume_php_resumestatus(state, body).await,
+        ("part", "status") => part_php_status(state, body).await,
+        ("part", "tbStatus") => part_php_tb_status(state, body).await,
+        ("company-cert", "index") => Ok(PhpOut::Data(company_cert_index(state, body).await?)),
+        ("company-cert", "status") => company_cert_status(state, body).await,
+        ("company-cert", "getCertStatist") => {
+            Ok(PhpOut::Data(company_cert_statist(state).await?))
+        }
+        ("company-cert", "sbody") => Ok(PhpOut::Data(company_cert_sbody(state, body).await?)),
+        ("set-integral", "index") => Ok(PhpOut::Data(set_integral_index(state).await?)),
+        ("set-integral", "save") => set_integral_save(state, user, body).await,
+        ("set-integral", "saveSet") => set_integral_save(state, user, body).await,
+        ("set-integral", "comjifen") => set_integral_save(state, user, body).await,
+        ("set-integral", "class") => Ok(PhpOut::Data(set_integral_class(state).await?)),
+        ("set-integral", "ajax") => set_integral_ajax(state, body).await,
+        ("set-integral", "del") => set_integral_del(state, body).await,
+        ("set-config", "save_logo") => set_config_save_logo(body),
+        ("set-config", "settplcache") => Ok(PhpOut::Data(set_config_settplcache(state).await?)),
+        ("set-config", "savetplcache") => set_config_savetplcache(state, user, body).await,
+        ("index", "mapconfig") => Ok(PhpOut::Data(index_mapconfig(state).await?)),
+        ("cache", "getPriceName") => Ok(PhpOut::Data(cache_get_price_name(state).await?)),
 
         ("company", "bind-package") => company_bind_package(state, body).await,
         ("company", "set-logo") => company_set_logo(state, body).await,
@@ -2482,6 +2512,73 @@ async fn special_comjob(state: &AppState, body: &Value) -> AppResult<Value> {
     }))
 }
 
+/// PHP `special_special::savespecial_action` — admin add, skip self-signup checks.
+async fn special_savespecial(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let sid = json_u64(body, "sid");
+    let uid = json_u64(body, "uid");
+    if sid == 0 || uid == 0 {
+        return Err(ApiError::business("admin_01448"));
+    }
+    if special_repo::already_applied(state.db.reader(), sid, uid).await? {
+        return Err(ApiError::business("admin_yunying_00015"));
+    }
+    special_repo::insert_admin_com(state.db.pool(), sid, uid, 1, clock::now_ts()).await?;
+    Ok(PhpOut::Message("admin_model_00061"))
+}
+
+/// PHP `special.model::addSpecialMutiCom` — skip unapproved companies.
+async fn special_muti_add_com(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let sid = json_u64(body, "sid");
+    let uids = ids_named(body, "uid");
+    if sid == 0 || uids.is_empty() {
+        return Err(ApiError::business("wap_00556"));
+    }
+    let existing = special_repo::list_uids_by_sid(state.db.reader(), sid).await?;
+    let companies = company_repo::list_by_uids(state.db.reader(), &uids).await?;
+    let now = clock::now_ts();
+    for uid in uids {
+        if existing.iter().any(|u| *u == uid) {
+            continue;
+        }
+        let ok = companies
+            .iter()
+            .any(|c| c.uid == uid && c.r_status == 1);
+        if !ok {
+            continue;
+        }
+        special_repo::insert_admin_com(state.db.pool(), sid, uid, 1, now).await?;
+    }
+    Ok(PhpOut::Message("api_wxapp_00013"))
+}
+
+fn csv_cell(s: &str) -> String {
+    let t = s.replace('"', "\"\"");
+    format!("\"{t}\"")
+}
+
+/// CSV export of special participants (no Excel/GD, no uploads write).
+async fn special_comxls(state: &AppState, body: &Value) -> AppResult<Value> {
+    let sid = json_u64(body, "zid").max(json_u64(body, "sid"));
+    let ids = ids_named(body, "cid");
+    let rows = gap_extra::php_list_special_coms_export(state.db.reader(), sid, &ids).await?;
+    let mut csv = String::from("\u{FEFF}id,uid,name,status,time\n");
+    for r in &rows {
+        csv.push_str(&format!(
+            "{},{},{},{},{}\n",
+            r.id,
+            r.uid,
+            csv_cell(&r.name),
+            r.status,
+            r.created_at
+        ));
+    }
+    Ok(json!({
+        "csv": csv,
+        "filename": "special_com.csv",
+        "total": rows.len() as u64,
+    }))
+}
+
 fn json_date_pair(v: &Value, key: &str) -> (String, String) {
     let alt = format!("{key}[]");
     let arr = v.get(key).or_else(|| v.get(&alt));
@@ -3446,14 +3543,6 @@ async fn finance_order_xls(state: &AppState, body: &Value) -> AppResult<Value> {
         "file_name": format!("orders-{}.csv", fmt_date(clock::now_ts())),
         "status": 1,
     }))
-}
-
-fn csv_cell(s: &str) -> String {
-    if s.contains(',') || s.contains('"') || s.contains('\n') {
-        format!("\"{}\"", s.replace('"', "\"\""))
-    } else {
-        s.to_string()
-    }
 }
 
 fn csv_arr(s: &str) -> Vec<String> {
@@ -6700,6 +6789,679 @@ async fn company_job_upjobhits(state: &AppState, body: &Value) -> AppResult<PhpO
         return Err(ApiError::business("member_user_00603"));
     }
     Ok(PhpOut::Message("member_user_00602"))
+}
+
+fn php_audit_next_job(next: Option<u64>, single: bool, atype: i32) -> PhpOut {
+    if single && atype != 1 {
+        if let Some(id) = next {
+            return PhpOut::Data(json!({ "job": { "id": id } }));
+        }
+    }
+    PhpOut::Message("common_01944")
+}
+
+fn php_audit_next_resume(next: Option<u64>, single: bool, atype: i32) -> PhpOut {
+    if single && atype != 1 {
+        if let Some(id) = next {
+            return PhpOut::Data(json!({ "next_id": id }));
+        }
+    }
+    PhpOut::Message("common_01944")
+}
+
+/// PHP `company_job::status_action` — `pid` CSV + `statusbody` + optional next job.
+async fn company_job_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "pid");
+    let ids = if ids.is_empty() { ids_of(body) } else { ids };
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    if status == 0 {
+        return Err(ApiError::param_invalid("admin_01311"));
+    }
+    let n = gap_extra::php_status_jobs(
+        state.db.pool(),
+        &ids,
+        status,
+        &json_str(body, "statusbody"),
+        json_i32(body, "lock_status"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00115"));
+    }
+    let single = has_flag(body, "single");
+    let next = if single && json_i32(body, "atype") != 1 {
+        gap_extra::php_next_pending_job(state.db.reader()).await?
+    } else {
+        None
+    };
+    Ok(php_audit_next_job(next, single, json_i32(body, "atype")))
+}
+
+/// PHP `company_job::cjobstatus_action` — also reinstates the company on pass.
+async fn company_job_cjobstatus(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "pid");
+    let uid = json_u64(body, "uid");
+    let status = json_i32(body, "status");
+    if id == 0 || uid == 0 || status == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = gap_extra::php_cjobstatus(
+        state.db.pool(),
+        id,
+        uid,
+        status,
+        &json_str(body, "statusbody"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00115"));
+    }
+    if status == 1 {
+        let _ = user_repo::admin_set_status(state.db.pool(), uid, 1).await?;
+        let _ = gap_extra::reinstate_company(state.db.pool(), uid).await?;
+    }
+    let single = has_flag(body, "single");
+    let next = if single && json_i32(body, "atype") != 1 {
+        gap_extra::php_next_pending_job(state.db.reader()).await?
+    } else {
+        None
+    };
+    Ok(php_audit_next_job(next, single, json_i32(body, "atype")))
+}
+
+/// PHP `company_job::jobAudit_action`.
+async fn company_job_audit(state: &AppState, body: &Value) -> AppResult<Value> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let db = state.db.reader();
+    let row = gap_extra::php_job_audit(db, id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    let mut tel = row.linktel.clone();
+    let mut phone = row.linkphone.clone();
+    let mut address = row.address.clone();
+    let mut linkman = row.linkman.clone();
+    if row.is_link == 2 {
+        if let Some(link) = gap_extra::php_job_link(db, row.link_id).await? {
+            tel = link.link_moblie;
+            phone = link.link_phone;
+            address = link.link_address;
+            linkman = link.link_man;
+        }
+    }
+    let crm_salesman = gap_extra::php_admin_user_name(db, row.crm_uid).await?;
+    let snum = gap_extra::php_job_pending_except(db, id).await?;
+    Ok(json!({
+        "info": {
+            "id": row.id,
+            "uid": row.uid,
+            "name": row.name,
+            "jobname": row.name,
+            "state": row.state,
+            "status": row.status,
+            "r_status": row.r_status,
+            "statusbody": row.lock_info.trim(),
+            "c_status": row.c_status,
+            "reg_date_n": fmt_ts(row.reg_date, "%Y-%m-%d %H:%M:%S"),
+            "login_date_n": if row.login_date > 0 {
+                fmt_ts(row.login_date, "%Y-%m-%d %H:%M:%S")
+            } else {
+                String::new()
+            },
+            "tel": tel,
+            "phone": phone,
+            "address": address,
+            "linkman": linkman,
+            "linkmail": row.linkmail,
+            "crm_salesman": crm_salesman,
+            "rating_name": row.rating_name,
+        },
+        "snum": snum,
+    }))
+}
+
+/// PHP `job.model::applyJobByAdmin` core insert (no email/sms/weixin).
+async fn company_job_apply(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let eid = json_u64(body, "eid");
+    let uid = json_u64(body, "uid");
+    let job_id = json_u64(body, "id").max(json_u64(body, "job_id"));
+    let com_id = json_u64(body, "comid").max(json_u64(body, "com_id"));
+    if eid == 0 || job_id == 0 {
+        return Err(ApiError::business("common_01170"));
+    }
+    let job = job_repo::find_by_id(state.db.reader(), job_id)
+        .await?
+        .filter(|j| com_id == 0 || j.uid == com_id);
+    let Some(job) = job else {
+        return Err(ApiError::business("common_01538"));
+    };
+    if gap_extra::php_userid_job_exists(state.db.reader(), eid, uid, job.id, job.uid).await? {
+        return Err(ApiError::business("common_01538"));
+    }
+    let nid = apply_repo::create(
+        state.db.pool(),
+        apply_repo::ApplyCreate {
+            uid,
+            job_id: job.id,
+            job_name: &job.name,
+            com_id: job.uid,
+            com_name: job.com_name.as_deref().unwrap_or(""),
+            eid,
+            now: clock::now_ts(),
+        },
+    )
+    .await?;
+    if nid == 0 {
+        return Err(ApiError::business("common_01394"));
+    }
+    let _ = gap_extra::php_inc_company_sq_job(state.db.pool(), job.uid).await;
+    let _ = gap_extra::php_inc_member_sq_jobnum(state.db.pool(), uid).await;
+    Ok(PhpOut::Message("model_00010"))
+}
+
+/// PHP `users_resume::status_action`.
+async fn resume_php_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "id");
+    if ids.is_empty() {
+        ids = ids_of(body);
+    }
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    if status == 0 {
+        return Err(ApiError::param_invalid("admin_01311"));
+    }
+    let content = json_str(body, "content");
+    if !content.is_empty() {
+        let _ = resume_label(state, body).await;
+    }
+    let n = gap_extra::php_status_resumes(
+        state.db.pool(),
+        &ids,
+        status,
+        &json_str(body, "statusbody"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00115"));
+    }
+    let single = has_flag(body, "single");
+    let next = if single && json_i32(body, "atype") != 1 {
+        gap_extra::php_next_pending_resume(state.db.reader()).await?
+    } else {
+        None
+    };
+    Ok(php_audit_next_resume(next, single, json_i32(body, "atype")))
+}
+
+/// PHP `users_resume::resumestatus_action` — unlock user then review.
+async fn resume_php_resumestatus(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    let uid = json_u64(body, "uid");
+    let status = json_i32(body, "status");
+    if id == 0 || uid == 0 || status == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let lock_status = json_i32(body, "lock_status");
+    if lock_status == 1 {
+        user_repo::update_lock(state.db.pool(), uid, 1, "").await?;
+        user_repo::lock_related_r_status(state.db.pool(), uid, 1).await?;
+    } else if lock_status != 0 && lock_status != 1 {
+        return Err(ApiError::param_invalid("wap_01298"));
+    }
+    let content = json_str(body, "content");
+    if !content.is_empty() {
+        let _ = resume_label(state, body).await;
+    }
+    let n = gap_extra::php_resume_status_one(
+        state.db.pool(),
+        id,
+        uid,
+        status,
+        &json_str(body, "statusbody"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00115"));
+    }
+    let single = has_flag(body, "single");
+    let next = if single && json_i32(body, "atype") != 1 {
+        gap_extra::php_next_pending_resume(state.db.reader()).await?
+    } else {
+        None
+    };
+    Ok(php_audit_next_resume(next, single, json_i32(body, "atype")))
+}
+
+/// PHP `partjob::status_action`.
+async fn part_php_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let ids = ids_named(body, "pid");
+    let ids = if ids.is_empty() { ids_of(body) } else { ids };
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let status = json_i32(body, "status");
+    if status == 0 {
+        return Err(ApiError::param_invalid("admin_01311"));
+    }
+    let n = gap_extra::php_status_parts(
+        state.db.pool(),
+        &ids,
+        status,
+        &json_str(body, "statusbody"),
+        json_i32(body, "lock_status"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00115"));
+    }
+    let single = has_flag(body, "single");
+    let next = if single && json_i32(body, "atype") != 1 {
+        gap_extra::php_next_pending_part(state.db.reader()).await?
+    } else {
+        None
+    };
+    Ok(php_audit_next_job(next, single, json_i32(body, "atype")))
+}
+
+/// PHP `partjob::tbStatus_action`.
+async fn part_php_tb_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "pid");
+    let uid = json_u64(body, "uid");
+    let status = json_i32(body, "status");
+    if id == 0 || uid == 0 || status == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let n = gap_extra::php_tb_status_part(
+        state.db.pool(),
+        id,
+        uid,
+        status,
+        &json_str(body, "statusbody"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("model_00115"));
+    }
+    if status == 1 {
+        let _ = user_repo::admin_set_status(state.db.pool(), uid, 1).await?;
+        let _ = gap_extra::reinstate_company(state.db.pool(), uid).await?;
+    }
+    let single = has_flag(body, "single");
+    let next = if single && json_i32(body, "atype") != 1 {
+        gap_extra::php_next_pending_part(state.db.reader()).await?
+    } else {
+        None
+    };
+    Ok(php_audit_next_job(next, single, json_i32(body, "atype")))
+}
+
+const INTEGRAL_INDEX_KEYS: &[&str] = &[
+    "integral_pricename",
+    "integral_priceunit",
+    "integral_min_recharge",
+    "money_min_recharge",
+    "paypack_max_recharge",
+    "packprice_min_recharge",
+    "integral_proportion",
+    "integral_signin",
+    "integral_reg",
+    "integral_login",
+    "integral_userinfo",
+    "integral_emailcert",
+    "integral_mobliecert",
+    "integral_avatar",
+    "integral_question",
+    "integral_answer",
+    "integral_answerpl",
+    "integral_invite_reg",
+    "integral_bind_wx",
+    "integral_add_resume",
+    "integral_identity",
+    "integral_comcert",
+    "integral_banner",
+    "integral_map",
+    "integral_ltcert",
+    "integral_px_banner",
+];
+
+async fn company_cert_index(state: &AppState, body: &Value) -> AppResult<Value> {
+    let (page, per, offset, limit) = page_of(body);
+    let kw = json_str(body, "keyword");
+    let uids = if kw.trim().is_empty() {
+        None
+    } else {
+        Some(gap_extra::php_search_company_uids(state.db.reader(), &kw).await?)
+    };
+    if uids.as_ref().is_some_and(|v| v.is_empty()) {
+        return Ok(paged(json!([]), 0, page, per));
+    }
+    let status_raw = json_str(body, "status");
+    let status = if status_raw.trim().is_empty() {
+        None
+    } else {
+        let s = json_i32(body, "status");
+        Some(if s == 3 { 0 } else { s })
+    };
+    let end = json_i32(body, "end");
+    let ctime_min = match end {
+        0 => None,
+        1 => Some(clock::start_of_today()),
+        n => Some(clock::now_ts() - i64::from(n) * 86_400),
+    };
+    let (rows, total) = gap_extra::php_cert_list(
+        state.db.reader(),
+        gap_extra::PhpCertListFilter {
+            status,
+            uids: uids.as_deref(),
+            ctime_min,
+            order_col: &json_str(body, "t"),
+            order_dir: &json_str(body, "order"),
+        },
+        offset,
+        limit,
+    )
+    .await?;
+    let cfg = setting_repo::find_many(state.db.reader(), &["sy_ossurl", "sy_weburl"]).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "uid": r.uid,
+                "status": r.status,
+                "check": checkpic_url(&cfg, &r.check),
+                "owner_cert": checkpic_url(&cfg, &r.owner_cert),
+                "wt_cert": checkpic_url(&cfg, &r.wt_cert),
+                "other_cert": checkpic_url(&cfg, &r.other_cert),
+                "social_credit": r.social_credit,
+                "statusbody": r.statusbody,
+                "ctime": r.ctime,
+                "ctime_n": fmt_ts(r.ctime, "%Y-%m-%d %H:%M"),
+                "name": r.name,
+                "logo": checkpic_url(&cfg, &r.logo),
+            })
+        })
+        .collect();
+    Ok(paged(json!(list), total, page, per))
+}
+
+async fn company_cert_statist(state: &AppState) -> AppResult<Value> {
+    let s = gap_extra::com_cert_stat(state.db.reader()).await?;
+    Ok(json!({
+        "comCertAll": s.com_cert_all,
+        "comCert1": s.com_cert1,
+        "comCert2": s.com_cert2,
+    }))
+}
+
+async fn company_cert_sbody(state: &AppState, body: &Value) -> AppResult<Value> {
+    let uid = json_u64(body, "uid");
+    if uid == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let body_txt = gap_extra::com_cert_statusbody(state.db.reader(), uid).await?;
+    Ok(Value::String(body_txt.trim().to_string()))
+}
+
+async fn company_cert_status(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let status_raw = json_str(body, "status");
+    if status_raw.trim().is_empty() {
+        return Err(ApiError::param_invalid("admin_01311"));
+    }
+    let status = json_i32(body, "status");
+    let mut uids = ids_named(body, "uid");
+    if uids.is_empty() {
+        uids = ids_of(body);
+    }
+    if uids.is_empty() {
+        return Err(ApiError::param_invalid("model_00001"));
+    }
+    let name = json_str(body, "name");
+    if !name.is_empty() && uids.len() == 1 {
+        if gap_extra::php_cert_name_taken(state.db.reader(), &name, uids[0]).await? {
+            return Err(ApiError::business("admin_user_00021"));
+        }
+    }
+    let n = gap_extra::php_cert_review(
+        state.db.pool(),
+        &uids,
+        status,
+        &json_str(body, "statusbody"),
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("wap_01715"));
+    }
+    let yyzz = if status == 1 { 1 } else { 2 };
+    let free = cfg_of(state, "com_free_status").await;
+    let job_status = json_i32(body, "job_status") == 1 || json_str(body, "job_status") == "1";
+    if free == "1" && job_status && yyzz == 1 {
+        let _ = gap_extra::php_jobs_approve_pending_for_uids(state.db.pool(), &uids).await?;
+        let _ = gap_extra::php_company_set_r_status_uids(state.db.pool(), &uids, 1).await?;
+    }
+    for uid in &uids {
+        let nm = if uids.len() == 1 && !name.is_empty() {
+            Some(name.as_str())
+        } else {
+            None
+        };
+        let _ = company_repo::set_yyzz(state.db.pool(), *uid, yyzz, nm).await?;
+    }
+    let _ = gap_extra::php_jobs_set_yyzz(state.db.pool(), &uids, yyzz).await?;
+    Ok(PhpOut::Message("admin_model_00159"))
+}
+
+async fn set_integral_index(state: &AppState) -> AppResult<Value> {
+    let map = setting_repo::find_many(state.db.reader(), INTEGRAL_INDEX_KEYS).await?;
+    let mut out = serde_json::Map::new();
+    for k in INTEGRAL_INDEX_KEYS {
+        out.insert((*k).into(), json!(map.get(*k).cloned().unwrap_or_default()));
+    }
+    Ok(Value::Object(out))
+}
+
+async fn set_integral_save(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let obj = body.as_object().ok_or_else(|| ApiError::param_invalid("wap_com_00228"))?;
+    let skip = ["pytoken", "m", "c", "a", "waterconfig"];
+    for (k, v) in obj {
+        if skip.contains(&k.as_str()) || k.is_empty() {
+            continue;
+        }
+        let val = match v {
+            Value::String(s) => s.clone(),
+            Value::Number(n) => n.to_string(),
+            Value::Bool(b) => if *b { "1".into() } else { "0".into() },
+            Value::Array(a) => a
+                .iter()
+                .filter_map(|x| x.as_str().map(str::to_string).or_else(|| x.as_i64().map(|n| n.to_string())))
+                .collect::<Vec<_>>()
+                .join(","),
+            Value::Null => continue,
+            _ => continue,
+        };
+        upsert_cfg(state, user, k, &val).await?;
+    }
+    Ok(PhpOut::Message("admin_01384"))
+}
+
+async fn set_integral_class(state: &AppState) -> AppResult<Value> {
+    let rows = gap_extra::php_intclass_list(state.db.reader()).await?;
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "integral": r.integral,
+                "discount": r.discount,
+                "state": r.state,
+                "status": r.state == 1,
+                "isEditjifen": false,
+                "isEditdiscount": false,
+            })
+        })
+        .collect();
+    Ok(json!(list))
+}
+
+async fn set_integral_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_js_00141"));
+    }
+    let mut n = 0u64;
+    let typ = json_str(body, "type");
+    if !typ.is_empty() {
+        let rec = json_i32(body, "rec");
+        let flag = if rec == 1 { 1 } else { 2 };
+        n = gap_extra::php_intclass_set_field(state.db.pool(), id, &typ, flag).await?;
+    }
+    if body.get("integral").is_some() {
+        let integral = json_i32(body, "integral");
+        if gap_extra::php_intclass_integral_taken(state.db.reader(), integral, id).await? {
+            return Err(ApiError::business("wap_js_00141"));
+        }
+        n = gap_extra::php_intclass_set_field(state.db.pool(), id, "integral", integral).await?;
+    }
+    if body.get("discount").is_some() {
+        n = gap_extra::php_intclass_set_field(state.db.pool(), id, "discount", json_i32(body, "discount")).await?;
+    }
+    if n == 0 {
+        return Err(ApiError::business("wap_js_00141"));
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+async fn set_integral_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let mut ids = ids_named(body, "delid");
+    ids.extend(ids_named(body, "del"));
+    ids.extend(ids_of(body));
+    ids.sort_unstable();
+    ids.dedup();
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("admin_user_00186"));
+    }
+    let n = gap_extra::php_intclass_del(state.db.pool(), &ids).await?;
+    if n == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("admin_model_00206"))
+}
+
+/// PHP `set_config::save_logo_action` — logo already written by upload.
+fn set_config_save_logo(body: &Value) -> AppResult<PhpOut> {
+    if !has_flag(body, "waterconfig") {
+        return Err(ApiError::business("common_01237"));
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+/// Keys from PHP `uploads/config/db.data.php` `modelconfig` (read-only copy).
+const TPL_CACHE_MODELS: &[(&str, &str)] = &[
+    ("job", "找工作"),
+    ("resume", "找人才"),
+    ("part", "兼职"),
+    ("company", "找企业"),
+    ("wap", "手机端"),
+    ("article", "资讯"),
+    ("announcement", "公告"),
+    ("hr", "工具箱"),
+    ("zph", "招聘会"),
+    ("ask", "问答"),
+    ("evaluate", "测评"),
+    ("once", "店铺招聘"),
+    ("tiny", "普工简历"),
+    ("redeem", "商城"),
+    ("map", "地图"),
+    ("special", "专题招聘"),
+    ("login", "登录"),
+    ("register", "注册"),
+    ("gongzhao", "公招"),
+    ("error", "错误提醒"),
+];
+
+fn tpl_cache_key(model: &str) -> String {
+    format!("sy_{model}_cache")
+}
+
+async fn set_config_settplcache(state: &AppState) -> AppResult<Value> {
+    let mut keys: Vec<&str> = vec!["sy_index_cache"];
+    let owned: Vec<String> = TPL_CACHE_MODELS.iter().map(|(k, _)| tpl_cache_key(k)).collect();
+    keys.extend(owned.iter().map(|s| s.as_str()));
+    let map = setting_repo::find_many(state.db.reader(), &keys).await?;
+    let mut new_model = serde_json::Map::new();
+    for (k, label) in TPL_CACHE_MODELS {
+        let cache = map.get(&tpl_cache_key(k)).cloned().unwrap_or_default();
+        new_model.insert(
+            (*k).to_string(),
+            json!({ "value": *label, "cache": cache }),
+        );
+    }
+    Ok(json!({
+        "newModel": Value::Object(new_model),
+        "sy_index_cache": map.get("sy_index_cache").cloned().unwrap_or_default(),
+    }))
+}
+
+async fn set_config_savetplcache(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<PhpOut> {
+    let mut allowed = vec!["sy_index_cache".to_string()];
+    allowed.extend(TPL_CACHE_MODELS.iter().map(|(k, _)| tpl_cache_key(k)));
+    let obj = match body {
+        Value::Object(m) => m,
+        _ => return Err(ApiError::param_invalid("wap_com_00228")),
+    };
+    for (k, v) in obj {
+        if !allowed.iter().any(|a| a == k) {
+            continue;
+        }
+        let val = match v {
+            Value::String(s) => s.clone(),
+            Value::Number(n) => n.to_string(),
+            Value::Bool(b) => (if *b { "1" } else { "0" }).into(),
+            _ => continue,
+        };
+        upsert_cfg(state, user, k, &val).await?;
+    }
+    Ok(PhpOut::Message("wap_user_00264"))
+}
+
+async fn index_mapconfig(state: &AppState) -> AppResult<Value> {
+    let keys = [
+        "map_x",
+        "map_y",
+        "map_rating",
+        "map_control",
+        "map_control_anchor",
+        "map_control_type",
+        "map_control_xb",
+        "map_control_scale",
+    ];
+    let map = setting_repo::find_many(state.db.reader(), &keys).await?;
+    let mut out = serde_json::Map::new();
+    for k in keys {
+        out.insert(k.into(), json!(map.get(k).cloned().unwrap_or_default()));
+    }
+    Ok(Value::Object(out))
+}
+
+async fn cache_get_price_name(state: &AppState) -> AppResult<Value> {
+    Ok(json!({
+        "integral_pricename": cfg_of(state, "integral_pricename").await,
+    }))
 }
 
 /// PHP `job.model::subReserveJob` renders the daily window as `s - e`, filling
@@ -12250,7 +13012,7 @@ async fn trust_recom(state: &AppState, body: &Value) -> AppResult<Value> {
 
 async fn trust_directrecom(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let eid = json_u64(body, "eid");
-    let jobid = json_u64(body, "jobid");
+    let jobid = json_u64(body, "jobid").max(json_u64(body, "id"));
     let comid = json_u64(body, "comid");
     if eid == 0 || jobid == 0 || comid == 0 {
         return Err(ApiError::business("wap_com_00228"));

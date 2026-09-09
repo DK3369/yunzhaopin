@@ -20,7 +20,7 @@ use sqlx::{MySqlPool, QueryBuilder};
 
 const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
                       COALESCE(order_id, '') AS order_id, \
-                      COALESCE(order_price, 0) AS order_price, \
+                      (COALESCE(order_price, 0) + 0E0) AS order_price, \
                       COALESCE(pay_time, 0) AS pay_time, \
                       COALESCE(pay_state, 0) AS pay_state, \
                       CAST(COALESCE(com_id, 0) AS UNSIGNED) AS com_id, \

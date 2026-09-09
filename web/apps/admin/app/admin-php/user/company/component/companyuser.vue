@@ -1721,20 +1721,6 @@ function isjsTell(str) {
     if (result == null) return false;
     return true;
 }
-function get_map_config(){
-	var config="";
-	var weburl = localStorage.getItem("sy_weburl");
-	$.ajax( {
-		async : false,
-		type : "post",
-		url : weburl + '/index.php?m=ajax&c=mapconfig',
-		data : {id:""},
-		success : function(set) {
-			config=set;
-		}
-	});
-	return config;
-}
 export default {
     props: {
         status: { type: String, default: '' },
@@ -2092,7 +2078,7 @@ export default {
 
             prevPage: 0,
             factshow:false,
-            factuploadAction: baseUrl + 'm=user&c=company&a=upfactpic',
+            factuploadAction: baseUrl + 'm=index&c=layui_upload',
             factfileList: [],
             fact_picurl:[],
             fact_delid:[],
@@ -3014,10 +3000,9 @@ export default {
 		},
 		openMap:function (){
 			var that = this;
-			var data=get_map_config();
-			if(data && data.indexOf('map_x')>-1){
-				var config=eval('('+data+')');
-				var rating,map_control_type,map_control_anchor;
+			httpPost('m=index&c=mapconfig', {}, {hideloading: true}).then(function (response) {
+				var config = (response.data && response.data.data) || {};
+				if (!config || typeof config !== 'object') return;
 				if (!that.x && !that.y) {
 					that.x = config.map_x;
 					that.y = config.map_y;
@@ -3033,7 +3018,7 @@ export default {
 					});
 					map.add(marker);
 				});
-			}
+			});
 		},
 		addressKeyup:function(queryString, cb){
 			
@@ -3654,23 +3639,42 @@ export default {
             this.factImageUrl = file.url;
             this.factImageVisible = true;
         },
-        saveFact: function () {
+        saveFact: async function () {
             let _this = this;
             var fact_status = _this.fact_status?1:0;
-            var fact_picurl = this.fact_picurl;
-            var params = new FormData();
-            params.append('uid',_this.fact_uid);
-            params.append('fact_status',fact_status);
-            params.append('fact_delid',_this.fact_delid);
-            
-            for (let j in fact_picurl) {
-                if (fact_picurl[j].raw) {
-                    params.append('newpic[]', fact_picurl[j].raw);
-                }
-            }
+            var fact_picurl = this.fact_picurl || [];
+            var urls = [];
             _this.submitLoading = true;
-            httpPost('m=user&c=company&a=savefact', params, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+            try {
+                for (let j in fact_picurl) {
+                    if (fact_picurl[j].raw) {
+                        var fd = new FormData();
+                        fd.append('file', fact_picurl[j].raw);
+                        var up = await fetch(_this.factuploadAction, {
+                            method: 'POST',
+                            body: fd,
+                            credentials: 'include',
+                        });
+                        var uj = await up.json();
+                        if ((uj.code === 0 || uj.errno === 0) && uj.data && uj.data.url) {
+                            urls.push(uj.data.url);
+                        } else {
+                            message.error(uj.msg || uj.message || lc('model_00001'));
+                            _this.submitLoading = false;
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+                _this.submitLoading = false;
+                return;
+            }
+            httpPost('m=user&c=company&a=savefact', {
+                uid: _this.fact_uid,
+                fact_status: fact_status,
+                fact_delid: (_this.fact_delid || []).join(','),
+                newpic: urls,
             }).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
@@ -3689,6 +3693,7 @@ export default {
                 }
             }).catch(function (error) {
                 console.log(error);
+                _this.submitLoading = false;
             })
         },
         // Business license verification dialog
