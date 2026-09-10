@@ -12,13 +12,13 @@
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{{ lc('admin_tool_00439') }}</div>
+                            <div class="TableTite">{{ lc('admin_tool_00437') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <div class="login-switch">
                                     <el-switch
-                                        v-model="configdata.sy_sinalogin"
+                                        v-model="configdata.sy_googlelogin"
                                         inline-prompt
                                         :width="52"
                                         :active-value="'1'"
@@ -26,47 +26,47 @@
                                         :active-text="lc('member_com_00287')"
                                         :inactive-text="lc('resume_00030')"
                                     />
-                                    <span class="login-switch-state" :class="configdata.sy_sinalogin === '1' ? 'is-on' : 'is-off'">
-                                        {{ configdata.sy_sinalogin === '1' ? lc('admin_tool_00694') : lc('admin_tool_00695') }}
+                                    <span class="login-switch-state" :class="configdata.sy_googlelogin === '1' ? 'is-on' : 'is-off'">
+                                        {{ configdata.sy_googlelogin === '1' ? lc('admin_tool_00694') : lc('admin_tool_00695') }}
                                     </span>
                                 </div>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span> </span>
+                                <span>{{ lc('admin_tool_00693') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">appid</div>
+                            <div class="TableTite">{{ lc('admin_tool_00691') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_sinaappid">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_googleappid">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>1002478xx</span>
+                                <span>xxxx.apps.googleusercontent.com</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">appkey</div>
+                            <div class="TableTite">{{ lc('admin_tool_00692') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_sinaappkey">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_googleappkey" show-password>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>4dd1c30d472676914f2fbfbnjt33</span>
+                                <span>GOCSPX-xxxx</span>
                             </div>
                         </td>
                     </tr>
@@ -79,19 +79,7 @@
     </div>
 </template>
 <script>
-const httpPost = (...a) => window.httpPost(...a)
 const lc = (...a) => window.lc(...a)
-const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
-const delConfirm = (...a) => window.delConfirm(...a)
-const formatDate = (...a) => window.formatDate(...a)
-const formatMonth = (...a) => window.formatMonth(...a)
-const formatDatetime = (...a) => window.formatDatetime(...a)
-const deepClone = (...a) => window.deepClone(...a)
-const scrollToTop = (...a) => window.scrollToTop(...a)
-const isEmpty = (...a) => window.isEmpty(...a)
-const isArray = (...a) => window.isArray(...a)
-const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
-const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
 
 export default {
     props: {
@@ -102,8 +90,8 @@ export default {
     },
     watch: {
         config: {
-            handler(val, oldVal) {
-                this.configdata = val;
+            handler(val) {
+                this.configdata = val || {}
             },
             immediate: true,
             deep: true,
@@ -114,13 +102,9 @@ export default {
             configdata: {}
         }
     },
-
-    mounted() {
-
-    },
     methods: {
         post: function() {
-            this.$emit('post-set', { type: 'sina', config: this.configdata })
+            this.$emit('post-set', { type: 'google', config: this.configdata })
         }
     },
 };

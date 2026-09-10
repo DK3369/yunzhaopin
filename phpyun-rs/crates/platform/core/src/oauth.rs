@@ -83,8 +83,8 @@ impl ProviderKind {
     /// The corresponding column name on the `phpyun_member` table.
     pub fn member_column(&self) -> &'static str {
         match self {
-            Self::Google => "google_id",
-            Self::Facebook => "fb_id",
+            Self::Google => "googleid",
+            Self::Facebook => "facebookid",
             Self::Apple => "apple_sub",
             Self::WeChat => "wxid",
             Self::QQ => "qqid",

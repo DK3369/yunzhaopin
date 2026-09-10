@@ -436,6 +436,12 @@ const FASTLOGIN_KEYS: &[&str] = &[
     "sy_sinalogin",
     "sy_sinaappid",
     "sy_sinaappkey",
+    "sy_googlelogin",
+    "sy_googleappid",
+    "sy_googleappkey",
+    "sy_facebooklogin",
+    "sy_facebookappid",
+    "sy_facebookappkey",
 ];
 
 pub async fn fastlogin_config(state: &AppState) -> AppResult<HashMap<String, String>> {

@@ -29,7 +29,6 @@ const err = ref('')
 const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
 let smsTimer: ReturnType<typeof setInterval> | null = null
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
-const wechatOauth = computed(() => oauth.value.find((o) => o.provider === 'wechat'))
 const appTicket = ref<{ login_id: string; usertype: number; payload: string; scan_url: string } | null>(null)
 const appQrSrc = ref('')
 const appQrHint = ref('')
@@ -187,9 +186,10 @@ onMounted(async () => {
   const redirect_uri = `${siteUrl}/login`
   for (const [name, path, key] of [
     ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
-    // 暂未开通 QQ 互联
-    // ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
+    ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
     ['Weibo', '/v1/wap/oauth/weibo/authorize-url', 'weibo'],
+    ['Google', '/v1/wap/oauth/google/authorize-url', 'google'],
+    ['Facebook', '/v1/wap/oauth/facebook/authorize-url', 'facebook'],
   ] as const) {
     try {
       const r = await api.post<{ authorize_url?: string }>(path, { redirect_uri })
@@ -476,9 +476,21 @@ onUnmounted(() => {
 
           <p v-if="err" class="lgp-err">{{ err }}</p>
           <div class="lgp-other">
-            <a v-if="wechatOauth" href="javascript:;" @click.prevent="startOauth(wechatOauth)">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#2aae67" d="M9.5 7.2c-3.7 0-6.7 2.4-6.7 5.4 0 1.7.9 3.2 2.4 4.3l-.6 1.8 2.1-1.1c.8.2 1.5.4 2.3.4.3 0 .6 0 .9-.1-.2-.5-.3-1.1-.3-1.7 0-3.2 2.9-5.7 6.5-5.7.2 0 .4 0 .6.1-1-2.1-3.4-3.4-6.2-3.4zm-1.7 2.2a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.5 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zM16.8 11c-3.3 0-6 2.2-6 5s2.7 5 6 5c.6 0 1.2-.1 1.8-.3l1.7.9-.5-1.5c1.2-.9 2-2.2 2-3.6 0-2.8-2.7-5-5-5zm-1.5 1.9a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4zm3.1 0a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4z" /></svg>
-              {{ $t('loginPage.wechat') }}
+            <a
+              v-for="o in oauth"
+              :key="o.provider"
+              href="javascript:;"
+              @click.prevent="startOauth(o)"
+            >
+              <svg v-if="o.provider === 'wechat'" viewBox="0 0 24 24" aria-hidden="true"><path fill="#2aae67" d="M9.5 7.2c-3.7 0-6.7 2.4-6.7 5.4 0 1.7.9 3.2 2.4 4.3l-.6 1.8 2.1-1.1c.8.2 1.5.4 2.3.4.3 0 .6 0 .9-.1-.2-.5-.3-1.1-.3-1.7 0-3.2 2.9-5.7 6.5-5.7.2 0 .4 0 .6.1-1-2.1-3.4-3.4-6.2-3.4zm-1.7 2.2a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.5 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zM16.8 11c-3.3 0-6 2.2-6 5s2.7 5 6 5c.6 0 1.2-.1 1.8-.3l1.7.9-.5-1.5c1.2-.9 2-2.2 2-3.6 0-2.8-2.7-5-5-5zm-1.5 1.9a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4zm3.1 0a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4z" /></svg>
+              {{
+                o.provider === 'wechat' ? $t('loginPage.wechat')
+                  : o.provider === 'qq' ? $t('loginPage.qq')
+                    : o.provider === 'weibo' ? $t('loginPage.weibo')
+                      : o.provider === 'google' ? $t('loginPage.google')
+                        : o.provider === 'facebook' ? $t('loginPage.facebook')
+                          : o.name
+              }}
             </a>
             <NuxtLink v-if="role === 2" to="/download">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 5h16v11H4V5zm2 2v7h12V7H6zm-2 11h16v2H4v-2z" /></svg>

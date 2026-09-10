@@ -4,14 +4,17 @@
 //! - `uid / did` are int(11) signed, so sqlx's `u64`/`u32` need a CAST to UNSIGNED
 //! - `reg_date / login_date` are int(11) and need CAST(AS SIGNED) for `i64`
 //! - `usertype / status` are int(1)/int(4); using `i32` on the Rust side is safer
-//! - **OAuth columns are not** google_id/fb_id/apple_sub — PHPYun actually has:
-//!   qqid / qqunionid / sinaid / wxid / wxopenid / unionid / wxname / bdopenid
+//! - **OAuth columns** on `phpyun_member`:
+//!   qqid / qqunionid / sinaid / wxid / wxopenid / unionid / wxname / bdopenid /
+//!   googleid / facebookid
 //!   So OAuth binding on the Rust side uses an allowlist mapping provider → real PHP column name.
 
 use super::entity::{AdminAppealListRow, AdminMemberListRow, Member};
 use sqlx::{MySqlPool, QueryBuilder};
 
 type OAuthBindingsRow = (
+    Option<String>,
+    Option<String>,
     Option<String>,
     Option<String>,
     Option<String>,
@@ -46,8 +49,10 @@ fn oauth_column_for(provider: &str) -> Option<&'static str> {
         "unionid" => Some("unionid"),
         "wechat_mp" | "wxopenid" => Some("wxopenid"),
         "baidu" | "bdopenid" => Some("bdopenid"),
-        // Overseas providers (PHPYun has no column; we keep the interface but return None, so upstream gets "bind failed")
-        "google" | "facebook" | "apple" | "google_id" | "fb_id" | "apple_sub" => None,
+        "google" | "googleid" | "google_id" => Some("googleid"),
+        "facebook" | "facebookid" | "fb_id" => Some("facebookid"),
+        // Apple still has no member column.
+        "apple" | "apple_sub" => None,
         _ => None,
     }
 }
@@ -390,14 +395,15 @@ pub async fn list_oauth_bindings(
     uid: u64,
 ) -> Result<Vec<&'static str>, sqlx::Error> {
     let row: Option<OAuthBindingsRow> = sqlx::query_as(
-        "SELECT qqid, sinaid, unionid, wxopenid, bdopenid FROM phpyun_member WHERE uid = ? LIMIT 1",
+        "SELECT qqid, sinaid, unionid, wxopenid, bdopenid, googleid, facebookid \
+         FROM phpyun_member WHERE uid = ? LIMIT 1",
     )
     .bind(uid)
     .fetch_optional(pool)
     .await?;
 
     let mut out = Vec::new();
-    if let Some((qq, sina, wx, wxmp, bd)) = row {
+    if let Some((qq, sina, wx, wxmp, bd, google, facebook)) = row {
         if qq.as_deref().is_some_and(|s| !s.is_empty()) {
             out.push("qq");
         }
@@ -412,6 +418,12 @@ pub async fn list_oauth_bindings(
         }
         if bd.as_deref().is_some_and(|s| !s.is_empty()) {
             out.push("baidu");
+        }
+        if google.as_deref().is_some_and(|s| !s.is_empty()) {
+            out.push("google");
+        }
+        if facebook.as_deref().is_some_and(|s| !s.is_empty()) {
+            out.push("facebook");
         }
     }
     Ok(out)
@@ -1127,6 +1139,7 @@ pub async fn anonymize_logout_member(
         "UPDATE phpyun_member SET username = ?, moblie = ?, email = ?, status = 2, \
          lock_info = 'common_06533', pwuid = 0, pw_repeat = 0, \
          qqid = '', qqunionid = '', sinaid = '', wxid = '', wxopenid = '', unionid = '', \
+         googleid = '', facebookid = '', \
          wxname = '', wxbindtime = 0, clientid = '', deviceToken = '', maguid = 0, qfyuid = 0 \
          WHERE uid = ?",
     )

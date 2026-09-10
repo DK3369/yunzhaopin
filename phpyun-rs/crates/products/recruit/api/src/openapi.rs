@@ -599,6 +599,10 @@ impl Modify for UniqueOperationId {
         v1::wap::oauth::qq_code_login,
         v1::wap::oauth::weibo_authorize_url,
         v1::wap::oauth::weibo_code_login,
+        v1::wap::oauth::google_authorize_url,
+        v1::wap::oauth::google_code_login,
+        v1::wap::oauth::facebook_authorize_url,
+        v1::wap::oauth::facebook_code_login,
         // Email-based forgot-password channel + manual appeal
         v1::wap::forgetpw::send_email,
         v1::wap::forgetpw::reset_by_email,

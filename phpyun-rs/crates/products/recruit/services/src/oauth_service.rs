@@ -17,6 +17,7 @@ use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{clock, ApiError, AppResult, AppState, ProviderKind};
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
+use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::user::{entity::Member, repo as user_repo};
 use uuid::Uuid;
 
@@ -100,6 +101,219 @@ async fn load_pending(state: &AppState, ticket: &str) -> AppResult<(String, Stri
 
 async fn consume_pending(state: &AppState, ticket: &str) {
     let _ = state.redis.del(&format!("{PENDING_PREFIX}{ticket}")).await;
+}
+
+/// AppId / secret / redirect for the PHP-style code OAuth providers.
+/// Admin `工具 → 登陆` writes `sy_*` into `phpyun_admin_config`; env is fallback only.
+pub struct OauthCodeApp {
+    pub appid: String,
+    pub appsecret: String,
+    pub redirect: String,
+}
+
+async fn setting_val(state: &AppState, key: &str) -> String {
+    match setting_repo::find(state.db.reader(), key).await {
+        Ok(Some(s)) => s.value,
+        _ => String::new(),
+    }
+}
+
+fn switch_on(raw: &str) -> bool {
+    matches!(raw.trim(), "1" | "true" | "yes" | "on")
+}
+
+fn first_nonempty(db: &str, env: Option<&str>) -> String {
+    let db = db.trim();
+    if !db.is_empty() {
+        return db.to_string();
+    }
+    env.unwrap_or("").trim().to_string()
+}
+
+async fn login_page_redirect(state: &AppState, env_redirect: Option<&str>) -> String {
+    let env = env_redirect.unwrap_or("").trim();
+    if !env.is_empty() {
+        return env.to_string();
+    }
+    let env_base = state.config.web_base_url.as_deref().unwrap_or("").trim();
+    let base = if !env_base.is_empty() {
+        env_base.to_string()
+    } else {
+        setting_val(state, "sy_weburl").await
+    };
+    let base = base.trim().trim_end_matches('/');
+    if base.is_empty() {
+        String::new()
+    } else {
+        format!("{base}/login")
+    }
+}
+
+async fn load_code_app(
+    state: &AppState,
+    enable_key: &str,
+    closed_key: &'static str,
+    db_id: &str,
+    db_secret: &str,
+    env_id: Option<&str>,
+    env_secret: Option<&str>,
+    env_redirect: Option<&str>,
+    missing_id: &'static str,
+    missing_secret: &'static str,
+    missing_redirect: &'static str,
+) -> AppResult<OauthCodeApp> {
+    if !switch_on(&setting_val(state, enable_key).await) {
+        return Err(ApiError::param_invalid(closed_key));
+    }
+    let appid = first_nonempty(&setting_val(state, db_id).await, env_id);
+    let appsecret = first_nonempty(&setting_val(state, db_secret).await, env_secret);
+    let redirect = login_page_redirect(state, env_redirect).await;
+    if appid.is_empty() {
+        return Err(ApiError::param_invalid(missing_id));
+    }
+    if appsecret.is_empty() {
+        return Err(ApiError::param_invalid(missing_secret));
+    }
+    if redirect.is_empty() {
+        return Err(ApiError::param_invalid(missing_redirect));
+    }
+    Ok(OauthCodeApp {
+        appid,
+        appsecret,
+        redirect,
+    })
+}
+
+pub async fn qq_code_app(state: &AppState) -> AppResult<OauthCodeApp> {
+    load_code_app(
+        state,
+        "sy_qqlogin",
+        "qq_login_closed",
+        "sy_qqappid",
+        "sy_qqappkey",
+        state.config.qq_appid.as_deref(),
+        state.config.qq_appsecret.as_deref(),
+        state.config.qq_oauth_redirect.as_deref(),
+        "qq_appid_missing",
+        "qq_appsecret_missing",
+        "qq_oauth_redirect_missing",
+    )
+    .await
+}
+
+pub async fn weibo_code_app(state: &AppState) -> AppResult<OauthCodeApp> {
+    load_code_app(
+        state,
+        "sy_sinalogin",
+        "weibo_login_closed",
+        "sy_sinaappid",
+        "sy_sinaappkey",
+        state.config.weibo_appid.as_deref(),
+        state.config.weibo_appsecret.as_deref(),
+        state.config.weibo_oauth_redirect.as_deref(),
+        "weibo_appid_missing",
+        "weibo_appsecret_missing",
+        "weibo_oauth_redirect_missing",
+    )
+    .await
+}
+
+pub async fn google_code_app(state: &AppState) -> AppResult<OauthCodeApp> {
+    load_code_app(
+        state,
+        "sy_googlelogin",
+        "google_login_closed",
+        "sy_googleappid",
+        "sy_googleappkey",
+        None,
+        None,
+        None,
+        "google_appid_missing",
+        "google_appsecret_missing",
+        "google_oauth_redirect_missing",
+    )
+    .await
+}
+
+pub async fn facebook_code_app(state: &AppState) -> AppResult<OauthCodeApp> {
+    load_code_app(
+        state,
+        "sy_facebooklogin",
+        "facebook_login_closed",
+        "sy_facebookappid",
+        "sy_facebookappkey",
+        None,
+        None,
+        None,
+        "facebook_appid_missing",
+        "facebook_appsecret_missing",
+        "facebook_oauth_redirect_missing",
+    )
+    .await
+}
+
+async fn login_bound_oauth_member(
+    state: &AppState,
+    user: Member,
+    provider: &'static str,
+    sub: String,
+    email_from_provider: Option<String>,
+    name_from_provider: Option<String>,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    if user.status == 2 {
+        auth_event("oauth_login_fail", Some("locked"));
+        return Err(ApiError::locked());
+    }
+    let (usertype, did) = auth_identity(&user)?;
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
+
+    let _ = crate::user_session_service::record_login(
+        state,
+        crate::user_session_service::LoginRecord {
+            uid: user.uid,
+            usertype,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: client_ip,
+            ua: user_agent,
+        },
+    )
+    .await;
+
+    auth_event("oauth_login_success", Some(provider));
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("user.login", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("uid:{}", user.uid))
+            .meta(&serde_json::json!({ "via": provider })),
+    )
+    .await;
+
+    Ok(OAuthLoginResult {
+        uid: user.uid,
+        usertype,
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        provider_sub: sub,
+        email_from_provider,
+        name_from_provider,
+        need_bind: false,
+        ticket: String::new(),
+        provider: provider.to_string(),
+    })
 }
 
 pub async fn login_with_oauth(
@@ -315,21 +529,10 @@ pub async fn login_with_qq_code(
     client_ip: &str,
     user_agent: &str,
 ) -> AppResult<OAuthLoginResult> {
-    let appid = state
-        .config
-        .qq_appid
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("qq_appid_missing"))?;
-    let appsecret = state
-        .config
-        .qq_appsecret
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("qq_appsecret_missing"))?;
-    let redirect = state
-        .config
-        .qq_oauth_redirect
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("qq_oauth_redirect_missing"))?;
+    let app = qq_code_app(state).await?;
+    let appid = app.appid.as_str();
+    let appsecret = app.appsecret.as_str();
+    let redirect = app.redirect.as_str();
 
     // 1) /oauth2.0/token returns text in url-encoded form: access_token=xxx&expires_in=7776000&refresh_token=yyy
     let token_url = format!(
@@ -465,21 +668,10 @@ pub async fn login_with_weibo_code(
     client_ip: &str,
     user_agent: &str,
 ) -> AppResult<OAuthLoginResult> {
-    let appid = state
-        .config
-        .weibo_appid
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("weibo_appid_missing"))?;
-    let appsecret = state
-        .config
-        .weibo_appsecret
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("weibo_appsecret_missing"))?;
-    let redirect = state
-        .config
-        .weibo_oauth_redirect
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("weibo_oauth_redirect_missing"))?;
+    let app = weibo_code_app(state).await?;
+    let appid = app.appid.as_str();
+    let appsecret = app.appsecret.as_str();
+    let redirect = app.redirect.as_str();
 
     // Weibo expects POST application/x-www-form-urlencoded.
     let body = format!(
@@ -588,6 +780,156 @@ pub fn weibo_authorize_url(appid: &str, redirect_uri: &str, state_val: &str) -> 
         redir = urlencoding_minimal(redirect_uri),
         state = urlencoding_minimal(state_val),
     )
+}
+
+pub fn google_authorize_url(appid: &str, redirect_uri: &str, state_val: &str) -> String {
+    format!(
+        "https://accounts.google.com/o/oauth2/v2/auth?client_id={appid}&redirect_uri={redir}&response_type=code&scope={scope}&state={state}&access_type=online&prompt=select_account",
+        appid = urlencoding_minimal(appid),
+        redir = urlencoding_minimal(redirect_uri),
+        scope = urlencoding_minimal("openid email profile"),
+        state = urlencoding_minimal(state_val),
+    )
+}
+
+pub fn facebook_authorize_url(appid: &str, redirect_uri: &str, state_val: &str) -> String {
+    format!(
+        "https://www.facebook.com/v21.0/dialog/oauth?client_id={appid}&redirect_uri={redir}&state={state}&scope={scope}",
+        appid = urlencoding_minimal(appid),
+        redir = urlencoding_minimal(redirect_uri),
+        state = urlencoding_minimal(state_val),
+        scope = urlencoding_minimal("email,public_profile"),
+    )
+}
+
+pub async fn login_with_google_code(
+    state: &AppState,
+    code: &str,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    let app = google_code_app(state).await?;
+    let body = format!(
+        "code={code}&client_id={cid}&client_secret={sec}&redirect_uri={redir}&grant_type=authorization_code",
+        code = urlencoding_minimal(code),
+        cid = urlencoding_minimal(&app.appid),
+        sec = urlencoding_minimal(&app.appsecret),
+        redir = urlencoding_minimal(&app.redirect),
+    );
+    #[derive(serde::Deserialize)]
+    struct GoogleTokenResp {
+        #[serde(default)]
+        access_token: Option<String>,
+        #[serde(default)]
+        error: Option<String>,
+        #[serde(default)]
+        error_description: Option<String>,
+    }
+    let token: GoogleTokenResp = state
+        .http
+        .post_form_to_json("https://oauth2.googleapis.com/token", &body)
+        .await?;
+    if let Some(err) = token.error.filter(|s| !s.is_empty()) {
+        let msg = token.error_description.unwrap_or_default();
+        return Err(ApiError::upstream(format!("google token error={err} msg={msg}")));
+    }
+    let Some(access_token) = token.access_token.filter(|s| !s.is_empty()) else {
+        return Err(ApiError::upstream("google oauth returned no access_token"));
+    };
+    #[derive(serde::Deserialize)]
+    struct GoogleUser {
+        #[serde(default)]
+        sub: Option<String>,
+        #[serde(default)]
+        email: Option<String>,
+        #[serde(default)]
+        name: Option<String>,
+    }
+    let me_url = format!(
+        "https://www.googleapis.com/oauth2/v3/userinfo?access_token={tok}",
+        tok = urlencoding_minimal(&access_token),
+    );
+    let me: GoogleUser = state.http.get_json(&me_url).await?;
+    let Some(sub) = me.sub.filter(|s| !s.is_empty()) else {
+        return Err(ApiError::upstream("google oauth returned no sub"));
+    };
+    let member = user_repo::find_by_oauth_id(state.db.reader(), "google", &sub).await?;
+    let Some(user) = member else {
+        return pending_not_bound(state, "google", &sub).await;
+    };
+    login_bound_oauth_member(
+        state,
+        user,
+        "google",
+        sub,
+        me.email,
+        me.name,
+        client_ip,
+        user_agent,
+    )
+    .await
+}
+
+pub async fn login_with_facebook_code(
+    state: &AppState,
+    code: &str,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    let app = facebook_code_app(state).await?;
+    let token_url = format!(
+        "https://graph.facebook.com/v21.0/oauth/access_token?client_id={cid}&redirect_uri={redir}&client_secret={sec}&code={code}",
+        cid = urlencoding_minimal(&app.appid),
+        redir = urlencoding_minimal(&app.redirect),
+        sec = urlencoding_minimal(&app.appsecret),
+        code = urlencoding_minimal(code),
+    );
+    #[derive(serde::Deserialize)]
+    struct FbTokenResp {
+        #[serde(default)]
+        access_token: Option<String>,
+        #[serde(default)]
+        error: Option<serde_json::Value>,
+    }
+    let token: FbTokenResp = state.http.get_json(&token_url).await?;
+    if token.error.is_some() {
+        return Err(ApiError::upstream("facebook token error"));
+    }
+    let Some(access_token) = token.access_token.filter(|s| !s.is_empty()) else {
+        return Err(ApiError::upstream("facebook oauth returned no access_token"));
+    };
+    #[derive(serde::Deserialize)]
+    struct FbUser {
+        #[serde(default)]
+        id: Option<String>,
+        #[serde(default)]
+        email: Option<String>,
+        #[serde(default)]
+        name: Option<String>,
+    }
+    let me_url = format!(
+        "https://graph.facebook.com/me?fields=id,name,email&access_token={tok}",
+        tok = urlencoding_minimal(&access_token),
+    );
+    let me: FbUser = state.http.get_json(&me_url).await?;
+    let Some(sub) = me.id.filter(|s| !s.is_empty()) else {
+        return Err(ApiError::upstream("facebook oauth returned no id"));
+    };
+    let member = user_repo::find_by_oauth_id(state.db.reader(), "facebook", &sub).await?;
+    let Some(user) = member else {
+        return pending_not_bound(state, "facebook", &sub).await;
+    };
+    login_bound_oauth_member(
+        state,
+        user,
+        "facebook",
+        sub,
+        me.email,
+        me.name,
+        client_ip,
+        user_agent,
+    )
+    .await
 }
 
 /// Minimal URL encoding — only escapes characters that would break the WeChat URL syntax,

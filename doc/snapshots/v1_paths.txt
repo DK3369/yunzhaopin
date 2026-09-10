@@ -397,7 +397,11 @@
 /v1/wap/nav
 /v1/wap/oauth/bind
 /v1/wap/oauth/bind-pending
+/v1/wap/oauth/facebook/authorize-url
+/v1/wap/oauth/facebook/code-login
 /v1/wap/oauth/fast-reg
+/v1/wap/oauth/google/authorize-url
+/v1/wap/oauth/google/code-login
 /v1/wap/oauth/login
 /v1/wap/oauth/qq/authorize-url
 /v1/wap/oauth/qq/code-login

@@ -8,6 +8,12 @@
                 <el-tab-pane :label="lc('admin_tool_00465')" name="second">
                     <loginsina :config="config" @post-set="postset"></loginsina>
                 </el-tab-pane>
+                <el-tab-pane :label="lc('admin_tool_00689')" name="google">
+                    <logingoogle :config="config" @post-set="postset"></logingoogle>
+                </el-tab-pane>
+                <el-tab-pane :label="lc('admin_tool_00690')" name="facebook">
+                    <loginfacebook :config="config" @post-set="postset"></loginfacebook>
+                </el-tab-pane>
             </el-tabs>
         </div>
     </div>
@@ -16,20 +22,20 @@
 <script>
 import Loginqq from './component/loginqq.vue'
 import Loginsina from './component/loginsina.vue'
+import Logingoogle from './component/logingoogle.vue'
+import Loginfacebook from './component/loginfacebook.vue'
 
 const httpPost = (...a) => window.httpPost(...a)
 const lc = (...a) => window.lc(...a)
 const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
-const delConfirm = (...a) => window.delConfirm(...a)
-const formatDate = (...a) => window.formatDate(...a)
-const formatMonth = (...a) => window.formatMonth(...a)
-const formatDatetime = (...a) => window.formatDatetime(...a)
-const deepClone = (...a) => window.deepClone(...a)
-const scrollToTop = (...a) => window.scrollToTop(...a)
-const isEmpty = (...a) => window.isEmpty(...a)
-const isArray = (...a) => window.isArray(...a)
-const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
-const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
+
+function flag1(v) {
+    return (v === 1 || v === '1' || v === true) ? '1' : '0'
+}
+
+function textOf(v) {
+    return v == null ? '' : String(v)
+}
 
 export default {
             data: function () {
@@ -41,6 +47,8 @@ export default {
             components: {
                 'loginqq': Loginqq,
                 'loginsina': Loginsina,
+                'logingoogle': Logingoogle,
+                'loginfacebook': Loginfacebook,
             },
             created:function(){
                 this.getInfo();
@@ -48,6 +56,24 @@ export default {
 
             },
             methods: {
+                applyConfig(raw) {
+                    const d = raw && typeof raw === 'object' ? raw : {}
+                    this.config = {
+                        sy_qqlogin: flag1(d.sy_qqlogin),
+                        sy_qqappid: textOf(d.sy_qqappid),
+                        sy_qqappkey: textOf(d.sy_qqappkey),
+                        sy_qqdt: flag1(d.sy_qqdt),
+                        sy_sinalogin: flag1(d.sy_sinalogin),
+                        sy_sinaappid: textOf(d.sy_sinaappid),
+                        sy_sinaappkey: textOf(d.sy_sinaappkey),
+                        sy_googlelogin: flag1(d.sy_googlelogin),
+                        sy_googleappid: textOf(d.sy_googleappid),
+                        sy_googleappkey: textOf(d.sy_googleappkey),
+                        sy_facebooklogin: flag1(d.sy_facebooklogin),
+                        sy_facebookappid: textOf(d.sy_facebookappid),
+                        sy_facebookappkey: textOf(d.sy_facebookappkey),
+                    }
+                },
                 async getInfo() {
                     let that = this;
                     
@@ -56,7 +82,7 @@ export default {
                         var res = result.data;
                         if (res.error == 0) {
                             
-                            that.config =res.data;
+                            that.applyConfig(res.data);
                             
                         }
                         
@@ -65,22 +91,31 @@ export default {
                     })
                 },
                 async postset(e){
-                    
-                    let that = this;
+                    let param = {}
                     if(e.type=='qq'){
-                        var param = {
-                            sy_qqlogin    : e.config.sy_qqlogin==1?1:0,
-                            sy_qqappid    : e.config.sy_qqappid,
-                            sy_qqappkey   : e.config.sy_qqappkey,
-                            sy_qqdt       : e.config.sy_qqdt==1?1:0,
-
+                        param = {
+                            sy_qqlogin    : flag1(e.config.sy_qqlogin),
+                            sy_qqappid    : textOf(e.config.sy_qqappid),
+                            sy_qqappkey   : textOf(e.config.sy_qqappkey),
+                            sy_qqdt       : flag1(e.config.sy_qqdt),
                         };
                     }else if(e.type=='sina'){
-                        var param = {
-                            
-                            sy_sinalogin  : e.config.sy_sinalogin==1?1:0,
-                            sy_sinaappid  : e.config.sy_sinaappid,
-                            sy_sinaappkey : e.config.sy_sinaappkey,
+                        param = {
+                            sy_sinalogin  : flag1(e.config.sy_sinalogin),
+                            sy_sinaappid  : textOf(e.config.sy_sinaappid),
+                            sy_sinaappkey : textOf(e.config.sy_sinaappkey),
+                        };
+                    }else if(e.type=='google'){
+                        param = {
+                            sy_googlelogin : flag1(e.config.sy_googlelogin),
+                            sy_googleappid : textOf(e.config.sy_googleappid),
+                            sy_googleappkey: textOf(e.config.sy_googleappkey),
+                        };
+                    }else if(e.type=='facebook'){
+                        param = {
+                            sy_facebooklogin : flag1(e.config.sy_facebooklogin),
+                            sy_facebookappid : textOf(e.config.sy_facebookappid),
+                            sy_facebookappkey: textOf(e.config.sy_facebookappkey),
                         };
                     }
                     startLoading();

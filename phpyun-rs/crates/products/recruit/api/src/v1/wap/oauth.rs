@@ -31,6 +31,10 @@ pub fn routes() -> Router<AppState> {
         // Weibo
         .route("/oauth/weibo/authorize-url", post(weibo_authorize_url))
         .route("/oauth/weibo/code-login", post(weibo_code_login))
+        .route("/oauth/google/authorize-url", post(google_authorize_url))
+        .route("/oauth/google/code-login", post(google_code_login))
+        .route("/oauth/facebook/authorize-url", post(facebook_authorize_url))
+        .route("/oauth/facebook/code-login", post(facebook_code_login))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -386,16 +390,7 @@ const QQ_STATE_TTL_SECS: u64 = 600;
 pub async fn qq_authorize_url(
     State(state): State<AppState>,
 ) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
-    let appid = state
-        .config
-        .qq_appid
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("qq_appid_missing"))?;
-    let redirect = state
-        .config
-        .qq_oauth_redirect
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("qq_oauth_redirect_missing"))?;
+    let app = oauth_service::qq_code_app(&state).await?;
 
     let state_val = uuid::Uuid::now_v7().simple().to_string();
     state
@@ -407,7 +402,7 @@ pub async fn qq_authorize_url(
         )
         .await?;
 
-    let url = oauth_service::qq_authorize_url(appid, redirect, &state_val);
+    let url = oauth_service::qq_authorize_url(&app.appid, &app.redirect, &state_val);
     Ok(ApiResponse::data(OAuthAuthorizeData {
         authorize_url: url,
         state: state_val,
@@ -477,16 +472,7 @@ const WEIBO_STATE_TTL_SECS: u64 = 600;
 pub async fn weibo_authorize_url(
     State(state): State<AppState>,
 ) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
-    let appid = state
-        .config
-        .weibo_appid
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("weibo_appid_missing"))?;
-    let redirect = state
-        .config
-        .weibo_oauth_redirect
-        .as_deref()
-        .ok_or_else(|| ApiError::param_invalid("weibo_oauth_redirect_missing"))?;
+    let app = oauth_service::weibo_code_app(&state).await?;
 
     let state_val = uuid::Uuid::now_v7().simple().to_string();
     state
@@ -498,7 +484,7 @@ pub async fn weibo_authorize_url(
         )
         .await?;
 
-    let url = oauth_service::weibo_authorize_url(appid, redirect, &state_val);
+    let url = oauth_service::weibo_authorize_url(&app.appid, &app.redirect, &state_val);
     Ok(ApiResponse::data(OAuthAuthorizeData {
         authorize_url: url,
         state: state_val,
@@ -535,5 +521,129 @@ pub async fn weibo_code_login(
         .unwrap_or("")
         .to_string();
     let r = oauth_service::login_with_weibo_code(&state, &f.code, &ip, &ua).await?;
+    Ok(ApiResponse::data(oauth_login_data(r)))
+}
+
+const GOOGLE_STATE_PREFIX: &str = "oauth:google:state:";
+const FACEBOOK_STATE_PREFIX: &str = "oauth:facebook:state:";
+const OAUTH_STATE_TTL_SECS: u64 = 600;
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/google/authorize-url",
+    tag = "auth",
+    responses(
+        (status = 200, description = "ok", body = OAuthAuthorizeData),
+        (status = 400, description = "google login closed or not configured"),
+    )
+)]
+pub async fn google_authorize_url(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
+    let app = oauth_service::google_code_app(&state).await?;
+    let state_val = uuid::Uuid::now_v7().simple().to_string();
+    state
+        .redis
+        .set_ex(
+            &format!("{GOOGLE_STATE_PREFIX}{state_val}"),
+            "1",
+            OAUTH_STATE_TTL_SECS,
+        )
+        .await?;
+    let url = oauth_service::google_authorize_url(&app.appid, &app.redirect, &state_val);
+    Ok(ApiResponse::data(OAuthAuthorizeData {
+        authorize_url: url,
+        state: state_val,
+    }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/google/code-login",
+    tag = "auth",
+    request_body = CodeLoginForm,
+    responses(
+        (status = 200, description = "Login successful", body = OAuthLoginData),
+        (status = 400, description = "google not configured / invalid code / invalid state"),
+        (status = 401, description = "sub not bound to member"),
+    )
+)]
+pub async fn google_code_login(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: axum::http::HeaderMap,
+    ValidatedJson(f): ValidatedJson<CodeLoginForm>,
+) -> AppResult<ApiResponse<OAuthLoginData>> {
+    let key = format!("{GOOGLE_STATE_PREFIX}{}", f.state);
+    if !state.redis.exists(&key).await {
+        return Err(ApiError::param_invalid("invalid_state"));
+    }
+    let _ = state.redis.del(&key).await;
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = oauth_service::login_with_google_code(&state, &f.code, &ip, &ua).await?;
+    Ok(ApiResponse::data(oauth_login_data(r)))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/facebook/authorize-url",
+    tag = "auth",
+    responses(
+        (status = 200, description = "ok", body = OAuthAuthorizeData),
+        (status = 400, description = "facebook login closed or not configured"),
+    )
+)]
+pub async fn facebook_authorize_url(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
+    let app = oauth_service::facebook_code_app(&state).await?;
+    let state_val = uuid::Uuid::now_v7().simple().to_string();
+    state
+        .redis
+        .set_ex(
+            &format!("{FACEBOOK_STATE_PREFIX}{state_val}"),
+            "1",
+            OAUTH_STATE_TTL_SECS,
+        )
+        .await?;
+    let url = oauth_service::facebook_authorize_url(&app.appid, &app.redirect, &state_val);
+    Ok(ApiResponse::data(OAuthAuthorizeData {
+        authorize_url: url,
+        state: state_val,
+    }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/facebook/code-login",
+    tag = "auth",
+    request_body = CodeLoginForm,
+    responses(
+        (status = 200, description = "Login successful", body = OAuthLoginData),
+        (status = 400, description = "facebook not configured / invalid code / invalid state"),
+        (status = 401, description = "id not bound to member"),
+    )
+)]
+pub async fn facebook_code_login(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: axum::http::HeaderMap,
+    ValidatedJson(f): ValidatedJson<CodeLoginForm>,
+) -> AppResult<ApiResponse<OAuthLoginData>> {
+    let key = format!("{FACEBOOK_STATE_PREFIX}{}", f.state);
+    if !state.redis.exists(&key).await {
+        return Err(ApiError::param_invalid("invalid_state"));
+    }
+    let _ = state.redis.del(&key).await;
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = oauth_service::login_with_facebook_code(&state, &f.code, &ip, &ua).await?;
     Ok(ApiResponse::data(oauth_login_data(r)))
 }

@@ -15,6 +15,8 @@ const PATHS: Record<string, string> = {
   wechat: '/v1/wap/oauth/wechat/code-login',
   qq: '/v1/wap/oauth/qq/code-login',
   weibo: '/v1/wap/oauth/weibo/code-login',
+  google: '/v1/wap/oauth/google/code-login',
+  facebook: '/v1/wap/oauth/facebook/code-login',
 }
 
 export default defineEventHandler(async (event) => {
