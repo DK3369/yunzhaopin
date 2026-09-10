@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { transform } from 'esbuild'
 
 type Kind = 'pc' | 'h5'
 type CssFile = { disk: string; href: string }
@@ -30,6 +31,7 @@ const H5_FILES: CssFile[] = [
   { disk: 'uploads/app/template/wap/css/yunwap.css', href: '/legacy/h5/css/yunwap.css' },
   { disk: 'uploads/app/template/wap/css/css.css', href: '/legacy/h5/css/css.css' },
   { disk: 'uploads/app/template/wap/css/job.css', href: '/legacy/h5/css/job.css' },
+  { disk: 'uploads/app/template/wap/css/member/memberwap.css', href: '/legacy/h5/css/member/memberwap.css' },
 ]
 
 const mem = new Map<string, string>()
@@ -55,21 +57,30 @@ function rewriteUrls(css: string, cssHref: string): string {
   })
 }
 
+async function minifyCss(css: string): Promise<string> {
+  try {
+    const out = await transform(css, { loader: 'css', minify: true })
+    return out.code || css
+  } catch {
+    return css
+  }
+}
+
 async function build(kind: Kind): Promise<string> {
   const root = repoRoot()
   const files = kind === 'pc' ? PC_FILES : H5_FILES
-  const parts: string[] = ['/* bundled legacy ' + kind + ' css */']
+  const parts: string[] = []
   for (const file of files) {
     const abs = join(root, file.disk)
     try {
       let css = await readFile(abs, 'utf8')
       css = css.replace(/@charset\s+[^;]+;/gi, '')
-      parts.push(`/* ${file.href} */`, rewriteUrls(css, file.href))
+      parts.push(rewriteUrls(css, file.href))
     } catch {
-      parts.push(`/* missing ${file.href} */`)
+      /* skip missing file */
     }
   }
-  return parts.join('\n')
+  return minifyCss(parts.join('\n'))
 }
 
 export async function bundledLegacyCss(kind: Kind, ver: string): Promise<string> {

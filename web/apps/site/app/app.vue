@@ -70,15 +70,6 @@ useHead({
     ...(siteStyle.value
       ? [{ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css?v=${cacheVer.value}` }]
       : []),
-    ...(route.path.startsWith('/user') || route.path.startsWith('/com')
-      ? [
-          {
-            rel: 'stylesheet',
-            href: `/legacy/h5/css/member/memberwap.css?v=${cacheVer.value}`,
-            media: 'screen and (max-width: 1199px)',
-          },
-        ]
-      : []),
   ],
 })
 

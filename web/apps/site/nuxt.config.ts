@@ -26,8 +26,10 @@ export default defineNuxtConfig({
       const prevOut = prev.output
       const extra = {
         codeSplitting: {
-          minSize: 20_000,
-          groups: [{ name: 'vendor', test: /[\\/]node_modules[\\/]/ }],
+          groups: [
+            { name: 'vendor', test: /[\\/]node_modules[\\/]/ },
+            { name: 'shared', minShareCount: 2 },
+          ],
         },
       }
       build.rolldownOptions = {
@@ -84,6 +86,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    externals: { external: ['esbuild'] },
     compressPublicAssets: true,
     prerender: { crawlLinks: false, routes: [] },
     // 仅 `nuxt dev`：把 /admin 转到本机 admin 进程。现网由 site Nitro :3001 直接出 /admin，不再另开端口。
