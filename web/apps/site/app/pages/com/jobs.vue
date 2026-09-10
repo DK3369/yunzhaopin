@@ -39,6 +39,9 @@ const picked = ref<number[]>([])
 const reserveOn = computed(() => String(settings.value.com_job_reserve || '') === '1')
 const reserveEnd = ref('')
 const reserveInterval = ref(30)
+const reserveStart = ref('')
+const reserveStop = ref('')
+const quoteHint = ref('')
 const allPicked = computed({
   get: () => list.value.length > 0 && picked.value.length === list.value.length,
   set: (v: boolean) => {
@@ -86,8 +89,14 @@ async function setStatus(id: number, status: number) {
 }
 async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
   msg.value = ''
+  quoteHint.value = ''
   const n = Math.max(1, Math.min(365, Number(days.value) || 1))
   try {
+    const q = await api.post<{ remain?: number; active?: boolean; expire_at?: number }>(
+      '/v1/mcenter/jobs/promote/quote',
+      { job_id: jobId, kind },
+    )
+    quoteHint.value = `${q.remain ?? 0}`
     await api.post('/v1/mcenter/jobs/promote', { job_id: jobId, kind, days: n })
     msg.value = t('common.success')
     await refresh()
@@ -131,9 +140,29 @@ async function reserveOne(id: number, status: number) {
       end_time: reserveEnd.value,
       interval: reserveInterval.value,
       status,
+      s_time: reserveStart.value,
+      e_time: reserveStop.value,
     })
     msg.value = t('common_01047')
     await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
+}
+async function fillReserve(id: number) {
+  msg.value = ''
+  try {
+    const r = await api.post<{
+      status?: number
+      interval?: number
+      s_time?: string
+      e_time?: string
+      end_time?: number
+    }>('/v1/mcenter/jobs/reserve/get', { job_id: id })
+    reserveEnd.value = formatUnixDate(r.end_time)
+    reserveInterval.value = Number(r.interval || 30)
+    reserveStart.value = r.s_time || ''
+    reserveStop.value = r.e_time || ''
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
@@ -151,6 +180,8 @@ async function reservePicked(status: number) {
         end_time: reserveEnd.value,
         interval: reserveInterval.value,
         status,
+        s_time: reserveStart.value,
+        e_time: reserveStop.value,
       })
     }
     msg.value = t('common_01047')
@@ -188,6 +219,8 @@ useSeoMeta({ title: t('wap_com_00106') })
     <p v-if="reserveOn">
       {{ $t('member_com_00267') }}
       <input v-model="reserveEnd" type="date" />
+      <input v-model="reserveStart" type="time" />
+      <input v-model="reserveStop" type="time" />
       <input v-model.number="reserveInterval" type="number" min="1" style="width: 5em" />
       <button type="button" @click="reservePicked(1)">{{ $t('member_com_00261') }}</button>
       <button type="button" @click="reservePicked(2)">{{ $t('member_com_00278') }}</button>
@@ -205,10 +238,12 @@ useSeoMeta({ title: t('wap_com_00106') })
       </p>
       <p>
         <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
+        <NuxtLink :to="`/poster/job/${job.id}`">{{ $t('ui.poster') }}</NuxtLink>
         <button type="button" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</button>
         <button type="button" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</button>
         <button type="button" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</button>
         <template v-if="reserveOn">
+          <button type="button" @click="fillReserve(job.id)">{{ $t('wap_00225') }}</button>
           <button type="button" @click="reserveOne(job.id, 1)">{{ $t('member_com_00267') }}</button>
           <button type="button" @click="reserveOne(job.id, 2)">{{ $t('member_com_00278') }}</button>
         </template>
@@ -222,6 +257,7 @@ useSeoMeta({ title: t('wap_com_00106') })
         <button v-else type="button" @click="closePromote(job.id, 'urgent')">{{ $t('common.close') }} {{ $t('member_com_00613') }}</button>
       </p>
     </article>
+    <p v-if="quoteHint" class="muted">{{ quoteHint }}</p>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

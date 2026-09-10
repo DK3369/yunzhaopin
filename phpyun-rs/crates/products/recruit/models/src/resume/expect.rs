@@ -524,6 +524,16 @@ pub async fn set_admin_state(pool: &MySqlPool, id: u64, state: i32, r_status: i3
     Ok(())
 }
 
+/// PHP `resume.model::setExpectState` with `uid` — take every expect offline after written-off.
+pub async fn set_state_for_uid(pool: &MySqlPool, uid: u64, state: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_resume_expect SET state = ? WHERE uid = ?")
+        .bind(state)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("DELETE FROM phpyun_resume_expect WHERE id = ? AND uid = ?")
         .bind(id)

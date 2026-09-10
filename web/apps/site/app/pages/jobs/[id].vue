@@ -494,6 +494,7 @@ useHead({
                 </template>
               </div>
               <p v-if="applyMsg" class="muted">{{ applyMsg }}</p>
+              <EmailRecommendForm kind="job" :id="id" />
             </div>
             <div class="job_details_topright">
               <img
@@ -522,6 +523,11 @@ useHead({
                   <a href="javascript:;" class="job_details_top_extension_jb" @click.prevent="report">{{
                     $t('wap_com_00350')
                   }}</a>
+                  <NuxtLink :to="`/poster/job/${id}`">{{ $t('ui.poster') }}</NuxtLink>
+                  <NuxtLink
+                    v-if="String(settings.sy_h5_share || '1') !== '2'"
+                    :to="`/share/job/${id}`"
+                  >{{ $t('common.share') }}</NuxtLink>
                 </div>
               </div>
               </template>
@@ -934,6 +940,7 @@ useHead({
         </div>
       </div>
       <p v-if="applyMsg" class="muted" style="padding: 0.24rem">{{ applyMsg }}</p>
+      <EmailRecommendForm kind="job" :id="id" />
       <div v-if="!jobClosed" class="yun_czfoot">
         <div class="yun_czfootfixed">
           <div class="yun_czfoot_c">

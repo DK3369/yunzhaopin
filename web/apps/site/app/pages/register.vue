@@ -22,6 +22,9 @@ const allowUser = computed(() => cfg.value?.reg_user !== false)
 const allowMobile = computed(() => cfg.value?.reg_moblie !== false)
 const allowEmail = computed(() => cfg.value?.reg_email !== false)
 const alreadyIn = computed(() => Boolean(me.value && Number(me.value.usertype) !== 0))
+const agreed = ref(true)
+const writtenPw = ref('')
+const showWritten = ref(false)
 const form = reactive({
   username: '',
   password: '',
@@ -88,6 +91,10 @@ async function submit() {
     err.value = t('wap_00416')
     return
   }
+  if (!agreed.value) {
+    err.value = t('wap_00309')
+    return
+  }
   if (form.usertype === 2 && form.c_name.trim() && comNameHint.value) return
   try {
     const logged = await $fetch<{ uid: number; usertype: number }>('/api/auth/register', {
@@ -105,12 +112,50 @@ async function submit() {
     }
     await navigateTo(logged.usertype === 2 ? '/com' : '/user')
   } catch (e: unknown) {
+    const key =
+      e instanceof ApiError
+        ? e.key
+        : String((e as { data?: { key?: string } }).data?.key || '')
+    const text =
+      e instanceof ApiError
+        ? e.message
+        : String(
+            (e as { data?: { statusMessage?: string; msg?: string }; statusMessage?: string }).data
+              ?.msg ||
+              (e as { data?: { statusMessage?: string } }).data?.statusMessage ||
+              (e as { statusMessage?: string }).statusMessage ||
+              '',
+          )
+    if (
+      (form.regway === 2 || form.regway === 3) &&
+      (key.includes('mobile_taken') ||
+        key.includes('email_taken') ||
+        /占用|taken/i.test(`${key} ${text}`))
+    ) {
+      showWritten.value = true
+    }
     if (e instanceof ApiError) err.value = e.message
     else {
       const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
       err.value = ex.data?.statusMessage || ex.statusMessage || t('common_06630')
     }
     loadCaptcha()
+  }
+}
+async function writtenOff() {
+  err.value = ''
+  try {
+    await api.post('/v1/wap/register/written-off', {
+      pw: writtenPw.value,
+      mobile: form.regway === 2 ? form.moblie : '',
+      email: form.regway === 3 ? form.email : '',
+    })
+    showWritten.value = false
+    writtenPw.value = ''
+    err.value = t('common.success')
+  } catch (e: unknown) {
+    if (e instanceof ApiError) err.value = e.message
+    else err.value = e instanceof Error ? e.message : t('common_06630')
   }
 }
 useSeoMeta({ title: t('common.register') })
@@ -178,6 +223,19 @@ useSeoMeta({ title: t('common.register') })
               <input v-model="form.moblie_code" class="login_box_bth" :placeholder="$t('wap_01371')" />
               <button type="button" @click="sendSms">{{ $t('admin_user_00166') }}</button>
             </div>
+            <div class="login_xy" style="padding: 8px 0">
+              <label class="login_xy_zx">
+                <input v-model="agreed" type="checkbox" />
+                <i class="policy">{{ $t('wap_00309') }}</i>
+                <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+                <i class="policy">{{ $t('wap_00679') }}</i>
+                <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+              </label>
+            </div>
+            <div v-if="showWritten" class="login_box_list">
+              <input v-model="writtenPw" type="password" class="login_box_bth" :placeholder="$t('wap_user_00371')" />
+              <button type="button" @click="writtenOff">{{ $t('common.confirm') }}</button>
+            </div>
             <div class="login_box_cz">
               <input type="submit" :value="$t('common.register')" class="login_box_bth2" />
             </div>
@@ -242,6 +300,21 @@ useSeoMeta({ title: t('common.register') })
           <div v-if="form.regway === 2" class="login_textbox">
             <input v-model="form.moblie_code" :placeholder="$t('wap_01371')" />
             <button type="button" @click="sendSms">{{ $t('admin_user_00166') }}</button>
+          </div>
+          <div class="login_xy">
+            <div class="login_xy_zx">
+              <input v-model="agreed" type="checkbox" />
+            </div>
+            <div>
+              <i class="policy">{{ $t('wap_00309') }}</i>
+              <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+              <i class="policy">{{ $t('wap_00679') }}</i>
+              <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+            </div>
+          </div>
+          <div v-if="showWritten" class="login_textbox">
+            <input v-model="writtenPw" type="password" :placeholder="$t('wap_user_00371')" />
+            <button type="button" @click="writtenOff">{{ $t('common.confirm') }}</button>
           </div>
         </div>
         <p v-if="err" class="muted">{{ err }}</p>

@@ -1224,3 +1224,40 @@ pub async fn latest_gzh_scan_wxid(
     .await?;
     Ok(row.map(|r| r.0).filter(|s| !s.is_empty()))
 }
+
+/// PHP `register.model::writtenOff` — free a username so the occupying mobile/email
+/// can be used to register again. `restname = 0` lets the member pick a new name later.
+pub async fn written_off_rename(
+    pool: &MySqlPool,
+    uid: u64,
+    new_username: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET username = ?, restname = 0 WHERE uid = ?")
+        .bind(new_username)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `register.model::writtenOff` mobile branch.
+pub async fn written_off_clear_mobile(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_member SET moblie = '', moblie_status = 0 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `register.model::writtenOff` email branch.
+pub async fn written_off_clear_email(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_member SET email = '', email_status = 0 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}

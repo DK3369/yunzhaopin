@@ -51,6 +51,7 @@ const expectCities = computed(() =>
 const expectTitle = computed(() => expectJobs.value[0] || '')
 const expectCity = computed(() => expectCities.value[0] || '')
 const expectSalary = computed(() => String(expect0.value.salary_n || ''))
+const eid = computed(() => Number(row.value.def_job || expect0.value.id || 0))
 const unlocked = computed(() => Number(row.value.m_status) === 1)
 const bodyOpen = computed(() => Number(row.value.resume_check ?? 1) === 1)
 const tj = computed(() => (row.value.tj || {}) as Record<string, unknown>)
@@ -528,6 +529,7 @@ async function report() {
               <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="report">{{ $t('wap_com_00350') }}</a>
             </p>
             <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
+            <EmailRecommendForm v-if="eid" kind="resume" :id="eid" />
           </div>
         </div>
       </div>
@@ -692,6 +694,7 @@ async function report() {
           <NuxtLink v-else to="/login" class="job_ceil_jobtd">{{ $t('common.login') }}</NuxtLink>
         </div>
         <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
+        <EmailRecommendForm v-if="eid" kind="resume" :id="eid" />
       </div>
       <div class="yun_czfoot">
         <div class="yun_czfootfixed">

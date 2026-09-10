@@ -962,3 +962,25 @@ pub async fn find_uid_by_name(pool: &MySqlPool, name: &str) -> Result<Option<u64
     .await?;
     Ok(row.map(|(uid,)| uid))
 }
+
+/// PHP `register.model::writtenOff` — drop the resume phone so the number can be reused.
+pub async fn written_off_clear_mobile(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume SET telphone = '', moblie_status = 0 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `register.model::writtenOff` — drop the resume email so the address can be reused.
+pub async fn written_off_clear_email(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume SET email = '', email_status = 0 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}

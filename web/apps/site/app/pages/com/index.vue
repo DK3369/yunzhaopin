@@ -41,6 +41,7 @@ const links = [
   { to: '/com/talent', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/com/cert', icon: '/legacy/h5/images/company.png' },
   { to: '/com/messages', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/com/job-messages', icon: '/legacy/h5/images/icon_communication.png' },
   { to: '/com/downloads', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/com/interviews', icon: '/legacy/h5/images/icon_communication.png' },
   { to: '/com/follows', icon: '/legacy/h5/images/icon_communication.png' },

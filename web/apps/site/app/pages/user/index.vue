@@ -37,7 +37,7 @@ const { data: expects } = await useAsyncData('user-home-expects', () =>
   api.post('/v1/mcenter/resume/expects/list', {}).catch(() => []),
 )
 const { data: completion } = await useAsyncData('user-home-score', () =>
-  api.post<{ score?: number }>('/v1/mcenter/resume/completion', {}).catch(() => null),
+  api.post<{ score?: number; missing?: string[] }>('/v1/mcenter/resume/completion', {}).catch(() => null),
 )
 const { data: signSt, refresh: refreshSign } = await useAsyncData('user-home-sign', () =>
   api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
@@ -60,6 +60,18 @@ const defExpect = computed(() => {
   return expectList.value.find((e: { id?: number }) => Number(e.id) === id) || expectList.value[0] || null
 })
 const integrity = computed(() => Number(completion.value?.score || 0))
+const missingBits = computed(() => completion.value?.missing || [])
+function missingLabel(k: string) {
+  const map: Record<string, string> = {
+    basic_info: t('wap_00269'),
+    photo: t('wap_user_00204'),
+    expect: t('wap_00460'),
+    education: t('wap_00459'),
+    work: t('wap_00457'),
+    skill_or_language_or_project: t('wap_00450'),
+  }
+  return map[k] || k
+}
 function ageOf(birthday?: string) {
   if (!birthday) return 0
   const y = Number(String(birthday).slice(0, 4))
@@ -98,6 +110,7 @@ const h5Links = [
   { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
   { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
   { to: '/user/otherservice', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00196' },
+  { to: '/user/eval-logs', icon: '/legacy/h5/images/sz.png', key: 'wap_00194' },
   { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
 ]
 function labelOf(to: string, key: string) {
@@ -183,6 +196,9 @@ function labelOf(to: string, key: string) {
                 <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" :style="{ width: `${integrity}%` }" /></div>
                 <span class="user_resume_wzd_r">{{ integrity }}%</span>
               </NuxtLink>
+              <p v-if="missingBits.length" class="muted">
+                <NuxtLink to="/user/resume">{{ missingBits.map(missingLabel).join(' · ') }}</NuxtLink>
+              </p>
             </div>
             <div class="user_resume_p user_resume_pd">{{ resume?.lastupdate_n }}</div>
           </div>
@@ -246,6 +262,9 @@ function labelOf(to: string, key: string) {
                 <span>{{ integrity }}%</span>
               </div>
             </div>
+            <p v-if="missingBits.length" class="muted">
+              <NuxtLink to="/user/resume">{{ missingBits.map(missingLabel).join(' · ') }}</NuxtLink>
+            </p>
             <div class="userheader_datum_job_state">
               <div v-if="resume?.exp_n || resume?.education_n" class="userheader_datum_job_data">
                 {{ resume?.exp_n }}{{ resume?.education_n }}{{ ageOf(resume?.birthday) ? ageOf(resume?.birthday) + $t('common_02074') : '' }}

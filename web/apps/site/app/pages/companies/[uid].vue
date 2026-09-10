@@ -280,6 +280,10 @@ useHead({
                 <i v-if="Number(company.moblie_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_sj" />
                 <i v-if="Number(company.email_status) === 1" class="job_details_cominfo_rz job_details_cominfo_rz_yx" />
                 <NuxtLink :to="`/poster/company/${uid}`">{{ $t('ui.poster') }}</NuxtLink>
+                <NuxtLink
+                  v-if="String(settings.sy_h5_share || '1') !== '2'"
+                  :to="`/share/company/${uid}`"
+                >{{ $t('common.share') }}</NuxtLink>
               </h1>
               <div class="com_details_info">
                 <template v-if="company.city_one">{{ company.city_one }}</template>

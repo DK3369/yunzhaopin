@@ -10,6 +10,10 @@ const { data } = await useAsyncData(`share-job-${id}`, () => api.get('/v1/wap/jo
 const job = computed(
   () => ((data.value as { job?: Record<string, unknown> } | null)?.job || {}) as Record<string, unknown>,
 )
+const href = computed(() => {
+  const origin = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
+  return `${origin}/jobs/${id}`
+})
 useSeoMeta({
   title: () => String(job.value.name || t('common.share')),
   description: () => seoJoin([job.value.description, job.value.com_name, job.value.name]),
@@ -20,6 +24,8 @@ useSeoMeta({
   <article v-if="shareOn">
     <h1>{{ job.name || $t('common.job') }}</h1>
     <p>{{ job.com_name }}</p>
+    <ShareSceneQr kind="job" :id="id" :href="href" />
+    <EmailRecommendForm kind="job" :id="id" />
     <p><NuxtLink :to="`/jobs/${id}`">{{ $t('common.more') }}</NuxtLink></p>
   </article>
   <p v-else class="muted">{{ $t('common_02409') }}</p>

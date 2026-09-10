@@ -12,11 +12,16 @@ async function remove(id: number) {
   await api.post('/v1/mcenter/messages/delete', { id })
   refresh()
 }
+async function readAll() {
+  await api.post('/v1/mcenter/messages/read-all', {})
+  refresh()
+}
 useSeoMeta({ title: t('common.message') })
 </script>
 
 <template>
   <MemberPanel :title="$t('common.message')" :error="error" :empty="!error && !(data?.list || []).length">
+    <p><button type="button" @click="readAll">{{ $t('common.confirm') }}</button></p>
     <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
       <p>{{ row.body || row.content || row.title || row.id }}</p>
       <p class="muted">{{ row.datetime_n }}</p>

@@ -44,7 +44,6 @@ pub async fn recommend_resume(
     eid: u64,
     input: RecommendInput<'_>,
 ) -> AppResult<RecommendResult> {
-    user.require_employer()?;
     common(state, user, REC_TYPE_RESUME, eid, input).await
 }
 

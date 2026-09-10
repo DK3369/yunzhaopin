@@ -25,6 +25,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/batch/close", post(batch_close))
         .route("/jobs/batch/delete", post(batch_delete))
         .route("/jobs/reserve", post(reserve))
+        .route("/jobs/reserve/get", post(reserve_get))
         .route("/jobs/promote/quote", post(promote_quote))
         .route("/jobs/promote", post(promote))
         .route("/jobs/promote/close", post(promote_close))
@@ -621,4 +622,43 @@ pub async fn reserve(
     )
     .await?;
     Ok(ApiResponse::data(ReserveOk { ok: true }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ReserveGetForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub job_id: u64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReserveInfoView {
+    pub status: i32,
+    pub interval: i32,
+    pub s_time: String,
+    pub e_time: String,
+    pub end_time: i64,
+}
+
+/// PHP member `job::reserveInfo` — current auto-refresh schedule for one job.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/reserve/get",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ReserveGetForm,
+    responses((status = 200, description = "ok", body = ReserveInfoView))
+)]
+pub async fn reserve_get(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ReserveGetForm>,
+) -> AppResult<ApiResponse<ReserveInfoView>> {
+    let r = job_mgmt_service::get_reserve(&state, &user, f.job_id).await?;
+    Ok(ApiResponse::data(ReserveInfoView {
+        status: r.status,
+        interval: r.interval,
+        s_time: r.s_time,
+        e_time: r.e_time,
+        end_time: r.end_time,
+    }))
 }

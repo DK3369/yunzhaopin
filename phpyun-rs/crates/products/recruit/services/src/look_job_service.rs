@@ -52,3 +52,16 @@ pub async fn hide_mine_seeker(
     }
     Ok(n)
 }
+
+pub async fn hide_mine_employer(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    let n = look_job::hide_by_com(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(phpyun_core::ApiError::business("not_found"));
+    }
+    Ok(n)
+}

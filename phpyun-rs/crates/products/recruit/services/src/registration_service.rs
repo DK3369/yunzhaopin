@@ -267,6 +267,119 @@ pub async fn company_name_taken(state: &AppState, name: &str) -> AppResult<bool>
         .is_some())
 }
 
+/// PHP `register.model::writtenOff` / wap `register::writtenoff_action`.
+///
+/// The occupying account's password is required. When `zyuid` is 0, the
+/// occupying member is resolved from `mobile` / `email` (same uniqueness
+/// fields the register page already knows).
+pub struct WrittenOffInput<'a> {
+    pub zyuid: u64,
+    pub password: &'a str,
+    pub mobile: &'a str,
+    pub email: &'a str,
+    pub client_ip: &'a str,
+}
+
+pub async fn written_off(state: &AppState, input: WrittenOffInput<'_>) -> AppResult<()> {
+    phpyun_core::rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:ip:{}:written_off", input.client_ip),
+        phpyun_core::rate_limit::LimitRule {
+            max: 8,
+            window: std::time::Duration::from_secs(3600),
+        },
+    )
+    .await?;
+    let mobile = input.mobile.trim();
+    let email = input.email.trim();
+    if mobile.is_empty() && email.is_empty() {
+        return Err(ApiError::param_invalid("mobile_or_email"));
+    }
+    if input.password.is_empty() {
+        return Err(ApiError::param_invalid("password"));
+    }
+    let db = state.db.pool();
+    let member = if input.zyuid > 0 {
+        user_repo::find_by_uid(db, input.zyuid).await?
+    } else if !mobile.is_empty() {
+        user_repo::find_by_mobile(db, mobile).await?
+    } else {
+        user_repo::find_by_email_loose(db, email).await?
+    }
+    .ok_or_else(|| ApiError::param_invalid("account_not_found"))?;
+
+    if member.status == 2 {
+        return Err(ApiError::locked());
+    }
+    if !phpyun_auth::verify_password_async(
+        input.password.to_string(),
+        member.password.clone(),
+        member.salt.clone(),
+    )
+    .await
+    {
+        return Err(ApiError::bad_credentials());
+    }
+
+    let uname = member.username.clone();
+    let uid = member.uid;
+    if !mobile.is_empty() {
+        let holds_mobile = member.moblie.as_deref() == Some(mobile) || uname == mobile;
+        if !holds_mobile {
+            return Err(ApiError::param_invalid("mobile"));
+        }
+        if uname == mobile {
+            let new_name = unique_yun_username(state).await?;
+            user_repo::written_off_rename(db, uid, &new_name).await?;
+        }
+        user_repo::written_off_clear_mobile(db, uid).await?;
+        resume_repo::written_off_clear_mobile(db, uid).await?;
+        company_repo::set_mobile_lock(db, uid, "", 0).await?;
+        phpyun_models::resume::expect::set_state_for_uid(db, uid, 0).await?;
+    } else {
+        let holds_email = member
+            .email
+            .as_deref()
+            .map(|e| e.eq_ignore_ascii_case(email))
+            .unwrap_or(false)
+            || uname.eq_ignore_ascii_case(email);
+        if !holds_email {
+            return Err(ApiError::param_invalid("email"));
+        }
+        if uname.eq_ignore_ascii_case(email) {
+            let new_name = unique_yun_username(state).await?;
+            user_repo::written_off_rename(db, uid, &new_name).await?;
+        }
+        user_repo::written_off_clear_email(db, uid).await?;
+        resume_repo::written_off_clear_email(db, uid).await?;
+        company_repo::set_email_lock(db, uid, "", 0).await?;
+    }
+
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("user.written_off", Actor::uid(uid).with_ip(input.client_ip))
+            .target(format!("uid:{uid}"))
+            .meta(&serde_json::json!({
+                "mobile": !mobile.is_empty(),
+                "email": !email.is_empty()
+            })),
+    )
+    .await;
+    Ok(())
+}
+
+async fn unique_yun_username(state: &AppState) -> AppResult<String> {
+    let pool = state.db.pool();
+    for _ in 0..8 {
+        let hex: String = Uuid::new_v4().simple().to_string().chars().take(8).collect();
+        let candidate = format!("yun{hex}");
+        if !user_repo::exists_username(pool, &candidate).await? {
+            return Ok(candidate);
+        }
+    }
+    Err(ApiError::business("username_taken"))
+}
+
 /// 16-character salt (PHPYun's salt is 6 chars; we bump to 16; argon2 accepts any length)
 fn gen_salt() -> String {
     let u = Uuid::now_v7();

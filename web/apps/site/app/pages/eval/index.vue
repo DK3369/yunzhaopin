@@ -3,6 +3,7 @@ const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
 const { t } = useI18n()
 const api = useApi()
+const { me } = useSiteChrome()
 const { data, error } = await useAsyncData(
   () => `eval-${page.value}`,
   () => api.get('/v1/wap/eval-papers', { page: page.value, page_size: 20 }),
@@ -13,6 +14,7 @@ useSeoMeta({ title: t('wap_00194') })
 <template>
   <section>
     <h1>{{ $t('wap_00194') }}</h1>
+    <p v-if="me"><NuxtLink to="/user/eval-logs">{{ $t('common.more') }}</NuxtLink></p>
     <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('wap_00192') }}</p>
     <div v-else class="stack">

@@ -105,6 +105,10 @@ pub async fn delete_mine_seeker(
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    let n = look_job_service::hide_mine_seeker(&state, &user, b.id).await?;
+    let n = if user.usertype == 2 {
+        look_job_service::hide_mine_employer(&state, &user, b.id).await?
+    } else {
+        look_job_service::hide_mine_seeker(&state, &user, b.id).await?
+    };
     Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }

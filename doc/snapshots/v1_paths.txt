@@ -136,6 +136,7 @@
 /v1/mcenter/jobs/promote/quote
 /v1/mcenter/jobs/refresh
 /v1/mcenter/jobs/reserve
+/v1/mcenter/jobs/reserve/get
 /v1/mcenter/jobs/status
 /v1/mcenter/jobs/update
 /v1/mcenter/look-jobs/delete
@@ -432,6 +433,7 @@
 /v1/wap/register/check
 /v1/wap/register/check-com-name
 /v1/wap/register/config
+/v1/wap/register/written-off
 /v1/wap/resume-share/view
 /v1/wap/resumes
 /v1/wap/resumes/default-expect

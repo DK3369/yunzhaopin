@@ -13,6 +13,8 @@ useSeoMeta({ title: t('wap_user_00196') })
       <NuxtLink to="/user/binding" class="job-card">{{ $t('wap_00389') }}</NuxtLink>
       <NuxtLink to="/user/account" class="job-card">{{ $t('wap_user_00338') }}</NuxtLink>
       <NuxtLink to="/user/set" class="job-card">{{ $t('wap_user_00214') }}</NuxtLink>
+      <NuxtLink to="/user/eval-logs" class="job-card">{{ $t('wap_00194') }}</NuxtLink>
+      <NuxtLink to="/user/resume" class="job-card">{{ $t('common.share') }}</NuxtLink>
     </div>
   </section>
 </template>

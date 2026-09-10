@@ -21,6 +21,7 @@ pub fn routes() -> Router<AppState> {
         .route("/register/check", post(check_availability))
         .route("/register/check-com-name", post(check_com_name))
         .route("/register/config", post(config))
+        .route("/register/written-off", post(written_off))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -308,4 +309,58 @@ pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<Regi
         reg_moblie,
         reg_email,
     }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct WrittenOffForm {
+    /// Occupying member uid (PHP `zyuid`). 0 = resolve from mobile/email.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
+    #[validate(range(max = 99_999_999))]
+    pub zyuid: u64,
+    /// Occupying account password (PHP `pw`).
+    #[validate(length(min = 1, max = 64))]
+    pub pw: String,
+    #[serde(default)]
+    #[validate(length(max = 32))]
+    pub mobile: String,
+    #[serde(default)]
+    #[validate(length(max = 128))]
+    pub email: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct WrittenOffOk {
+    pub ok: bool,
+}
+
+/// PHP `wap/register::writtenoff_action` — unbind a taken mobile/email so a new
+/// registration can use it. Requires the occupying account's password.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/register/written-off",
+    tag = "auth",
+    request_body = WrittenOffForm,
+    responses(
+        (status = 200, description = "ok", body = WrittenOffOk),
+        (status = 400, description = "Missing field / password mismatch / not occupying"),
+        (status = 403, description = "Occupying account locked"),
+    )
+)]
+pub async fn written_off(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<WrittenOffForm>,
+) -> AppResult<ApiResponse<WrittenOffOk>> {
+    registration_service::written_off(
+        &state,
+        registration_service::WrittenOffInput {
+            zyuid: f.zyuid,
+            password: &f.pw,
+            mobile: &f.mobile,
+            email: &f.email,
+            client_ip: &ip,
+        },
+    )
+    .await?;
+    Ok(ApiResponse::data(WrittenOffOk { ok: true }))
 }

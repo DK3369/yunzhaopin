@@ -774,6 +774,47 @@ pub async fn up_reserve(
     Ok(())
 }
 
+/// PHP member `job::reserveInfo` — pre-fill the auto-refresh dialog.
+pub struct ReserveInfo {
+    pub status: i32,
+    pub interval: i32,
+    pub s_time: String,
+    pub e_time: String,
+    pub end_time: i64,
+}
+
+pub async fn get_reserve(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    job_id: u64,
+) -> AppResult<ReserveInfo> {
+    user.require_employer()?;
+    let job = job_repo::find_by_id(state.db.reader(), job_id)
+        .await?
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    if job.uid != user.uid {
+        return Err(ApiError::business("job_not_found"));
+    }
+    let row = phpyun_models::admin_gap::extra::find_reserve_schedule(state.db.reader(), job_id)
+        .await?;
+    Ok(match row {
+        Some(r) => ReserveInfo {
+            status: r.status,
+            interval: r.interval,
+            s_time: r.s_time,
+            e_time: r.e_time,
+            end_time: r.end_time,
+        },
+        None => ReserveInfo {
+            status: 2,
+            interval: 0,
+            s_time: String::new(),
+            e_time: String::new(),
+            end_time: 0,
+        },
+    })
+}
+
 fn parse_reserve_end_ts(s: &str) -> i64 {
     let s = s.trim();
     if s.is_empty() {

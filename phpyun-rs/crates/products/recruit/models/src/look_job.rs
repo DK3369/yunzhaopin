@@ -50,7 +50,8 @@ pub async fn list_by_com(
         "SELECT {FIELDS} FROM phpyun_look_job d \
          LEFT JOIN phpyun_company_job j ON j.id = d.jobid \
          LEFT JOIN phpyun_resume r ON r.uid = d.uid \
-         WHERE d.com_id = ? ORDER BY d.datetime DESC LIMIT ? OFFSET ?"
+         WHERE d.com_id = ? AND COALESCE(d.com_status,0) = 0 \
+         ORDER BY d.datetime DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, LookJob>(&sql)
         .bind(com_uid)
@@ -68,7 +69,10 @@ pub async fn list_by_com(
 
 pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_look_job WHERE com_id = ?")
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_look_job \
+             WHERE com_id = ? AND COALESCE(com_status,0) = 0",
+        )
             .bind(com_uid)
             .fetch_one(pool)
             .await?;
@@ -140,6 +144,19 @@ pub async fn hide_by_seeker(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, 
     )
     .bind(id)
     .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `delLookJob` for usertype=2: `com_status = 1`.
+pub async fn hide_by_com(pool: &MySqlPool, id: u64, com_uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_look_job SET com_status = 1 \
+         WHERE id = ? AND com_id = ? AND COALESCE(com_status,0) = 0",
+    )
+    .bind(id)
+    .bind(com_uid)
     .execute(pool)
     .await?;
     Ok(res.rows_affected())

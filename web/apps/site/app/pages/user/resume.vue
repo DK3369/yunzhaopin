@@ -51,6 +51,14 @@ const { data: languages, refresh: refreshLanguages } = await useAsyncData('my-la
 const { data: shows, refresh: refreshShows } = await useAsyncData('my-resume-gallery', () =>
   api.post('/v1/mcenter/galleries/list', { kind: 'resume', page: 1, page_size: 20 }).catch(() => ({ list: [] })),
 )
+const { data: shareTokens, refresh: refreshShares } = await useAsyncData('my-resume-shares', () =>
+  api
+    .post<{ list?: Array<{ token: string; view_count?: number; expires_at_n?: string; active?: boolean }> }>(
+      '/v1/mcenter/resume-share-tokens/list',
+      { page: 1, page_size: 20 },
+    )
+    .catch(() => ({ list: [] })),
+)
 const { data: eduDict } = await useAsyncData('resume-edu-dict', () =>
   api.get<DictItem[]>('/v1/wap/dict/educations', { source: 'user' }).catch(() => [] as DictItem[]),
 )
@@ -108,6 +116,7 @@ const certForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', title: ''
 const otherForm = reactive({ id: 0, name: '', content: '' })
 const languageForm = reactive({ id: 0, name: '', level: 0 })
 const galleryTitle = ref('')
+const shareTtl = ref(604800)
 const msg = ref('')
 
 function fail(e: unknown) {
@@ -169,6 +178,26 @@ async function removeShow(id: number) {
     await api.post('/v1/mcenter/galleries/delete', { kind: 'resume', ids: [id] })
     msg.value = t('common.success')
     await refreshShows()
+  } catch (e: unknown) {
+    msg.value = fail(e)
+  }
+}
+async function createShare() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume-share-tokens', { ttl_secs: shareTtl.value })
+    msg.value = t('common.success')
+    await refreshShares()
+  } catch (e: unknown) {
+    msg.value = fail(e)
+  }
+}
+async function revokeShare(token: string) {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume-share-tokens/revoke', { token })
+    msg.value = t('common.success')
+    await refreshShares()
   } catch (e: unknown) {
     msg.value = fail(e)
   }
@@ -477,6 +506,18 @@ useSeoMeta({ title: t('wap_user_00204') })
       <h3>{{ row.title || row.id }}</h3>
       <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
       <button type="button" @click="removeShow(row.id)">{{ $t('common.delete') }}</button>
+    </article>
+    <h2>{{ $t('common.share') }}</h2>
+    <form class="form" @submit.prevent="createShare">
+      <input v-model.number="shareTtl" type="number" min="60" max="2592000" />
+      <button type="submit">{{ $t('common.submit') }}</button>
+    </form>
+    <article v-for="row in shareTokens?.list || []" :key="row.token" class="job-card">
+      <h3>
+        <NuxtLink :to="`/share/resume/${row.token}`">{{ row.token }}</NuxtLink>
+      </h3>
+      <p class="muted">{{ row.view_count }} · {{ row.expires_at_n }}</p>
+      <button v-if="row.active" type="button" @click="revokeShare(row.token)">{{ $t('common.delete') }}</button>
     </article>
     <p v-if="msg">{{ msg }}</p>
   </section>
