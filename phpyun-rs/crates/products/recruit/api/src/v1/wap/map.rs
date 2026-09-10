@@ -37,6 +37,21 @@ pub struct GeoQuery {
     #[serde(default)]
     #[validate(range(max = 999))]
     pub did: u32,
+    /// PHP `wap/map::joblist` `depower`. Empty → `is_depower=2`; `all` → no filter; otherwise the integer value.
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub depower: Option<String>,
+}
+
+fn job_depower(raw: &Option<String>) -> Option<i32> {
+    let s = raw.as_deref().map(str::trim).unwrap_or("");
+    if s.is_empty() {
+        return Some(2);
+    }
+    if s.eq_ignore_ascii_case("all") {
+        return None;
+    }
+    s.parse::<i32>().ok().or(Some(2))
 }
 fn default_radius() -> f64 {
     50.0
@@ -107,6 +122,7 @@ pub async fn jobs_near(
         q.page,
         q.limit,
         q.did,
+        job_depower(&q.depower),
     )
     .await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

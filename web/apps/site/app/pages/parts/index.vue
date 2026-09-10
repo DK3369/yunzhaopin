@@ -41,12 +41,16 @@ const { data: partTypes } = await useAsyncData(
   () => `cat-part-${locale.value}`,
   () => api.get<Array<{ id: number; name: string; parent_id?: number }>>('/v1/wap/categories', { kind: 'part' }).catch(() => []),
 )
-const typeItems = computed(() =>
-  (partTypes.value || [])
-    .filter((c) => !c.parent_id)
-    .map((c) => ({ id: c.id, name: c.name })),
+const partRoots = computed(() =>
+  (partTypes.value || []).filter((c) => !c.parent_id).sort((a, b) => a.id - b.id),
 )
-const cycleItems = computed(() => (partTypes.value || []).filter((c) => Number(c.parent_id) > 0).map((c) => ({ id: c.id, name: c.name })))
+function partChildren(rootIdx: number) {
+  const root = partRoots.value[rootIdx]
+  if (!root) return []
+  return (partTypes.value || []).filter((c) => Number(c.parent_id) === root.id)
+}
+const typeItems = computed(() => partChildren(0))
+const cycleItems = computed(() => partChildren(2))
 useSeoMeta({ title: t('wap_com_00311') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 useListLoginGate(error)

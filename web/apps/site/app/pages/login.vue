@@ -97,22 +97,33 @@ async function loadCaptcha() {
 }
 onMounted(async () => {
   rememberReferrer()
-  if (String(useRoute().query.bind) === '1' && me.value) {
+  const q = useRoute().query
+  const code = typeof q.code === 'string' ? q.code : ''
+  const state = typeof q.state === 'string' ? q.state : ''
+  const oauthIntent = import.meta.client ? sessionStorage.getItem('oauth_intent') || '' : ''
+  if (String(q.bind) === '1' && me.value && oauthIntent !== 'bind') {
     await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined)
-  } else if (me.value && Number(me.value.usertype) !== 0) {
+  } else if (me.value && Number(me.value.usertype) !== 0 && !(code && state)) {
     await afterLogin(me.value)
     return
   }
   if (smsLoginOn.value && String(settings.value.sy_login_type) === '2') {
     tab.value = 'sms'
   }
-  const q = useRoute().query
-  const code = typeof q.code === 'string' ? q.code : ''
-  const state = typeof q.state === 'string' ? q.state : ''
   if (code && state) {
     const stored = sessionStorage.getItem('oauth_provider') || ''
     const provider = stored || (typeof q.provider === 'string' ? q.provider : 'wechat')
+    const intent = sessionStorage.getItem('oauth_intent') || ''
+    const bindNext = sessionStorage.getItem('oauth_bind_next') || '/user/binding'
     try {
+      if (intent === 'bind') {
+        await $fetch('/api/auth/oauth-bind', { method: 'POST', body: { provider, code, state } })
+        sessionStorage.removeItem('oauth_provider')
+        sessionStorage.removeItem('oauth_intent')
+        sessionStorage.removeItem('oauth_bind_next')
+        await navigateTo(bindNext)
+        return
+      }
       const me = await $fetch<{ uid: number; usertype: number; need_bind?: boolean; ticket?: string }>(
         '/api/auth/oauth-login',
         {
@@ -128,6 +139,8 @@ onMounted(async () => {
       await afterLogin(me)
       return
     } catch (e: unknown) {
+      sessionStorage.removeItem('oauth_intent')
+      sessionStorage.removeItem('oauth_bind_next')
       const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
       err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
     }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatUnixDate, isUnauthErr } from '~/utils/site'
+import { ApiError } from '~/utils/envelope'
 
 type JobRow = {
   id: number
@@ -42,6 +43,7 @@ const reserveInterval = ref(30)
 const reserveStart = ref('')
 const reserveStop = ref('')
 const quoteHint = ref('')
+const buyHint = ref('')
 const allPicked = computed({
   get: () => list.value.length > 0 && picked.value.length === list.value.length,
   set: (v: boolean) => {
@@ -66,15 +68,33 @@ function expireOf(job: JobRow, kind: 'top' | 'rec' | 'urgent') {
   return formatUnixDate(ts)
 }
 
+function isQuotaErr(e: unknown) {
+  if (!(e instanceof ApiError)) return false
+  return (
+    e.key === 'job_refresh_quota' ||
+    e.key === 'common_00207' ||
+    e.key === 'common_00206' ||
+    e.key === 'common_00180'
+  )
+}
+function failAct(e: unknown) {
+  if (isQuotaErr(e)) {
+    buyHint.value = e instanceof ApiError ? e.message : t('wap_com_00048')
+    return t('wap_com_00048')
+  }
+  return e instanceof Error ? e.message : t('ui.load_failed')
+}
+
 async function refreshJob(id: number) {
   msg.value = ''
+  buyHint.value = ''
   try {
     await api.post('/v1/mcenter/jobs/refresh', { id })
     msg.value = t('common.success')
     await refresh()
     await refreshCounts()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    msg.value = failAct(e)
   }
 }
 async function setStatus(id: number, status: number) {
@@ -90,6 +110,7 @@ async function setStatus(id: number, status: number) {
 async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
   msg.value = ''
   quoteHint.value = ''
+  buyHint.value = ''
   const n = Math.max(1, Math.min(365, Number(days.value) || 1))
   try {
     const q = await api.post<{ remain?: number; active?: boolean; expire_at?: number }>(
@@ -102,7 +123,7 @@ async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
     await refresh()
     await refreshCounts()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    msg.value = failAct(e)
   }
 }
 async function closePromote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
@@ -118,6 +139,7 @@ async function closePromote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
 }
 async function batch(kind: 'refresh' | 'close' | 'delete') {
   msg.value = ''
+  buyHint.value = ''
   if (!picked.value.length) {
     msg.value = t('common_01164')
     return
@@ -129,7 +151,7 @@ async function batch(kind: 'refresh' | 'close' | 'delete') {
     await refresh()
     await refreshCounts()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    msg.value = failAct(e)
   }
 }
 async function reserveOne(id: number, status: number) {
@@ -258,6 +280,12 @@ useSeoMeta({ title: t('wap_com_00106') })
       </p>
     </article>
     <p v-if="quoteHint" class="muted">{{ quoteHint }}</p>
+    <p v-if="buyHint" class="muted">
+      {{ buyHint }}
+      <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
+      ·
+      <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>
+    </p>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

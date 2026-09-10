@@ -207,6 +207,19 @@ pub struct ZphDetail {
     pub is_open: i32,
     pub status: i32,
     pub sort: i32,
+    /// PHP `zph.com` past-event album (`phpyun_zhaopinhui_pic`).
+    #[serde(default)]
+    pub pics: Vec<ZphPicView>,
+}
+
+/// Job-fair gallery item.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ZphPicView {
+    pub id: u64,
+    pub title: String,
+    pub pic: String,
+    pub pic_n: String,
+    pub sort: i32,
 }
 
 impl ZphDetail {
@@ -214,6 +227,7 @@ impl ZphDetail {
         z: phpyun_models::zph::entity::Zph,
         state: &AppState,
         dicts: &phpyun_services::dict_service::LocalizedDicts,
+        pics: Vec<ZphPicView>,
     ) -> Self {
         let banner_n = pic_n(state, &z.banner);
         let banner_wap_n = pic_n(state, &z.banner_wap);
@@ -259,6 +273,7 @@ impl ZphDetail {
             is_open: z.is_open,
             status: z.status,
             sort: z.sort,
+            pics,
         }
     }
 }
@@ -303,6 +318,7 @@ impl From<phpyun_models::zph::entity::Zph> for ZphDetail {
             is_open: z.is_open,
             status: z.status,
             sort: z.sort,
+            pics: Vec::new(),
         }
     }
 }
@@ -347,9 +363,20 @@ pub async fn detail(
 ) -> AppResult<ApiResponse<ZphDetail>> {
     let id = b.id;
     let z = zph_service::get_detail(&state, id).await?;
+    let pics = zph_service::list_pics(&state, id).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
+    let pic_views = pics
+        .into_iter()
+        .map(|p| ZphPicView {
+            pic_n: pic_n(&state, &p.pic),
+            id: p.id,
+            title: p.title,
+            pic: p.pic,
+            sort: p.sort,
+        })
+        .collect();
     Ok(ApiResponse::data(ZphDetail::from_with_dict(
-        z, &state, &dicts,
+        z, &state, &dicts, pic_views,
     )))
 }
 

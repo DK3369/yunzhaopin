@@ -65,6 +65,22 @@ const { data: eduDict } = await useAsyncData('resume-edu-dict', () =>
 const { data: expDict } = await useAsyncData('resume-exp-dict', () =>
   api.get<DictItem[]>('/v1/wap/dict/experiences', { source: 'user' }).catch(() => [] as DictItem[]),
 )
+const { data: completion, refresh: refreshCompletion } = await useAsyncData('resume-edit-completion', () =>
+  api.post<{ score?: number; missing?: string[] }>('/v1/mcenter/resume/completion', {}).catch(() => null),
+)
+const integrity = computed(() => Number(completion.value?.score || 0))
+const missingBits = computed(() => completion.value?.missing || [])
+function missingLabel(k: string) {
+  const map: Record<string, string> = {
+    basic_info: t('wap_00269'),
+    photo: t('wap_user_00204'),
+    expect: t('wap_00460'),
+    education: t('wap_00459'),
+    work: t('wap_00457'),
+    skill_or_language_or_project: t('wap_00450'),
+  }
+  return map[k] || k
+}
 const form = reactive({
   name: '',
   sex: 1,
@@ -128,6 +144,7 @@ async function saveResume() {
     await api.post('/v1/mcenter/resume', { ...form })
     msg.value = t('common.success')
     await refresh()
+    await refreshCompletion()
   } catch (e: unknown) {
     msg.value = fail(e)
   }
@@ -325,6 +342,8 @@ useSeoMeta({ title: t('wap_user_00204') })
 <template>
   <section>
     <h1>{{ $t('wap_user_00204') }}</h1>
+    <p v-if="integrity" class="muted">{{ integrity }}%</p>
+    <p v-if="missingBits.length" class="muted">{{ missingBits.map(missingLabel).join(' · ') }}</p>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="saveResume">
       <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" width="72" height="72" />

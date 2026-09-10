@@ -4,7 +4,7 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged
 use phpyun_models::{
     job::repo as job_repo,
     zph::{
-        entity::{Zph, ZphCompany, ZphReservation, ZphSpace},
+        entity::{Zph, ZphCompany, ZphPic, ZphReservation, ZphSpace},
         repo as zph_repo,
     },
 };
@@ -31,6 +31,11 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Zph> {
         return Err(ApiError::business("zph_closed"));
     }
     Ok(z)
+}
+
+/// Past-event gallery (`phpyun_zhaopinhui_pic`). Additive on fair detail.
+pub async fn list_pics(state: &AppState, zid: u64) -> AppResult<Vec<ZphPic>> {
+    Ok(zph_repo::list_pics(state.db.reader(), zid).await?)
 }
 
 pub struct PublicSpace {

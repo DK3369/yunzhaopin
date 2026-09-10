@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { seoJoin } from '~/utils/seo'
-import type { CompanyLike, JobLike } from '~/utils/site'
+import { mediaUrl, type CompanyLike, type JobLike } from '~/utils/site'
 
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
 const { me } = useSiteChrome()
 const tab = computed(() => String(useRoute().query.tab || 'intro'))
-const { data } = await useAsyncData(`fair-${id}`, () => api.get('/v1/wap/zph/detail', { id }))
+const { data } = await useAsyncData(`fair-${id}`, () =>
+  api.get<{
+    title?: string
+    address?: string
+    body?: string
+    start_at_n?: string
+    pics?: Array<{ id: number; title?: string; pic?: string; pic_n?: string }>
+  }>('/v1/wap/zph/detail', { id }),
+)
 const { data: companies } = await useAsyncData(`fair-com-${id}`, () =>
   api.get<{ list?: CompanyLike[] }>('/v1/wap/zph/companies', { id, page: 1, page_size: 20 }).catch(() => ({ list: [] })),
 )
@@ -123,6 +131,12 @@ useHead({ link: [{ rel: 'canonical', href: `/fairs/${id}` }] })
     <template v-else>
       <div v-if="data?.body" v-html="data.body" />
       <p v-else-if="!data?.title" class="muted">{{ $t('wap_00603') }}</p>
+      <div v-if="(data?.pics || []).length" class="stack">
+        <figure v-for="p in data?.pics || []" :key="p.id">
+          <img v-if="p.pic_n || p.pic" :src="mediaUrl(p.pic_n || p.pic)" :alt="p.title || ''" />
+          <figcaption v-if="p.title" class="muted">{{ p.title }}</figcaption>
+        </figure>
+      </div>
     </template>
   </article>
 </template>

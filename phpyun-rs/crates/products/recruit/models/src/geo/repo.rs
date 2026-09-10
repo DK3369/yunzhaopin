@@ -55,6 +55,9 @@ pub struct NearQuery {
     pub offset: u64,
     pub did: u32,
     pub min_lastupdate: i64,
+    /// PHP `wap/map::joblist` `depower`: `None` = all jobs; `Some(n)` = `is_depower = n`.
+    /// Default for callers that omit it is `Some(2)` (non-depowered).
+    pub job_depower: Option<i32>,
 }
 
 pub async fn list_jobs_near(
@@ -86,7 +89,7 @@ pub async fn list_jobs_near(
                ) AS distance
         FROM phpyun_company_job
         WHERE state = 1 AND status = 0 AND r_status = 1
-          AND COALESCE(is_depower, 2) = 2
+          AND (? IS NULL OR COALESCE(is_depower, 2) = ?)
           AND (? <= 0 OR lastupdate > ?)
           AND (? = 0 OR COALESCE(did, 0) = ?)
           AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
@@ -97,6 +100,8 @@ pub async fn list_jobs_near(
         .bind(q.y)
         .bind(q.y)
         .bind(q.x)
+        .bind(q.job_depower)
+        .bind(q.job_depower.unwrap_or(2))
         .bind(q.min_lastupdate)
         .bind(q.min_lastupdate)
         .bind(q.did)
@@ -125,7 +130,7 @@ pub async fn count_jobs_near(pool: &MySqlPool, q: NearQuery) -> Result<u64, sqlx
                    ) AS distance
             FROM phpyun_company_job
             WHERE state = 1 AND status = 0 AND r_status = 1
-              AND COALESCE(is_depower, 2) = 2
+              AND (? IS NULL OR COALESCE(is_depower, 2) = ?)
               AND (? <= 0 OR lastupdate > ?)
               AND (? = 0 OR COALESCE(did, 0) = ?)
               AND x BETWEEN ? AND ? AND y BETWEEN ? AND ?
@@ -135,6 +140,8 @@ pub async fn count_jobs_near(pool: &MySqlPool, q: NearQuery) -> Result<u64, sqlx
         .bind(q.y)
         .bind(q.y)
         .bind(q.x)
+        .bind(q.job_depower)
+        .bind(q.job_depower.unwrap_or(2))
         .bind(q.min_lastupdate)
         .bind(q.min_lastupdate)
         .bind(q.did)

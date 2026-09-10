@@ -305,6 +305,7 @@ pub async fn city_domain(
                     offset: 0,
                     did: 0,
                     min_lastupdate: 0,
+                    job_depower: Some(2),
                 },
             )
             .await

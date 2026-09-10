@@ -78,6 +78,10 @@ pub struct LogItem {
     pub answers: phpyun_core::json::Value,
     pub created_at: i64,
     pub created_at_n: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub paper_name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub comment: Option<String>,
 }
 
 impl From<phpyun_models::eval::entity::EvalLog> for LogItem {
@@ -90,7 +94,18 @@ impl From<phpyun_models::eval::entity::EvalLog> for LogItem {
             answers: l.answers,
             created_at_n: fmt_dt(l.created_at),
             created_at: l.created_at,
+            paper_name: String::new(),
+            comment: None,
         }
+    }
+}
+
+impl LogItem {
+    fn from_detail(d: eval_service::MyLogDetail) -> Self {
+        let mut item = Self::from(d.log);
+        item.paper_name = d.paper_name;
+        item.comment = d.comment;
+        item
     }
 }
 
@@ -177,8 +192,6 @@ pub async fn get_log(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<LogItem>> {
     let log_id = b.id;
-    let row = phpyun_models::eval::repo::find_log_for_owner(state.db.reader(), log_id, user.uid)
-        .await?
-        .ok_or_else(|| phpyun_core::ApiError::param_invalid("log_not_found"))?;
-    Ok(ApiResponse::data(LogItem::from(row)))
+    let d = eval_service::get_my_log(&state, user.uid, log_id).await?;
+    Ok(ApiResponse::data(LogItem::from_detail(d)))
 }

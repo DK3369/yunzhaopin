@@ -109,6 +109,30 @@ fn match_grade_comment(paper: &EvalPaper, score: i32) -> Option<String> {
     None
 }
 
+pub struct MyLogDetail {
+    pub log: EvalLog,
+    pub paper_name: String,
+    pub comment: Option<String>,
+}
+
+/// PHP `evaluate/exampaper::gradeshow_action`: own log + paper name + score-band comment.
+pub async fn get_my_log(state: &AppState, uid: u64, log_id: u64) -> AppResult<MyLogDetail> {
+    let db = state.db.reader();
+    let log = eval_repo::find_log_for_owner(db, log_id, uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("log_not_found"))?;
+    let paper = eval_repo::find_paper(db, log.paper_id).await?;
+    let paper_name = paper.as_ref().map(|p| p.name.clone()).unwrap_or_default();
+    let comment = paper
+        .as_ref()
+        .and_then(|p| match_grade_comment(p, log.score));
+    Ok(MyLogDetail {
+        log,
+        paper_name,
+        comment,
+    })
+}
+
 pub async fn list_my_logs(
     state: &AppState,
     user: &AuthenticatedUser,

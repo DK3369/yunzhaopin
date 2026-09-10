@@ -50,6 +50,7 @@ const x = computed(() => String(route.query.x || jobLoc.value?.x || ''))
 const y = computed(() => String(route.query.y || jobLoc.value?.y || ''))
 const tab = computed(() => String(route.query.tab || 'jobs'))
 const page = computed(() => Number(route.query.page || 1))
+const depower = computed(() => String(route.query.depower || ''))
 const hasPoint = computed(() => x.value !== '' && y.value !== '')
 const locFail = ref(false)
 const xInput = ref('')
@@ -63,7 +64,7 @@ watch(
   { immediate: true },
 )
 const { data, error } = await useAsyncData(
-  () => `map-${tab.value}-${x.value}-${y.value}-${page.value}`,
+  () => `map-${tab.value}-${x.value}-${y.value}-${page.value}-${depower.value}`,
   () => {
     if (!hasPoint.value) return Promise.resolve({ list: [] as NearJob[], total: 0 })
     const q = applyToQuery({
@@ -72,6 +73,7 @@ const { data, error } = await useAsyncData(
       radius_km: tab.value === 'companies' ? 20 : 50,
       limit: 10,
       page: page.value,
+      depower: tab.value === 'jobs' && depower.value ? depower.value : undefined,
     })
     if (tab.value === 'companies') {
       return api.get<{ list: NearCompany[]; total: number }>('/v1/wap/map/companies', q)
@@ -177,6 +179,14 @@ useSeoMeta({ title: t('default_00139') })
     <form class="form" @submit.prevent="navigateTo({ path: '/map', query: { ...route.query, x: xInput, y: yInput, page: 1 } })">
       <input v-model="xInput" placeholder="x" />
       <input v-model="yInput" placeholder="y" />
+      <select
+        v-if="tab === 'jobs'"
+        :value="depower"
+        @change="(e) => navigateTo({ query: { ...route.query, depower: (e.target as HTMLSelectElement).value || undefined, page: 1 } })"
+      >
+        <option value="">{{ $t('default_00246') }}</option>
+        <option value="all">{{ $t('common.all') }}</option>
+      </select>
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
     <div ref="mapEl" class="map-pick" />

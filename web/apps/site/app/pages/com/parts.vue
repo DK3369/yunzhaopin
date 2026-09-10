@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isUnauthErr } from '~/utils/site'
+import { ApiError } from '~/utils/envelope'
 
 type PartRow = {
   id: number
@@ -17,16 +18,35 @@ type PartRow = {
   state?: number
   status?: number
   content?: string
+  number?: number
+  sex?: number
 }
+type CatNode = { id: number; name: string; parent_id?: number }
 
 const api = useApi()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-parts', () =>
   api.post('/v1/mcenter/com-parts/list', { page: 1, page_size: 20 }),
 )
 const { data: applies, refresh: refreshApplies } = await useAsyncData('com-part-applies', () =>
   api.post('/v1/mcenter/com-part-applications', { page: 1, page_size: 20 }),
 )
+const { data: partCats } = await useAsyncData(
+  () => `com-part-cats-${locale.value}`,
+  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'part' }).catch(() => [] as CatNode[]),
+)
+const roots = computed(() =>
+  (partCats.value || []).filter((c) => !c.parent_id).sort((a, b) => a.id - b.id),
+)
+function childrenOf(rootIdx: number) {
+  const root = roots.value[rootIdx]
+  if (!root) return []
+  return (partCats.value || []).filter((c) => Number(c.parent_id) === root.id)
+}
+const typeItems = computed(() => childrenOf(0))
+const salaryTypeItems = computed(() => childrenOf(1))
+const cycleItems = computed(() => childrenOf(2))
+const sexItems = computed(() => childrenOf(3))
 const form = reactive({
   id: 0,
   name: '',
@@ -38,6 +58,8 @@ const form = reactive({
   salary: 0,
   salary_type: 0,
   billing_cycle: 0,
+  number: 1,
+  sex: 0,
   linkman: '',
   linktel: '',
   content: '',
@@ -45,7 +67,12 @@ const form = reactive({
   y: '',
 })
 const msg = ref('')
+const buyHint = ref('')
 function fail(e: unknown) {
+  if (e instanceof ApiError && e.key === 'part_refresh_quota') {
+    buyHint.value = e.message
+    return t('wap_com_00048')
+  }
   return e instanceof Error ? e.message : t('ui.failed')
 }
 function fill(row: PartRow) {
@@ -59,12 +86,19 @@ function fill(row: PartRow) {
   form.salary = Number(row.salary || 0)
   form.salary_type = Number(row.salary_type || 0)
   form.billing_cycle = Number(row.billing_cycle || 0)
+  form.number = Number(row.number || 1)
+  form.sex = Number(row.sex || 0)
   form.linkman = String(row.linkman || '')
   form.linktel = String(row.linktel || '')
   form.content = String(row.content || '')
 }
 async function save() {
   msg.value = ''
+  buyHint.value = ''
+  if (!form.name.trim() || form.salary <= 0) {
+    msg.value = t('ui.failed')
+    return
+  }
   try {
     if (form.id) await api.post('/v1/mcenter/com-parts/update', { ...form })
     else await api.post('/v1/mcenter/com-parts/create', { ...form })
@@ -78,6 +112,7 @@ async function save() {
 }
 async function refreshPart(id: number) {
   msg.value = ''
+  buyHint.value = ''
   try {
     await api.post('/v1/mcenter/com-parts/refresh', { id })
     msg.value = t('common.success')
@@ -131,13 +166,30 @@ useSeoMeta({ title: t('member_com_00480') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="save">
       <input v-model="form.name" :placeholder="$t('wap_com_00288')" required />
-      <input v-model.number="form.type" type="number" :placeholder="$t('wap_com_00311')" />
-      <input v-model.number="form.provinceid" type="number" />
-      <input v-model.number="form.cityid" type="number" />
+      <select v-model.number="form.type">
+        <option :value="0">{{ $t('wap_com_00311') }}</option>
+        <option v-for="c in typeItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
+      <LocationFields
+        v-model:province-id="form.provinceid"
+        v-model:city-id="form.cityid"
+        v-model:district-id="form.three_cityid"
+      />
       <input v-model="form.address" :placeholder="$t('wap_00040')" />
-      <input v-model.number="form.salary" type="number" />
-      <input v-model.number="form.salary_type" type="number" />
-      <input v-model.number="form.billing_cycle" type="number" />
+      <input v-model.number="form.number" type="number" min="1" :placeholder="$t('ui.headcount')" />
+      <select v-model.number="form.sex">
+        <option :value="0">{{ $t('common.not_limited') }}</option>
+        <option v-for="c in sexItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
+      <input v-model.number="form.salary" type="number" min="1" required />
+      <select v-model.number="form.salary_type">
+        <option :value="0">{{ $t('common.all') }}</option>
+        <option v-for="c in salaryTypeItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
+      <select v-model.number="form.billing_cycle">
+        <option :value="0">{{ $t('wap_user_00220') }}</option>
+        <option v-for="c in cycleItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
       <input v-model="form.linkman" :placeholder="$t('common_02051')" />
       <input v-model="form.linktel" :placeholder="$t('common.phone')" />
       <input v-model="form.x" placeholder="x" />
@@ -171,6 +223,12 @@ useSeoMeta({ title: t('member_com_00480') })
         <button type="button" @click="setApply(row.id, 3)">{{ $t('wap_com_00046') }}</button>
       </article>
     </div>
+    <p v-if="buyHint" class="muted">
+      {{ buyHint }}
+      <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
+      ·
+      <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>
+    </p>
     <p v-if="msg">{{ msg }}</p>
   </section>
 </template>

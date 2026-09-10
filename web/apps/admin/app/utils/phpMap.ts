@@ -67,9 +67,19 @@ function jobStatsToPhp(data: unknown): Record<string, unknown> {
 }
 
 function idsFromDel(body: Record<string, unknown>): Record<string, unknown> {
-  const del = body.del ?? body.id ?? body.ids
+  const del = body.del ?? body.id ?? body.pid ?? body.ids
   const raw = Array.isArray(del) ? del : csvList(del)
   return { ids: raw.map((x) => Number(x)).filter((n) => n > 0) }
+}
+
+/** PHP `company_job` xuanshang/recommend/urgent: `s==1` means cancel. */
+function jobPromoteFromPhp(kind: string) {
+  return (b: Record<string, unknown>) => ({
+    ids: idsFromDel({ del: b.del, id: b.pid ?? b.id, ids: b.ids }).ids,
+    kind,
+    on: Number(b.s) !== 1,
+    days: Number(b.days || 0),
+  })
 }
 
 /** PHP `status` posts `id`/`pid` as csv and radio values as strings. */
@@ -337,9 +347,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
     transformRes: cacheDataShape,
   },
   'user/company_job/getHbData': phpContent('company-job', 'getHbData'),
-  'user/company_job/xuanshang': { path: '/v1/admin/jobs/promote', transformReq: (b) => ({ ids: idsFromDel(b).ids, kind: 'top', on: true, days: Number(b.days || 0) }) },
-  'user/company_job/recommend': { path: '/v1/admin/jobs/promote', transformReq: (b) => ({ ids: idsFromDel(b).ids, kind: 'rec', on: true, days: Number(b.days || 0) }) },
-  'user/company_job/urgent': { path: '/v1/admin/jobs/promote', transformReq: (b) => ({ ids: idsFromDel(b).ids, kind: 'urgent', on: true, days: Number(b.days || 0) }) },
+  'user/company_job/xuanshang': { path: '/v1/admin/jobs/promote', transformReq: jobPromoteFromPhp('top') },
+  'user/company_job/recommend': { path: '/v1/admin/jobs/promote', transformReq: jobPromoteFromPhp('rec') },
+  'user/company_job/urgent': { path: '/v1/admin/jobs/promote', transformReq: jobPromoteFromPhp('urgent') },
   'user/company_job/add': { path: '/v1/admin/jobs/php-add-form' },
   'common/cache': { path: '/v1/admin/cache/php-dicts' },
   'common/cache/getCityClass': { path: '/v1/admin/cache/php-dicts' },

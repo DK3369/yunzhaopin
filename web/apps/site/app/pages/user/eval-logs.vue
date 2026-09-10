@@ -17,8 +17,7 @@ useSeoMeta({ title: t('wap_00194') })
     <div v-else class="stack">
       <article v-for="row in data?.list || []" :key="row.id" class="job-card">
         <h3>
-          <NuxtLink v-if="row.paper_id" :to="`/eval/${row.paper_id}`">{{ $t('wap_00194') }} #{{ row.paper_id }}</NuxtLink>
-          <span v-else>{{ row.id }}</span>
+          <NuxtLink :to="`/user/eval-logs/${row.id}`">{{ row.paper_name || $t('wap_00194') }} #{{ row.paper_id || row.id }}</NuxtLink>
         </h3>
         <p>{{ row.score }}</p>
         <p class="muted">{{ row.created_at_n }}</p>

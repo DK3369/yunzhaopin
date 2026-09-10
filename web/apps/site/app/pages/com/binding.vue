@@ -10,6 +10,36 @@ const mobile = ref('')
 const mobileCode = ref('')
 const email = ref('')
 const msg = ref('')
+const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
+const bound = computed(() => new Set((data.value?.providers || []).map((p) => String(p).toLowerCase())))
+const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
+
+async function loadOauth() {
+  const redirect_uri = `${siteUrl}/login`
+  oauth.value = []
+  for (const [name, path, key] of [
+    ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
+    ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
+    ['Weibo', '/v1/wap/oauth/weibo/authorize-url', 'weibo'],
+  ] as const) {
+    if (bound.value.has(key)) continue
+    try {
+      const r = await api.post<{ authorize_url?: string }>(path, { redirect_uri })
+      if (r.authorize_url) oauth.value.push({ name, path: r.authorize_url, provider: key })
+    } catch {
+      /* not configured */
+    }
+  }
+}
+onMounted(loadOauth)
+watch(bound, loadOauth)
+
+function startBind(o: { path: string; provider: string }) {
+  sessionStorage.setItem('oauth_provider', o.provider)
+  sessionStorage.setItem('oauth_intent', 'bind')
+  sessionStorage.setItem('oauth_bind_next', '/com/binding')
+  window.location.href = o.path
+}
 
 function fail(e: unknown) {
   return e instanceof Error ? e.message : t('ui.failed')
@@ -76,6 +106,15 @@ useSeoMeta({ title: t('member_user_00059') })
           <button type="button" @click="unbind(p)">{{ $t('wap_js_00065') }}</button>
         </li>
       </ul>
+      <p v-if="oauth.length">
+        <a
+          v-for="o in oauth"
+          :key="o.provider"
+          :href="o.path"
+          style="margin-right: 12px"
+          @click.prevent="startBind(o)"
+        >{{ o.name }}</a>
+      </p>
       <form class="form" @submit.prevent="bindMobile">
         <input v-model="mobile" :placeholder="$t('common.phone')" />
         <button type="button" @click="sendMobile">{{ $t('common.submit') }}</button>

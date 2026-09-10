@@ -31,6 +31,7 @@ async fn near_query(
     page: u32,
     page_size: u64,
     did: u32,
+    job_depower: Option<i32>,
 ) -> AppResult<NearQuery> {
     validate(x, y, radius_km)?;
     let limit = page_size.clamp(1, 50);
@@ -51,6 +52,7 @@ async fn near_query(
         offset,
         did,
         min_lastupdate,
+        job_depower,
     })
 }
 
@@ -69,8 +71,9 @@ pub async fn jobs_near(
     page: u32,
     page_size: u64,
     did: u32,
+    job_depower: Option<i32>,
 ) -> AppResult<NearPage<JobNear>> {
-    let q = near_query(state, x, y, radius_km, page, page_size, did).await?;
+    let q = near_query(state, x, y, radius_km, page, page_size, did, job_depower).await?;
     let (list, total) = tokio::join!(
         geo_repo::list_jobs_near(state.db.reader(), q),
         geo_repo::count_jobs_near(state.db.reader(), q),
@@ -92,7 +95,7 @@ pub async fn companies_near(
     page_size: u64,
     did: u32,
 ) -> AppResult<NearPage<CompanyNear>> {
-    let q = near_query(state, x, y, radius_km, page, page_size, did).await?;
+    let q = near_query(state, x, y, radius_km, page, page_size, did, Some(2)).await?;
     let (list, total) = tokio::join!(
         geo_repo::list_companies_near(state.db.reader(), q),
         geo_repo::count_companies_near(state.db.reader(), q),
