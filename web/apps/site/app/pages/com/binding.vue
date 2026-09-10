@@ -32,7 +32,8 @@ async function loadOauth() {
   oauth.value = []
   for (const [name, path, key] of [
     ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
-    ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
+    // 暂未开通 QQ 互联
+    // ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
     ['Weibo', '/v1/wap/oauth/weibo/authorize-url', 'weibo'],
   ] as const) {
     if (bound.value.has(key)) continue
