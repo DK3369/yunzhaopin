@@ -54,7 +54,7 @@ fn pick_name(c: &Country, lang: Lang) -> String {
     }
 }
 
-fn to_view(c: &Country, lang: Lang) -> CountryView {
+pub(crate) fn to_view(c: &Country, lang: Lang) -> CountryView {
     CountryView {
         id: c.id,
         code: c.code.clone(),

@@ -1,8 +1,8 @@
 import type { DictItem } from '../utils/query'
+import { usePublicDicts } from './usePublicDicts'
 
 export type CountryOpt = { code: string; name: string }
 
-type CountryView = { code: string; name: string; flag?: string }
 type RegionView = { id: number; name: string; country_code?: string }
 
 function asId(v: unknown): number {
@@ -10,7 +10,7 @@ function asId(v: unknown): number {
   return Number.isFinite(n) && n > 0 ? n : 0
 }
 
-/** Country from `/v1/wap/countries`, cities from `/v1/wap/regions` — not city_class.
+/** Countries from `/v1/wap/dict/bundle`, cities from `/v1/wap/regions` — not city_class.
  *  All `useAsyncData` must be registered before any `await` (Nuxt E1001).
  */
 export async function useRegionCascade(opts: {
@@ -24,10 +24,7 @@ export async function useRegionCascade(opts: {
   const provinceId = computed(() => asId(opts.provinceId.value))
   const cityId = computed(() => asId(opts.cityId.value))
 
-  const countriesAsync = useAsyncData(
-    () => `countries-${locale.value}`,
-    () => api.get<CountryView[]>('/v1/wap/countries').catch(() => [] as CountryView[]),
-  )
+  const dictsAsync = usePublicDicts()
   const countryRootsAsync = useAsyncData(
     () => `regions-l0-${locale.value}-${country.value}`,
     () =>
@@ -65,15 +62,15 @@ export async function useRegionCascade(opts: {
         : Promise.resolve([] as RegionView[]),
   )
   const [
-    { data: countries },
+    { data: dicts },
     { data: countryRoots },
     { data: provinces },
     { data: cities },
     { data: districts },
-  ] = await Promise.all([countriesAsync, countryRootsAsync, provincesAsync, citiesAsync, districtsAsync])
+  ] = await Promise.all([dictsAsync, countryRootsAsync, provincesAsync, citiesAsync, districtsAsync])
 
   const countryItems = computed<CountryOpt[]>(() =>
-    (countries.value || []).map((c) => ({
+    (dicts.value?.countries || []).map((c) => ({
       code: c.code,
       name: c.flag ? `${c.flag} ${c.name}` : c.name,
     })),
@@ -92,5 +89,5 @@ export async function useRegionCascade(opts: {
   )
   const countryRegionId = computed(() => asId(countryRoots.value?.[0]?.id))
 
-  return { countryItems, countryDictItems, provinceItems, cityItems, districtItems, countryRegionId }
+  return { countryItems, countryDictItems, provinceItems, cityItems, districtItems, countryRegionId, dicts }
 }

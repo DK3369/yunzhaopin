@@ -59,30 +59,13 @@ const { data: cats } = await useAsyncData(
 const jobRoots = computed(() => catTree(cats.value || [], 80))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === form.job1)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === form.job1_son)?.children || [])
-const { data: edus } = await useAsyncData(
-  () => `dict-edu-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/educations').catch(() => [] as DictItem[]),
-)
-const { data: exps } = await useAsyncData(
-  () => `dict-exp-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/experiences').catch(() => [] as DictItem[]),
-)
-const { data: welfares } = await useAsyncData(
-  () => `dict-welfare-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/welfares').catch(() => [] as DictItem[]),
-)
-const { data: jobTypes } = await useAsyncData(
-  () => `dict-job-type-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/job-types').catch(() => [] as DictItem[]),
-)
-const { data: industries } = await useAsyncData(
-  () => `dict-hy-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
-)
-const { data: reports } = await useAsyncData(
-  () => `dict-report-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/reports').catch(() => [] as DictItem[]),
-)
+const { data: dicts } = await usePublicDicts()
+const edus = computed(() => dicts.value?.educations ?? [])
+const exps = computed(() => dicts.value?.experiences ?? [])
+const welfares = computed(() => dicts.value?.welfares ?? [])
+const jobTypes = computed(() => dicts.value?.job_types ?? [])
+const industries = computed(() => dicts.value?.industries ?? [])
+const reports = computed(() => dicts.value?.reports ?? [])
 const { data: marriages } = await useAsyncData(
   () => `dict-marriage-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/marriages').catch(() => [] as DictItem[]),

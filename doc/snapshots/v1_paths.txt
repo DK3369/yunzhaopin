@@ -330,6 +330,7 @@
 /v1/wap/descriptions/by-name
 /v1/wap/descriptions/classes
 /v1/wap/descriptions/get
+/v1/wap/dict/bundle
 /v1/wap/dict/cities
 /v1/wap/dict/cities/by-province
 /v1/wap/dict/company-natures

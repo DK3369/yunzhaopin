@@ -314,6 +314,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::resume_language::update,
         // v1::mcenter::resume_language::remove, // removed
         // wap: dict
+        v1::wap::dict::bundle,
         v1::wap::dict::cities,
         v1::wap::dict::cities_of_province,
         v1::wap::dict::industries,
@@ -863,6 +864,8 @@ impl Modify for UniqueOperationId {
             v1::mcenter::resume_language::LanguageItem,
             v1::mcenter::resume_language::LanguageForm,
             v1::wap::dict::DictItem,
+            v1::wap::dict::DictBundle,
+            v1::wap::countries::CountryView,
             v1::wap::articles::ArticleSummary,
             v1::wap::articles::ArticleDetail,
             v1::wap::articles::ArticleGroupItem,

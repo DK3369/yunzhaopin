@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { listFailMsg, type CompanyLike } from '~/utils/site'
-import type { DictItem } from '~/utils/query'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -18,7 +17,7 @@ const mun = computed(() => numQuery(route.query.mun))
 const welfare = computed(() => numQuery(route.query.welfare))
 const api = useApi()
 const { applyToQuery } = useSubSite()
-const { countryItems, countryDictItems, provinceItems, cityItems, districtItems } = await useRegionCascade({
+const { countryItems, countryDictItems, provinceItems, cityItems, districtItems, dicts } = await useRegionCascade({
   country,
   provinceId: computed(() => provinceId.value || 0),
   cityId: computed(() => cityId.value || 0),
@@ -47,22 +46,10 @@ const { data, error } = await useAsyncData(
       }),
     ),
 )
-const { data: industries } = await useAsyncData(
-  () => `dict-hy-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
-)
-const { data: natures } = await useAsyncData(
-  () => `dict-pr-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/company-natures').catch(() => [] as DictItem[]),
-)
-const { data: sizes } = await useAsyncData(
-  () => `dict-mun-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
-)
-const { data: welfares } = await useAsyncData(
-  () => `dict-welfare-com-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/welfares').catch(() => [] as DictItem[]),
-)
+const industries = computed(() => dicts.value?.industries ?? [])
+const natures = computed(() => dicts.value?.company_natures ?? [])
+const sizes = computed(() => dicts.value?.company_sizes ?? [])
+const welfares = computed(() => dicts.value?.welfares ?? [])
 useSeoMeta({ title: t('home.famous_companies') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 useListLoginGate(error)

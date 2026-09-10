@@ -12,7 +12,6 @@ type Row = {
   job_name?: string
   uname?: string
 }
-type DictItem = { id: number; name: string }
 type Counts = {
   total: number
   pending: number
@@ -66,13 +65,9 @@ const { data: myJobs } = await useAsyncData('com-apps-jobs', () =>
     })
     .catch(() => ({ list: [] })),
 )
-const dictParams = { source: 'user' }
-const { data: eduDict } = await useAsyncData('dict-edu-user', () =>
-  api.get<DictItem[]>('/v1/wap/dict/educations', dictParams).catch(() => [] as DictItem[]),
-)
-const { data: expDict } = await useAsyncData('dict-exp-user', () =>
-  api.get<DictItem[]>('/v1/wap/dict/experiences', dictParams).catch(() => [] as DictItem[]),
-)
+const { data: dicts } = await usePublicDicts()
+const eduDict = computed(() => dicts.value?.educations_user ?? [])
+const expDict = computed(() => dicts.value?.experiences_user ?? [])
 
 const list = computed(() => data.value?.list || [])
 const total = computed(() => data.value?.total || 0)

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { isUnauthErr, mediaUrl } from '~/utils/site'
-import type { DictItem } from '~/utils/query'
 
 type ChildRow = {
   id: number
@@ -59,12 +58,9 @@ const { data: shareTokens, refresh: refreshShares } = await useAsyncData('my-res
     )
     .catch(() => ({ list: [] })),
 )
-const { data: eduDict } = await useAsyncData('resume-edu-dict', () =>
-  api.get<DictItem[]>('/v1/wap/dict/educations', { source: 'user' }).catch(() => [] as DictItem[]),
-)
-const { data: expDict } = await useAsyncData('resume-exp-dict', () =>
-  api.get<DictItem[]>('/v1/wap/dict/experiences', { source: 'user' }).catch(() => [] as DictItem[]),
-)
+const { data: dicts } = await usePublicDicts()
+const eduDict = computed(() => dicts.value?.educations_user ?? [])
+const expDict = computed(() => dicts.value?.experiences_user ?? [])
 const { data: completion, refresh: refreshCompletion } = await useAsyncData('resume-edit-completion', () =>
   api.post<{ score?: number; missing?: string[] }>('/v1/mcenter/resume/completion', {}).catch(() => null),
 )

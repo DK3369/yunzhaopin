@@ -89,7 +89,7 @@ const moreOpen = ref(
 )
 const api = useApi()
 const { applyToQuery } = useSubSite()
-const { countryItems, countryDictItems, provinceItems: provinces, cityItems: cities, districtItems: districts } =
+const { countryItems, countryDictItems, provinceItems: provinces, cityItems: cities, districtItems: districts, dicts } =
   await useRegionCascade({
     country,
     provinceId: computed(() => provinceId.value || 0),
@@ -164,30 +164,15 @@ const jobItems = computed(() => jobRoots.value.map((c) => ({ id: c.id, name: c.n
 const job2Items = computed(() => jobLevel2.value.map((c) => ({ id: c.id, name: c.name })))
 const job3Items = computed(() => jobLevel3.value.map((c) => ({ id: c.id, name: c.name })))
 
-const { data: edus } = await useAsyncData(
-  () => `dict-edu-user-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/educations', { source: 'user' }).catch(() => [] as DictItem[]),
-)
-const { data: exps } = await useAsyncData(
-  () => `dict-exp-user-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/experiences', { source: 'user' }).catch(() => [] as DictItem[]),
-)
+const edus = computed(() => dicts.value?.educations_user ?? [])
+const exps = computed(() => dicts.value?.experiences_user ?? [])
 const { data: tags } = await useAsyncData(
   () => `dict-user-tag-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/tags').catch(() => [] as DictItem[]),
 )
-const { data: industries } = await useAsyncData(
-  () => `dict-hy-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
-)
-const { data: reports } = await useAsyncData(
-  () => `dict-user-report-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/reports', { source: 'user' }).catch(() => [] as DictItem[]),
-)
-const { data: jobTypes } = await useAsyncData(
-  () => `dict-user-type-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/job-types', { source: 'user' }).catch(() => [] as DictItem[]),
-)
+const industries = computed(() => dicts.value?.industries ?? [])
+const reports = computed(() => dicts.value?.reports_user ?? [])
+const jobTypes = computed(() => dicts.value?.job_types_user ?? [])
 const { data: adsTop } = await useAsyncData('ads-508', () =>
   api.get<Array<{ image_n?: string }>>('/v1/wap/ads', { slot: '508', limit: 1 }).catch(() => []),
 )

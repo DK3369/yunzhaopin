@@ -32,10 +32,11 @@
 //! - `phpyun_partclass`  — part-time categories
 //! - `phpyun_q_class`    — Q&A categories
 
+use phpyun_core::cache::SimpleCache;
 use phpyun_core::{AppResult, AppState, Lang};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
 /// One dictionary table: id → multi-language name map.
@@ -311,7 +312,9 @@ impl LocalizedDicts {
         fn unlimited(name: &str) -> bool {
             name.contains("不限") || name.eq_ignore_ascii_case("unlimited")
         }
-        let pos = items.iter().position(|(id, name)| *id == selected && !unlimited(name));
+        let pos = items
+            .iter()
+            .position(|(id, name)| *id == selected && !unlimited(name));
         let Some(sort_idx) = pos else {
             return vec![selected];
         };
@@ -374,7 +377,14 @@ impl LocalizedDicts {
             .filter(|(id, name)| **id > 0 && !name.is_empty())
             .map(|(id, name)| {
                 let n = self.industry(*id);
-                (*id, if n.is_empty() { name.clone() } else { n.to_string() })
+                (
+                    *id,
+                    if n.is_empty() {
+                        name.clone()
+                    } else {
+                        n.to_string()
+                    },
+                )
             })
             .collect();
         rows.sort_by_key(|(id, _)| *id);
@@ -407,6 +417,64 @@ impl LocalizedDicts {
         }
         out
     }
+}
+
+/// Public dropdown lists for `/v1/wap/dict/bundle`. Built from the in-memory
+/// `Dicts` snapshot (no extra DB read). Cached per request language and dropped
+/// whenever `Dicts` is swapped (admin edit / pubsub / background refresh).
+#[derive(Clone)]
+pub struct PublicDictLists {
+    pub educations: Vec<(i32, String)>,
+    pub educations_user: Vec<(i32, String)>,
+    pub experiences: Vec<(i32, String)>,
+    pub experiences_user: Vec<(i32, String)>,
+    pub industries: Vec<(i32, String)>,
+    pub welfares: Vec<(i32, String)>,
+    pub reports: Vec<(i32, String)>,
+    pub reports_user: Vec<(i32, String)>,
+    pub job_types_user: Vec<(i32, String)>,
+    pub company_natures: Vec<(i32, String)>,
+    pub company_sizes: Vec<(i32, String)>,
+}
+
+fn build_public_lists(dicts: &LocalizedDicts) -> PublicDictLists {
+    PublicDictLists {
+        educations: dicts.comclass_by_variable("job_edu"),
+        educations_user: dicts.userclass_by_variable("user_edu"),
+        experiences: dicts.comclass_by_variable("job_exp"),
+        experiences_user: dicts.userclass_by_variable("user_word"),
+        industries: dicts.industry_all(),
+        welfares: dicts.comclass_by_variable("job_welfare"),
+        reports: dicts.comclass_by_variable("job_report"),
+        reports_user: dicts.userclass_by_variable("user_report"),
+        job_types_user: dicts.userclass_by_variable("user_type"),
+        company_natures: dicts.comclass_by_variable("job_pr"),
+        company_sizes: dicts.comclass_by_variable("job_mun"),
+    }
+}
+
+static PUBLIC_LISTS: OnceLock<SimpleCache<Lang, PublicDictLists>> = OnceLock::new();
+
+fn public_lists_cache() -> &'static SimpleCache<Lang, PublicDictLists> {
+    PUBLIC_LISTS.get_or_init(|| SimpleCache::new(8, Duration::from_secs(30 * 60)))
+}
+
+fn invalidate_public_lists() {
+    if let Some(cache) = PUBLIC_LISTS.get() {
+        cache.invalidate_all();
+    }
+}
+
+/// Language-bound public dropdowns. Hits memory only after `Dicts` is loaded.
+pub async fn public_lists(state: &AppState) -> AppResult<Arc<PublicDictLists>> {
+    let lang = phpyun_core::i18n::current_lang();
+    let state = state.clone();
+    public_lists_cache()
+        .get_or_load(lang, move || async move {
+            let dicts = get(&state).await?;
+            Ok(build_public_lists(&dicts))
+        })
+        .await
 }
 
 fn var_names(vars: &HashMap<String, i32>) -> Vec<String> {
@@ -515,6 +583,7 @@ pub async fn init_and_spawn_refresher(state: &AppState) {
                 Ok(fresh) => {
                     if let Some(swap) = DICTS.get() {
                         swap.store(Arc::new(fresh));
+                        invalidate_public_lists();
                         tracing::debug!("dict_i18n bg refreshed");
                     }
                 }
@@ -573,6 +642,7 @@ pub async fn reload(state: &AppState) -> AppResult<()> {
             .get_or_init(|| async { ArcSwap::from(Arc::new(fresh)) })
             .await;
     }
+    invalidate_public_lists();
     tracing::info!("dict_i18n reloaded");
 
     // Broadcast to other processes (failure does not affect this process — warn is enough)
@@ -593,6 +663,7 @@ async fn subscribe_and_listen(state: &AppState) -> AppResult<()> {
             Ok(fresh) => {
                 if let Some(swap) = DICTS.get() {
                     swap.store(Arc::new(fresh));
+                    invalidate_public_lists();
                     tracing::info!(channel = PUBSUB_CHANNEL, "dict_i18n reloaded via pubsub");
                 }
             }
@@ -656,7 +727,10 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
         job: build_table(job?, i18n.remove("job").unwrap_or_default()),
         industry: build_table(ind?, i18n.get("industry").cloned().unwrap_or_default()),
         comclass: build_table(comclass, i18n.get("comclass").cloned().unwrap_or_default()),
-        userclass: build_table(userclass, i18n.get("userclass").cloned().unwrap_or_default()),
+        userclass: build_table(
+            userclass,
+            i18n.get("userclass").cloned().unwrap_or_default(),
+        ),
         city: build_table(city_zh, i18n.remove("city").unwrap_or_default()),
         part: build_table(part?, i18n.get("part").cloned().unwrap_or_default()),
         question: build_table(q?, i18n.get("question").cloned().unwrap_or_default()),
@@ -706,7 +780,9 @@ async fn load_class_rows(
 /// PHP `CacheM->GetCache('city')` reads `data/plus/city.cache.php`.
 /// `phpyun_city_class` in this database is the world-country tree (ids ≥ 4001),
 /// while jobs/resumes still store the legacy China ids (6=广东, 81=河源).
-fn load_php_city_cache(state: &AppState) -> (Vec<i32>, HashMap<i32, Vec<i32>>, HashMap<i32, String>) {
+fn load_php_city_cache(
+    state: &AppState,
+) -> (Vec<i32>, HashMap<i32, Vec<i32>>, HashMap<i32, String>) {
     let Some(path) = city_cache_path(state) else {
         return (Vec::new(), HashMap::new(), HashMap::new());
     };
@@ -732,7 +808,9 @@ fn city_cache_path(state: &AppState) -> Option<PathBuf> {
         cands.push(Path::new(root).join("data/plus/city.cache.php"));
     }
     cands.push(PathBuf::from("./uploads/data/plus/city.cache.php"));
-    cands.push(PathBuf::from("/www/wwwroot/zzzz.com/uploads/data/plus/city.cache.php"));
+    cands.push(PathBuf::from(
+        "/www/wwwroot/zzzz.com/uploads/data/plus/city.cache.php",
+    ));
     cands.into_iter().find(|p| p.is_file())
 }
 
@@ -814,7 +892,10 @@ fn parse_quoted_ints(src: &str) -> Vec<i32> {
             while j < bytes.len() && bytes[j] != b'\'' {
                 j += 1;
             }
-            if let Ok(n) = std::str::from_utf8(&bytes[s..j]).unwrap_or("").parse::<i32>() {
+            if let Ok(n) = std::str::from_utf8(&bytes[s..j])
+                .unwrap_or("")
+                .parse::<i32>()
+            {
                 out.push(n);
             }
             i = j + 1;

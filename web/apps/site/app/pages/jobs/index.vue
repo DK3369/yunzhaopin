@@ -41,7 +41,7 @@ const hiddenFilters = computed(() => {
 })
 const freeTel = computed(() => String(settings.value.sy_freewebtel || ''))
 const api = useApi()
-const { countryItems, countryDictItems, provinceItems: provinces, cityItems: cities, districtItems: districts } =
+const { countryItems, countryDictItems, provinceItems: provinces, cityItems: cities, districtItems: districts, dicts } =
   await useRegionCascade({
     country,
     provinceId: computed(() => provinceId.value || 0),
@@ -94,42 +94,15 @@ const jobRoots = computed(() => catTree(cats.value || [], 40))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === job1.value)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === job1Son.value)?.children || [])
 
-const { data: edus } = await useAsyncData(
-  () => `dict-edu-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/educations').catch(() => [] as DictItem[]),
-)
-const { data: exps } = await useAsyncData(
-  () => `dict-exp-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/experiences').catch(() => [] as DictItem[]),
-)
-const { data: salaries } = await useAsyncData(
-  () => `dict-salary-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/salaries').catch(() => [] as DictItem[]),
-)
-const { data: industries } = await useAsyncData(
-  () => `dict-hy-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
-)
-const { data: welfares } = await useAsyncData(
-  () => `dict-welfare-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/welfares').catch(() => [] as DictItem[]),
-)
-const { data: reports } = await useAsyncData(
-  () => `dict-report-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/reports').catch(() => [] as DictItem[]),
-)
-const { data: jobTypes } = await useAsyncData(
-  () => `dict-job-type-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/job-types').catch(() => [] as DictItem[]),
-)
-const { data: natures } = await useAsyncData(
-  () => `dict-pr-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/company-natures').catch(() => [] as DictItem[]),
-)
-const { data: sizes } = await useAsyncData(
-  () => `dict-mun-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
-)
+const edus = computed(() => dicts.value?.educations ?? [])
+const exps = computed(() => dicts.value?.experiences ?? [])
+const salaries = computed(() => dicts.value?.salaries ?? [])
+const industries = computed(() => dicts.value?.industries ?? [])
+const welfares = computed(() => dicts.value?.welfares ?? [])
+const reports = computed(() => dicts.value?.reports ?? [])
+const jobTypes = computed(() => dicts.value?.job_types ?? [])
+const natures = computed(() => dicts.value?.company_natures ?? [])
+const sizes = computed(() => dicts.value?.company_sizes ?? [])
 const { data: adsTop } = await useAsyncData('ads-507', () =>
   api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '507', limit: 1 }).catch(() => []),
 )

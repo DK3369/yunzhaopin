@@ -50,3 +50,17 @@ cargo clippy -- -D warnings
 cargo test
 cargo run -p phpyun-rs
 ```
+
+
+<!-- 合并包：https://job1.ov6.com/api/proxy/v1/wap/dict/bundle?lang=zh
+原 10 条仍可用：
+https://job1.ov6.com/api/proxy/v1/wap/countries?lang=zh
+https://job1.ov6.com/api/proxy/v1/wap/dict/educations?lang=zh 
+https://job1.ov6.com/api/proxy/v1/wap/dict/experiences?lang=zh 
+https://job1.ov6.com/api/proxy/v1/wap/dict/salaries?lang=zh
+https://job1.ov6.com/api/proxy/v1/wap/dict/industries?lang=zh 
+https://job1.ov6.com/api/proxy/v1/wap/dict/welfares?lang=zh 
+https://job1.ov6.com/api/proxy/v1/wap/dict/reports?lang=zh 
+https://job1.ov6.com/api/proxy/v1/wap/dict/job-types?lang=zh 
+https://job1.ov6.com/api/proxy/v1/wap/dict/company-natures?lang=zh
+https://job1.ov6.com/api/proxy/v1/wap/dict/company-sizes?lang=zh  -->

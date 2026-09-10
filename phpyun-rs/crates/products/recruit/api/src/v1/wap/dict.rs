@@ -15,13 +15,16 @@ use axum::{extract::State, routing::get, Router};
 use phpyun_core::i18n::{current_lang, t, Lang};
 use phpyun_core::ValidatedJsonOrQuery;
 use phpyun_core::{ApiResponse, AppResult, AppState};
-use phpyun_services::dict_service;
+use phpyun_services::{country_service, dict_service};
 use serde::Deserialize;
 use serde::Serialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
+use super::countries::{to_view as country_to_view, CountryView};
+
 pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/dict/bundle",
     "/v1/wap/dict/cities",
     "/v1/wap/dict/cities/by-province",
     "/v1/wap/dict/industries",
@@ -49,7 +52,8 @@ pub fn routes() -> Router<AppState> {
             "/dict/cities/by-province",
             get(cities_of_province).post(cities_of_province),
         );
-    r.route("/dict/industries", get(industries).post(industries))
+    r.route("/dict/bundle", get(bundle).post(bundle))
+        .route("/dict/industries", get(industries).post(industries))
         .route(
             "/dict/job-categories",
             get(job_categories).post(job_categories),
@@ -67,7 +71,10 @@ pub fn routes() -> Router<AppState> {
             "/dict/company-natures",
             get(company_natures).post(company_natures),
         )
-        .route("/dict/company-sizes", get(company_sizes).post(company_sizes))
+        .route(
+            "/dict/company-sizes",
+            get(company_sizes).post(company_sizes),
+        )
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -102,9 +109,81 @@ fn render(entries: &[DictEntry], lang: Lang) -> Vec<DictItem> {
 }
 
 fn named_items(rows: Vec<(i32, String)>) -> Vec<DictItem> {
-    rows.into_iter()
-        .map(|(id, name)| DictItem { id, name })
+    named_cloned(&rows)
+}
+
+fn named_cloned(rows: &[(i32, String)]) -> Vec<DictItem> {
+    rows.iter()
+        .map(|(id, name)| DictItem {
+            id: *id,
+            name: name.clone(),
+        })
         .collect()
+}
+
+fn named_or_static(rows: &[(i32, String)], fallback: &[DictEntry]) -> Vec<DictItem> {
+    if rows.is_empty() {
+        render(fallback, current_lang())
+    } else {
+        named_cloned(rows)
+    }
+}
+
+/// Combined public dictionaries (the 10 lists PC/H5 used to fetch one-by-one).
+/// Individual `/v1/wap/dict/*` and `/v1/wap/countries` routes stay unchanged.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct DictBundle {
+    pub countries: Vec<CountryView>,
+    pub educations: Vec<DictItem>,
+    pub educations_user: Vec<DictItem>,
+    pub experiences: Vec<DictItem>,
+    pub experiences_user: Vec<DictItem>,
+    pub salaries: Vec<DictItem>,
+    pub industries: Vec<DictItem>,
+    pub welfares: Vec<DictItem>,
+    pub reports: Vec<DictItem>,
+    pub reports_user: Vec<DictItem>,
+    pub job_types: Vec<DictItem>,
+    pub job_types_user: Vec<DictItem>,
+    pub company_natures: Vec<DictItem>,
+    pub company_sizes: Vec<DictItem>,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/bundle",
+    tag = "wap",
+    responses((status = 200, description = "ok", body = DictBundle))
+)]
+pub async fn bundle(State(state): State<AppState>) -> AppResult<ApiResponse<DictBundle>> {
+    let lang = current_lang();
+    let lists = dict_service::public_lists(&state).await?;
+    let countries = country_service::list_all(&state)
+        .await?
+        .iter()
+        .map(|c| country_to_view(c, lang))
+        .collect();
+    let job_types = render(JOB_TYPES, lang);
+    Ok(ApiResponse::data(DictBundle {
+        countries,
+        educations: named_or_static(&lists.educations, EDUCATIONS),
+        educations_user: named_or_static(&lists.educations_user, EDUCATIONS),
+        experiences: named_or_static(&lists.experiences, EXPERIENCES),
+        experiences_user: named_or_static(&lists.experiences_user, EXPERIENCES),
+        salaries: render(SALARIES, lang),
+        industries: named_or_static(&lists.industries, INDUSTRIES),
+        welfares: named_cloned(&lists.welfares),
+        reports: named_cloned(&lists.reports),
+        reports_user: named_cloned(&lists.reports_user),
+        job_types: job_types.clone(),
+        job_types_user: if lists.job_types_user.is_empty() {
+            job_types
+        } else {
+            named_cloned(&lists.job_types_user)
+        },
+        company_natures: named_cloned(&lists.company_natures),
+        company_sizes: named_cloned(&lists.company_sizes),
+    }))
 }
 
 #[derive(Debug, Deserialize, Validate, utoipa::ToSchema, Default)]
@@ -349,7 +428,9 @@ pub async fn tags(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<Di
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn company_natures(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+pub async fn company_natures(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<Vec<DictItem>>> {
     let dicts = dict_service::get(&state).await?;
     Ok(ApiResponse::data(named_items(
         dicts.comclass_by_variable("job_pr"),

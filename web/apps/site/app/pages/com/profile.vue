@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { isUnauthErr } from '~/utils/site'
-import type { DictItem } from '~/utils/query'
 
 const api = useApi()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-profile', () =>
   api.post('/v1/mcenter/company/list', {}),
 )
@@ -46,18 +45,10 @@ watch(
   },
   { immediate: true },
 )
-const { data: industries } = await useAsyncData(
-  () => `dict-hy-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
-)
-const { data: natures } = await useAsyncData(
-  () => `dict-pr-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/company-natures').catch(() => [] as DictItem[]),
-)
-const { data: sizes } = await useAsyncData(
-  () => `dict-mun-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
-)
+const { data: dicts } = await usePublicDicts()
+const industries = computed(() => dicts.value?.industries ?? [])
+const natures = computed(() => dicts.value?.company_natures ?? [])
+const sizes = computed(() => dicts.value?.company_sizes ?? [])
 const msg = ref('')
 async function onLogo(ev: Event) {
   const file = (ev.target as HTMLInputElement).files?.[0]

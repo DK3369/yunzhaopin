@@ -28,7 +28,7 @@ const { data, error } = await useAsyncData('data-show-board', async () => {
   const cityBody = { level: cityLevel.value }
   const emptyD: Dist[] = []
   const emptyP: Point[] = []
-  const [sex, edu, exp, age, rCity, cCity, scale, prop, ureg, cjob, clog, edus, exps, natures, sizes, cities] =
+  const [sex, edu, exp, age, rCity, cCity, scale, prop, ureg, cjob, clog, bundle, cities] =
     await Promise.all([
       api.post<Dist[]>('/v1/wap/data-show/resume-sex', {}).catch(() => emptyD),
       api.post<Dist[]>('/v1/wap/data-show/resume-edu', {}).catch(() => emptyD),
@@ -41,13 +41,37 @@ const { data, error } = await useAsyncData('data-show-board', async () => {
       api.post<Point[]>('/v1/wap/data-show/user-register-trend', {}).catch(() => emptyP),
       api.post<Point[]>('/v1/wap/data-show/company-job-trend', {}).catch(() => emptyP),
       api.post<Point[]>('/v1/wap/data-show/company-login-trend', {}).catch(() => emptyP),
-      api.get<DictItem[]>('/v1/wap/dict/educations', { source: 'user' }).catch(() => [] as DictItem[]),
-      api.get<DictItem[]>('/v1/wap/dict/experiences').catch(() => [] as DictItem[]),
-      api.get<DictItem[]>('/v1/wap/dict/company-natures').catch(() => [] as DictItem[]),
-      api.get<DictItem[]>('/v1/wap/dict/company-sizes').catch(() => [] as DictItem[]),
+      api.get<{
+        educations_user: DictItem[]
+        experiences: DictItem[]
+        company_natures: DictItem[]
+        company_sizes: DictItem[]
+      }>('/v1/wap/dict/bundle').catch(() => ({
+        educations_user: [] as DictItem[],
+        experiences: [] as DictItem[],
+        company_natures: [] as DictItem[],
+        company_sizes: [] as DictItem[],
+      })),
       api.get<DictItem[]>('/v1/wap/dict/cities').catch(() => [] as DictItem[]),
     ])
-  return { sex, edu, exp, age, rCity, cCity, scale, prop, ureg, cjob, clog, edus, exps, natures, sizes, cities }
+  return {
+    sex,
+    edu,
+    exp,
+    age,
+    rCity,
+    cCity,
+    scale,
+    prop,
+    ureg,
+    cjob,
+    clog,
+    edus: bundle.educations_user,
+    exps: bundle.experiences,
+    natures: bundle.company_natures,
+    sizes: bundle.company_sizes,
+    cities,
+  }
 })
 
 useSeoMeta({ title: () => pageTitle.value })
