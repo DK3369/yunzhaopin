@@ -32,6 +32,15 @@ pub struct CreateJobInput<'a> {
     pub wel: Option<&'a str>,
     pub sdate: i64,
     pub edate: i64,
+    pub hy: i32,
+    pub report: i32,
+    pub age: i32,
+    pub sex: i32,
+    pub marriage: i32,
+    pub lang: &'a str,
+    pub is_graduate: i32,
+    pub zp_minage: i32,
+    pub zp_maxage: i32,
 }
 
 async fn setting_on(state: &AppState, key: &str) -> bool {
@@ -128,6 +137,11 @@ pub async fn create(
         Some(s) if !s.is_empty() => s,
         _ => looked_up.as_str(),
     };
+    let hy = if input.hy != 0 {
+        input.hy
+    } else {
+        company_row.as_ref().map(|c| c.hy).unwrap_or(0)
+    };
     let id = job_repo::create(
         state.db.pool(),
         job_repo::JobCreate {
@@ -153,6 +167,15 @@ pub async fn create(
             did: user.did,
             x: x.as_str(),
             y: y.as_str(),
+            hy,
+            report: input.report,
+            age: input.age,
+            sex: input.sex,
+            marriage: input.marriage,
+            lang: input.lang,
+            is_graduate: input.is_graduate,
+            zp_minage: input.zp_minage,
+            zp_maxage: input.zp_maxage,
         },
         now,
     )
@@ -190,6 +213,15 @@ pub struct UpdateJobInput<'a> {
     pub wel: Option<&'a str>,
     pub sdate: Option<i64>,
     pub edate: Option<i64>,
+    pub hy: Option<i32>,
+    pub report: Option<i32>,
+    pub age: Option<i32>,
+    pub sex: Option<i32>,
+    pub marriage: Option<i32>,
+    pub lang: Option<&'a str>,
+    pub is_graduate: Option<i32>,
+    pub zp_minage: Option<i32>,
+    pub zp_maxage: Option<i32>,
 }
 
 pub async fn update(
@@ -223,6 +255,15 @@ pub async fn update(
             welfare: input.wel,
             sdate: input.sdate,
             edate: input.edate,
+            hy: input.hy,
+            report: input.report,
+            age: input.age,
+            sex: input.sex,
+            marriage: input.marriage,
+            lang: input.lang,
+            is_graduate: input.is_graduate,
+            zp_minage: input.zp_minage,
+            zp_maxage: input.zp_maxage,
         },
         clock::now_ts(),
     )

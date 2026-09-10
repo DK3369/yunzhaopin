@@ -86,6 +86,17 @@ pub async fn list_by_uid(
         .await
 }
 
+pub async fn count_unread_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_msg \
+         WHERE uid = ? AND COALESCE(isdel,9) = 9 AND COALESCE(is_browse,0) = 1",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_userid_msg \

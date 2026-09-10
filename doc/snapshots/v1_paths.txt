@@ -262,11 +262,13 @@
 /v1/mcenter/talent-pool/delete
 /v1/mcenter/talent-pool/list
 /v1/mcenter/talent-pool/remark
+/v1/mcenter/vip/bank-accounts
 /v1/mcenter/vip/current
 /v1/mcenter/vip/orders
 /v1/mcenter/vip/orders/cancel
 /v1/mcenter/vip/orders/list
 /v1/mcenter/vip/orders/mock-paid
+/v1/mcenter/vip/orders/paybank
 /v1/mcenter/vip/packages
 /v1/mcenter/vip/quote
 /v1/mcenter/warnings
@@ -336,8 +338,12 @@
 /v1/wap/dict/industries
 /v1/wap/dict/job-categories
 /v1/wap/dict/job-types
+/v1/wap/dict/langs
+/v1/wap/dict/marriages
+/v1/wap/dict/reports
 /v1/wap/dict/salaries
 /v1/wap/dict/tags
+/v1/wap/dict/welfares
 /v1/wap/eval-papers
 /v1/wap/eval-papers/detail
 /v1/wap/eval-papers/messages/list

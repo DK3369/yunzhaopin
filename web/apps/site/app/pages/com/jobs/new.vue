@@ -24,9 +24,19 @@ const form = reactive({
   wel: '',
   sdate: 0,
   edate: 0,
+  hy: 0,
+  report: 0,
+  age: 0,
+  sex: 0,
+  marriage: 0,
+  lang: '',
+  is_graduate: 0,
+  zp_minage: 0,
+  zp_maxage: 0,
 })
 const sdateN = ref('')
 const welIds = ref<number[]>([])
+const langIds = ref<number[]>([])
 const msg = ref('')
 const { data: cats } = await useAsyncData(
   () => `job-cats-${locale.value}`,
@@ -50,6 +60,22 @@ const { data: welfares } = await useAsyncData(
 const { data: jobTypes } = await useAsyncData(
   () => `dict-job-type-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/job-types').catch(() => [] as DictItem[]),
+)
+const { data: industries } = await useAsyncData(
+  () => `dict-hy-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
+)
+const { data: reports } = await useAsyncData(
+  () => `dict-report-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/reports').catch(() => [] as DictItem[]),
+)
+const { data: marriages } = await useAsyncData(
+  () => `dict-marriage-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/marriages').catch(() => [] as DictItem[]),
+)
+const { data: langs } = await useAsyncData(
+  () => `dict-lang-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/langs').catch(() => [] as DictItem[]),
 )
 watch(
   () => form.job1,
@@ -85,6 +111,15 @@ if (editId.value) {
     form.content = String(row.description || row.content || '')
     form.wel = String(row.welfare || row.wel || '')
     form.sdate = Number(row.sdate || 0)
+    form.hy = Number(row.hy || 0)
+    form.report = Number(row.report || 0)
+    form.age = Number(row.age || 0)
+    form.sex = Number(row.sex || 0)
+    form.marriage = Number(row.marriage || 0)
+    form.lang = String(row.lang || '')
+    form.is_graduate = Number(row.is_graduate || 0) ? 1 : 0
+    form.zp_minage = Number(row.zp_minage || 0)
+    form.zp_maxage = Number(row.zp_maxage || 0)
     if (form.sdate > 0) {
       const d = new Date(form.sdate * 1000)
       sdateN.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -96,6 +131,11 @@ watch(welfares, (list) => {
   const names = new Set(form.wel.split(',').map((s) => s.trim()).filter(Boolean))
   welIds.value = list.filter((w) => names.has(w.name)).map((w) => w.id)
 }, { immediate: true })
+watch(langs, (list) => {
+  if (!form.lang || !list?.length) return
+  const ids = new Set(form.lang.split(',').map((s) => Number(s.trim())).filter((n) => n > 0))
+  langIds.value = list.filter((w) => ids.has(w.id)).map((w) => w.id)
+}, { immediate: true })
 async function submit() {
   msg.value = ''
   try {
@@ -103,10 +143,11 @@ async function submit() {
       .filter((w) => welIds.value.includes(w.id))
       .map((w) => w.name)
       .join(',')
+    const lang = langIds.value.filter((id) => id > 0).join(',')
     if (sdateN.value) {
       form.sdate = Math.floor(new Date(`${sdateN.value}T00:00:00`).getTime() / 1000)
     }
-    const body = { ...form, wel }
+    const body = { ...form, wel, lang, is_graduate: form.is_graduate ? 1 : 0 }
     if (editId.value) {
       await api.post('/v1/mcenter/jobs/update', { id: editId.value, ...body })
     } else {
@@ -157,6 +198,35 @@ useSeoMeta({ title: t('wap_00322') })
         <option :value="0">{{ $t('common.not_limited') }}</option>
         <option v-for="e in edus || []" :key="e.id" :value="e.id">{{ e.name }}</option>
       </select>
+      <select v-model.number="form.hy">
+        <option :value="0">{{ $t('wap_user_00100') }}</option>
+        <option v-for="h in industries || []" :key="h.id" :value="h.id">{{ h.name }}</option>
+      </select>
+      <select v-model.number="form.report">
+        <option :value="0">{{ $t('wap_com_00279') }}</option>
+        <option v-for="r in reports || []" :key="r.id" :value="r.id">{{ r.name }}</option>
+      </select>
+      <select v-model.number="form.sex">
+        <option :value="0">{{ $t('wap_com_00303') }}</option>
+        <option :value="1">{{ $t('common_02092') }}</option>
+        <option :value="2">{{ $t('common_02069') }}</option>
+      </select>
+      <select v-model.number="form.marriage">
+        <option :value="0">{{ $t('default_00241') }}</option>
+        <option v-for="m in marriages || []" :key="m.id" :value="m.id">{{ m.name }}</option>
+      </select>
+      <input v-model.number="form.zp_minage" type="number" min="0" max="99" :placeholder="$t('wap_com_00285')" />
+      <input v-model.number="form.zp_maxage" type="number" min="0" max="99" :placeholder="$t('wap_com_00308')" />
+      <label>
+        <input v-model="form.is_graduate" type="checkbox" :true-value="1" :false-value="0" />
+        {{ $t('member_com_00241') }}
+      </label>
+      <div v-if="(langs || []).length">
+        <p class="muted">{{ $t('wap_com_00292') }}</p>
+        <label v-for="lg in langs || []" :key="lg.id">
+          <input v-model="langIds" type="checkbox" :value="lg.id" /> {{ lg.name }}
+        </label>
+      </div>
       <input v-model="sdateN" type="date" />
       <div>
         <label v-for="w in welfares || []" :key="w.id">

@@ -20,6 +20,14 @@ pub struct DashboardCounts {
     pub view_count: u64,
     pub integral_balance: i64,
     pub signday: u32,
+    /// PHP wxapp `sysnews.wkyqnum` — unread interview invites.
+    pub wkyqnum: u64,
+    /// PHP wxapp `sysnews.commsgnum` — unread consult replies.
+    pub commsgnum: u64,
+    /// PHP wxapp `sysnews.sxnum` — unread system messages (same as `unread_messages`).
+    pub sxnum: u64,
+    /// PHP wxapp `sysnews.sysnum` — wkyqnum + sxnum + commsgnum.
+    pub sysnum: u64,
 }
 
 /// Company-side home aggregation (aligned with PHPYun `com/tongji` + `com/zhaopin` counter blocks).
@@ -47,7 +55,7 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
 
     // PHPYun only stores job favorites (`phpyun_fav_job`); company / resume
     // favorites have no backing table, so the dashboard total is just job-fav count.
-    let (messages, applies, interviews, fav_job, looks, bal, sign) = tokio::join!(
+    let (messages, applies, interviews, fav_job, looks, bal, sign, wkyq, commsg) = tokio::join!(
         message_repo::count(db, uid, None, true),
         apply_repo::count_by_uid(db, uid, None, None),
         phpyun_models::userid_msg::repo::count_by_uid(db, uid),
@@ -55,12 +63,17 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
         phpyun_models::look_resume::count_by_resume_uid(db, uid),
         integral_repo::get_balance(db, uid),
         sign_repo::get_user_sign(db, uid),
+        phpyun_models::userid_msg::repo::count_unread_by_uid(db, uid),
+        phpyun_models::job_msg::repo::count_unread_replies_by_uid(db, uid),
     );
 
     let fav_total = fav_job.unwrap_or(0);
+    let unread_messages = messages.unwrap_or(0);
+    let wkyqnum = wkyq.unwrap_or(0);
+    let commsgnum = commsg.unwrap_or(0);
 
     Ok(DashboardCounts {
-        unread_messages: messages.unwrap_or(0),
+        unread_messages,
         unread_chats: 0,
         apply_count: applies.unwrap_or(0),
         interview_count: interviews.unwrap_or(0),
@@ -68,6 +81,10 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
         view_count: looks.unwrap_or(0),
         integral_balance: bal.map(|b| b.balance).unwrap_or(0),
         signday: sign.map(|s| s.signday).unwrap_or(0),
+        wkyqnum,
+        commsgnum,
+        sxnum: unread_messages,
+        sysnum: wkyqnum + unread_messages + commsgnum,
     })
 }
 

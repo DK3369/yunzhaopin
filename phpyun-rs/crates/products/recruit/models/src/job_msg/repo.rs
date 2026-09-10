@@ -250,6 +250,20 @@ pub async fn count_for_seeker(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::E
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP wxapp `sysnews` `commsgnum`: reply present and `user_remind_status=0`.
+pub async fn count_unread_replies_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_msg \
+         WHERE uid = ? AND COALESCE(del_status,0) = 0 \
+           AND COALESCE(user_remind_status,0) = 0 \
+           AND COALESCE(reply,'') <> ''",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// PHP `upInfo(user_remind_status=0 → 1)` after the seeker opens commsg.
 pub async fn mark_user_reminded(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(

@@ -326,6 +326,38 @@ pub async fn mark_order_paid(
     Ok(res.rows_affected())
 }
 
+/// PHP `payComOrderByBank`: keep `order_remark` as package code; voucher goes to
+/// `order_bank` / `bank_time` / `order_pic` / `order_info`. `order_state=3` = 等待确认.
+pub async fn submit_bank_pay(
+    pool: &MySqlPool,
+    order_no: &str,
+    uid: u64,
+    order_bank: &str,
+    bank_time: i64,
+    order_pic: Option<&str>,
+    order_info: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"UPDATE phpyun_company_order
+           SET order_type = 'bank',
+               order_state = 3,
+               order_bank = ?,
+               bank_time = ?,
+               order_pic = COALESCE(?, order_pic),
+               order_info = COALESCE(?, order_info)
+           WHERE order_id = ? AND uid = ? AND type = 1 AND order_state IN (0, 3)"#,
+    )
+    .bind(order_bank)
+    .bind(bank_time)
+    .bind(order_pic)
+    .bind(order_info)
+    .bind(order_no)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn list_user_orders(
     pool: &MySqlPool,
     uid: u64,

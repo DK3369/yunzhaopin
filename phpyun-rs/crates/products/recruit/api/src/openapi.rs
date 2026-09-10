@@ -320,6 +320,10 @@ impl Modify for UniqueOperationId {
         v1::wap::dict::salaries,
         v1::wap::dict::job_types,
         v1::wap::dict::tags,
+        v1::wap::dict::welfares,
+        v1::wap::dict::reports,
+        v1::wap::dict::marriages,
+        v1::wap::dict::langs,
         v1::wap::dict::company_natures,
         v1::wap::dict::company_sizes,
         // wap: articles
@@ -349,6 +353,8 @@ impl Modify for UniqueOperationId {
         v1::mcenter::vip::get_current,
         v1::mcenter::vip::list_orders,
         v1::mcenter::vip::create_order,
+        v1::mcenter::vip::list_bank_accounts,
+        v1::mcenter::vip::paybank,
         // wap: hot searches
         v1::wap::hot_searches::list,
         // wap: announcements
@@ -876,6 +882,8 @@ impl Modify for UniqueOperationId {
             v1::mcenter::vip::CreateOrderForm,
             v1::mcenter::vip::OrderCreated,
             v1::mcenter::vip::OrderItem,
+            v1::mcenter::vip::BankAccountView,
+            v1::mcenter::vip::PayBankForm,
             v1::wap::hot_searches::HotItem,
             v1::wap::announcements::AnnouncementSummary,
             v1::wap::announcements::AnnouncementDetail,

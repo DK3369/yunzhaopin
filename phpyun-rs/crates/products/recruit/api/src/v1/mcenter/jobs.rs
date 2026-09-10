@@ -87,6 +87,35 @@ pub struct CreateJobForm {
     )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: i64,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub hy: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub report: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub age: i32,
+    /// 0 any / 1 male / 2 female (PHP `com_sex`).
+    #[serde(default)]
+    #[validate(range(min = 0, max = 9))]
+    pub sex: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub marriage: i32,
+    /// Comma-separated `job_lang` ids (PHP `pylode`).
+    #[serde(default)]
+    #[validate(length(max = 500))]
+    pub lang: String,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 1))]
+    pub is_graduate: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
+    pub zp_minage: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
+    pub zp_maxage: i32,
 }
 
 /// Publish job
@@ -126,6 +155,15 @@ pub async fn create(
             wel: f.wel.as_deref(),
             sdate: f.sdate,
             edate: f.edate,
+            hy: f.hy,
+            report: f.report,
+            age: f.age,
+            sex: f.sex,
+            marriage: f.marriage,
+            lang: f.lang.as_str(),
+            is_graduate: f.is_graduate,
+            zp_minage: f.zp_minage,
+            zp_maxage: f.zp_maxage,
         },
         None,
         &ip,
@@ -188,6 +226,24 @@ pub struct UpdateJobForm {
     )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: Option<i64>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub hy: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub report: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub age: Option<i32>,
+    #[validate(range(min = 0, max = 9))]
+    pub sex: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub marriage: Option<i32>,
+    #[validate(length(max = 500))]
+    pub lang: Option<String>,
+    #[validate(range(min = 0, max = 1))]
+    pub is_graduate: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
+    pub zp_minage: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
+    pub zp_maxage: Option<i32>,
 }
 
 /// Update job (re-enters review after editing)
@@ -227,6 +283,15 @@ pub async fn update(
             wel: f.wel.as_deref(),
             sdate: f.sdate,
             edate: f.edate,
+            hy: f.hy,
+            report: f.report,
+            age: f.age,
+            sex: f.sex,
+            marriage: f.marriage,
+            lang: f.lang.as_deref(),
+            is_graduate: f.is_graduate,
+            zp_minage: f.zp_minage,
+            zp_maxage: f.zp_maxage,
         },
         &ip,
     )

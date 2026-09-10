@@ -541,6 +541,15 @@ pub struct JobCreate<'a> {
     pub did: u32,
     pub x: &'a str,
     pub y: &'a str,
+    pub hy: i32,
+    pub report: i32,
+    pub age: i32,
+    pub sex: i32,
+    pub marriage: i32,
+    pub lang: &'a str,
+    pub is_graduate: i32,
+    pub zp_minage: i32,
+    pub zp_maxage: i32,
 }
 
 /// Create a new job. **Defaults to under-review** (state=0); waits for
@@ -551,11 +560,11 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
            (uid, com_name, name, job1, job1_son, job_post,
             provinceid, cityid, three_cityid, x, y,
             minsalary, maxsalary, `type`, number, exp, edu,
-            description, welfare, report, sex, marriage, lang,
+            description, welfare, hy, report, age, sex, marriage, lang, is_graduate,
+            zp_minage, zp_maxage,
             state, status, r_status, rec, urgent,
             rec_time, sdate, edate, lastupdate, did)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                   0, 0, 0, '',
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                    0, 0, 1, 0, 0, 0, ?, ?, ?, ?)"#,
     )
     .bind(c.uid)
@@ -577,6 +586,15 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     .bind(c.edu)
     .bind(c.description.unwrap_or(""))
     .bind(c.welfare.unwrap_or(""))
+    .bind(c.hy)
+    .bind(c.report)
+    .bind(c.age)
+    .bind(c.sex)
+    .bind(c.marriage)
+    .bind(c.lang)
+    .bind(c.is_graduate)
+    .bind(c.zp_minage)
+    .bind(c.zp_maxage)
     .bind(c.sdate)
     .bind(c.edate)
     .bind(now)
@@ -818,6 +836,15 @@ pub struct JobUpdate<'a> {
     pub welfare: Option<&'a str>,
     pub sdate: Option<i64>,
     pub edate: Option<i64>,
+    pub hy: Option<i32>,
+    pub report: Option<i32>,
+    pub age: Option<i32>,
+    pub sex: Option<i32>,
+    pub marriage: Option<i32>,
+    pub lang: Option<&'a str>,
+    pub is_graduate: Option<i32>,
+    pub zp_minage: Option<i32>,
+    pub zp_maxage: Option<i32>,
 }
 
 /// Update a job -- dynamic update via COALESCE; resets state to
@@ -848,6 +875,15 @@ pub async fn update(
             welfare     = COALESCE(?, welfare),
             sdate       = COALESCE(?, sdate),
             edate       = COALESCE(?, edate),
+            hy          = COALESCE(?, hy),
+            report      = COALESCE(?, report),
+            age         = COALESCE(?, age),
+            sex         = COALESCE(?, sex),
+            marriage    = COALESCE(?, marriage),
+            lang        = COALESCE(?, lang),
+            is_graduate = COALESCE(?, is_graduate),
+            zp_minage   = COALESCE(?, zp_minage),
+            zp_maxage   = COALESCE(?, zp_maxage),
             state       = 0,
             lastupdate  = ?
            WHERE id = ? AND uid = ?"#,
@@ -869,6 +905,15 @@ pub async fn update(
     .bind(u.welfare)
     .bind(u.sdate)
     .bind(u.edate)
+    .bind(u.hy)
+    .bind(u.report)
+    .bind(u.age)
+    .bind(u.sex)
+    .bind(u.marriage)
+    .bind(u.lang)
+    .bind(u.is_graduate)
+    .bind(u.zp_minage)
+    .bind(u.zp_maxage)
     .bind(now)
     .bind(id)
     .bind(uid)

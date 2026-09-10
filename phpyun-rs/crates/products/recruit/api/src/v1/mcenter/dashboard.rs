@@ -24,6 +24,10 @@ pub struct DashboardView {
     pub view_count: u64,
     pub integral_balance: i64,
     pub signday: u32,
+    pub wkyqnum: u64,
+    pub commsgnum: u64,
+    pub sxnum: u64,
+    pub sysnum: u64,
 }
 
 /// Member center — first-screen aggregate counts
@@ -48,6 +52,10 @@ pub async fn counts(
         view_count: d.view_count,
         integral_balance: d.integral_balance,
         signday: d.signday,
+        wkyqnum: d.wkyqnum,
+        commsgnum: d.commsgnum,
+        sxnum: d.sxnum,
+        sysnum: d.sysnum,
     }))
 }
 

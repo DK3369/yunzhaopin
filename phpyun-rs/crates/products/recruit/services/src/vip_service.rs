@@ -159,6 +159,85 @@ pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> App
     Ok(())
 }
 
+pub struct BankPayInput<'a> {
+    pub order_no: &'a str,
+    pub bank_name: &'a str,
+    pub bank_number: &'a str,
+    pub bank_price: &'a str,
+    pub bank_time: i64,
+    pub order_remark: &'a str,
+    pub order_pic: Option<&'a str>,
+}
+
+/// PHP `payComOrderByBank` — submit bank-transfer voucher for a pending VIP order.
+pub async fn submit_bank_pay(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    input: BankPayInput<'_>,
+    client_ip: &str,
+) -> AppResult<()> {
+    if input.bank_name.trim().is_empty() {
+        return Err(ApiError::business("model_00022"));
+    }
+    if input.bank_number.trim().is_empty() {
+        return Err(ApiError::business("model_00023"));
+    }
+    if input.bank_price.trim().is_empty() {
+        return Err(ApiError::business("model_00024"));
+    }
+    if input.bank_time <= 0 {
+        return Err(ApiError::business("wap_js_00127"));
+    }
+    let order = vip_repo::find_order_by_no(state.db.reader(), input.order_no)
+        .await?
+        .ok_or_else(|| ApiError::business("order_not_found"))?;
+    if order.uid != user.uid {
+        return Err(ApiError::business("order_not_owned"));
+    }
+    if order.status != 0 && !(order.channel == "bank" && order.status == 3) {
+        return Err(ApiError::business("order_not_pending"));
+    }
+    let order_bank = format!(
+        "{}@%{}@%{}",
+        input.bank_name.trim(),
+        input.bank_number.trim(),
+        input.bank_price.trim()
+    );
+    let remark_json = if input.order_remark.trim().is_empty() {
+        None
+    } else {
+        Some(serde_json::json!({ "remark": input.order_remark.trim() }).to_string())
+    };
+    let pic = input.order_pic.map(str::trim).filter(|s| !s.is_empty());
+    let affected = vip_repo::submit_bank_pay(
+        state.db.pool(),
+        input.order_no,
+        user.uid,
+        &order_bank,
+        input.bank_time,
+        pic,
+        remark_json.as_deref(),
+    )
+    .await?;
+    if affected == 0 {
+        return Err(ApiError::business("order_not_pending"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("vip.order_bank", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("order:{}", input.order_no)),
+    )
+    .await;
+    Ok(())
+}
+
+pub async fn list_bank_accounts(
+    state: &AppState,
+    _user: &AuthenticatedUser,
+) -> AppResult<Vec<phpyun_models::bank::entity::BankAccount>> {
+    Ok(phpyun_models::bank::repo::list_all(state.db.reader()).await?)
+}
+
 pub struct OrderPage {
     pub list: Vec<PayOrder>,
     pub total: u64,

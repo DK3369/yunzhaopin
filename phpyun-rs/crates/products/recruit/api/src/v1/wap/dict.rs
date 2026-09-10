@@ -32,6 +32,8 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/dict/job-types",
     "/v1/wap/dict/welfares",
     "/v1/wap/dict/reports",
+    "/v1/wap/dict/marriages",
+    "/v1/wap/dict/langs",
     "/v1/wap/dict/tags",
     "/v1/wap/dict/company-natures",
     "/v1/wap/dict/company-sizes",
@@ -58,6 +60,8 @@ pub fn routes() -> Router<AppState> {
         .route("/dict/job-types", get(job_types).post(job_types))
         .route("/dict/welfares", get(welfares).post(welfares))
         .route("/dict/reports", get(reports).post(reports))
+        .route("/dict/marriages", get(marriages).post(marriages))
+        .route("/dict/langs", get(langs).post(langs))
         .route("/dict/tags", get(tags).post(tags))
         .route(
             "/dict/company-natures",
@@ -294,6 +298,34 @@ pub async fn reports(
         dicts.comclass_by_variable("job_report")
     };
     Ok(ApiResponse::data(named_items(rows)))
+}
+
+/// Marital requirement — PHP `$comdata.job_marriage`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/marriages",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn marriages(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(named_items(
+        dicts.comclass_by_variable("job_marriage"),
+    )))
+}
+
+/// Language requirement — PHP `$comdata.job_lang`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/dict/langs",
+    tag = "wap",
+    responses((status = 200, description = "ok"))
+)]
+pub async fn langs(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(named_items(
+        dicts.comclass_by_variable("job_lang"),
+    )))
 }
 
 /// Resume person tags — PHP `$userdata.user_tag`.

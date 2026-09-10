@@ -13,6 +13,10 @@ const { data: dash } = await useAsyncData('user-dash', () =>
       favorite_count: number
       view_count: number
       unread_messages: number
+      wkyqnum: number
+      commsgnum: number
+      sxnum: number
+      sysnum: number
     }>('/v1/mcenter/dashboard', {})
     .catch(() => null),
 )
@@ -136,7 +140,7 @@ function labelOf(to: string, key: string) {
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/interviews">
               <i class="yun_m_index_date_icon1" />
-              <span v-if="dash?.unread_messages" class="yun_m_n">{{ dash.unread_messages }}</span>
+              <span v-if="dash?.wkyqnum" class="yun_m_n">{{ dash.wkyqnum }}</span>
               <div class="yun_m_index_datename">{{ $t('wap_user_00216') }}</div>
               <div class="yun_m_index_date_n">
                 <span class="yun_m_index_d_c">{{ dash?.interview_count ?? 0 }}</span>

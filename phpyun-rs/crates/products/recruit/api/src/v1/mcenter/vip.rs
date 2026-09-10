@@ -19,6 +19,8 @@ pub fn routes() -> Router<AppState> {
         .route("/vip/orders", post(create_order))
         .route("/vip/orders/list", post(list_orders))
         .route("/vip/orders/cancel", post(cancel_order))
+        .route("/vip/orders/paybank", post(paybank))
+        .route("/vip/bank-accounts", post(list_bank_accounts))
         .route("/vip/quote", post(quote_price));
 
     // mock-paid is only mounted in debug builds; the release binary does not include this route.
@@ -153,7 +155,7 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
 ) -> AppResult<ApiResponse<OrderCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" {
         return Err(ApiError::param_invalid("channel"));
     }
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
@@ -201,6 +203,11 @@ pub struct OrderItem {
 
 impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
     fn from(o: phpyun_models::vip::entity::PayOrder) -> Self {
+        let status_n = if o.channel == "bank" && o.status == 3 {
+            "awaiting_confirm".to_string()
+        } else {
+            order_status_name(o.status).to_string()
+        };
         Self {
             id: o.id,
             order_no: o.order_no,
@@ -209,7 +216,7 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
             amount_yuan: f64::from(o.amount_cents) / 100.0,
             amount_cents: o.amount_cents,
             channel: o.channel,
-            status_n: order_status_name(o.status).to_string(),
+            status_n,
             status: o.status,
             pay_tx_id: o.pay_tx_id,
             created_at_n: fmt_dt(o.created_at),
@@ -260,6 +267,100 @@ pub async fn cancel_order(
     vip_service::cancel_order(&state, &user, &order_no).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct BankAccountView {
+    pub id: u64,
+    pub name: String,
+    pub bank_name: String,
+    pub bank_number: String,
+    pub bank_address: String,
+}
+
+/// Site bank-transfer accounts (PHP `getBankList`).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/vip/bank-accounts",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_bank_accounts(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Vec<BankAccountView>>> {
+    let list = vip_service::list_bank_accounts(&state, &user).await?;
+    Ok(ApiResponse::data(
+        list.into_iter()
+            .map(|a| BankAccountView {
+                id: a.id,
+                name: a.name,
+                bank_name: a.bank_name,
+                bank_number: a.bank_number,
+                bank_address: a.bank_address,
+            })
+            .collect(),
+    ))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PayBankForm {
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
+    pub order_no: String,
+    #[validate(length(min = 1, max = 80))]
+    pub bank_name: String,
+    #[validate(length(min = 1, max = 80))]
+    pub bank_number: String,
+    #[validate(length(min = 1, max = 32))]
+    pub bank_price: String,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_ts")]
+    #[validate(range(min = 1i64, max = 4_102_444_800i64))]
+    pub bank_time: i64,
+    #[serde(default)]
+    #[validate(length(max = 500))]
+    pub order_remark: String,
+    #[serde(default)]
+    #[validate(length(max = 255))]
+    pub order_pic: Option<String>,
+}
+
+/// PHP `payment::paybank` — submit bank transfer voucher.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/vip/orders/paybank",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = PayBankForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn paybank(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<PayBankForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    vip_service::submit_bank_pay(
+        &state,
+        &user,
+        vip_service::BankPayInput {
+            order_no: &f.order_no,
+            bank_name: &f.bank_name,
+            bank_number: &f.bank_number,
+            bank_price: &f.bank_price,
+            bank_time: f.bank_time,
+            order_remark: &f.order_remark,
+            order_pic: f.order_pic.as_deref(),
+        },
+        &ip,
+    )
+    .await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+/// **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
 
 /// **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
 /// Only compiled in debug builds — this function does not exist in the release binary.
