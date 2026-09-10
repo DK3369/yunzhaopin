@@ -364,6 +364,7 @@
 /v1/wap/hr-docs/classes
 /v1/wap/hr-docs/detail
 /v1/wap/hr-docs/download
+/v1/wap/initads
 /v1/wap/initjobs
 /v1/wap/integral/items
 /v1/wap/integral/items/detail

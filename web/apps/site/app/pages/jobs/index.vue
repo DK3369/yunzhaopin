@@ -103,15 +103,14 @@ const reports = computed(() => dicts.value?.reports ?? [])
 const jobTypes = computed(() => dicts.value?.job_types ?? [])
 const natures = computed(() => dicts.value?.company_natures ?? [])
 const sizes = computed(() => dicts.value?.company_sizes ?? [])
-const { data: adsTop } = await useAsyncData('ads-507', () =>
-  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '507', limit: 1 }).catch(() => []),
-)
-const { data: adsH5 } = await useAsyncData('ads-504', () =>
-  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '504', limit: 1 }).catch(() => []),
-)
-const { data: adsSide } = await useAsyncData('ads-7', () =>
-  api.get<Array<{ image_n?: string; html?: string }>>('/v1/wap/ads', { slot: '7', limit: 5 }).catch(() => []),
-)
+const { data: ads } = await useAdsBundle('jobs-list-ads', [
+  { slot: '507', limit: 1 },
+  { slot: '504', limit: 1 },
+  { slot: '7', limit: 5 },
+])
+const adsTop = computed(() => ads.value?.['507'] || [])
+const adsH5 = computed(() => ads.value?.['504'] || [])
+const adsSide = computed(() => ads.value?.['7'] || [])
 
 const jobItems = computed(() => jobRoots.value.map((c) => ({ id: c.id, name: c.name })))
 const job2Items = computed(() => jobLevel2.value.map((c) => ({ id: c.id, name: c.name })))

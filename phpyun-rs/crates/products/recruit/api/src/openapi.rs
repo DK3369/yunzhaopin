@@ -466,6 +466,7 @@ impl Modify for UniqueOperationId {
         v1::wap::gongzhao::detail,
         // wap: ads public
         v1::wap::ads::list,
+        v1::wap::ads::initads,
         // mcenter: blacklist
         v1::mcenter::blacklist::list,
         v1::mcenter::blacklist::add,

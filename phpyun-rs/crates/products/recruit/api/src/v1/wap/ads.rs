@@ -10,20 +10,25 @@ use phpyun_core::{
     ApiError, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson,
     ValidatedJsonOrQuery,
 };
+use phpyun_models::ad::entity::Ad;
 use phpyun_services::ad_service;
+use serde::de::{self, Deserializer, SeqAccess, Visitor};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
+use std::fmt;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/ads"];
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/ads", "/v1/wap/initads"];
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/ads", get(list).post(list))
+        .route("/initads", get(initads).post(initads))
         .route("/ads/click", post(track_click))
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams)]
+#[derive(Debug, Deserialize, Serialize, Validate, IntoParams, ToSchema)]
 pub struct AdQuery {
     /// Slot key — alphanumeric / underscore / hyphen, 1..=64 chars. The
     /// string flows into `phpyun_ad.slot = ?`, so a stricter charset guard
@@ -64,6 +69,20 @@ pub struct AdView {
     pub pic_content: String,
 }
 
+fn to_view(state: &AppState, site_base: Option<&str>, a: Ad) -> AdView {
+    AdView {
+        image_n: state.storage.normalize_legacy_url(&a.image, site_base),
+        id: a.id,
+        title: a.title,
+        image: a.image,
+        link: a.link,
+        target: a.target,
+        pic_width: a.pic_width,
+        pic_height: a.pic_height,
+        pic_content: a.pic_content,
+    }
+}
+
 /// List active ads for a slot
 #[utoipa::path(post, path = "/v1/wap/ads", tag = "wap", params(AdQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
@@ -74,19 +93,117 @@ pub async fn list(
     let site_base = state.config.web_base_url.as_deref();
     let items = list
         .into_iter()
-        .map(|a| AdView {
-            image_n: state.storage.normalize_legacy_url(&a.image, site_base),
-            id: a.id,
-            title: a.title,
-            image: a.image,
-            link: a.link,
-            target: a.target,
-            pic_width: a.pic_width,
-            pic_height: a.pic_height,
-            pic_content: a.pic_content,
-        })
+        .map(|a| to_view(&state, site_base, a))
         .collect();
     Ok(ApiResponse::data(items))
+}
+
+/// GET compact: `slots=3:5,50:5`. POST JSON: `{ "slots": [{ "slot": "3", "limit": 5 }] }`.
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
+pub struct InitAdsInput {
+    #[serde(default, deserialize_with = "de_slots")]
+    #[validate(length(min = 1, max = 32), nested)]
+    pub slots: Vec<AdQuery>,
+}
+
+fn parse_compact_slots(s: &str) -> Result<Vec<AdQuery>, String> {
+    let mut out = Vec::new();
+    for part in s.split([',', '|']) {
+        let part = part.trim();
+        if part.is_empty() {
+            continue;
+        }
+        let (slot, limit) = match part.split_once(':') {
+            Some((a, b)) => {
+                let lim = b.trim().parse::<u64>().unwrap_or(10).clamp(1, 100);
+                (a.trim().to_string(), lim)
+            }
+            None => (part.to_string(), 10),
+        };
+        if slot.is_empty() {
+            continue;
+        }
+        out.push(AdQuery { slot, limit });
+    }
+    Ok(out)
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum SlotElem {
+    One(AdQuery),
+    Spec(String),
+}
+
+fn de_slots<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<AdQuery>, D::Error> {
+    struct SlotsVisitor;
+    impl<'de> Visitor<'de> for SlotsVisitor {
+        type Value = Vec<AdQuery>;
+        fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            f.write_str("slot list or compact spec like 3:5,50:5")
+        }
+        fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
+            parse_compact_slots(v).map_err(E::custom)
+        }
+        fn visit_string<E: de::Error>(self, v: String) -> Result<Self::Value, E> {
+            self.visit_str(&v)
+        }
+        fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
+            let mut out = Vec::new();
+            while let Some(item) = seq.next_element::<SlotElem>()? {
+                match item {
+                    SlotElem::One(q) => out.push(q),
+                    SlotElem::Spec(s) => {
+                        out.extend(parse_compact_slots(&s).map_err(de::Error::custom)?);
+                    }
+                }
+            }
+            Ok(out)
+        }
+        fn visit_none<E: de::Error>(self) -> Result<Self::Value, E> {
+            Ok(Vec::new())
+        }
+        fn visit_unit<E: de::Error>(self) -> Result<Self::Value, E> {
+            Ok(Vec::new())
+        }
+    }
+    deserializer.deserialize_any(SlotsVisitor)
+}
+
+/// Batch active ads. Keys are slot ids; empty slots return `[]`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/initads",
+    tag = "wap",
+    request_body = InitAdsInput,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn initads(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<InitAdsInput>,
+) -> AppResult<ApiResponse<BTreeMap<String, Vec<AdView>>>> {
+    let needs: Vec<ad_service::SlotNeed> = q
+        .slots
+        .into_iter()
+        .map(|s| ad_service::SlotNeed {
+            slot: s.slot,
+            limit: s.limit,
+        })
+        .collect();
+    let map = ad_service::list_active_many(&state, &needs).await?;
+    let site_base = state.config.web_base_url.as_deref();
+    let out = map
+        .into_iter()
+        .map(|(k, list)| {
+            (
+                k,
+                list.into_iter()
+                    .map(|a| to_view(&state, site_base, a))
+                    .collect(),
+            )
+        })
+        .collect();
+    Ok(ApiResponse::data(out))
 }
 
 // ==================== Click tracking ====================

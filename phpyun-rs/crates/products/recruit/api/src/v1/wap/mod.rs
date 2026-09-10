@@ -222,6 +222,7 @@ mod get_alias_tests {
             "/v1/wap/eval-papers",
             "/v1/wap/legal",
             "/v1/wap/initjobs",
+            "/v1/wap/initads",
         ] {
             assert!(v.contains(&p), "missing GET alias {p}");
         }

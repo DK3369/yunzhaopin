@@ -1,5 +1,6 @@
 //! Admin dashboard aggregation: pending counts for each review queue plus the last 24h of registrations/applications/postings overview.
 
+use crate::ad_service;
 use crate::category_service;
 use crate::country_service;
 use crate::data_show_service;
@@ -578,6 +579,7 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     region_service::reload(state).await?;
     country_service::invalidate().await;
     category_service::invalidate_all();
+    ad_service::invalidate_all();
     home_service::invalidate_all().await;
     friend_link_service::invalidate_all().await;
     hot_search_service::invalidate_all().await;

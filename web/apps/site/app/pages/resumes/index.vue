@@ -173,12 +173,12 @@ const { data: tags } = await useAsyncData(
 const industries = computed(() => dicts.value?.industries ?? [])
 const reports = computed(() => dicts.value?.reports_user ?? [])
 const jobTypes = computed(() => dicts.value?.job_types_user ?? [])
-const { data: adsTop } = await useAsyncData('ads-508', () =>
-  api.get<Array<{ image_n?: string }>>('/v1/wap/ads', { slot: '508', limit: 1 }).catch(() => []),
-)
-const { data: adsSide } = await useAsyncData('ads-36', () =>
-  api.get<Array<{ image_n?: string }>>('/v1/wap/ads', { slot: '36', limit: 5 }).catch(() => []),
-)
+const { data: ads } = await useAdsBundle('resumes-list-ads', [
+  { slot: '508', limit: 1 },
+  { slot: '36', limit: 5 },
+])
+const adsTop = computed(() => ads.value?.['508'] || [])
+const adsSide = computed(() => ads.value?.['36'] || [])
 const { data: recSide } = await useAsyncData(
   () => `resumes-rec-side-${locale.value}`,
   () =>

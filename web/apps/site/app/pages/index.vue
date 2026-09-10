@@ -122,40 +122,36 @@ const { data: hotClass } = await useAsyncData(
   () => `hot-job-class-${locale.value}`,
   () => api.get<CatNode[]>('/v1/wap/categories/recommended', { kind: 'job', limit: 20 }).catch(() => [] as CatNode[]),
 )
-const { data: adsPc } = await useAsyncData('ads-3', () =>
-  api.get<Banner[]>('/v1/wap/ads', { slot: '3', limit: 5 }).catch(() => [] as Banner[]),
-)
-const { data: adsH5 } = await useAsyncData('ads-50', () =>
-  api.get<Banner[]>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => [] as Banner[]),
-)
-const { data: adsMid } = await useAsyncData('ads-mid', async () => {
-  const [slot13, slot14, slot15, slot72, slot73, slot92, slot503, slot506, slot502, slot10, slot11] = await Promise.all([
-    api.get<Banner[]>('/v1/wap/ads', { slot: '13', limit: 3 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '14', limit: 3 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '15', limit: 3 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '72', limit: 1 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '73', limit: 1 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '92', limit: 5 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '503', limit: 3 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '506', limit: 1 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '502', limit: 1 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '10', limit: 1 }).catch(() => [] as Banner[]),
-    api.get<Banner[]>('/v1/wap/ads', { slot: '11', limit: 1 }).catch(() => [] as Banner[]),
-  ])
-  return {
-    slot13: slot13 || [],
-    slot14: slot14 || [],
-    slot15: slot15 || [],
-    slot72: slot72 || [],
-    slot73: slot73 || [],
-    slot92: slot92 || [],
-    slot503: slot503 || [],
-    slot506: slot506 || [],
-    slot502: slot502 || [],
-    slot10: slot10 || [],
-    slot11: slot11 || [],
-  }
-})
+const { data: ads } = await useAdsBundle('home-ads', [
+  { slot: '3', limit: 5 },
+  { slot: '50', limit: 5 },
+  { slot: '13', limit: 3 },
+  { slot: '14', limit: 3 },
+  { slot: '15', limit: 3 },
+  { slot: '72', limit: 1 },
+  { slot: '73', limit: 1 },
+  { slot: '92', limit: 5 },
+  { slot: '503', limit: 3 },
+  { slot: '506', limit: 1 },
+  { slot: '502', limit: 1 },
+  { slot: '10', limit: 1 },
+  { slot: '11', limit: 1 },
+])
+const adsPc = computed(() => ads.value?.['3'] || [])
+const adsH5 = computed(() => ads.value?.['50'] || [])
+const adsMid = computed(() => ({
+  slot13: ads.value?.['13'] || [],
+  slot14: ads.value?.['14'] || [],
+  slot15: ads.value?.['15'] || [],
+  slot72: ads.value?.['72'] || [],
+  slot73: ads.value?.['73'] || [],
+  slot92: ads.value?.['92'] || [],
+  slot503: ads.value?.['503'] || [],
+  slot506: ads.value?.['506'] || [],
+  slot502: ads.value?.['502'] || [],
+  slot10: ads.value?.['10'] || [],
+  slot11: ads.value?.['11'] || [],
+}))
 const { data: friendLinks } = await useAsyncData('home-links', () =>
   api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
 )

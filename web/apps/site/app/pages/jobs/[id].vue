@@ -151,12 +151,12 @@ const contactInfo = computed(
       unknown
     >,
 )
-const { data: adsBanner } = await useAsyncData('ads-509', () =>
-  api.get<Array<{ image_n?: string }>>('/v1/wap/ads', { slot: '509', limit: 1 }).catch(() => []),
-)
-const { data: adsH5 } = await useAsyncData('ads-512', () =>
-  api.get<Array<{ image_n?: string; image?: string; link?: string }>>('/v1/wap/ads', { slot: '512', limit: 1 }).catch(() => []),
-)
+const { data: ads } = await useAdsBundle('job-detail-ads', [
+  { slot: '509', limit: 1 },
+  { slot: '512', limit: 1 },
+])
+const adsBanner = computed(() => ads.value?.['509'] || [])
+const adsH5 = computed(() => ads.value?.['512'] || [])
 const { data: similar } = await useAsyncData(
   () => `job-similar-${locale.value}-${id}`,
   () => api.get<JobLike[]>('/v1/wap/jobs/similar', { id, limit: 8 }).catch(() => [] as JobLike[]),

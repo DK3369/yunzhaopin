@@ -63,6 +63,7 @@ use phpyun_models::wx_nav::repo as wx_nav_repo;
 use phpyun_models::zph::repo as zph_repo;
 use serde_json::{json, Value};
 
+use crate::ad_service;
 use crate::admin_cms_service;
 use crate::admin_dashboard_service;
 use crate::admin_longtail_service;
@@ -2932,6 +2933,7 @@ async fn ads_saveadd(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         },
     )
     .await?;
+    ad_service::invalidate_all();
     Ok(PhpOut::Message("ok"))
 }
 
@@ -2944,6 +2946,7 @@ async fn ads_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if n == 0 {
         return Err(ApiError::business("admin_user_00186"));
     }
+    ad_service::invalidate_all();
     Ok(PhpOut::Message("ok"))
 }
 
@@ -3007,6 +3010,7 @@ async fn ads_check(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::param_invalid("id"));
     }
     ad_repo::set_check(state.db.pool(), id, json_i32(body, "val")).await?;
+    ad_service::invalidate_all();
     Ok(PhpOut::Message("ok"))
 }
 
@@ -3029,6 +3033,7 @@ async fn ads_ctime(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if n == 0 {
         return Err(ApiError::business("wap_01715"));
     }
+    ad_service::invalidate_all();
     Ok(PhpOut::Message("ok"))
 }
 
@@ -3038,6 +3043,7 @@ async fn ads_upsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::business("common_01716"));
     }
     ad_repo::set_sort(state.db.pool(), id, json_i32(body, "sort")).await?;
+    ad_service::invalidate_all();
     Ok(PhpOut::Data(json!({})))
 }
 

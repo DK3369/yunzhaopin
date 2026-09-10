@@ -60,6 +60,38 @@ pub async fn list_active(
         .await
 }
 
+/// Active ads in many `class_id`s, newest/heaviest first within each slot.
+/// Callers group and apply per-slot limits. Caps rows at `50 * slot count`.
+pub async fn list_active_in_slots(
+    pool: &MySqlPool,
+    class_ids: &[i32],
+    now: i64,
+) -> Result<Vec<Ad>, sqlx::Error> {
+    if class_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let max_rows = u64::try_from(class_ids.len().saturating_mul(50)).unwrap_or(1_600);
+    let mut qb = QueryBuilder::new(format!("SELECT {FIELDS} FROM phpyun_ad WHERE class_id IN ("));
+    let mut first = true;
+    for id in class_ids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(
+        ") AND is_open = 1 \
+         AND (time_start IS NULL OR time_start = '' OR UNIX_TIMESTAMP(time_start) <= ",
+    );
+    qb.push_bind(now);
+    qb.push(") AND (time_end IS NULL OR time_end = '' OR UNIX_TIMESTAMP(time_end) >= ");
+    qb.push_bind(now);
+    qb.push(") ORDER BY class_id, sort DESC, id DESC LIMIT ");
+    qb.push_bind(max_rows);
+    qb.build_query_as().fetch_all(pool).await
+}
+
 pub async fn list_all(
     pool: &MySqlPool,
     slot: Option<&str>,
