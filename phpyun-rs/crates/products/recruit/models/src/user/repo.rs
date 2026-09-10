@@ -1185,6 +1185,19 @@ pub struct WxSubscribeRow {
     pub subscribe: i32,
 }
 
+/// PHP `integralMission` weixinBind: `wxid` or `unionid` non-empty.
+pub async fn weixin_bound(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(String, String)> = sqlx::query_as(
+        "SELECT COALESCE(wxid,''), COALESCE(unionid,'') FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row
+        .map(|(wxid, unionid)| !wxid.trim().is_empty() || !unionid.trim().is_empty())
+        .unwrap_or(false))
+}
+
 pub async fn find_wx_subscribe(
     pool: &MySqlPool,
     uid: u64,

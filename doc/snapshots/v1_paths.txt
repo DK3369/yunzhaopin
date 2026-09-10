@@ -111,6 +111,7 @@
 /v1/mcenter/integral/consumes
 /v1/mcenter/integral/exchange
 /v1/mcenter/integral/history
+/v1/mcenter/integral/mission
 /v1/mcenter/integral/transfer
 /v1/mcenter/integral/transfers
 /v1/mcenter/interview-templates

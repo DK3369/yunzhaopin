@@ -72,3 +72,63 @@ pub async fn upsert_user_sign(
         .await?;
     Ok(())
 }
+
+/// PHP `member_reg` — daily sign-in row used by `integralMission` / `sign_action`.
+pub async fn exists_reg_today(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+    date_ymd: u32,
+) -> Result<bool, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_member_reg \
+         WHERE uid = ? AND usertype = ? AND `date` = ?",
+    )
+    .bind(uid)
+    .bind(usertype)
+    .bind(date_ymd)
+    .fetch_one(pool)
+    .await?;
+    Ok(n > 0)
+}
+
+/// Latest `member_reg.date` (YYYYMMDD) for streak detection.
+pub async fn last_reg_date(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+) -> Result<u32, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(`date`, 0) AS SIGNED) FROM phpyun_member_reg \
+         WHERE uid = ? AND usertype = ? ORDER BY id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .bind(usertype)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row
+        .map(|r| u32::try_from(r.0).unwrap_or(0))
+        .unwrap_or(0))
+}
+
+pub async fn insert_reg(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+    date_ymd: u32,
+    ip: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let ip = if ip.len() > 40 { &ip[..40] } else { ip };
+    let res = sqlx::query(
+        "INSERT INTO phpyun_member_reg (uid, usertype, `date`, ip, ctime) VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(uid)
+    .bind(usertype)
+    .bind(date_ymd)
+    .bind(ip)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}

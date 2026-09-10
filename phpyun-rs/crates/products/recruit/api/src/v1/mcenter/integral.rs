@@ -18,6 +18,7 @@ pub fn routes() -> Router<AppState> {
         .route("/integral/consumes", post(consumes))
         .route("/integral/transfer", post(transfer))
         .route("/integral/transfers", post(list_transfers))
+        .route("/integral/mission", post(mission))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -256,6 +257,57 @@ pub async fn list_transfers(
         page.page,
         page.page_size,
     )))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct MissionView {
+    pub base_info: bool,
+    pub photo: bool,
+    pub logo: bool,
+    pub signin: bool,
+    pub email_checked: bool,
+    pub phone_checked: bool,
+    pub identification: bool,
+    pub weixin_bind: bool,
+    pub map: bool,
+    pub banner: bool,
+    pub yyzz: bool,
+    pub question: bool,
+    pub answer: bool,
+    pub answerpl: bool,
+    pub resume: bool,
+}
+
+/// Daily task completion (PHP `integralMission`). `true` = already done.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/integral/mission",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = MissionView))
+)]
+pub async fn mission(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<MissionView>> {
+    let m = integral_service::mission(&state, &user).await?;
+    Ok(ApiResponse::data(MissionView {
+        base_info: m.base_info,
+        photo: m.photo,
+        logo: m.logo,
+        signin: m.signin,
+        email_checked: m.email_checked,
+        phone_checked: m.phone_checked,
+        identification: m.identification,
+        weixin_bind: m.weixin_bind,
+        map: m.map,
+        banner: m.banner,
+        yyzz: m.yyzz,
+        question: m.question,
+        answer: m.answer,
+        answerpl: m.answerpl,
+        resume: m.resume,
+    }))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]

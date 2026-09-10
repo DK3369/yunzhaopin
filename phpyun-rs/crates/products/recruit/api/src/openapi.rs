@@ -394,6 +394,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::integral::history,
         v1::mcenter::integral::transfer,
         v1::mcenter::integral::list_transfers,
+        v1::mcenter::integral::mission,
         // mcenter: invite
         v1::mcenter::invite::send,
         // mcenter: sign-in + dashboard
@@ -918,6 +919,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::integral::TransferForm,
             v1::mcenter::integral::TransferResult,
             v1::mcenter::integral::TransferItem,
+            v1::mcenter::integral::MissionView,
             v1::wap::home::HomeData,
             v1::wap::home::AnnouncementSummary,
             v1::wap::home::HotKeyword,

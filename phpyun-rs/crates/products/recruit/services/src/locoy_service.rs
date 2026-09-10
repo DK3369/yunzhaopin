@@ -179,6 +179,13 @@ async fn ingest_job(state: &AppState, post: &HashMap<String, String>) -> AppResu
             is_graduate: 0,
             zp_minage: 0,
             zp_maxage: 0,
+            is_link: 1,
+            link_id: 0,
+            is_message: 1,
+            is_email: 1,
+            exp_req: "",
+            edu_req: "",
+            zp_num: 0,
         },
         now,
     )

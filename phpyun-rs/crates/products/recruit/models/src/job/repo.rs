@@ -106,7 +106,10 @@ const FIELDS: &str = "id, uid, name, com_name, \
     COALESCE(statusbody, '') AS statusbody, COALESCE(rating, 0) AS rating, \
     COALESCE(source, 0) AS source, \
     COALESCE(report, 0) AS report, COALESCE(is_graduate, 0) AS is_graduate, \
-    COALESCE(operatime, 0) AS operatime";
+    COALESCE(operatime, 0) AS operatime, \
+    COALESCE(is_link, 1) AS is_link, COALESCE(link_id, 0) AS link_id, \
+    COALESCE(is_message, 1) AS is_message, COALESCE(is_email, 1) AS is_email, \
+    COALESCE(exp_req, '') AS exp_req, COALESCE(edu_req, '') AS edu_req";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_company_job WHERE id = ? LIMIT 1");
@@ -550,6 +553,13 @@ pub struct JobCreate<'a> {
     pub is_graduate: i32,
     pub zp_minage: i32,
     pub zp_maxage: i32,
+    pub is_link: i32,
+    pub link_id: i32,
+    pub is_message: i32,
+    pub is_email: i32,
+    pub exp_req: &'a str,
+    pub edu_req: &'a str,
+    pub zp_num: i32,
 }
 
 /// Create a new job. **Defaults to under-review** (state=0); waits for
@@ -561,10 +571,11 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
             provinceid, cityid, three_cityid, x, y,
             minsalary, maxsalary, `type`, number, exp, edu,
             description, welfare, hy, report, age, sex, marriage, lang, is_graduate,
-            zp_minage, zp_maxage,
+            zp_minage, zp_maxage, zp_num,
+            is_link, link_id, is_message, is_email, exp_req, edu_req,
             state, status, r_status, rec, urgent,
             rec_time, sdate, edate, lastupdate, did)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                    0, 0, 1, 0, 0, 0, ?, ?, ?, ?)"#,
     )
     .bind(c.uid)
@@ -595,6 +606,13 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     .bind(c.is_graduate)
     .bind(c.zp_minage)
     .bind(c.zp_maxage)
+    .bind(c.zp_num)
+    .bind(c.is_link)
+    .bind(c.link_id)
+    .bind(c.is_message)
+    .bind(c.is_email)
+    .bind(c.exp_req)
+    .bind(c.edu_req)
     .bind(c.sdate)
     .bind(c.edate)
     .bind(now)
@@ -845,6 +863,15 @@ pub struct JobUpdate<'a> {
     pub is_graduate: Option<i32>,
     pub zp_minage: Option<i32>,
     pub zp_maxage: Option<i32>,
+    pub is_link: Option<i32>,
+    pub link_id: Option<i32>,
+    pub is_message: Option<i32>,
+    pub is_email: Option<i32>,
+    pub exp_req: Option<&'a str>,
+    pub edu_req: Option<&'a str>,
+    pub zp_num: Option<i32>,
+    pub x: Option<&'a str>,
+    pub y: Option<&'a str>,
 }
 
 /// Update a job -- dynamic update via COALESCE; resets state to
@@ -884,6 +911,15 @@ pub async fn update(
             is_graduate = COALESCE(?, is_graduate),
             zp_minage   = COALESCE(?, zp_minage),
             zp_maxage   = COALESCE(?, zp_maxage),
+            zp_num      = COALESCE(?, zp_num),
+            is_link     = COALESCE(?, is_link),
+            link_id     = COALESCE(?, link_id),
+            is_message  = COALESCE(?, is_message),
+            is_email    = COALESCE(?, is_email),
+            exp_req     = COALESCE(?, exp_req),
+            edu_req     = COALESCE(?, edu_req),
+            x           = COALESCE(?, x),
+            y           = COALESCE(?, y),
             state       = 0,
             lastupdate  = ?
            WHERE id = ? AND uid = ?"#,
@@ -914,6 +950,15 @@ pub async fn update(
     .bind(u.is_graduate)
     .bind(u.zp_minage)
     .bind(u.zp_maxage)
+    .bind(u.zp_num)
+    .bind(u.is_link)
+    .bind(u.link_id)
+    .bind(u.is_message)
+    .bind(u.is_email)
+    .bind(u.exp_req)
+    .bind(u.edu_req)
+    .bind(u.x)
+    .bind(u.y)
     .bind(now)
     .bind(id)
     .bind(uid)

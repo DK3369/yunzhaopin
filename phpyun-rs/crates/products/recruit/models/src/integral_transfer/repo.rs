@@ -501,6 +501,27 @@ pub async fn php_insert_pay(
     Ok(res.last_insert_id())
 }
 
+/// PHP `integral.model::max_time` — same `pay_remark` on this uid today.
+pub async fn count_remark_today(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+    remark: &str,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_pay \
+         WHERE com_id = ? AND usertype = ? AND pay_remark = ? \
+           AND pay_time >= UNIX_TIMESTAMP(CURDATE()) \
+           AND pay_time < UNIX_TIMESTAMP(CURDATE()) + 86400",
+    )
+    .bind(uid)
+    .bind(usertype)
+    .bind(remark)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// PHP `companyorder::getCompanyPayNum` by `com_id` + `pay_remark`.
 pub async fn count_by_remark(
     pool: &MySqlPool,

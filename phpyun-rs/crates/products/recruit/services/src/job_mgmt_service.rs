@@ -6,10 +6,75 @@ use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company::repo as company_repo;
+use phpyun_models::company_address::repo as company_address_repo;
 use phpyun_models::company_cert::repo as company_cert_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::{entity::Job, repo as job_repo};
 use phpyun_models::site_setting::repo as setting_repo;
+
+fn store_is_email(v: i32) -> i32 {
+    if v == 2 || v == 3 {
+        3
+    } else {
+        1
+    }
+}
+
+fn store_is_message(v: i32) -> i32 {
+    if v == 2 {
+        2
+    } else {
+        1
+    }
+}
+
+struct ResolvedLink {
+    is_link: i32,
+    link_id: i32,
+    provinceid: i32,
+    cityid: i32,
+    three_cityid: i32,
+    x: String,
+    y: String,
+}
+
+async fn resolve_job_link(
+    state: &AppState,
+    uid: u64,
+    link_id: i32,
+    provinceid: i32,
+    cityid: i32,
+    three_cityid: i32,
+    default_x: &str,
+    default_y: &str,
+) -> AppResult<ResolvedLink> {
+    if link_id > 0 {
+        if let Some(addr) =
+            company_address_repo::find_by_id(state.db.reader(), link_id as u64, uid)
+                .await?
+        {
+            let stored_id = i32::try_from(addr.id).unwrap_or(link_id);
+            return Ok(ResolvedLink {
+                is_link: 2,
+                link_id: stored_id,
+                provinceid: addr.provinceid,
+                cityid: addr.cityid,
+                three_cityid: addr.three_cityid,
+                x: addr.x.unwrap_or_default(),
+                y: addr.y.unwrap_or_default(),
+            });
+        }
+    }
+    Ok(ResolvedLink {
+        is_link: 1,
+        link_id: 0,
+        provinceid,
+        cityid,
+        three_cityid,
+        x: default_x.to_string(),
+        y: default_y.to_string(),
+    })
+}
 
 // ==================== Create ====================
 
@@ -41,6 +106,11 @@ pub struct CreateJobInput<'a> {
     pub is_graduate: i32,
     pub zp_minage: i32,
     pub zp_maxage: i32,
+    pub link_id: i32,
+    pub is_message: i32,
+    pub is_email: i32,
+    pub exp_req: &'a str,
+    pub edu_req: &'a str,
 }
 
 async fn setting_on(state: &AppState, key: &str) -> bool {
@@ -142,6 +212,17 @@ pub async fn create(
     } else {
         company_row.as_ref().map(|c| c.hy).unwrap_or(0)
     };
+    let link = resolve_job_link(
+        state,
+        user.uid,
+        input.link_id,
+        input.provinceid,
+        input.cityid,
+        input.three_cityid,
+        x.as_str(),
+        y.as_str(),
+    )
+    .await?;
     let id = job_repo::create(
         state.db.pool(),
         job_repo::JobCreate {
@@ -151,9 +232,9 @@ pub async fn create(
             job1: input.job1,
             job1_son: input.job1_son,
             job_post: input.job_post,
-            provinceid: input.provinceid,
-            cityid: input.cityid,
-            three_cityid: input.three_cityid,
+            provinceid: link.provinceid,
+            cityid: link.cityid,
+            three_cityid: link.three_cityid,
             minsalary: input.minsalary,
             maxsalary: input.maxsalary,
             job_type: input.job_type,
@@ -165,8 +246,8 @@ pub async fn create(
             sdate: input.sdate,
             edate: input.edate,
             did: user.did,
-            x: x.as_str(),
-            y: y.as_str(),
+            x: link.x.as_str(),
+            y: link.y.as_str(),
             hy,
             report: input.report,
             age: input.age,
@@ -176,6 +257,13 @@ pub async fn create(
             is_graduate: input.is_graduate,
             zp_minage: input.zp_minage,
             zp_maxage: input.zp_maxage,
+            is_link: link.is_link,
+            link_id: link.link_id,
+            is_message: store_is_message(input.is_message),
+            is_email: store_is_email(input.is_email),
+            exp_req: input.exp_req,
+            edu_req: input.edu_req,
+            zp_num: input.number,
         },
         now,
     )
@@ -222,6 +310,12 @@ pub struct UpdateJobInput<'a> {
     pub is_graduate: Option<i32>,
     pub zp_minage: Option<i32>,
     pub zp_maxage: Option<i32>,
+    pub is_link: Option<i32>,
+    pub link_id: Option<i32>,
+    pub is_message: Option<i32>,
+    pub is_email: Option<i32>,
+    pub exp_req: Option<&'a str>,
+    pub edu_req: Option<&'a str>,
 }
 
 pub async fn update(
@@ -232,6 +326,45 @@ pub async fn update(
     client_ip: &str,
 ) -> AppResult<()> {
     user.require_employer()?;
+    let company_row = company_repo::find_by_uid(state.db.reader(), user.uid).await?;
+    let default_x = company_row
+        .as_ref()
+        .and_then(|c| c.x.clone())
+        .unwrap_or_default();
+    let default_y = company_row
+        .as_ref()
+        .and_then(|c| c.y.clone())
+        .unwrap_or_default();
+    let mut provinceid = input.provinceid;
+    let mut cityid = input.cityid;
+    let mut three_cityid = input.three_cityid;
+    let mut is_link = input.is_link;
+    let mut link_id = input.link_id;
+    let mut coords: Option<(String, String)> = None;
+    if let Some(lid) = input.link_id {
+        let link = resolve_job_link(
+            state,
+            user.uid,
+            lid,
+            input.provinceid.unwrap_or(0),
+            input.cityid.unwrap_or(0),
+            input.three_cityid.unwrap_or(0),
+            default_x.as_str(),
+            default_y.as_str(),
+        )
+        .await?;
+        provinceid = Some(link.provinceid);
+        cityid = Some(link.cityid);
+        three_cityid = Some(link.three_cityid);
+        is_link = Some(link.is_link);
+        link_id = Some(link.link_id);
+        coords = Some((link.x, link.y));
+    }
+    let (x, y) = match &coords {
+        Some((xs, ys)) => (Some(xs.as_str()), Some(ys.as_str())),
+        None => (None, None),
+    };
+    let zp_num = input.number;
     let affected = job_repo::update(
         state.db.pool(),
         id,
@@ -241,9 +374,9 @@ pub async fn update(
             job1: input.job1,
             job1_son: input.job1_son,
             job_post: input.job_post,
-            provinceid: input.provinceid,
-            cityid: input.cityid,
-            three_cityid: input.three_cityid,
+            provinceid,
+            cityid,
+            three_cityid,
 
             minsalary: input.minsalary,
             maxsalary: input.maxsalary,
@@ -264,6 +397,15 @@ pub async fn update(
             is_graduate: input.is_graduate,
             zp_minage: input.zp_minage,
             zp_maxage: input.zp_maxage,
+            is_link,
+            link_id,
+            is_message: input.is_message.map(store_is_message),
+            is_email: input.is_email.map(store_is_email),
+            exp_req: input.exp_req,
+            edu_req: input.edu_req,
+            zp_num,
+            x,
+            y,
         },
         clock::now_ts(),
     )

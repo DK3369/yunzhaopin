@@ -116,6 +116,24 @@ pub struct CreateJobForm {
     #[serde(default)]
     #[validate(range(min = 0, max = 99))]
     pub zp_maxage: i32,
+    /// 0 = company default contact; >0 = `company_job_link.id` (PHP WAP `-1` = 0).
+    #[serde(default)]
+    #[validate(range(min = -1, max = 99_999_999))]
+    pub link_id: i32,
+    /// 1 = accept consult / 2 = off.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 2))]
+    pub is_message: i32,
+    /// 1 = email notify / 2 or 3 = off (stored as 3).
+    #[serde(default)]
+    #[validate(range(min = 0, max = 3))]
+    pub is_email: i32,
+    #[serde(default)]
+    #[validate(length(max = 200))]
+    pub exp_req: String,
+    #[serde(default)]
+    #[validate(length(max = 200))]
+    pub edu_req: String,
 }
 
 /// Publish job
@@ -164,6 +182,11 @@ pub async fn create(
             is_graduate: f.is_graduate,
             zp_minage: f.zp_minage,
             zp_maxage: f.zp_maxage,
+            link_id: f.link_id,
+            is_message: f.is_message,
+            is_email: f.is_email,
+            exp_req: f.exp_req.as_str(),
+            edu_req: f.edu_req.as_str(),
         },
         None,
         &ip,
@@ -244,6 +267,16 @@ pub struct UpdateJobForm {
     pub zp_minage: Option<i32>,
     #[validate(range(min = 0, max = 99))]
     pub zp_maxage: Option<i32>,
+    #[validate(range(min = -1, max = 99_999_999))]
+    pub link_id: Option<i32>,
+    #[validate(range(min = 0, max = 2))]
+    pub is_message: Option<i32>,
+    #[validate(range(min = 0, max = 3))]
+    pub is_email: Option<i32>,
+    #[validate(length(max = 200))]
+    pub exp_req: Option<String>,
+    #[validate(length(max = 200))]
+    pub edu_req: Option<String>,
 }
 
 /// Update job (re-enters review after editing)
@@ -292,6 +325,12 @@ pub async fn update(
             is_graduate: f.is_graduate,
             zp_minage: f.zp_minage,
             zp_maxage: f.zp_maxage,
+            is_link: None,
+            link_id: f.link_id,
+            is_message: f.is_message,
+            is_email: f.is_email,
+            exp_req: f.exp_req.as_deref(),
+            edu_req: f.edu_req.as_deref(),
         },
         &ip,
     )

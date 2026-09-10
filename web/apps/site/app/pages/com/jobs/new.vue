@@ -33,6 +33,11 @@ const form = reactive({
   is_graduate: 0,
   zp_minage: 0,
   zp_maxage: 0,
+  link_id: 0,
+  is_message: 1,
+  is_email: 1,
+  exp_req: '',
+  edu_req: '',
 })
 const sdateN = ref('')
 const welIds = ref<number[]>([])
@@ -77,6 +82,13 @@ const { data: langs } = await useAsyncData(
   () => `dict-lang-${locale.value}`,
   () => api.get<DictItem[]>('/v1/wap/dict/langs').catch(() => [] as DictItem[]),
 )
+type AddrRow = { id: number; link_man: string; link_moblie: string; link_address?: string | null }
+const { data: addrs } = await useAsyncData('job-publish-addrs', () =>
+  api
+    .post<{ list: AddrRow[] }>('/v1/mcenter/company-addresses', { page: 1, page_size: 50 })
+    .catch(() => ({ list: [] as AddrRow[] })),
+)
+const addrList = computed(() => addrs.value?.list || [])
 watch(
   () => form.job1,
   (n, o) => {
@@ -120,6 +132,11 @@ if (editId.value) {
     form.is_graduate = Number(row.is_graduate || 0) ? 1 : 0
     form.zp_minage = Number(row.zp_minage || 0)
     form.zp_maxage = Number(row.zp_maxage || 0)
+    form.link_id = Number(row.link_id || 0)
+    form.is_message = Number(row.is_message || 1) === 2 ? 2 : 1
+    form.is_email = Number(row.is_email || 1) === 3 ? 3 : 1
+    form.exp_req = String(row.exp_req || '')
+    form.edu_req = String(row.edu_req || '')
     if (form.sdate > 0) {
       const d = new Date(form.sdate * 1000)
       sdateN.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -234,6 +251,29 @@ useSeoMeta({ title: t('wap_00322') })
         </label>
       </div>
       <textarea v-model="form.content" :placeholder="$t('ui.job_desc')" rows="8" />
+      <p class="muted">{{ $t('member_com_00242') }}</p>
+      <input v-model="form.exp_req" :placeholder="$t('wap_com_00305')" />
+      <input v-model="form.edu_req" :placeholder="$t('wap_com_00301')" />
+      <p class="muted">{{ $t('member_user_00198') }}</p>
+      <label>
+        <input v-model.number="form.link_id" type="radio" :value="0" />
+        {{ $t('member_com_00528') }}
+      </label>
+      <label v-for="a in addrList" :key="a.id">
+        <input v-model.number="form.link_id" type="radio" :value="a.id" />
+        {{ a.link_man }} {{ a.link_moblie }} {{ a.link_address || '' }}
+      </label>
+      <p>
+        <NuxtLink to="/com/addresses">{{ $t('wap_com_00304') }}</NuxtLink>
+      </p>
+      <label>
+        <input v-model="form.is_message" type="checkbox" :true-value="1" :false-value="2" />
+        {{ $t('wap_00893') }} · {{ $t('wap_com_00261') }}
+      </label>
+      <label>
+        <input v-model="form.is_email" type="checkbox" :true-value="1" :false-value="3" />
+        {{ $t('wap_com_00293') }} · {{ $t('wap_com_00262') }}
+      </label>
       <button type="submit">{{ $t('ui.submit_audit') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>

@@ -97,6 +97,13 @@ async function submitBank() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+function canFillBank(o: { channel?: string; status?: number; status_n?: string }) {
+  return o.channel === 'bank' && (o.status === 0 || o.status === 3 || o.status_n === 'awaiting_confirm')
+}
+function fillBank(o: { order_no?: string; amount_yuan?: number }) {
+  bankOrderNo.value = String(o.order_no || '')
+  bankForm.bank_price = String(o.amount_yuan ?? '')
+}
 useSeoMeta({ title: t('common_01946') })
 </script>
 
@@ -139,6 +146,7 @@ useSeoMeta({ title: t('common_01946') })
       <article v-for="o in orders?.list || []" :key="o.order_no" class="job-card">
         <h3>{{ o.order_no }}</h3>
         <p class="muted">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
+        <button v-if="canFillBank(o)" type="button" @click="fillBank(o)">{{ $t('wap_01805') }}</button>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>

@@ -20,6 +20,7 @@ type ExchangeRow = {
 
 const api = useApi()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 
 const PAGE_SIZE = 20
 const consumePage = ref(1)
@@ -67,6 +68,57 @@ const { data: transfers, refresh: refreshTransfers } = await useAsyncData(
   { watch: [transferPage] },
 )
 
+type Mission = {
+  base_info?: boolean
+  logo?: boolean
+  signin?: boolean
+  email_checked?: boolean
+  phone_checked?: boolean
+  weixin_bind?: boolean
+  map?: boolean
+  banner?: boolean
+  yyzz?: boolean
+  question?: boolean
+  answer?: boolean
+  answerpl?: boolean
+}
+const { data: mission, refresh: refreshMission } = await useAsyncData('com-integral-mission', () =>
+  api.post<Mission>('/v1/mcenter/integral/mission', {}).catch(() => null),
+)
+const { data: signSt, refresh: refreshSign } = await useAsyncData('com-sign-status', () =>
+  api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
+)
+function pts(key: string) {
+  const n = String(settings.value[key] || '').trim()
+  return n ? `+${n}` : ''
+}
+const tasks = computed(() => [
+  { done: mission.value?.signin || signSt.value?.signed_today, title: t('wap_user_00114'), reward: pts('integral_signin'), to: '', doneText: t('wap_00989'), go: t('wap_user_00118'), sign: true },
+  { done: false, title: t('wap_user_00108'), reward: pts('integral_invite_reg'), to: '/invite', doneText: '', go: t('wap_user_00121'), sign: false },
+  { done: mission.value?.logo, title: t('wap_com_00180'), reward: pts('integral_avatar'), to: '/com/profile', doneText: t('wap_user_00123'), go: t('wap_user_00116'), sign: false },
+  { done: mission.value?.phone_checked, title: t('wap_user_00109'), reward: pts('integral_mobliecert'), to: '/com/binding', doneText: t('wap_user_00128'), go: t('wap_user_00120'), sign: false },
+  { done: mission.value?.weixin_bind, title: t('wap_user_00115'), reward: pts('integral_bind_wx'), to: '/com/binding', doneText: t('wap_user_00127'), go: t('wap_user_00119'), sign: false },
+  { done: mission.value?.map, title: t('wap_com_00182'), reward: pts('integral_map'), to: '/com/profile', doneText: t('wap_com_00189'), go: t('wap_com_00185'), sign: false },
+  { done: mission.value?.yyzz, title: t('wap_com_00181'), reward: pts('integral_comcert'), to: '/com/cert', doneText: t('wap_user_00128'), go: t('wap_user_00120'), sign: false },
+  { done: mission.value?.base_info, title: t('wap_00990'), reward: pts('integral_userinfo'), to: '/com/profile', doneText: t('wap_user_00125'), go: t('wap_user_00117'), sign: false },
+  { done: mission.value?.email_checked, title: t('wap_user_00122'), reward: pts('integral_emailcert'), to: '/com/binding', doneText: t('wap_user_00128'), go: t('wap_com_00186'), sign: false },
+  { done: mission.value?.banner, title: t('wap_com_00033'), reward: pts('integral_banner'), to: '/com/banners', doneText: t('wap_user_00123'), go: t('wap_com_00183'), sign: false },
+  { done: mission.value?.question, title: t('wap_user_00112'), reward: pts('integral_question'), to: '/questions', doneText: t('wap_00992'), go: t('wap_com_00184'), sign: false },
+  { done: mission.value?.answer, title: t('wap_user_00113'), reward: pts('integral_answer'), to: '/questions', doneText: t('wap_com_00188'), go: t('wap_user_00113'), sign: false },
+  { done: mission.value?.answerpl, title: t('wap_00994'), reward: pts('integral_answerpl'), to: '/questions', doneText: t('wap_com_00187'), go: t('wap_00994'), sign: false },
+])
+async function sign() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/sign', {})
+    msg.value = t('common.success')
+    await refreshSign()
+    await refreshMission()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+
 async function transfer() {
   msg.value = ''
   try {
@@ -101,6 +153,18 @@ useSeoMeta({ title: t('wap_user_00008') })
         <NuxtLink to="/com/pay" class="job-card">{{ $t('member_com_00041') }}</NuxtLink>
         <NuxtLink to="/com/orders" class="job-card">{{ $t('common_02029') }}</NuxtLink>
       </nav>
+
+      <h2>{{ $t('wap_01021') }}</h2>
+      <article v-for="(row, i) in tasks" :key="i" class="job-card">
+        <p>{{ row.title }} <span v-if="row.reward" class="muted">{{ row.reward }}</span></p>
+        <p v-if="row.done" class="muted">{{ row.doneText }}</p>
+        <p v-else-if="row.sign">
+          <button type="button" :disabled="!!signSt?.signed_today" @click="sign">{{ row.go }}</button>
+        </p>
+        <p v-else-if="row.to">
+          <NuxtLink :to="row.to">{{ row.go }}</NuxtLink>
+        </p>
+      </article>
 
       <h2>{{ $t('wap_01020') }}</h2>
       <p v-if="!(consumes?.list || []).length" class="muted">{{ $t('ui.no_data') }}</p>

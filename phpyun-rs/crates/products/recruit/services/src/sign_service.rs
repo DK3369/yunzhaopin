@@ -16,7 +16,7 @@ use phpyun_models::sign_in::{entity::UserSign, repo as sign_repo};
 const BASE_REWARD: u32 = 5;
 const STREAK_BONUS_DAYS: u32 = 5;
 
-fn ymd_of(ts: i64) -> AppResult<u32> {
+pub(crate) fn ymd_of(ts: i64) -> AppResult<u32> {
     // UTC calendar (PHPYun uses the server timezone; in production an offset_hours adjustment can be added)
     let secs_per_day = 86_400;
     let days = ts.div_euclid(secs_per_day);
@@ -105,8 +105,13 @@ pub async fn sign(
     }
 
     // 1) Read the previous sign-in state and compute signday
+    let usertype = i32::from(user.usertype);
+    if sign_repo::exists_reg_today(db, user.uid, usertype, today).await? {
+        return Err(ApiError::param_invalid("already_signed"));
+    }
+    let last_ymd = sign_repo::last_reg_date(db, user.uid, usertype).await?;
     let prev = sign_repo::get_user_sign(db, user.uid).await?;
-    let signday = if is_yesterday(today, prev.last_date_ymd) {
+    let signday = if is_yesterday(today, last_ymd) {
         prev.signday
             .checked_add(1)
             .ok_or_else(|| ApiError::internal(std::io::Error::other("sign streak overflow")))?
@@ -129,6 +134,7 @@ pub async fn sign(
 
     // 4) Update user_sign + add points
     sign_repo::upsert_user_sign(db, user.uid, signday, today, now).await?;
+    sign_repo::insert_reg(db, user.uid, usertype, today, client_ip, now).await?;
     integral_repo::add_balance(db, user.uid, i64::from(reward), now).await?;
 
     // 5) Audit
@@ -153,10 +159,12 @@ pub async fn sign(
 
 pub async fn status(state: &AppState, user: &AuthenticatedUser) -> AppResult<(UserSign, bool)> {
     let today = ymd_of(clock::now_ts())?;
+    let usertype = i32::from(user.usertype);
     let us = sign_repo::get_user_sign(state.db.reader(), user.uid).await?;
-    let signed_today = sign_repo::find_today(state.db.reader(), user.uid, today)
+    let lock_key = format!("sign:lock:{}:{}", user.uid, today);
+    let signed_today = sign_repo::exists_reg_today(state.db.reader(), user.uid, usertype, today)
         .await?
-        .is_some();
+        || state.redis.exists(&lock_key).await;
     Ok((us, signed_today))
 }
 

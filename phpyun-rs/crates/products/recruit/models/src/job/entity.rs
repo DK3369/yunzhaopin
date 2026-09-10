@@ -142,4 +142,21 @@ pub struct Job {
     /// Last resume-process unix time (PHP `operatime`).
     #[sqlx(default)]
     pub operatime: i64,
+    /// 1 = company default contact / 2 = `company_job_link` (`link_id`).
+    #[sqlx(default)]
+    pub is_link: i32,
+    #[sqlx(default)]
+    pub link_id: i32,
+    /// 1 = accept consult / 2 = off.
+    #[sqlx(default)]
+    pub is_message: i32,
+    /// 1 = email notify / 3 = off (PHP `is_email==2` stores 3).
+    #[sqlx(default)]
+    pub is_email: i32,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub exp_req: String,
+    #[serde(default)]
+    #[sqlx(default)]
+    pub edu_req: String,
 }
