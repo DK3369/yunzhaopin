@@ -957,3 +957,275 @@ html.force-pc .site-h5 {
   text-align: left;
 }
 
+/* 登录页：整页卡片，不依赖 PHP login.css 的绝对定位 */
+.lgp {
+  min-height: 100vh;
+  background: #12c2c2;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 80px;
+  box-sizing: border-box;
+}
+.lgp-top {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+.lgp-back,
+.lgp .lang-switch,
+.lgp .lang-switch a {
+  color: #fff;
+}
+.lgp-card {
+  width: 860px;
+  max-width: 100%;
+  min-height: 520px;
+  background: #fff;
+  border-radius: 16px;
+  display: flex;
+  box-shadow: 0 12px 40px rgba(0, 80, 80, 0.18);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.lgp-side {
+  width: 240px;
+  flex: none;
+  padding: 32px 24px;
+  background: linear-gradient(180deg, #e7fbf8 0%, #f7fffe 100%);
+}
+.lgp-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #12a8a8;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+.lgp-brand img {
+  max-height: 36px;
+  max-width: 140px;
+}
+.lgp-side-title {
+  font-size: 14px;
+  color: #12a8a8;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+.lgp-feat {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lgp-feat li {
+  margin-bottom: 20px;
+}
+.lgp-feat strong {
+  display: block;
+  font-size: 14px;
+  color: #333;
+}
+.lgp-feat span {
+  font-size: 12px;
+  color: #888;
+}
+.lgp-main {
+  flex: 1;
+  padding: 28px 40px 20px;
+  text-align: center;
+}
+.lgp-tabs {
+  display: inline-flex;
+  background: #f4f4f5;
+  border-radius: 20px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+.lgp-tabs button {
+  border: 0;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  color: #666;
+  font-size: 13px;
+}
+.lgp-tabs button.on {
+  background: #fff;
+  color: #333;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.lgp-h1 {
+  font-size: 22px;
+  margin: 8px 0 6px;
+  color: #222;
+}
+.lgp-sub {
+  color: #999;
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+.lgp-role {
+  display: flex;
+  background: #f5f5f6;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+.lgp-role button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  height: 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #666;
+}
+.lgp-role button.on {
+  background: #fff;
+  color: #12b3b3;
+  font-weight: 600;
+}
+.lgp-field {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  height: 46px;
+  margin-bottom: 12px;
+  padding: 0 12px;
+}
+.lgp-field input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  height: 44px;
+  font-size: 14px;
+  min-width: 0;
+}
+.lgp-cc {
+  color: #333;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #eee;
+  font-size: 14px;
+}
+.lgp-send {
+  border: 0;
+  background: transparent;
+  color: #12b3b3;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.lgp-send:disabled {
+  color: #aaa;
+  cursor: default;
+}
+.lgp-captcha {
+  height: 36px;
+  cursor: pointer;
+}
+.lgp-submit {
+  width: 100%;
+  height: 46px;
+  border: 0;
+  border-radius: 8px;
+  background: #12b3b3;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.lgp-err {
+  color: #e54;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+.lgp-other {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin: 16px 0 12px;
+  font-size: 13px;
+}
+.lgp-other a {
+  color: #12b3b3;
+  text-decoration: none;
+}
+.lgp-agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  text-align: left;
+  font-size: 12px;
+  color: #888;
+  margin: 8px 0;
+}
+.lgp-agree a {
+  color: #12b3b3;
+}
+.lgp-foot {
+  font-size: 12px;
+  color: #bbb;
+  margin: 16px 0 0;
+  line-height: 1.6;
+}
+.lgp-qr {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.lgp-qr-links {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #888;
+}
+.lgp-qr-links a {
+  color: #12b3b3;
+}
+.lgp-extra {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 13px;
+}
+.lgp-sky {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 180px;
+  pointer-events: none;
+}
+@media (max-width: 800px) {
+  .lgp-card {
+    flex-direction: column;
+    min-height: 0;
+  }
+  .lgp-side {
+    width: auto;
+    padding: 16px 20px 8px;
+  }
+  .lgp-feat {
+    display: none;
+  }
+  .lgp-main {
+    padding: 16px 20px 20px;
+  }
+}
+

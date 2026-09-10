@@ -104,6 +104,10 @@ pub async fn mlogin(
 
 // ==================== SMS dynamic-code login ====================
 
+fn default_sms_usertype() -> u8 {
+    1
+}
+
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct LoginSmsForm {
     #[validate(custom(function = "validators::cn_mobile"))]
@@ -112,6 +116,18 @@ pub struct LoginSmsForm {
     /// SMS verification code (PHP field name `dynamiccode`)
     #[validate(custom(function = "validators::captcha"))]
     pub dynamiccode: String,
+
+    /// Role for first-time SMS login/register (1=jobseeker / 2=employer).
+    /// Existing accounts keep their stored usertype.
+    #[serde(
+        default = "default_sms_usertype",
+        deserialize_with = "phpyun_core::date_parse::de_loose_u8"
+    )]
+    #[validate(range(min = 1, max = 2))]
+    pub usertype: u8,
+
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u32")]
+    pub did: u32,
 }
 
 /// SMS dynamic-code login (aligned with the `act_login=1` branch of PHPYun `mlogin_action`)
@@ -139,6 +155,8 @@ pub async fn login_sms(
         &state,
         &form.moblie,
         &form.dynamiccode,
+        form.usertype,
+        form.did,
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;

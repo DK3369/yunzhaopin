@@ -289,6 +289,8 @@ pub async fn login_with_sms_code(
     state: &AppState,
     mobile: &str,
     sms_code: &str,
+    usertype: u8,
+    did: u32,
     ctx: LoginContext<'_>,
 ) -> AppResult<LoginResult> {
     use phpyun_core::verify::{self, VerifyKind};
@@ -297,20 +299,73 @@ pub async fn login_with_sms_code(
     //    credential-stuffing). Peek only; increment after a real failed attempt.
     rate_limit::check_login_fail(&state.redis, mobile).await?;
 
-    // 2. Verify the SMS code
-    if !verify::verify(&state.redis, VerifyKind::SmsLogin, mobile, sms_code).await? {
+    // 2. Verify login or register SMS (combined login/register card).
+    let login_ok = verify::verify(&state.redis, VerifyKind::SmsLogin, mobile, sms_code).await?;
+    let code_ok = if login_ok {
+        true
+    } else {
+        verify::verify(&state.redis, VerifyKind::SmsRegister, mobile, sms_code).await?
+    };
+    if !code_ok {
         auth_event("login_fail", Some("bad_sms_code"));
         rate_limit::record_login_fail(&state.redis, mobile).await;
         return Err(ApiError::bad_credentials());
     }
 
-    // 3. Look up the user by phone number
+    // 3. Look up the user by phone; unknown numbers register then log in
+    //    (same idea as `login_or_register_with_email_code`).
     let user = match user_repo::find_by_mobile(state.db.reader(), mobile).await? {
         Some(u) => u,
         None => {
-            auth_event("login_fail", Some("not_found"));
-            rate_limit::record_login_fail(&state.redis, mobile).await;
-            return Err(ApiError::bad_credentials());
+            let role = if usertype == 2 { 2 } else { 1 };
+            let now = phpyun_core::clock::now_ts();
+            let salt = uuid::Uuid::now_v7()
+                .simple()
+                .to_string()
+                .chars()
+                .take(16)
+                .collect::<String>();
+            let random_password = uuid::Uuid::now_v7().simple().to_string();
+            let hash = argon2_hash_async(format!("{random_password}{salt}")).await?;
+            let mobile_c = mobile.to_string();
+            let ip = ctx.ip.to_string();
+            let uid = state
+                .db
+                .with_tx(|tx| {
+                    Box::pin(async move {
+                        let uid = user_repo::create_member(
+                            &mut **tx,
+                            &mobile_c,
+                            &hash,
+                            &salt,
+                            Some(&mobile_c),
+                            None,
+                            role,
+                            did,
+                            &ip,
+                            now,
+                        )
+                        .await?;
+                        match role {
+                            1 => resume_repo::ensure_row_in_tx(&mut **tx, uid, did, now).await?,
+                            2 => company_repo::ensure_row(&mut **tx, uid, did).await?,
+                            _ => {}
+                        }
+                        Ok::<u64, ApiError>(uid)
+                    })
+                })
+                .await?;
+            auth_event("register_success", Some("sms"));
+            let _ = audit::emit(
+                state,
+                AuditEvent::new("user.register", Actor::uid(uid).with_ip(ctx.ip))
+                    .target(format!("uid:{uid}"))
+                    .meta(&serde_json::json!({ "regway": 2, "usertype": role, "did": did })),
+            )
+            .await;
+            user_repo::find_by_uid(state.db.pool(), uid).await?.ok_or_else(|| {
+                ApiError::internal(std::io::Error::other("sms registration lookup failed"))
+            })?
         }
     };
     if user.status == 2 {

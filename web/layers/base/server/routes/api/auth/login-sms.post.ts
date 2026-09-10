@@ -1,7 +1,7 @@
 import { rustFetch } from '../../../utils/rust'
 import { setAccessCookie } from '../../../utils/auth-cookie'
 
-type LoginBody = { moblie: string; dynamiccode: string }
+type LoginBody = { moblie: string; dynamiccode: string; usertype?: number; did?: number }
 type TokenData = { uid: number; usertype: number; access_token: string }
 
 export default defineEventHandler(async (event) => {
