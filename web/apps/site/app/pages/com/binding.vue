@@ -6,10 +6,23 @@ const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-oauth-bindings', () =>
   api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
 )
-const mobile = ref('')
+const { data: me, refresh: refreshMe } = await useAsyncData('com-me-bind', () =>
+  api.post<{ moblie?: string | null; email?: string | null }>('/v1/wap/me', {}).catch(() => null),
+)
+const mobile = ref(String(me.value?.moblie || ''))
 const mobileCode = ref('')
-const email = ref('')
+const email = ref(String(me.value?.email || ''))
 const msg = ref('')
+function maskPhone(s: string) {
+  const v = s.trim()
+  if (v.length < 7) return v
+  return `${v.slice(0, 3)}****${v.slice(-4)}`
+}
+function maskEmail(s: string) {
+  const i = s.indexOf('@')
+  if (i <= 1) return s
+  return `${s[0]}***${s.slice(i)}`
+}
 const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
 const bound = computed(() => new Set((data.value?.providers || []).map((p) => String(p).toLowerCase())))
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
@@ -68,6 +81,7 @@ async function bindMobile() {
   try {
     await api.post('/v1/mcenter/cert/mobile/verify', { moblie: mobile.value, moblie_code: mobileCode.value })
     msg.value = t('common.success')
+    await refreshMe()
   } catch (e: unknown) {
     msg.value = fail(e)
   }
@@ -99,6 +113,8 @@ useSeoMeta({ title: t('member_user_00059') })
         <NuxtLink to="/user/account" class="job-card">{{ $t('member_user_00220') }} / {{ $t('member_com_00538') }}</NuxtLink>
       </nav>
       <h2>{{ $t('wap_00389') }}</h2>
+      <p v-if="me?.moblie" class="muted">{{ $t('common.phone') }} {{ maskPhone(String(me.moblie)) }}</p>
+      <p v-if="me?.email" class="muted">{{ $t('member_user_00282') }} {{ maskEmail(String(me.email)) }}</p>
       <p v-if="!(data?.providers || []).length" class="muted">{{ $t('ui.no_binding') }}</p>
       <ul v-else class="stack">
         <li v-for="p in data?.providers || []" :key="p">

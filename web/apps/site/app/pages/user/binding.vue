@@ -6,10 +6,23 @@ const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('oauth-bindings', () =>
   api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
 )
-const mobile = ref('')
+const { data: me, refresh: refreshMe } = await useAsyncData('user-me-bind', () =>
+  api.post<{ moblie?: string | null; email?: string | null }>('/v1/wap/me', {}).catch(() => null),
+)
+const mobile = ref(String(me.value?.moblie || ''))
 const mobileCode = ref('')
-const email = ref('')
+const email = ref(String(me.value?.email || ''))
 const msg = ref('')
+function maskPhone(s: string) {
+  const v = s.trim()
+  if (v.length < 7) return v
+  return `${v.slice(0, 3)}****${v.slice(-4)}`
+}
+function maskEmail(s: string) {
+  const i = s.indexOf('@')
+  if (i <= 1) return s
+  return `${s[0]}***${s.slice(i)}`
+}
 const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
 const bound = computed(() => new Set((data.value?.providers || []).map((p) => String(p).toLowerCase())))
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
@@ -63,6 +76,7 @@ async function bindMobile() {
   try {
     await api.post('/v1/mcenter/cert/mobile/verify', { moblie: mobile.value, moblie_code: mobileCode.value })
     msg.value = t('common.success')
+    await refreshMe()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -83,7 +97,9 @@ useSeoMeta({ title: t('wap_00389') })
   <section>
     <h1>{{ $t('wap_00389') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!(data?.providers || []).length" class="muted">{{ $t('ui.no_binding') }}</p>
+    <p v-if="me?.moblie" class="muted">{{ $t('common.phone') }} {{ maskPhone(String(me.moblie)) }}</p>
+    <p v-if="me?.email" class="muted">{{ $t('member_user_00282') }} {{ maskEmail(String(me.email)) }}</p>
+    <p v-if="!(data?.providers || []).length" class="muted">{{ $t('ui.no_binding') }}</p>
     <ul v-else class="stack">
       <li v-for="p in data?.providers || []" :key="p">
         {{ p }}

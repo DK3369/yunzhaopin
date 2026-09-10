@@ -69,6 +69,7 @@ pub struct ComDashboardView {
     pub resume_downloads: u64,
     pub unread_chats: u64,
     pub unread_messages: u64,
+    pub job_msg_unanswered: u64,
     pub integral_balance: i64,
 }
 
@@ -95,6 +96,7 @@ pub async fn com_counts(
         resume_downloads: d.resume_downloads,
         unread_chats: d.unread_chats,
         unread_messages: d.unread_messages,
+        job_msg_unanswered: d.job_msg_unanswered,
         integral_balance: d.integral_balance,
     }))
 }

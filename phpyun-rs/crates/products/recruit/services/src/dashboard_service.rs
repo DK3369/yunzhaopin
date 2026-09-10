@@ -45,6 +45,8 @@ pub struct ComDashboardCounts {
     pub unread_chats: u64,
     /// Overall unread system notifications
     pub unread_messages: u64,
+    /// Unanswered public job consults (PHP `sysnews` jobnum).
+    pub job_msg_unanswered: u64,
     /// Current integral balance
     pub integral_balance: i64,
 }
@@ -107,14 +109,16 @@ pub async fn com_counts(
     let interviews_f = interview_repo::count_for_company(db, uid);
     let downloads_f = phpyun_models::resume_download::repo::count_for_company(db, uid);
     let messages_f = message_repo::count(db, uid, None, true);
+    let job_msg_f = phpyun_models::job_msg::repo::count_for_employer(db, uid, true);
     let bal_f = integral_repo::get_balance(db, uid);
 
-    let (applies_total, applies_unread, interviews, downloads, messages, bal) = tokio::join!(
+    let (applies_total, applies_unread, interviews, downloads, messages, job_msg, bal) = tokio::join!(
         applies_total_f,
         applies_unread_f,
         interviews_f,
         downloads_f,
         messages_f,
+        job_msg_f,
         bal_f,
     );
 
@@ -125,6 +129,7 @@ pub async fn com_counts(
         resume_downloads: downloads.unwrap_or(0),
         unread_chats: 0,
         unread_messages: messages.unwrap_or(0),
+        job_msg_unanswered: job_msg.unwrap_or(0),
         integral_balance: bal.map(|b| b.balance).unwrap_or(0),
     })
 }

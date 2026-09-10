@@ -37,7 +37,34 @@ function payChannel() {
   if (import.meta.client && /Android|iPhone|iPad|Mobile|MicroMessenger/i.test(navigator.userAgent)) return 'wxh5'
   return 'wxpay'
 }
+type PackDesc = {
+  job_num?: number
+  breakjob_num?: number
+  resume?: number
+  interview?: number
+  top_num?: number
+  rec_num?: number
+  urgent_num?: number
+  zph_num?: number
+  part_num?: number
+}
 const packages = computed(() => (Array.isArray(packs.value) ? packs.value : packs.value?.list || []))
+function quotaLines(p: { desc?: PackDesc | null }) {
+  const raw = p.desc
+  const d = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
+  const rows: Array<[number, string, string?]> = [
+    [Number(d.job_num || 0), 'wap_com_00106'],
+    [Number(d.breakjob_num || 0), 'wap_com_00029'],
+    [Number(d.resume || 0), 'wap_00451'],
+    [Number(d.interview || 0), 'wap_user_00216'],
+    [Number(d.top_num || 0), 'wap_com_00238', 'common_02067'],
+    [Number(d.rec_num || 0), 'wap_com_00237', 'common_02067'],
+    [Number(d.urgent_num || 0), 'member_com_00613', 'common_02067'],
+    [Number(d.zph_num || 0), 'member_com_00293'],
+    [Number(d.part_num || 0), 'wap_user_00271'],
+  ]
+  return rows.filter(([n]) => n > 0)
+}
 async function buy(code: string) {
   msg.value = ''
   try {
@@ -140,6 +167,11 @@ useSeoMeta({ title: t('common_01946') })
       <article v-for="p in packages" :key="p.code" class="job-card">
         <h3>{{ p.name }}</h3>
         <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
+        <ul v-if="quotaLines(p).length" class="muted">
+          <li v-for="(row, i) in quotaLines(p)" :key="i">
+            {{ $t(row[1]) }} {{ row[0] }}<template v-if="row[2]">{{ $t(row[2]) }}</template>
+          </li>
+        </ul>
         <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
       </article>
     </div>

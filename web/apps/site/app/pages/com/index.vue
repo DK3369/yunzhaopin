@@ -9,6 +9,8 @@ const { data: dash } = await useAsyncData('com-dash', () =>
     .post<{
       applies_received: number
       applies_unread: number
+      job_msg_unanswered?: number
+      unread_messages?: number
     }>('/v1/mcenter/com-dashboard', {})
     .catch(() => null),
 )
@@ -152,7 +154,12 @@ function labelOf(to: string) {
               <div class="taskbar_datum_img">
                 <img :src="item.icon" alt="" width="100%" height="100%" />
               </div>
-              <div class="taskbar_datum_word">{{ labelOf(item.to) }}</div>
+              <div class="taskbar_datum_word">
+                {{ labelOf(item.to) }}
+                <span v-if="item.to === '/com/applications' && dash?.applies_unread" class="yun_m_n">{{ dash.applies_unread }}</span>
+                <span v-else-if="item.to === '/com/job-messages' && dash?.job_msg_unanswered" class="yun_m_n">{{ dash.job_msg_unanswered }}</span>
+                <span v-else-if="item.to === '/com/messages' && dash?.unread_messages" class="yun_m_n">{{ dash.unread_messages }}</span>
+              </div>
             </div>
             <div class="taskbar_nav">
               <div class="taskbar_nav_img">

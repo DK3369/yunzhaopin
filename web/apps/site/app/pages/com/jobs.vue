@@ -171,6 +171,31 @@ async function reserveOne(id: number, status: number) {
     msg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
 }
+async function copyShare(id: number, kind: 'text' | 'link') {
+  msg.value = ''
+  const fallback = import.meta.client ? `${window.location.origin}/jobs/${id}` : `/jobs/${id}`
+  try {
+    const r = await api.get<{ plain_text?: string; share_url?: string }>('/v1/wap/jobs/share-text', { id })
+    const text = kind === 'link' ? String(r.share_url || fallback) : String(r.plain_text || '')
+    if (import.meta.client && navigator.clipboard && text) {
+      await navigator.clipboard.writeText(text)
+      msg.value = t('common.success')
+      return
+    }
+    msg.value = text || t('ui.load_failed')
+  } catch (e: unknown) {
+    if (kind === 'link' && import.meta.client && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(fallback)
+        msg.value = t('common.success')
+        return
+      } catch {
+        /* fall through */
+      }
+    }
+    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
+}
 async function fillReserve(id: number) {
   msg.value = ''
   try {
@@ -261,6 +286,8 @@ useSeoMeta({ title: t('wap_com_00106') })
       <p>
         <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
         <NuxtLink :to="`/poster/job/${job.id}`">{{ $t('ui.poster') }}</NuxtLink>
+        <button type="button" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00232') }}</button>
+        <button type="button" @click="copyShare(job.id, 'link')">{{ $t('wap_com_00233') }}</button>
         <button type="button" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</button>
         <button type="button" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</button>
         <button type="button" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</button>

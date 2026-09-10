@@ -50,7 +50,17 @@ pub async fn list_active_packages(
               COALESCE(`type`, 0) AS target_usertype,
               COALESCE(service_time, 0) AS duration_days,
               CAST(COALESCE(service_price, 0) * 100 AS SIGNED) AS price_cents,
-              NULL AS desc_json,
+              JSON_OBJECT(
+                'job_num', COALESCE(job_num, 0),
+                'breakjob_num', COALESCE(breakjob_num, 0),
+                'resume', COALESCE(resume, 0),
+                'interview', COALESCE(interview, 0),
+                'top_num', COALESCE(top_num, 0),
+                'rec_num', COALESCE(rec_num, 0),
+                'urgent_num', COALESCE(urgent_num, 0),
+                'zph_num', COALESCE(zph_num, 0),
+                'part_num', COALESCE(part_num, 0)
+              ) AS desc_json,
               COALESCE(display, 1) AS is_active,
               COALESCE(sort, 0) AS sort_order,
               COALESCE(time_start, 0) AS created_at
@@ -180,7 +190,17 @@ pub async fn find_package_by_code(
               COALESCE(`type`, 0) AS target_usertype,
               COALESCE(service_time, 0) AS duration_days,
               CAST(COALESCE(service_price, 0) * 100 AS SIGNED) AS price_cents,
-              NULL AS desc_json,
+              JSON_OBJECT(
+                'job_num', COALESCE(job_num, 0),
+                'breakjob_num', COALESCE(breakjob_num, 0),
+                'resume', COALESCE(resume, 0),
+                'interview', COALESCE(interview, 0),
+                'top_num', COALESCE(top_num, 0),
+                'rec_num', COALESCE(rec_num, 0),
+                'urgent_num', COALESCE(urgent_num, 0),
+                'zph_num', COALESCE(zph_num, 0),
+                'part_num', COALESCE(part_num, 0)
+              ) AS desc_json,
               COALESCE(display, 1) AS is_active,
               COALESCE(sort, 0) AS sort_order,
               COALESCE(time_start, 0) AS created_at
