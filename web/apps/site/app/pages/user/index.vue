@@ -111,6 +111,7 @@ const h5Links = [
   { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
   { to: '/user/otherservice', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00196' },
   { to: '/user/eval-logs', icon: '/legacy/h5/images/sz.png', key: 'wap_00194' },
+  { to: '/user/looks', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00275' },
   { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
 ]
 function labelOf(to: string, key: string) {

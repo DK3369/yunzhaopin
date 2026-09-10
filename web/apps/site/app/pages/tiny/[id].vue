@@ -65,7 +65,15 @@ useHead({ link: [{ rel: 'canonical', href: `/tiny/${id}` }] })
 <template>
   <article>
     <h1>{{ data?.username || $t('common_02409') }}</h1>
-    <p v-if="data?.job" class="muted">{{ data.job }} · {{ data.exp }}</p>
+    <p v-if="data?.job" class="muted">{{ data.job }} · {{ data.exp_n || data.exp }}</p>
+    <p v-if="data?.sex_n || Number(data?.sex)" class="muted">
+      {{ data.sex_n || (Number(data?.sex) === 2 ? $t('common_02069') : Number(data?.sex) === 1 ? $t('common_02092') : '') }}
+    </p>
+    <p
+      v-if="data?.province_name || data?.city_name"
+      class="muted"
+    >{{ [data?.province_name, data?.city_name, data?.three_city_name].filter(Boolean).join('-') }}</p>
+    <p v-if="Number(data?.hits)" class="muted">{{ $t('member_com_00268') }}：{{ data.hits }} {{ $t('common_02089') }}</p>
     <p v-if="data?.mobile_masked" class="muted">{{ data.mobile_masked }}</p>
     <p v-if="data?.production">{{ data.production }}</p>
     <p v-else-if="!data?.username" class="muted">{{ $t('common_02409') }}</p>

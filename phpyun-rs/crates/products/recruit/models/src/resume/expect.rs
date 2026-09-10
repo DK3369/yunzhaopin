@@ -128,6 +128,18 @@ pub async fn find_default_by_uid(
         .await
 }
 
+/// PHP `addLookJob`: insert only when a default, publicly visible expect exists.
+pub async fn has_default_public(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM phpyun_resume_expect \
+         WHERE uid = ? AND COALESCE(defaults,0) = 1 AND COALESCE(r_status,0) = 1 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Expect>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_resume_expect WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, Expect>(&sql)

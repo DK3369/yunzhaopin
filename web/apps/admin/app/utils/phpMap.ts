@@ -95,6 +95,16 @@ function idsStatusFromPhp(body: Record<string, unknown>): Record<string, unknown
   }
 }
 
+/** PHP once/tiny `status_action`: `id` may be a csv; native admin is id + ids. */
+function idStatusFromPhp(body: Record<string, unknown>): Record<string, unknown> {
+  const ids = idsFromDel({
+    del: body.del,
+    id: body.id ?? body.pid,
+    ids: body.ids,
+  }).ids as number[]
+  return { id: ids[0] || 0, ids, status: Number(body.status) }
+}
+
 function csvList(v: unknown): string[] {
   if (Array.isArray(v)) return v.map((x) => String(x).trim()).filter(Boolean)
   return String(v || '')
@@ -639,7 +649,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/weipin_once': phpContent('once', 'index'),
   'user/weipin_once/index': phpContent('once', 'index'),
   'user/weipin_once/onceNum': phpContentRaw('once', 'once-num'),
-  'user/weipin_once/status': phpContent('once', 'status'),
+  'user/weipin_once/status': { path: '/v1/admin/once-jobs/status', transformReq: idStatusFromPhp },
   'user/weipin_once/checksitedid': phpContent('once', 'checksitedid'),
   'user/weipin_once/price_gear': phpContent('once', 'price_gear'),
   'user/weipin_once/price_gear_add': phpContent('once', 'price_gear_add'),
@@ -655,7 +665,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/weipin_tiny': phpContent('tiny', 'index'),
   'user/weipin_tiny/index': phpContent('tiny', 'index'),
   'user/weipin_tiny/tinyNum': phpContentRaw('tiny', 'tiny-num'),
-  'user/weipin_tiny/status': phpContent('tiny', 'status'),
+  'user/weipin_tiny/status': { path: '/v1/admin/tiny/status', transformReq: idStatusFromPhp },
   'user/weipin_tiny/checksitedid': phpContent('tiny', 'checksitedid'),
   'user/weipin_tiny/set': phpContent('tiny', 'set'),
   'user/weipin_tiny/tinyset': phpContent('tiny', 'tinyset'),

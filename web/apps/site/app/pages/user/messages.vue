@@ -21,6 +21,11 @@ useSeoMeta({ title: t('common.message') })
 
 <template>
   <MemberPanel :title="$t('common.message')" :error="error" :empty="!error && !(data?.list || []).length">
+    <nav class="stack" style="margin-bottom: 12px">
+      <NuxtLink to="/user/interviews" class="job-card">{{ $t('wap_user_00216') }}</NuxtLink>
+      <NuxtLink to="/user/applications" class="job-card">{{ $t('wap_01133') }}</NuxtLink>
+      <NuxtLink to="/user/consults" class="job-card">{{ $t('wap_user_00364') }}</NuxtLink>
+    </nav>
     <p><button type="button" @click="readAll">{{ $t('common.confirm') }}</button></p>
     <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
       <p>{{ row.body || row.content || row.title || row.id }}</p>

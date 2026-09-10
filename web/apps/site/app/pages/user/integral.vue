@@ -36,6 +36,11 @@ useSeoMeta({ title: t('wap_user_00008') })
       <button type="button" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
       <span v-if="signSt" class="muted"> {{ signSt.signday ?? 0 }} / {{ signSt.signdays ?? 0 }}</span>
     </p>
+    <nav class="stack">
+      <NuxtLink to="/user/resume" class="job-card">{{ $t('wap_user_00204') }}</NuxtLink>
+      <NuxtLink to="/user/invite" class="job-card">{{ $t('ui.invite_reg') }}</NuxtLink>
+      <NuxtLink to="/user/binding" class="job-card">{{ $t('wap_00389') }}</NuxtLink>
+    </nav>
     <h2>{{ $t('ui.flow') }}</h2>
     <p v-if="!(hist?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <div class="stack">

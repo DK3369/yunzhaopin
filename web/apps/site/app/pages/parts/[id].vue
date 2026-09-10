@@ -59,6 +59,12 @@ const cityLine = computed(() =>
   [row.value.province_name, row.value.city_name, row.value.three_city_name].map((v) => String(v || '')).filter(Boolean).join('-'),
 )
 const tel = computed(() => String(row.value.linktel || row.value.linktel_n || ''))
+const mapHref = computed(() => {
+  const x = String(row.value.x || '')
+  const y = String(row.value.y || '')
+  if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`
+  return ''
+})
 const telQr = ref('')
 onMounted(async () => {
   try {
@@ -78,6 +84,7 @@ useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
     <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
     <template v-else>
       <p v-if="row.com_name || cityLine" class="muted">{{ row.com_name }} {{ cityLine }}</p>
+      <p v-if="row.is_rec" class="muted">{{ $t('wap_com_00237') }}</p>
       <ul class="stack">
         <li v-if="row.part_type_n">{{ $t('member_com_00313') }}：{{ row.part_type_n }}</li>
         <li v-if="salaryLine">{{ salaryLine }}</li>
@@ -85,7 +92,10 @@ useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
         <li v-if="row.sex_n">{{ $t('wap_com_00332') }}：{{ row.sex_n }}</li>
         <li v-if="row.worktime">{{ $t('wap_00456') }}：{{ row.worktime }}</li>
         <li v-if="row.address">{{ $t('wap_user_00243') }}：{{ row.address }}</li>
+        <li v-if="row.edate_n">{{ $t('wap_01394') }}{{ row.edate_n }}</li>
+        <li v-if="Number(row.hits)">{{ $t('member_com_00268') }}：{{ row.hits }} {{ $t('common_02089') }}</li>
       </ul>
+      <p v-if="mapHref"><NuxtLink :to="mapHref">{{ $t('wap_00223') }}</NuxtLink></p>
       <div v-if="row.content" v-html="String(row.content)" />
       <p v-else-if="!row.name" class="muted">{{ $t('member_com_00477') }}</p>
       <h2>{{ $t('wap_00462') }}</h2>

@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
-use phpyun_core::utils::{mask_name_short as mask_name, mask_tel};
+use phpyun_core::utils::{mask_name_short as mask_name, mask_tel, fmt_date, pic_n_str};
 use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{
     json, ApiError, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
@@ -150,6 +150,11 @@ pub struct OnceDetail {
     pub ctime: i64,
     pub edate: i64,
     pub hits: i64,
+    pub pic_n: String,
+    pub edate_n: String,
+    pub province_name: String,
+    pub city_name: String,
+    pub three_city_name: String,
 }
 
 #[utoipa::path(post, path = "/v1/wap/once-jobs/show", tag = "wap", request_body = IdBody,
@@ -160,6 +165,8 @@ pub async fn show(
 ) -> AppResult<ApiResponse<OnceDetail>> {
     let id = b.id;
     let j = once_service::show(&state, id).await?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let pic_raw = j.pic.clone().unwrap_or_default();
     Ok(ApiResponse::data(OnceDetail {
         id: j.id,
         title: j.title,
@@ -183,6 +190,14 @@ pub async fn show(
         ctime: j.ctime,
         edate: j.edate,
         hits: j.hits,
+        pic_n: pic_n_str(&state, &pic_raw),
+        edate_n: fmt_date(j.edate),
+        province_name: phpyun_services::region_service::loc_name(dicts.city(j.provinceid), j.provinceid),
+        city_name: phpyun_services::region_service::loc_name(dicts.city(j.cityid), j.cityid),
+        three_city_name: phpyun_services::region_service::loc_name(
+            dicts.city(j.three_cityid),
+            j.three_cityid,
+        ),
     }))
 }
 

@@ -142,6 +142,11 @@ pub struct TinyDetail {
     pub time: i64,
     pub lastupdate: i64,
     pub hits: i64,
+    pub sex_n: String,
+    pub exp_n: String,
+    pub province_name: String,
+    pub city_name: String,
+    pub three_city_name: String,
 }
 
 #[utoipa::path(post,
@@ -160,6 +165,7 @@ pub async fn show(
     phpyun_services::site_gate_service::ensure_module_on(&state, "sy_tiny_web").await?;
     let id = b.id;
     let t = tiny_service::show(&state, id).await?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
     Ok(ApiResponse::data(TinyDetail {
         id: t.id,
         username: t.username,
@@ -175,6 +181,14 @@ pub async fn show(
         time: t.time,
         lastupdate: t.lastupdate,
         hits: t.hits,
+        sex_n: dicts.user_or_com(t.sex).to_string(),
+        exp_n: dicts.user_or_com(t.exp).to_string(),
+        province_name: phpyun_services::region_service::loc_name(dicts.city(t.provinceid), t.provinceid),
+        city_name: phpyun_services::region_service::loc_name(dicts.city(t.cityid), t.cityid),
+        three_city_name: phpyun_services::region_service::loc_name(
+            dicts.city(t.three_cityid),
+            t.three_cityid,
+        ),
     }))
 }
 

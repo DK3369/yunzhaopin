@@ -347,7 +347,13 @@ pub async fn list_jobs(
     // `/v1/wap/jobs/detail` so callers get the full job document.
     if let Some(id) = q.id {
         return Ok(ApiResponse::data(
-            build_job_detail_value(&state, user.as_ref(), id).await?,
+            build_job_detail_value(
+                &state,
+                user.as_ref(),
+                id,
+                &crate::v1::wap::client_ip(&headers),
+            )
+            .await?,
         ));
     }
 
@@ -442,10 +448,17 @@ pub async fn list_jobs(
 pub async fn job_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
     Ok(ApiResponse::data(
-        build_job_detail_value(&state, user.as_ref(), b.id).await?,
+        build_job_detail_value(
+            &state,
+            user.as_ref(),
+            b.id,
+            &crate::v1::wap::client_ip(&headers),
+        )
+        .await?,
     ))
 }
 
@@ -456,11 +469,13 @@ pub async fn build_job_detail_value(
     state: &AppState,
     user: Option<&phpyun_core::AuthenticatedUser>,
     id: u64,
+    ip: &str,
 ) -> AppResult<json::Value> {
     let d = job_service::get_detail(state, id, user).await?;
     // Logged-in user: record visit footprint + bump view count (fire-and-forget)
     if let Some(u) = user {
         view_service::record_async(state, u.uid, KIND_JOB, id);
+        phpyun_services::look_job_service::browse_job_async(state, u, id, d.job.uid, ip);
     }
     let now = phpyun_core::clock::now_ts();
 

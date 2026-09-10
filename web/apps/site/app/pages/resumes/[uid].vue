@@ -6,7 +6,7 @@ const route = useRoute()
 const { t, te, locale } = useI18n()
 const uid = Number(route.params.uid)
 const api = useApi()
-const { me } = useSiteChrome()
+const { me, settings } = useSiteChrome()
 const clientVisitorBlocked = ref(false)
 const { data, error, refresh } = await useAsyncData(
   () => `resume-${locale.value}-${uid}`,
@@ -118,6 +118,25 @@ function payConfirmText(res: DownloadResult) {
   return te((res.msg_key || 'common_00696') as never)
     ? t((res.msg_key || 'common_00696') as never)
     : t('common_00696')
+}
+async function shareResume() {
+  actionMsg.value = ''
+  try {
+    const r = await api.post<{ url?: string }>('/v1/wap/share/resumes', { uid })
+    const url = String(r.url || (import.meta.client ? window.location.href : ''))
+    if (import.meta.client && navigator.share) {
+      await navigator.share({ title: name.value, url })
+      return
+    }
+    if (import.meta.client && navigator.clipboard && url) {
+      await navigator.clipboard.writeText(url)
+      actionMsg.value = t('common.success')
+      return
+    }
+    actionMsg.value = url || t('ui.load_failed')
+  } catch (e: unknown) {
+    actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
+  }
 }
 useSeoMeta({
   title: () => name.value || t('common.resume'),
@@ -695,6 +714,15 @@ async function report() {
         </div>
         <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
         <EmailRecommendForm v-if="eid" kind="resume" :id="eid" />
+        <ShareSceneQr
+          v-if="String(settings.sy_h5_share || '1') !== '2' && uid"
+          kind="resume"
+          :id="uid"
+          :href="`/resumes/${uid}`"
+        />
+        <p>
+          <button type="button" @click="shareResume">{{ $t('common.share') }}</button>
+        </p>
       </div>
       <div class="yun_czfoot">
         <div class="yun_czfootfixed">

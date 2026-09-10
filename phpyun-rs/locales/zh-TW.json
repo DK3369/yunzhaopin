@@ -80,6 +80,7 @@
   "registration_closed": "網站已關閉註冊",
   "need_register": "請先註冊帳號",
   "once_not_approved": "該店鋪招聘尚未審核通過",
+  "once_not_found": "店鋪招聘不存在",
   "once_unpaid": "該店鋪招聘尚未付款，暫不可查看",
   "zph_closed": "該招聘會未開放",
   "zph_already_started": "招聘會已開始，無法報名",

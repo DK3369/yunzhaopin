@@ -2,7 +2,7 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
 use phpyun_models::once_job::entity::OnceJob;
 use phpyun_services::admin_cms_service;
@@ -37,9 +37,21 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetStatusForm {
-    #[validate(range(min = 1))]
+    #[serde(default)]
     pub id: u64,
+    #[serde(default)]
+    pub ids: Vec<u64>,
     pub status: i32,
+}
+
+fn status_ids(id: u64, mut ids: Vec<u64>) -> Vec<u64> {
+    if id > 0 && !ids.contains(&id) {
+        ids.insert(0, id);
+    }
+    ids.retain(|&x| x > 0);
+    ids.sort_unstable();
+    ids.dedup();
+    ids
 }
 
 #[utoipa::path(post, path = "/v1/admin/once-jobs/status", tag = "admin", security(("bearer" = [])), request_body = SetStatusForm, responses((status = 200, description = "ok")))]
@@ -49,6 +61,12 @@ pub async fn set_status(
     ValidatedJson(f): ValidatedJson<SetStatusForm>,
 ) -> AppResult<ApiResponse> {
     user.require_admin()?;
-    admin_cms_service::set_once_status(&state, &user, f.id, f.status).await?;
+    let ids = status_ids(f.id, f.ids);
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("id"));
+    }
+    for id in ids {
+        admin_cms_service::set_once_status(&state, &user, id, f.status).await?;
+    }
     Ok(ApiResponse::message("ok"))
 }

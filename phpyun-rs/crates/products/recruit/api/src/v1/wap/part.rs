@@ -239,7 +239,10 @@ pub struct PartDetail {
     pub deadline: i64,
     pub addtime: i64,
     pub rec_time: i64,
+    /// PHP list `is_rec`: `rec_time > now`.
+    pub is_rec: bool,
     pub lastupdate: i64,
+    pub edate_n: String,
     /// 0 long-term / 1 expired / 2 expires within 3 days / 3 expires within 7 days / 4 normal
     pub edate_state: i32,
 
@@ -396,7 +399,9 @@ pub async fn part_detail(
         deadline: j.deadline,
         addtime: j.addtime,
         rec_time: j.rec_time,
+        is_rec: j.rec_time > now,
         lastupdate: j.lastupdate,
+        edate_n: fmt_date(j.edate),
         edate_state: compute_edate_state(j.edate, now),
 
         state: j.state,

@@ -21,6 +21,10 @@ useSeoMeta({ title: t('wap_user_00275') })
 
 <template>
   <section>
+    <nav class="m_tab">
+      <NuxtLink to="/user/views">{{ $t('wap_user_00276') }}</NuxtLink>
+      <NuxtLink to="/user/looks">{{ $t('wap_user_00275') }}</NuxtLink>
+    </nav>
     <h1>{{ $t('wap_user_00275') }}</h1>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>

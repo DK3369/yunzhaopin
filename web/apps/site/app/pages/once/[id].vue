@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mediaUrl } from '~/utils/site'
+
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
@@ -9,6 +11,11 @@ const { data, error } = await useAsyncData(`once-${id}`, () =>
     throw e
   }),
 )
+const row = computed(() => (data.value || {}) as Record<string, unknown>)
+const cityLine = computed(() =>
+  [row.value.province_name, row.value.city_name, row.value.three_city_name].map((v) => String(v || '')).filter(Boolean).join('-'),
+)
+const pic = computed(() => mediaUrl(String(row.value.pic_n || row.value.pic || '')))
 const password = ref('')
 const msg = ref('')
 const owned = ref<Record<string, unknown> | null>(null)
@@ -105,7 +112,12 @@ useHead({ link: [{ rel: 'canonical', href: `/once/${id}` }] })
   <article>
     <h1>{{ data?.title || data?.companyname || $t('wap_00630') }}</h1>
     <p v-if="data?.companyname" class="muted">{{ data.companyname }}</p>
+    <p v-if="cityLine" class="muted">{{ cityLine }}</p>
     <p v-if="data?.address" class="muted">{{ data.address }}</p>
+    <p v-if="data?.salary_text" class="muted">{{ data.salary_text }}</p>
+    <p v-if="data?.edate_n" class="muted">{{ $t('wap_01394') }}{{ data.edate_n }}</p>
+    <p v-if="Number(data?.hits)" class="muted">{{ $t('member_com_00268') }}：{{ data.hits }} {{ $t('common_02089') }}</p>
+    <img v-if="pic" :src="pic" alt="" width="160" height="160" />
     <p v-if="data?.linkman_masked" class="muted">{{ $t('wap_01431') }} {{ data.linkman_masked }} · {{ data.linktel_masked }}</p>
     <p v-if="data?.require">{{ data.require }}</p>
     <p v-else-if="!data && error" class="muted">{{ $t('wap_00630') }}</p>
