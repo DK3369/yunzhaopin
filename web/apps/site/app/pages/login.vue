@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ApiError } from '~/utils/envelope'
+import { mediaUrl } from '~/utils/site'
 
-const { siteName, logoPc, settings, me } = useSiteChrome()
+const { siteName, logoPc, settings, me, wapQr } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
 const smsLoginOn = computed(
@@ -26,12 +27,15 @@ const { data: captcha } = await useAsyncData('login-captcha', () =>
 const authcode = ref('')
 const err = ref('')
 const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
-const wxQr = ref<{ login_id: string; show_url: string } | null>(null)
-const wxQrHint = ref('')
-let wxPoll: ReturnType<typeof setInterval> | null = null
 let smsTimer: ReturnType<typeof setInterval> | null = null
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
 const wechatOauth = computed(() => oauth.value.find((o) => o.provider === 'wechat'))
+const appQr = computed(
+  () =>
+    wapQr.value ||
+    mediaUrl(settings.value.sy_androidu_qcode) ||
+    mediaUrl(settings.value.sy_iosu_qcode),
+)
 
 function loginNext(): string {
   const q = String(useRoute().query.next || nextFrom.value || '')
@@ -41,7 +45,7 @@ function loginNext(): string {
 
 function homeOf(usertype: number) {
   if (usertype === 2) return '/com'
-  return '/'
+  return '/user'
 }
 
 function authFail(e: unknown): { key: string; msg: string } {
@@ -60,6 +64,16 @@ async function handleAuthFail(e: unknown) {
   const f = authFail(e)
   if (f.key === 'locked') {
     await navigateTo('/loginlock')
+    return
+  }
+  if (f.key === 'need_register') {
+    await navigateTo({
+      path: '/register',
+      query: {
+        usertype: String(role.value),
+        ...(mobile.value ? { moblie: mobile.value } : {}),
+      },
+    })
     return
   }
   err.value = f.msg || t('common_00888')
@@ -169,29 +183,6 @@ onMounted(async () => {
     }
   }
   if (needImageCaptcha.value && !captcha.value) await loadCaptcha()
-  try {
-    wxQr.value = await $fetch('/api/auth/login-wx-qr', { method: 'POST' })
-    if (wxQr.value?.login_id) {
-      wxPoll = setInterval(async () => {
-        try {
-          const st = await $fetch<{ status: string; uid?: number; usertype?: number }>(
-            '/api/auth/login-wx-status',
-            { method: 'POST', body: { login_id: wxQr.value?.login_id } },
-          )
-          if (st.status === 'ok' && st.uid) {
-            if (wxPoll) clearInterval(wxPoll)
-            await afterLogin({ uid: st.uid, usertype: Number(st.usertype || 0) })
-          } else if (st.status === 'unbound') {
-            wxQrHint.value = t('common.register')
-          }
-        } catch {
-          /* keep polling until expire */
-        }
-      }, 2000)
-    }
-  } catch {
-    wxQr.value = null
-  }
   const redirect_uri = `${siteUrl}/login`
   for (const [name, path, key] of [
     ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
@@ -236,38 +227,18 @@ async function submitPass() {
   }
 }
 
-async function sendSmsCode(scene: 'login' | 'register') {
-  await api.post('/v1/wap/sms/send', {
-    moblie: mobile.value,
-    scene,
-    captcha_cid: captcha.value?.cid,
-    authcode: authcode.value,
-  })
-}
-
 async function sendSms() {
   err.value = ''
-  if (!agreed.value) {
-    err.value = t('wap_00309')
-    return
-  }
   if (smsWait.value > 0) return
   try {
-    await sendSmsCode('login')
+    await api.post('/v1/wap/sms/send', {
+      moblie: mobile.value,
+      scene: 'login',
+      captcha_cid: captcha.value?.cid,
+      authcode: authcode.value,
+    })
     startSmsWait()
   } catch (e: unknown) {
-    const f = authFail(e)
-    if (f.key === 'need_register') {
-      try {
-        await sendSmsCode('register')
-        startSmsWait()
-        return
-      } catch (e2: unknown) {
-        await handleAuthFail(e2)
-        loadCaptcha()
-        return
-      }
-    }
     await handleAuthFail(e)
     loadCaptcha()
   }
@@ -282,7 +253,7 @@ async function submitSms() {
   try {
     const logged = await $fetch<{ uid: number; usertype: number }>('/api/auth/login-sms', {
       method: 'POST',
-      body: { moblie: mobile.value, dynamiccode: smsCode.value, usertype: role.value },
+      body: { moblie: mobile.value, dynamiccode: smsCode.value },
     })
     await afterLogin(logged)
   } catch (e: unknown) {
@@ -292,7 +263,6 @@ async function submitSms() {
 
 useSeoMeta({ title: t('common.login') })
 onUnmounted(() => {
-  if (wxPoll) clearInterval(wxPoll)
   if (smsTimer) clearInterval(smsTimer)
 })
 </script>
@@ -348,9 +318,8 @@ onUnmounted(() => {
         <template v-if="panel === 'qr'">
           <h1 class="lgp-h1">{{ $t('loginPage.qr_title', { site: siteName }) }}</h1>
           <div class="lgp-qr">
-            <img v-if="wxQr?.show_url" :src="wxQr.show_url" alt="" width="180" height="180" />
+            <img v-if="appQr" :src="appQr" alt="" width="180" height="180" />
             <p v-else class="muted">{{ $t('common_02409') }}</p>
-            <p v-if="wxQrHint" class="muted">{{ wxQrHint }}</p>
           </div>
           <p class="lgp-qr-links">
             <NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink>
@@ -383,6 +352,10 @@ onUnmounted(() => {
               </button>
             </div>
             <button type="submit" class="lgp-submit">{{ $t('loginPage.submit') }}</button>
+            <p class="lgp-extra">
+              <span />
+              <NuxtLink :to="{ path: '/register', query: { usertype: String(role) } }">{{ $t('common.register') }}</NuxtLink>
+            </p>
           </form>
 
           <form v-else @submit.prevent="submitPass">

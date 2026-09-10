@@ -52,6 +52,14 @@ async function loadCaptcha() {
   form.captcha_cid = captcha.value?.cid || ''
 }
 onMounted(async () => {
+  const q = useRoute().query
+  if (Number(q.usertype) === 2) form.usertype = 2
+  else if (Number(q.usertype) === 1) form.usertype = 1
+  const mob = String(q.moblie || q.mobile || '').trim()
+  if (mob) {
+    form.moblie = mob
+    if (allowMobile.value) form.regway = 2
+  }
   if (alreadyIn.value) {
     await navigateTo(Number(me.value?.usertype) === 2 ? '/com' : '/user')
     return
