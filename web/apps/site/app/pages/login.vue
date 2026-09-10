@@ -2,7 +2,7 @@
 import { ApiError } from '~/utils/envelope'
 import { qrSvgDataUri } from '~/utils/qr'
 
-const { siteName, logoPc, settings, me } = useSiteChrome()
+const { siteName, logoPc, settings, me, worktime, phone } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
 const smsLoginOn = computed(
@@ -341,74 +341,104 @@ onUnmounted(() => {
     </div>
     <div class="lgp-card">
       <aside class="lgp-side">
-        <NuxtLink to="/" class="lgp-brand">
-          <img v-if="logoPc" :src="logoPc" :alt="siteName" />
-          <span v-else>{{ siteName }}</span>
+        <NuxtLink to="/" class="lgp-side-head">
+          <span class="lgp-mark">
+            <img v-if="logoPc" :src="logoPc" :alt="siteName" />
+            <span v-else>{{ siteName.slice(0, 2) || 'JOB' }}</span>
+          </span>
+          <span class="lgp-side-copy">
+            <strong>{{ $t('loginPage.side_job') }}</strong>
+            <em>{{ $t('loginPage.side_talk', { site: siteName }) }}</em>
+          </span>
         </NuxtLink>
-        <p class="lgp-side-title">{{ role === 1 ? $t('loginPage.seek_tagline') : $t('loginPage.hire_tagline') }}</p>
         <ul v-if="role === 1" class="lgp-feat">
           <li>
-            <strong>{{ $t('loginPage.seek_f1_t') }}</strong>
-            <span>{{ $t('loginPage.seek_f1_d') }}</span>
+            <span class="lgp-feat-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 12h4v8H4v-8zm6-6h4v14h-4V6zm6 3h4v11h-4V9z" /></svg>
+            </span>
+            <span>
+              <strong>{{ $t('loginPage.seek_f2_t') }}</strong>
+              <em>{{ $t('loginPage.seek_f2_d') }}</em>
+            </span>
           </li>
           <li>
-            <strong>{{ $t('loginPage.seek_f2_t') }}</strong>
-            <span>{{ $t('loginPage.seek_f2_d') }}</span>
-          </li>
-          <li>
-            <strong>{{ $t('loginPage.seek_f3_t') }}</strong>
-            <span>{{ $t('loginPage.seek_f3_d') }}</span>
+            <span class="lgp-feat-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 3h6l1 2h4v3H4V5h4l1-2zm-3 8h12l-1.5 9h-9L6 11z" /></svg>
+            </span>
+            <span>
+              <strong>{{ $t('loginPage.seek_f3_t') }}</strong>
+              <em>{{ $t('loginPage.seek_f3_d') }}</em>
+            </span>
           </li>
         </ul>
         <ul v-else class="lgp-feat">
           <li>
-            <strong>{{ $t('loginPage.hire_f1_t') }}</strong>
-            <span>{{ $t('loginPage.hire_f1_d') }}</span>
+            <span class="lgp-feat-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h10v8H8l-4 3V4zm12 4h6v10l-4-3h-2V8z" /></svg>
+            </span>
+            <span>
+              <strong>{{ $t('loginPage.hire_f1_t') }}</strong>
+              <em>{{ $t('loginPage.hire_f1_d') }}</em>
+            </span>
           </li>
           <li>
-            <strong>{{ $t('loginPage.hire_f2_t') }}</strong>
-            <span>{{ $t('loginPage.hire_f2_d') }}</span>
+            <span class="lgp-feat-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.5 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2 19c0-2.7 3.1-5 7-5s7 2.3 7 5v1H2v-1zm14 1v-1c0-1.3-.5-2.5-1.4-3.4 1.8.3 4.4 1.3 4.4 3.4V20h-3z" /></svg>
+            </span>
+            <span>
+              <strong>{{ $t('loginPage.hire_f2_t') }}</strong>
+              <em>{{ $t('loginPage.hire_f2_d') }}</em>
+            </span>
           </li>
           <li>
-            <strong>{{ $t('loginPage.hire_f3_t') }}</strong>
-            <span>{{ $t('loginPage.hire_f3_d') }}</span>
+            <span class="lgp-feat-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 3h6l1 2h4v3H4V5h4l1-2zm-3 8h12l-1.5 9h-9L6 11z" /></svg>
+            </span>
+            <span>
+              <strong>{{ $t('loginPage.hire_f3_t') }}</strong>
+              <em>{{ $t('loginPage.hire_f3_d') }}</em>
+            </span>
           </li>
         </ul>
       </aside>
       <div class="lgp-main">
-        <div class="lgp-role">
-          <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
-          <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
-        </div>
-        <div class="lgp-tabs">
-          <button type="button" :class="{ on: panel === 'qr' }" @click="openPanel('qr')">{{ $t('loginPage.tab_qr') }}</button>
-          <button type="button" :class="{ on: panel === 'sms' || panel === 'pass' }" @click="openPanel(smsLoginOn ? 'sms' : 'pass')">{{ $t('loginPage.tab_sms') }}</button>
-        </div>
+        <button type="button" class="lgp-qr-btn" @click="openPanel(panel === 'qr' ? (smsLoginOn ? 'sms' : 'pass') : 'qr')">
+          <svg v-if="panel !== 'qr'" class="lgp-qr-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v4h-4v-2h2v-2z" />
+          </svg>
+          <svg v-else class="lgp-qr-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M4 4h16v12H4V4zm2 2v8h12V6H6zm-2 12h16v2H4v-2z" />
+          </svg>
+          {{ panel === 'qr' ? $t('loginPage.sms_title') : $t('loginPage.tab_qr') }}
+        </button>
 
         <template v-if="panel === 'qr'">
-          <h1 class="lgp-h1">{{ role === 1 ? $t('loginPage.qr_seek_title') : $t('loginPage.qr_hire_title') }}</h1>
-          <p class="lgp-sub">{{ role === 1 ? $t('loginPage.qr_seek_hint') : $t('loginPage.qr_hire_hint') }}</p>
+          <h1 class="lgp-h1">{{ $t('loginPage.qr_title', { site: siteName }) }}</h1>
           <div class="lgp-qr">
-            <img v-if="appQrSrc" :src="appQrSrc" alt="" width="180" height="180" />
+            <img v-if="appQrSrc" :src="appQrSrc" alt="" width="200" height="200" />
             <p v-else class="muted">{{ $t('common_02409') }}</p>
             <p v-if="appQrHint" class="lgp-err">{{ appQrHint }}</p>
             <button v-if="appQrHint" type="button" class="lgp-send" @click="startAppQr">{{ $t('loginPage.qr_refresh') }}</button>
           </div>
+          <p v-if="err" class="lgp-err">{{ err }}</p>
           <p class="lgp-qr-links">
             <NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink>
-            <span>·</span>
             <span>{{ $t('loginPage.qr_help') }}</span>
           </p>
         </template>
 
         <template v-else>
           <h1 class="lgp-h1">{{ $t('loginPage.sms_title') }}</h1>
-          <p class="lgp-sub">{{ $t('loginPage.sms_hint') }}</p>
+          <p class="lgp-sub">{{ $t('loginPage.sms_hint', { site: siteName }) }}</p>
+          <div class="lgp-role">
+            <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
+            <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
+          </div>
 
           <form v-if="panel === 'sms'" @submit.prevent="submitSms">
             <div class="lgp-field">
-              <span class="lgp-cc">+86</span>
-              <input v-model="mobile" type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('common.phone')" />
+              <span class="lgp-cc">+86 <i /></span>
+              <input v-model="mobile" type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('loginPage.mobile_ph')" />
             </div>
             <div v-if="needImageCaptcha && captcha?.image" class="lgp-field">
               <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
@@ -421,10 +451,6 @@ onUnmounted(() => {
               </button>
             </div>
             <button type="submit" class="lgp-submit">{{ $t('loginPage.submit') }}</button>
-            <p class="lgp-extra">
-              <span />
-              <NuxtLink :to="{ path: '/register', query: { usertype: String(role) } }">{{ $t('common.register') }}</NuxtLink>
-            </p>
           </form>
 
           <form v-else @submit.prevent="submitPass">
@@ -447,25 +473,52 @@ onUnmounted(() => {
 
           <p v-if="err" class="lgp-err">{{ err }}</p>
           <div class="lgp-other">
-            <a v-if="wechatOauth" href="javascript:;" @click.prevent="startOauth(wechatOauth)">{{ $t('loginPage.wechat') }}</a>
-            <NuxtLink to="/download">{{ $t('loginPage.desktop') }}</NuxtLink>
-            <a v-if="smsLoginOn && panel === 'sms'" href="javascript:;" @click.prevent="panel = 'pass'">{{ $t('wap_00308') }}</a>
-            <a v-else-if="smsLoginOn && panel === 'pass'" href="javascript:;" @click.prevent="panel = 'sms'">{{ $t('wap_00648') }}</a>
+            <a v-if="wechatOauth" href="javascript:;" @click.prevent="startOauth(wechatOauth)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#2aae67" d="M9.5 7.2c-3.7 0-6.7 2.4-6.7 5.4 0 1.7.9 3.2 2.4 4.3l-.6 1.8 2.1-1.1c.8.2 1.5.4 2.3.4.3 0 .6 0 .9-.1-.2-.5-.3-1.1-.3-1.7 0-3.2 2.9-5.7 6.5-5.7.2 0 .4 0 .6.1-1-2.1-3.4-3.4-6.2-3.4zm-1.7 2.2a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.5 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zM16.8 11c-3.3 0-6 2.2-6 5s2.7 5 6 5c.6 0 1.2-.1 1.8-.3l1.7.9-.5-1.5c1.2-.9 2-2.2 2-3.6 0-2.8-2.7-5-5-5zm-1.5 1.9a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4zm3.1 0a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4z" /></svg>
+              {{ $t('loginPage.wechat') }}
+            </a>
+            <NuxtLink v-if="role === 2" to="/download">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 5h16v11H4V5zm2 2v7h12V7H6zm-2 11h16v2H4v-2z" /></svg>
+              {{ $t('loginPage.desktop') }}
+            </NuxtLink>
           </div>
           <label class="lgp-agree">
             <input v-model="agreed" type="checkbox" />
             <span>
-              {{ $t('loginPage.agree_prefix') }}
-              <NuxtLink to="/pages/protocol">{{ $t('wap_00678') }}</NuxtLink>
-              <NuxtLink to="/pages/privacy">{{ $t('wap_00313') }}</NuxtLink>
+              {{ $t('loginPage.agree_prefix', { site: siteName }) }}
+              <NuxtLink to="/pages/protocol">{{ $t('loginPage.protocol') }}</NuxtLink>
+              <NuxtLink to="/pages/privacy">{{ $t('loginPage.privacy') }}</NuxtLink>
+              {{ $t('loginPage.agree_suffix', { site: siteName }) }}
             </span>
           </label>
         </template>
-        <p class="lgp-foot">{{ $t('loginPage.service', { tel: settings.sy_freewebtel || '' }) }}</p>
+        <p class="lgp-foot">
+          {{ $t('loginPage.service', { tel: phone || settings.sy_freewebtel || '', time: worktime || '8:00-22:00' }) }}
+          <br />
+          {{ $t('loginPage.license') }}
+        </p>
       </div>
     </div>
-    <svg class="lgp-sky" viewBox="0 0 1440 220" preserveAspectRatio="xMidYEnd meet" aria-hidden="true">
-      <path fill="#0aa9a8" fill-opacity="0.35" d="M0 180 L80 140 L160 170 L240 110 L320 160 L400 90 L480 150 L560 100 L640 165 L720 80 L800 155 L880 95 L960 170 L1040 120 L1120 175 L1200 130 L1280 180 L1360 150 L1440 190 L1440 220 L0 220 Z" />
+    <svg class="lgp-sky" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <g fill="none" stroke="#0aa9a8" stroke-opacity="0.45" stroke-width="1.4">
+        <path d="M0 210 H1440" />
+        <path d="M20 210 V150 h28 v-22 h18 v32 h22 V210" />
+        <path d="M100 210 V120 h50 V210" />
+        <path d="M118 132 h14 v10 h-14z M118 148 h14 v10 h-14z M118 164 h14 v10 h-14z M118 180 h14 v10 h-14z" />
+        <path d="M165 210 V88 h36 V210" />
+        <path d="M220 210 V140 h70 V210" />
+        <path d="M236 152 h14 v12 h-14z M258 152 h14 v12 h-14z M236 172 h14 v12 h-14z M258 172 h14 v12 h-14z" />
+        <path d="M310 210 V100 h24 v-36 h18 v36 h24 V210" />
+        <path d="M400 210 V70 l18-28 18 28 V210" />
+        <path d="M460 210 V150 h90 V210" />
+        <path d="M580 210 V110 h40 V210" />
+        <path d="M1080 210 V130 h60 V210" />
+        <path d="M1096 142 h12 v10 h-12z M1116 142 h12 v10 h-12z M1096 160 h12 v10 h-12z M1116 160 h12 v10 h-12z" />
+        <path d="M1160 210 V80 h18 v-50 h12 v50 h18 V210" />
+        <path d="M1220 210 V40 c8-28 18-48 22-70 4 22 14 42 22 70 V210" />
+        <path d="M1288 210 V120 h70 V210" />
+        <path d="M1368 210 V150 h52 V210" />
+      </g>
     </svg>
   </div>
 </template>
