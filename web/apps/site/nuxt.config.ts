@@ -10,9 +10,32 @@ export default defineNuxtConfig({
   vite: {
     build: {
       cssCodeSplit: false,
+      minify: 'oxc',
+      cssMinify: true,
     },
     server: {
       allowedHosts: true,
+    },
+  },
+  hooks: {
+    'vite:extendConfig'(config, { isClient }) {
+      if (!isClient) return
+      const build = config.build ?? {}
+      config.build = build
+      const prev = build.rolldownOptions ?? {}
+      const prevOut = prev.output
+      const extra = {
+        codeSplitting: {
+          minSize: 20_000,
+          groups: [{ name: 'vendor', test: /[\\/]node_modules[\\/]/ }],
+        },
+      }
+      build.rolldownOptions = {
+        ...prev,
+        output: Array.isArray(prevOut)
+          ? prevOut.map((o) => ({ ...o, ...extra }))
+          : { ...(prevOut ?? {}), ...extra },
+      }
     },
   },
   css: ['~/assets/main.css'],
@@ -61,6 +84,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    compressPublicAssets: true,
     prerender: { crawlLinks: false, routes: [] },
     // 仅 `nuxt dev`：把 /admin 转到本机 admin 进程。现网由 site Nitro :3001 直接出 /admin，不再另开端口。
     devProxy: {
