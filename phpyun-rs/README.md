@@ -31,7 +31,7 @@ crates/products/recruit/api-admin      # /v1/admin
 crates/apps/server                     # 唯一 binary，包名 phpyun-rs
 ```
 
-`/v1/wap` 与 `/v1/mcenter` 是 Flutter App 的线上契约，**只允许加法**。公开读接口另挂了 GET 别名供 SSR/CDN。
+`/v1/wap` 与 `/v1/mcenter` 是 Flutter App 的线上契约，**只允许加法**。公开读接口另挂了 GET 别名供 SSR/CDN。PC/H5 用 `/v1/wap/initjobs`、`/v1/wap/initads`；单条 `dict` / `countries` / `ads?slot=` 仅 App 契约，勿删。
 
 ## 测试
 
@@ -50,17 +50,3 @@ cargo clippy -- -D warnings
 cargo test
 cargo run -p phpyun-rs
 ```
-
-
-<!-- 合并包：https://job1.ov6.com/api/proxy/v1/wap/initjobs?lang=zh
-原 10 条仍可用：
-https://job1.ov6.com/api/proxy/v1/wap/countries?lang=zh
-https://job1.ov6.com/api/proxy/v1/wap/dict/educations?lang=zh 
-https://job1.ov6.com/api/proxy/v1/wap/dict/experiences?lang=zh 
-https://job1.ov6.com/api/proxy/v1/wap/dict/salaries?lang=zh
-https://job1.ov6.com/api/proxy/v1/wap/dict/industries?lang=zh 
-https://job1.ov6.com/api/proxy/v1/wap/dict/welfares?lang=zh 
-https://job1.ov6.com/api/proxy/v1/wap/dict/reports?lang=zh 
-https://job1.ov6.com/api/proxy/v1/wap/dict/job-types?lang=zh 
-https://job1.ov6.com/api/proxy/v1/wap/dict/company-natures?lang=zh
-https://job1.ov6.com/api/proxy/v1/wap/dict/company-sizes?lang=zh  -->
