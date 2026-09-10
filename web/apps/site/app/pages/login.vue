@@ -12,7 +12,7 @@ const needImageCaptcha = computed(() => {
   const web = String(settings.value.code_web || '')
   return web.includes('前台登录') || web.includes('wap_js_00062')
 })
-const panel = ref<'sms' | 'qr' | 'pass'>('sms')
+const panel = ref<'sms' | 'qr' | 'pass'>(smsLoginOn.value ? 'sms' : 'pass')
 const role = ref<1 | 2>(1)
 const username = ref('')
 const password = ref('')
@@ -428,8 +428,8 @@ onUnmounted(() => {
         </template>
 
         <template v-else>
-          <h1 class="lgp-h1">{{ $t('loginPage.sms_title') }}</h1>
-          <p class="lgp-sub">{{ $t('loginPage.sms_hint', { site: siteName }) }}</p>
+          <h1 class="lgp-h1">{{ panel === 'pass' ? $t('common.login') : $t('loginPage.sms_title') }}</h1>
+          <p v-if="panel !== 'pass'" class="lgp-sub">{{ $t('loginPage.sms_hint', { site: siteName }) }}</p>
           <div class="lgp-role">
             <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
             <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
