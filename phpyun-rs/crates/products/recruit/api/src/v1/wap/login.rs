@@ -15,7 +15,9 @@ use axum::{
 use phpyun_core::dto::AuthTokenData;
 use phpyun_core::validators;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+};
 use phpyun_services::user_service::{self, LoginContext};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -29,6 +31,9 @@ pub fn routes() -> Router<AppState> {
         .route("/login/email", post(login_email))
         .route("/login/wx-qr", post(wx_qr))
         .route("/login/wx-status", post(wx_status))
+        .route("/login/app-qr", post(app_qr))
+        .route("/login/app-status", post(app_status))
+        .route("/login/app-confirm", post(app_confirm))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -342,4 +347,103 @@ pub async fn wx_status(
         usertype: r.usertype,
         access_token: r.access_token,
     }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct AppQrForm {
+    #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u8")]
+    #[validate(range(min = 1, max = 2))]
+    pub usertype: u8,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AppQrData {
+    pub login_id: String,
+    pub usertype: u8,
+    pub payload: String,
+    pub scan_url: String,
+    pub expire_seconds: u64,
+}
+
+/// Create a native APP scan-to-login ticket (jobseeker APP vs employer APP).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/app-qr",
+    tag = "auth",
+    request_body = AppQrForm,
+    responses((status = 200, description = "ok", body = AppQrData))
+)]
+pub async fn app_qr(
+    State(state): State<AppState>,
+    ValidatedJson(form): ValidatedJson<AppQrForm>,
+) -> AppResult<ApiResponse<AppQrData>> {
+    let r = phpyun_services::app_login_service::create_qr(&state, form.usertype).await?;
+    Ok(ApiResponse::data(AppQrData {
+        login_id: r.login_id,
+        usertype: r.usertype,
+        payload: r.payload,
+        scan_url: r.scan_url,
+        expire_seconds: r.expire_seconds,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct AppLoginIdForm {
+    #[validate(length(min = 8, max = 32))]
+    pub login_id: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AppStatusData {
+    pub status: String,
+    pub uid: Option<u64>,
+    pub usertype: Option<u8>,
+    pub access_token: Option<String>,
+}
+
+/// Poll native APP scan-to-login. Issues a web session when the matching APP confirms.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/app-status",
+    tag = "auth",
+    request_body = AppLoginIdForm,
+    responses((status = 200, description = "ok", body = AppStatusData))
+)]
+pub async fn app_status(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: HeaderMap,
+    ValidatedJson(form): ValidatedJson<AppLoginIdForm>,
+) -> AppResult<ApiResponse<AppStatusData>> {
+    let ua = ua_from(&headers);
+    let r = phpyun_services::app_login_service::poll_status(
+        &state,
+        &form.login_id,
+        LoginContext { ip: &ip, ua: &ua },
+    )
+    .await?;
+    Ok(ApiResponse::data(AppStatusData {
+        status: r.status,
+        uid: r.uid,
+        usertype: r.usertype,
+        access_token: r.access_token,
+    }))
+}
+
+/// APP (already logged in) confirms a PC ticket. Role must match the ticket.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/app-confirm",
+    tag = "auth",
+    security(("bearer" = [])),
+    request_body = AppLoginIdForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn app_confirm(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(form): ValidatedJson<AppLoginIdForm>,
+) -> AppResult<ApiResponse> {
+    phpyun_services::app_login_service::confirm(&state, &user, &form.login_id).await?;
+    Ok(ApiResponse::message("ok"))
 }

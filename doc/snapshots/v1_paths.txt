@@ -380,6 +380,9 @@
 /v1/wap/jobs/temporary-apply
 /v1/wap/legal
 /v1/wap/login
+/v1/wap/login/app-confirm
+/v1/wap/login/app-qr
+/v1/wap/login/app-status
 /v1/wap/login/email
 /v1/wap/login/email/code
 /v1/wap/login/sms

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ApiError } from '~/utils/envelope'
-import { mediaUrl } from '~/utils/site'
+import { qrSvgDataUri } from '~/utils/qr'
 
-const { siteName, logoPc, settings, me, wapQr } = useSiteChrome()
+const { siteName, logoPc, settings, me } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
 const smsLoginOn = computed(
@@ -30,12 +30,11 @@ const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
 let smsTimer: ReturnType<typeof setInterval> | null = null
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
 const wechatOauth = computed(() => oauth.value.find((o) => o.provider === 'wechat'))
-const appQr = computed(
-  () =>
-    wapQr.value ||
-    mediaUrl(settings.value.sy_androidu_qcode) ||
-    mediaUrl(settings.value.sy_iosu_qcode),
-)
+const appTicket = ref<{ login_id: string; usertype: number; payload: string; scan_url: string } | null>(null)
+const appQrSrc = ref('')
+const appQrHint = ref('')
+let appPoll: ReturnType<typeof setInterval> | null = null
+let appWatchReady = false
 
 function loginNext(): string {
   const q = String(useRoute().query.next || nextFrom.value || '')
@@ -261,10 +260,77 @@ async function submitSms() {
   }
 }
 
+function stopAppPoll() {
+  if (appPoll) {
+    clearInterval(appPoll)
+    appPoll = null
+  }
+}
+
+async function startAppQr() {
+  stopAppPoll()
+  appQrHint.value = ''
+  appTicket.value = null
+  appQrSrc.value = ''
+  err.value = ''
+  try {
+    const ticket = await $fetch<{
+      login_id: string
+      usertype: number
+      payload: string
+      scan_url: string
+    }>('/api/auth/login-app-qr', { method: 'POST', body: { usertype: role.value } })
+    appTicket.value = ticket
+    const content = siteUrl
+      ? `${siteUrl}/app-login?login_id=${ticket.login_id}&usertype=${ticket.usertype}`
+      : ticket.scan_url || ticket.payload
+    appQrSrc.value = qrSvgDataUri(content)
+    appPoll = setInterval(async () => {
+      if (!appTicket.value?.login_id) return
+      try {
+        const st = await $fetch<{ status: string; uid?: number; usertype?: number }>(
+          '/api/auth/login-app-status',
+          { method: 'POST', body: { login_id: appTicket.value.login_id } },
+        )
+        if (st.status === 'ok' && st.uid) {
+          stopAppPoll()
+          await afterLogin({ uid: st.uid, usertype: Number(st.usertype || role.value) })
+        } else if (st.status === 'mismatch') {
+          appQrHint.value = t('loginPage.qr_mismatch')
+        }
+      } catch (e: unknown) {
+        const f = authFail(e)
+        if (f.key === 'applogin_expired') {
+          stopAppPoll()
+          appQrHint.value = f.msg || t('loginPage.qr_expired')
+        }
+      }
+    }, 2000)
+  } catch (e: unknown) {
+    await handleAuthFail(e)
+  }
+}
+
+function openPanel(next: 'sms' | 'qr' | 'pass') {
+  panel.value = next
+  if (next === 'qr') startAppQr()
+  else stopAppPoll()
+}
+
+watch(role, () => {
+  if (!appWatchReady) return
+  if (panel.value === 'qr') startAppQr()
+})
+
 useSeoMeta({ title: t('common.login') })
+onMounted(() => {
+  appWatchReady = true
+})
 onUnmounted(() => {
   if (smsTimer) clearInterval(smsTimer)
+  stopAppPoll()
 })
+
 </script>
 
 <template>
@@ -310,16 +376,23 @@ onUnmounted(() => {
         </ul>
       </aside>
       <div class="lgp-main">
+        <div class="lgp-role">
+          <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
+          <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
+        </div>
         <div class="lgp-tabs">
-          <button type="button" :class="{ on: panel === 'qr' }" @click="panel = 'qr'">{{ $t('loginPage.tab_qr') }}</button>
-          <button type="button" :class="{ on: panel === 'sms' || panel === 'pass' }" @click="panel = smsLoginOn ? 'sms' : 'pass'">{{ $t('loginPage.tab_sms') }}</button>
+          <button type="button" :class="{ on: panel === 'qr' }" @click="openPanel('qr')">{{ $t('loginPage.tab_qr') }}</button>
+          <button type="button" :class="{ on: panel === 'sms' || panel === 'pass' }" @click="openPanel(smsLoginOn ? 'sms' : 'pass')">{{ $t('loginPage.tab_sms') }}</button>
         </div>
 
         <template v-if="panel === 'qr'">
-          <h1 class="lgp-h1">{{ $t('loginPage.qr_title', { site: siteName }) }}</h1>
+          <h1 class="lgp-h1">{{ role === 1 ? $t('loginPage.qr_seek_title') : $t('loginPage.qr_hire_title') }}</h1>
+          <p class="lgp-sub">{{ role === 1 ? $t('loginPage.qr_seek_hint') : $t('loginPage.qr_hire_hint') }}</p>
           <div class="lgp-qr">
-            <img v-if="appQr" :src="appQr" alt="" width="180" height="180" />
+            <img v-if="appQrSrc" :src="appQrSrc" alt="" width="180" height="180" />
             <p v-else class="muted">{{ $t('common_02409') }}</p>
+            <p v-if="appQrHint" class="lgp-err">{{ appQrHint }}</p>
+            <button v-if="appQrHint" type="button" class="lgp-send" @click="startAppQr">{{ $t('loginPage.qr_refresh') }}</button>
           </div>
           <p class="lgp-qr-links">
             <NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink>
@@ -331,10 +404,6 @@ onUnmounted(() => {
         <template v-else>
           <h1 class="lgp-h1">{{ $t('loginPage.sms_title') }}</h1>
           <p class="lgp-sub">{{ $t('loginPage.sms_hint') }}</p>
-          <div class="lgp-role">
-            <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
-            <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
-          </div>
 
           <form v-if="panel === 'sms'" @submit.prevent="submitSms">
             <div class="lgp-field">

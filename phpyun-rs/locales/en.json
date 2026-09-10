@@ -267,6 +267,7 @@
     "wechat_appsecret_missing": "WeChat AppSecret is not configured",
     "wechat_not_configured": "WeChat login is not configured",
     "wxlogin_expired": "WeChat QR code expired, please refresh",
+    "applogin_expired": "APP QR code expired, please refresh",
     "zph_not_found": "Job fair does not exist",
     "zph_unavailable": "Job fair unavailable",
     "comment_empty": "Comment cannot be empty",

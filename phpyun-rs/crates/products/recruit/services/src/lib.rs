@@ -59,6 +59,7 @@ pub mod admin_system_gap_service;
 pub mod admin_service;
 pub mod admin_tool_service;
 pub mod announcement_service;
+pub mod app_login_service;
 pub mod app_version_service;
 pub mod apply_service;
 pub mod article_service;
