@@ -163,7 +163,10 @@ pub async fn dispatch(
         ("ads", "delete") => ads_del(state, body).await,
         ("ads", "preview") => Ok(PhpOut::Data(ads_preview(state, body).await?)),
         ("ads", "check") => ads_check(state, body).await,
-        ("ads", "cache_ad") => Ok(PhpOut::Message("admin_01172")),
+        ("ads", "cache_ad") => {
+            ad_service::invalidate_all();
+            Ok(PhpOut::Message("admin_01172"))
+        }
         ("ads", "ctime") => ads_ctime(state, body).await,
         ("ads", "upsort") => ads_upsort(state, body).await,
         ("ad-class", "index") => Ok(PhpOut::Data(ad_class_index(state, body).await?)),

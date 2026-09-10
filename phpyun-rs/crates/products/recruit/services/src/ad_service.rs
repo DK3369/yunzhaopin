@@ -1,6 +1,8 @@
 //! Ad slots (aligned with PHPYun `ad.model.php`).
 //!
-//! Public endpoint returns the currently active ads for a `slot`; admin endpoint performs CRUD.
+//! `/v1/wap/ads` and `/v1/wap/initads` share one in-process cache. It is dropped
+//! by admin 清缓存, 广告页「更新缓存」(cache_ad), and ad write paths so the
+//! next public read hits the DB.
 
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{
@@ -10,7 +12,7 @@ use phpyun_models::ad::{entity::Ad, repo as ad_repo};
 use sqlx::MySqlPool;
 use std::collections::BTreeMap;
 
-const TTL_SECS: u64 = 60;
+const TTL_SECS: u64 = 300;
 
 static CACHE: std::sync::OnceLock<SimpleCache<String, BTreeMap<String, Vec<Ad>>>> =
     std::sync::OnceLock::new();

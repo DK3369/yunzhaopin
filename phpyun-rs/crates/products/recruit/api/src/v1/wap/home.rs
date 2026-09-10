@@ -3,7 +3,7 @@
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::fmt_date;
 use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
-use phpyun_services::home_service;
+use phpyun_services::{ad_service, home_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -298,12 +298,11 @@ pub async fn aggregate(
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<AggregateQuery>,
 ) -> AppResult<ApiResponse<AggregateData>> {
     let db = state.db.reader();
-    let now = phpyun_core::clock::now_ts();
     let slot = q.slot.unwrap_or_default();
     let slot_ref: Option<&str> = if slot.is_empty() { None } else { Some(&slot) };
     let ads_fut = async {
         match slot_ref {
-            Some(s) => phpyun_models::ad::repo::list_active(db, s, now, 10).await,
+            Some(s) => ad_service::list_active(&state, s, 10).await,
             None => Ok(vec![]),
         }
     };

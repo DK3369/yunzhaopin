@@ -551,7 +551,7 @@ fn cascader_nodes(nodes: &[(u64, u64, String)]) -> Vec<serde_json::Value> {
     rec(0, &by_parent)
 }
 
-/// Rotate public `cachecode` and drop in-process public caches (home / dict / CSS bust).
+/// Rotate public `cachecode` and drop in-process public caches (home / dict / ads / CSS bust).
 pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> AppResult<String> {
     user.require_admin()?;
     let prev = site_setting_service::get(state, "cachecode")
