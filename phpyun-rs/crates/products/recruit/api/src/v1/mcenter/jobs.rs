@@ -134,6 +134,32 @@ pub struct CreateJobForm {
     #[serde(default)]
     #[validate(length(max = 200))]
     pub edu_req: String,
+    /// 1 = company default / 2 = address book / 3 = hide public contact (WAP `is_hide`).
+    #[serde(default = "default_is_link")]
+    #[validate(range(min = 1, max = 3))]
+    pub is_link: i32,
+    /// 1 = 面议 → store minsalary/maxsalary = 0.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 1))]
+    pub salary_type: i32,
+    /// 0/3 any / 1 male / 2 female.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 3))]
+    pub sex_req: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
+    pub minage_req: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
+    pub maxage_req: i32,
+    /// 1 = copy this job's contact/geo onto every job of the company.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 1))]
+    pub is_tblink: i32,
+}
+
+fn default_is_link() -> i32 {
+    1
 }
 
 /// Publish job
@@ -183,10 +209,16 @@ pub async fn create(
             zp_minage: f.zp_minage,
             zp_maxage: f.zp_maxage,
             link_id: f.link_id,
+            is_link: f.is_link,
             is_message: f.is_message,
             is_email: f.is_email,
             exp_req: f.exp_req.as_str(),
             edu_req: f.edu_req.as_str(),
+            sex_req: f.sex_req,
+            minage_req: f.minage_req,
+            maxage_req: f.maxage_req,
+            salary_type: f.salary_type,
+            is_tblink: f.is_tblink,
         },
         None,
         &ip,
@@ -277,6 +309,18 @@ pub struct UpdateJobForm {
     pub exp_req: Option<String>,
     #[validate(length(max = 200))]
     pub edu_req: Option<String>,
+    #[validate(range(min = 1, max = 3))]
+    pub is_link: Option<i32>,
+    #[validate(range(min = 0, max = 1))]
+    pub salary_type: Option<i32>,
+    #[validate(range(min = 0, max = 3))]
+    pub sex_req: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
+    pub minage_req: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
+    pub maxage_req: Option<i32>,
+    #[validate(range(min = 0, max = 1))]
+    pub is_tblink: Option<i32>,
 }
 
 /// Update job (re-enters review after editing)
@@ -325,12 +369,17 @@ pub async fn update(
             is_graduate: f.is_graduate,
             zp_minage: f.zp_minage,
             zp_maxage: f.zp_maxage,
-            is_link: None,
+            is_link: f.is_link,
             link_id: f.link_id,
             is_message: f.is_message,
             is_email: f.is_email,
             exp_req: f.exp_req.as_deref(),
             edu_req: f.edu_req.as_deref(),
+            sex_req: f.sex_req,
+            minage_req: f.minage_req,
+            maxage_req: f.maxage_req,
+            salary_type: f.salary_type,
+            is_tblink: f.is_tblink,
         },
         &ip,
     )

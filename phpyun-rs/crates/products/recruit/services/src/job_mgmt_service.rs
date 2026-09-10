@@ -76,6 +76,45 @@ async fn resolve_job_link(
     })
 }
 
+fn overlay_hide(mut link: ResolvedLink, is_link: i32) -> ResolvedLink {
+    if is_link == 3 {
+        link.is_link = 3;
+    }
+    link
+}
+
+fn apply_salary(salary_type: i32, min: i32, max: i32) -> (i32, i32) {
+    if salary_type == 1 {
+        (0, 0)
+    } else {
+        (min, max)
+    }
+}
+
+async fn maybe_tblink(
+    state: &AppState,
+    uid: u64,
+    is_tblink: i32,
+    link: &ResolvedLink,
+) -> AppResult<()> {
+    if is_tblink != 1 {
+        return Ok(());
+    }
+    let _ = job_repo::sync_contact_by_uid(
+        state.db.pool(),
+        uid,
+        link.link_id,
+        link.is_link,
+        link.provinceid,
+        link.cityid,
+        link.three_cityid,
+        link.x.as_str(),
+        link.y.as_str(),
+    )
+    .await?;
+    Ok(())
+}
+
 // ==================== Create ====================
 
 pub struct CreateJobInput<'a> {
@@ -107,10 +146,16 @@ pub struct CreateJobInput<'a> {
     pub zp_minage: i32,
     pub zp_maxage: i32,
     pub link_id: i32,
+    pub is_link: i32,
     pub is_message: i32,
     pub is_email: i32,
     pub exp_req: &'a str,
     pub edu_req: &'a str,
+    pub sex_req: i32,
+    pub minage_req: i32,
+    pub maxage_req: i32,
+    pub salary_type: i32,
+    pub is_tblink: i32,
 }
 
 async fn setting_on(state: &AppState, key: &str) -> bool {
@@ -212,17 +257,21 @@ pub async fn create(
     } else {
         company_row.as_ref().map(|c| c.hy).unwrap_or(0)
     };
-    let link = resolve_job_link(
-        state,
-        user.uid,
-        input.link_id,
-        input.provinceid,
-        input.cityid,
-        input.three_cityid,
-        x.as_str(),
-        y.as_str(),
-    )
-    .await?;
+    let link = overlay_hide(
+        resolve_job_link(
+            state,
+            user.uid,
+            input.link_id,
+            input.provinceid,
+            input.cityid,
+            input.three_cityid,
+            x.as_str(),
+            y.as_str(),
+        )
+        .await?,
+        input.is_link,
+    );
+    let (minsalary, maxsalary) = apply_salary(input.salary_type, input.minsalary, input.maxsalary);
     let id = job_repo::create(
         state.db.pool(),
         job_repo::JobCreate {
@@ -235,8 +284,8 @@ pub async fn create(
             provinceid: link.provinceid,
             cityid: link.cityid,
             three_cityid: link.three_cityid,
-            minsalary: input.minsalary,
-            maxsalary: input.maxsalary,
+            minsalary,
+            maxsalary,
             job_type: input.job_type,
             number: input.number,
             exp: input.exp,
@@ -263,11 +312,15 @@ pub async fn create(
             is_email: store_is_email(input.is_email),
             exp_req: input.exp_req,
             edu_req: input.edu_req,
+            sex_req: input.sex_req,
+            minage_req: input.minage_req,
+            maxage_req: input.maxage_req,
             zp_num: input.number,
         },
         now,
     )
     .await?;
+    maybe_tblink(state, user.uid, input.is_tblink, &link).await?;
 
     let _ = audit::emit(
         state,
@@ -316,6 +369,11 @@ pub struct UpdateJobInput<'a> {
     pub is_email: Option<i32>,
     pub exp_req: Option<&'a str>,
     pub edu_req: Option<&'a str>,
+    pub sex_req: Option<i32>,
+    pub minage_req: Option<i32>,
+    pub maxage_req: Option<i32>,
+    pub salary_type: Option<i32>,
+    pub is_tblink: Option<i32>,
 }
 
 pub async fn update(
@@ -342,27 +400,42 @@ pub async fn update(
     let mut link_id = input.link_id;
     let mut coords: Option<(String, String)> = None;
     if let Some(lid) = input.link_id {
-        let link = resolve_job_link(
-            state,
-            user.uid,
-            lid,
-            input.provinceid.unwrap_or(0),
-            input.cityid.unwrap_or(0),
-            input.three_cityid.unwrap_or(0),
-            default_x.as_str(),
-            default_y.as_str(),
-        )
-        .await?;
+        let link = overlay_hide(
+            resolve_job_link(
+                state,
+                user.uid,
+                lid,
+                input.provinceid.unwrap_or(0),
+                input.cityid.unwrap_or(0),
+                input.three_cityid.unwrap_or(0),
+                default_x.as_str(),
+                default_y.as_str(),
+            )
+            .await?,
+            input.is_link.unwrap_or(0),
+        );
         provinceid = Some(link.provinceid);
         cityid = Some(link.cityid);
         three_cityid = Some(link.three_cityid);
         is_link = Some(link.is_link);
         link_id = Some(link.link_id);
         coords = Some((link.x, link.y));
+    } else if input.is_link == Some(3) {
+        is_link = Some(3);
     }
     let (x, y) = match &coords {
         Some((xs, ys)) => (Some(xs.as_str()), Some(ys.as_str())),
         None => (None, None),
+    };
+    let (minsalary, maxsalary) = if input.salary_type == Some(1) {
+        (Some(0), Some(0))
+    } else {
+        (input.minsalary, input.maxsalary)
+    };
+    let name = if setting_on(state, "joblock").await {
+        None
+    } else {
+        input.name
     };
     let zp_num = input.number;
     let affected = job_repo::update(
@@ -370,7 +443,7 @@ pub async fn update(
         id,
         user.uid,
         job_repo::JobUpdate {
-            name: input.name,
+            name,
             job1: input.job1,
             job1_son: input.job1_son,
             job_post: input.job_post,
@@ -378,8 +451,8 @@ pub async fn update(
             cityid,
             three_cityid,
 
-            minsalary: input.minsalary,
-            maxsalary: input.maxsalary,
+            minsalary,
+            maxsalary,
             job_type: input.job_type,
             number: input.number,
             exp: input.exp,
@@ -403,6 +476,9 @@ pub async fn update(
             is_email: input.is_email.map(store_is_email),
             exp_req: input.exp_req,
             edu_req: input.edu_req,
+            sex_req: input.sex_req,
+            minage_req: input.minage_req,
+            maxage_req: input.maxage_req,
             zp_num,
             x,
             y,
@@ -412,6 +488,24 @@ pub async fn update(
     .await?;
     if affected == 0 {
         return Err(ApiError::business("job_not_found"));
+    }
+    if input.is_tblink == Some(1) {
+        if let Some(job) = job_repo::find_by_id(state.db.reader(), id).await? {
+            if job.uid == user.uid {
+                let _ = job_repo::sync_contact_by_uid(
+                    state.db.pool(),
+                    user.uid,
+                    job.link_id,
+                    job.is_link,
+                    job.provinceid,
+                    job.cityid,
+                    job.three_cityid,
+                    job.x.as_deref().unwrap_or(""),
+                    job.y.as_deref().unwrap_or(""),
+                )
+                .await?;
+            }
+        }
     }
     let _ = audit::emit(
         state,

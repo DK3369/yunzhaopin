@@ -2,6 +2,7 @@
 import { dictReqLabel, formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 import { seoJoin } from '~/utils/seo'
 import { pushRecentJob } from '~/utils/recentViews'
+import { ApiError } from '~/utils/envelope'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -261,8 +262,41 @@ async function apply() {
     await api.post('/v1/mcenter/apply', { job_id: id })
     appliedLocal.value = true
     applyMsg.value = t('common.success')
+    await refreshContactAfterApply()
   } catch (e: unknown) {
     applyMsg.value = e instanceof Error ? e.message : t('common.no')
+    if (e instanceof ApiError) {
+      if (e.key === 'default_00002') {
+        await navigateTo('/user/privacy')
+        return
+      }
+      if (
+        e.key === 'common_00475' ||
+        e.key === 'common_01055' ||
+        e.key === 'common_00675' ||
+        e.key === 'common_01148' ||
+        e.key === 'common_06286' ||
+        e.key === 'common_00801' ||
+        e.key === 'common_06287'
+      ) {
+        await navigateTo('/user/resume')
+      }
+    }
+  }
+}
+async function refreshContactAfterApply() {
+  try {
+    const r = await api.get<{
+      linktel?: string
+      linkphone?: string
+      linkman?: string
+      revealed?: boolean
+    }>('/v1/wap/jobs/contact', { id, isgetprv: 0 })
+    if (r.revealed && (r.linktel || r.linkphone)) {
+      revealed.value = { linktel: r.linktel, linkphone: r.linkphone, linkman: r.linkman }
+    }
+  } catch {
+    /* keep current contact */
   }
 }
 async function shareJob() {

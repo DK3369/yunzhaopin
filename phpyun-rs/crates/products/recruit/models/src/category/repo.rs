@@ -887,3 +887,17 @@ pub async fn city_meta_by_ids(
     qb.push(")");
     qb.build_query_as().fetch_all(pool).await
 }
+
+/// PHP `userclass.sort` for apply-time exp/edu gates (`job.model.php::applyJob`).
+pub async fn userclass_sort(pool: &MySqlPool, id: i32) -> Result<Option<i32>, sqlx::Error> {
+    if id <= 0 {
+        return Ok(None);
+    }
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT COALESCE(sort, 0) FROM phpyun_userclass WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}

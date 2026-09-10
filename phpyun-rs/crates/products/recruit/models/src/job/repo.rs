@@ -109,7 +109,10 @@ const FIELDS: &str = "id, uid, name, com_name, \
     COALESCE(operatime, 0) AS operatime, \
     COALESCE(is_link, 1) AS is_link, COALESCE(link_id, 0) AS link_id, \
     COALESCE(is_message, 1) AS is_message, COALESCE(is_email, 1) AS is_email, \
-    COALESCE(exp_req, '') AS exp_req, COALESCE(edu_req, '') AS edu_req";
+    COALESCE(exp_req, '') AS exp_req, COALESCE(edu_req, '') AS edu_req, \
+    COALESCE(CAST(NULLIF(TRIM(sex_req), '') AS SIGNED), 0) AS sex_req, \
+    COALESCE(minage_req, 0) AS minage_req, \
+    COALESCE(maxage_req, 0) AS maxage_req";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_company_job WHERE id = ? LIMIT 1");
@@ -559,6 +562,9 @@ pub struct JobCreate<'a> {
     pub is_email: i32,
     pub exp_req: &'a str,
     pub edu_req: &'a str,
+    pub sex_req: i32,
+    pub minage_req: i32,
+    pub maxage_req: i32,
     pub zp_num: i32,
 }
 
@@ -573,9 +579,10 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
             description, welfare, hy, report, age, sex, marriage, lang, is_graduate,
             zp_minage, zp_maxage, zp_num,
             is_link, link_id, is_message, is_email, exp_req, edu_req,
+            sex_req, minage_req, maxage_req,
             state, status, r_status, rec, urgent,
             rec_time, sdate, edate, lastupdate, did)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                    0, 0, 1, 0, 0, 0, ?, ?, ?, ?)"#,
     )
     .bind(c.uid)
@@ -613,6 +620,9 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     .bind(c.is_email)
     .bind(c.exp_req)
     .bind(c.edu_req)
+    .bind(c.sex_req)
+    .bind(c.minage_req)
+    .bind(c.maxage_req)
     .bind(c.sdate)
     .bind(c.edate)
     .bind(now)
@@ -869,6 +879,9 @@ pub struct JobUpdate<'a> {
     pub is_email: Option<i32>,
     pub exp_req: Option<&'a str>,
     pub edu_req: Option<&'a str>,
+    pub sex_req: Option<i32>,
+    pub minage_req: Option<i32>,
+    pub maxage_req: Option<i32>,
     pub zp_num: Option<i32>,
     pub x: Option<&'a str>,
     pub y: Option<&'a str>,
@@ -918,6 +931,9 @@ pub async fn update(
             is_email    = COALESCE(?, is_email),
             exp_req     = COALESCE(?, exp_req),
             edu_req     = COALESCE(?, edu_req),
+            sex_req     = COALESCE(?, sex_req),
+            minage_req  = COALESCE(?, minage_req),
+            maxage_req  = COALESCE(?, maxage_req),
             x           = COALESCE(?, x),
             y           = COALESCE(?, y),
             state       = 0,
@@ -957,10 +973,43 @@ pub async fn update(
     .bind(u.is_email)
     .bind(u.exp_req)
     .bind(u.edu_req)
+    .bind(u.sex_req)
+    .bind(u.minage_req)
+    .bind(u.maxage_req)
     .bind(u.x)
     .bind(u.y)
     .bind(now)
     .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `addJobInfo` `is_tblink=1`: copy this job's contact/geo onto every job of the company.
+pub async fn sync_contact_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    link_id: i32,
+    is_link: i32,
+    provinceid: i32,
+    cityid: i32,
+    three_cityid: i32,
+    x: &str,
+    y: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_job SET link_id = ?, is_link = ?, \
+         provinceid = ?, cityid = ?, three_cityid = ?, x = ?, y = ? \
+         WHERE uid = ?",
+    )
+    .bind(link_id)
+    .bind(is_link)
+    .bind(provinceid)
+    .bind(cityid)
+    .bind(three_cityid)
+    .bind(x)
+    .bind(y)
     .bind(uid)
     .execute(pool)
     .await?;

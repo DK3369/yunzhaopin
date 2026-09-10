@@ -87,13 +87,14 @@ pub struct ApplyCreate<'a> {
     pub com_name: &'a str,
     pub eid: u64,
     pub now: i64,
+    pub is_browse: i32,
 }
 
 pub async fn create(pool: &MySqlPool, c: ApplyCreate<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"INSERT INTO phpyun_userid_job
            (uid, job_id, job_name, com_id, com_name, eid, datetime, is_browse, invited, invite_time, isdel, quxiao)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, 0, 9, 0)"#,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 9, 0)"#,
     )
     .bind(c.uid)
     .bind(c.job_id)
@@ -102,6 +103,7 @@ pub async fn create(pool: &MySqlPool, c: ApplyCreate<'_>) -> Result<u64, sqlx::E
     .bind(c.com_name)
     .bind(c.eid)
     .bind(c.now)
+    .bind(c.is_browse)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())

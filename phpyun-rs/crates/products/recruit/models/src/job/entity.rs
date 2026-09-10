@@ -142,7 +142,7 @@ pub struct Job {
     /// Last resume-process unix time (PHP `operatime`).
     #[sqlx(default)]
     pub operatime: i64,
-    /// 1 = company default contact / 2 = `company_job_link` (`link_id`).
+    /// 1 = company default / 2 = `company_job_link` (`link_id`) / 3 = hide public contact.
     #[sqlx(default)]
     pub is_link: i32,
     #[sqlx(default)]
@@ -159,4 +159,11 @@ pub struct Job {
     #[serde(default)]
     #[sqlx(default)]
     pub edu_req: String,
+    /// Apply-time gender filter stored as VARCHAR in PHP; 0/3 = any / 1 = male / 2 = female.
+    #[sqlx(default)]
+    pub sex_req: i32,
+    #[sqlx(default)]
+    pub minage_req: i32,
+    #[sqlx(default)]
+    pub maxage_req: i32,
 }

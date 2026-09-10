@@ -10,8 +10,11 @@
 //! check (sessions break across a multi-instance backend).
 
 use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_models::company_statis::repo as company_statis_repo;
 use phpyun_models::integral::repo as integral_repo;
+use phpyun_models::integral_transfer::repo as pay_repo;
 use phpyun_models::sign_in::{entity::UserSign, repo as sign_repo};
+use phpyun_models::site_setting::repo as setting_repo;
 
 const BASE_REWARD: u32 = 5;
 const STREAK_BONUS_DAYS: u32 = 5;
@@ -119,11 +122,22 @@ pub async fn sign(
         1
     };
 
-    // 2) Compute the reward
+    // 2) Reward from site config `integral_signin` (default 5); streak >= 5 doubles.
+    let base = match setting_repo::find(state.db.reader(), "integral_signin").await {
+        Ok(Some(row)) => {
+            let s = row.value.trim();
+            if s.is_empty() {
+                BASE_REWARD
+            } else {
+                s.parse::<u32>().unwrap_or(BASE_REWARD)
+            }
+        }
+        _ => BASE_REWARD,
+    };
     let reward = if signday >= STREAK_BONUS_DAYS {
-        BASE_REWARD * 2
+        base.saturating_mul(2)
     } else {
-        BASE_REWARD
+        base
     };
 
     // 3) INSERT IGNORE backed by the unique index
@@ -135,7 +149,30 @@ pub async fn sign(
     // 4) Update user_sign + add points
     sign_repo::upsert_user_sign(db, user.uid, signday, today, now).await?;
     sign_repo::insert_reg(db, user.uid, usertype, today, client_ip, now).await?;
-    integral_repo::add_balance(db, user.uid, i64::from(reward), now).await?;
+    if reward > 0 {
+        if usertype == 2 {
+            company_statis_repo::add_integral(db, user.uid, i64::from(reward)).await?;
+        } else {
+            integral_repo::add_balance(db, user.uid, i64::from(reward), now).await?;
+        }
+        let remark = if signday > 1 {
+            format!("wap_00128{signday}天")
+        } else {
+            "wap_00125".to_string()
+        };
+        let order_id = format!("sign{now}{}", user.uid);
+        pay_repo::php_insert_pay(
+            db,
+            &order_id,
+            &reward.to_string(),
+            now,
+            user.uid,
+            &remark,
+            pay_repo::LEDGER_KIND_INTEGRAL,
+            usertype,
+        )
+        .await?;
+    }
 
     // 5) Audit
     let _ = audit::emit(

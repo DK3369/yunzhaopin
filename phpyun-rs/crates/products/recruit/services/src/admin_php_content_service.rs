@@ -7099,6 +7099,7 @@ async fn company_job_apply(state: &AppState, body: &Value) -> AppResult<PhpOut> 
             com_name: job.com_name.as_deref().unwrap_or(""),
             eid,
             now: clock::now_ts(),
+            is_browse: 1,
         },
     )
     .await?;

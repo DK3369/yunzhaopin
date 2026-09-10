@@ -100,6 +100,19 @@ async function submitBank() {
 function canFillBank(o: { channel?: string; status?: number; status_n?: string }) {
   return o.channel === 'bank' && (o.status === 0 || o.status === 3 || o.status_n === 'awaiting_confirm')
 }
+function canCancel(o: { status?: number }) {
+  return o.status === 0
+}
+async function cancelOrder(o: { order_no?: string }) {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/vip/orders/cancel', { order_no: String(o.order_no || '') })
+    msg.value = t('common.success')
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 function fillBank(o: { order_no?: string; amount_yuan?: number }) {
   bankOrderNo.value = String(o.order_no || '')
   bankForm.bank_price = String(o.amount_yuan ?? '')
@@ -148,6 +161,7 @@ useSeoMeta({ title: t('ui.pay') })
         <h3>{{ o.order_no }}</h3>
         <p class="muted">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
         <button v-if="canFillBank(o)" type="button" @click="fillBank(o)">{{ $t('wap_01805') }}</button>
+        <button v-if="canCancel(o)" type="button" @click="cancelOrder(o)">{{ $t('common.cancel') }}</button>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>

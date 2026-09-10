@@ -4,7 +4,10 @@ import type { DictItem } from '~/utils/query'
 
 const api = useApi()
 const { t, locale } = useI18n()
+const { settings } = useSiteChrome()
 const editId = computed(() => Number(useRoute().query.id || 0))
+const showNegotiable = computed(() => String(settings.value.com_job_myswitch || '') === '1')
+const nameLocked = computed(() => String(settings.value.joblock || '') === '1' && !!editId.value)
 const form = reactive({
   name: '',
   job1: 0,
@@ -16,6 +19,7 @@ const form = reactive({
   salary: 0,
   minsalary: 0,
   maxsalary: 0,
+  salary_type: 0,
   type: 57,
   number: 1,
   exp: 0,
@@ -34,10 +38,15 @@ const form = reactive({
   zp_minage: 0,
   zp_maxage: 0,
   link_id: 0,
+  is_link: 1,
   is_message: 1,
   is_email: 1,
   exp_req: '',
   edu_req: '',
+  sex_req: 0,
+  minage_req: 0,
+  maxage_req: 0,
+  is_tblink: 0,
 })
 const sdateN = ref('')
 const welIds = ref<number[]>([])
@@ -137,6 +146,11 @@ if (editId.value) {
     form.is_email = Number(row.is_email || 1) === 3 ? 3 : 1
     form.exp_req = String(row.exp_req || '')
     form.edu_req = String(row.edu_req || '')
+    form.sex_req = Number(row.sex_req || 0)
+    form.minage_req = Number(row.minage_req || 0)
+    form.maxage_req = Number(row.maxage_req || 0)
+    form.is_link = Number(row.is_link || 1) === 3 ? 3 : 1
+    form.salary_type = form.minsalary === 0 && form.maxsalary === 0 ? 1 : 0
     if (form.sdate > 0) {
       const d = new Date(form.sdate * 1000)
       sdateN.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -183,7 +197,7 @@ useSeoMeta({ title: t('wap_00322') })
   <section>
     <h1>{{ $t('wap_00322') }}</h1>
     <form class="form" @submit.prevent="submit">
-      <input v-model="form.name" :placeholder="$t('wap_com_00288')" required />
+      <input v-model="form.name" :placeholder="$t('wap_com_00288')" required :disabled="nameLocked" />
       <select v-model.number="form.job1" required>
         <option :value="0">{{ $t('common.job') }}</option>
         <option v-for="c in jobRoots" :key="c.id" :value="c.id">{{ c.name }}</option>
@@ -201,8 +215,14 @@ useSeoMeta({ title: t('wap_00322') })
         v-model:city-id="form.cityid"
         v-model:district-id="form.three_cityid"
       />
-      <input v-model.number="form.minsalary" type="number" :placeholder="$t('ui.min_salary')" />
-      <input v-model.number="form.maxsalary" type="number" :placeholder="$t('ui.max_salary')" />
+      <label v-if="showNegotiable">
+        <input v-model="form.salary_type" type="checkbox" :true-value="1" :false-value="0" />
+        {{ $t('wap_com_00291') }}
+      </label>
+      <template v-if="form.salary_type !== 1">
+        <input v-model.number="form.minsalary" type="number" :placeholder="$t('ui.min_salary')" />
+        <input v-model.number="form.maxsalary" type="number" :placeholder="$t('ui.max_salary')" />
+      </template>
       <select v-model.number="form.type">
         <option v-for="tp in jobTypes || []" :key="tp.id" :value="tp.id">{{ tp.name }}</option>
       </select>
@@ -254,6 +274,13 @@ useSeoMeta({ title: t('wap_00322') })
       <p class="muted">{{ $t('member_com_00242') }}</p>
       <input v-model="form.exp_req" :placeholder="$t('wap_com_00305')" />
       <input v-model="form.edu_req" :placeholder="$t('wap_com_00301')" />
+      <select v-model.number="form.sex_req">
+        <option :value="0">{{ $t('common_01936') }}</option>
+        <option :value="1">{{ $t('common_02092') }}</option>
+        <option :value="2">{{ $t('common_02069') }}</option>
+      </select>
+      <input v-model.number="form.minage_req" type="number" min="0" max="99" :placeholder="$t('wap_com_00285')" />
+      <input v-model.number="form.maxage_req" type="number" min="0" max="99" :placeholder="$t('wap_com_00308')" />
       <p class="muted">{{ $t('member_user_00198') }}</p>
       <label>
         <input v-model.number="form.link_id" type="radio" :value="0" />
@@ -266,6 +293,14 @@ useSeoMeta({ title: t('wap_00322') })
       <p>
         <NuxtLink to="/com/addresses">{{ $t('wap_com_00304') }}</NuxtLink>
       </p>
+      <label>
+        <input v-model="form.is_link" type="checkbox" :true-value="3" :false-value="1" />
+        {{ $t('wap_com_00276') }}
+      </label>
+      <label>
+        <input v-model="form.is_tblink" type="checkbox" :true-value="1" :false-value="0" />
+        {{ $t('wap_00892') }}
+      </label>
       <label>
         <input v-model="form.is_message" type="checkbox" :true-value="1" :false-value="2" />
         {{ $t('wap_00893') }} · {{ $t('wap_com_00261') }}

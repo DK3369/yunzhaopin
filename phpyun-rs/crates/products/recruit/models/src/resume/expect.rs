@@ -98,6 +98,65 @@ pub async fn find_default_state_by_uid(
     .await
 }
 
+/// Columns PHP `applyJob` reads from `resume_expect` (not on the main [`Expect`] row).
+#[derive(Debug, Clone, FromRow)]
+pub struct ApplyExpect {
+    #[sqlx(try_from = "i32")]
+    pub id: u64,
+    pub uname: String,
+    pub integrity: i32,
+    pub state: i32,
+    pub status: i32,
+    pub exp: i32,
+    pub edu: i32,
+    pub sex: i32,
+    pub birthday: String,
+    pub city_classid: String,
+}
+
+const APPLY_FIELDS: &str = "\
+    id, COALESCE(uname,'') AS uname, COALESCE(integrity,0) AS integrity, \
+    COALESCE(state,0) AS state, COALESCE(status,0) AS status, \
+    COALESCE(exp,0) AS exp, COALESCE(edu,0) AS edu, COALESCE(sex,0) AS sex, \
+    COALESCE(birthday,'') AS birthday, COALESCE(city_classid,'') AS city_classid";
+
+/// PHP `applyJob`: `defaults=1`, else `resume.def_job`.
+pub async fn find_apply_expect(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<ApplyExpect>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {APPLY_FIELDS} FROM phpyun_resume_expect \
+         WHERE uid = ? AND COALESCE(defaults, 0) = 1 \
+         ORDER BY lastupdate DESC, id DESC LIMIT 1"
+    );
+    if let Some(row) = sqlx::query_as::<_, ApplyExpect>(&sql)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?
+    {
+        return Ok(Some(row));
+    }
+    let def: Option<(i32,)> = sqlx::query_as(
+        "SELECT COALESCE(def_job, 0) FROM phpyun_resume WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    let eid = def.map(|r| r.0).unwrap_or(0);
+    if eid <= 0 {
+        return Ok(None);
+    }
+    let sql = format!(
+        "SELECT {APPLY_FIELDS} FROM phpyun_resume_expect WHERE uid = ? AND id = ? LIMIT 1"
+    );
+    sqlx::query_as::<_, ApplyExpect>(&sql)
+        .bind(uid)
+        .bind(eid)
+        .fetch_optional(pool)
+        .await
+}
+
 pub async fn find_default_id_by_uid(
     pool: &MySqlPool,
     uid: u64,

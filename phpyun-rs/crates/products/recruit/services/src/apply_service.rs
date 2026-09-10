@@ -8,13 +8,63 @@ use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::apply::{entity::Apply, repo as apply_repo};
+use phpyun_models::category::repo as category_repo;
 use phpyun_models::job::repo as job_repo;
+use phpyun_models::resume::expect as expect_repo;
+use phpyun_models::site_setting::repo as setting_repo;
 
 // ==================== Jobseeker submission ====================
 
 pub struct ApplyResult {
     pub id: u64,
     pub job_id: u64,
+}
+
+fn parse_req_id(raw: &str) -> i32 {
+    raw.trim().parse().unwrap_or(0)
+}
+
+fn cfg_i32(map: &std::collections::HashMap<String, String>, key: &str) -> i32 {
+    map.get(key)
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(0)
+}
+
+fn php_year_age(birthday: &str) -> i32 {
+    let by: i32 = birthday
+        .trim()
+        .get(..4)
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(0);
+    if by <= 0 {
+        return 0;
+    }
+    i32::from(clock::now_year()) - by
+}
+
+async fn sort_below(
+    pool: &sqlx::MySqlPool,
+    have_id: i32,
+    need_id: i32,
+) -> AppResult<bool> {
+    let need = category_repo::userclass_sort(pool, need_id).await?;
+    let Some(need_sort) = need else {
+        return Ok(false);
+    };
+    let have = category_repo::userclass_sort(pool, have_id).await?;
+    Ok(match have {
+        Some(h) => h < need_sort,
+        None => true,
+    })
+}
+
+fn gate_or_mark(strict: bool, key: &'static str, is_browse: &mut i32) -> AppResult<()> {
+    if strict {
+        Err(ApiError::business(key))
+    } else {
+        *is_browse = 4;
+        Ok(())
+    }
 }
 
 pub async fn apply_to_job(
@@ -52,7 +102,65 @@ pub async fn apply_to_job(
         return Err(ApiError::business("apply_duplicate"));
     }
 
-    // 4. Persist (PHPYun's eid equals the jobseeker uid, denoting the default resume)
+    let expect = expect_repo::find_apply_expect(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("common_00475"))?;
+    if expect.uname.trim().is_empty() || expect.edu == 0 || expect.exp == 0 {
+        return Err(ApiError::business("common_01055"));
+    }
+    let city = expect.city_classid.trim();
+    if city.is_empty() || city == "0" {
+        return Err(ApiError::business("common_00675"));
+    }
+
+    let cfg = setting_repo::find_many(
+        state.db.reader(),
+        &["user_sqintegrity", "sy_shresume_applyjob", "sqjob_req"],
+    )
+    .await
+    .unwrap_or_default();
+    let need_integrity = cfg_i32(&cfg, "user_sqintegrity");
+    if need_integrity > 0 && expect.integrity < need_integrity {
+        return Err(ApiError::business("common_01148"));
+    }
+    let sh_ok = cfg.get("sy_shresume_applyjob").map(|s| s.trim() == "1").unwrap_or(false);
+    match expect.state {
+        0 if !sh_ok => return Err(ApiError::business("common_06286")),
+        2 => return Err(ApiError::business("common_00801")),
+        3 => return Err(ApiError::business("common_06287")),
+        _ => {}
+    }
+    if expect.status == 2 {
+        return Err(ApiError::business("default_00002"));
+    }
+
+    let strict = cfg.get("sqjob_req").map(|s| s.trim() == "1").unwrap_or(false);
+    let pool = state.db.reader();
+    let mut is_browse = 1i32;
+    let exp_req = parse_req_id(&job.exp_req);
+    if exp_req > 0 && sort_below(pool, expect.exp, exp_req).await? {
+        gate_or_mark(strict, "common_00708", &mut is_browse)?;
+    }
+    let edu_req = parse_req_id(&job.edu_req);
+    if edu_req > 0 && sort_below(pool, expect.edu, edu_req).await? {
+        gate_or_mark(strict, "common_00883", &mut is_browse)?;
+    }
+    if job.sex_req > 0
+        && expect.sex != job.sex_req
+        && expect.sex != 3
+        && job.sex_req != 3
+    {
+        gate_or_mark(strict, "common_00885", &mut is_browse)?;
+    }
+    if job.minage_req > 0 || job.maxage_req > 0 {
+        let age = php_year_age(&expect.birthday);
+        if (job.minage_req > 0 && age < job.minage_req)
+            || (job.maxage_req > 0 && age > job.maxage_req)
+        {
+            gate_or_mark(strict, "common_00884", &mut is_browse)?;
+        }
+    }
+
     let com_name = job.com_name.clone().unwrap_or_default();
     let id = apply_repo::create(
         state.db.pool(),
@@ -62,8 +170,9 @@ pub async fn apply_to_job(
             job_name: &job.name,
             com_id: job.uid,
             com_name: &com_name,
-            eid: user.uid,
+            eid: expect.id,
             now: clock::now_ts(),
+            is_browse,
         },
     )
     .await?;
