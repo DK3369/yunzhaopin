@@ -19,7 +19,7 @@ type IndexTpl = { id?: number; pic?: string; height?: number; se?: number }
 const api = useApi()
 const route = useRoute()
 const { t, te, locale } = useI18n()
-const { siteName, me, h5Nav, settings, refreshMe } = useSiteChrome()
+const { siteName, me, h5Nav, settings } = useSiteChrome()
 
 type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
 const searchKind = ref<SearchKind>('job')
@@ -293,24 +293,6 @@ function adHref(ad: Banner) {
   return ad.link || undefined
 }
 
-const loginUser = ref('')
-const loginPass = ref('')
-const loginErr = ref('')
-async function homeLogin() {
-  loginErr.value = ''
-  try {
-    const profile = await $fetch<{ uid: number; usertype: number }>('/api/auth/login', {
-      method: 'POST',
-      body: { username: loginUser.value, password: loginPass.value },
-    })
-    await refreshMe()
-    await navigateTo(profile.usertype === 2 ? '/com' : '/')
-  } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    loginErr.value = ex.data?.statusMessage || ex.statusMessage || t('ui.login_failed')
-  }
-}
-
 onMounted(() => {
   document.addEventListener('click', closeSearchMenu)
 })
@@ -447,32 +429,6 @@ useHead({
           </div>
 
           <div class="fastloginbox">
-            <div class="hp_login hp_login_panel">
-              <template v-if="me">
-                <div class="hp_login_tit">
-                  <span class="yun_Indexlogin_tit_s">{{ $t('common_02492') }}</span>
-                </div>
-                <p style="padding: 20px 10px 8px">{{ me.username }}</p>
-                <NuxtLink :to="me.usertype === 2 ? '/com' : '/user'" class="hp_login_submit" style="display: block; text-align: center; text-decoration: none">{{ $t('default_00307') }}</NuxtLink>
-              </template>
-              <form v-else @submit.prevent="homeLogin">
-                <div class="hp_login_tit">
-                  <span class="yun_Indexlogin_tit_s">{{ $t('wap_00555') }}</span>
-                </div>
-                <div class="hp_login_hy">
-                  <input v-model="loginUser" class="hp_login_hy_but" :placeholder="$t('admin_user_00140')" autocomplete="username" />
-                </div>
-                <div class="hp_login_hy">
-                  <input v-model="loginPass" class="hp_login_hy_but" type="password" :placeholder="$t('wap_user_00371')" autocomplete="current-password" />
-                </div>
-                <button class="hp_login_submit" type="submit">{{ $t('common.login') }}</button>
-                <p v-if="loginErr" class="muted" style="padding: 6px 4px 0">{{ loginErr }}</p>
-                <div style="padding: 8px 4px; font-size: 12px">
-                  <NuxtLink to="/register">{{ $t('ajax_00016') }}</NuxtLink>
-                  <NuxtLink to="/forgetpw" style="float: right">{{ $t('wap_00680') }}</NuxtLink>
-                </div>
-              </form>
-            </div>
             <div class="new_gg fl">
               <div class="new_gg_tit">
                 {{ $t('common.site_notice') }}
