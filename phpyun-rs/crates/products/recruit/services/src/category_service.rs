@@ -27,7 +27,7 @@ fn children_cache() -> &'static SimpleCache<(String, u64), Vec<Category>> {
     CHILDREN_CACHE.get_or_init(|| SimpleCache::new(256, std::time::Duration::from_secs(TTL_SECS)))
 }
 
-fn invalidate_all() {
+pub fn invalidate_all() {
     list_cache().invalidate_all();
     children_cache().invalidate_all();
 }

@@ -1,5 +1,17 @@
 //! Admin dashboard aggregation: pending counts for each review queue plus the last 24h of registrations/applications/postings overview.
 
+use crate::category_service;
+use crate::country_service;
+use crate::data_show_service;
+use crate::description_service;
+use crate::dict_service;
+use crate::friend_link_service;
+use crate::home_service;
+use crate::hot_search_service;
+use crate::qna_service;
+use crate::redeem_service;
+use crate::region_service;
+use crate::site_setting_service;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::admin_msg::repo::AdminMsgNum;
@@ -536,4 +548,42 @@ fn cascader_nodes(nodes: &[(u64, u64, String)]) -> Vec<serde_json::Value> {
             .collect()
     }
     rec(0, &by_parent)
+}
+
+/// Rotate public `cachecode` and drop in-process public caches (home / dict / CSS bust).
+pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> AppResult<String> {
+    user.require_admin()?;
+    let prev = site_setting_service::get(state, "cachecode")
+        .await?
+        .map(|s| s.value)
+        .unwrap_or_default();
+    let tick = clock::now_ts().unsigned_abs();
+    let mut n = 1000u64 + (tick % 9000);
+    if n.to_string() == prev {
+        n = 1000u64 + ((n - 1000 + 1) % 9000);
+    }
+    let code = n.to_string();
+    site_setting_service::admin_upsert(
+        state,
+        user,
+        site_setting_service::UpsertInput {
+            key: "cachecode",
+            value: &code,
+            description: "",
+            is_public: true,
+        },
+    )
+    .await?;
+    dict_service::reload(state).await?;
+    region_service::reload(state).await?;
+    country_service::invalidate().await;
+    category_service::invalidate_all();
+    home_service::invalidate_all().await;
+    friend_link_service::invalidate_all().await;
+    hot_search_service::invalidate_all().await;
+    data_show_service::invalidate_all().await;
+    description_service::invalidate_classes_cache().await;
+    redeem_service::invalidate_classes_cache().await;
+    qna_service::invalidate_categories_cache().await;
+    Ok(code)
 }

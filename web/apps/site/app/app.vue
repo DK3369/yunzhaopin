@@ -37,6 +37,10 @@ const siteStyle = computed(() => {
   if (!/^[a-zA-Z0-9_]{1,64}$/.test(s)) return ''
   return s
 })
+const cacheVer = computed(() => {
+  const raw = String(settings.value.cachecode || '0').replace(/[^0-9a-zA-Z_-]/g, '')
+  return raw || '0'
+})
 
 useHead({
   htmlAttrs: {
@@ -53,14 +57,24 @@ useHead({
   },
   link: () => [
     { rel: 'canonical', href: `${siteUrl}${route.path}` },
+    {
+      rel: 'stylesheet',
+      href: `/legacy/pc.css?v=${cacheVer.value}`,
+      media: 'screen and (min-width: 1200px)',
+    },
+    {
+      rel: 'stylesheet',
+      href: `/legacy/h5.css?v=${cacheVer.value}`,
+      media: 'screen and (max-width: 1199px)',
+    },
     ...(siteStyle.value
-      ? [{ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css` }]
+      ? [{ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css?v=${cacheVer.value}` }]
       : []),
     ...(route.path.startsWith('/user') || route.path.startsWith('/com')
       ? [
           {
             rel: 'stylesheet',
-            href: '/legacy/h5/css/member/memberwap.css',
+            href: `/legacy/h5/css/member/memberwap.css?v=${cacheVer.value}`,
             media: 'screen and (max-width: 1199px)',
           },
         ]

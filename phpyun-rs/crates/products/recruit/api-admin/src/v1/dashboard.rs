@@ -261,10 +261,11 @@ pub async fn chart(
 
 #[utoipa::path(post, path = "/v1/admin/cache/clear", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn cache_clear(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiResponse> {
-    user.require_admin()?;
-    Ok(ApiResponse::message("ok"))
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let code = admin_dashboard_service::clear_site_caches(&state, &user).await?;
+    Ok(ApiResponse::data(serde_json::json!({ "cachecode": code })))
 }
 
 /// PHP `common/cache` + `getCacheData` (job/city cascader + search_list).

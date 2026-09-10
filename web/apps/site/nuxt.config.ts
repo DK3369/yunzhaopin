@@ -8,6 +8,9 @@ export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   compatibilityDate: '2026-08-25',
   vite: {
+    build: {
+      cssCodeSplit: false,
+    },
     server: {
       allowedHosts: true,
     },
@@ -44,6 +47,7 @@ export default defineNuxtConfig({
     '/user/**': { ssr: false },
     '/com/**': { ssr: false },
     '/favicon.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
   app: {
     head: {
@@ -53,29 +57,7 @@ export default defineNuxtConfig({
           content: 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no',
         },
       ],
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/index.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/style.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/css.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/yun_seach.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/comapply.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/login.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/news.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/job.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/class.public.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/yun_job_fairs.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/part.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/map.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/evaluate.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/pc/style/integral.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/member/user/m_css.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/member/com/m_style.css', media: 'screen and (min-width: 1200px)' },
-        { rel: 'stylesheet', href: '/legacy/h5/css/base.css', media: 'screen and (max-width: 1199px)' },
-        { rel: 'stylesheet', href: '/legacy/h5/css/yunwap.css', media: 'screen and (max-width: 1199px)' },
-        { rel: 'stylesheet', href: '/legacy/h5/css/css.css', media: 'screen and (max-width: 1199px)' },
-        { rel: 'stylesheet', href: '/legacy/h5/css/job.css', media: 'screen and (max-width: 1199px)' },
-      ],
+      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
   },
   nitro: {

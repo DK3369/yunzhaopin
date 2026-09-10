@@ -64,6 +64,7 @@ use phpyun_models::zph::repo as zph_repo;
 use serde_json::{json, Value};
 
 use crate::admin_cms_service;
+use crate::admin_dashboard_service;
 use crate::admin_longtail_service;
 use crate::admin_report_service;
 use crate::description_service;
@@ -16277,10 +16278,7 @@ async fn gen_cache_run(
     user: &AuthenticatedUser,
     _body: &Value,
 ) -> AppResult<PhpOut> {
-    let code = format!("{}", 1000 + (clock::now_ts() % 9000));
-    upsert_cfg(state, user, "cachecode", &code).await?;
-    dict_service::reload(state).await?;
-    home_service::invalidate_all().await;
+    admin_dashboard_service::clear_site_caches(state, user).await?;
     Ok(PhpOut::Message("admin_system_00064"))
 }
 

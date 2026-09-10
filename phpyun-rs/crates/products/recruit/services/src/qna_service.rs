@@ -286,6 +286,12 @@ fn qclasses_cache() -> &'static phpyun_core::cache::SimpleCache<(), Vec<QClass>>
         .get_or_init(|| phpyun_core::cache::SimpleCache::new(1, std::time::Duration::from_secs(60)))
 }
 
+pub async fn invalidate_categories_cache() {
+    if let Some(c) = QCLASSES_CACHE.get() {
+        c.invalidate(&()).await;
+    }
+}
+
 pub async fn list_categories(state: &AppState) -> AppResult<std::sync::Arc<Vec<QClass>>> {
     let cache = qclasses_cache();
     let db = state.db.reader().clone();

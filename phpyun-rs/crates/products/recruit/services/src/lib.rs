@@ -28,6 +28,10 @@
 //! mcenter_service        ──> user_service             (member-center user lookups)
 //! contact_cert_service   ──> sms_service              (verification SMS)
 //! search_service         ──> hot_search_service       (record hot keywords)
+//! admin_dashboard_service ──> site_setting / dict / region / country / category /
+//!                            home / friend_link / hot_search / data_show /
+//!                            description / redeem / qna  (clear_site_caches)
+//! admin_php_content_service ──> admin_dashboard_service  (gen_cache bust)
 //! payment_notify_service ──> vip_service, once_service (gateway settle)
 //! ```
 //!

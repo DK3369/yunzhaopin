@@ -64,15 +64,25 @@ pub async fn upsert(
     _is_public: bool,
     _now: i64,
 ) -> Result<(), sqlx::Error> {
-    // PHPYun table has no description/is_public/updated_at columns — ignored
-    sqlx::query(
-        "INSERT INTO phpyun_admin_config (name, config) VALUES (?, ?) \
-         ON DUPLICATE KEY UPDATE config = VALUES(config)",
-    )
-    .bind(key)
-    .bind(value)
-    .execute(pool)
-    .await?;
+    // Table has KEY(name) but no UNIQUE/PK, so ON DUPLICATE KEY never fires and
+    // would keep inserting extra rows (cachecode already had 3 copies).
+    let exists: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_admin_config WHERE name = ? LIMIT 1")
+        .bind(key)
+        .fetch_optional(pool)
+        .await?;
+    if exists.is_some() {
+        sqlx::query("UPDATE phpyun_admin_config SET config = ? WHERE name = ?")
+            .bind(value)
+            .bind(key)
+            .execute(pool)
+            .await?;
+    } else {
+        sqlx::query("INSERT INTO phpyun_admin_config (name, config) VALUES (?, ?)")
+            .bind(key)
+            .bind(value)
+            .execute(pool)
+            .await?;
+    }
     Ok(())
 }
 

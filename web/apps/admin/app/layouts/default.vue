@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { lc, persistLocale, translateMenuText } from '~/utils/phpLc'
 import { httpPost } from '~/utils/httpPost'
 
@@ -210,10 +210,31 @@ async function logout() {
   await navigateTo('/login')
 }
 async function clearCache() {
-  const res = await httpPost('m=index&c=del_cache', {})
-  const body = res.data as { error?: number }
-  if (body.error) ElMessage.error(lc('admin_index_00051'))
-  else ElMessage.success(lc('admin_index_00052'))
+  try {
+    await ElMessageBox.confirm(
+      locale.value === 'en' ? 'Clear the cache?' : '确定清除缓存？',
+      lc('common_01520', null, '提示'),
+      {
+        type: 'warning',
+        confirmButtonText: lc('common_02016', null, '确定'),
+        cancelButtonText: lc('wap_js_00080', null, '取消'),
+      },
+    )
+  } catch {
+    return
+  }
+  try {
+    const res = await httpPost('m=index&c=del_cache', {})
+    const body = res.data as { error?: number; msg?: string }
+    if (Number(body.error) > 0) {
+      ElMessage.error(body.msg || lc('admin_index_00051', null, '清除缓存失败'))
+      return
+    }
+    ElMessage.success(lc('admin_index_00052', null, '清除缓存成功'))
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : ''
+    ElMessage.error(msg || lc('admin_index_00051', null, '清除缓存失败'))
+  }
 }
 function openPage(url: string) {
   window.open(url || '/', '_blank')
