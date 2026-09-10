@@ -24,7 +24,7 @@ use validator::Validate;
 use super::countries::{to_view as country_to_view, CountryView};
 
 pub const GET_ALLOWED_PATHS: &[&str] = &[
-    "/v1/wap/dict/bundle",
+    "/v1/wap/initjobs",
     "/v1/wap/dict/cities",
     "/v1/wap/dict/cities/by-province",
     "/v1/wap/dict/industries",
@@ -52,7 +52,7 @@ pub fn routes() -> Router<AppState> {
             "/dict/cities/by-province",
             get(cities_of_province).post(cities_of_province),
         );
-    r.route("/dict/bundle", get(bundle).post(bundle))
+    r.route("/initjobs", get(initjobs).post(initjobs))
         .route("/dict/industries", get(industries).post(industries))
         .route(
             "/dict/job-categories",
@@ -132,7 +132,7 @@ fn named_or_static(rows: &[(i32, String)], fallback: &[DictEntry]) -> Vec<DictIt
 /// Combined public dictionaries (the 10 lists PC/H5 used to fetch one-by-one).
 /// Individual `/v1/wap/dict/*` and `/v1/wap/countries` routes stay unchanged.
 #[derive(Debug, Serialize, ToSchema)]
-pub struct DictBundle {
+pub struct InitJobs {
     pub countries: Vec<CountryView>,
     pub educations: Vec<DictItem>,
     pub educations_user: Vec<DictItem>,
@@ -151,11 +151,11 @@ pub struct DictBundle {
 
 #[utoipa::path(
     post,
-    path = "/v1/wap/dict/bundle",
+    path = "/v1/wap/initjobs",
     tag = "wap",
-    responses((status = 200, description = "ok", body = DictBundle))
+    responses((status = 200, description = "ok", body = InitJobs))
 )]
-pub async fn bundle(State(state): State<AppState>) -> AppResult<ApiResponse<DictBundle>> {
+pub async fn initjobs(State(state): State<AppState>) -> AppResult<ApiResponse<InitJobs>> {
     let lang = current_lang();
     let lists = dict_service::public_lists(&state).await?;
     let countries = country_service::list_all(&state)
@@ -164,7 +164,7 @@ pub async fn bundle(State(state): State<AppState>) -> AppResult<ApiResponse<Dict
         .map(|c| country_to_view(c, lang))
         .collect();
     let job_types = render(JOB_TYPES, lang);
-    Ok(ApiResponse::data(DictBundle {
+    Ok(ApiResponse::data(InitJobs {
         countries,
         educations: named_or_static(&lists.educations, EDUCATIONS),
         educations_user: named_or_static(&lists.educations_user, EDUCATIONS),

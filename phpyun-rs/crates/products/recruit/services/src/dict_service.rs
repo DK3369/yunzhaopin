@@ -419,7 +419,7 @@ impl LocalizedDicts {
     }
 }
 
-/// Public dropdown lists for `/v1/wap/dict/bundle`. Built from the in-memory
+/// Public dropdown lists for `/v1/wap/initjobs`. Built from the in-memory
 /// `Dicts` snapshot (no extra DB read). Cached per request language and dropped
 /// whenever `Dicts` is swapped (admin edit / pubsub / background refresh).
 #[derive(Clone)]

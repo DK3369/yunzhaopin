@@ -46,7 +46,7 @@ const { data, error } = await useAsyncData('data-show-board', async () => {
         experiences: DictItem[]
         company_natures: DictItem[]
         company_sizes: DictItem[]
-      }>('/v1/wap/dict/bundle').catch(() => ({
+      }>('/v1/wap/initjobs').catch(() => ({
         educations_user: [] as DictItem[],
         experiences: [] as DictItem[],
         company_natures: [] as DictItem[],

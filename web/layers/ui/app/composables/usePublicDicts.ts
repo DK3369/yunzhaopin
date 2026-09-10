@@ -51,12 +51,12 @@ export function emptyPublicDictBundle(): PublicDictBundle {
   }
 }
 
-/** Shared PC/H5 fetch of `/v1/wap/dict/bundle`. Same key = one request per locale. */
+/** Shared PC/H5 fetch of `/v1/wap/initjobs`. Same key = one request per locale. */
 export function usePublicDicts() {
   const api = useApi()
   const { locale } = useI18n()
   return useAsyncData(
-    () => `wap-dict-bundle-${locale.value}`,
-    () => api.get<PublicDictBundle>('/v1/wap/dict/bundle').catch(() => emptyPublicDictBundle()),
+    () => `wap-initjobs-${locale.value}`,
+    () => api.get<PublicDictBundle>('/v1/wap/initjobs').catch(() => emptyPublicDictBundle()),
   )
 }

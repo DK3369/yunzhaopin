@@ -52,7 +52,7 @@ cargo run -p phpyun-rs
 ```
 
 
-<!-- 合并包：https://job1.ov6.com/api/proxy/v1/wap/dict/bundle?lang=zh
+<!-- 合并包：https://job1.ov6.com/api/proxy/v1/wap/initjobs?lang=zh
 原 10 条仍可用：
 https://job1.ov6.com/api/proxy/v1/wap/countries?lang=zh
 https://job1.ov6.com/api/proxy/v1/wap/dict/educations?lang=zh 

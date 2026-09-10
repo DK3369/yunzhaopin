@@ -10,7 +10,7 @@ function asId(v: unknown): number {
   return Number.isFinite(n) && n > 0 ? n : 0
 }
 
-/** Countries from `/v1/wap/dict/bundle`, cities from `/v1/wap/regions` — not city_class.
+/** Countries from `/v1/wap/initjobs`, cities from `/v1/wap/regions` — not city_class.
  *  All `useAsyncData` must be registered before any `await` (Nuxt E1001).
  */
 export async function useRegionCascade(opts: {

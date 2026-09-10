@@ -330,7 +330,6 @@
 /v1/wap/descriptions/by-name
 /v1/wap/descriptions/classes
 /v1/wap/descriptions/get
-/v1/wap/dict/bundle
 /v1/wap/dict/cities
 /v1/wap/dict/cities/by-province
 /v1/wap/dict/company-natures
@@ -365,6 +364,7 @@
 /v1/wap/hr-docs/classes
 /v1/wap/hr-docs/detail
 /v1/wap/hr-docs/download
+/v1/wap/initjobs
 /v1/wap/integral/items
 /v1/wap/integral/items/detail
 /v1/wap/jobs
