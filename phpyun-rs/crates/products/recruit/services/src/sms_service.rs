@@ -4,11 +4,12 @@
 use phpyun_core::metrics::auth_event;
 use phpyun_core::sms::SmsTemplate;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{rate_limit, AppResult, AppState};
+use phpyun_core::{rate_limit, ApiError, AppResult, AppState};
+use phpyun_models::user::repo as user_repo;
 use std::time::Duration;
 
 /// SMS scene — maps to a VerifyKind + template.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SmsScene {
     Register,
     Login,
@@ -61,6 +62,13 @@ impl SmsScene {
 }
 
 pub async fn send_sms_code(state: &AppState, mobile: &str, scene: SmsScene) -> AppResult<()> {
+    // PHP `wap/login::sendmsg_action`: `sy_reg_type == 2` and unknown mobile → register first.
+    if scene == SmsScene::Login && crate::site_gate_service::setting_i32(state, "sy_reg_type").await == 2 {
+        if !user_repo::exists_mobile(state.db.reader(), mobile).await? {
+            return Err(ApiError::business("need_register"));
+        }
+    }
+
     // 1. Rate limit (1 per minute + 5 per hour)
     rate_limit::check_sms_rate(&state.redis, mobile).await?;
 

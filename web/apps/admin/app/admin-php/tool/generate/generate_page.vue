@@ -8,6 +8,12 @@
                     type="success"
                     :description="lc('admin_html_00001')" :closable="false">
                 </el-alert>
+                <el-alert
+                    style="margin-top: 8px;"
+                    :title="lc('admin_ssr_no_static')"
+                    type="warning"
+                    :closable="false">
+                </el-alert>
             </template>
         </div>
         <div class="tool_boxall">

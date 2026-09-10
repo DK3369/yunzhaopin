@@ -74,6 +74,7 @@ pub mod usertype_change;
 pub mod views;
 pub mod vip;
 pub mod warnings;
+pub mod wechat;
 pub mod yqms;
 pub mod zph;
 
@@ -158,4 +159,5 @@ pub fn router() -> Router<AppState> {
         .merge(resume_tpl::routes())
         .merge(username::routes())
         .merge(usertype_change::routes())
+        .merge(wechat::routes())
 }

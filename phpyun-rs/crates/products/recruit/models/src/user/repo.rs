@@ -1177,3 +1177,50 @@ pub async fn update_lock_info_only(
         .await?;
     Ok(res.rows_affected())
 }
+
+/// PHP `isgzh_action` reads `member.subscribe` + `wxid`.
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct WxSubscribeRow {
+    pub wxid: String,
+    pub subscribe: i32,
+}
+
+pub async fn find_wx_subscribe(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<WxSubscribeRow>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT COALESCE(wxid,'') AS wxid, CAST(COALESCE(subscribe,0) AS SIGNED) AS subscribe \
+         FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn set_subscribe(pool: &MySqlPool, uid: u64, subscribe: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET subscribe = ? WHERE uid = ?")
+        .bind(subscribe)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `weixin::getWxQrcode` for `weixin_gzhid_{uid}` scanned today (`status=2`).
+pub async fn latest_gzh_scan_wxid(
+    pool: &MySqlPool,
+    login_id: &str,
+    since_ts: i64,
+) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(wxid,'') FROM phpyun_wxqrcode \
+         WHERE wxloginid = ? AND status = 2 AND `time` > ? \
+         ORDER BY id DESC LIMIT 1",
+    )
+    .bind(login_id)
+    .bind(since_ts)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).filter(|s| !s.is_empty()))
+}

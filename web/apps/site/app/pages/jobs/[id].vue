@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { dictReqLabel, formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 import { seoJoin } from '~/utils/seo'
+import { pushRecentJob } from '~/utils/recentViews'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -114,7 +115,15 @@ const cityLabel = computed(() => {
 const hyLabel = computed(() => String(dict.value.hy_n || company.value.hy_n || job.value.job_hy || job.value.hy_n || ''))
 const munLabel = computed(() => String(dict.value.mun_n || ''))
 const prLabel = computed(() => String(dict.value.pr_n || ''))
-const hits = computed(() => Number(job.value.jobhits || 0))
+const hits = ref(0)
+watch(
+  () => Number(job.value.jobhits || 0),
+  (v) => {
+    if (v) hits.value = v
+  },
+  { immediate: true },
+)
+const telQr = ref('')
 const sexSwitch = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
 const yqItems = computed(() => {
   const out: Array<{ label: string; value: string }> = []
@@ -183,7 +192,7 @@ const applyStats = computed(() => ({
 const mapHref = computed(() => {
   const x = String(contactInfo.value.x || company.value.x || job.value.x || '')
   const y = String(contactInfo.value.y || company.value.y || job.value.y || '')
-  if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`
+  if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}&job_id=${id}`
   return ''
 })
 const linkMsg = computed(() => {
@@ -203,6 +212,26 @@ onMounted(async () => {
   window.addEventListener('scroll', onScroll, { passive: true })
   onScroll()
   onUnmounted(() => window.removeEventListener('scroll', onScroll))
+  const title = String(job.value.name || '')
+  if (id && title) {
+    pushRecentJob({
+      id,
+      name: title,
+      com_name: String(job.value.com_name || company.value.name || ''),
+    })
+  }
+  try {
+    const r = await api.post<{ hits?: number }>('/v1/wap/jobs/hits', { id })
+    if (Number(r.hits) > 0) hits.value = Number(r.hits)
+  } catch {
+    /* keep payload hits */
+  }
+  try {
+    const qr = await api.post<{ show_url?: string }>('/v1/wap/wechat/qr', { kind: 'jobtel', id })
+    telQr.value = String(qr.show_url || '')
+  } catch {
+    telQr.value = ''
+  }
   try {
     const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
       kind: 1,
@@ -591,6 +620,15 @@ useHead({
                   <span class="job_details_touch_tel_say">{{ $t('member_com_00024') }}{{ siteName }}{{ $t('wap_00240') }}</span>
                 </template>
               </div>
+              <img
+                v-if="telQr"
+                :src="telQr"
+                alt=""
+                class="job_details_touch_qr"
+                width="80"
+                height="80"
+                style="display: block; margin-top: 8px"
+              />
               </template>
               <span v-if="comAddress" class="job_details_touch_add">
                 {{ $t('wap_js_00082') }}：{{ comAddress }}
@@ -954,6 +992,7 @@ useHead({
           {{ linkMsg || $t('common_02372') }}
         </div>
         <div v-else class="new_jobshow_tel">{{ applyMsg || linkMsg || telDisplay }}</div>
+        <img v-if="telQr" :src="telQr" alt="" width="80" height="80" style="display: block; margin: 8px 0" />
         <a href="javascript:;" class="new_jobshow_telbth" @click.prevent="h5LinkOpen = false">{{ $t('common.close') }}</a>
       </div>
     </div>

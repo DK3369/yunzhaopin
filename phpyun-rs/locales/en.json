@@ -84,6 +84,7 @@
   "site_closed": "The site is currently closed",
   "ip_banned": "Your IP is not allowed to access this site",
   "registration_closed": "Registration is closed",
+  "need_register": "Please register an account first",
   "once_not_approved": "This listing has not been approved",
   "once_unpaid": "This listing is unpaid and cannot be viewed yet",
   "zph_closed": "This job fair is not open",

@@ -47,6 +47,7 @@
                     <li><NuxtLink to="/companies">{{ $t('common.company') }}</NuxtLink></li>
                     <li><NuxtLink to="/fairs">{{ $t('member_com_00293') }}</NuxtLink></li>
                     <li><NuxtLink to="/articles">{{ $t('common.article') }}</NuxtLink></li>
+                    <li><NuxtLink to="/data-show">{{ $t('wap_00124') }}</NuxtLink></li>
                   </ul>
                 </dd>
               </dl>

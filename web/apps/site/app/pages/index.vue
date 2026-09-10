@@ -855,6 +855,8 @@ useHead({
           <NuxtLink to="/pages/about">{{ $t('wap_00218') }}</NuxtLink>
           <span class="yun_newedition_footer_line">|</span>
           <NuxtLink to="/pages/contact">{{ $t('wap_00220') }}</NuxtLink>
+          <span class="yun_newedition_footer_line">|</span>
+          <NuxtLink to="/data-show">{{ $t('wap_00124') }}</NuxtLink>
         </div>
       </div>
     </div>

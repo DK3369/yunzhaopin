@@ -122,7 +122,7 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
                 perPage: 0,
                 pageSizes: [],
                 total: 0,
-                uploadAction: baseUrl + 'm=user&c=company_order&a=multiupload',
+                uploadAction: baseUrl + 'm=index&c=uploadfile',
 
                 prevPage: 0
             }
@@ -184,8 +184,9 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
                 return isJPG && isLt2M;
             },
             handleAvatarSuccess(res, file) {
-                if (res.error == 0) {
-                    this.picurl.push(res.picurl);
+                const url = (res && res.data && res.data.url) || res.picurl || res.url || '';
+                if ((res.error == 0 || res.errno == 0 || res.code == 0) && url) {
+                    this.picurl.push(url);
                 }
             },
             exceedFun(files, fileList){

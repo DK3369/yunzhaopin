@@ -49,7 +49,7 @@
             <div class="xinzenLite">
                 <div class="wxsettip_small ">{{ lc('admin_user_company_00016') }}</div>
                 <div class="wxsetokdsu">
-                    <el-upload class="avatar-uploader" :action="''" :show-file-list="false" :on-change="mqlogoChange"
+                    <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :on-success="mqlogoOk"
                         :accept="pic_accept">
                         <img v-if="info.hot_pic_n" :src="info.hot_pic_n" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -131,6 +131,7 @@ export default {
             isedit: false,
             com_arr: [],
             mqlogolist: [],
+            uploadAction: (typeof baseUrl !== 'undefined' ? baseUrl : '/admin/api/php-admin?') + 'm=index&c=uploadfile',
             comindex: -1,// Company index when setting featured company from company details
             saveLoading: false
         }
@@ -247,7 +248,7 @@ export default {
                 params.append(i,that.info[i])
             }
             if (that.mqlogolist.length) {
-                params.append('mqlogo[]', that.mqlogolist[0])
+                params.append('hot_pic', that.info.hot_pic || '')
             }
             httpPost('m=user&c=hotjob&a=save', params).then(function (result) {
                 var res = result.data
@@ -270,13 +271,17 @@ export default {
                 }, 2000);
             });
         },
-        mqlogoChange(file) {
-            var tmp = deepClone(this.info)
-            // Preview file handling
-            tmp.hot_pic_n = URL.createObjectURL(file.raw);
-            // Clone file metadata
-            this.mqlogolist[0] = file.raw;
-            this.info = tmp
+        mqlogoOk(res) {
+            const url = (res && res.data && res.data.url) || res.picurl || res.url || '';
+            if ((res.errno == 0 || res.error == 0 || res.code == 0) && url) {
+                var tmp = deepClone(this.info);
+                tmp.hot_pic = url;
+                tmp.hot_pic_n = url;
+                this.info = tmp;
+                this.mqlogolist = [url];
+            } else {
+                message.error((res && (res.msg || res.message)) || lc('admin_system_00137'));
+            }
         },
     },
 };

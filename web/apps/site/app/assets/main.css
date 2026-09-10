@@ -909,3 +909,51 @@ html.force-pc .site-h5 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+.data-show {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.data-show h2 {
+  margin: 24px 0 8px;
+}
+.data-show h3 {
+  margin: 16px 0 8px;
+  font-size: 15px;
+}
+.data-show-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+.data-show-row span {
+  width: 120px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.data-show-bar {
+  display: block;
+  height: 10px;
+  min-width: 4px;
+  background: #2f88ff;
+  border-radius: 4px;
+}
+.data-show-row em {
+  font-style: normal;
+  color: #666;
+  min-width: 40px;
+}
+.data-show-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-show-table th,
+.data-show-table td {
+  border: 1px solid #eee;
+  padding: 6px 8px;
+  text-align: left;
+}
+

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { catTree, formatSalary, listFailMsg, type CatNode, type JobLike } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
+import { readRecentJobs } from '~/utils/recentViews'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -294,6 +295,11 @@ useSeoMeta({ title: keyword.value ? `${keyword.value} - ${t('common.job')}` : t(
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 useListLoginGate(error)
 
+const recentJobs = ref<ReturnType<typeof readRecentJobs>>([])
+onMounted(() => {
+  recentJobs.value = readRecentJobs()
+})
+
 function goPage(p: number) {
   return navigateTo({ query: { ...route.query, page: p } })
 }
@@ -521,6 +527,10 @@ function goPage(p: number) {
           </div>
         </div>
         <div class="left_job_all fl">
+          <div v-if="recentJobs.length" class="job_left_sidebar" style="padding: 12px 20px">
+            <span>{{ $t('wap_01135') }}：</span>
+            <NuxtLink v-for="j in recentJobs" :key="'rj'+j.id" :to="`/jobs/${j.id}`" style="margin-right: 10px">{{ j.name }}</NuxtLink>
+          </div>
           <div class="job_left_sidebar">
             <p v-if="error" class="muted" style="padding: 30px 0">{{ failMsg }}</p>
             <template v-else>
@@ -647,6 +657,10 @@ function goPage(p: number) {
       />
     </div>
     <div class="main_part" style="padding-top: 0.2rem">
+      <div v-if="recentJobs.length" style="padding: 0.16rem 0.24rem">
+        <span>{{ $t('wap_01135') }}：</span>
+        <NuxtLink v-for="j in recentJobs" :key="'rjh5'+j.id" :to="`/jobs/${j.id}`" style="margin-right: 8px">{{ j.name }}</NuxtLink>
+      </div>
       <div v-if="adsH5?.length" class="jobzd_banner">
         <img v-for="(ad, i) in adsH5" :key="i" :src="ad.image_n" alt="" style="width: 100%" />
       </div>

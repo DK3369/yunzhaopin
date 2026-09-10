@@ -117,10 +117,10 @@ pub async fn dispatch(
         ("fairs", "checksitedid") => fairs_checksitedid(state, body).await,
         ("fairs", "comxlscheck") => fairs_comxlscheck(state, body).await,
         ("fairs", "comxls") => Ok(PhpOut::Data(fairs_comxls(state, body).await?)),
-        ("fairs", "upload") => Err(ApiError::business("upload_not_supported")),
-        ("fairs", "uploadsave") => Err(ApiError::business("upload_not_supported")),
-        ("fairs", "setthemb") => Err(ApiError::business("upload_not_supported")),
-        ("fairs", "delpic") => Err(ApiError::business("upload_not_supported")),
+        ("fairs", "upload") => Ok(PhpOut::Data(fairs_upload(state, body).await?)),
+        ("fairs", "uploadsave") => fairs_uploadsave(state, body).await,
+        ("fairs", "setthemb") => fairs_setthemb(state, body).await,
+        ("fairs", "delpic") => fairs_delpic(state, body).await,
         ("news", "index") => Ok(PhpOut::Data(news_index(state, body).await?)),
         ("news", "addnews") => news_addnews(state, user, body).await,
         ("news", "delete") => news_del(state, user, body).await,
@@ -178,7 +178,7 @@ pub async fn dispatch(
         ("finance-order", "delete") => finance_order_del(state, user, body).await,
         ("finance-order", "xls") => Ok(PhpOut::Data(finance_order_xls(state, body).await?)),
         ("finance-order", "upload") => Ok(PhpOut::Data(finance_order_upload(state, body).await?)),
-        ("finance-order", "multiupload") => Err(ApiError::business("upload_not_supported")),
+        ("finance-order", "multiupload") => Ok(PhpOut::Data(finance_order_multiupload(body))),
         ("finance-order", "uploadsave") => finance_order_uploadsave(state, body).await,
         ("finance-order", "htpic_del") => finance_order_htpic_del(state, body).await,
         ("comset", "logo") => comset_logo(state, user, body).await,
@@ -575,6 +575,8 @@ pub async fn dispatch(
         ("fabutool", "comtwTask_base_data") => Ok(PhpOut::Data(fabutool_tw_base(state, false).await?)),
         ("fabutool", "delTwTask") => fabutool_del_tw(state, user, body).await,
         ("fabutool", "taskFinish") => fabutool_task_finish(state, body).await,
+        ("tuiguang", "index") => Ok(PhpOut::Data(tuiguang_index(state, false).await?)),
+        ("tuiguang", "msgtg") => Ok(PhpOut::Data(tuiguang_index(state, true).await?)),
         ("tuiguang", "getBirthday") => Ok(PhpOut::Data(tuiguang_birthday(state, body).await?)),
         ("tuiguang", "getcom") => Ok(PhpOut::Data(json!(tuiguang_getcom(state, body).await?))),
         ("tuiguang", "getuser") => Ok(PhpOut::Data(json!(tuiguang_getuser(state, body).await?))),
@@ -1405,6 +1407,112 @@ async fn fairs_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpOut>
     }
     zph_repo::set_did_ids(state.db.pool(), &ids, json_i32(body, "did")).await?;
     Ok(PhpOut::Message("admin_model_00033"))
+}
+
+async fn fairs_upload(state: &AppState, body: &Value) -> AppResult<Value> {
+    let zid = json_u64(body, "id");
+    let base = preview_base(state);
+    let rows = zph_repo::list_pics(state.db.reader(), zid).await?;
+    let mut pics: Vec<String> = Vec::new();
+    let list: Vec<Value> = rows
+        .into_iter()
+        .map(|r| {
+            let pic_n = pic_url(&base, &r.pic);
+            pics.push(pic_n.clone());
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "pic": r.pic,
+                "pic_n": pic_n,
+                "sort": r.sort,
+                "zid": r.zid,
+                "is_themb": if r.is_themb == "1" { "1" } else { "0" },
+                "did": r.did,
+            })
+        })
+        .collect();
+    let row = zph_repo::find_admin_form(state.db.reader(), zid)
+        .await?
+        .map(|r| json!({ "id": r.id, "title": r.title, "did": r.did }))
+        .unwrap_or_else(|| json!({}));
+    Ok(json!({ "row": row, "list": list, "pics": pics }))
+}
+
+fn media_path_of(cfg: &HashMap<String, String>, raw: &str) -> String {
+    let s = raw.trim();
+    if s.is_empty()
+        || s.starts_with("data:")
+        || s.starts_with("blob:")
+        || s.contains('\0')
+    {
+        return String::new();
+    }
+    strip_site_url(cfg, s)
+}
+
+async fn fairs_uploadsave(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let cfg = settings_hash(state).await?;
+    let pic = media_path_of(&cfg, &json_str(body, "pic"));
+    let title = json_str(body, "title");
+    if title.is_empty() {
+        return Err(ApiError::business("admin_vue_00073"));
+    }
+    let id = json_u64(body, "id");
+    if id == 0 {
+        if pic.is_empty() {
+            return Err(ApiError::business("wap_01412"));
+        }
+        let zid = json_u64(body, "zph_id");
+        if zid == 0 {
+            return Err(ApiError::param_invalid("wap_com_00228"));
+        }
+        let did = zph_repo::find_admin_form(state.db.reader(), zid)
+            .await?
+            .map(|r| r.did)
+            .unwrap_or(0);
+        let nid = zph_repo::insert_pic(
+            state.db.pool(),
+            &title,
+            &pic,
+            json_i32(body, "sort"),
+            zid,
+            did,
+        )
+        .await?;
+        if nid == 0 {
+            return Err(ApiError::business("admin_system_00137"));
+        }
+        Ok(PhpOut::Message("ok"))
+    } else {
+        let n = zph_repo::update_pic(state.db.pool(), id, &title, &pic, json_i32(body, "sort")).await?;
+        if n == 0 {
+            return Err(ApiError::business("member_user_00603"));
+        }
+        Ok(PhpOut::Message("ok"))
+    }
+}
+
+async fn fairs_setthemb(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "id");
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    if zph_repo::set_pic_themb(state.db.pool(), id).await? == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("wap_com_00240"))
+}
+
+async fn fairs_delpic(state: &AppState, body: &Value) -> AppResult<PhpOut> {
+    let id = json_u64(body, "del");
+    let id = if id == 0 { json_u64(body, "id") } else { id };
+    if id == 0 {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    if zph_repo::delete_pic(state.db.pool(), id).await? == 0 {
+        return Err(ApiError::business("admin_user_00186"));
+    }
+    Ok(PhpOut::Message("ok"))
 }
 
 fn nid_from_body(body: &Value) -> Option<String> {
@@ -3605,6 +3713,12 @@ async fn finance_order_upload(state: &AppState, body: &Value) -> AppResult<Value
     }))
 }
 
+fn finance_order_multiupload(body: &Value) -> Value {
+    let url = json_str(body, "picurl");
+    let url = if url.is_empty() { json_str(body, "url") } else { url };
+    json!({ "error": 0, "picurl": url })
+}
+
 async fn finance_order_uploadsave(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let order_id = json_u64(body, "order_id");
     if order_id == 0 {
@@ -4448,9 +4562,9 @@ async fn once_edit(state: &AppState, body: &Value) -> AppResult<Value> {
 }
 
 async fn once_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
-    if has_flag(body, "yyzz") || has_flag(body, "file") {
-        return Err(ApiError::business("upload_not_supported"));
-    }
+    let cfg = settings_hash(state).await?;
+    let pic = media_path_of(&cfg, &json_str(body, "pic"));
+    let yyzz = media_path_of(&cfg, &json_str(body, "yyzz"));
     let days = json_i32(body, "edate");
     let now = clock::now_ts();
     let edate = now + i64::from(days.max(0)) * 86_400;
@@ -4479,6 +4593,8 @@ async fn once_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             edate,
             did: json_i32(body, "did"),
             now,
+            pic: &pic,
+            yyzz: &yyzz,
         },
     )
     .await?;
@@ -4964,15 +5080,19 @@ async fn hotjob_save(
     user: &AuthenticatedUser,
     body: &Value,
 ) -> AppResult<PhpOut> {
-    if has_flag(body, "mqlogo") {
-        return Err(ApiError::business("upload_not_supported"));
+    if has_flag(body, "mqlogo") && json_str(body, "hot_pic").is_empty() {
+        return Err(ApiError::business("admin_system_00137"));
     }
     let uid = json_u64(body, "uid");
     if uid == 0 {
         return Err(ApiError::param_invalid("uid"));
     }
     let existing = company_repo::hotjob_find_by_uid(state.db.reader(), uid).await?;
-    let mut hot_pic = json_str(body, "hot_pic");
+    let cfg = settings_hash(state).await?;
+    let mut hot_pic = media_path_of(&cfg, &json_str(body, "hot_pic"));
+    if hot_pic.is_empty() {
+        hot_pic = media_path_of(&cfg, &json_str(body, "hot_pic_n"));
+    }
     if hot_pic.is_empty() {
         if let Some(h) = existing.as_ref() {
             hot_pic = h.hot_pic.clone();
@@ -7593,21 +7713,6 @@ async fn company_job_close_stale_reserve(state: &AppState) -> AppResult<PhpOut> 
     Ok(PhpOut::Message("model_00009"))
 }
 
-/// `HH:MM` start must be strictly before `HH:MM` end, the check PHP does by
-/// splitting on `:` and comparing hour then minute.
-fn reserve_window_invalid(s_time: &str, e_time: &str) -> bool {
-    if s_time.is_empty() || e_time.is_empty() {
-        return false;
-    }
-    let parse = |v: &str| {
-        let mut it = v.split(':');
-        let h: i32 = it.next().unwrap_or("0").trim().parse().unwrap_or(0);
-        let m: i32 = it.next().unwrap_or("0").trim().parse().unwrap_or(0);
-        h * 60 + m
-    };
-    parse(s_time) >= parse(e_time)
-}
-
 /// PHP `company_job::upReserveJob_action` → `job.model::reserveUpJob`.
 async fn company_job_up_reserve(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let uid = json_u64(body, "uid");
@@ -7616,75 +7721,17 @@ async fn company_job_up_reserve(state: &AppState, body: &Value) -> AppResult<Php
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
     let status = json_i32(body, "status");
-    let opening = status == 1;
-    let db = state.db.pool();
-
-    // PHP divides the remaining refresh budget by the per-refresh price. Closing
-    // a schedule (`status = 2`) skips the check, so an out-of-quota company can
-    // still turn its refreshes off.
-    if status != 2 {
-        let price = setting_repo::find(db, "sy_reserve_refresh_price")
-            .await?
-            .and_then(|s| s.value.trim().parse::<i64>().ok())
-            .filter(|v| *v > 0)
-            .unwrap_or(1);
-        if gap_extra::reserve_refresh_budget(db, uid).await? / price == 0 {
-            return Err(ApiError::business("common_00982"));
-        }
-    }
-    if setting_repo::find(db, "com_job_reserve")
-        .await?
-        .map(|s| s.value.trim() != "1")
-        .unwrap_or(true)
-    {
-        return Err(ApiError::business("common_01177"));
-    }
-
-    let eligible = gap_extra::eligible_reserve_job_ids(db, uid, &job_ids).await?;
-    if eligible.is_empty() {
-        return Err(ApiError::business("model_00008"));
-    }
-
-    let end_time = parse_date_ts(&json_str(body, "end_time"));
-    if opening && end_time > 0 && end_time < clock::start_of_today() + 86_400 {
-        return Err(ApiError::business("wap_com_00212"));
-    }
-    let interval = json_i32(body, "interval");
-    let floor = setting_repo::find(db, "sy_reserve_refresh_interval")
-        .await?
-        .and_then(|s| s.value.trim().parse::<i32>().ok())
-        .unwrap_or(0);
-    // PHP appends the configured floor to the message, but also appends the raw
-    // key `wap_com_00247` instead of translating it, so the sentence it produces
-    // is broken. The locale entry here is self-contained instead.
-    if opening && interval < floor {
-        return Err(ApiError::business("common_00606"));
-    }
-    let s_time = json_str(body, "s_time");
-    let e_time = json_str(body, "e_time");
-    if reserve_window_invalid(&s_time, &e_time) {
-        return Err(ApiError::business("common_00227"));
-    }
-
-    let now = clock::now_ts();
-    let v = gap_extra::ReserveScheduleIn {
+    crate::job_mgmt_service::up_reserve(
+        state,
+        uid,
+        &job_ids,
         status,
-        interval,
-        start_time: now,
-        end_time,
-        next_time: now + i64::from(interval.max(0)) * 60,
-        s_time: s_time.as_str(),
-        e_time: e_time.as_str(),
-    };
-    let existing = gap_extra::existing_reserve_job_ids(db, uid, &eligible).await?;
-    let fresh: Vec<u64> = eligible
-        .iter()
-        .copied()
-        .filter(|id| !existing.contains(id))
-        .collect();
-    gap_extra::insert_reserve_schedules(db, uid, &fresh, &v).await?;
-    gap_extra::update_reserve_schedules(db, uid, &existing, &v).await?;
-    gap_extra::set_jobs_is_reserve(db, uid, &eligible, i32::from(opening)).await?;
+        &json_str(body, "end_time"),
+        json_i32(body, "interval"),
+        &json_str(body, "s_time"),
+        &json_str(body, "e_time"),
+    )
+    .await?;
     Ok(PhpOut::Message("common_01047"))
 }
 
@@ -15403,6 +15450,65 @@ async fn fabutool_task_finish(state: &AppState, body: &Value) -> AppResult<PhpOu
         return Err(ApiError::business("admin_system_00397"));
     }
     Ok(PhpOut::Message("wap_user_00264"))
+}
+
+fn tuiguang_needles(keys: &[&str]) -> Vec<String> {
+    let mut out = Vec::new();
+    for key in keys {
+        if !out.iter().any(|x| x == key) {
+            out.push((*key).to_string());
+        }
+        for lang in [i18n::Lang::ZhCN, i18n::Lang::En, i18n::Lang::ZhTW] {
+            let t = i18n::t(&format!("messages.{key}"), lang);
+            if !t.is_empty() && t != format!("messages.{key}") && !out.iter().any(|x| x == &t) {
+                out.push(t);
+            }
+        }
+    }
+    out
+}
+
+fn tuiguang_slot(ctime: Option<(String, i64)>) -> Value {
+    match ctime {
+        Some((title, ts)) if ts > 0 => json!({ "ctime": ts, "ctime_n": fmt_dt(ts), "title": title }),
+        _ => json!({}),
+    }
+}
+
+async fn tuiguang_index(state: &AppState, sms: bool) -> AppResult<Value> {
+    let pool = state.db.reader();
+    let slots: [(&str, &[&str]); 7] = if sms {
+        [
+            ("anniversary", &["admin_yunying_00045"]),
+            ("todaydue", &["admin_yunying_00034"]),
+            ("sevendue", &["admin_yunying_00035"]),
+            ("useradd", &["admin_yunying_00040"]),
+            ("userup", &["admin_yunying_00038"]),
+            ("addjob", &["admin_yunying_00222"]),
+            ("upjob", &["admin_yunying_00039"]),
+        ]
+    } else {
+        [
+            ("anniversary", &["admin_yunying_00044"]),
+            ("todaydue", &["admin_yunying_00023"]),
+            ("sevendue", &["admin_yunying_00036", "admin_yunying_00041"]),
+            ("useradd", &["admin_yunying_00040"]),
+            ("userup", &["admin_01403"]),
+            ("addjob", &["admin_yunying_00222"]),
+            ("upjob", &["admin_yunying_00039"]),
+        ]
+    };
+    let mut out = serde_json::Map::new();
+    for (name, keys) in slots {
+        let likes = tuiguang_needles(keys);
+        let hit = if sms {
+            moblie_msg_repo::latest_ctime_content_likes(pool, &likes).await?
+        } else {
+            email_msg_repo::latest_ctime_title_likes(pool, &likes).await?
+        };
+        out.insert(name.to_string(), tuiguang_slot(hit));
+    }
+    Ok(Value::Object(out))
 }
 
 async fn tuiguang_birthday(state: &AppState, body: &Value) -> AppResult<Value> {

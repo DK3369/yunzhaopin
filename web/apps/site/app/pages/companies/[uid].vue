@@ -53,6 +53,7 @@ const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('u
 const following = ref(false)
 const followMsg = ref('')
 const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
+const telQr = ref('')
 const contact = computed(
   () => (company.value.contact || {}) as Record<string, unknown>,
 )
@@ -202,6 +203,12 @@ async function postAsk() {
 }
 onMounted(async () => {
   if (comMessageOn.value) await loadAskCaptcha()
+  try {
+    const qr = await api.post<{ show_url?: string }>('/v1/wap/wechat/qr', { kind: 'comtel', id: uid })
+    telQr.value = String(qr.show_url || '')
+  } catch {
+    telQr.value = ''
+  }
 })
 watch(
   () => company.value.isatn,
@@ -397,6 +404,14 @@ useHead({
                   $t('default_00233')
                 }}</a>
               </div>
+              <img
+                v-if="telQr"
+                :src="telQr"
+                alt=""
+                width="80"
+                height="80"
+                style="display: block; margin-top: 8px"
+              />
               <span v-if="company.address" class="firm_mes1" style="width: 100%">
                 {{ $t('wap_00040') }}：
                 <NuxtLink v-if="mapHref" :to="mapHref">{{ company.address }}</NuxtLink>
@@ -589,6 +604,7 @@ useHead({
             </template>
             <a v-else href="javascript:;" @click.prevent="showTel">{{ $t('default_00233') }}</a>
           </div>
+          <img v-if="telQr" :src="telQr" alt="" width="80" height="80" style="display: block; margin-top: 8px" />
         </div>
         <div v-if="comMessageOn" class="job_describe_bottom">
           <div class="job_describe_cengter_header">{{ $t('wap_00271') }}</div>

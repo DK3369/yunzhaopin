@@ -4,6 +4,8 @@
         <el-alert :title="lc('admin_tool_00417')" type="success"
             :closable="false">
         </el-alert>
+        <el-alert style="margin-top: 8px;" :title="lc('admin_ssr_no_static')" type="warning" :closable="false">
+        </el-alert>
     </div>
     <div class="moduleTable">
         <table class="tableVue">

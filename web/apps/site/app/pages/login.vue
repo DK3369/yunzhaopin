@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { siteName, logoPc, settings } = useSiteChrome()
+import { ApiError } from '~/utils/envelope'
+
+const { siteName, logoPc, settings, me } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
 const smsLoginOn = computed(
@@ -36,6 +38,31 @@ function loginNext(): string {
   return ''
 }
 
+function authFail(e: unknown): { key: string; msg: string } {
+  if (e instanceof ApiError) return { key: e.key, msg: e.message }
+  const ex = e as {
+    statusMessage?: string
+    data?: { key?: string; msg?: string; statusMessage?: string }
+  }
+  return {
+    key: String(ex.data?.key || ''),
+    msg: ex.data?.msg || ex.data?.statusMessage || ex.statusMessage || '',
+  }
+}
+
+async function handleAuthFail(e: unknown) {
+  const f = authFail(e)
+  if (f.key === 'locked') {
+    await navigateTo('/loginlock')
+    return
+  }
+  if (f.key === 'need_register') {
+    await navigateTo('/register')
+    return
+  }
+  err.value = f.msg || t('common_00888')
+}
+
 function goBack() {
   const n = loginNext()
   if (n) return navigateTo(n)
@@ -70,6 +97,12 @@ async function loadCaptcha() {
 }
 onMounted(async () => {
   rememberReferrer()
+  if (String(useRoute().query.bind) === '1' && me.value) {
+    await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined)
+  } else if (me.value && Number(me.value.usertype) !== 0) {
+    await afterLogin(me.value)
+    return
+  }
   if (smsLoginOn.value && String(settings.value.sy_login_type) === '2') {
     tab.value = 'sms'
   }
@@ -169,8 +202,7 @@ async function submitPass() {
     })
     await afterLogin(me)
   } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
+    await handleAuthFail(e)
     if (needImageCaptcha.value) loadCaptcha()
   }
 }
@@ -184,21 +216,20 @@ async function sendSms() {
       authcode: authcode.value,
     })
   } catch (e: unknown) {
-    err.value = e instanceof Error ? e.message : t('common_00888')
+    await handleAuthFail(e)
     loadCaptcha()
   }
 }
 async function submitSms() {
   err.value = ''
   try {
-    const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/login-sms', {
+    const logged = await $fetch<{ uid: number; usertype: number }>('/api/auth/login-sms', {
       method: 'POST',
       body: { moblie: mobile.value, dynamiccode: smsCode.value },
     })
-    await afterLogin(me)
+    await afterLogin(logged)
   } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
+    await handleAuthFail(e)
   }
 }
 async function sendEmail() {
@@ -223,8 +254,7 @@ async function submitEmail() {
     })
     await afterLogin(me)
   } catch (e: unknown) {
-    const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
-    err.value = ex.data?.statusMessage || ex.statusMessage || t('common_00888')
+    await handleAuthFail(e)
   }
 }
 useSeoMeta({ title: t('common.login') })
@@ -280,6 +310,15 @@ onUnmounted(() => {
                     <img :src="captcha.image" alt="" @click="loadCaptcha" />
                     <input v-model="authcode" class="login_box_bth" :placeholder="$t('wap_00262')" autocomplete="off" />
                   </div>
+                </div>
+                <div class="login_xy" style="padding: 8px 0">
+                  <label class="login_xy_zx">
+                    <input id="xieyicheck-pc" v-model="agreed" type="checkbox" />
+                    <i class="policy">{{ $t('wap_00309') }}</i>
+                    <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+                    <i class="policy">{{ $t('wap_00679') }}</i>
+                    <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+                  </label>
                 </div>
                 <div class="login_box_cz">
                   <input type="submit" :value="$t('common.login')" class="login_box_bth2" />

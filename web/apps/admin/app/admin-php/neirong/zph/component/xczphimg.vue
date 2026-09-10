@@ -59,7 +59,7 @@
                             </div>
                             <div class="drawerModInpt">
                                 <el-upload :accept="pic_accept" class="avatar-uploader" :action="uploadAction"
-                                    :show-file-list="false" :on-change="uploadChange">
+                                    :show-file-list="false" :on-success="onUploadOk">
                                     <img style="width:200px;" v-if="info.pic_n" :src="info.pic_n" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
@@ -154,6 +154,7 @@ export default {
         addPic() {
             this.info.title = '';
             this.info.pic_n = '';
+            this.info.pic = '';
             this.info.sort = '';
             this.info.id = '';
             this.editBox = true;
@@ -224,8 +225,8 @@ export default {
             }
             formData.append('title', that.info.title);
             formData.append('sort', that.info.sort);
-            if (that.files.length !== 0) {
-                formData.append('file', that.files);
+            if (that.info.pic) {
+                formData.append('pic', that.info.pic);
             }
             formData.append('id', that.info.id);
             formData.append('zph_id', that.zph_id)
@@ -249,6 +250,7 @@ export default {
         editPic(row) {
             this.info.title = row.title;
             this.info.pic_n = row.pic_n;
+            this.info.pic = row.pic;
             this.info.sort = row.sort;
             this.info.id = row.id;
             this.editBox = true;
@@ -272,12 +274,14 @@ export default {
                 console.log(error)
             })
         },
-        uploadChange(file) {
-            var tmp = deepClone(this.info)
-            tmp.pic_n = URL.createObjectURL(file.raw)
-            this.info = tmp
-            // 复刻文件信息
-            this.files = file.raw;
+        onUploadOk(res) {
+            const url = (res && res.data && res.data.url) || res.picurl || res.url || '';
+            if ((res.code == 0 || res.errno == 0 || res.error == 0) && url) {
+                this.info.pic = url;
+                this.info.pic_n = url;
+            } else {
+                message.error((res && (res.msg || res.message)) || lc('admin_system_00137'));
+            }
         },
     },
 };

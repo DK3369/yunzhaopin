@@ -153,21 +153,25 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
 ) -> AppResult<ApiResponse<OrderCreated>> {
-    if f.channel != "alipay" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" {
         return Err(ApiError::param_invalid("channel"));
     }
-    payment_notify_service::ensure_alipay_page(&state).await?;
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
-    let pay_url = Some(
-        payment_notify_service::build_alipay_page_url(
-            &state,
-            &created.order_no,
-            &created.subject,
-            created.amount_cents,
-            None,
+    let pay_url = if f.channel == "alipay" {
+        payment_notify_service::ensure_alipay_page(&state).await?;
+        Some(
+            payment_notify_service::build_alipay_page_url(
+                &state,
+                &created.order_no,
+                &created.subject,
+                created.amount_cents,
+                None,
+            )
+            .await?,
         )
-        .await?,
-    );
+    } else {
+        None
+    };
     Ok(ApiResponse::data(OrderCreated {
         order_no: created.order_no,
         pay_url,

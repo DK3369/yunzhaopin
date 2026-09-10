@@ -535,8 +535,8 @@
                             <span>{{ lc('admin_user_weipin_00017') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-upload class="upload-demo" :accept="pic_accept" list-type="picture" action=""
-                                :auto-upload="false" :on-change="handleChangeYyzz" :show-file-list="false">
+                            <el-upload class="upload-demo" :accept="pic_accept" list-type="picture"
+                                :action="uploadAction" :on-success="onYyzzOk" :show-file-list="false">
                                 <el-button size="small" type="primary"
                                     icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                                 <img class="el-upload-list__item-thumbnail"
@@ -550,8 +550,8 @@
                             <span>{{ lc('wap_00362') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-upload class="upload-demo" :accept="pic_accept" list-type="picture" action=""
-                                :auto-upload="false" :on-change="handleChangePic" :show-file-list="false">
+                            <el-upload class="upload-demo" :accept="pic_accept" list-type="picture"
+                                :action="uploadAction" :on-success="onPicOk" :show-file-list="false">
                                 <el-button size="small" type="primary"
                                     icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                                 <img class="el-upload-list__item-thumbnail"
@@ -611,6 +611,7 @@ export default {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
+            uploadAction: (typeof baseUrl !== 'undefined' ? baseUrl : '/admin/api/php-admin?') + 'm=index&c=uploadfile',
             loading: false,
 			pagerCount: 5,
             dataText: lc('admin_user_weipin_00026'),
@@ -1101,14 +1102,23 @@ export default {
             }
         },
 
-        // 上传时触发
-        handleChangePic(file, fileList) {
-            this.$set(this.ruleFormAdd, 'file', file.raw);
-            this.$set(this.ruleFormAdd, 'pic_n', file.url);
+        onPicOk(res) {
+            const url = (res && res.data && res.data.url) || res.picurl || res.url || '';
+            if ((res.errno == 0 || res.error == 0 || res.code == 0) && url) {
+                this.$set(this.ruleFormAdd, 'pic', url);
+                this.$set(this.ruleFormAdd, 'pic_n', url);
+            } else {
+                message.error((res && (res.msg || res.message)) || lc('admin_system_00137'));
+            }
         },
-        handleChangeYyzz(file, fileList) {
-            this.$set(this.ruleFormAdd, 'yyzz', file.raw);
-            this.$set(this.ruleFormAdd, 'yyzz_n', file.url);
+        onYyzzOk(res) {
+            const url = (res && res.data && res.data.url) || res.picurl || res.url || '';
+            if ((res.errno == 0 || res.error == 0 || res.code == 0) && url) {
+                this.$set(this.ruleFormAdd, 'yyzz', url);
+                this.$set(this.ruleFormAdd, 'yyzz_n', url);
+            } else {
+                message.error((res && (res.msg || res.message)) || lc('admin_system_00137'));
+            }
         },
 
         saveAdd() {

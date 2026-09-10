@@ -1,5 +1,8 @@
 <template>
 <div id="databaseApp" class="moduleDome">
+    <div class="tableDome_tip" style="padding: 12px 20px 0;">
+        <el-alert :title="lc('admin_backup_use_ops')" type="warning" :closable="false"></el-alert>
+    </div>
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane :label="lc('admin_tool_00277')" name="first" :lazy="true">

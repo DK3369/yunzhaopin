@@ -24,6 +24,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/batch/refresh", post(batch_refresh))
         .route("/jobs/batch/close", post(batch_close))
         .route("/jobs/batch/delete", post(batch_delete))
+        .route("/jobs/reserve", post(reserve))
         .route("/jobs/promote/quote", post(promote_quote))
         .route("/jobs/promote", post(promote))
         .route("/jobs/promote/close", post(promote_close))
@@ -565,4 +566,59 @@ pub async fn promote_close(
         ok: true,
         refunded: r.refunded,
     }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ReserveForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub job_id: u64,
+    /// `YYYY-MM-DD` or unix seconds.
+    #[serde(default)]
+    #[validate(length(max = 32))]
+    pub end_time: String,
+    #[validate(range(min = 0, max = 10_080))]
+    pub interval: i32,
+    /// 1 = open schedule, 2 = close.
+    #[validate(range(min = 1, max = 2))]
+    pub status: i32,
+    #[serde(default)]
+    #[validate(length(max = 8))]
+    pub s_time: String,
+    #[serde(default)]
+    #[validate(length(max = 8))]
+    pub e_time: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReserveOk {
+    pub ok: bool,
+}
+
+/// PHP member `job::reserveUpJob` — schedule or cancel auto-refresh for one job.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/reserve",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ReserveForm,
+    responses((status = 200, description = "ok", body = ReserveOk))
+)]
+pub async fn reserve(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ReserveForm>,
+) -> AppResult<ApiResponse<ReserveOk>> {
+    user.require_employer()?;
+    job_mgmt_service::up_reserve(
+        &state,
+        user.uid,
+        &[f.job_id],
+        f.status,
+        &f.end_time,
+        f.interval,
+        &f.s_time,
+        &f.e_time,
+    )
+    .await?;
+    Ok(ApiResponse::data(ReserveOk { ok: true }))
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
+import { pushRecentResume } from '~/utils/recentViews'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -136,6 +137,8 @@ onMounted(async () => {
     bumpVisitorCookie()
   }
   fav.value = Boolean(row.value.in_talentpool)
+  const title = name.value || String(expectTitle.value || '')
+  if (uid && title) pushRecentResume({ uid, name: title })
   const eid = Number(expect0.value.id || row.value.def_job || 0)
   if (eid > 0) {
     api.post('/v1/wap/resumes/expects/hits', { eid }).catch(() => {})

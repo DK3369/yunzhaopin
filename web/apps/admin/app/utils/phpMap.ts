@@ -1158,9 +1158,9 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/category_introduce_class/del': catClass('introduce', 'del'),
   'system/category_introduce_class/classadd': catClass('introduce', 'classadd'),
 
-  'yunying/yingxiao_tuiguang': { path: '/v1/admin/marketing/email-status' },
-  'yunying/yingxiao_tuiguang/index': { path: '/v1/admin/marketing/email-status' },
-  'yunying/yingxiao_tuiguang/msgtg': { path: '/v1/admin/marketing/sms-status' },
+  'yunying/yingxiao_tuiguang': phpContent('tuiguang', 'index'),
+  'yunying/yingxiao_tuiguang/index': phpContent('tuiguang', 'index'),
+  'yunying/yingxiao_tuiguang/msgtg': phpContent('tuiguang', 'msgtg'),
   'yunying/yingxiao_tuiguang/send': {
     path: '/v1/admin/marketing/email-send',
     transformReq: (b) => ({
@@ -1574,7 +1574,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/company_job_refresh_log': { list: '/v1/admin/job-refresh-logs' },
   'user/company_company': { list: '/v1/admin/companies' },
   'user/admin_member': { list: '/v1/admin/php-content/user-gap/mem-index' },
-  'yunying/yingxiao_tuiguang': { list: '/v1/admin/marketing/email-status' },
+  'yunying/yingxiao_tuiguang': { list: '/v1/admin/php-content/tuiguang/index' },
   'yunying/yingxiao_hbconfig': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'yunying/yingxiao_hrlog': { list: '/v1/admin/hr-logs' },
   'yunying/shop_set': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },

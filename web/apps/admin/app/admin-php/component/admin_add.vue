@@ -2,6 +2,7 @@
     <div style="overflow: hidden;position: relative;height: 100%;">
         <div style="overflow-y: auto;position: relative;height: calc(100% - 80px);">
             <div class="drawerModInfo drawerModInfoOne">
+                <el-alert v-if="source == 'crmAdd'" :title="lc('admin_crm_unavailable')" type="warning" :closable="false" style="margin-bottom: 12px;"></el-alert>
                 <div class="drawerModTites">
                     <el-divider content-position="left">{{ lc('admin_00027') }}</el-divider>
                 </div>

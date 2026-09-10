@@ -18,6 +18,11 @@ const { data: fans } = await useAsyncData('com-fans-n', () =>
 const { data: looks } = await useAsyncData('com-looks-n', () =>
   api.post<{ total: number }>('/v1/mcenter/look-jobs/list', { page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
 )
+const { data: gzh } = await useAsyncData('com-gzh', () =>
+  api.post<{ subscribe?: number }>('/v1/mcenter/wechat/subscribe', {}).catch(() => ({ subscribe: 1 })),
+)
+const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
+const { wxQr } = useSiteChrome()
 useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
@@ -45,6 +50,7 @@ const links = [
   { to: '/com/stats', icon: '/legacy/h5/images/sz.png' },
   { to: '/com/password', icon: '/legacy/h5/images/sz.png' },
   { to: '/com/set', icon: '/legacy/h5/images/sz.png' },
+  { to: '/com/otherservice', icon: '/legacy/h5/images/sz.png' },
   { to: '/com/binding', icon: '/legacy/h5/images/sz.png' },
   { to: '/com/finder', icon: '/legacy/h5/images/Please_resume.png' },
   { to: '/com/news', icon: '/legacy/h5/images/company.png' },
@@ -75,6 +81,10 @@ function labelOf(to: string) {
   </section>
   <div v-else>
     <div class="site-pc">
+      <p v-if="gzhNeed" class="muted" style="padding: 8px 0">
+        {{ $t('common_00655') }}
+        <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
+      </p>
       <div class="membRighTops">
         <ul>
           <li class="membRighTops_mr">
@@ -118,6 +128,10 @@ function labelOf(to: string) {
       </div>
     </div>
     <div class="site-h5">
+      <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
+        {{ $t('common_00655') }}
+        <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
+      </p>
       <div class="userheader">
         <div class="userheader_datum userheaderToubuds">
           <div class="userheader_datum_left">

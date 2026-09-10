@@ -10,6 +10,11 @@ const rename = reactive({ old_password: '', new_username: '' })
 const logoutPw = ref('')
 const split = reactive({ old_password: '', new_username: '', new_password: '' })
 const msg = ref('')
+const applyUt = ref(2)
+const applyBody = ref('')
+const { data: utSt, refresh: refreshUt } = await useAsyncData('usertype-st', () =>
+  api.post<{ pending?: boolean; apply_usertype?: number }>('/v1/mcenter/account/usertype/status', {}).catch(() => null),
+)
 type SessionRow = {
   id: number
   device?: string
@@ -46,6 +51,19 @@ async function doSplit() {
   try {
     await api.post('/v1/mcenter/account/split', { ...split })
     msg.value = t('common.success')
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+async function applyUsertype() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/account/usertype/apply', {
+      apply_usertype: applyUt.value,
+      apply_body: applyBody.value,
+    })
+    msg.value = t('common.success')
+    await refreshUt()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -95,6 +113,15 @@ useSeoMeta({ title: t('wap_user_00338') })
       <input v-model="split.old_password" type="password" :placeholder="$t('wap_01097')" required />
       <input v-model="split.new_username" required />
       <input v-model="split.new_password" type="password" :placeholder="$t('wap_01099')" required />
+      <button type="submit">{{ $t('common.submit') }}</button>
+    </form>
+    <h2>{{ $t('admin_user_00162') }}</h2>
+    <form class="form" @submit.prevent="applyUsertype">
+      <select v-model.number="applyUt">
+        <option :value="1">{{ $t('common.resume') }}</option>
+        <option :value="2">{{ $t('common.company') }}</option>
+      </select>
+      <input v-model="applyBody" :placeholder="$t('wap_user_00203')" />
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <h2>{{ $t('member_user_00058') }}</h2>

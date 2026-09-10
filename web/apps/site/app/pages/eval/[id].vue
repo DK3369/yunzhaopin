@@ -31,8 +31,26 @@ const { data: examinees } = await useAsyncData(
 const answers = reactive<Record<string, string>>({})
 const result = ref('')
 const comment = ref('')
-const leave = ref('')
-const leaveMsg = ref('')
+const shareMsg = ref('')
+async function shareResult() {
+  shareMsg.value = ''
+  const paper = (data.value || {}) as { name?: string }
+  const title = String(paper.name || t('ui.eval_detail'))
+  const text = `${title} ${result.value} ${comment.value}`.trim()
+  const url = import.meta.client ? window.location.href : ''
+  try {
+    if (import.meta.client && navigator.share) {
+      await navigator.share({ title, text, url })
+      return
+    }
+    if (import.meta.client && navigator.clipboard) {
+      await navigator.clipboard.writeText(`${text} ${url}`.trim())
+      shareMsg.value = t('common.success')
+    }
+  } catch (e: unknown) {
+    shareMsg.value = e instanceof Error ? e.message : t('common_00888')
+  }
+}
 function nuidCookie(): string {
   if (!import.meta.client) return ''
   const m = document.cookie.match(/(?:^|; )eval_nuid=([^;]*)/)
@@ -102,6 +120,10 @@ useSeoMeta({ title: data.value?.name ? String(data.value.name) : t('ui.eval_deta
       </form>
       <p v-if="result">{{ result }}</p>
       <p v-if="comment" class="muted">{{ comment }}</p>
+      <p v-if="result">
+        <button type="button" @click="shareResult">{{ $t('common.share') }}</button>
+      </p>
+      <p v-if="shareMsg">{{ shareMsg }}</p>
       <h2>{{ $t('common.message') }}</h2>
       <p v-if="!(messages?.list || []).length" class="muted">{{ $t('common_02409') }}</p>
       <p v-for="m in messages?.list || []" :key="m.id" class="muted">{{ m.uid }} · {{ m.ctime_n }} · {{ m.message }}</p>

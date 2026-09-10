@@ -256,6 +256,17 @@ pub async fn apply_default_company_rating(state: &AppState, uid: u64) -> AppResu
     Ok(())
 }
 
+/// PHP `register::checkComName_action` / `checkRegFirst` — exact company name match.
+pub async fn company_name_taken(state: &AppState, name: &str) -> AppResult<bool> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Ok(false);
+    }
+    Ok(company_repo::find_uid_by_name(state.db.reader(), name)
+        .await?
+        .is_some())
+}
+
 /// 16-character salt (PHPYun's salt is 6 chars; we bump to 16; argon2 accepts any length)
 fn gen_salt() -> String {
     let u = Uuid::now_v7();

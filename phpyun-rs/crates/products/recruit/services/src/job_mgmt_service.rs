@@ -697,3 +697,103 @@ pub async fn close_promote(
     .await;
     Ok(PromoteCloseResult { refunded: refund })
 }
+
+/// PHP `job.model::reserveUpJob` / admin `company_job::upReserveJob_action`.
+/// `uid` is the employer that owns the jobs (mcenter uses the session uid).
+pub async fn up_reserve(
+    state: &AppState,
+    uid: u64,
+    job_ids: &[u64],
+    status: i32,
+    end_time_raw: &str,
+    interval: i32,
+    s_time: &str,
+    e_time: &str,
+) -> AppResult<()> {
+    use phpyun_models::admin_gap::extra as gap_extra;
+
+    if uid == 0 || job_ids.is_empty() {
+        return Err(ApiError::param_invalid("wap_com_00228"));
+    }
+    let opening = status == 1;
+    let db = state.db.pool();
+
+    if status != 2 {
+        let price = setting_repo::find(db, "sy_reserve_refresh_price")
+            .await?
+            .and_then(|s| s.value.trim().parse::<i64>().ok())
+            .filter(|v| *v > 0)
+            .unwrap_or(1);
+        if gap_extra::reserve_refresh_budget(db, uid).await? / price == 0 {
+            return Err(ApiError::business("common_00982"));
+        }
+    }
+    if !setting_on(state, "com_job_reserve").await {
+        return Err(ApiError::business("common_01177"));
+    }
+
+    let eligible = gap_extra::eligible_reserve_job_ids(db, uid, job_ids).await?;
+    if eligible.is_empty() {
+        return Err(ApiError::business("model_00008"));
+    }
+
+    let end_time = parse_reserve_end_ts(end_time_raw);
+    if opening && end_time > 0 && end_time < clock::start_of_today() + 86_400 {
+        return Err(ApiError::business("wap_com_00212"));
+    }
+    let floor = setting_repo::find(db, "sy_reserve_refresh_interval")
+        .await?
+        .and_then(|s| s.value.trim().parse::<i32>().ok())
+        .unwrap_or(0);
+    if opening && interval < floor {
+        return Err(ApiError::business("common_00606"));
+    }
+    if reserve_window_invalid(s_time, e_time) {
+        return Err(ApiError::business("common_00227"));
+    }
+
+    let now = clock::now_ts();
+    let v = gap_extra::ReserveScheduleIn {
+        status,
+        interval,
+        start_time: now,
+        end_time,
+        next_time: now + i64::from(interval.max(0)) * 60,
+        s_time,
+        e_time,
+    };
+    let existing = gap_extra::existing_reserve_job_ids(db, uid, &eligible).await?;
+    let fresh: Vec<u64> = eligible
+        .iter()
+        .copied()
+        .filter(|id| !existing.contains(id))
+        .collect();
+    gap_extra::insert_reserve_schedules(db, uid, &fresh, &v).await?;
+    gap_extra::update_reserve_schedules(db, uid, &existing, &v).await?;
+    gap_extra::set_jobs_is_reserve(db, uid, &eligible, i32::from(opening)).await?;
+    Ok(())
+}
+
+fn parse_reserve_end_ts(s: &str) -> i64 {
+    let s = s.trim();
+    if s.is_empty() {
+        return 0;
+    }
+    if let Ok(n) = s.parse::<i64>() {
+        return n;
+    }
+    clock::parse_site_date(s).unwrap_or(0)
+}
+
+fn reserve_window_invalid(s_time: &str, e_time: &str) -> bool {
+    if s_time.is_empty() || e_time.is_empty() {
+        return false;
+    }
+    let parse = |v: &str| {
+        let mut it = v.split(':');
+        let h: i32 = it.next().unwrap_or("0").trim().parse().unwrap_or(0);
+        let m: i32 = it.next().unwrap_or("0").trim().parse().unwrap_or(0);
+        h * 60 + m
+    };
+    parse(s_time) >= parse(e_time)
+}

@@ -26,6 +26,7 @@ const CUSTOM_SEND_URL: &str = "https://api.weixin.qq.com/cgi-bin/message/custom/
 const SHOW_QR_URL: &str = "https://mp.weixin.qq.com/cgi-bin/showqrcode";
 const MENU_CREATE_URL: &str = "https://api.weixin.qq.com/cgi-bin/menu/create";
 const MENU_DELETE_URL: &str = "https://api.weixin.qq.com/cgi-bin/menu/delete";
+const USER_INFO_URL: &str = "https://api.weixin.qq.com/cgi-bin/user/info";
 
 // ==================== access_token ====================
 
@@ -248,6 +249,39 @@ pub async fn replace_menu(state: &AppState, menu: &serde_json::Value) -> AppResu
         }
     }
     Ok(())
+}
+
+#[derive(Debug, Deserialize)]
+struct WxUserInfoResp {
+    #[serde(default)]
+    subscribe: Option<i32>,
+    #[serde(default)]
+    errcode: Option<i64>,
+    #[serde(default)]
+    errmsg: Option<String>,
+}
+
+/// PHP `weixin.model::getWxUser` — Official Account follow status for an openid.
+pub async fn get_subscribe(state: &AppState, openid: &str) -> AppResult<i32> {
+    if openid.is_empty() {
+        return Ok(0);
+    }
+    let token = get_access_token(state).await?;
+    let url = format!(
+        "{USER_INFO_URL}?access_token={}&openid={}&lang=zh_CN",
+        urlencoding_minimal(&token),
+        urlencoding_minimal(openid),
+    );
+    let resp: WxUserInfoResp = state.http.get_json(&url).await?;
+    if let Some(code) = resp.errcode {
+        if code != 0 {
+            return Err(ApiError::upstream(format!(
+                "wechat user info errcode={code} errmsg={}",
+                resp.errmsg.unwrap_or_default()
+            )));
+        }
+    }
+    Ok(resp.subscribe.unwrap_or(0))
 }
 
 /// Mini-program card message.

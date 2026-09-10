@@ -23,15 +23,45 @@ const route = useRoute()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
 const { applyToQuery } = useSubSite()
-const x = computed(() => String(route.query.x || ''))
-const y = computed(() => String(route.query.y || ''))
+const jobId = computed(() => Number(route.query.job_id || 0))
+const api = useApi()
+const { data: jobLoc } = await useAsyncData(
+  () => `map-job-${jobId.value}`,
+  async () => {
+    if (!jobId.value) return null as { x: string; y: string } | null
+    const d = await api
+      .get<{
+        job?: Record<string, unknown>
+        company?: Record<string, unknown>
+        contact?: Record<string, unknown>
+      }>('/v1/wap/jobs/detail', { id: jobId.value })
+      .catch(() => null)
+    if (!d) return null
+    const job = d.job || {}
+    const contact = d.contact || {}
+    const company = d.company || {}
+    const x = String(contact.x || company.x || job.x || '')
+    const y = String(contact.y || company.y || job.y || '')
+    if (!x || !y) return null
+    return { x, y }
+  },
+)
+const x = computed(() => String(route.query.x || jobLoc.value?.x || ''))
+const y = computed(() => String(route.query.y || jobLoc.value?.y || ''))
 const tab = computed(() => String(route.query.tab || 'jobs'))
 const page = computed(() => Number(route.query.page || 1))
 const hasPoint = computed(() => x.value !== '' && y.value !== '')
 const locFail = ref(false)
-const xInput = ref(String(route.query.x || ''))
-const yInput = ref(String(route.query.y || ''))
-const api = useApi()
+const xInput = ref('')
+const yInput = ref('')
+watch(
+  [x, y],
+  ([nx, ny]) => {
+    if (nx) xInput.value = nx
+    if (ny) yInput.value = ny
+  },
+  { immediate: true },
+)
 const { data, error } = await useAsyncData(
   () => `map-${tab.value}-${x.value}-${y.value}-${page.value}`,
   () => {

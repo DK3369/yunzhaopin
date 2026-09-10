@@ -744,6 +744,8 @@ pub struct AdminOnceSave<'a> {
     pub edate: i64,
     pub did: i32,
     pub now: i64,
+    pub pic: &'a str,
+    pub yyzz: &'a str,
 }
 
 pub async fn admin_save(
@@ -755,7 +757,8 @@ pub async fn admin_save(
         sqlx::query(
             "UPDATE phpyun_once_job SET title=?, companyname=?, linkman=?, phone=?, \
              provinceid=?, cityid=?, three_cityid=?, address=?, `require`=?, salary=?, \
-             password=COALESCE(?, password), edate=?, status=1, did=? WHERE id=?",
+             password=COALESCE(?, password), edate=?, status=1, did=?, \
+             pic=IF(?='', pic, ?), yyzz=IF(?='', yyzz, ?) WHERE id=?",
         )
         .bind(s.title)
         .bind(s.companyname)
@@ -770,6 +773,10 @@ pub async fn admin_save(
         .bind(s.password_md5)
         .bind(s.edate)
         .bind(s.did)
+        .bind(s.pic)
+        .bind(s.pic)
+        .bind(s.yyzz)
+        .bind(s.yyzz)
         .bind(id)
         .execute(pool)
         .await?;
@@ -778,8 +785,8 @@ pub async fn admin_save(
         let res = sqlx::query(
             "INSERT INTO phpyun_once_job \
              (title, companyname, linkman, phone, provinceid, cityid, three_cityid, address, \
-              `require`, salary, password, status, did, ctime, edate) \
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)",
+              `require`, salary, password, status, did, ctime, edate, pic, yyzz) \
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)",
         )
         .bind(s.title)
         .bind(s.companyname)
@@ -795,6 +802,8 @@ pub async fn admin_save(
         .bind(s.did)
         .bind(s.now)
         .bind(s.edate)
+        .bind(s.pic)
+        .bind(s.yyzz)
         .execute(pool)
         .await?;
         Ok(res.last_insert_id())

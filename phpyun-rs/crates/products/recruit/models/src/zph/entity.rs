@@ -110,3 +110,15 @@ pub struct ZphReservation {
     pub status: i32,
     pub created_at: i64,
 }
+
+/// PHP `phpyun_zhaopinhui_pic` (job-fair gallery).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct ZphPic {
+    pub id: u64,
+    pub title: String,
+    pub pic: String,
+    pub sort: i32,
+    pub zid: u64,
+    pub is_themb: String,
+    pub did: i32,
+}

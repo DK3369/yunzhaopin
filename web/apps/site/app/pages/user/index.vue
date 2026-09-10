@@ -42,6 +42,11 @@ const { data: completion } = await useAsyncData('user-home-score', () =>
 const { data: signSt, refresh: refreshSign } = await useAsyncData('user-home-sign', () =>
   api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
 )
+const { data: gzh } = await useAsyncData('user-gzh', () =>
+  api.post<{ subscribe?: number }>('/v1/mcenter/wechat/subscribe', {}).catch(() => ({ subscribe: 1 })),
+)
+const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
+const { wxQr } = useSiteChrome()
 const msg = ref('')
 useSeoMeta({ title: t('member_user_00183') })
 
@@ -92,6 +97,7 @@ const h5Links = [
   { to: '/user/parts', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00220' },
   { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
   { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
+  { to: '/user/otherservice', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00196' },
   { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
 ]
 function labelOf(to: string, key: string) {
@@ -107,7 +113,11 @@ function labelOf(to: string, key: string) {
   </section>
   <div v-else>
     <div class="site-pc">
-      <div class="yun_m_index_date_box">
+        <p v-if="gzhNeed" class="muted" style="padding: 8px 0">
+          {{ $t('common_00655') }}
+          <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
+        </p>
+        <div class="yun_m_index_date_box">
         <div class="yun_m_index_date_box_c">
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/interviews">
@@ -168,9 +178,11 @@ function labelOf(to: string, key: string) {
           </div>
           <div class="user_resume_c">
             <div class="user_resume_wzd">
-              <span class="user_resume_wzd_name">{{ $t('wap_00328') }}：</span>
-              <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" :style="{ width: `${integrity}%` }" /></div>
-              <span class="user_resume_wzd_r">{{ integrity }}%</span>
+              <NuxtLink to="/user/resume">
+                <span class="user_resume_wzd_name">{{ $t('wap_00328') }}：</span>
+                <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" :style="{ width: `${integrity}%` }" /></div>
+                <span class="user_resume_wzd_r">{{ integrity }}%</span>
+              </NuxtLink>
             </div>
             <div class="user_resume_p user_resume_pd">{{ resume?.lastupdate_n }}</div>
           </div>
@@ -205,6 +217,10 @@ function labelOf(to: string, key: string) {
       </div>
     </div>
     <div class="site-h5">
+      <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
+        {{ $t('common_00655') }}
+        <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
+      </p>
       <div class="userheader">
         <div class="userheader_nav">
           <div class="userheader_nav_calendar" @click="signSt?.signed_today ? undefined : sign()">

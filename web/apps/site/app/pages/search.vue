@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { readRecentJobs, readRecentResumes } from '~/utils/recentViews'
+
 const HISTORY = { job: 'job_key_history', resume: 'resume_key_history' }
 
 function readHistory(kind: 'job' | 'resume'): string[] {
@@ -28,9 +30,13 @@ const scope = computed(() => String(route.query.scope || 'all'))
 const api = useApi()
 const jobHistory = ref<string[]>([])
 const resumeHistory = ref<string[]>([])
+const recentJobs = ref<ReturnType<typeof readRecentJobs>>([])
+const recentResumes = ref<ReturnType<typeof readRecentResumes>>([])
 onMounted(() => {
   jobHistory.value = readHistory('job')
   resumeHistory.value = readHistory('resume')
+  recentJobs.value = readRecentJobs()
+  recentResumes.value = readRecentResumes()
   if (kw.value) {
     if (scope.value === 'resume') pushHistory('resume', kw.value)
     else pushHistory('job', kw.value)
@@ -80,6 +86,17 @@ useSeoMeta({ title: kw.value ? `${kw.value} - ${t('common.search')}` : t('common
       </p>
       <p>
         <NuxtLink v-for="h in resumeHistory" :key="'r'+h" :to="`/search?scope=resume&kw=${encodeURIComponent(h)}`">{{ h }}</NuxtLink>
+      </p>
+    </div>
+    <div v-if="!kw && (recentJobs.length || recentResumes.length)">
+      <h2>{{ $t('member_com_00151') }}</h2>
+      <p v-if="recentJobs.length">
+        {{ $t('wap_01135') }}：
+        <NuxtLink v-for="j in recentJobs" :key="'rj'+j.id" :to="`/jobs/${j.id}`" style="margin-right: 8px">{{ j.name }}</NuxtLink>
+      </p>
+      <p v-if="recentResumes.length">
+        {{ $t('member_com_00006') }}：
+        <NuxtLink v-for="r in recentResumes" :key="'rr'+r.uid" :to="`/resumes/${r.uid}`" style="margin-right: 8px">{{ r.name }}</NuxtLink>
       </p>
     </div>
     <template v-else>

@@ -135,6 +135,7 @@
 /v1/mcenter/jobs/promote/close
 /v1/mcenter/jobs/promote/quote
 /v1/mcenter/jobs/refresh
+/v1/mcenter/jobs/reserve
 /v1/mcenter/jobs/status
 /v1/mcenter/jobs/update
 /v1/mcenter/look-jobs/delete
@@ -270,6 +271,7 @@
 /v1/mcenter/warnings
 /v1/mcenter/warnings/read
 /v1/mcenter/warnings/unread-count
+/v1/mcenter/wechat/subscribe
 /v1/mcenter/yqms/accept
 /v1/mcenter/yqms/delete
 /v1/mcenter/yqms/list
@@ -428,6 +430,7 @@
 /v1/wap/regions/get
 /v1/wap/register
 /v1/wap/register/check
+/v1/wap/register/check-com-name
 /v1/wap/register/config
 /v1/wap/resume-share/view
 /v1/wap/resumes

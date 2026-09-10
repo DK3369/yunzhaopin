@@ -3,6 +3,7 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 const { data: packs, error } = await useAsyncData('user-vip-packs', () =>
   api.post('/v1/mcenter/vip/packages', {}),
 )
@@ -10,16 +11,25 @@ const { data: orders, refresh } = await useAsyncData('user-vip-orders', () =>
   api.post('/v1/mcenter/vip/orders/list', { page: 1, page_size: 20 }),
 )
 const msg = ref('')
+const channel = ref('alipay')
+const wxPayOn = computed(() =>
+  Boolean(settings.value.sy_wxpayid || settings.value.sy_wxpaykey || settings.value.wx_appid),
+)
+function payChannel() {
+  if (channel.value !== 'wxpay') return channel.value
+  if (import.meta.client && /Android|iPhone|iPad|Mobile|MicroMessenger/i.test(navigator.userAgent)) return 'wxh5'
+  return 'wxpay'
+}
 const packages = computed(() => (Array.isArray(packs.value) ? packs.value : packs.value?.list || []))
 async function buy(code: string) {
   msg.value = ''
   try {
-    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: 'alipay' })
+    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: payChannel() })
     if (created?.pay_url) {
       window.location.href = created.pay_url
       return
     }
-    msg.value = created?.msg || created?.order_no || t('ui.load_failed')
+    msg.value = created?.msg || created?.order_no || t('common.success')
     await refresh()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
@@ -32,6 +42,10 @@ useSeoMeta({ title: t('ui.pay') })
   <section>
     <h1>{{ $t('ui.pay') }}</h1>
     <p class="muted">{{ $t('ui.pay_hint') }}</p>
+    <p>
+      <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
+      <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
+    </p>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <div class="stack">
       <article v-for="p in packages" :key="p.code" class="job-card">

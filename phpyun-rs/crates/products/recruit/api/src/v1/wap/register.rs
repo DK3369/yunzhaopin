@@ -19,6 +19,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
         .route("/register/check", post(check_availability))
+        .route("/register/check-com-name", post(check_com_name))
         .route("/register/config", post(config))
 }
 
@@ -229,6 +230,35 @@ pub async fn check_availability(
     }))
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct CheckComNameForm {
+    /// PHP field `c_name`
+    #[validate(length(min = 1, max = 100))]
+    pub c_name: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CheckComNameData {
+    /// PHP `errcode == 1` when the name already exists.
+    pub taken: bool,
+}
+
+/// Pre-check whether a company name is already registered (PHP `checkComName_action`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/register/check-com-name",
+    tag = "auth",
+    request_body = CheckComNameForm,
+    responses((status = 200, description = "ok", body = CheckComNameData))
+)]
+pub async fn check_com_name(
+    State(state): State<AppState>,
+    ValidatedJson(f): ValidatedJson<CheckComNameForm>,
+) -> AppResult<ApiResponse<CheckComNameData>> {
+    let taken = registration_service::company_name_taken(&state, &f.c_name).await?;
+    Ok(ApiResponse::data(CheckComNameData { taken }))
+}
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct RegisterConfig {
     pub username_min_len: u32,
@@ -242,6 +272,10 @@ pub struct RegisterConfig {
     pub sms_code_length: u32,
     pub sms_code_ttl_secs: u32,
     pub registration_open: bool,
+    /// PHP `reg_user` / `reg_moblie` / `reg_email` — `"1"` means that channel is on.
+    pub reg_user: bool,
+    pub reg_moblie: bool,
+    pub reg_email: bool,
 }
 
 /// Registration rules config: clients can use this for instant validation and display copy.
@@ -255,6 +289,9 @@ pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<Regi
     let open = phpyun_services::site_gate_service::ensure_registration_open(&state)
         .await
         .is_ok();
+    let reg_user = phpyun_services::site_gate_service::setting_i32(&state, "reg_user").await == 1;
+    let reg_moblie = phpyun_services::site_gate_service::setting_i32(&state, "reg_moblie").await == 1;
+    let reg_email = phpyun_services::site_gate_service::setting_i32(&state, "reg_email").await == 1;
     Ok(ApiResponse::data(RegisterConfig {
         username_min_len: 3,
         username_max_len: 20,
@@ -267,5 +304,8 @@ pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<Regi
         sms_code_length: 6,
         sms_code_ttl_secs: 300,
         registration_open: open,
+        reg_user,
+        reg_moblie,
+        reg_email,
     }))
 }

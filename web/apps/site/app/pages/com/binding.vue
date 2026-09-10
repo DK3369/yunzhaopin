@@ -86,6 +86,8 @@ useSeoMeta({ title: t('member_user_00059') })
         <input v-model="email" :placeholder="$t('member_user_00282')" />
         <button type="submit">{{ $t('common.submit') }}</button>
       </form>
+      <p class="muted">{{ $t('ajax_00001') }}</p>
+      <p><NuxtLink to="/email-verify">{{ $t('wap_user_00179') }}</NuxtLink></p>
       <p v-if="msg">{{ msg }}</p>
     </template>
   </section>

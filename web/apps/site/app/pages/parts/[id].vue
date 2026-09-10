@@ -59,6 +59,15 @@ const cityLine = computed(() =>
   [row.value.province_name, row.value.city_name, row.value.three_city_name].map((v) => String(v || '')).filter(Boolean).join('-'),
 )
 const tel = computed(() => String(row.value.linktel || row.value.linktel_n || ''))
+const telQr = ref('')
+onMounted(async () => {
+  try {
+    const qr = await api.post<{ show_url?: string }>('/v1/wap/wechat/qr', { kind: 'parttel', id })
+    telQr.value = String(qr.show_url || '')
+  } catch {
+    telQr.value = ''
+  }
+})
 useSeoMeta({ title: () => String(row.value.name || t('wap_user_00220')) })
 useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
 </script>
@@ -83,6 +92,7 @@ useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
       <p v-if="row.linkman">{{ $t('wap_01431') }}：{{ row.linkman }}</p>
       <p v-if="Number(row.link_tip) > 0" class="muted">{{ $t('wap_01395') }}</p>
       <p v-else-if="tel">{{ $t('wap_user_00265') }}：{{ tel }}</p>
+      <img v-if="telQr" :src="telQr" alt="" width="80" height="80" style="display: block; margin: 8px 0" />
       <p>
         <button type="button" :disabled="acting" @click="apply">{{ $t('wap_com_00235') }}</button>
         <button type="button" :disabled="acting" @click="collect">{{ $t('wap_00379') }}</button>

@@ -15,7 +15,7 @@
 //!   - status     ↔ is_open (1=open / 0=closed; PHP's `status` column is a workflow state, while is_open is the listing flag)
 //!   - created_at ↔ ctime
 
-use super::entity::{Zph, ZphCompany, ZphReservation, ZphSpace};
+use super::entity::{Zph, ZphCompany, ZphPic, ZphReservation, ZphSpace};
 use crate::soft_delete::{self, PREDICATE};
 use sqlx::{MySqlPool, QueryBuilder};
 
@@ -1040,4 +1040,106 @@ pub async fn patch_space_field(pool: &MySqlPool, id: u64, field: &str, value: &s
         }
         _ => Ok(0),
     }
+}
+
+const ZPH_PIC_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    COALESCE(title, '') AS title, \
+    COALESCE(pic, '') AS pic, \
+    CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
+    CAST(COALESCE(zid, 0) AS UNSIGNED) AS zid, \
+    COALESCE(is_themb, '') AS is_themb, \
+    CAST(COALESCE(did, 0) AS SIGNED) AS did";
+
+pub async fn list_pics(pool: &MySqlPool, zid: u64) -> Result<Vec<ZphPic>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ZPH_PIC_FIELDS} FROM phpyun_zhaopinhui_pic WHERE zid = ? ORDER BY sort ASC, id DESC"
+    );
+    sqlx::query_as::<_, ZphPic>(&sql)
+        .bind(zid)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn find_pic(pool: &MySqlPool, id: u64) -> Result<Option<ZphPic>, sqlx::Error> {
+    let sql = format!("SELECT {ZPH_PIC_FIELDS} FROM phpyun_zhaopinhui_pic WHERE id = ? LIMIT 1");
+    sqlx::query_as::<_, ZphPic>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn insert_pic(
+    pool: &MySqlPool,
+    title: &str,
+    pic: &str,
+    sort: i32,
+    zid: u64,
+    did: i32,
+) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query(
+        "INSERT INTO phpyun_zhaopinhui_pic (title, pic, sort, zid, is_themb, did) VALUES (?, ?, ?, ?, '0', ?)",
+    )
+    .bind(title)
+    .bind(pic)
+    .bind(sort)
+    .bind(zid)
+    .bind(did)
+    .execute(pool)
+    .await?
+    .last_insert_id())
+}
+
+pub async fn update_pic(
+    pool: &MySqlPool,
+    id: u64,
+    title: &str,
+    pic: &str,
+    sort: i32,
+) -> Result<u64, sqlx::Error> {
+    if pic.is_empty() {
+        Ok(sqlx::query("UPDATE phpyun_zhaopinhui_pic SET title = ?, sort = ? WHERE id = ?")
+            .bind(title)
+            .bind(sort)
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected())
+    } else {
+        Ok(
+            sqlx::query("UPDATE phpyun_zhaopinhui_pic SET title = ?, pic = ?, sort = ? WHERE id = ?")
+                .bind(title)
+                .bind(pic)
+                .bind(sort)
+                .bind(id)
+                .execute(pool)
+                .await?
+                .rows_affected(),
+        )
+    }
+}
+
+pub async fn delete_pic(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    Ok(sqlx::query("DELETE FROM phpyun_zhaopinhui_pic WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?
+        .rows_affected())
+}
+
+pub async fn set_pic_themb(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let Some(row) = find_pic(pool, id).await? else {
+        return Ok(0);
+    };
+    sqlx::query("UPDATE phpyun_zhaopinhui_pic SET is_themb = '' WHERE zid = ?")
+        .bind(row.zid)
+        .execute(pool)
+        .await?;
+    Ok(
+        sqlx::query("UPDATE phpyun_zhaopinhui_pic SET is_themb = '1' WHERE id = ?")
+            .bind(id)
+            .execute(pool)
+            .await?
+            .rows_affected(),
+    )
 }

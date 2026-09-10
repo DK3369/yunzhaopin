@@ -209,3 +209,29 @@ pub async fn delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Erro
     qb.push(")");
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
+
+/// Latest email whose title contains any of `likes` (PHP promotion index).
+pub async fn latest_ctime_title_likes(
+    pool: &MySqlPool,
+    likes: &[String],
+) -> Result<Option<(String, i64)>, sqlx::Error> {
+    let needles: Vec<&str> = likes.iter().map(|s| s.as_str()).filter(|s| !s.is_empty()).collect();
+    if needles.is_empty() {
+        return Ok(None);
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT COALESCE(title,'') AS title, CAST(COALESCE(ctime,0) AS SIGNED) AS ctime \
+         FROM phpyun_email_msg WHERE COALESCE(del,0) <> 1 AND (",
+    );
+    let mut first = true;
+    for n in needles {
+        if !first {
+            qb.push(" OR ");
+        }
+        first = false;
+        qb.push("title LIKE ");
+        qb.push_bind(format!("%{n}%"));
+    }
+    qb.push(") ORDER BY id DESC LIMIT 1");
+    Ok(qb.build_query_as::<(String, i64)>().fetch_optional(pool).await?)
+}
