@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ApiError } from '~/utils/envelope'
 
-const { siteName, logoPc, settings, me } = useSiteChrome()
+const { siteName, logoPc, settings, me, refreshMe } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
 const { data: cfg } = await useAsyncData('register-config', () =>
@@ -114,11 +114,12 @@ async function submit() {
         referrer_uid: Number(useRoute().query.uid || 0) || 0,
       },
     })
+    await refreshMe()
     if (logged.usertype === 0) {
       await navigateTo('/utype')
       return
     }
-    await navigateTo(logged.usertype === 2 ? '/com' : '/user')
+    await navigateTo(logged.usertype === 2 ? '/com' : '/')
   } catch (e: unknown) {
     const key =
       e instanceof ApiError

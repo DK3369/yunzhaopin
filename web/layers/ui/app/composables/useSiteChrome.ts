@@ -257,7 +257,7 @@ export function useSiteChrome() {
   const hrlicense = computed(() => String(settings.value.sy_hrlicense || '').trim())
   const secord = computed(() => String(settings.value.sy_websecord || '').trim())
 
-  const { data: me } = useAsyncData(
+  const { data: me, refresh: refreshMe } = useAsyncData(
     'auth-me',
     () => $fetch<Me>('/api/auth/me').catch(() => null),
     { default: () => null },
@@ -319,6 +319,7 @@ export function useSiteChrome() {
 
   async function logout() {
     await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined)
+    await refreshMe()
     await navigateTo('/login')
   }
 
@@ -350,6 +351,7 @@ export function useSiteChrome() {
     hrlicense,
     secord,
     me,
+    refreshMe,
     isHome,
     isAuth,
     isMember,

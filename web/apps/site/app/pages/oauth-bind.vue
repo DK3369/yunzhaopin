@@ -27,11 +27,12 @@ onMounted(() => {
 })
 
 async function afterLogin(me: { uid: number; usertype: number }) {
+  await refreshNuxtData('auth-me')
   if (me.usertype === 0) {
     await navigateTo('/utype')
     return
   }
-  await navigateTo(me.usertype === 2 ? '/com' : '/user')
+  await navigateTo(me.usertype === 2 ? '/com' : '/')
 }
 
 async function sendSms() {

@@ -28,6 +28,7 @@ const { wxQr } = useSiteChrome()
 useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
+  await refreshNuxtData('auth-me')
   await navigateTo('/login')
 }
 

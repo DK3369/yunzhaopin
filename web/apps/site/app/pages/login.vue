@@ -2,7 +2,7 @@
 import { ApiError } from '~/utils/envelope'
 import { qrSvgDataUri } from '~/utils/qr'
 
-const { siteName, logoPc, settings, me, worktime, phone } = useSiteChrome()
+const { siteName, logoPc, settings, me, worktime, phone, refreshMe } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
 const smsLoginOn = computed(
@@ -44,7 +44,7 @@ function loginNext(): string {
 
 function homeOf(usertype: number) {
   if (usertype === 2) return '/com'
-  return '/user'
+  return '/'
 }
 
 function authFail(e: unknown): { key: string; msg: string } {
@@ -124,6 +124,7 @@ function startSmsWait() {
 }
 
 async function afterLogin(user: { uid: number; usertype: number }) {
+  await refreshMe()
   const next = loginNext()
   if (user.usertype === 0) {
     await navigateTo({ path: '/utype', query: next ? { next } : {} })
@@ -144,6 +145,7 @@ onMounted(async () => {
   const oauthIntent = import.meta.client ? sessionStorage.getItem('oauth_intent') || '' : ''
   if (String(q.bind) === '1' && me.value && oauthIntent !== 'bind') {
     await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined)
+    await refreshMe()
   } else if (me.value && Number(me.value.usertype) !== 0 && !(code && state)) {
     await afterLogin(me.value)
     return

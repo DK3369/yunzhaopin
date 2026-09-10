@@ -84,6 +84,7 @@ function ageOf(birthday?: string) {
 }
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
+  await refreshNuxtData('auth-me')
   await navigateTo('/login')
 }
 async function refreshMyResume() {

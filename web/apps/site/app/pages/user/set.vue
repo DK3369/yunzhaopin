@@ -3,6 +3,7 @@ const { t } = useI18n()
 useSeoMeta({ title: t('wap_user_00214') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
+  await refreshNuxtData('auth-me')
   await navigateTo('/login')
 }
 </script>

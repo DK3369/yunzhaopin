@@ -19,7 +19,7 @@ type IndexTpl = { id?: number; pic?: string; height?: number; se?: number }
 const api = useApi()
 const route = useRoute()
 const { t, te, locale } = useI18n()
-const { siteName, me, h5Nav, settings } = useSiteChrome()
+const { siteName, me, h5Nav, settings, refreshMe } = useSiteChrome()
 
 type SearchKind = 'job' | 'resume' | 'tiny' | 'once'
 const searchKind = ref<SearchKind>('job')
@@ -307,7 +307,8 @@ async function homeLogin() {
       method: 'POST',
       body: { username: loginUser.value, password: loginPass.value },
     })
-    await navigateTo(profile.usertype === 2 ? '/com' : '/user')
+    await refreshMe()
+    await navigateTo(profile.usertype === 2 ? '/com' : '/')
   } catch (e: unknown) {
     const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
     loginErr.value = ex.data?.statusMessage || ex.statusMessage || t('ui.login_failed')
