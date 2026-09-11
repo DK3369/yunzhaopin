@@ -190,15 +190,11 @@ export function applyPhpLcFixes(): void {
   const i18n = composer()
   if (!i18n?.mergeLocaleMessage) return
   i18n.mergeLocaleMessage('zh', {
-    admin_yunying_00201: LC_FIRST_WINS.zh.admin_yunying_00201,
-    admin_vue_00137: LC_FIRST_WINS.zh.admin_vue_00137,
-    admin_level1_category_value: LC_FIRST_WINS.zh.admin_level1_category_value,
+    ...LC_FIRST_WINS.zh,
     nav: { '123': NAV_LABEL.zh[123], '186': NAV_LABEL.zh[186] },
   })
   i18n.mergeLocaleMessage('en', {
-    admin_yunying_00201: LC_FIRST_WINS.en.admin_yunying_00201,
-    admin_vue_00137: LC_FIRST_WINS.en.admin_vue_00137,
-    admin_level1_category_value: LC_FIRST_WINS.en.admin_level1_category_value,
+    ...LC_FIRST_WINS.en,
     nav: { '123': NAV_LABEL.en[123], '186': NAV_LABEL.en[186] },
   })
   mergedFixes = true

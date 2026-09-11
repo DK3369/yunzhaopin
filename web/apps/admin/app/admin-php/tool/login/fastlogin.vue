@@ -8,10 +8,10 @@
                 <el-tab-pane :label="lc('admin_tool_00465')" name="second">
                     <loginsina :config="config" @post-set="postset"></loginsina>
                 </el-tab-pane>
-                <el-tab-pane :label="lc('admin_tool_00689')" name="google">
+                <el-tab-pane :label="lc('admin_tool_00689', null, 'Google登录配置')" name="google">
                     <logingoogle :config="config" @post-set="postset"></logingoogle>
                 </el-tab-pane>
-                <el-tab-pane :label="lc('admin_tool_00690')" name="facebook">
+                <el-tab-pane :label="lc('admin_tool_00690', null, 'Facebook登录配置')" name="facebook">
                     <loginfacebook :config="config" @post-set="postset"></loginfacebook>
                 </el-tab-pane>
             </el-tabs>

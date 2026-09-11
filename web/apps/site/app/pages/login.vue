@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ApiError } from '~/utils/envelope'
 import { qrSvgDataUri } from '~/utils/qr'
+import { OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin } from '~/utils/site'
 
 const { siteName, logoPc, settings, me, worktime, phone, refreshMe } = useSiteChrome()
 const { t } = useI18n()
@@ -184,16 +185,11 @@ onMounted(async () => {
   }
   if (needImageCaptcha.value && !captcha.value) await loadCaptcha()
   const redirect_uri = `${siteUrl}/login`
-  for (const [name, path, key] of [
-    ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
-    ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
-    ['Weibo', '/v1/wap/oauth/weibo/authorize-url', 'weibo'],
-    ['Google', '/v1/wap/oauth/google/authorize-url', 'google'],
-    ['Facebook', '/v1/wap/oauth/facebook/authorize-url', 'facebook'],
-  ] as const) {
+  for (const item of OAUTH_FRONT_PROVIDERS) {
+    if (!oauthEnabledByAdmin(settings.value, item)) continue
     try {
-      const r = await api.post<{ authorize_url?: string }>(path, { redirect_uri })
-      if (r.authorize_url) oauth.value.push({ name, path: r.authorize_url, provider: key })
+      const r = await api.post<{ authorize_url?: string }>(item.path, { redirect_uri })
+      if (r.authorize_url) oauth.value.push({ name: item.name, path: r.authorize_url, provider: item.key })
     } catch {
       /* not configured */
     }

@@ -194,6 +194,23 @@ export function isPathModuleOn(settings: Record<string, string>, path: string): 
   return isNavModuleOn(settings, to)
 }
 
+/** PHP 前台快捷登录：开关在 `phpyun_admin_config`（工具 → 登陆）。微信仍可按环境探测。 */
+export const OAUTH_FRONT_PROVIDERS = [
+  { name: 'WeChat', path: '/v1/wap/oauth/wechat/authorize-url', key: 'wechat', flag: 'wx_author' },
+  { name: 'QQ', path: '/v1/wap/oauth/qq/authorize-url', key: 'qq', flag: 'sy_qqlogin' },
+  { name: 'Weibo', path: '/v1/wap/oauth/weibo/authorize-url', key: 'weibo', flag: 'sy_sinalogin' },
+  { name: 'Google', path: '/v1/wap/oauth/google/authorize-url', key: 'google', flag: 'sy_googlelogin' },
+  { name: 'Facebook', path: '/v1/wap/oauth/facebook/authorize-url', key: 'facebook', flag: 'sy_facebooklogin' },
+] as const
+
+export function oauthEnabledByAdmin(
+  settings: Record<string, string>,
+  provider: (typeof OAUTH_FRONT_PROVIDERS)[number],
+): boolean {
+  if (provider.key === 'wechat') return true
+  return String(settings[provider.flag] || '') === '1'
+}
+
 export function errKey(err: unknown): string {
   if (!err || typeof err !== 'object') return ''
   const e = err as { key?: string; data?: { key?: string } }

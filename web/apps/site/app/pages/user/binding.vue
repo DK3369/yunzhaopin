@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { isUnauthErr, OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 const { data, error, refresh } = await useAsyncData('oauth-bindings', () =>
   api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
 )
@@ -30,17 +31,12 @@ const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '
 async function loadOauth() {
   const redirect_uri = `${siteUrl}/login`
   oauth.value = []
-  for (const [name, path, key] of [
-    ['WeChat', '/v1/wap/oauth/wechat/authorize-url', 'wechat'],
-    ['QQ', '/v1/wap/oauth/qq/authorize-url', 'qq'],
-    ['Weibo', '/v1/wap/oauth/weibo/authorize-url', 'weibo'],
-    ['Google', '/v1/wap/oauth/google/authorize-url', 'google'],
-    ['Facebook', '/v1/wap/oauth/facebook/authorize-url', 'facebook'],
-  ] as const) {
-    if (bound.value.has(key)) continue
+  for (const item of OAUTH_FRONT_PROVIDERS) {
+    if (bound.value.has(item.key)) continue
+    if (!oauthEnabledByAdmin(settings.value, item)) continue
     try {
-      const r = await api.post<{ authorize_url?: string }>(path, { redirect_uri })
-      if (r.authorize_url) oauth.value.push({ name, path: r.authorize_url, provider: key })
+      const r = await api.post<{ authorize_url?: string }>(item.path, { redirect_uri })
+      if (r.authorize_url) oauth.value.push({ name: item.name, path: r.authorize_url, provider: item.key })
     } catch {
       /* not configured */
     }
