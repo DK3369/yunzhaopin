@@ -119,15 +119,21 @@ export default {
                         };
                     }
                     startLoading();
-                    httpPost('m=tool&c=fastlogin&a=save',param).then((result)=>{
-                        endLoading();
-                        var res = result.data;
-
-                        message.success(res.msg,this.getInfo);
-
-                    }).catch(function(e){
+                    try {
+                        const result = await httpPost('m=tool&c=fastlogin&a=save', param)
+                        const res = result.data || {}
+                        if (res.error == 0) {
+                            message.success(res.msg || 'ok')
+                            await this.getInfo()
+                        } else {
+                            message.error(res.msg || 'error')
+                        }
+                    } catch (e) {
                         console.log(e)
-                    })
+                        message.error('error')
+                    } finally {
+                        endLoading()
+                    }
                 },
             }
         }

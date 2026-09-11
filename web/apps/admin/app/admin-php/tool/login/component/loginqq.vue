@@ -104,11 +104,10 @@ export default {
     },
     watch: {
         config: {
-            handler(val, oldVal) {
-                this.configdata = val;
+            handler(val) {
+                this.configdata = Object.assign({}, val || {})
             },
             immediate: true,
-            deep: true,
         }
     },
     data: function() {

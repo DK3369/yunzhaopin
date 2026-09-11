@@ -31,7 +31,14 @@ function phpSwitchVNode(attrs: Record<string, unknown>, slots: Record<string, un
   const activeText = attrOf(attrs, 'activeText', 'active-text')
   const inactiveText = attrOf(attrs, 'inactiveText', 'inactive-text')
   const on = Object.is(model, active) || String(model) === String(active)
-  const next: Record<string, unknown> = { ...attrs, modelValue: model }
+  const next: Record<string, unknown> = {
+    ...attrs,
+    modelValue: model,
+    activeValue: active,
+    inactiveValue: inactive,
+  }
+  delete next['active-value']
+  delete next['inactive-value']
   // PHP Element UI 2 used v-show so only the current side's text is visible.
   // Element Plus paints both labels at once; they wrap into 不通知/通知.
   if (activeText != null || inactiveText != null) {

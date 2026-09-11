@@ -78,10 +78,9 @@ export default {
     watch: {
         config: {
             handler(val) {
-                this.configdata = val || {}
+                this.configdata = Object.assign({}, val || {})
             },
             immediate: true,
-            deep: true,
         }
     },
     data: function() {
