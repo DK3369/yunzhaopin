@@ -7,12 +7,11 @@ function skipCloudflareRocketLoader(html: { head: string[]; bodyPrepend: string[
   html.bodyAppend = html.bodyAppend.map(patch)
 }
 
+// 只把 node_modules 合成 vendor。不要把 apps/pages/admin-php 打进同一 chunk：
+// 后台 120+ 页 + i18n 会在登录时整包求值，Nuxt 直接进 500。
 const clientChunkGroups = {
   codeSplitting: {
-    groups: [
-      { name: 'vendor', test: /[\\/]node_modules[\\/]/ },
-      { name: 'app', test: /[\\/](apps|layers|admin-php)[\\/]/ },
-    ],
+    groups: [{ name: 'vendor', test: /[\\/]node_modules[\\/]/ }],
   },
 }
 

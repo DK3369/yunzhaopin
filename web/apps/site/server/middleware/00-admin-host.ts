@@ -65,17 +65,16 @@ function staleHashedAsset(event: Parameters<typeof setHeader>[0], hit: { ext: st
   return RELOAD_JS
 }
 
-function hashedPath(pathname: string): { tag: string; ext: string } | null {
+function hashedPath(pathname: string): { tag: string; ext: 'js' | 'mjs' | 'css' } | null {
   const n = pathname.match(/\/_n\/([^/]+)\/.+\.(js|mjs|css)$/)
-  if (n) return { tag: decodeURIComponent(n[1]), ext: n[2] }
+  if (n) return { tag: decodeURIComponent(n[1]), ext: n[2] as 'js' | 'mjs' | 'css' }
   const old = pathname.match(/\/_nuxt\/.+\.(js|mjs|css)$/)
-  if (old) return { tag: '_nuxt', ext: old[1] }
+  if (old) return { tag: '_nuxt', ext: old[1] as 'js' | 'mjs' | 'css' }
   return null
 }
 
-function staticAssetExt(pathname: string): 'js' | 'mjs' | 'css' | null {
-  const m = pathname.match(/\.(js|mjs|css)$/i)
-  return m ? (m[1].toLowerCase() as 'js' | 'mjs' | 'css') : null
+function hashedAssetExt(pathname: string): 'js' | 'mjs' | 'css' | null {
+  return hashedPath(pathname)?.ext ?? null
 }
 
 function currentAssetTag(): string {
@@ -146,18 +145,12 @@ export default defineEventHandler(async (event) => {
       const body = staleHashedAsset(event, hit)
       return event.method === 'HEAD' ? '' : body
     }
-
-    const missingExt = staticAssetExt(path)
-    if (missingExt) {
-      const body = staleHashedAsset(event, { ext: missingExt })
-      return event.method === 'HEAD' ? '' : body
-    }
   }
 
   try {
     await proxyAdmin(event)
   } catch {
-    const ext = staticAssetExt(path)
+    const ext = hashedAssetExt(path)
     if (ext) {
       const body = staleHashedAsset(event, { ext })
       return event.method === 'HEAD' ? '' : body
