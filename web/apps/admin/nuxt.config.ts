@@ -1,6 +1,10 @@
 /** EP 3: radio/checkbox `label` as the selected value is deprecated. Not el-form-item / el-table-column. */
-import { writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = dirname(fileURLToPath(import.meta.url))
+const phpAdmin = (...p: string[]) => join(here, 'public/php-admin', ...p)
 
 function rewriteChoiceLabelToValue(code: string) {
   return code.replace(
@@ -66,6 +70,48 @@ function rewriteButtonTypeText(code: string) {
       return `<${tag}${attrs}${slash}>`
     },
   )
+}
+
+/** Concat php-admin CSS (PostCSS cannot parse the minified Element UI 2 sheet). */
+function rewriteCssUrls(css: string, cssHref: string): string {
+  const dir = cssHref.replace(/[^/]+$/, '')
+  return css.replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (full, quote: string, raw: string) => {
+    const src = String(raw || '').trim()
+    if (!src || /^(data:|https?:|\/\/|#)/i.test(src) || src.startsWith('/')) return full
+    try {
+      const abs = new URL(src, `https://dummy.local${dir}`).pathname
+      return `url(${quote}${abs}${quote})`
+    } catch {
+      return full
+    }
+  })
+}
+
+const PHP_ADMIN_CSS: { disk: string; href: string }[] = [
+  { disk: 'js/element-icons.css', href: '/admin/php-admin/js/element-icons.css' },
+  { disk: 'adstyle/allcss/overall.css', href: '/admin/php-admin/adstyle/allcss/overall.css' },
+  { disk: 'adstyle/allcss/system.css', href: '/admin/php-admin/adstyle/allcss/system.css' },
+  { disk: 'adstyle/allcss/yunying.css', href: '/admin/php-admin/adstyle/allcss/yunying.css' },
+  { disk: 'adstyle/allcss/neirong.css', href: '/admin/php-admin/adstyle/allcss/neirong.css' },
+  { disk: 'adstyle/allcss/tool.css', href: '/admin/php-admin/adstyle/allcss/tool.css' },
+  { disk: 'adstyle/allcss/huiyuan.css', href: '/admin/php-admin/adstyle/allcss/huiyuan.css' },
+  { disk: 'adstyle/allcss/index.css', href: '/admin/php-admin/adstyle/allcss/index.css' },
+  { disk: 'adstyle/allcss/gongju.css', href: '/admin/php-admin/adstyle/allcss/gongju.css' },
+  { disk: 'adstyle/allcss/crm.css', href: '/admin/php-admin/adstyle/allcss/crm.css' },
+  { disk: 'images/admin.css', href: '/admin/php-admin/images/admin.css' },
+  { disk: 'js/wangeditor/index.css', href: '/admin/php-admin/js/wangeditor/index.css' },
+]
+
+function bundlePhpAdminCss(): string {
+  const parts: string[] = []
+  for (const file of PHP_ADMIN_CSS) {
+    const abs = phpAdmin(file.disk)
+    if (!existsSync(abs)) continue
+    let css = readFileSync(abs, 'utf8')
+    css = css.replace(/@charset\s+[^;]+;/gi, '')
+    parts.push(rewriteCssUrls(css, file.href))
+  }
+  return parts.join('\n')
 }
 
 /** Compile-time EP 2.10 compat: do not batch-edit dozens of PHP Vue templates. */
@@ -168,10 +214,7 @@ export default defineNuxtConfig({
       meta: [{ name: 'admin-build', content: adminAssetTag }],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.v1.ico' },
-        { rel: 'stylesheet', href: '/admin/php-admin/js/element-icons.css' },
-        { rel: 'stylesheet', href: '/admin/php-admin/adstyle/phpyun.css' },
-        { rel: 'stylesheet', href: '/admin/php-admin/images/admin.css' },
-        { rel: 'stylesheet', href: '/admin/php-admin/js/wangeditor/index.css' },
+        { rel: 'stylesheet', href: '/admin/php-admin/adstyle/admin-bundle.css' },
       ],
       script: [
         {
@@ -190,10 +233,15 @@ export default defineNuxtConfig({
       ],
     },
   },
-  elementPlus: { importStyle: 'css' },
+  css: ['element-plus/dist/index.css'],
+  elementPlus: { importStyle: false },
   hooks: {
     'nitro:build:public-assets'(nitro: { options: { output: { publicDir: string } } }) {
-      writeFileSync(join(nitro.options.output.publicDir, 'admin-asset-tag'), `${adminAssetTag}\n`)
+      const pub = nitro.options.output.publicDir
+      writeFileSync(join(pub, 'admin-asset-tag'), `${adminAssetTag}\n`)
+      const cssDir = join(pub, 'php-admin/adstyle')
+      mkdirSync(cssDir, { recursive: true })
+      writeFileSync(join(cssDir, 'admin-bundle.css'), bundlePhpAdminCss())
     },
   },
 })

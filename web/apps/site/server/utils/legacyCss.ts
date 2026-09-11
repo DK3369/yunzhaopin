@@ -22,8 +22,13 @@ const PC_FILES: CssFile[] = [
   { disk: 'uploads/app/template/default/style/map.css', href: '/legacy/pc/style/map.css' },
   { disk: 'uploads/app/template/default/style/evaluate.css', href: '/legacy/pc/style/evaluate.css' },
   { disk: 'uploads/app/template/default/style/integral.css', href: '/legacy/pc/style/integral.css' },
+  { disk: 'uploads/app/template/default/style/tips.css', href: '/legacy/pc/style/tips.css' },
+  { disk: 'uploads/app/template/default/style/microresume.css', href: '/legacy/pc/style/microresume.css' },
+  { disk: 'uploads/app/template/default/style/mdsSlide.css', href: '/legacy/pc/style/mdsSlide.css' },
+  { disk: 'uploads/app/template/default/style/newclass.public.css', href: '/legacy/pc/style/newclass.public.css' },
   { disk: 'uploads/app/template/member/user/images/m_css.css', href: '/legacy/member/user/m_css.css' },
   { disk: 'uploads/app/template/member/com/images/m_style.css', href: '/legacy/member/com/m_style.css' },
+  { disk: 'uploads/app/template/member/com/images/two_style.css', href: '/legacy/member/com/two_style.css' },
 ]
 
 const H5_FILES: CssFile[] = [
@@ -31,7 +36,10 @@ const H5_FILES: CssFile[] = [
   { disk: 'uploads/app/template/wap/css/yunwap.css', href: '/legacy/h5/css/yunwap.css' },
   { disk: 'uploads/app/template/wap/css/css.css', href: '/legacy/h5/css/css.css' },
   { disk: 'uploads/app/template/wap/css/job.css', href: '/legacy/h5/css/job.css' },
+  { disk: 'uploads/app/template/wap/css/map.css', href: '/legacy/h5/css/map.css' },
+  { disk: 'uploads/app/template/wap/css/combase.css', href: '/legacy/h5/css/combase.css' },
   { disk: 'uploads/app/template/wap/css/member/memberwap.css', href: '/legacy/h5/css/member/memberwap.css' },
+  { disk: 'uploads/app/template/wap/css/member/memberuserwap.css', href: '/legacy/h5/css/member/memberuserwap.css' },
 ]
 
 const mem = new Map<string, string>()

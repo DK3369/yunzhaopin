@@ -7,39 +7,6 @@ const repoRoot = resolve(here, '../../..')
 export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   compatibilityDate: '2026-08-25',
-  vite: {
-    build: {
-      cssCodeSplit: false,
-      minify: 'oxc',
-      cssMinify: true,
-    },
-    server: {
-      allowedHosts: true,
-    },
-  },
-  hooks: {
-    'vite:extendConfig'(config, { isClient }) {
-      if (!isClient) return
-      const build = config.build ?? {}
-      config.build = build
-      const prev = build.rolldownOptions ?? {}
-      const prevOut = prev.output
-      const extra = {
-        codeSplitting: {
-          groups: [
-            { name: 'vendor', test: /[\\/]node_modules[\\/]/ },
-            { name: 'shared', minShareCount: 2 },
-          ],
-        },
-      }
-      build.rolldownOptions = {
-        ...prev,
-        output: Array.isArray(prevOut)
-          ? prevOut.map((o) => ({ ...o, ...extra }))
-          : { ...(prevOut ?? {}), ...extra },
-      }
-    },
-  },
   css: ['~/assets/main.css'],
   modules: ['@nuxtjs/i18n'],
   i18n: {
