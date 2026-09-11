@@ -30,6 +30,8 @@ export type PublicDictBundle = {
   job_types_user: DictItem[]
   company_natures: DictItem[]
   company_sizes: DictItem[]
+  sy_googlelogin?: string
+  sy_facebooklogin?: string
 }
 
 export function emptyPublicDictBundle(): PublicDictBundle {
@@ -48,6 +50,8 @@ export function emptyPublicDictBundle(): PublicDictBundle {
     job_types_user: [],
     company_natures: [],
     company_sizes: [],
+    sy_googlelogin: '',
+    sy_facebooklogin: '',
   }
 }
 

@@ -16,20 +16,7 @@
                         </td>
                         <td>
                             <div class="TableButn">
-                                <div class="login-switch">
-                                    <el-switch
-                                        v-model="configdata.sy_sinalogin"
-                                        inline-prompt
-                                        :width="52"
-                                        :active-value="'1'"
-                                        :inactive-value="'0'"
-                                        :active-text="lc('member_com_00287')"
-                                        :inactive-text="lc('resume_00030')"
-                                    />
-                                    <span class="login-switch-state" :class="configdata.sy_sinalogin === '1' ? 'is-on' : 'is-off'">
-                                        {{ configdata.sy_sinalogin === '1' ? lc('admin_tool_00694') : lc('admin_tool_00695') }}
-                                    </span>
-                                </div>
+                                <el-switch v-model="configdata.sy_sinalogin" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>
@@ -74,7 +61,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="post">{{ lc('common.submit') }}</el-button>
+            <el-button type="primary" size="medium" @click="post">{{ lc('common.submit', null, '提交') }}</el-button>
         </div>
     </div>
 </template>
@@ -125,9 +112,3 @@ export default {
     },
 };
 </script>
-<style scoped>
-.login-switch { display: flex; align-items: center; gap: 12px; }
-.login-switch-state { font-size: 14px; font-weight: 600; }
-.login-switch-state.is-on { color: #67c23a; }
-.login-switch-state.is-off { color: #909399; }
-</style>

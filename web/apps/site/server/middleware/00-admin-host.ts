@@ -5,7 +5,7 @@
  * Skip when not production so `nuxt dev` can use `nitro.devProxy`.
  */
 import http from 'node:http'
-import { createReadStream, existsSync, statSync } from 'node:fs'
+import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs'
 import { extname, join, normalize } from 'node:path'
 
 const PUBLIC_ROOT = normalize(
@@ -49,6 +49,23 @@ function resolveUnderPublic(urlPath: string) {
   return abs
 }
 
+const RELOAD_JS =
+  'try{var k="py-n-reload";if(sessionStorage.getItem(k)==="1"){sessionStorage.removeItem(k)}else{sessionStorage.setItem(k,"1");location.reload()}}catch(e){}'
+
+function hashedPath(pathname: string): { tag: string; ext: string } | null {
+  const m = pathname.match(/\/_n\/([^/]+)\/.+\.(js|mjs|css)$/)
+  if (!m) return null
+  return { tag: decodeURIComponent(m[1]), ext: m[2] }
+}
+
+function currentAssetTag(): string {
+  try {
+    return readFileSync(join(PUBLIC_ROOT, 'admin-asset-tag'), 'utf8').trim()
+  } catch {
+    return ''
+  }
+}
+
 function proxyAdmin(event: { node: { req: http.IncomingMessage; res: http.ServerResponse } }) {
   const req = event.node.req
   const res = event.node.res
@@ -79,6 +96,21 @@ export default defineEventHandler(async (event) => {
   if (!isAdminPath(path)) return
 
   if (event.method === 'GET' || event.method === 'HEAD') {
+    const hit = hashedPath(path)
+    const current = currentAssetTag()
+    if (hit && current && hit.tag !== current) {
+      setHeader(event, 'cache-control', 'no-store')
+      setHeader(event, 'cdn-cache-control', 'no-store')
+      if (hit.ext === 'css') {
+        setResponseStatus(event, 404)
+        setHeader(event, 'content-type', 'text/plain; charset=utf-8')
+        return event.method === 'HEAD' ? '' : 'not found'
+      }
+      setResponseStatus(event, 200)
+      setHeader(event, 'content-type', 'application/javascript; charset=utf-8')
+      return event.method === 'HEAD' ? '' : RELOAD_JS
+    }
+
     const file = resolveUnderPublic(path)
     if (file) {
       const type = MIME[extname(file).toLowerCase()] || 'application/octet-stream'

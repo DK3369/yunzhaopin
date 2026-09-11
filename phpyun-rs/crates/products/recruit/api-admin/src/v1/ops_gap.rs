@@ -7,6 +7,7 @@ use phpyun_core::{
 };
 use phpyun_models::admin_gap::entity::*;
 use phpyun_services::admin_ops_gap_service;
+use phpyun_services::dict_service;
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::HashMap;
@@ -342,6 +343,7 @@ pub async fn fastlogin_save(
     user.require_admin()?;
     let items: Vec<_> = f.items.into_iter().collect();
     admin_ops_gap_service::save_fastlogin(&state, &user, &items).await?;
+    dict_service::invalidate_public_lists();
     Ok(ApiResponse::message("ok"))
 }
 

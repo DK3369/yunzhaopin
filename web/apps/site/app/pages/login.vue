@@ -4,6 +4,7 @@ import { qrSvgDataUri } from '~/utils/qr'
 import { OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin } from '~/utils/site'
 
 const { siteName, logoPc, settings, me, worktime, phone, refreshMe } = useSiteChrome()
+const { data: dicts } = await usePublicDicts()
 const { t } = useI18n()
 const api = useApi()
 const smsLoginOn = computed(
@@ -186,7 +187,7 @@ onMounted(async () => {
   if (needImageCaptcha.value && !captcha.value) await loadCaptcha()
   const redirect_uri = `${siteUrl}/login`
   for (const item of OAUTH_FRONT_PROVIDERS) {
-    if (!oauthEnabledByAdmin(settings.value, item)) continue
+    if (!oauthEnabledByAdmin(settings.value, item, dicts.value)) continue
     try {
       const r = await api.post<{ authorize_url?: string }>(item.path, { redirect_uri })
       if (r.authorize_url) oauth.value.push({ name: item.name, path: r.authorize_url, provider: item.key })

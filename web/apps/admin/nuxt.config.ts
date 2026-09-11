@@ -1,4 +1,7 @@
 /** EP 3: radio/checkbox `label` as the selected value is deprecated. Not el-form-item / el-table-column. */
+import { writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+
 function rewriteChoiceLabelToValue(code: string) {
   return code.replace(
     /<(el-(?:radio|checkbox)(?:-button)?)(\s[\s\S]*?)(\/?)>/g,
@@ -188,4 +191,9 @@ export default defineNuxtConfig({
     },
   },
   elementPlus: { importStyle: 'css' },
+  hooks: {
+    'nitro:build:public-assets'(nitro: { options: { output: { publicDir: string } } }) {
+      writeFileSync(join(nitro.options.output.publicDir, 'admin-asset-tag'), `${adminAssetTag}\n`)
+    },
+  },
 })

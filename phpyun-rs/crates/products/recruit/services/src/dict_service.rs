@@ -34,6 +34,7 @@
 
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{AppResult, AppState, Lang};
+use phpyun_models::site_setting::repo as setting_repo;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
@@ -420,8 +421,9 @@ impl LocalizedDicts {
 }
 
 /// Public dropdown lists for `/v1/wap/initjobs`. Built from the in-memory
-/// `Dicts` snapshot (no extra DB read). Cached per request language and dropped
-/// whenever `Dicts` is swapped (admin edit / pubsub / background refresh).
+/// `Dicts` snapshot plus two login switches from `phpyun_admin_config`.
+/// Cached per request language and dropped whenever `Dicts` is swapped
+/// (admin edit / pubsub / background refresh / cache clear).
 #[derive(Clone)]
 pub struct PublicDictLists {
     pub educations: Vec<(i32, String)>,
@@ -435,9 +437,11 @@ pub struct PublicDictLists {
     pub job_types_user: Vec<(i32, String)>,
     pub company_natures: Vec<(i32, String)>,
     pub company_sizes: Vec<(i32, String)>,
+    pub sy_googlelogin: String,
+    pub sy_facebooklogin: String,
 }
 
-fn build_public_lists(dicts: &LocalizedDicts) -> PublicDictLists {
+fn build_public_lists(dicts: &LocalizedDicts, google: String, facebook: String) -> PublicDictLists {
     PublicDictLists {
         educations: dicts.comclass_by_variable("job_edu"),
         educations_user: dicts.userclass_by_variable("user_edu"),
@@ -450,6 +454,8 @@ fn build_public_lists(dicts: &LocalizedDicts) -> PublicDictLists {
         job_types_user: dicts.userclass_by_variable("user_type"),
         company_natures: dicts.comclass_by_variable("job_pr"),
         company_sizes: dicts.comclass_by_variable("job_mun"),
+        sy_googlelogin: google,
+        sy_facebooklogin: facebook,
     }
 }
 
@@ -459,7 +465,7 @@ fn public_lists_cache() -> &'static SimpleCache<Lang, PublicDictLists> {
     PUBLIC_LISTS.get_or_init(|| SimpleCache::new(8, Duration::from_secs(30 * 60)))
 }
 
-fn invalidate_public_lists() {
+pub fn invalidate_public_lists() {
     if let Some(cache) = PUBLIC_LISTS.get() {
         cache.invalidate_all();
     }
@@ -472,7 +478,16 @@ pub async fn public_lists(state: &AppState) -> AppResult<Arc<PublicDictLists>> {
     public_lists_cache()
         .get_or_load(lang, move || async move {
             let dicts = get(&state).await?;
-            Ok(build_public_lists(&dicts))
+            let flags = setting_repo::find_many(
+                state.db.reader(),
+                &["sy_googlelogin", "sy_facebooklogin"],
+            )
+            .await?;
+            Ok(build_public_lists(
+                &dicts,
+                flags.get("sy_googlelogin").cloned().unwrap_or_default(),
+                flags.get("sy_facebooklogin").cloned().unwrap_or_default(),
+            ))
         })
         .await
 }

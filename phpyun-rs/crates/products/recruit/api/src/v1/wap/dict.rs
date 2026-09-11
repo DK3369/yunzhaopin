@@ -147,6 +147,10 @@ pub struct InitJobs {
     pub job_types_user: Vec<DictItem>,
     pub company_natures: Vec<DictItem>,
     pub company_sizes: Vec<DictItem>,
+    /// `'1'` = show Google on PC/H5 login. Empty / `'0'` = hide.
+    pub sy_googlelogin: String,
+    /// `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide.
+    pub sy_facebooklogin: String,
 }
 
 #[utoipa::path(
@@ -183,6 +187,8 @@ pub async fn initjobs(State(state): State<AppState>) -> AppResult<ApiResponse<In
         },
         company_natures: named_cloned(&lists.company_natures),
         company_sizes: named_cloned(&lists.company_sizes),
+        sy_googlelogin: lists.sy_googlelogin.clone(),
+        sy_facebooklogin: lists.sy_facebooklogin.clone(),
     }))
 }
 

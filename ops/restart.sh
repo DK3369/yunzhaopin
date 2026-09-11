@@ -27,7 +27,6 @@ RETIRED_WEB_PORTS=(3002)
 
 CARGO_TMP="${CARGO_TMP:-/var/tmp/cargo-tmp}"
 NPM_TMP="${NPM_TMP:-/var/tmp/npm-tmp}"
-ADMIN_N_PREV="${ADMIN_N_PREV:-/var/tmp/phpyun-admin-n-prev}"
 NODE_BIN="${NODE_BIN:-}"
 
 DO_BUILD=0
@@ -330,26 +329,24 @@ build_nuxt() {
   export TMPDIR="${NPM_TMP}"
   need_cmd pnpm
   tag="$(git -C "${ROOT}" rev-parse --short HEAD)"
-  pub="${WEB_DIR}/apps/admin/.output/public/_n"
-  if [[ "${filter}" == "@phpyun/admin" && -d "${pub}" ]]; then
-    rm -rf "${ADMIN_N_PREV}"
-    cp -a "${pub}" "${ADMIN_N_PREV}"
-  fi
   log "pnpm --filter ${filter} build  (ADMIN_ASSET_TAG=${tag})"
   (
     cd "${WEB_DIR}"
     ADMIN_ASSET_TAG="${tag}" pnpm --filter "${filter}" build
   )
-  if [[ "${filter}" == "@phpyun/admin" && -d "${ADMIN_N_PREV}" ]]; then
-    mkdir -p "${pub}"
-    for d in "${ADMIN_N_PREV}"/*; do
-      [[ -d "${d}" ]] || continue
-      name="$(basename "${d}")"
-      if [[ ! -d "${pub}/${name}" ]]; then
-        log "保留上一版 hashed 资源 _n/${name}"
-        cp -a "${d}" "${pub}/${name}"
-      fi
-    done
+  if [[ "${filter}" == "@phpyun/admin" ]]; then
+    pub="${WEB_DIR}/apps/admin/.output/public"
+    printf '%s\n' "${tag}" > "${pub}/admin-asset-tag"
+    if [[ -d "${pub}/_n" ]]; then
+      for d in "${pub}/_n"/*; do
+        [[ -d "${d}" ]] || continue
+        name="$(basename "${d}")"
+        if [[ "${name}" != "${tag}" ]]; then
+          log "删除过期 hashed 资源 _n/${name}"
+          rm -rf "${d}"
+        fi
+      done
+    fi
   fi
 }
 

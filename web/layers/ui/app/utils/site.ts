@@ -206,8 +206,11 @@ export const OAUTH_FRONT_PROVIDERS = [
 export function oauthEnabledByAdmin(
   settings: Record<string, string>,
   provider: (typeof OAUTH_FRONT_PROVIDERS)[number],
+  initjobs?: { sy_googlelogin?: string; sy_facebooklogin?: string } | null,
 ): boolean {
   if (provider.key === 'wechat') return true
+  if (provider.key === 'google') return String(initjobs?.sy_googlelogin || '') === '1'
+  if (provider.key === 'facebook') return String(initjobs?.sy_facebooklogin || '') === '1'
   return String(settings[provider.flag] || '') === '1'
 }
 

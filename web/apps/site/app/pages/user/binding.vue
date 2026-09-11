@@ -4,6 +4,7 @@ import { isUnauthErr, OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin } from '~/utils
 const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
+const { data: dicts } = await usePublicDicts()
 const { data, error, refresh } = await useAsyncData('oauth-bindings', () =>
   api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
 )
@@ -33,7 +34,7 @@ async function loadOauth() {
   oauth.value = []
   for (const item of OAUTH_FRONT_PROVIDERS) {
     if (bound.value.has(item.key)) continue
-    if (!oauthEnabledByAdmin(settings.value, item)) continue
+    if (!oauthEnabledByAdmin(settings.value, item, dicts.value)) continue
     try {
       const r = await api.post<{ authorize_url?: string }>(item.path, { redirect_uri })
       if (r.authorize_url) oauth.value.push({ name: item.name, path: r.authorize_url, provider: item.key })
