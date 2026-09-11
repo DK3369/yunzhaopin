@@ -102,6 +102,30 @@ const PHP_ADMIN_CSS: { disk: string; href: string; note: string }[] = [
   { disk: 'js/wangeditor/index.css', href: '/admin/php-admin/js/wangeditor/index.css', note: 'wangeditor/index.css 编辑器' },
 ]
 
+/**
+ * PHP 皮肤主色在 overall.css：顶栏 `--bg-color3` #2D57E5，交互 `--bg-color4` #1890FF，
+ * 登录页 body #145dff。Element Plus 默认 `--el-color-primary:#409eff`，hashed CSS 里的
+ * `:root` 会把按钮/勾选/分页留在 Element 蓝。用更高特异性的 `html:root` 贴齐 PHP 主色，
+ * 并压过之后按需注入的 EP `:root`。
+ */
+function phpAdminEpPrimaryCss(): string {
+  return `html:root {
+  --el-color-primary: var(--bg-color3);
+  --el-color-primary-rgb: 45, 87, 229;
+  --el-color-primary-light-3: #6C89ED;
+  --el-color-primary-light-5: #96ABF2;
+  --el-color-primary-light-7: #C0CDF7;
+  --el-color-primary-light-8: #D5DDFA;
+  --el-color-primary-light-9: #EAEEFC;
+  --el-color-primary-dark-2: #2446B7;
+}
+html:has(.adminDomeAll),
+html:has(.adminDomeAll) body {
+  background: #145dff;
+}
+`
+}
+
 function bundlePhpAdminCss(): string {
   const parts: string[] = [
     '/* php-admin CSS modules — section comments keep overall/system/yunying boundaries; class prefixes unchanged */',
@@ -113,6 +137,7 @@ function bundlePhpAdminCss(): string {
     css = css.replace(/@charset\s+[^;]+;/gi, '')
     parts.push(`/* ==== ${file.note} ==== */\n${rewriteCssUrls(css, file.href)}`)
   }
+  parts.push(`/* ==== element-plus 主色对齐 PHP 皮肤 --bg-color3 ==== */\n${phpAdminEpPrimaryCss()}`)
   return parts.join('\n\n')
 }
 
