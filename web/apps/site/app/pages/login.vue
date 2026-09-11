@@ -489,10 +489,6 @@ onUnmounted(() => {
                           : o.name
               }}
             </a>
-            <NuxtLink v-if="role === 2" to="/download">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 5h16v11H4V5zm2 2v7h12V7H6zm-2 11h16v2H4v-2z" /></svg>
-              {{ $t('loginPage.desktop') }}
-            </NuxtLink>
           </div>
           <label class="lgp-agree">
             <input v-model="agreed" type="checkbox" />
