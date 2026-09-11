@@ -445,6 +445,8 @@
     "too_short": "Field too short: %{field}",
     "too_long": "Field too long: %{field}",
     "out_of_range": "%{field} is out of allowed range",
+    "job_scrape_busy": "A scrape is already running, try again later",
+    "job_scrape_bad_url": "Source URL must start with http:// or https://",
     "refresh_token": {
       "invalid": "Invalid refresh_token"
     }
@@ -718,7 +720,8 @@
     "admin_tool_00013": " cleaned",
     "admin_tool_00502": " succeeded",
     "wap_user_00147": "Deleted",
-    "api_wxapp_00007": "Saved"
+    "api_wxapp_00007": "Saved",
+    "job_scrape_done": "Scrape finished"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

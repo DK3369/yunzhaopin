@@ -140,6 +140,15 @@ fn start_scheduler(state: &AppState) {
     }
 
     let s = state.clone();
+    sch.interval("job_scrape", Duration::from_secs(60), move || {
+        let s = s.clone();
+        async move {
+            phpyun_services::job_scrape_service::tick(&s).await;
+        }
+    })
+    .lock_ttl(Duration::from_secs(900));
+
+    let s = state.clone();
     sch.interval("db_pool_metrics", Duration::from_secs(30), move || {
         let s = s.clone();
         async move {

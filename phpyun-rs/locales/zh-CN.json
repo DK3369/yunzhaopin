@@ -438,6 +438,8 @@
     "too_short": "字段太短：%{field}",
     "too_long": "字段太长：%{field}",
     "out_of_range": "%{field} 取值不在允许范围内",
+    "job_scrape_busy": "正在采集中，请稍后再试",
+    "job_scrape_bad_url": "请填写以 http:// 或 https:// 开头的源站地址",
     "refresh_token": {
       "invalid": "refresh_token 不合法"
     }
@@ -711,7 +713,8 @@
     "admin_tool_00013": "已清理",
     "admin_tool_00502": "成功",
     "wap_user_00147": "删除成功",
-    "api_wxapp_00007": "保存成功"
+    "api_wxapp_00007": "保存成功",
+    "job_scrape_done": "采集完成"
   },
   "recommend": {
     "disabled": "推荐功能已关闭",

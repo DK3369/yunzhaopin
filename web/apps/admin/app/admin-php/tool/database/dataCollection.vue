@@ -26,6 +26,9 @@
             <el-tab-pane :label="lc('admin_tool_00328')" name="eighth">
                 <part_set v-bind:locoy_config="locoyConfig" v-bind:part_set="partSet"></part_set>
             </el-tab-pane>
+            <el-tab-pane :label="lc('admin_tool_00696')" name="ninth">
+                <scrape_set></scrape_set>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </div>
@@ -40,6 +43,7 @@ import UserSet from './component/userSet.vue'
 import ResumeSet from './component/resumeSet.vue'
 import AccountSet from './component/accountSet.vue'
 import PartSet from './component/partSet.vue'
+import ScrapeSet from './component/scrapeSet.vue'
 
 const httpPost = (...a) => window.httpPost(...a)
 const lc = (...a) => window.lc(...a)
@@ -77,6 +81,7 @@ export default {
             'resume_set': ResumeSet,
             'account_set': AccountSet,
             'part_set': PartSet,
+            'scrape_set': ScrapeSet,
         },
         created(){
             this.getCollectionConfig();

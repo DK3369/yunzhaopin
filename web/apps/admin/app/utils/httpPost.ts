@@ -69,7 +69,11 @@ function formToObject(params: unknown): Record<string, unknown> {
   return {}
 }
 
-async function postAdmin(path: string, body: Record<string, unknown>): Promise<ApiEnvelope<unknown>> {
+async function postAdmin(
+  path: string,
+  body: Record<string, unknown>,
+  timeoutMs?: number,
+): Promise<ApiEnvelope<unknown>> {
   const page = body.page != null ? Number(body.page) : undefined
   const page_size = body.page_size != null ? Number(body.page_size) : undefined
   const query: Record<string, unknown> = {}
@@ -82,6 +86,7 @@ async function postAdmin(path: string, body: Record<string, unknown>): Promise<A
     query: { ...query, lang: loc },
     headers: { 'accept-language': rustLangFor(loc) },
     body,
+    timeout: timeoutMs && timeoutMs > 0 ? timeoutMs : undefined,
   })
 }
 
@@ -108,8 +113,9 @@ export async function httpPost(
     }
   }
   const req = action.transformReq ? action.transformReq(body) : body
+  const timeoutMs = typeof _config.timeout === 'number' ? _config.timeout : undefined
   try {
-    const env = await postAdmin(action.path, req)
+    const env = await postAdmin(action.path, req, timeoutMs)
     if (env.code !== 200) {
       return { data: { error: 1, msg: phpMsg(env.msg || env.key || 'error'), data: phpFailData(env.data) } }
     }

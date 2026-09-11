@@ -74,6 +74,7 @@ use crate::friend_link_service;
 use crate::home_service;
 use crate::mail_service;
 use crate::redeem_service;
+use crate::job_scrape_service;
 use crate::site_setting_service;
 use crate::wechat_api_service;
 use phpyun_models::entrust_record;
@@ -638,6 +639,17 @@ pub async fn dispatch(
         ("data-call", "getPreviewData") => Ok(PhpOut::Data(data_call_preview(state, body).await?)),
         ("data-collection", "getRating") => Ok(PhpOut::Data(data_collection_rating(state).await?)),
         ("data-collection", "index") => Ok(PhpOut::Data(data_collection_index(state).await?)),
+        ("data-collection", "scrapeGet") => Ok(PhpOut::Data(job_scrape_service::admin_get(state).await?)),
+        ("data-collection", "scrapeSave") => {
+            job_scrape_service::admin_save(state, body).await?;
+            Ok(PhpOut::Message("api_wxapp_00007"))
+        }
+        ("data-collection", "scrapeRun") => {
+            Ok(PhpOut::MessageData(
+                "job_scrape_done",
+                job_scrape_service::admin_run(state).await?,
+            ))
+        }
         ("index", "getIpAddress") => index_get_ip_address(state, body).await,
         ("index", "getMobileAddress") => index_get_mobile_address(state, body).await,
         ("index", "wxbind") => Ok(PhpOut::Data(index_wxbind(state, user).await?)),

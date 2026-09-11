@@ -50,6 +50,7 @@ pub mod interview_template;
 pub mod invite;
 pub mod userid_msg;
 pub mod job;
+pub mod job_scrape;
 pub mod job_msg;
 pub mod job_tellog;
 pub mod look_job;

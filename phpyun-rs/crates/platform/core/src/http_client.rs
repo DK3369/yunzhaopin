@@ -166,6 +166,42 @@ impl Http {
         .await
     }
 
+    /// GET HTML / text (job scrape and similar). Browser-like UA so
+    /// Next.js pages that ignore empty/bot UAs still return the document.
+    pub async fn get_text(&self, url: &str) -> AppResult<String> {
+        let host = host_of(url);
+        let span = tracing::info_span!("http.get_text", url = %url, host = %host);
+        async move {
+            let started = Instant::now();
+            let res = self
+                .inner
+                .get(url)
+                .header(
+                    "user-agent",
+                    "Mozilla/5.0 (compatible; phpyun-rs-scrape/0.1)",
+                )
+                .header("accept", "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8")
+                .send()
+                .await
+                .and_then(|r| r.error_for_status());
+            match res {
+                Ok(resp) => {
+                    let status = resp.status().as_u16();
+                    let text = resp.text().await.map_err(map_reqwest_err)?;
+                    m::histogram_ms(
+                        "http.client.latency_ms",
+                        started.elapsed().as_secs_f64() * 1000.0,
+                    );
+                    record_status(&host, status);
+                    Ok(text)
+                }
+                Err(e) => Err(map_reqwest_err(e)),
+            }
+        }
+        .instrument(span)
+        .await
+    }
+
     /// GET raw bytes (WeChat mmbiz images and other binary fetches).
     pub async fn get_bytes(&self, url: &str) -> AppResult<bytes::Bytes> {
         let host = host_of(url);

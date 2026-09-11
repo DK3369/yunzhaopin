@@ -1335,6 +1335,16 @@ pub async fn expire_overdue(pool: &MySqlPool, now: i64) -> Result<u64, sqlx::Err
     Ok(res.rows_affected())
 }
 
+/// Full-time / remote / intern etc. (`phpyun_company_job.type`).
+pub async fn admin_set_type(pool: &MySqlPool, id: u64, job_type: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET `type` = ? WHERE id = ?")
+        .bind(job_type)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 /// Admin: review (modify state). `state=1` = approve / `state=2` = reject.
 pub async fn admin_set_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_company_job SET state = ? WHERE id = ?")
