@@ -104,9 +104,12 @@ const PHP_ADMIN_CSS: { disk: string; href: string; note: string }[] = [
 
 /**
  * PHP 皮肤主色在 overall.css：顶栏 `--bg-color3` #2D57E5，交互 `--bg-color4` #1890FF，
- * 登录页 body #145dff。Element Plus 默认 `--el-color-primary:#409eff`，hashed CSS 里的
- * `:root` 会把按钮/勾选/分页留在 Element 蓝。用更高特异性的 `html:root` 贴齐 PHP 主色，
- * 并压过之后按需注入的 EP `:root`。
+ * Element Plus 默认 `--el-color-primary:#409eff`；用 `html:root` 贴齐顶栏主色。
+ *
+ * #145dff 只属于登录模块（admin.css 的 body / .adminLogiSub）。PHP 登录后不引
+ * admin.css。拼进全站 bundle 后会把首页透明内容区底下的 body 染成登录蓝。
+ * 登录后 body 对齐 --bg-color7（#f5f7fa）；登录页再用 :has(.adminDomeAll) 收回。
+ * 不改 .adminLogiSub、huiyuan .jiliTanJinTite:before 里的同一色值。
  */
 function phpAdminEpPrimaryCss(): string {
   return `html:root {
@@ -118,6 +121,9 @@ function phpAdminEpPrimaryCss(): string {
   --el-color-primary-light-8: #D5DDFA;
   --el-color-primary-light-9: #EAEEFC;
   --el-color-primary-dark-2: #2446B7;
+}
+body {
+  background: var(--bg-color7);
 }
 html:has(.adminDomeAll),
 html:has(.adminDomeAll) body {
