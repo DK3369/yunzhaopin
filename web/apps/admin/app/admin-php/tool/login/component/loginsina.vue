@@ -16,7 +16,7 @@
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_sinalogin" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_sinalogin" active-value="1" inactive-value="0" style="--el-switch-on-color:#1890FF;--el-switch-off-color:#B8BDC9"></el-switch>
                             </div>
                         </td>
                         <td>
