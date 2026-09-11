@@ -21,7 +21,6 @@
                 <span>{{ lc('admin_00069') }}</span>
                 <span>{{ lc('admin_01060') }}<el-link href='http://www.ov6.com'  target="_blank" :underline="false">http://www.ov6.com</el-link></span>
                 <span>{{ lc('admin_01061') }}<el-link href='https://www.ov6.com/bbs'  target="_blank" :underline="false">https://www.ov6.com/bbs</el-link></span>
-                <span>{{ lc('admin_01062') }}</span>
             </div>
         </div>
     </div>

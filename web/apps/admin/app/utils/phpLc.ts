@@ -60,6 +60,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00693: '回调地址为前台 /login，须与开放平台后台填写的一致',
     admin_tool_00694: '当前已开启',
     admin_tool_00695: '当前已关闭',
+    admin_php_version: '前后端版本：{0}',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -72,6 +73,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00693: 'Callback URL is the site /login page and must match the provider console',
     admin_tool_00694: 'Currently on',
     admin_tool_00695: 'Currently off',
+    admin_php_version: 'Frontend / backend: {0}',
   },
 }
 

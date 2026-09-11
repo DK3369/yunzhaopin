@@ -22,6 +22,9 @@ use phpyun_models::job::repo as job_repo;
 use phpyun_models::report::repo as report_repo;
 use phpyun_models::stats::repo as stats_repo;
 use phpyun_models::user::entity::Member;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::sync::OnceLock;
 
 #[derive(Debug, Default)]
 pub struct AdminOverview {
@@ -138,6 +141,154 @@ fn start_of_month(_now: i64) -> i64 {
     local_midnight(d.with_day(1).unwrap_or(d))
 }
 
+struct SysStatic {
+    os: String,
+    rustc: String,
+    nuxt: String,
+    user: String,
+    host: String,
+}
+
+fn cmd_stdout(bin: &str, args: &[&str]) -> Option<String> {
+    let out = Command::new(bin).args(args).output().ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let s = String::from_utf8_lossy(&out.stdout).trim().to_string();
+    if s.is_empty() {
+        None
+    } else {
+        Some(s)
+    }
+}
+
+fn repo_root() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../../..")
+}
+
+fn os_pretty() -> String {
+    if let Ok(text) = std::fs::read_to_string("/etc/os-release") {
+        for line in text.lines() {
+            if let Some(v) = line.strip_prefix("PRETTY_NAME=") {
+                let name = v.trim().trim_matches('"').trim();
+                if !name.is_empty() {
+                    return name.to_string();
+                }
+            }
+        }
+    }
+    cmd_stdout("uname", &["-sr"]).unwrap_or_else(|| {
+        format!("{} {}", std::env::consts::OS, std::env::consts::ARCH)
+    })
+}
+
+fn rustc_semver() -> String {
+    const BINS: &[&str] = &["rustc", "/home/aa/.cargo/bin/rustc", "/usr/bin/rustc"];
+    for bin in BINS {
+        if let Some(raw) = cmd_stdout(bin, &["--version"]) {
+            if let Some(v) = raw.split_whitespace().nth(1).filter(|s| !s.is_empty()) {
+                return v.to_string();
+            }
+        }
+    }
+    String::from("unknown")
+}
+
+fn nuxt_version() -> String {
+    let path = repo_root().join("web/apps/admin/package.json");
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return String::from("unknown");
+    };
+    let Ok(v) = serde_json::from_str::<serde_json::Value>(&text) else {
+        return String::from("unknown");
+    };
+    let raw = v
+        .get("dependencies")
+        .and_then(|d| d.get("nuxt"))
+        .and_then(|n| n.as_str())
+        .unwrap_or("")
+        .trim();
+    let cleaned = raw.trim_start_matches(['^', '~', '=']).trim();
+    if cleaned.is_empty() {
+        String::from("unknown")
+    } else {
+        cleaned.to_string()
+    }
+}
+
+fn process_user() -> String {
+    std::env::var("USER")
+        .or_else(|_| std::env::var("LOGNAME"))
+        .ok()
+        .filter(|s| !s.is_empty())
+        .or_else(|| cmd_stdout("whoami", &[]))
+        .unwrap_or_default()
+}
+
+fn hostname() -> String {
+    std::fs::read_to_string("/etc/hostname")
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .or_else(|| cmd_stdout("hostname", &[]))
+        .unwrap_or_default()
+}
+
+fn sys_static() -> &'static SysStatic {
+    static CELL: OnceLock<SysStatic> = OnceLock::new();
+    CELL.get_or_init(|| SysStatic {
+        os: os_pretty(),
+        rustc: rustc_semver(),
+        nuxt: nuxt_version(),
+        user: process_user(),
+        host: hostname(),
+    })
+}
+
+fn host_from_url(raw: &str) -> Option<String> {
+    let s = raw.trim().trim_end_matches('/');
+    let rest = s
+        .strip_prefix("https://")
+        .or_else(|| s.strip_prefix("http://"))?;
+    let host = rest.split('/').next()?.split(':').next()?;
+    if host.is_empty() {
+        None
+    } else {
+        Some(host.to_string())
+    }
+}
+
+fn disk_root(state: &AppState) -> PathBuf {
+    if let Some(p) = state.config.storage_fs_root.as_deref() {
+        let path = PathBuf::from(p);
+        if path.exists() {
+            return path;
+        }
+    }
+    let root = repo_root();
+    if root.exists() {
+        return root;
+    }
+    PathBuf::from("/www/wwwroot/zzzz.com")
+}
+
+fn disk_free_mb(path: &Path) -> String {
+    let Ok(out) = Command::new("df").args(["-Pm"]).arg(path).output() else {
+        return String::from("0");
+    };
+    let text = String::from_utf8_lossy(&out.stdout);
+    let Some(line) = text.lines().nth(1) else {
+        return String::from("0");
+    };
+    let Some(avail) = line.split_whitespace().nth(3) else {
+        return String::from("0");
+    };
+    match avail.parse::<f64>() {
+        Ok(n) => format!("{n:.2}"),
+        Err(_) => String::from("0"),
+    }
+}
+
 pub async fn home_data(
     state: &AppState,
     admin: &AuthenticatedUser,
@@ -146,6 +297,11 @@ pub async fn home_data(
     let row = phpyun_models::admin_rbac::repo::find_by_uid(state.db.reader(), admin.uid)
         .await?
         .ok_or_else(phpyun_core::ApiError::unauth)?;
+    let info = sys_static();
+    let mysql = stats_repo::mysql_version(state.db.reader()).await;
+    let kongjian = disk_free_mb(&disk_root(state));
+    let server = host_from_url(state.config.web_base_url.as_deref().unwrap_or(""))
+        .unwrap_or_else(|| info.host.clone());
     Ok(serde_json::json!({
         "index_lookstatistc": row.index_lookstatistc,
         "base": "",
@@ -158,13 +314,13 @@ pub async fn home_data(
             "updateUrl": ""
         },
         "sysinfo": {
-            "version": "phpyun-rs",
-            "soft": "axum",
-            "kongjian": 0,
-            "phpbanben": "-",
-            "banben": "mysql",
-            "yonghu": "",
-            "server": ""
+            "version": format!("phpyun-rs {}", env!("CARGO_PKG_VERSION")),
+            "soft": info.os,
+            "kongjian": kongjian,
+            "phpbanben": format!("前端 Nuxt {}  后端 Rust {}", info.nuxt, info.rustc),
+            "banben": mysql,
+            "yonghu": info.user,
+            "server": server
         }
     }))
 }

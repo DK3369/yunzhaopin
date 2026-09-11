@@ -19,7 +19,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-08-25',
   vite: {
     build: {
-      cssCodeSplit: false,
       minify: 'oxc',
       cssMinify: true,
     },
@@ -50,15 +49,6 @@ export default defineNuxtConfig({
         output: Array.isArray(prevOut)
           ? prevOut.map((o) => ({ ...o, ...clientChunkGroups }))
           : { ...(prevOut ?? {}), ...clientChunkGroups },
-      }
-    },
-    // cssCodeSplit:false 后入口已含全部 CSS；剥掉异步 chunk 上的 css preload，避免引用已不存在的碎文件。
-    'build:manifest'(manifest) {
-      for (const item of Object.values(manifest)) {
-        if (!item || typeof item !== 'object') continue
-        const row = item as { isEntry?: boolean; css?: string[] }
-        if (row.isEntry) continue
-        row.css = []
       }
     },
   },

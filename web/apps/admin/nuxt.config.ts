@@ -87,31 +87,33 @@ function rewriteCssUrls(css: string, cssHref: string): string {
   })
 }
 
-const PHP_ADMIN_CSS: { disk: string; href: string }[] = [
-  { disk: 'js/element-icons.css', href: '/admin/php-admin/js/element-icons.css' },
-  { disk: 'adstyle/allcss/overall.css', href: '/admin/php-admin/adstyle/allcss/overall.css' },
-  { disk: 'adstyle/allcss/system.css', href: '/admin/php-admin/adstyle/allcss/system.css' },
-  { disk: 'adstyle/allcss/yunying.css', href: '/admin/php-admin/adstyle/allcss/yunying.css' },
-  { disk: 'adstyle/allcss/neirong.css', href: '/admin/php-admin/adstyle/allcss/neirong.css' },
-  { disk: 'adstyle/allcss/tool.css', href: '/admin/php-admin/adstyle/allcss/tool.css' },
-  { disk: 'adstyle/allcss/huiyuan.css', href: '/admin/php-admin/adstyle/allcss/huiyuan.css' },
-  { disk: 'adstyle/allcss/index.css', href: '/admin/php-admin/adstyle/allcss/index.css' },
-  { disk: 'adstyle/allcss/gongju.css', href: '/admin/php-admin/adstyle/allcss/gongju.css' },
-  { disk: 'adstyle/allcss/crm.css', href: '/admin/php-admin/adstyle/allcss/crm.css' },
-  { disk: 'images/admin.css', href: '/admin/php-admin/images/admin.css' },
-  { disk: 'js/wangeditor/index.css', href: '/admin/php-admin/js/wangeditor/index.css' },
+const PHP_ADMIN_CSS: { disk: string; href: string; note: string }[] = [
+  { disk: 'js/element-icons.css', href: '/admin/php-admin/js/element-icons.css', note: 'element-icons.css Element UI 2' },
+  { disk: 'adstyle/allcss/overall.css', href: '/admin/php-admin/adstyle/allcss/overall.css', note: 'overall.css 全局' },
+  { disk: 'adstyle/allcss/system.css', href: '/admin/php-admin/adstyle/allcss/system.css', note: 'system.css 系统' },
+  { disk: 'adstyle/allcss/yunying.css', href: '/admin/php-admin/adstyle/allcss/yunying.css', note: 'yunying.css 运营' },
+  { disk: 'adstyle/allcss/neirong.css', href: '/admin/php-admin/adstyle/allcss/neirong.css', note: 'neirong.css 内容' },
+  { disk: 'adstyle/allcss/tool.css', href: '/admin/php-admin/adstyle/allcss/tool.css', note: 'tool.css 工具' },
+  { disk: 'adstyle/allcss/huiyuan.css', href: '/admin/php-admin/adstyle/allcss/huiyuan.css', note: 'huiyuan.css 会员' },
+  { disk: 'adstyle/allcss/index.css', href: '/admin/php-admin/adstyle/allcss/index.css', note: 'index.css 首页' },
+  { disk: 'adstyle/allcss/gongju.css', href: '/admin/php-admin/adstyle/allcss/gongju.css', note: 'gongju.css 工具页' },
+  { disk: 'adstyle/allcss/crm.css', href: '/admin/php-admin/adstyle/allcss/crm.css', note: 'crm.css CRM' },
+  { disk: 'images/admin.css', href: '/admin/php-admin/images/admin.css', note: 'admin.css 登录' },
+  { disk: 'js/wangeditor/index.css', href: '/admin/php-admin/js/wangeditor/index.css', note: 'wangeditor/index.css 编辑器' },
 ]
 
 function bundlePhpAdminCss(): string {
-  const parts: string[] = []
+  const parts: string[] = [
+    '/* php-admin CSS modules — section comments keep overall/system/yunying boundaries; class prefixes unchanged */',
+  ]
   for (const file of PHP_ADMIN_CSS) {
     const abs = phpAdmin(file.disk)
     if (!existsSync(abs)) continue
     let css = readFileSync(abs, 'utf8')
     css = css.replace(/@charset\s+[^;]+;/gi, '')
-    parts.push(rewriteCssUrls(css, file.href))
+    parts.push(`/* ==== ${file.note} ==== */\n${rewriteCssUrls(css, file.href)}`)
   }
-  return parts.join('\n')
+  return parts.join('\n\n')
 }
 
 /** Compile-time EP 2.10 compat: do not batch-edit dozens of PHP Vue templates. */
@@ -214,7 +216,11 @@ export default defineNuxtConfig({
       meta: [{ name: 'admin-build', content: adminAssetTag }],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.v1.ico' },
-        { rel: 'stylesheet', href: '/admin/php-admin/adstyle/admin-bundle.css' },
+        {
+          rel: 'stylesheet',
+          href: '/admin/php-admin/adstyle/admin-bundle.css',
+          tagPriority: 10000,
+        },
       ],
       script: [
         {
@@ -233,9 +239,18 @@ export default defineNuxtConfig({
       ],
     },
   },
-  css: ['element-plus/dist/index.css'],
-  elementPlus: { importStyle: false },
   hooks: {
+    'render:html'(html: { head: string[] }) {
+      const re = /<link[^>]+admin-bundle\.css[^>]*>/i
+      const tag = '<link rel="stylesheet" href="/admin/php-admin/adstyle/admin-bundle.css">'
+      html.head = html.head.filter((s) => !re.test(s))
+      const lastCss = html.head.reduce((acc, s, i) => {
+        if (/rel=["']stylesheet["']/i.test(s) || /\.css["']/i.test(s)) return i
+        return acc
+      }, -1)
+      if (lastCss >= 0) html.head.splice(lastCss + 1, 0, tag)
+      else html.head.push(tag)
+    },
     'nitro:build:public-assets'(nitro: { options: { output: { publicDir: string } } }) {
       const pub = nitro.options.output.publicDir
       writeFileSync(join(pub, 'admin-asset-tag'), `${adminAssetTag}\n`)

@@ -436,3 +436,10 @@ pub async fn daily_day_counts(
         .await;
     rows.unwrap_or_default()
 }
+
+pub async fn mysql_version(pool: &MySqlPool) -> String {
+    sqlx::query_scalar::<_, String>("SELECT VERSION()")
+        .fetch_one(pool)
+        .await
+        .unwrap_or_else(|_| String::from("unknown"))
+}
