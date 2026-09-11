@@ -61,6 +61,11 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00694: '当前已开启',
     admin_tool_00695: '当前已关闭',
     admin_php_version: '前后端版本：{0}',
+    admin_phpyun_version: 'OV6程序版本：{0}',
+    admin_available_space: '可用空间(磁盘区)：{0} M',
+    admin_server_software: '服务器软件：{0}',
+    admin_mysql_version: 'MySQL 版本：{0}',
+    admin_user_server: '用户 - 服务器：{0} - {1}',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -74,6 +79,11 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00694: 'Currently on',
     admin_tool_00695: 'Currently off',
     admin_php_version: 'Frontend / backend: {0}',
+    admin_phpyun_version: 'OV6 version: {0}',
+    admin_available_space: 'Available disk: {0} M',
+    admin_server_software: 'Server software: {0}',
+    admin_mysql_version: 'MySQL: {0}',
+    admin_user_server: 'User - host: {0} - {1}',
   },
 }
 
@@ -152,20 +162,10 @@ function lookupRaw(i18n: I18nComposer, key: string): string | undefined {
   return typeof cur === 'string' ? cur : undefined
 }
 
-function i18nValues(params?: unknown): Record<string, unknown> | undefined {
-  if (params == null) return undefined
-  const arr = Array.isArray(params) ? params : [params]
-  const o: Record<string, unknown> = {}
-  arr.forEach((v, i) => {
-    o[String(i)] = v ?? ''
-  })
-  return o
-}
-
 function translatedOf(i18n: I18nComposer, key: string, params?: unknown): string | undefined {
   if (!i18n.te(key)) return undefined
-  const values = i18nValues(params)
-  const t = String(values ? i18n.t(key, values) : i18n.t(key))
+  const list = Array.isArray(params) ? params : params != null ? [params] : undefined
+  const t = String(list ? i18n.t(key, list as never) : i18n.t(key))
   if (!t || t === key) return undefined
   return t
 }
