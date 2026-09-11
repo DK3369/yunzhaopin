@@ -638,4 +638,10 @@ onMounted(() => {
 .subContPageInfo > * {
   height: 100%;
 }
+.subHeader,
+.subHeadtop {
+  width: 100%;
+  min-height: 60px;
+  background: #2d57e5 !important;
+}
 </style>

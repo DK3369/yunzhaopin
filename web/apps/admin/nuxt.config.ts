@@ -109,6 +109,7 @@ const PHP_ADMIN_CSS: { disk: string; href: string; note: string }[] = [
  * #145dff 只属于登录模块（admin.css 的 body / .adminLogiSub）。PHP 登录后不引
  * admin.css。拼进全站 bundle 后会把首页透明内容区底下的 body 染成登录蓝。
  * 登录后 body 对齐 --bg-color7（#f5f7fa）；登录页再用 :has(.adminDomeAll) 收回。
+ * 顶栏 .subHeader / .subHeadtop 仍是 --bg-color3（#2D57E5），不要跟内容区灰底混。
  * 不改 .adminLogiSub、huiyuan .jiliTanJinTite:before 里的同一色值。
  */
 function phpAdminEpPrimaryCss(): string {
@@ -128,6 +129,12 @@ body {
 html:has(.adminDomeAll),
 html:has(.adminDomeAll) body {
   background: #145dff;
+}
+.subHeader,
+.subHeadtop {
+  width: 100%;
+  min-height: 60px;
+  background: #2D57E5 !important;
 }
 `
 }
@@ -249,7 +256,7 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/admin/favicon.v1.ico' },
         {
           rel: 'stylesheet',
-          href: '/admin/php-admin/adstyle/admin-bundle.css',
+          href: `/admin/php-admin/adstyle/admin-bundle.css?b=${adminAssetTag}`,
           tagPriority: 10000,
         },
       ],
@@ -273,7 +280,7 @@ export default defineNuxtConfig({
   hooks: {
     'render:html'(html: { head: string[] }) {
       const re = /<link[^>]+admin-bundle\.css[^>]*>/i
-      const tag = '<link rel="stylesheet" href="/admin/php-admin/adstyle/admin-bundle.css">'
+      const tag = `<link rel="stylesheet" href="/admin/php-admin/adstyle/admin-bundle.css?b=${adminAssetTag}">`
       html.head = html.head.filter((s) => !re.test(s))
       const lastCss = html.head.reduce((acc, s, i) => {
         if (/rel=["']stylesheet["']/i.test(s) || /\.css["']/i.test(s)) return i
