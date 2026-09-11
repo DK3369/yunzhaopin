@@ -530,6 +530,7 @@ case "${TARGET}" in
       DO_BUILD=0
     fi
     bounce_unit "${UNIT_RS}" "${PORT_RS}" "${PORT_RS_METRICS}"
+    bounce_admin_sock
     restart_site
     if [[ "${DO_VERIFY}" -eq 1 ]]; then
       verify_rust
