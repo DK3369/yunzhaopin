@@ -5,7 +5,7 @@
  * Hashed JS/CSS whose tag is not the current build becomes a one-shot reload.
  */
 const RELOAD_JS =
-  'try{var k="py-n-reload";if(sessionStorage.getItem(k)==="1"){sessionStorage.removeItem(k)}else{sessionStorage.setItem(k,"1");location.reload()}}catch(e){}'
+  'try{var k="py-n-reload";var n=parseInt(sessionStorage.getItem(k)||"0",10)||0;if(n>=2){sessionStorage.removeItem(k);if(document.body){document.body.textContent="后台资源已更新，请按 Ctrl+F5 强制刷新"}}else{sessionStorage.setItem(k,String(n+1));location.reload()}}catch(e){}'
 
 type RenderResponse = {
   body?: unknown
@@ -53,7 +53,8 @@ export default defineNitroPlugin((nitroApp) => {
       const hit = hashedPath(getRequestURL(event).pathname)
       if (!hit) return
       const current = currentTag(event)
-      if (!current || hit.tag === current) return
+      if (!current) return
+      if (hit.tag === current) return
       return applyMiss(hit, {
         status: (n) => setResponseStatus(event, n),
         header: (k, v) => setHeader(event, k, v),
@@ -66,8 +67,12 @@ export default defineNitroPlugin((nitroApp) => {
     const hit = hashedPath(getRequestURL(event).pathname)
     if (!hit) return
     const current = currentTag(event)
-    if (!current || hit.tag === current) return
+    if (!current) return
     const headers = response.headers || (response.headers = {})
+    const ct = String(headers['content-type'] || headers['Content-Type'] || '')
+    const raw = typeof response.body === 'string' ? response.body : ''
+    const leakedHtml = ct.includes('html') || raw.trimStart().startsWith('<!')
+    if (hit.tag === current && !leakedHtml) return
     const body = applyMiss(hit, {
       status: (n) => {
         response.statusCode = n

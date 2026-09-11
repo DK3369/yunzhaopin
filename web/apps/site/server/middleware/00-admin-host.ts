@@ -50,7 +50,20 @@ function resolveUnderPublic(urlPath: string) {
 }
 
 const RELOAD_JS =
-  'try{var k="py-n-reload";if(sessionStorage.getItem(k)==="1"){sessionStorage.removeItem(k)}else{sessionStorage.setItem(k,"1");location.reload()}}catch(e){}'
+  'try{var k="py-n-reload";var n=parseInt(sessionStorage.getItem(k)||"0",10)||0;if(n>=2){sessionStorage.removeItem(k);if(document.body){document.body.textContent="后台资源已更新，请按 Ctrl+F5 强制刷新"}}else{sessionStorage.setItem(k,String(n+1));location.reload()}}catch(e){}'
+
+function staleHashedAsset(event: Parameters<typeof setHeader>[0], hit: { ext: string }) {
+  setHeader(event, 'cache-control', 'no-store')
+  setHeader(event, 'cdn-cache-control', 'no-store')
+  if (hit.ext === 'css') {
+    setResponseStatus(event, 404)
+    setHeader(event, 'content-type', 'text/plain; charset=utf-8')
+    return 'not found'
+  }
+  setResponseStatus(event, 200)
+  setHeader(event, 'content-type', 'application/javascript; charset=utf-8')
+  return RELOAD_JS
+}
 
 function hashedPath(pathname: string): { tag: string; ext: string } | null {
   const m = pathname.match(/\/_n\/([^/]+)\/.+\.(js|mjs|css)$/)
@@ -99,16 +112,8 @@ export default defineEventHandler(async (event) => {
     const hit = hashedPath(path)
     const current = currentAssetTag()
     if (hit && current && hit.tag !== current) {
-      setHeader(event, 'cache-control', 'no-store')
-      setHeader(event, 'cdn-cache-control', 'no-store')
-      if (hit.ext === 'css') {
-        setResponseStatus(event, 404)
-        setHeader(event, 'content-type', 'text/plain; charset=utf-8')
-        return event.method === 'HEAD' ? '' : 'not found'
-      }
-      setResponseStatus(event, 200)
-      setHeader(event, 'content-type', 'application/javascript; charset=utf-8')
-      return event.method === 'HEAD' ? '' : RELOAD_JS
+      const body = staleHashedAsset(event, hit)
+      return event.method === 'HEAD' ? '' : body
     }
 
     const file = resolveUnderPublic(path)
@@ -127,6 +132,12 @@ export default defineEventHandler(async (event) => {
         return ''
       }
       return sendStream(event, createReadStream(file))
+    }
+
+    // Same tag, file gone (rebuild replaced hashed names). Never SPA-fallback HTML as JS.
+    if (hit) {
+      const body = staleHashedAsset(event, hit)
+      return event.method === 'HEAD' ? '' : body
     }
   }
 
