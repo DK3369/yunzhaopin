@@ -319,6 +319,11 @@ if (import.meta.client) {
 onMounted(() => {
   getMsgNum()
 })
+
+useHead({
+  link: [{ rel: 'stylesheet', href: '/admin/php-admin/js/wangeditor/index.css' }],
+  script: [{ src: '/admin/php-admin/js/wangeditor/index.js', tagPosition: 'bodyClose' }],
+})
 </script>
 
 <template>
@@ -637,11 +642,5 @@ onMounted(() => {
 }
 .subContPageInfo > * {
   height: 100%;
-}
-.subHeader,
-.subHeadtop {
-  width: 100%;
-  min-height: 60px;
-  background: #2d57e5 !important;
 }
 </style>

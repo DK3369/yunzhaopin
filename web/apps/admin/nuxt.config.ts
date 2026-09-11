@@ -87,8 +87,16 @@ function rewriteCssUrls(css: string, cssHref: string): string {
   })
 }
 
+/**
+ * PHP 登录后只引 phpyun.css（overall…crm）+ element 图标。
+ * wangeditor 不进全站包。admin.css 拼在最后，再用 html:has(.adminDomeAll) 把
+ * body 登录蓝限制在登录页。
+ *
+ * public 里的 element-icons.css 实际是截断的 EU2 表，末尾停在 `.el-dropdown`。
+ * 直接拼接会把下一份的 `:root` 吃成 `.el-dropdown :root`，皮肤变量全部失效。
+ */
 const PHP_ADMIN_CSS: { disk: string; href: string; note: string }[] = [
-  { disk: 'js/element-icons.css', href: '/admin/php-admin/js/element-icons.css', note: 'element-icons.css Element UI 2' },
+  { disk: 'js/element-icons.css', href: '/admin/php-admin/js/element-icons.css', note: 'element-icons.css 图标字体' },
   { disk: 'adstyle/allcss/overall.css', href: '/admin/php-admin/adstyle/allcss/overall.css', note: 'overall.css 全局' },
   { disk: 'adstyle/allcss/system.css', href: '/admin/php-admin/adstyle/allcss/system.css', note: 'system.css 系统' },
   { disk: 'adstyle/allcss/yunying.css', href: '/admin/php-admin/adstyle/allcss/yunying.css', note: 'yunying.css 运营' },
@@ -99,18 +107,22 @@ const PHP_ADMIN_CSS: { disk: string; href: string; note: string }[] = [
   { disk: 'adstyle/allcss/gongju.css', href: '/admin/php-admin/adstyle/allcss/gongju.css', note: 'gongju.css 工具页' },
   { disk: 'adstyle/allcss/crm.css', href: '/admin/php-admin/adstyle/allcss/crm.css', note: 'crm.css CRM' },
   { disk: 'images/admin.css', href: '/admin/php-admin/images/admin.css', note: 'admin.css 登录' },
-  { disk: 'js/wangeditor/index.css', href: '/admin/php-admin/js/wangeditor/index.css', note: 'wangeditor/index.css 编辑器' },
 ]
 
+function takeIconFontCss(css: string): string {
+  const cut = css.search(/\.el-pagination\b/)
+  return cut > 0 ? css.slice(0, cut) : css
+}
+
+/** Close a dangling last selector so the next file's `:root` stays `:root`. */
+function closeCssModule(): string {
+  return '\nhtml.php-admin-css-sep{}\n'
+}
+
 /**
- * PHP 皮肤主色在 overall.css：顶栏 `--bg-color3` #2D57E5，交互 `--bg-color4` #1890FF，
- * Element Plus 默认 `--el-color-primary:#409eff`；用 `html:root` 贴齐顶栏主色。
- *
- * #145dff 只属于登录模块（admin.css 的 body / .adminLogiSub）。PHP 登录后不引
- * admin.css。拼进全站 bundle 后会把首页透明内容区底下的 body 染成登录蓝。
- * 登录后 body 对齐 --bg-color7（#f5f7fa）；登录页再用 :has(.adminDomeAll) 收回。
- * 顶栏 .subHeader / .subHeadtop 仍是 --bg-color3（#2D57E5），不要跟内容区灰底混。
- * 不改 .adminLogiSub、huiyuan .jiliTanJinTite:before 里的同一色值。
+ * Element Plus 默认 `--el-color-primary:#409eff`；贴到 PHP 顶栏主色。
+ * admin.css 的 `body #145dff` 只给登录页；登录后 body 回到 --bg-color7。
+ * 不覆盖 .subHeader，overall.css 的 --bg-color3 自己画顶栏。
  */
 function phpAdminEpPrimaryCss(): string {
   return `html:root {
@@ -130,12 +142,6 @@ html:has(.adminDomeAll),
 html:has(.adminDomeAll) body {
   background: #145dff;
 }
-.subHeader,
-.subHeadtop {
-  width: 100%;
-  min-height: 60px;
-  background: #2D57E5 !important;
-}
 `
 }
 
@@ -148,10 +154,11 @@ function bundlePhpAdminCss(): string {
     if (!existsSync(abs)) continue
     let css = readFileSync(abs, 'utf8')
     css = css.replace(/@charset\s+[^;]+;/gi, '')
-    parts.push(`/* ==== ${file.note} ==== */\n${rewriteCssUrls(css, file.href)}`)
+    if (file.disk.endsWith('element-icons.css')) css = takeIconFontCss(css)
+    parts.push(`/* ==== ${file.note} ==== */\n${rewriteCssUrls(css, file.href)}${closeCssModule()}`)
   }
   parts.push(`/* ==== element-plus 主色对齐 PHP 皮肤 --bg-color3 ==== */\n${phpAdminEpPrimaryCss()}`)
-  return parts.join('\n\n')
+  return parts.join('\n')
 }
 
 /** Compile-time EP 2.10 compat: do not batch-edit dozens of PHP Vue templates. */
@@ -265,15 +272,9 @@ export default defineNuxtConfig({
           innerHTML:
             'globalThis.startLoading=globalThis.startLoading||function(){};globalThis.endLoading=globalThis.endLoading||function(){};globalThis.baseUrl=globalThis.baseUrl||"/admin/api/php-admin?";globalThis.getUrlParams=globalThis.getUrlParams||function(l){l=l||window.location;var qs="",a={},p,n;if(l.search)qs=l.search.slice(1);else if(l.hash&&l.hash.indexOf("?")>=0)qs=l.hash.slice(l.hash.indexOf("?")+1);qs.split("&").forEach(function(s){if(!s)return;p=s.split("=");n=decodeURIComponent(p[0]||"");if(n)a[n]=decodeURIComponent(p[1]||"");});return a;};globalThis.wangEditor=globalThis.wangEditor||{createEditor:function(){return{getHtml:function(){return""},getText:function(){return""},setHtml:function(){},destroy:function(){},on:function(){}}},createToolbar:function(){return{destroy:function(){}}}};',
         },
-        { src: '/admin/php-admin/js/jquery.min.js' },
-        { src: '/admin/php-admin/js/echarts.min.js' },
-        { src: '/admin/php-admin/js/clipboard.min.js' },
-        {
-          src: '/admin/php-admin/js/wangeditor/index.js',
-          tagPosition: 'head',
-          defer: false,
-          async: false,
-        },
+        { src: '/admin/php-admin/js/jquery.min.js', tagPosition: 'bodyClose' },
+        { src: '/admin/php-admin/js/echarts.min.js', tagPosition: 'bodyClose' },
+        { src: '/admin/php-admin/js/clipboard.min.js', tagPosition: 'bodyClose' },
       ],
     },
   },

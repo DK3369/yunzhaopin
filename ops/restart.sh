@@ -328,7 +328,7 @@ build_nuxt() {
   export PATH="${NODE_BIN}:${HOME}/.cargo/bin:${PATH}"
   export TMPDIR="${NPM_TMP}"
   need_cmd pnpm
-  tag="$(git -C "${ROOT}" rev-parse --short HEAD)"
+  tag="$(git -C "${ROOT}" rev-parse --short HEAD)-$(date +%H%M%S)"
   log "pnpm --filter ${filter} build  (ADMIN_ASSET_TAG=${tag})"
   (
     cd "${WEB_DIR}"
@@ -338,10 +338,15 @@ build_nuxt() {
     pub="${WEB_DIR}/apps/admin/.output/public"
     printf '%s\n' "${tag}" > "${pub}/admin-asset-tag"
     if [[ -d "${pub}/_n" ]]; then
-      for d in "${pub}/_n"/*; do
-        [[ -d "${d}" ]] || continue
+      mapfile -t olds < <(ls -1dt "${pub}/_n"/*/ 2>/dev/null | sed 's:/$::')
+      local kept=0
+      for d in "${olds[@]}"; do
         name="$(basename "${d}")"
-        if [[ "${name}" != "${tag}" ]]; then
+        if [[ "${name}" == "${tag}" ]]; then
+          continue
+        fi
+        kept=$((kept + 1))
+        if [[ "${kept}" -gt 2 ]]; then
           log "删除过期 hashed 资源 _n/${name}"
           rm -rf "${d}"
         fi

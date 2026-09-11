@@ -72,7 +72,8 @@ export default defineNitroPlugin((nitroApp) => {
     const ct = String(headers['content-type'] || headers['Content-Type'] || '')
     const raw = typeof response.body === 'string' ? response.body : ''
     const leakedHtml = ct.includes('html') || raw.trimStart().startsWith('<!')
-    if (hit.tag === current && !leakedHtml) return
+    const missing = response.statusCode === 404 || response.statusCode === 503
+    if (hit.tag === current && !leakedHtml && !missing) return
     const body = applyMiss(hit, {
       status: (n) => {
         response.statusCode = n
