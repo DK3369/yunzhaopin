@@ -491,11 +491,12 @@ onUnmounted(() => {
             </a>
           </div>
           <label class="lgp-agree">
-            <input v-model="agreed" type="checkbox" />
+            <input v-model="agreed" class="lgp-agree-box" type="checkbox" />
+            <span class="lgp-agree-ui" aria-hidden="true" />
             <span>
               {{ $t('loginPage.agree_prefix', { site: siteName }) }}
-              <NuxtLink to="/pages/protocol">{{ $t('loginPage.protocol') }}</NuxtLink>
-              <NuxtLink to="/pages/privacy">{{ $t('loginPage.privacy') }}</NuxtLink>
+              <NuxtLink to="/pages/protocol" @click.stop>{{ $t('loginPage.protocol') }}</NuxtLink>
+              <NuxtLink to="/pages/privacy" @click.stop>{{ $t('loginPage.privacy') }}</NuxtLink>
               {{ $t('loginPage.agree_suffix', { site: siteName }) }}
             </span>
           </label>

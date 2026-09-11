@@ -952,9 +952,9 @@ html.force-pc .site-h5 {
   padding: 24px 16px 80px;
   box-sizing: border-box;
 }
-.lgp *,
-.lgp *::before,
-.lgp *::after {
+.lgp *:not([type='checkbox']),
+.lgp *:not([type='checkbox'])::before,
+.lgp *:not([type='checkbox'])::after {
   box-sizing: border-box;
 }
 .lgp-top {
@@ -1227,6 +1227,7 @@ html.force-pc .site-h5 {
   height: 18px;
 }
 .lgp-agree {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -1235,6 +1236,48 @@ html.force-pc .site-h5 {
   color: #888;
   margin: 8px 0;
   line-height: 1.6;
+  cursor: pointer;
+}
+.lgp-agree-box {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  opacity: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+.lgp-agree-ui {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  border: 1.5px solid #bbb;
+  border-radius: 3px;
+  background: #fff;
+  position: relative;
+  pointer-events: none;
+}
+.lgp-agree-box:focus-visible + .lgp-agree-ui {
+  outline: 2px solid #12b3b3;
+  outline-offset: 2px;
+}
+.lgp-agree-box:checked + .lgp-agree-ui {
+  background: #12b3b3;
+  border-color: #12b3b3;
+}
+.lgp-agree-box:checked + .lgp-agree-ui::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 .lgp-agree a {
   color: #12b3b3;
