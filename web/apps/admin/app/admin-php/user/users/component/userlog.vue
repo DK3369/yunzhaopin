@@ -47,9 +47,9 @@
 				</el-table-column>
 				<el-table-column prop="neirong" :label="lc('wap_user_00102')" min-width="180" show-overflow-tooltip>
 					<template #default="scope">
-						{{scope.row.content}}
+						{{ packedLog(scope.row.content) }}
 						<template v-if="scope.row.sub_n">
-							；{{scope.row.sub_n}}
+							；{{ packedLog(scope.row.sub_n) }}
 						</template>
 					</template>
 				</el-table-column>
@@ -93,6 +93,7 @@ import ResumePreview from '../../../component/resume_preview.vue'
 
 const httpPost = (...a) => window.httpPost(...a)
 const lc = (...a) => window.lc(...a)
+const packedLog = (s) => (typeof window.yunAdminPacked === 'function' ? window.yunAdminPacked(s) : String(s ?? ''))
 const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
 const delConfirm = (...a) => window.delConfirm(...a)
 const formatDate = (...a) => window.formatDate(...a)

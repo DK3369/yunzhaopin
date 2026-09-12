@@ -9,7 +9,7 @@ import {
   ElTooltip as ElTooltipBase,
 } from 'element-plus'
 import { httpPost } from '~/utils/httpPost'
-import { applyPhpLcFixes, lc, persistLocale, readStoredLocale, translateMenuText } from '~/utils/phpLc'
+import { applyPhpLcFixes, lc, persistLocale, readStoredLocale, translateMenuText, translatePackedText } from '~/utils/phpLc'
 
 function coerceSwitchValue(val: unknown, active: unknown, inactive: unknown) {
   if (Object.is(val, active) || Object.is(val, inactive)) return val
@@ -443,6 +443,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       if (readStoredLocale() === 'zh') return String(text ?? '')
       return translateMenuText(String(text ?? ''))
     }
+    w.yunAdminPacked = (text: unknown) => translatePackedText(text)
     w.yunAdminTranslateDOM = () => undefined
     // PHP pages load wangEditor in HTML; Nuxt must still have a fallback if the
     // script tag races Vue chunks. Real editor comes from public/php-admin/js/wangeditor.
