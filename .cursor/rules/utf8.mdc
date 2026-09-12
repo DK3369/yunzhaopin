@@ -1,0 +1,20 @@
+---
+description: 存库与接口字段只用 UTF-8（MySQL 用 utf8mb4）
+alwaysApply: true
+---
+
+# 字段编码：UTF-8
+
+存库、接口、页面里的文本字段一律 **UTF-8**。不要 GBK / GB2312 / latin1，也不要 MySQL 名叫 `utf8` 的 3 字节集（那是 **utf8mb3**，emoji 会 `1366 Incorrect string value`）。
+
+## MySQL（库 `jobs`）
+
+- 库、表、文本列：**`utf8mb4`**（现网 collation `utf8mb4_general_ci`）。
+- 连接已在 `phpyun-rs/.../db.rs` 里 `.charset("utf8mb4")`。`DATABASE_URL` **不要** `?charset=utf8`。
+- 新建表/列：`DEFAULT CHARSET=utf8mb4`。旧表用 `CONVERT TO CHARACTER SET utf8mb4`（见 `migrations/sqlx/20260912000002_jobs_utf8mb4.sql`），现网手工执行；`RUN_MIGRATIONS_ON_BOOT=false`。
+- **禁止**为迁就 utf8mb3 而删 emoji / 4 字节 UTF-8。
+
+## 其它
+
+- JSON / HTTP：`charset=utf-8`。源码与语言包按 UTF-8 保存。
+- 只改 `phpyun-rs/` 与 `web/`，不要改 `uploads/` PHP。

@@ -24,7 +24,7 @@ sudo systemctl restart test-jobs-phpyun-rs-3003
 unit 的 `ExecStart` 是 **debug** binary：`phpyun-rs/target/debug/phpyun-rs`。  
 `PHPYUN_ENV_FILE=/www/wwwroot/zzzz.com/phpyun-rs/.env`，`BIND=127.0.0.1:3003`。
 
-`APP_ENV`：`dev` / `test` / `prod`。debug 默认同 `.env.dev`，release 同 `.env.pro`。现网 unit 显式指 `.env`（库 **jobs**）。`.env.dev` 是测试库 `phpyun_test`。改业务只写 **jobs**，不要写库名 `phpyun`。
+`APP_ENV`：`dev` / `test` / `prod`。debug 默认同 `.env.dev`，release 同 `.env.pro`。现网 unit 显式指 `.env`（库 **jobs**）。`.env.dev` 是测试库 `phpyun_test`。改业务只写 **jobs**，不要写库名 `phpyun`。文本列 **utf8mb4**（见 [utf8.mdc](../../rules/utf8.mdc)）。
 
 ## 探活
 

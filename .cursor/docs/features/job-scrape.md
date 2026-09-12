@@ -16,7 +16,7 @@
 | 锁 | Redis `job_scrape:run` TTL 1800s。**立即采集**在后台跑，HTTP 马上返回（现网 `REQUEST_TIMEOUT_SECS=30`，以前整段等完会被掐掉、锁不释放，再点就是 `job_scrape_busy`）。进程启动会 `DEL` 残留锁。正在跑时再点返回 200「正在采集中」，不是错误。 |
 | 后台 | `scrapeSet.vue`「立即采集」；采集中按钮禁用。配置在 `phpyun_admin_config`：`job_scrape_url/enabled/hours/minutes/last_run/last_msg` |
 | 测 | `cargo test -p phpyun-services --offline --lib job_scrape` |
-| MySQL | `description` 是 utf8（非 utf8mb4），JD 里 emoji 会 1366；入库前丢掉 4 字节字符 |
+| MySQL | 文本列 **utf8mb4**（真 UTF-8，含 emoji）。连接 `.charset("utf8mb4")`。旧 PHP 表已 `CONVERT`；迁移 `20260912000002_jobs_utf8mb4.sql` |
 
 拉不到 JD（部分 Workday、已下线 posting）保留 Company/Location 占位，不挡入库。
 

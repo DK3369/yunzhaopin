@@ -15,6 +15,7 @@
 | 依赖怎么数、别乱砍 | [deps.md](./deps.md) | [doc/RUST_DEPENDENCIES.md](../../../doc/RUST_DEPENDENCIES.md) |
 | 本机怎么起 | [run.md](./run.md) | [`ops/restart.sh`](../../../ops/restart.sh)、[phpyun-rs/README.md](../../../phpyun-rs/README.md) |
 | 采集英文岗 / 官网申请 | [features/job-scrape.md](../features/job-scrape.md) | `job_scrape_service.rs`、`apply_service.rs`、site `jobs/[id].vue` |
+| 字段 UTF-8 | [utf8.mdc](../../rules/utf8.mdc) | 库 `jobs` 表/列 **utf8mb4**；连接 `db.rs` `.charset("utf8mb4")` |
 
 ## 历史 / 条数会过期（不要当未做清单）
 

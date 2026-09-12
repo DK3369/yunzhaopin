@@ -11,6 +11,7 @@
 |---|---|
 | Rust 进程 / 分层 / 契约 / 编译 | [rust/README.md](./rust/README.md) |
 | 采集英文岗、补 JD、官网申请记原投递表 | [features/job-scrape.md](./features/job-scrape.md) |
+| 字段编码 UTF-8 / MySQL utf8mb4 | [`.cursor/rules/utf8.mdc`](../rules/utf8.mdc) |
 
 ## 不要当现状的
 
