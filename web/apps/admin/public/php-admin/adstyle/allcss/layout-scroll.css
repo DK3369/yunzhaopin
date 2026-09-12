@@ -1,0 +1,23 @@
+/* Nuxt 内容区滚动。
+ * PHP 后台每页是 iframe 整窗，overflow:hidden + 写死 calc 高度没问题。
+ * 嵌进 .subContPageInfo 之后同样裁切会把页脚、分页、提示条挤出可视区。
+ * 外壳改成纵向可滚动，不再按页面扣像素。
+ */
+
+.subContPageInfo {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+.homeModule,
+.moduleElenAl,
+.moduleElenAlCategorySub,
+.moduleElenAlRight,
+.setDomeAll,
+.setDomeAll .el-tabs__content,
+.setDomeAll .el-tab-pane,
+.setBasicAll,
+.subContPageInfo .iframeAlls {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}

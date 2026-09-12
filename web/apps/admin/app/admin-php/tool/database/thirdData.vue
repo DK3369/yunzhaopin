@@ -9,7 +9,7 @@
     <div class="tableDome_tip" style="margin: 0 12px;">
         <el-alert :title="lc('admin_tool_00733')" type="success" :closable="false"></el-alert>
     </div>
-    <div class="moduleElTable thirdDataTable">
+    <div class="moduleElTable">
         <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="handleSelectionChange" ref="dataTable" v-loading="loading" :empty-text="emptytext">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="sort" :label="lc('admin_vue_00044')" width="80" align="center"></el-table-column>
@@ -245,8 +245,3 @@ export default {
     },
 }
 </script>
-<style>
-.thirdDataTable {
-    height: calc(100% - (60px + 50px + 12px + 12px + 52px));
-}
-</style>

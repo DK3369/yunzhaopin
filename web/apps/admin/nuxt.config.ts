@@ -158,6 +158,11 @@ function bundlePhpAdminCss(): string {
     parts.push(`/* ==== ${file.note} ==== */\n${rewriteCssUrls(css, file.href)}${closeCssModule()}`)
   }
   parts.push(`/* ==== element-plus 主色对齐 PHP 皮肤 --bg-color3 ==== */\n${phpAdminEpPrimaryCss()}`)
+  const layoutScroll = phpAdmin('adstyle/allcss/layout-scroll.css')
+  if (existsSync(layoutScroll)) {
+    const css = readFileSync(layoutScroll, 'utf8').replace(/@charset\s+[^;]+;/gi, '')
+    parts.push(`/* ==== Nuxt 内容区滚动（必须拼在最后，覆盖 overflow:hidden） ==== */\n${css}`)
+  }
   return parts.join('\n')
 }
 

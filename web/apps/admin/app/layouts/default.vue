@@ -642,5 +642,6 @@ useHead({
 }
 .subContPageInfo > * {
   height: 100%;
+  overflow: auto;
 }
 </style>
