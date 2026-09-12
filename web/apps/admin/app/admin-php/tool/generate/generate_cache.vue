@@ -23,7 +23,7 @@
                             <tr></tr>
                         </template>
                         <td>
-                            <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
+                            <el-checkbox :label="item.id">{{ cacheLabel(item.name) }}</el-checkbox>
                         </td>
                     </template>
                     </tbody>
@@ -84,6 +84,18 @@ export default {
             this.getBaseData();
         },
         methods: {
+            cacheLabel(text) {
+                const s = String(text == null ? '' : text)
+                if (!s) return ''
+                const m = /^([a-z][a-z0-9_]*)_([0-9]{5})$/.exec(s)
+                if (m && m[1].split('_').length <= 3) {
+                    return lc(s)
+                }
+                if (typeof window !== 'undefined' && typeof window.yunAdminT === 'function') {
+                    return window.yunAdminT(s)
+                }
+                return s
+            },
             selectAllBottom(value) {
                 let _this = this;
                 if (value) {
