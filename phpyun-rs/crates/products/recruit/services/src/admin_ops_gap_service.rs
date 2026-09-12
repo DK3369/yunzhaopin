@@ -289,17 +289,17 @@ pub async fn list_data_call(state: &AppState, page: Pagination) -> AppResult<Pag
 
 fn datacall_type_n(t: &str) -> String {
     match t {
-        "resume" => "简历".into(),
-        "member" => "用户".into(),
-        "company" => "公司".into(),
-        "job" => "职位".into(),
-        "zph" => "招聘会".into(),
-        "news" => "新闻".into(),
-        "ask" => "问答".into(),
-        "link" => "友情链接".into(),
-        "once" => "店铺招聘".into(),
-        "tiny" => "普工简历".into(),
-        "keyword" => "热门关键字".into(),
+        "resume" => "wap_com_00428".into(),
+        "member" => "common_02014".into(),
+        "company" => "default_00262".into(),
+        "job" => "wap_user_00154".into(),
+        "zph" => "member_com_00293".into(),
+        "news" => "admin_tool_00428".into(),
+        "ask" => "wap_user_00223".into(),
+        "link" => "default_00256".into(),
+        "once" => "wap_js_00130".into(),
+        "tiny" => "wap_js_00066".into(),
+        "keyword" => "admin_system_00443".into(),
         other => other.to_string(),
     }
 }

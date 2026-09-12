@@ -11,8 +11,12 @@
         <div class="moduleElTable">
             <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="handleSelectionChange" ref="dataTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="name" :label="lc('admin_tool_00306')" min-width="220"></el-table-column>
-                <el-table-column prop="type_n" :label="lc('admin_tool_00307')" width="180"></el-table-column>
+                <el-table-column :label="lc('admin_tool_00306')" min-width="220">
+                    <template #default="scope">{{ callLabel(scope.row.name) }}</template>
+                </el-table-column>
+                <el-table-column :label="lc('admin_tool_00307')" width="180">
+                    <template #default="scope">{{ callLabel(scope.row.type_n) }}</template>
+                </el-table-column>
                 <el-table-column prop="num" :label="lc('admin_tool_00303')" width="180" align="center"></el-table-column>
                 <el-table-column prop="time_n" :label="lc('wap_00326')" width="180" align="center"></el-table-column>
                 <el-table-column :label="lc('admin_tool_00308')" width="260" align="center">
@@ -108,7 +112,7 @@
         <el-dialog :title="lc('admin_tool_00312')" v-model="typeDrawer" :with-header="true" :modal-append-to-body="false" :show-close="true" width="520px">
             <div class="datacallLepys">
                 <el-row>
-                    <el-button plain v-for="(item, key) in dataCall" :key="key" @click="handleSelType(key)">{{item[0]}}
+                    <el-button plain v-for="(item, key) in dataCall" :key="key" @click="handleSelType(key)">{{ callLabel(item[0]) }}
                     </el-button>
                 </el-row>
             </div>
@@ -190,7 +194,7 @@
                                             </td>
                                         </tr>
                                         <tr v-if="trShow">
-                                            <td>{{trName}}</td>
+                                            <td>{{ callLabel(trName) }}</td>
                                             <td>
                                                 <div class="TableSelect">
                                                     <el-select v-model="callInfo.where" :placeholder="lc('wap_user_00100')">
@@ -240,7 +244,7 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(v, k) in fieldArr" :key="k">
-                                            <td>{{v.name}}</td>
+                                            <td>{{ callLabel(v.name) }}</td>
                                             <td>
                                                 {{v.value}}
                                             </td>
@@ -321,6 +325,18 @@ export default {
             this.getDataList();
         },
         methods: {
+            callLabel(text) {
+                const s = String(text == null ? '' : text)
+                if (!s) return ''
+                const m = /^([a-z][a-z0-9_]*)_([0-9]{5})$/.exec(s)
+                if (m && m[1].split('_').length <= 3) {
+                    return lc(s)
+                }
+                if (typeof window !== 'undefined' && typeof window.yunAdminT === 'function') {
+                    return window.yunAdminT(s)
+                }
+                return s
+            },
             inputIntNumber(val, form, key) {
                 this.$data[form][key] = val.replace(/[^0-9]/g, '');
             },
@@ -432,50 +448,61 @@ export default {
                 let that = this;
                 that.fieldArr=[];
                 that.orderArr=[];
-                for (let i in that.dataCall[that.callType].field) {
-                    that.fieldArr.push({
-                        'name': that.dataCall[that.callType].field[i],
-                        'value': '{' + i + '}'
-                    });
+                that.trShow = false;
+                that.optionS = [];
+                that.trName = '';
+                const spec = that.dataCall && that.dataCall[that.callType];
+                if (!spec) {
+                    return;
                 }
-                for (let i in that.dataCall[that.callType].order) {
-                    that.orderArr.push({
-                        'label': that.dataCall[that.callType].order[i],
-                        'value': i.replace(',',' ')
-                    });
+                if (spec.field) {
+                    for (let i in spec.field) {
+                        that.fieldArr.push({
+                            'name': spec.field[i],
+                            'value': '{' + i + '}'
+                        });
+                    }
                 }
-                if (that.dataCall[that.callType].where != undefined) {
+                if (spec.order) {
+                    for (let i in spec.order) {
+                        that.orderArr.push({
+                            'label': that.callLabel(spec.order[i]),
+                            'value': i.replace(',',' ')
+                        });
+                    }
+                }
+                if (spec.where != undefined) {
 
                     that.trShow = true;
                     that.optionS = [];
 
                     if (that.callType == 'member') {
-                        that.trName = that.dataCall[that.callType].where.usertype[0];
-                        for (let i in that.dataCall[that.callType].where.usertype) {
+                        that.trName = spec.where.usertype[0];
+                        for (let i in spec.where.usertype) {
                             if (i > 0) {
                                 that.optionS.push({
-                                    'label': that.dataCall[that.callType].where.usertype[i],
+                                    'label': that.callLabel(spec.where.usertype[i]),
                                     'value': 'usertype_' + i
                                 });
                             }
                         }
                     } else if (that.callType == 'link') {
-                        that.trName = that.dataCall[that.callType].where.img_type[0];
-                        for (let i in that.dataCall[that.callType].where.img_type) {
+                        that.trName = spec.where.img_type[0];
+                        for (let i in spec.where.img_type) {
                             if (i > 0) {
                                 that.optionS.push({
-                                    'label': that.dataCall[that.callType].where.img_type[i],
+                                    'label': that.callLabel(spec.where.img_type[i]),
                                     'value': 'img_type_' + i
                                 });
                             }
                         }
 
                     } else if (that.callType == 'keyword') {
-                        that.trName = that.dataCall[that.callType].where.keytype[0];
-                        for (let i in that.dataCall[that.callType].where.keytype) {
+                        that.trName = spec.where.keytype[0];
+                        for (let i in spec.where.keytype) {
                             if (i > 0) {
                                 that.optionS.push({
-                                    'label': that.dataCall[that.callType].where.keytype[i],
+                                    'label': that.callLabel(spec.where.keytype[i]),
                                     'value': 'keytype_' + i
                                 });
                             }
@@ -507,7 +534,7 @@ export default {
                 let idArr = [],
                     nameArr = [];
                 let params = {};
-                name = scope.row.name;
+                name = this.callLabel(scope.row.name);
                 params.id = scope.row.id;
                 delConfirm(this, params, this.upDataCall, window.lc('admin_update_data_call_confirm', [name]));
             },
@@ -537,13 +564,13 @@ export default {
                     this.selectedItem.forEach((item) => {
 
                         idArr.push(item.id);
-                        nameArr.push(item.name);
+                        nameArr.push(this.callLabel(item.name));
                     });
                     name = nameArr.join(', ');
                     params.id = idArr;
                 } else {
 
-                    name = scope.row.name;
+                    name = this.callLabel(scope.row.name);
                     params.id = scope.row.id;
                 }
 

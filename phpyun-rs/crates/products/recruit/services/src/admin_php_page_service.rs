@@ -971,17 +971,17 @@ async fn city_child_ids(state: &AppState, pid: i32) -> AppResult<Value> {
 
 fn datacall_static() -> Value {
     json!({
-        "resume": { "0": "简历" },
-        "member": { "0": "用户" },
-        "company": { "0": "公司" },
-        "job": { "0": "职位" },
-        "zph": { "0": "招聘会" },
-        "news": { "0": "新闻" },
-        "ask": { "0": "问答" },
-        "link": { "0": "友情链接" },
-        "once": { "0": "店铺招聘" },
-        "tiny": { "0": "普工简历" },
-        "keyword": { "0": "热门关键字" },
+        "resume": { "0": "wap_com_00428" },
+        "member": { "0": "common_02014" },
+        "company": { "0": "default_00262" },
+        "job": { "0": "wap_user_00154" },
+        "zph": { "0": "member_com_00293" },
+        "news": { "0": "admin_tool_00428" },
+        "ask": { "0": "wap_user_00223" },
+        "link": { "0": "default_00256" },
+        "once": { "0": "wap_js_00130" },
+        "tiny": { "0": "wap_js_00066" },
+        "keyword": { "0": "admin_system_00443" },
     })
 }
 
