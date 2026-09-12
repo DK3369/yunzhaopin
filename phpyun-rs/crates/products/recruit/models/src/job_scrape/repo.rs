@@ -35,6 +35,14 @@ pub async fn find_url_by_job_id(pool: &MySqlPool, job_id: u64) -> Result<Option<
     Ok(row.map(|r| r.0).filter(|s| !s.is_empty()))
 }
 
+pub async fn delete_item_by_job_id(pool: &MySqlPool, job_id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_rs_job_scrape_item WHERE job_id = ?")
+        .bind(job_id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn insert_item(
     pool: &MySqlPool,
     source_url: &str,

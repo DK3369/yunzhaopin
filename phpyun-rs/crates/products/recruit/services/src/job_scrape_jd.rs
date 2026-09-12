@@ -6,6 +6,8 @@ use phpyun_core::http_client::{Http, RetryPolicy};
 use serde_json::Value;
 
 const DESC_MAX_BYTES: usize = 60_000;
+/// Visible job-body text (tags stripped). Shorter postings are not stored.
+pub const MIN_BODY_CHARS: usize = 100;
 const ALLOWED_TAGS: &[&str] = &[
     "p", "br", "ul", "ol", "li", "h1", "h2", "h3", "strong", "em", "b", "i", "a", "div", "span",
 ];
@@ -34,16 +36,17 @@ pub async fn official_body_html(
         return None;
     }
     if let Some(html) = fetch_ats(http, cache, url, title).await {
-        if is_substantial(&html) {
+        if is_substantial(&html) && has_min_body(&html) {
             return Some(html);
         }
     }
     match http.get_text(url).await {
-        Ok(page) => extract_from_html(&page),
+        Ok(page) => extract_from_html(&page).filter(|s| has_min_body(s)),
         Err(_) => None,
     }
 }
 
+#[cfg(test)]
 pub fn is_stub_description(html: &str) -> bool {
     let t = html.trim();
     if t.is_empty() || t.contains("Apply / source") {
@@ -61,6 +64,57 @@ pub fn is_stub_description(html: &str) -> bool {
     }
     let paras = t.matches("<p>").count();
     paras <= 4 && t.len() < 800
+}
+
+/// Visible characters in HTML (tags stripped, whitespace collapsed).
+pub fn visible_char_count(html: &str) -> usize {
+    visible_text(html).chars().count()
+}
+
+pub fn has_min_body(html: &str) -> bool {
+    visible_char_count(html) >= MIN_BODY_CHARS
+}
+
+/// Stored `compose_description` HTML: headers / Apply-link do not count as JD.
+pub fn stored_description_has_min_body(html: &str) -> bool {
+    if html.trim().is_empty() || html.contains("Apply / source") {
+        return false;
+    }
+    has_min_body(&strip_scrape_headers(html))
+}
+
+fn strip_scrape_headers(html: &str) -> String {
+    let mut s = html.to_string();
+    for label in ["Company", "Location", "Posted"] {
+        let open = format!("<p><strong>{label}:</strong>");
+        if let Some(i) = s.find(&open) {
+            if let Some(rel) = s[i..].find("</p>") {
+                let end = i + rel + 4;
+                s.replace_range(i..end, "");
+            }
+        }
+    }
+    s
+}
+
+fn visible_text(html: &str) -> String {
+    let mut out = String::new();
+    let mut in_tag = false;
+    for c in html.chars() {
+        match c {
+            '<' => in_tag = true,
+            '>' => {
+                in_tag = false;
+                out.push(' ');
+            }
+            _ if !in_tag => out.push(c),
+            _ => {}
+        }
+    }
+    unescape_basic(&out)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 pub fn compose_description(
@@ -784,6 +838,30 @@ mod tests {
         let out = sanitize_html("<p>Lock \u{1F512} here</p>");
         assert!(out.contains("\u{1F512}"));
         assert!(out.contains("<p>Lock "));
+    }
+
+    #[test]
+    fn min_body_counts_visible_chars_not_tags() {
+        assert!(!has_min_body(""));
+        assert!(!has_min_body("<p>short</p>"));
+        let n99 = "a".repeat(99);
+        let n100 = "a".repeat(100);
+        assert!(!has_min_body(&format!("<p>{n99}</p>")));
+        assert!(has_min_body(&format!("<p>{n100}</p>")));
+        assert_eq!(visible_char_count("<p>你好世界</p>"), 4);
+    }
+
+    #[test]
+    fn stored_rejects_apply_source_even_with_og() {
+        let html = "<p><strong>Company:</strong> ITFS</p><p><strong>Location:</strong> Warszawa</p>\
+            <p>Oferty pracy dla specjalistów oraz narzędzia wspomagające proces rekrutacji. SOLID.Jobs to dużo więcej niż job board.</p>\
+            <p><a href=\"https://solid.jobs/x\">Apply / source</a></p>";
+        assert!(!stored_description_has_min_body(html));
+        let real = format!(
+            "<p><strong>Company:</strong> X</p><p>{}</p>",
+            "We are looking for an engineer. ".repeat(8)
+        );
+        assert!(stored_description_has_min_body(&real));
     }
 
     #[test]

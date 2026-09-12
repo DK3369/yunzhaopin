@@ -46,6 +46,7 @@ struct RunStats {
     inserted: i32,
     skipped: i32,
     updated: i32,
+    dropped: i32,
     error: String,
 }
 
@@ -226,6 +227,7 @@ async fn run_locked(state: &AppState, fail_if_busy: bool) -> AppResult<RunStats>
                 inserted: 0,
                 skipped: 0,
                 updated: 0,
+                dropped: 0,
                 error: String::new(),
             });
         }
@@ -239,6 +241,7 @@ async fn run_locked(state: &AppState, fail_if_busy: bool) -> AppResult<RunStats>
             inserted: 0,
             skipped: 0,
             updated: 0,
+            dropped: 0,
             error: String::new(),
         });
     }
@@ -255,6 +258,7 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         inserted: 0,
         skipped: 0,
         updated: 0,
+        dropped: 0,
         error: String::new(),
     };
     let mut jd_cache = JdCache::default();
@@ -301,6 +305,21 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         salt,
         password_hash,
     };
+    match refresh_or_drop_short_jobs(state, &mut jd_cache).await {
+        Ok((n_upd, n_drop)) => {
+            stats.updated += n_upd;
+            stats.dropped += n_drop;
+        }
+        Err(e) => {
+            tracing::warn!(error = %e, "job_scrape: short-body sweep failed");
+            if stats.error.len() < 200 {
+                if !stats.error.is_empty() {
+                    stats.error.push(';');
+                }
+                stats.error.push_str(&e.to_string());
+            }
+        }
+    }
     for job in &jobs {
         match ingest_one(state, job, &classes, &creds, &mut jd_cache).await {
             Ok(IngestOut::Inserted) => stats.inserted += 1,
@@ -318,18 +337,6 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
             }
         }
     }
-    match backfill_existing_stubs(state, &mut jd_cache).await {
-        Ok(n) => stats.updated += n,
-        Err(e) => {
-            tracing::warn!(error = %e, "job_scrape: stub backfill failed");
-            if stats.error.len() < 200 {
-                if !stats.error.is_empty() {
-                    stats.error.push(';');
-                }
-                stats.error.push_str(&e.to_string());
-            }
-        }
-    }
     let finished = clock::now_ts();
     let _ = setting_repo::upsert(
         state.db.pool(),
@@ -344,8 +351,8 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         state.db.pool(),
         KEY_LAST_MSG,
         &format!(
-            "fetched={} inserted={} skipped={} updated={}",
-            stats.fetched, stats.inserted, stats.skipped, stats.updated
+            "fetched={} inserted={} skipped={} updated={} dropped={}",
+            stats.fetched, stats.inserted, stats.skipped, stats.updated, stats.dropped
         ),
         "",
         false,
@@ -389,11 +396,16 @@ async fn ingest_one(
         }
         return Ok(IngestOut::Skipped);
     }
-    let uid = ensure_company(state, &job.company, &job.location, creds).await?;
     let job_name = clip_chars(&job.role, JOB_NAME_MAX);
     if job_name.is_empty() {
         return Ok(IngestOut::Skipped);
     }
+    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url, Some(&job.role))
+        .await;
+    let Some(body) = body else {
+        return Ok(IngestOut::Skipped);
+    };
+    let uid = ensure_company(state, &job.company, &job.location, creds).await?;
     if job_repo::find_id_by_uid_name_listed(state.db.reader(), uid, &job_name)
         .await?
         .is_some()
@@ -410,7 +422,13 @@ async fn ingest_one(
         JOB_NAME_MAX,
     );
     let com_logo = com.logo.clone().unwrap_or_default();
-    let description = fetch_job_description(state, job, jd_cache).await;
+    let description = job_scrape_jd::compose_description(
+        &job.company,
+        &job.location,
+        &job.posted_at,
+        &job.url,
+        Some(&body),
+    );
     let rating = statis_repo::read_rating(state.db.reader(), uid)
         .await
         .unwrap_or(1);
@@ -489,21 +507,6 @@ async fn ingest_one(
     Ok(IngestOut::Inserted)
 }
 
-async fn fetch_job_description(
-    state: &AppState,
-    job: &ScrapedJob,
-    jd_cache: &mut JdCache,
-) -> String {
-    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url, Some(&job.role)).await;
-    job_scrape_jd::compose_description(
-        &job.company,
-        &job.location,
-        &job.posted_at,
-        &job.url,
-        body.as_deref(),
-    )
-}
-
 async fn refresh_stub_description(
     state: &AppState,
     job_id: u64,
@@ -513,11 +516,17 @@ async fn refresh_stub_description(
     let current = job_repo::find_description(state.db.reader(), job_id)
         .await?
         .unwrap_or_default();
-    if !job_scrape_jd::is_stub_description(&current) {
+    if job_scrape_jd::stored_description_has_min_body(&current) {
         return Ok(false);
     }
-    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url, Some(&job.role)).await;
-    let Some(body) = body.filter(|s| !s.trim().is_empty()) else {
+    let Some(body) = job_scrape_jd::official_body_html(
+        &state.http,
+        jd_cache,
+        &job.url,
+        Some(&job.role),
+    )
+    .await
+    else {
         return Ok(false);
     };
     let next = job_scrape_jd::compose_description(
@@ -527,16 +536,20 @@ async fn refresh_stub_description(
         &job.url,
         Some(&body),
     );
-    if next == current || job_scrape_jd::is_stub_description(&next) {
+    if next == current || !job_scrape_jd::stored_description_has_min_body(&next) {
         return Ok(false);
     }
     let n = job_repo::update_description_keep_listed(state.db.pool(), job_id, &next).await?;
     Ok(n > 0)
 }
 
-async fn backfill_existing_stubs(state: &AppState, jd_cache: &mut JdCache) -> AppResult<i32> {
+async fn refresh_or_drop_short_jobs(
+    state: &AppState,
+    jd_cache: &mut JdCache,
+) -> AppResult<(i32, i32)> {
     let items = scrape_repo::list_items(state.db.reader()).await?;
     let mut updated = 0i32;
+    let mut dropped = 0i32;
     for (job_id, source_url, role, company_name) in items {
         if source_url.is_empty() || job_id == 0 {
             continue;
@@ -544,7 +557,7 @@ async fn backfill_existing_stubs(state: &AppState, jd_cache: &mut JdCache) -> Ap
         let current = job_repo::find_description(state.db.reader(), job_id)
             .await?
             .unwrap_or_default();
-        if !job_scrape_jd::is_stub_description(&current) {
+        if job_scrape_jd::stored_description_has_min_body(&current) {
             continue;
         }
         let (company, location, posted) = header_from_description(&current, &company_name);
@@ -557,9 +570,18 @@ async fn backfill_existing_stubs(state: &AppState, jd_cache: &mut JdCache) -> Ap
         };
         if refresh_stub_description(state, job_id, &job, jd_cache).await? {
             updated += 1;
+            continue;
         }
+        drop_scrape_job(state, job_id).await?;
+        dropped += 1;
     }
-    Ok(updated)
+    Ok((updated, dropped))
+}
+
+async fn drop_scrape_job(state: &AppState, job_id: u64) -> AppResult<()> {
+    job_repo::delete_by_id(state.db.pool(), job_id).await?;
+    scrape_repo::delete_item_by_job_id(state.db.pool(), job_id).await?;
+    Ok(())
 }
 
 fn header_from_description(html: &str, fallback_company: &str) -> (String, String, String) {
