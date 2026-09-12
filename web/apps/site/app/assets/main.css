@@ -1349,3 +1349,62 @@ html.force-pc .site-h5 {
   }
 }
 
+/* 职位详情 JD：覆盖 style.css / H5 * 重置（p/ul/h2 边距清零、列表无圆点） */
+.job_details_describe {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.job-jd {
+  display: block;
+  width: 100%;
+  clear: both;
+  margin-top: 12px;
+  color: #444746;
+  line-height: 1.75;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.job-jd p {
+  display: block;
+  margin: 0 0 0.75em;
+}
+.job-jd > div {
+  display: block;
+  margin: 0 0 0.75em;
+}
+.job-jd h1,
+.job-jd h2,
+.job-jd h3 {
+  display: block;
+  margin: 1.1em 0 0.45em;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #222;
+}
+.job-jd ul,
+.job-jd ol {
+  display: block;
+  margin: 0.4em 0 0.9em 1.4em;
+  padding-left: 1.2em;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+.job-jd ol {
+  list-style-type: decimal;
+}
+.job-jd li {
+  display: list-item;
+  margin: 0.28em 0;
+  padding: 0;
+}
+.job-jd a {
+  color: #2778f8;
+  word-break: break-word;
+}
+.job-jd strong,
+.job-jd b {
+  font-weight: 700;
+}
+

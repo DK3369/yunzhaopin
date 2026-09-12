@@ -715,7 +715,7 @@ useHead({
               <span v-for="item in yqItems" :key="item.label + item.value" class="job_details_describe_yq">
                 {{ item.label ? `${item.label}：` : '' }}{{ item.value }}
               </span>
-              <div v-html="String(job.description || job.content || '')" />
+              <div class="job-jd" v-html="String(job.description || job.content || '')" />
               <div v-if="shenming" class="job_details_tip">{{ $t('common_02136') }}：{{ shenming }}</div>
             </div>
           </div>
@@ -899,7 +899,7 @@ useHead({
                 {{ item.label ? `${item.label}：` : '' }}{{ item.value }}
               </li>
             </ul>
-            <div class="newjob_js" v-html="String(job.description || job.content || '')" />
+            <div class="newjob_js job-jd" v-html="String(job.description || job.content || '')" />
           </div>
         </div>
         <div v-if="adsH5?.length" class="jobshow_ad">
