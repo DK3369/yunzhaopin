@@ -6,10 +6,10 @@
             <el-button type="primary" icon="el-icon-document-add" size="small" @click="openAdd">{{ lc('admin_tool_00707') }}</el-button>
         </div>
     </div>
-    <div class="tableDome_tip" style="margin: 0 12px 8px;">
+    <div class="tableDome_tip" style="margin: 0 12px;">
         <el-alert :title="lc('admin_tool_00733')" type="success" :closable="false"></el-alert>
     </div>
-    <div class="moduleElTable">
+    <div class="moduleElTable thirdDataTable">
         <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="handleSelectionChange" ref="dataTable" v-loading="loading" :empty-text="emptytext">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="sort" :label="lc('admin_vue_00044')" width="80" align="center"></el-table-column>
@@ -42,7 +42,9 @@
             <el-button size="small" @click="delSel">{{ lc('member_com_00055') }}</el-button>
         </div>
         <div class="modulePagNum">
-            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+            <div class="modulePagNum" style="margin: 0 auto;">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+            </div>
         </div>
     </div>
     <el-dialog :title="form.id ? lc('wap_js_00073') : lc('admin_tool_00707')" v-model="dialogShow" :modal-append-to-body="false" width="560px">
@@ -243,3 +245,8 @@ export default {
     },
 }
 </script>
+<style>
+.thirdDataTable {
+    height: calc(100% - (60px + 50px + 12px + 12px + 52px));
+}
+</style>
