@@ -240,6 +240,8 @@ pub struct JobDetailData {
     pub offline: bool,
     /// `edate` in the past (still shown with a stamp).
     pub expired: bool,
+    /// Official apply URL when this job was imported by scrape; empty otherwise.
+    pub apply_url: String,
 }
 
 pub async fn get_detail(
@@ -328,6 +330,12 @@ pub async fn get_detail(
         )
     };
 
+    let apply_url = phpyun_models::job_scrape::repo::find_url_by_job_id(db, id)
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_default();
+
     Ok(JobDetailData {
         job,
         com_logo,
@@ -354,6 +362,7 @@ pub async fn get_detail(
         linkjob,
         offline,
         expired,
+        apply_url,
     })
 }
 

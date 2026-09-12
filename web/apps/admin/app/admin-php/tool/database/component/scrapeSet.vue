@@ -163,7 +163,7 @@ export default {
         runNow() {
             const that = this
             that.runLoading = true
-            httpPost('m=tool&c=dataCollection&a=scrapeRun', {}, { timeout: 180000 }).then(function (res) {
+            httpPost('m=tool&c=dataCollection&a=scrapeRun', {}, { timeout: 300000 }).then(function (res) {
                 if (res.data.error == 0) {
                     const d = res.data.data || {}
                     const extra = d.inserted != null

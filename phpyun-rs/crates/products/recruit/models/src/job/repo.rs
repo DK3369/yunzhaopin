@@ -822,6 +822,30 @@ pub async fn update_admin(pool: &MySqlPool, id: u64, w: AdminJobWrite<'_>) -> Re
     Ok(res.rows_affected())
 }
 
+pub async fn find_description(pool: &MySqlPool, id: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(description, '') FROM phpyun_company_job WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
+/// Update description only; keep listing state (unlike [`update`], which resets `state=0`).
+pub async fn update_description_keep_listed(
+    pool: &MySqlPool,
+    id: u64,
+    description: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET description = ? WHERE id = ?")
+        .bind(description)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn find_id_by_uid_name_listed(
     pool: &MySqlPool,
     uid: u64,

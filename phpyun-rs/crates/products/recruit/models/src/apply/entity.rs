@@ -16,6 +16,9 @@ pub struct Apply {
     /// Copied from `phpyun_company_job.name` at apply time.
     #[sqlx(default)]
     pub job_name: String,
+    /// Official apply URL for scraped jobs; empty for on-site resume applies.
+    #[sqlx(default)]
+    pub apply_url: String,
     /// Copied from `phpyun_company.name` at apply time.
     #[sqlx(default)]
     pub com_name: String,

@@ -25,6 +25,16 @@ pub async fn find_job_id_by_url(pool: &MySqlPool, source_url: &str) -> Result<Op
     Ok(row.map(|r| r.0))
 }
 
+pub async fn find_url_by_job_id(pool: &MySqlPool, job_id: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(source_url, '') FROM phpyun_rs_job_scrape_item WHERE job_id = ? LIMIT 1",
+    )
+    .bind(job_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0).filter(|s| !s.is_empty()))
+}
+
 pub async fn insert_item(
     pool: &MySqlPool,
     source_url: &str,

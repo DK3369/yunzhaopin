@@ -498,5 +498,6 @@ pub async fn apply(
     Ok(ApiResponse::data(ApplyCreated {
         id: r.id,
         job_id: r.job_id,
+        apply_url: String::new(),
     }))
 }

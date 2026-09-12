@@ -16,6 +16,8 @@ use phpyun_models::user::repo as user_repo;
 use serde_json::{json, Value};
 use uuid::Uuid;
 
+use crate::job_scrape_jd::{self, JdCache};
+
 const KEY_URL: &str = "job_scrape_url";
 const KEY_ENABLED: &str = "job_scrape_enabled";
 const KEY_HOURS: &str = "job_scrape_hours";
@@ -43,6 +45,7 @@ struct RunStats {
     fetched: i32,
     inserted: i32,
     skipped: i32,
+    updated: i32,
     error: String,
 }
 
@@ -119,6 +122,7 @@ pub async fn admin_run(state: &AppState) -> AppResult<Value> {
         "fetched": stats.fetched,
         "inserted": stats.inserted,
         "skipped": stats.skipped,
+        "updated": stats.updated,
         "error": stats.error,
     }))
 }
@@ -149,7 +153,7 @@ async fn run_locked(state: &AppState, fail_if_busy: bool) -> AppResult<RunStats>
     let owner = Uuid::now_v7().to_string();
     let got = state
         .redis
-        .acquire_lock(LOCK_KEY, &owner, 900_000)
+        .acquire_lock(LOCK_KEY, &owner, 1_800_000)
         .await
         .unwrap_or(false);
     if !got {
@@ -160,6 +164,7 @@ async fn run_locked(state: &AppState, fail_if_busy: bool) -> AppResult<RunStats>
             fetched: 0,
             inserted: 0,
             skipped: 0,
+            updated: 0,
             error: String::new(),
         });
     }
@@ -175,8 +180,10 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         fetched: 0,
         inserted: 0,
         skipped: 0,
+        updated: 0,
         error: String::new(),
     };
+    let mut jd_cache = JdCache::default();
     let pages = scrape_page_urls(&cfg.url);
     let mut jobs: Vec<ScrapedJob> = Vec::new();
     let mut seen = HashSet::new();
@@ -221,9 +228,10 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         password_hash,
     };
     for job in &jobs {
-        match ingest_one(state, job, &classes, &creds).await {
-            Ok(true) => stats.inserted += 1,
-            Ok(false) => stats.skipped += 1,
+        match ingest_one(state, job, &classes, &creds, &mut jd_cache).await {
+            Ok(IngestOut::Inserted) => stats.inserted += 1,
+            Ok(IngestOut::Updated) => stats.updated += 1,
+            Ok(IngestOut::Skipped) => stats.skipped += 1,
             Err(e) => {
                 tracing::warn!(url = %job.url, error = %e, "job_scrape: ingest failed");
                 stats.skipped += 1;
@@ -250,8 +258,8 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         state.db.pool(),
         KEY_LAST_MSG,
         &format!(
-            "fetched={} inserted={} skipped={}",
-            stats.fetched, stats.inserted, stats.skipped
+            "fetched={} inserted={} skipped={} updated={}",
+            stats.fetched, stats.inserted, stats.skipped, stats.updated
         ),
         "",
         false,
@@ -276,28 +284,35 @@ struct ImportedCreds {
     password_hash: String,
 }
 
+enum IngestOut {
+    Inserted,
+    Updated,
+    Skipped,
+}
+
 async fn ingest_one(
     state: &AppState,
     job: &ScrapedJob,
     classes: &JobClassMap,
     creds: &ImportedCreds,
-) -> AppResult<bool> {
-    if scrape_repo::find_job_id_by_url(state.db.reader(), &job.url)
-        .await?
-        .is_some()
-    {
-        return Ok(false);
+    jd_cache: &mut JdCache,
+) -> AppResult<IngestOut> {
+    if let Some(job_id) = scrape_repo::find_job_id_by_url(state.db.reader(), &job.url).await? {
+        if job_id > 0 && refresh_stub_description(state, job_id, job, jd_cache).await? {
+            return Ok(IngestOut::Updated);
+        }
+        return Ok(IngestOut::Skipped);
     }
     let uid = ensure_company(state, &job.company, &job.location, creds).await?;
     let job_name = clip_chars(&job.role, JOB_NAME_MAX);
     if job_name.is_empty() {
-        return Ok(false);
+        return Ok(IngestOut::Skipped);
     }
     if job_repo::find_id_by_uid_name_listed(state.db.reader(), uid, &job_name)
         .await?
         .is_some()
     {
-        return Ok(false);
+        return Ok(IngestOut::Skipped);
     }
     let now = clock::now_ts();
     let (job1, job1_son, job_post) = classes.match_role(&job.role);
@@ -309,7 +324,7 @@ async fn ingest_one(
         JOB_NAME_MAX,
     );
     let com_logo = com.logo.clone().unwrap_or_default();
-    let description = job_description(job);
+    let description = fetch_job_description(state, job, jd_cache).await;
     let rating = statis_repo::read_rating(state.db.reader(), uid)
         .await
         .unwrap_or(1);
@@ -385,7 +400,52 @@ async fn ingest_one(
         now,
     )
     .await?;
-    Ok(true)
+    Ok(IngestOut::Inserted)
+}
+
+async fn fetch_job_description(
+    state: &AppState,
+    job: &ScrapedJob,
+    jd_cache: &mut JdCache,
+) -> String {
+    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url).await;
+    job_scrape_jd::compose_description(
+        &job.company,
+        &job.location,
+        &job.posted_at,
+        &job.url,
+        body.as_deref(),
+    )
+}
+
+async fn refresh_stub_description(
+    state: &AppState,
+    job_id: u64,
+    job: &ScrapedJob,
+    jd_cache: &mut JdCache,
+) -> AppResult<bool> {
+    let current = job_repo::find_description(state.db.reader(), job_id)
+        .await?
+        .unwrap_or_default();
+    if !job_scrape_jd::is_stub_description(&current) {
+        return Ok(false);
+    }
+    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url).await;
+    let Some(body) = body.filter(|s| !s.trim().is_empty()) else {
+        return Ok(false);
+    };
+    let next = job_scrape_jd::compose_description(
+        &job.company,
+        &job.location,
+        &job.posted_at,
+        &job.url,
+        Some(&body),
+    );
+    if next == current || job_scrape_jd::is_stub_description(&next) {
+        return Ok(false);
+    }
+    let n = job_repo::update_description_keep_listed(state.db.pool(), job_id, &next).await?;
+    Ok(n > 0)
 }
 
 async fn ensure_company(
@@ -688,31 +748,6 @@ fn scrape_page_urls(base: &str) -> Vec<String> {
         out.push(explore);
     }
     out
-}
-
-fn job_description(job: &ScrapedJob) -> String {
-    let mut html = String::new();
-    html.push_str("<p><strong>Company:</strong> ");
-    html.push_str(&esc(&job.company));
-    html.push_str("</p><p><strong>Location:</strong> ");
-    html.push_str(&esc(&job.location));
-    html.push_str("</p>");
-    if !job.posted_at.is_empty() {
-        html.push_str("<p><strong>Posted:</strong> ");
-        html.push_str(&esc(&job.posted_at));
-        html.push_str("</p>");
-    }
-    html.push_str("<p><a href=\"");
-    html.push_str(&esc(&job.url));
-    html.push_str("\" target=\"_blank\" rel=\"noopener\">Apply / source</a></p>");
-    html
-}
-
-fn esc(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
 }
 
 fn has_cjk(s: &str) -> bool {

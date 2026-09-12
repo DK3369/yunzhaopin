@@ -80,6 +80,9 @@ useSeoMeta({ title: t('wap_user_00270') })
           <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`">{{ row.com_name }}</NuxtLink>
         </p>
         <p class="muted">{{ browseLabel(row) }} · {{ row.datetime_n }}</p>
+        <p v-if="row.apply_url">
+          <a :href="row.apply_url" target="_blank" rel="noopener">{{ $t('ui.apply_official') }}</a>
+        </p>
         <button v-if="!row.quxiao" type="button" @click="withdraw(row.id)">{{ $t('common.cancel') }}</button>
         <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
       </article>

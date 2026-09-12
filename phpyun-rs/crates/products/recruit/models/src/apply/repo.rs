@@ -17,6 +17,7 @@ const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
      CAST(com_id AS UNSIGNED) AS com_id, \
      CAST(eid AS UNSIGNED) AS eid, \
      COALESCE(job_name, '') AS job_name, \
+     COALESCE(apply_url, '') AS apply_url, \
      COALESCE(com_name, '') AS com_name, \
      CAST(datetime AS SIGNED) AS datetime, is_browse, \
      COALESCE(invited, 0) AS invited, \
@@ -83,6 +84,7 @@ pub struct ApplyCreate<'a> {
     pub uid: u64,
     pub job_id: u64,
     pub job_name: &'a str,
+    pub apply_url: &'a str,
     pub com_id: u64,
     pub com_name: &'a str,
     pub eid: u64,
@@ -93,12 +95,13 @@ pub struct ApplyCreate<'a> {
 pub async fn create(pool: &MySqlPool, c: ApplyCreate<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"INSERT INTO phpyun_userid_job
-           (uid, job_id, job_name, com_id, com_name, eid, datetime, is_browse, invited, invite_time, isdel, quxiao)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 9, 0)"#,
+           (uid, job_id, job_name, apply_url, com_id, com_name, eid, datetime, is_browse, invited, invite_time, isdel, quxiao)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 9, 0)"#,
     )
     .bind(c.uid)
     .bind(c.job_id)
     .bind(c.job_name)
+    .bind(c.apply_url)
     .bind(c.com_id)
     .bind(c.com_name)
     .bind(c.eid)
@@ -107,6 +110,15 @@ pub async fn create(pool: &MySqlPool, c: ApplyCreate<'_>) -> Result<u64, sqlx::E
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
+}
+
+pub async fn set_apply_url(pool: &MySqlPool, id: u64, apply_url: &str) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_userid_job SET apply_url = ? WHERE id = ? AND isdel = 9")
+        .bind(apply_url)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
 }
 
 // ==================== Job seeker view ====================
@@ -269,6 +281,7 @@ const FIELDS_J: &str = "CAST(j.id AS UNSIGNED) AS id, \
      CAST(j.com_id AS UNSIGNED) AS com_id, \
      CAST(j.eid AS UNSIGNED) AS eid, \
      COALESCE(j.job_name, '') AS job_name, \
+     COALESCE(j.apply_url, '') AS apply_url, \
      COALESCE(j.com_name, '') AS com_name, \
      CAST(j.datetime AS SIGNED) AS datetime, j.is_browse, \
      COALESCE(j.invited, 0) AS invited, \

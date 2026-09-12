@@ -44,6 +44,10 @@ const msgList = computed(
       Record<string, unknown>
     >,
 )
+const officialApplyUrl = computed(() => {
+  const payload = (data.value || {}) as Record<string, unknown>
+  return String(payload.apply_url || '')
+})
 const appliedLocal = ref(false)
 const alreadyApplied = computed(() => appliedLocal.value || Boolean(userContext.value.is_applied))
 const alreadyInvited = computed(() => Number(userContext.value.invite_job || 0) > 0)
@@ -57,6 +61,9 @@ const showSnum = computed(() => {
   return snum > threshold
 })
 const applyCta = computed(() => {
+  if (officialApplyUrl.value) {
+    return { kind: 'apply' as const, label: t('ui.apply_official') }
+  }
   if (alreadyApplied.value) return { kind: 'applied' as const, label: t('ui.already_applied') }
   if (alreadyInvited.value) return { kind: 'invited' as const, label: t('wap_00291') }
   return { kind: 'apply' as const, label: t('wap_com_00235') }
@@ -250,12 +257,37 @@ async function apply() {
     applyMsg.value = t('wap_com_00242')
     return
   }
+  const official = officialApplyUrl.value
   if (!me.value) {
+    if (official) {
+      await navigateTo({ path: '/login', query: { next: `/jobs/${id}` } })
+      return
+    }
     await navigateTo(`/quick-apply/${id}`)
     return
   }
   if (me.value.usertype !== 1) {
     applyMsg.value = t('wap_00256')
+    return
+  }
+  if (official) {
+    const popup = window.open('about:blank', '_blank')
+    if (popup) popup.opener = null
+    try {
+      const r = await api.post<{ apply_url?: string }>('/v1/mcenter/apply', { job_id: id })
+      const url = String(r.apply_url || official)
+      if (url.startsWith('https://') || url.startsWith('http://')) {
+        if (popup) popup.location.replace(url)
+        else window.open(url, '_blank', 'noopener,noreferrer')
+      } else if (popup) {
+        popup.close()
+      }
+      appliedLocal.value = true
+      applyMsg.value = t('common.success')
+    } catch (e: unknown) {
+      if (popup) popup.close()
+      applyMsg.value = e instanceof Error ? e.message : t('common.no')
+    }
     return
   }
   try {

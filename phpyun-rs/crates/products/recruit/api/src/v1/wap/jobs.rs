@@ -590,6 +590,7 @@ pub async fn build_job_detail_value(
     Ok(json::json!({
         "offline": d.offline,
         "expired": d.expired,
+        "apply_url": d.apply_url,
         // Job main table (Job entity serialized directly; field names = original DB column names)
         "job": d.job,
 

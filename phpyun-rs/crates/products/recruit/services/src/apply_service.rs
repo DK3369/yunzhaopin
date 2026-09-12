@@ -10,6 +10,7 @@ use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::apply::{entity::Apply, repo as apply_repo};
 use phpyun_models::category::repo as category_repo;
 use phpyun_models::job::repo as job_repo;
+use phpyun_models::job_scrape::repo as scrape_repo;
 use phpyun_models::resume::expect as expect_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 
@@ -18,6 +19,7 @@ use phpyun_models::site_setting::repo as setting_repo;
 pub struct ApplyResult {
     pub id: u64,
     pub job_id: u64,
+    pub apply_url: String,
 }
 
 fn parse_req_id(raw: &str) -> i32 {
@@ -94,6 +96,13 @@ pub async fn apply_to_job(
         return Err(ApiError::business("apply_own_job"));
     }
 
+    let source_url = scrape_repo::find_url_by_job_id(state.db.reader(), job_id)
+        .await?
+        .unwrap_or_default();
+    if !source_url.is_empty() {
+        return apply_scrape_job(state, user, &job, &source_url, client_ip).await;
+    }
+
     // 3. Prevent duplicate applications
     if apply_repo::find_by_uid_job(state.db.reader(), user.uid, job_id)
         .await?
@@ -168,6 +177,7 @@ pub async fn apply_to_job(
             uid: user.uid,
             job_id,
             job_name: &job.name,
+            apply_url: "",
             com_id: job.uid,
             com_name: &com_name,
             eid: expect.id,
@@ -199,7 +209,72 @@ pub async fn apply_to_job(
         )
         .await;
 
-    Ok(ApplyResult { id, job_id })
+    Ok(ApplyResult {
+        id,
+        job_id,
+        apply_url: String::new(),
+    })
+}
+
+async fn apply_scrape_job(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    job: &phpyun_models::job::entity::Job,
+    source_url: &str,
+    client_ip: &str,
+) -> AppResult<ApplyResult> {
+    let apply_url: String = source_url.chars().take(512).collect();
+    if let Some(existing) = apply_repo::find_by_uid_job(state.db.reader(), user.uid, job.id).await? {
+        if existing.apply_url.is_empty() {
+            let _ = apply_repo::set_apply_url(state.db.pool(), existing.id, &apply_url).await;
+        }
+        let url = if existing.apply_url.is_empty() {
+            apply_url
+        } else {
+            existing.apply_url
+        };
+        return Ok(ApplyResult {
+            id: existing.id,
+            job_id: job.id,
+            apply_url: url,
+        });
+    }
+    let eid = expect_repo::find_apply_expect(state.db.reader(), user.uid)
+        .await?
+        .map(|e| e.id)
+        .unwrap_or(0);
+    let com_name = job.com_name.clone().unwrap_or_default();
+    let id = apply_repo::create(
+        state.db.pool(),
+        apply_repo::ApplyCreate {
+            uid: user.uid,
+            job_id: job.id,
+            job_name: &job.name,
+            apply_url: &apply_url,
+            com_id: job.uid,
+            com_name: &com_name,
+            eid,
+            now: clock::now_ts(),
+            is_browse: 1,
+        },
+    )
+    .await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("resume.apply", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("job:{}", job.id))
+            .meta(&serde_json::json!({
+                "apply_id": id,
+                "com_id": job.uid,
+                "apply_url": apply_url,
+            })),
+    )
+    .await;
+    Ok(ApplyResult {
+        id,
+        job_id: job.id,
+        apply_url,
+    })
 }
 
 // ==================== Jobseeker: my applications ====================

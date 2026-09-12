@@ -30,6 +30,8 @@ pub struct ApplyForm {
 pub struct ApplyCreated {
     pub id: u64,
     pub job_id: u64,
+    #[serde(default)]
+    pub apply_url: String,
 }
 
 /// Job seeker submits a resume application to a job
@@ -57,6 +59,7 @@ pub async fn apply_to_job(
     Ok(ApiResponse::data(ApplyCreated {
         id: r.id,
         job_id: r.job_id,
+        apply_url: r.apply_url,
     }))
 }
 
@@ -70,6 +73,8 @@ pub struct MyApplySummary {
     pub eid: u64,
     pub job_name: String,
     pub com_name: String,
+    #[serde(default)]
+    pub apply_url: String,
     pub datetime: i64,
     pub datetime_n: String,
     /// 1 unviewed / 2 viewed / 3 interviewed / 4 not suitable / 7 hired
@@ -94,6 +99,7 @@ impl From<phpyun_models::apply::entity::Apply> for MyApplySummary {
             eid: a.eid,
             job_name: a.job_name,
             com_name: a.com_name,
+            apply_url: a.apply_url,
             datetime_n: fmt_dt(a.datetime),
             datetime: a.datetime,
             employer_viewed: a.is_browse != 1,

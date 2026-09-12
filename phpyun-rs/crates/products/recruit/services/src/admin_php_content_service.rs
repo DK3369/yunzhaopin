@@ -7117,6 +7117,7 @@ async fn company_job_apply(state: &AppState, body: &Value) -> AppResult<PhpOut> 
             uid,
             job_id: job.id,
             job_name: &job.name,
+            apply_url: "",
             com_id: job.uid,
             com_name: job.com_name.as_deref().unwrap_or(""),
             eid,

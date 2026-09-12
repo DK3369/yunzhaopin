@@ -11,6 +11,7 @@ type Row = {
   invited?: boolean
   job_name?: string
   uname?: string
+  apply_url?: string
 }
 type Counts = {
   total: number
@@ -310,6 +311,9 @@ useSeoMeta({ title: t('member_com_00454') })
             · {{ row.job_name || row.job_id }}
           </h3>
           <p class="muted">{{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</p>
+          <p v-if="row.apply_url">
+            <a :href="row.apply_url" target="_blank" rel="noopener">{{ $t('ui.apply_official') }}</a>
+          </p>
           <p class="acts">
             <button type="button" @click="pick(row)">{{ $t('wap_com_00046') }}</button>
             <button type="button" @click="openRemark(row)">{{ $t('member_user_00242') }}</button>

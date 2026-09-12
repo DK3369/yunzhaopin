@@ -105,6 +105,8 @@ pub struct ApplicantSummary {
     pub eid: u64,
     pub job_name: String,
     pub uname: String,
+    #[serde(default)]
+    pub apply_url: String,
     pub datetime: i64,
     pub datetime_n: String,
     /// 1 unviewed / 2 viewed / 3 interviewed / 4 not suitable / 7 hired etc.
@@ -133,6 +135,7 @@ impl From<phpyun_models::apply::entity::Apply> for ApplicantSummary {
             eid: a.eid,
             job_name: a.job_name,
             uname: a.uname,
+            apply_url: a.apply_url,
             datetime_n: fmt_dt(a.datetime),
             datetime: a.datetime,
             unread: a.is_browse == 1,

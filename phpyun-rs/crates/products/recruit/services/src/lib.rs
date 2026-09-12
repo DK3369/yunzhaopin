@@ -118,6 +118,7 @@ pub mod member_logout_service;
 pub mod message_service;
 pub mod nav_menu_service;
 pub mod locoy_service;
+mod job_scrape_jd;
 pub mod job_scrape_service;
 pub mod look_job_service;
 pub mod oauth_service;
