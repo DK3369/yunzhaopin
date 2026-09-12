@@ -18,8 +18,8 @@
                 <el-table-column :label="lc('admin_00690')" width="140">
                     <template #default="scope">
                         <div class="moduleProps">
-                            <div class=" ">{{ scope.row.name }}</div>
-                            <span class="gsd">{{ scope.row.type_n }} </span>
+                            <div class=" ">{{ packedLog(scope.row.name) }}</div>
+                            <span class="gsd">{{ scope.row.type == 2 ? lc('wap_com_00384') : (scope.row.type == 1 ? lc('wap_com_00380') : packedLog(scope.row.type_n)) }} </span>
                         </div>
                     </template>
                 </el-table-column>
@@ -141,6 +141,7 @@ import ComratingIndexEdit from './comrating_index_edit.vue'
 
 const httpPost = (...a) => window.httpPost(...a)
 const lc = (...a) => window.lc(...a)
+const packedLog = (s) => (typeof window.yunAdminPacked === 'function' ? window.yunAdminPacked(s) : String(s ?? ''))
 const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
 const delConfirm = (...a) => window.delConfirm(...a)
 const formatDate = (...a) => window.formatDate(...a)

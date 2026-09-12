@@ -22,7 +22,7 @@
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                             v-model="scope.row.name" @blur="alterData(scope)"></el-input>
                         <span v-else>
-                            {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
+                            {{ packedLog(scope.row.name) }}<img @click="editData(scope)" class="editIcon"
                             src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
                         </span>
                     </template>
@@ -340,7 +340,7 @@ export default {
         handleDetail(scope) {
             this.info = scope.row;
             this.detailVisible = true;
-            this.titleDetail = scope.row.name + " {{ lc('member_com_00380') }}"
+            this.titleDetail = this.packedLog(scope.row.name) + ' ' + lc('member_com_00380')
         },
         handleStatus(scope) {
             let _this = this;

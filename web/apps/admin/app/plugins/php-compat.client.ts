@@ -575,6 +575,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   nuxtApp.vueApp.mixin({
     methods: {
       lc,
+      packedLog: translatePackedText,
       $set(obj: Record<string, unknown>, key: string, val: unknown) {
         if (obj && typeof obj === 'object') obj[key] = val
       },
