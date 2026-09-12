@@ -12,21 +12,28 @@ const ALLOWED_TAGS: &[&str] = &[
 
 pub struct JdCache {
     ashby: HashMap<String, Value>,
+    greenhouse: HashMap<String, Value>,
 }
 
 impl Default for JdCache {
     fn default() -> Self {
         Self {
             ashby: HashMap::new(),
+            greenhouse: HashMap::new(),
         }
     }
 }
 
-pub async fn official_body_html(http: &Http, cache: &mut JdCache, url: &str) -> Option<String> {
+pub async fn official_body_html(
+    http: &Http,
+    cache: &mut JdCache,
+    url: &str,
+    title: Option<&str>,
+) -> Option<String> {
     if !url.starts_with("https://") && !url.starts_with("http://") {
         return None;
     }
-    if let Some(html) = fetch_ats(http, cache, url).await {
+    if let Some(html) = fetch_ats(http, cache, url, title).await {
         if is_substantial(&html) {
             return Some(html);
         }
@@ -84,7 +91,12 @@ pub fn compose_description(
     clip_bytes(&html, DESC_MAX_BYTES)
 }
 
-async fn fetch_ats(http: &Http, cache: &mut JdCache, url: &str) -> Option<String> {
+async fn fetch_ats(
+    http: &Http,
+    cache: &mut JdCache,
+    url: &str,
+    title: Option<&str>,
+) -> Option<String> {
     let (host, segs, query) = split_url(url)?;
     if host.ends_with("ashbyhq.com") {
         return ashby_html(http, cache, &segs, url).await;
@@ -92,10 +104,16 @@ async fn fetch_ats(http: &Http, cache: &mut JdCache, url: &str) -> Option<String
     if host == "jobs.lever.co" || host.ends_with(".lever.co") {
         return lever_html(http, &segs).await;
     }
-    if host.contains("greenhouse.io") {
-        return greenhouse_html(http, &segs, &query).await;
+    if host.contains("greenhouse.io") || has_greenhouse_hint(&query) {
+        if let Some(html) = greenhouse_html(http, cache, &host, &segs, &query, title).await {
+            return Some(html);
+        }
     }
     None
+}
+
+fn has_greenhouse_hint(query: &[(String, String)]) -> bool {
+    query.iter().any(|(k, _)| k == "gh_jid" || k == "for" || k == "board")
 }
 
 async fn ashby_html(http: &Http, cache: &mut JdCache, segs: &[String], page_url: &str) -> Option<String> {
@@ -183,46 +201,170 @@ async fn lever_html(http: &Http, segs: &[String]) -> Option<String> {
 
 async fn greenhouse_html(
     http: &Http,
+    cache: &mut JdCache,
+    host: &str,
     segs: &[String],
     query: &[(String, String)],
+    title: Option<&str>,
 ) -> Option<String> {
-    let (board, id) = greenhouse_ids(segs, query)?;
+    let (board, id) = greenhouse_ids(host, segs, query)?;
+    if let Some(html) = greenhouse_job_api(http, &board, &id).await {
+        return Some(html);
+    }
+    greenhouse_board_lookup(http, cache, &board, &id, title).await
+}
+
+async fn greenhouse_job_api(http: &Http, board: &str, id: &str) -> Option<String> {
     let api = format!("https://boards-api.greenhouse.io/v1/boards/{board}/jobs/{id}?content=true");
     let v = http
         .get_json_with::<Value>(&api, RetryPolicy::NONE)
         .await
         .ok()?;
-    let content = v.get("content").and_then(Value::as_str).unwrap_or("");
-    if content.trim().is_empty() {
-        return None;
-    }
-    Some(sanitize_html(&unescape_basic(content)))
+    greenhouse_content_html(v.get("content").and_then(Value::as_str).unwrap_or(""))
 }
 
-fn greenhouse_ids(segs: &[String], query: &[(String, String)]) -> Option<(String, String)> {
-    let board_q = query.iter().find(|(k, _)| k == "for").map(|(_, v)| v.clone());
-    let token = query
-        .iter()
-        .find(|(k, _)| k == "token" || k == "gh_jid" || k == "id")
-        .map(|(_, v)| v.clone());
-    if let (Some(b), Some(id)) = (board_q.clone(), token.clone()) {
-        return Some((b, id));
+async fn greenhouse_board_lookup(
+    http: &Http,
+    cache: &mut JdCache,
+    board: &str,
+    id: &str,
+    title: Option<&str>,
+) -> Option<String> {
+    if !cache.greenhouse.contains_key(board) {
+        let api = format!("https://boards-api.greenhouse.io/v1/boards/{board}/jobs");
+        let val = http
+            .get_json_with::<Value>(&api, RetryPolicy::NONE)
+            .await
+            .unwrap_or(Value::Null);
+        cache.greenhouse.insert(board.to_string(), val);
     }
-    let skip = ["embed", "embed2", "jobs", "job", "job_app", "job-boards"];
-    let board = segs
-        .iter()
-        .find(|s| {
-            let l = s.to_ascii_lowercase();
-            !skip.contains(&l.as_str()) && !l.is_empty()
-        })?
-        .clone();
-    if let Some(i) = segs.iter().position(|s| s == "jobs" || s == "job") {
-        let id = segs.get(i + 1)?.clone();
-        if !board.is_empty() && !id.is_empty() && id != board {
-            return Some((board, id));
+    let jobs = cache.greenhouse.get(board)?.get("jobs")?.as_array()?;
+    let mut live_id: Option<String> = None;
+    for job in jobs {
+        if json_id(job) == id {
+            live_id = Some(id.to_string());
+            break;
         }
     }
-    None
+    if live_id.is_none() {
+        if let Some(title) = title {
+            for job in jobs {
+                let live_title = job.get("title").and_then(Value::as_str).unwrap_or("");
+                if titles_match(title, live_title) {
+                    let nid = json_id(job);
+                    if !nid.is_empty() {
+                        live_id = Some(nid);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    let live_id = live_id?;
+    if live_id == id {
+        return None;
+    }
+    greenhouse_job_api(http, board, &live_id).await
+}
+
+fn json_id(v: &Value) -> String {
+    v.get("id")
+        .and_then(|x| {
+            x.as_u64()
+                .map(|n| n.to_string())
+                .or_else(|| x.as_i64().map(|n| n.to_string()))
+                .or_else(|| x.as_str().map(|s| s.to_string()))
+        })
+        .unwrap_or_default()
+}
+
+fn titles_match(stored: &str, live: &str) -> bool {
+    let a = norm_title(stored);
+    let b = norm_title(live);
+    if a.len() < 8 || b.is_empty() {
+        return false;
+    }
+    a == b || (a.len() >= 40 && b.starts_with(&a))
+}
+
+fn norm_title(s: &str) -> String {
+    s.split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_ascii_lowercase()
+}
+
+fn greenhouse_content_html(content: &str) -> Option<String> {
+    let mut s = unescape_basic(content);
+    if s.contains("&lt;") {
+        s = unescape_basic(&s);
+    }
+    let html = sanitize_html(&s);
+    is_substantial(&html).then_some(html)
+}
+
+fn greenhouse_ids(
+    host: &str,
+    segs: &[String],
+    query: &[(String, String)],
+) -> Option<(String, String)> {
+    let board_q = query
+        .iter()
+        .find(|(k, _)| k == "for" || k == "board")
+        .map(|(_, v)| v.clone())
+        .filter(|s| !s.is_empty());
+    let token = query
+        .iter()
+        .find(|(k, _)| k == "token" || k == "gh_jid" || (host.contains("greenhouse.io") && k == "id"))
+        .map(|(_, v)| v.clone())
+        .filter(|s| !s.is_empty());
+    let path_id = segs
+        .iter()
+        .position(|s| s == "jobs" || s == "job" || s == "positions")
+        .and_then(|i| segs.get(i + 1).cloned())
+        .filter(|s| !s.is_empty() && *s != "embed");
+    let id = token.or(path_id)?;
+    if let Some(b) = board_q {
+        if b != id {
+            return Some((b, id));
+        }
+    }
+    if host.contains("greenhouse.io") {
+        let skip = ["embed", "embed2", "jobs", "job", "job_app", "job-boards"];
+        let board = segs
+            .iter()
+            .find(|s| {
+                let l = s.to_ascii_lowercase();
+                !skip.contains(&l.as_str()) && !l.is_empty()
+            })?
+            .clone();
+        if !board.is_empty() && board != id {
+            return Some((board, id));
+        }
+        return None;
+    }
+    let board = guess_greenhouse_board(host)?;
+    if board != id {
+        Some((board, id))
+    } else {
+        None
+    }
+}
+
+fn guess_greenhouse_board(host: &str) -> Option<String> {
+    let h = host.trim_start_matches("www.");
+    if h.contains("greenhouse.io") || h.contains("ashbyhq.com") || h.contains("lever.co") {
+        return None;
+    }
+    const SKIP: &[&str] = &[
+        "www", "careers", "jobs", "job", "apply", "go", "en", "en-eu", "en-de", "global",
+        "com", "io", "ai", "co", "net", "org", "eu", "de", "uk", "us", "app",
+    ];
+    let board = h
+        .split('.')
+        .find(|p| !SKIP.contains(p) && p.len() > 1)
+        .map(|s| s.to_string())?;
+    Some(board)
 }
 
 fn extract_from_html(page: &str) -> Option<String> {
@@ -236,6 +378,9 @@ fn extract_from_html(page: &str) -> Option<String> {
         }
     }
     if let Some(html) = next_data_description(page).filter(|s| is_substantial(s)) {
+        return Some(html);
+    }
+    if let Some(html) = extract_best_quoted_html(page, "content") {
         return Some(html);
     }
     if let Some(html) = description_block(page) {
@@ -365,7 +510,30 @@ fn jobposting_desc(v: &Value) -> Option<String> {
 fn extract_quoted_field(page: &str, field: &str) -> Option<String> {
     let needle = format!("\"{field}\":\"");
     let pos = page.find(&needle)?;
-    let rest = &page[pos + needle.len()..];
+    decode_quoted_from(&page[pos + needle.len()..])
+}
+
+fn extract_best_quoted_html(page: &str, field: &str) -> Option<String> {
+    let needle = format!("\"{field}\":\"");
+    let mut from = 0;
+    let mut best: Option<String> = None;
+    while let Some(rel) = page[from..].find(&needle) {
+        let pos = from + rel;
+        if let Some(raw) = decode_quoted_from(&page[pos + needle.len()..]) {
+            let html = sanitize_html(&unescape_basic(&raw));
+            if is_substantial(&html) {
+                let longer = best.as_ref().map(|b| html.len() > b.len()).unwrap_or(true);
+                if longer {
+                    best = Some(html);
+                }
+            }
+        }
+        from = pos + needle.len();
+    }
+    best
+}
+
+fn decode_quoted_from(rest: &str) -> Option<String> {
     let mut out = String::new();
     let mut chars = rest.chars();
     while let Some(c) = chars.next() {
@@ -643,11 +811,53 @@ mod tests {
 
     #[test]
     fn greenhouse_ids_from_job_boards_path() {
-        let (_, segs, q) =
+        let (host, segs, q) =
             split_url("https://job-boards.greenhouse.io/airtable/jobs/8498915002").unwrap();
         assert_eq!(
-            greenhouse_ids(&segs, &q),
+            greenhouse_ids(&host, &segs, &q),
             Some(("airtable".to_string(), "8498915002".to_string()))
         );
+    }
+
+    #[test]
+    fn greenhouse_ids_from_custom_domain_gh_jid() {
+        let (host, segs, q) =
+            split_url("https://sumup.com/careers/positions/8213032002?gh_jid=8213032002").unwrap();
+        assert_eq!(
+            greenhouse_ids(&host, &segs, &q),
+            Some(("sumup".to_string(), "8213032002".to_string()))
+        );
+        let (host, segs, q) = split_url(
+            "https://coreweave.com/careers/job?4686914006&board=coreweave&gh_jid=4686914006",
+        )
+        .unwrap();
+        assert_eq!(
+            greenhouse_ids(&host, &segs, &q),
+            Some(("coreweave".to_string(), "4686914006".to_string()))
+        );
+        let (host, segs, q) =
+            split_url("https://careers.hellofresh.com/global/en/job/8076640?gh_jid=8076640")
+                .unwrap();
+        assert_eq!(
+            greenhouse_ids(&host, &segs, &q),
+            Some(("hellofresh".to_string(), "8076640".to_string()))
+        );
+    }
+
+    #[test]
+    fn titles_match_clipped_prefix() {
+        assert!(titles_match(
+            "Engineering Manager, Continuous Deployment and Cha",
+            "Engineering Manager, Continuous Deployment and Change Management"
+        ));
+        assert!(!titles_match("Engineer", "Engineering Manager, Inference"));
+    }
+
+    #[test]
+    fn extract_picks_longest_content_not_empty_board_field() {
+        let page = r#"{"board":{"content":""},"job":{"content":"\u003ch2\u003eAbout the role\u003c/h2\u003e\u003cul\u003e\u003cli\u003eShip\u003c/li\u003e\u003c/ul\u003e"}}"#;
+        let out = extract_from_html(page).expect("jd");
+        assert!(out.contains("<h2>About the role</h2>"));
+        assert!(out.contains("<li>Ship</li>"));
     }
 }

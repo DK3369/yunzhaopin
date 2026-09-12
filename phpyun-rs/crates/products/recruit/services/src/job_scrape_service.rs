@@ -318,6 +318,18 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
             }
         }
     }
+    match backfill_existing_stubs(state, &mut jd_cache).await {
+        Ok(n) => stats.updated += n,
+        Err(e) => {
+            tracing::warn!(error = %e, "job_scrape: stub backfill failed");
+            if stats.error.len() < 200 {
+                if !stats.error.is_empty() {
+                    stats.error.push(';');
+                }
+                stats.error.push_str(&e.to_string());
+            }
+        }
+    }
     let finished = clock::now_ts();
     let _ = setting_repo::upsert(
         state.db.pool(),
@@ -482,7 +494,7 @@ async fn fetch_job_description(
     job: &ScrapedJob,
     jd_cache: &mut JdCache,
 ) -> String {
-    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url).await;
+    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url, Some(&job.role)).await;
     job_scrape_jd::compose_description(
         &job.company,
         &job.location,
@@ -504,7 +516,7 @@ async fn refresh_stub_description(
     if !job_scrape_jd::is_stub_description(&current) {
         return Ok(false);
     }
-    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url).await;
+    let body = job_scrape_jd::official_body_html(&state.http, jd_cache, &job.url, Some(&job.role)).await;
     let Some(body) = body.filter(|s| !s.trim().is_empty()) else {
         return Ok(false);
     };
@@ -520,6 +532,56 @@ async fn refresh_stub_description(
     }
     let n = job_repo::update_description_keep_listed(state.db.pool(), job_id, &next).await?;
     Ok(n > 0)
+}
+
+async fn backfill_existing_stubs(state: &AppState, jd_cache: &mut JdCache) -> AppResult<i32> {
+    let items = scrape_repo::list_items(state.db.reader()).await?;
+    let mut updated = 0i32;
+    for (job_id, source_url, role, company_name) in items {
+        if source_url.is_empty() || job_id == 0 {
+            continue;
+        }
+        let current = job_repo::find_description(state.db.reader(), job_id)
+            .await?
+            .unwrap_or_default();
+        if !job_scrape_jd::is_stub_description(&current) {
+            continue;
+        }
+        let (company, location, posted) = header_from_description(&current, &company_name);
+        let job = ScrapedJob {
+            url: source_url,
+            company,
+            role,
+            location,
+            posted_at: posted,
+        };
+        if refresh_stub_description(state, job_id, &job, jd_cache).await? {
+            updated += 1;
+        }
+    }
+    Ok(updated)
+}
+
+fn header_from_description(html: &str, fallback_company: &str) -> (String, String, String) {
+    fn grab(html: &str, label: &str) -> String {
+        let needle = format!("<strong>{label}:</strong>");
+        let Some(pos) = html.find(&needle) else {
+            return String::new();
+        };
+        let rest = html[pos + needle.len()..].trim_start();
+        let end = rest.find("</p>").unwrap_or(rest.len().min(180));
+        rest[..end].trim().to_string()
+    }
+    let company = grab(html, "Company");
+    (
+        if company.is_empty() {
+            fallback_company.to_string()
+        } else {
+            company
+        },
+        grab(html, "Location"),
+        grab(html, "Posted"),
+    )
 }
 
 async fn ensure_company(

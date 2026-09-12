@@ -85,6 +85,18 @@ pub async fn insert_log(
     Ok(res.last_insert_id())
 }
 
+pub async fn list_items(
+    pool: &MySqlPool,
+) -> Result<Vec<(u64, String, String, String)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(job_id AS UNSIGNED), COALESCE(source_url, ''), \
+                COALESCE(role, ''), COALESCE(company_name, '') \
+         FROM phpyun_rs_job_scrape_item",
+    )
+    .fetch_all(pool)
+    .await
+}
+
 pub async fn list_logs(pool: &MySqlPool, limit: i64) -> Result<Vec<ScrapeLog>, sqlx::Error> {
     sqlx::query_as::<_, ScrapeLog>(
         "SELECT CAST(id AS SIGNED) AS id, \

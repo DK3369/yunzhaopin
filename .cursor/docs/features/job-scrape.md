@@ -10,9 +10,9 @@
 | 项 | 口径 |
 |---|---|
 | 编排 | `job_scrape_service.rs`；60s tick，仅 `job_scrape_enabled=1` 且间隔到了才跑 |
-| 拉正文 | `job_scrape_jd.rs`：Ashby board JSON `descriptionHtml`（同 board 缓存）→ Lever / Greenhouse 公开 JSON（`job-boards.greenhouse.io/{board}/jobs/{id}` 解析 board/id）→ HTML：JSON-LD → `descriptionHtml` → `__NEXT_DATA__` → `job-description` 等容器。**短 og:description 不当完整 JD**；JSON-LD/ATS/HTML 都要过 `is_substantial`（≥400 字或含 ul/ol/li/h2/h3） |
+| 拉正文 | `job_scrape_jd.rs`：Ashby board JSON → Lever / Greenhouse 公开 JSON。**任意带 `gh_jid`/`board=` 的原站 URL** 也走 Greenhouse（SumUp / CoreWeave / HelloFresh 等内嵌板）。单岗 404 时拉 board 列表按标题（含 50 字截断前缀）对上仍在招的新 id。HTML：JSON-LD → `descriptionHtml` → `__NEXT_DATA__` → 最长 `"content"` → 描述容器。**短 og:description 不当完整 JD**；要过 `is_substantial`（≥400 字或含 ul/ol/li/h2/h3） |
 | 写入 | `compose_description` 清洗后约 60KB；**禁止** `job::repo::update`（会把 `state=0`）；回填用 `update_description_keep_listed` |
-| 回填 | 已有岗且 `is_stub_description`（空 / 含 `Apply / source` / 短 Company+Location 无列表标题）才 UPDATE；没拉到正文不覆盖。utf8mb4 后可再跑一轮立即采集补 1366 漏写 |
+| 回填 | 已有岗且 `is_stub_description` 才 UPDATE。立即采集在列表 ingest 之后再扫一遍 `phpyun_rs_job_scrape_item` 里仍是占位的岗。拉不到正文不覆盖（已下线 Lever / 未公开 Ashby / Workday 403 / solid.jobs SPA 仍占位） |
 | 锁 | Redis `job_scrape:run` TTL 1800s。**立即采集**在后台跑，HTTP 马上返回（现网 `REQUEST_TIMEOUT_SECS=30`，以前整段等完会被掐掉、锁不释放，再点就是 `job_scrape_busy`）。进程启动会 `DEL` 残留锁。正在跑时再点返回 200「正在采集中」，不是错误。 |
 | 后台 | `scrapeSet.vue`「立即采集」；采集中按钮禁用。配置在 `phpyun_admin_config`：`job_scrape_url/enabled/hours/minutes/last_run/last_msg` |
 | 测 | `cargo test -p phpyun-services --offline --lib job_scrape` |
