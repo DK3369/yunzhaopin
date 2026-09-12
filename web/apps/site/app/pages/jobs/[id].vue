@@ -560,7 +560,6 @@ useHead({
                 </template>
               </div>
               <p v-if="applyMsg" class="muted">{{ applyMsg }}</p>
-              <EmailRecommendForm kind="job" :id="id" />
             </div>
             <div class="job_details_topright">
               <img
@@ -1006,7 +1005,6 @@ useHead({
         </div>
       </div>
       <p v-if="applyMsg" class="muted" style="padding: 0.24rem">{{ applyMsg }}</p>
-      <EmailRecommendForm kind="job" :id="id" />
       <div v-if="!jobClosed" class="yun_czfoot">
         <div class="yun_czfootfixed">
           <div class="yun_czfoot_c">
