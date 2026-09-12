@@ -10,9 +10,9 @@
 | 项 | 口径 |
 |---|---|
 | 编排 | `job_scrape_service.rs`；60s tick，仅 `job_scrape_enabled=1` 且间隔到了才跑 |
-| 拉正文 | `job_scrape_jd.rs`：Ashby board JSON `descriptionHtml`（同 board 缓存）→ Lever / Greenhouse 公开 JSON → `get_text` + JSON-LD / 正文 |
-| 写入 | `compose_description` 清洗后约 60KB；**禁止** `job::repo::update`（会把 `state=0`） |
-| 回填 | 已有岗且 `is_stub_description`（空 / 含 `Apply / source` / 短 meta 无列表标题）才 UPDATE；没拉到正文不覆盖 |
+| 拉正文 | `job_scrape_jd.rs`：Ashby board JSON `descriptionHtml`（同 board 缓存）→ Lever / Greenhouse 公开 JSON（`job-boards.greenhouse.io/{board}/jobs/{id}` 解析 board/id）→ HTML：JSON-LD → `descriptionHtml` → `__NEXT_DATA__` → `job-description` 等容器。**短 og:description 不当完整 JD**；JSON-LD/ATS/HTML 都要过 `is_substantial`（≥400 字或含 ul/ol/li/h2/h3） |
+| 写入 | `compose_description` 清洗后约 60KB；**禁止** `job::repo::update`（会把 `state=0`）；回填用 `update_description_keep_listed` |
+| 回填 | 已有岗且 `is_stub_description`（空 / 含 `Apply / source` / 短 Company+Location 无列表标题）才 UPDATE；没拉到正文不覆盖。utf8mb4 后可再跑一轮立即采集补 1366 漏写 |
 | 锁 | Redis `job_scrape:run` TTL 1800s。**立即采集**在后台跑，HTTP 马上返回（现网 `REQUEST_TIMEOUT_SECS=30`，以前整段等完会被掐掉、锁不释放，再点就是 `job_scrape_busy`）。进程启动会 `DEL` 残留锁。正在跑时再点返回 200「正在采集中」，不是错误。 |
 | 后台 | `scrapeSet.vue`「立即采集」；采集中按钮禁用。配置在 `phpyun_admin_config`：`job_scrape_url/enabled/hours/minutes/last_run/last_msg` |
 | 测 | `cargo test -p phpyun-services --offline --lib job_scrape` |
@@ -48,4 +48,5 @@
 
 - Rust：`services/src/job_scrape_service.rs`、`job_scrape_jd.rs`、`apply_service.rs`；`models` 的 `job` / `job_scrape` / `apply` repo；`api/src/v1/mcenter/apply.rs`、`applications.rs`、`wap/jobs.rs`
 - 后台采集页：`web/apps/admin/.../scrapeSet.vue`
+- 后台职位列表招聘状态：`joball.vue` / `partjob.vue` / `company_job.vue` 用模板三元 `status` → `wap_com_00243`（招聘中）/ `wap_com_00242`（已下架）。**语言包只放词**，禁止把 `{{ props.row.status ... }}` 写进 `lc()` 文案。PHP 口径 `status != 1`（`status==0`）招聘中，`status==1` 已下架
 - 发布：`ops/restart.sh rust --build`；动了 site/admin 再 `frontend --build` 或 `all --build`

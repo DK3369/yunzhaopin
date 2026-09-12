@@ -16,7 +16,7 @@
                 <el-table-column :label="lc('member_user_00181')" width="120">
                     <template #default="scope">
                         <el-switch :value="scope.row.status == 0" @change="zpstatuschange($event, scope.row.id)"></el-switch>
-                        <div>{{ lc('admin_00612') }}</div>
+                        <div>{{ Number(scope.row.status) === 0 ? lc('wap_com_00243') : lc('wap_com_00242') }}</div>
                     </template>
                 </el-table-column>
                 <el-table-column :label="lc('admin_user_company_00040')">

@@ -118,7 +118,7 @@
                 <el-table-column prop="comd" :label="lc('member_user_00178')" width="130">
                     <template #default="props">
                         <el-switch v-model="props.row.iszp" @change="zpstatuschange($event, props.row)"></el-switch>
-                        {{ lc('admin_00748') }}
+                        {{ Number(props.row.status) !== 1 ? lc('wap_com_00243') : lc('wap_com_00242') }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="zt" :label="lc('member_user_00181')">

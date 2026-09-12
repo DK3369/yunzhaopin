@@ -27,7 +27,7 @@ pub async fn official_body_html(http: &Http, cache: &mut JdCache, url: &str) -> 
         return None;
     }
     if let Some(html) = fetch_ats(http, cache, url).await {
-        if !html.trim().is_empty() {
+        if is_substantial(&html) {
             return Some(html);
         }
     }
@@ -208,10 +208,17 @@ fn greenhouse_ids(segs: &[String], query: &[(String, String)]) -> Option<(String
     if let (Some(b), Some(id)) = (board_q.clone(), token.clone()) {
         return Some((b, id));
     }
-    let board = segs.first()?.clone();
-    if let Some(i) = segs.iter().position(|s| s == "jobs") {
+    let skip = ["embed", "embed2", "jobs", "job", "job_app", "job-boards"];
+    let board = segs
+        .iter()
+        .find(|s| {
+            let l = s.to_ascii_lowercase();
+            !skip.contains(&l.as_str()) && !l.is_empty()
+        })?
+        .clone();
+    if let Some(i) = segs.iter().position(|s| s == "jobs" || s == "job") {
         let id = segs.get(i + 1)?.clone();
-        if !board.is_empty() && !id.is_empty() {
+        if !board.is_empty() && !id.is_empty() && id != board {
             return Some((board, id));
         }
     }
@@ -223,10 +230,85 @@ fn extract_from_html(page: &str) -> Option<String> {
         return Some(html);
     }
     if let Some(html) = extract_quoted_field(page, "descriptionHtml") {
-        return Some(sanitize_html(&html));
+        let html = sanitize_html(&html);
+        if is_substantial(&html) {
+            return Some(html);
+        }
     }
-    if let Some(plain) = og_description(page) {
-        return Some(plain_to_html(&plain));
+    if let Some(html) = next_data_description(page).filter(|s| is_substantial(s)) {
+        return Some(html);
+    }
+    if let Some(html) = description_block(page) {
+        return Some(html);
+    }
+    None
+}
+
+fn is_substantial(html: &str) -> bool {
+    let t = html.trim();
+    if t.len() >= 400 {
+        return true;
+    }
+    t.contains("<ul") || t.contains("<ol") || t.contains("<li") || t.contains("<h2") || t.contains("<h3")
+}
+
+fn next_data_description(page: &str) -> Option<String> {
+    let start = page.find("__NEXT_DATA__")?;
+    let after = &page[start..];
+    let gt = after.find('>')?;
+    let rest = &after[gt + 1..];
+    let end = rest.find("</script")?;
+    let v: Value = serde_json::from_str(rest[..end].trim()).ok()?;
+    walk_jd_value(&v)
+}
+
+fn walk_jd_value(v: &Value) -> Option<String> {
+    match v {
+        Value::Object(map) => {
+            for key in ["descriptionHtml", "description_html", "content", "description"] {
+                if let Some(s) = map.get(key).and_then(Value::as_str) {
+                    if looks_like_jd_text(s) {
+                        return Some(if s.contains('<') {
+                            sanitize_html(s)
+                        } else {
+                            plain_to_html(s)
+                        });
+                    }
+                }
+            }
+            map.values().find_map(walk_jd_value)
+        }
+        Value::Array(a) => a.iter().find_map(walk_jd_value),
+        _ => None,
+    }
+}
+
+fn looks_like_jd_text(s: &str) -> bool {
+    s.len() >= 400
+        || ((s.contains("<p") || s.contains("<li") || s.contains("<h")) && s.len() >= 200)
+}
+
+fn description_block(page: &str) -> Option<String> {
+    let lower = page.to_ascii_lowercase();
+    for needle in [
+        "job-description",
+        "job_description",
+        "jobdescription",
+        "posting-description",
+        "job-posting-description",
+    ] {
+        let Some(pos) = lower.find(needle) else {
+            continue;
+        };
+        let Some(gt) = page[pos..].find('>') else {
+            continue;
+        };
+        let start = pos + gt + 1;
+        let chunk = &page[start..page.len().min(start + 80_000)];
+        let html = sanitize_html(chunk);
+        if is_substantial(&html) {
+            return Some(html);
+        }
     }
     None
 }
@@ -247,7 +329,7 @@ fn jsonld_description(page: &str) -> Option<String> {
         };
         let raw = rest[..end].trim();
         if let Ok(v) = serde_json::from_str::<Value>(raw) {
-            if let Some(html) = jobposting_desc(&v) {
+            if let Some(html) = jobposting_desc(&v).filter(|s| is_substantial(s)) {
                 return Some(html);
             }
         }
@@ -316,24 +398,6 @@ fn extract_quoted_field(page: &str, field: &str) -> Option<String> {
         None
     } else {
         Some(out)
-    }
-}
-
-fn og_description(page: &str) -> Option<String> {
-    let lower = page.to_ascii_lowercase();
-    let key = "property=\"og:description\"";
-    let pos = lower.find(key)?;
-    let slice_end = (pos + 800).min(page.len());
-    let slice = &page[pos..slice_end];
-    let content_key = "content=\"";
-    let cpos = slice.to_ascii_lowercase().find(content_key)?;
-    let rest = &slice[cpos + content_key.len()..];
-    let end = rest.find('"')?;
-    let s = unescape_basic(&rest[..end]);
-    if s.trim().len() < 20 {
-        None
-    } else {
-        Some(s)
     }
 }
 
@@ -565,5 +629,25 @@ mod tests {
         assert!(!is_stub_description(
             "<p><strong>Company:</strong> X</p><p>We are looking for an iOS engineer with five years of experience building consumer products, collaborating with design, and shipping App Store releases every sprint. You will own the mobile roadmap.</p><h3>Requirements</h3><ul><li>Swift</li></ul>"
         ));
+    }
+
+    #[test]
+    fn extract_skips_short_og_keeps_next_data() {
+        let page = r#"<meta property="og:description" content="A short teaser about the role.">
+<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"job":{"descriptionHtml":"<h2>About</h2><ul><li>Ship</li></ul>"}}}}</script>"#;
+        let out = extract_from_html(page).expect("jd");
+        assert!(out.contains("<h2>About</h2>"));
+        assert!(out.contains("<li>Ship</li>"));
+        assert!(!out.contains("short teaser"));
+    }
+
+    #[test]
+    fn greenhouse_ids_from_job_boards_path() {
+        let (_, segs, q) =
+            split_url("https://job-boards.greenhouse.io/airtable/jobs/8498915002").unwrap();
+        assert_eq!(
+            greenhouse_ids(&segs, &q),
+            Some(("airtable".to_string(), "8498915002".to_string()))
+        );
     }
 }
