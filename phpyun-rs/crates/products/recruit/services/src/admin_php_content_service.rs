@@ -645,10 +645,17 @@ pub async fn dispatch(
             Ok(PhpOut::Message("api_wxapp_00007"))
         }
         ("data-collection", "scrapeRun") => {
-            Ok(PhpOut::MessageData(
-                "job_scrape_done",
-                job_scrape_service::admin_run(state).await?,
-            ))
+            let data = job_scrape_service::admin_run(state).await?;
+            let started = data.get("started").and_then(Value::as_bool).unwrap_or(false);
+            let running = data.get("running").and_then(Value::as_bool).unwrap_or(false);
+            let key = if started {
+                "job_scrape_started"
+            } else if running {
+                "job_scrape_busy"
+            } else {
+                "job_scrape_done"
+            };
+            Ok(PhpOut::MessageData(key, data))
         }
         ("index", "getIpAddress") => index_get_ip_address(state, body).await,
         ("index", "getMobileAddress") => index_get_mobile_address(state, body).await,

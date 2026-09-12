@@ -715,7 +715,9 @@
     "admin_tool_00502": "成功",
     "wap_user_00147": "刪除成功",
     "api_wxapp_00007": "儲存成功",
-    "job_scrape_done": "採集完成"
+    "job_scrape_done": "採集完成",
+    "job_scrape_started": "已開始採集，完成後請重新整理看結果",
+    "job_scrape_busy": "正在採集中，請稍後再試"
   },
   "recommend": {
     "disabled": "推薦功能已關閉",

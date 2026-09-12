@@ -68,7 +68,7 @@
             </table>
             <div class="setBasicButn" style="border: none;">
                 <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
-                <el-button type="success" size="medium" @click="runNow" :disabled="runLoading">{{ lc('admin_tool_00702') }}</el-button>
+                <el-button type="success" size="medium" @click="runNow" :disabled="runLoading || form.running">{{ lc('admin_tool_00702') }}</el-button>
             </div>
             <div v-if="form.last_msg" class="tableDome_tip" style="margin-top:12px;">
                 <el-alert :title="form.last_msg" type="info" :closable="false"></el-alert>
@@ -120,6 +120,7 @@ export default {
                 minutes: 0,
                 last_run_n: '',
                 last_msg: '',
+                running: false,
             },
             logs: [],
         }
@@ -138,6 +139,7 @@ export default {
                 this.form.minutes = d.minutes == null ? 0 : d.minutes
                 this.form.last_run_n = d.last_run_n || ''
                 this.form.last_msg = d.last_msg || ''
+                this.form.running = Boolean(d.running)
                 this.logs = Array.isArray(d.logs) ? d.logs : []
             }
         },
@@ -163,13 +165,14 @@ export default {
         runNow() {
             const that = this
             that.runLoading = true
-            httpPost('m=tool&c=dataCollection&a=scrapeRun', {}, { timeout: 300000 }).then(function (res) {
+            httpPost('m=tool&c=dataCollection&a=scrapeRun', {}, { timeout: 30000 }).then(function (res) {
                 if (res.data.error == 0) {
                     const d = res.data.data || {}
-                    const extra = d.inserted != null
-                        ? ` ${lc('admin_tool_00707')} ${d.inserted} / ${lc('admin_tool_00708')} ${d.skipped}`
-                        : ''
-                    message.success((res.data.msg || '') + extra)
+                    if (d.running && !d.started) {
+                        message.warning(res.data.msg || lc('admin_tool_00702'))
+                    } else {
+                        message.success(res.data.msg || '')
+                    }
                     that.load()
                 } else {
                     message.error(res.data.msg)

@@ -721,7 +721,9 @@
     "admin_tool_00502": " succeeded",
     "wap_user_00147": "Deleted",
     "api_wxapp_00007": "Saved",
-    "job_scrape_done": "Scrape finished"
+    "job_scrape_done": "Scrape finished",
+    "job_scrape_started": "Scrape started; refresh for results when it finishes",
+    "job_scrape_busy": "A scrape is already running, try again later"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

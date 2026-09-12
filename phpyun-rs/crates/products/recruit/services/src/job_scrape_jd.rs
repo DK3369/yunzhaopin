@@ -81,7 +81,7 @@ pub fn compose_description(
         html.push_str(&esc(url));
         html.push_str("\" target=\"_blank\" rel=\"noopener\">Apply / source</a></p>");
     }
-    clip_bytes(&html, DESC_MAX_BYTES)
+    clip_bytes(&strip_non_bmp(&html), DESC_MAX_BYTES)
 }
 
 async fn fetch_ats(http: &Http, cache: &mut JdCache, url: &str) -> Option<String> {
@@ -423,7 +423,7 @@ pub fn sanitize_html(input: &str) -> String {
             }
         }
     }
-    clip_bytes(&out, DESC_MAX_BYTES)
+    clip_bytes(&strip_non_bmp(&out), DESC_MAX_BYTES)
 }
 
 fn strip_dangerous_blocks(input: &str) -> String {
@@ -521,6 +521,10 @@ fn esc(s: &str) -> String {
         .replace('"', "&quot;")
 }
 
+fn strip_non_bmp(s: &str) -> String {
+    s.chars().filter(|c| (*c as u32) <= 0xFFFF).collect()
+}
+
 fn clip_bytes(s: &str, max: usize) -> String {
     if s.len() <= max {
         return s.to_string();
@@ -545,6 +549,13 @@ mod tests {
         assert!(out.contains("<li>A</li>"));
         assert!(out.contains("https://jobs.example.com/a"));
         assert!(!out.contains("javascript:"));
+    }
+
+    #[test]
+    fn sanitize_strips_emoji_for_mysql_utf8() {
+        let out = sanitize_html("<p>Lock \u{1F512} here</p>");
+        assert!(out.contains("<p>Lock  here</p>"));
+        assert!(!out.as_bytes().iter().any(|b| *b >= 0xF0));
     }
 
     #[test]

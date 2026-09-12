@@ -70,6 +70,7 @@ pub async fn admin_get(state: &AppState) -> AppResult<Value> {
             })
         })
         .collect();
+    let running = lock_held(state).await;
     Ok(json!({
         "url": cfg.url,
         "enabled": if cfg.enabled { "1" } else { "0" },
@@ -78,8 +79,27 @@ pub async fn admin_get(state: &AppState) -> AppResult<Value> {
         "last_run": cfg.last_run,
         "last_run_n": if cfg.last_run > 0 { fmt_dt(cfg.last_run) } else { String::new() },
         "last_msg": cfg.last_msg,
+        "running": running,
         "logs": log_rows,
     }))
+}
+
+/// Drop a leftover Redis lock after restart (HTTP timeout used to cancel
+/// the handler before `release_lock`). Safe: this process is the only runner.
+pub async fn clear_run_lock(state: &AppState) {
+    if let Err(e) = state.redis.del(LOCK_KEY).await {
+        tracing::warn!(error = %e, "job_scrape: clear stale lock failed");
+    }
+}
+
+async fn lock_held(state: &AppState) -> bool {
+    state
+        .redis
+        .get_str(LOCK_KEY)
+        .await
+        .ok()
+        .flatten()
+        .is_some()
 }
 
 pub async fn admin_save(state: &AppState, body: &Value) -> AppResult<()> {
@@ -117,13 +137,52 @@ pub async fn admin_save(state: &AppState, body: &Value) -> AppResult<()> {
 }
 
 pub async fn admin_run(state: &AppState) -> AppResult<Value> {
-    let stats = run_locked(state, true).await?;
+    let owner = Uuid::now_v7().to_string();
+    let got = state
+        .redis
+        .acquire_lock(LOCK_KEY, &owner, 1_800_000)
+        .await?;
+    if !got {
+        let cfg = load_config(state).await?;
+        return Ok(json!({
+            "started": false,
+            "running": true,
+            "fetched": 0,
+            "inserted": 0,
+            "skipped": 0,
+            "updated": 0,
+            "error": "",
+            "last_msg": cfg.last_msg,
+        }));
+    }
+    let now = clock::now_ts();
+    let _ = setting_repo::upsert(state.db.pool(), KEY_LAST_MSG, "采集进行中", "", false, now).await;
+    let bg = state.clone();
+    tokio::spawn(async move {
+        let res = run_inner(&bg).await;
+        let _ = bg.redis.release_lock(LOCK_KEY, &owner).await;
+        if let Err(e) = res {
+            tracing::warn!(error = %e, "job_scrape: run failed");
+            let ts = clock::now_ts();
+            let _ = setting_repo::upsert(
+                bg.db.pool(),
+                KEY_LAST_MSG,
+                &format!("error: {e}"),
+                "",
+                false,
+                ts,
+            )
+            .await;
+        }
+    });
     Ok(json!({
-        "fetched": stats.fetched,
-        "inserted": stats.inserted,
-        "skipped": stats.skipped,
-        "updated": stats.updated,
-        "error": stats.error,
+        "started": true,
+        "running": true,
+        "fetched": 0,
+        "inserted": 0,
+        "skipped": 0,
+        "updated": 0,
+        "error": "",
     }))
 }
 
@@ -151,11 +210,26 @@ pub async fn tick(state: &AppState) {
 
 async fn run_locked(state: &AppState, fail_if_busy: bool) -> AppResult<RunStats> {
     let owner = Uuid::now_v7().to_string();
-    let got = state
+    let got = match state
         .redis
         .acquire_lock(LOCK_KEY, &owner, 1_800_000)
         .await
-        .unwrap_or(false);
+    {
+        Ok(v) => v,
+        Err(e) => {
+            tracing::warn!(error = %e, "job_scrape: lock acquire failed");
+            if fail_if_busy {
+                return Err(e);
+            }
+            return Ok(RunStats {
+                fetched: 0,
+                inserted: 0,
+                skipped: 0,
+                updated: 0,
+                error: String::new(),
+            });
+        }
+    };
     if !got {
         if fail_if_busy {
             return Err(ApiError::business("job_scrape_busy"));

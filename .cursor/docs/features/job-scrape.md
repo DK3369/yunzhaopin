@@ -13,9 +13,10 @@
 | 拉正文 | `job_scrape_jd.rs`：Ashby board JSON `descriptionHtml`（同 board 缓存）→ Lever / Greenhouse 公开 JSON → `get_text` + JSON-LD / 正文 |
 | 写入 | `compose_description` 清洗后约 60KB；**禁止** `job::repo::update`（会把 `state=0`） |
 | 回填 | 已有岗且 `is_stub_description`（空 / 含 `Apply / source` / 短 meta 无列表标题）才 UPDATE；没拉到正文不覆盖 |
-| 锁 | Redis `job_scrape:run` TTL 1800s |
-| 后台 | `scrapeSet.vue`「立即采集」timeout 300s；配置在 `phpyun_admin_config`：`job_scrape_url/enabled/hours/minutes/last_run/last_msg` |
+| 锁 | Redis `job_scrape:run` TTL 1800s。**立即采集**在后台跑，HTTP 马上返回（现网 `REQUEST_TIMEOUT_SECS=30`，以前整段等完会被掐掉、锁不释放，再点就是 `job_scrape_busy`）。进程启动会 `DEL` 残留锁。正在跑时再点返回 200「正在采集中」，不是错误。 |
+| 后台 | `scrapeSet.vue`「立即采集」；采集中按钮禁用。配置在 `phpyun_admin_config`：`job_scrape_url/enabled/hours/minutes/last_run/last_msg` |
 | 测 | `cargo test -p phpyun-services --offline --lib job_scrape` |
+| MySQL | `description` 是 utf8（非 utf8mb4），JD 里 emoji 会 1366；入库前丢掉 4 字节字符 |
 
 拉不到 JD（部分 Workday、已下线 posting）保留 Company/Location 占位，不挡入库。
 
