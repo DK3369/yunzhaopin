@@ -1,0 +1,12 @@
+---
+description: 业务落地后写入 .cursor/docs，后续对话先查这里
+alwaysApply: true
+---
+
+# Cursor 文档
+
+1. **动手前**打开 [`.cursor/docs/README.md`](../docs/README.md)，有对应专题就先读，不要只靠聊天摘要或 `.cursor/plans/`。
+2. **收尾**：有实质业务或口径变化时，更新或新增 `.cursor/docs/` 专题（短文：现状怎么做、禁止做什么、改哪几个文件），并在 README 索引加一行。
+3. 细节以代码为准，不要把整份 plan 或大段代码贴进文档当第二真相。
+4. **不要改**用户的 `.cursor/plans/*.plan.md`，除非当次明确要求。
+5. 不要为此在 `uploads/` 或仓库根再写一份重复长文。

@@ -2,7 +2,7 @@
 
 长文仍在仓库原处，**不要复制一份当第二真相**。这里只分类、标明「现状 / 历史 / 去哪查」。
 
-硬边界见 [`.cursor/rules/rust-php-boundary.mdc`](../../rules/rust-php-boundary.mdc)（always apply）。改 Rust 代码时再读 [`.cursor/rules/rust-code.mdc`](../../rules/rust-code.mdc)。
+总索引（含业务专题）见 [`.cursor/docs/README.md`](../README.md)。硬边界见 [`.cursor/rules/rust-php-boundary.mdc`](../../rules/rust-php-boundary.mdc)（always apply）。改 Rust 代码时再读 [`.cursor/rules/rust-code.mdc`](../../rules/rust-code.mdc)。
 
 ## 先读（现状）
 
@@ -14,6 +14,7 @@
 | 后端 i18n | [i18n.md](./i18n.md) | [phpyun-rs/docs/INTERNATIONALIZATION.md](../../../phpyun-rs/docs/INTERNATIONALIZATION.md) |
 | 依赖怎么数、别乱砍 | [deps.md](./deps.md) | [doc/RUST_DEPENDENCIES.md](../../../doc/RUST_DEPENDENCIES.md) |
 | 本机怎么起 | [run.md](./run.md) | [`ops/restart.sh`](../../../ops/restart.sh)、[phpyun-rs/README.md](../../../phpyun-rs/README.md) |
+| 采集英文岗 / 官网申请 | [features/job-scrape.md](../features/job-scrape.md) | `job_scrape_service.rs`、`apply_service.rs`、site `jobs/[id].vue` |
 
 ## 历史 / 条数会过期（不要当未做清单）
 
