@@ -516,7 +516,9 @@ async fn refresh_stub_description(
     let current = job_repo::find_description(state.db.reader(), job_id)
         .await?
         .unwrap_or_default();
-    if job_scrape_jd::stored_description_has_min_body(&current) {
+    if job_scrape_jd::stored_description_has_min_body(&current)
+        && job_scrape_jd::is_structured_jd(&current)
+    {
         return Ok(false);
     }
     let Some(body) = job_scrape_jd::official_body_html(
@@ -539,6 +541,14 @@ async fn refresh_stub_description(
     if next == current || !job_scrape_jd::stored_description_has_min_body(&next) {
         return Ok(false);
     }
+    if job_scrape_jd::is_structured_jd(&current) && !job_scrape_jd::is_structured_jd(&next) {
+        return Ok(false);
+    }
+    if job_scrape_jd::stored_description_has_min_body(&current)
+        && !job_scrape_jd::is_structured_jd(&next)
+    {
+        return Ok(false);
+    }
     let n = job_repo::update_description_keep_listed(state.db.pool(), job_id, &next).await?;
     Ok(n > 0)
 }
@@ -557,7 +567,9 @@ async fn refresh_or_drop_short_jobs(
         let current = job_repo::find_description(state.db.reader(), job_id)
             .await?
             .unwrap_or_default();
-        if job_scrape_jd::stored_description_has_min_body(&current) {
+        if job_scrape_jd::stored_description_has_min_body(&current)
+            && job_scrape_jd::is_structured_jd(&current)
+        {
             continue;
         }
         let (company, location, posted) = header_from_description(&current, &company_name);
@@ -570,6 +582,9 @@ async fn refresh_or_drop_short_jobs(
         };
         if refresh_stub_description(state, job_id, &job, jd_cache).await? {
             updated += 1;
+            continue;
+        }
+        if job_scrape_jd::stored_description_has_min_body(&current) {
             continue;
         }
         drop_scrape_job(state, job_id).await?;

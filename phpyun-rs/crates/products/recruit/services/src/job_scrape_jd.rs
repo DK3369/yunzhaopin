@@ -83,6 +83,17 @@ pub fn stored_description_has_min_body(html: &str) -> bool {
     has_min_body(&strip_scrape_headers(html))
 }
 
+/// Company/Location headers plus one wall-of-text `<p>` is not a formatted JD.
+pub fn is_structured_jd(html: &str) -> bool {
+    let b = strip_scrape_headers(html);
+    b.contains("<ul")
+        || b.contains("<ol")
+        || b.contains("<h2")
+        || b.contains("<h3")
+        || b.contains("<br")
+        || b.matches("<p>").count() >= 3
+}
+
 fn strip_scrape_headers(html: &str) -> String {
     let mut s = html.to_string();
     for label in ["Company", "Location", "Posted"] {
@@ -162,6 +173,9 @@ async fn fetch_ats(
         if let Some(html) = greenhouse_html(http, cache, &host, &segs, &query, title).await {
             return Some(html);
         }
+    }
+    if host.contains("myworkdayjobs.com") {
+        return workday_html(http, &host, &segs).await;
     }
     None
 }
@@ -266,6 +280,79 @@ async fn greenhouse_html(
         return Some(html);
     }
     greenhouse_board_lookup(http, cache, &board, &id, title).await
+}
+
+async fn workday_html(http: &Http, host: &str, segs: &[String]) -> Option<String> {
+    let api = workday_cxs_url(host, segs)?;
+    let v = http
+        .get_json_with::<Value>(&api, RetryPolicy::NONE)
+        .await
+        .ok()?;
+    let d = v
+        .pointer("/jobPostingInfo/jobDescription")
+        .and_then(Value::as_str)?;
+    if d.trim().is_empty() {
+        return None;
+    }
+    Some(tidy_workday_html(d))
+}
+
+fn workday_cxs_url(host: &str, segs: &[String]) -> Option<String> {
+    if !host.contains("myworkdayjobs.com") {
+        return None;
+    }
+    let job_idx = segs.iter().position(|s| s.eq_ignore_ascii_case("job"))?;
+    if job_idx == 0 {
+        return None;
+    }
+    let tenant = host.split('.').next().unwrap_or("");
+    if tenant.is_empty() || tenant.starts_with("wd") {
+        return None;
+    }
+    let path = segs.join("/");
+    Some(format!("https://{host}/wday/cxs/{tenant}/{path}"))
+}
+
+fn tidy_workday_html(input: &str) -> String {
+    let mut s = sanitize_html(input);
+    for tag in ["div", "span"] {
+        s = s.replace(&format!("<{tag}>"), "");
+        s = s.replace(&format!("</{tag}>"), "");
+    }
+    loop {
+        let next = s.replace("<p></p>", "").replace("<p> </p>", "");
+        if next == s {
+            break;
+        }
+        s = next;
+    }
+    wrap_loose_text(&s)
+}
+
+/// Workday often puts labels in `<p>` and the value as a sibling text node.
+fn wrap_loose_text(html: &str) -> String {
+    let mut out = String::with_capacity(html.len() + 32);
+    let mut i = 0;
+    while i < html.len() {
+        if html[i..].starts_with("</p>") {
+            out.push_str("</p>");
+            i += 4;
+            let rest = &html[i..];
+            let next_lt = rest.find('<').unwrap_or(rest.len());
+            let chunk = rest[..next_lt].trim();
+            if !chunk.is_empty() {
+                out.push_str("<p>");
+                out.push_str(chunk);
+                out.push_str("</p>");
+            }
+            i += next_lt;
+        } else {
+            let ch = html[i..].chars().next().unwrap();
+            out.push(ch);
+            i += ch.len_utf8();
+        }
+    }
+    out
 }
 
 async fn greenhouse_job_api(http: &Http, board: &str, id: &str) -> Option<String> {
@@ -862,6 +949,36 @@ mod tests {
             "We are looking for an engineer. ".repeat(8)
         );
         assert!(stored_description_has_min_body(&real));
+        assert!(!is_structured_jd(&real));
+        assert!(is_structured_jd(
+            "<p><strong>Company:</strong> X</p><p>A</p><p>B</p><p>C</p>"
+        ));
+        assert!(is_structured_jd("<p><strong>Company:</strong> X</p><ul><li>A</li></ul>"));
+    }
+
+    #[test]
+    fn workday_cxs_url_from_posting() {
+        let (host, segs, _) = split_url(
+            "https://aah.wd5.myworkdayjobs.com/external/job/Charlotte-NC---3311-Beam-Rd/Field-Nurse_R187647",
+        )
+        .unwrap();
+        assert_eq!(
+            workday_cxs_url(&host, &segs).as_deref(),
+            Some("https://aah.wd5.myworkdayjobs.com/wday/cxs/aah/external/job/Charlotte-NC---3311-Beam-Rd/Field-Nurse_R187647")
+        );
+    }
+
+    #[test]
+    fn tidy_workday_keeps_p_and_lists() {
+        let raw = r#"<div><div><p style="x"><span><b>Department:</b></span></p></div></div><p></p>Part time<p><b>Pay Range:</b></p>$38.20<ul><li>PALS</li></ul>"#;
+        let out = tidy_workday_html(raw);
+        assert!(out.contains("<p><b>Department:</b></p>"), "{out}");
+        assert!(out.contains("<p>Part time</p>"), "{out}");
+        assert!(out.contains("<p>$38.20</p>"), "{out}");
+        assert!(out.contains("<ul><li>PALS</li></ul>"));
+        assert!(!out.contains("<div"));
+        assert!(!out.contains("<span"));
+        assert!(!out.contains("<p></p>"));
     }
 
     #[test]
