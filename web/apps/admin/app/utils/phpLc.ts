@@ -99,6 +99,12 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00726: '自定义WAP导航',
     admin_tool_00727: '问答分类',
     admin_tool_00728: '邮件服务器',
+    admin_tool_00729: '第三方数据',
+    admin_tool_00730: '采集源',
+    admin_tool_00731: '板类型',
+    admin_tool_00732: '公开接口',
+    admin_tool_00733: 'Greenhouse / Ashby / Lever / Workday 会按表批量拉职位；其它地址只保存、采集时跳过。',
+    admin_tool_00734: '公司板地址在「第三方数据」维护；本页只管聚合站 URL 和定时。',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -150,6 +156,12 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00726: 'Custom WAP navigation',
     admin_tool_00727: 'Q&A categories',
     admin_tool_00728: 'Email server',
+    admin_tool_00729: 'Third Data',
+    admin_tool_00730: 'Sources',
+    admin_tool_00731: 'Provider',
+    admin_tool_00732: 'Public API',
+    admin_tool_00733: 'Greenhouse / Ashby / Lever / Workday boards are crawled in sort order; other URLs are stored but skipped.',
+    admin_tool_00734: 'Company board URLs live under Third Data. This page still controls the aggregator URL and schedule.',
   },
 }
 
@@ -205,6 +217,7 @@ const NAME_ALIAS: Record<string, string> = {
   单页面分类: 'admin_system_00681',
   数据库: 'common_01919',
   邮件服务器: 'admin_tool_00728',
+  第三方数据: 'admin_tool_00729',
   计划任务: 'admin_system_00273',
 }
 

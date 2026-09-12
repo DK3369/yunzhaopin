@@ -1314,6 +1314,10 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'tool/dataCall/index': { path: '/v1/admin/data-call/list', transformReq: pageQuery },
   'tool/dataCall/save': { path: '/v1/admin/data-call' },
   'tool/dataCall/del': { path: '/v1/admin/data-call/delete', transformReq: idsFromDel },
+  'tool/thirdData': { path: '/v1/admin/third-data/list', transformReq: pageQuery },
+  'tool/thirdData/index': { path: '/v1/admin/third-data/list', transformReq: pageQuery },
+  'tool/thirdData/save': { path: '/v1/admin/third-data' },
+  'tool/thirdData/del': { path: '/v1/admin/third-data/delete', transformReq: idsFromDel },
   // 数据回收站 reads PHP's own `phpyun_recycle` shape, so it gets the `php-*`
   // routes rather than the generic JSON recycle-bin view.
   'tool/dataRecycle': { path: '/v1/admin/recycle-bin/php-index', transformReq: pageQuery },
@@ -1619,6 +1623,7 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'tool/database': { list: '/v1/admin/php-content/database/getOptTable' },
   'tool/generate_page': { list: '/v1/admin/php-content/generate-page/baseData' },
   'tool/dataCall': { list: '/v1/admin/data-call/list', save: '/v1/admin/data-call', del: '/v1/admin/data-call/delete' },
+  'tool/thirdData': { list: '/v1/admin/third-data/list', save: '/v1/admin/third-data', del: '/v1/admin/third-data/delete' },
   'tool/dataCollection': { list: '/v1/admin/php-content/data-collection/index' },
   'tool/weixinrecord': { list: '/v1/admin/php-content/weixinrecord/index' },
   'index/getIpAddress': { list: '/v1/admin/php-content/index/getIpAddress' },

@@ -12,10 +12,12 @@ use phpyun_models::dict_i18n::repo as dict_i18n_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::job_scrape::repo as scrape_repo;
 use phpyun_models::site_setting::repo as setting_repo;
+use phpyun_models::third_data::{self, repo as third_data_repo};
 use phpyun_models::user::repo as user_repo;
 use serde_json::{json, Value};
 use uuid::Uuid;
 
+use crate::job_scrape_board;
 use crate::job_scrape_jd::{self, JdCache};
 
 const KEY_URL: &str = "job_scrape_url";
@@ -28,6 +30,7 @@ const LOCK_KEY: &str = "job_scrape:run";
 const DEFAULT_URL: &str = "http://72.62.75.195:3000/";
 const DEFAULT_JOB1: i32 = 955; // Technology
 const MAX_JOBS: usize = 400;
+const MAX_ATS_JOBS: usize = 200;
 const COMPANY_NAME_MAX: usize = 25;
 const JOB_NAME_MAX: usize = 50;
 const ADDRESS_MAX: usize = 100;
@@ -285,6 +288,18 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
     if jobs.len() > MAX_JOBS {
         jobs.truncate(MAX_JOBS);
     }
+    match append_third_data_jobs(state, &mut jobs, &mut seen, &mut jd_cache, &mut stats).await {
+        Ok(()) => {}
+        Err(e) => {
+            tracing::warn!(error = %e, "job_scrape: third_data list failed");
+            if stats.error.len() < 200 {
+                if !stats.error.is_empty() {
+                    stats.error.push(';');
+                }
+                stats.error.push_str(&e.to_string());
+            }
+        }
+    }
     stats.fetched = jobs.len() as i32;
     let classes = match load_job_classes(state).await {
         Ok(c) => c,
@@ -375,6 +390,78 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
 struct ImportedCreds {
     salt: String,
     password_hash: String,
+}
+
+async fn append_third_data_jobs(
+    state: &AppState,
+    jobs: &mut Vec<ScrapedJob>,
+    seen: &mut HashSet<String>,
+    jd_cache: &mut JdCache,
+    stats: &mut RunStats,
+) -> AppResult<()> {
+    let sources = third_data_repo::list_enabled_ordered(state.db.reader()).await?;
+    let cap = MAX_JOBS.saturating_add(MAX_ATS_JOBS);
+    for src in sources {
+        if jobs.len() >= cap {
+            break;
+        }
+        let provider = third_data::normalize_provider(&src.provider, &src.url, &src.api_url);
+        if !job_scrape_board::is_supported(&provider) {
+            tracing::info!(
+                name = %src.name,
+                url = %src.url,
+                provider = %provider,
+                "job_scrape: skip unsupported third_data"
+            );
+            continue;
+        }
+        match job_scrape_board::list_jobs(
+            &state.http,
+            jd_cache,
+            &provider,
+            &src.url,
+            &src.api_url,
+            &src.name,
+        )
+        .await
+        {
+            Ok(board_jobs) => {
+                for j in board_jobs {
+                    if jobs.len() >= cap {
+                        break;
+                    }
+                    if !is_english_job(&j.company, &j.role) {
+                        continue;
+                    }
+                    if !seen.insert(j.url.clone()) {
+                        continue;
+                    }
+                    jobs.push(ScrapedJob {
+                        url: j.url,
+                        company: j.company,
+                        role: j.role,
+                        location: j.location,
+                        posted_at: j.posted_at,
+                    });
+                }
+            }
+            Err(e) => {
+                tracing::warn!(
+                    name = %src.name,
+                    url = %src.url,
+                    error = %e,
+                    "job_scrape: board list failed"
+                );
+                if stats.error.len() < 200 {
+                    if !stats.error.is_empty() {
+                        stats.error.push(';');
+                    }
+                    stats.error.push_str(&e);
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 enum IngestOut {

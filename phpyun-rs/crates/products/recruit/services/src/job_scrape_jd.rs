@@ -26,6 +26,16 @@ impl Default for JdCache {
     }
 }
 
+impl JdCache {
+    pub fn put_greenhouse(&mut self, board: impl Into<String>, val: Value) {
+        self.greenhouse.insert(board.into(), val);
+    }
+
+    pub fn put_ashby(&mut self, board: impl Into<String>, val: Value) {
+        self.ashby.insert(board.into(), val);
+    }
+}
+
 pub async fn official_body_html(
     http: &Http,
     cache: &mut JdCache,

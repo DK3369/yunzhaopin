@@ -285,6 +285,9 @@
 /v1/admin/specials/display
 /v1/admin/sysmsgs
 /v1/admin/sysmsgs/send
+/v1/admin/third-data
+/v1/admin/third-data/delete
+/v1/admin/third-data/list
 /v1/admin/tiny
 /v1/admin/tiny/status
 /v1/admin/toolbox/classes

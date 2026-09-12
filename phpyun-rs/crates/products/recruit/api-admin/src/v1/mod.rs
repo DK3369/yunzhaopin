@@ -43,6 +43,7 @@ pub mod resumes;
 pub mod site_settings;
 pub mod system_gap;
 pub mod tiny;
+pub mod third_data;
 pub mod toolbox;
 pub mod upload;
 pub mod users;
@@ -88,6 +89,7 @@ pub fn router() -> Router<AppState> {
         .merge(once_jobs::routes())
         .merge(tiny::routes())
         .merge(friend_links::routes())
+        .merge(third_data::routes())
         .merge(ops::routes())
         .merge(php_content::routes())
         .merge(companies::routes())

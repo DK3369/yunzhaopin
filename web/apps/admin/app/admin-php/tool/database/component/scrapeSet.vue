@@ -3,6 +3,9 @@
         <div class="tableDome_tip">
             <el-alert :title="lc('admin_tool_00710')" type="success" :closable="false"></el-alert>
         </div>
+        <div class="tableDome_tip" style="margin-top: 8px;">
+            <el-alert :title="lc('admin_tool_00734')" type="info" :closable="false"></el-alert>
+        </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
