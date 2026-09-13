@@ -47,6 +47,7 @@
             </div>
         </div>
     </div>
+    <div class="thirdDataFooterSpace"></div>
     <el-dialog :title="form.id ? lc('wap_js_00073') : lc('admin_tool_00707')" v-model="dialogShow" :modal-append-to-body="false" width="560px">
         <el-form :model="form" label-width="110px">
             <el-form-item :label="lc('admin_system_00292')">
@@ -245,3 +246,11 @@ export default {
     },
 }
 </script>
+<style>
+#thirdDataApp .moduleElTable {
+    height: calc(100% - (60px + 50px + 12px + 12px + 52px + 40px));
+}
+.thirdDataFooterSpace {
+    height: 40px;
+}
+</style>
