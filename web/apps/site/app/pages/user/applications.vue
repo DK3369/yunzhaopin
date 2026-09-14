@@ -55,18 +55,58 @@ const stateTabs = computed(() => [
   { v: 4, label: t('wap_user_00354') },
   { v: 7, label: t('wap_user_00356') },
 ])
+const dayTabs = computed(() => [
+  { v: null as number | null, label: t('common.all') },
+  { v: 1, label: t('common_01940') },
+  { v: 3, label: t('admin_user_00179') },
+  { v: 7, label: t('wap_00339') },
+  { v: 15, label: '15' },
+  { v: 30, label: t('member_com_00368') },
+])
+const filterGroups = computed(() => [
+  {
+    label: t('member_user_00175'),
+    options: stateTabs.value.map((tab) => ({
+      value: tab.v,
+      label: tab.label,
+      on: state.value === tab.v,
+      select: () => {
+        state.value = tab.v
+      },
+    })),
+  },
+  {
+    label: t('member_user_00176'),
+    options: dayTabs.value.map((tab) => ({
+      value: tab.v,
+      label: tab.label,
+      on: days.value === tab.v,
+      select: () => {
+        days.value = tab.v
+      },
+    })),
+  },
+])
+const sub = computed(() => {
+  const n = Number(data.value?.total ?? list.value.length)
+  return n ? String(n) : ''
+})
 useSeoMeta({ title: t('wap_user_00270') })
 </script>
 
 <template>
   <MemberPanel
     :title="$t('wap_user_00270')"
+    :sub="sub"
     :error="error && !isUnauthErr(error) ? error : undefined"
     :empty="!error && !list.length"
     :empty-text="$t('ui.no_applies')"
     empty-to="/jobs"
     :empty-action="$t('wap_user_00254')"
   >
+    <template #pcFilters>
+      <MemberPcFilterBar :groups="filterGroups" />
+    </template>
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
     <div class="site-h5 m_tab">
       <div class="m_tabbox category">
@@ -77,43 +117,47 @@ useSeoMeta({ title: t('wap_user_00270') })
         </ul>
       </div>
     </div>
-    <p class="site-pc">
-      <button v-for="tab in stateTabs" :key="'pc-' + String(tab.v)" type="button" :class="{ on: state === tab.v }" @click="state = tab.v">
-        {{ tab.label }}
-      </button>
-    </p>
-    <p>
-      <button type="button" @click="days = null">{{ $t('common.all') }}</button>
-      <button type="button" @click="days = 1">1</button>
-      <button type="button" @click="days = 3">3</button>
-      <button type="button" @click="days = 7">7</button>
-      <button type="button" @click="days = 15">15</button>
-      <button type="button" @click="days = 30">30</button>
-    </p>
     <div v-if="list.length" class="user_new_listtit site-pc">
-      <div class="user_new_job">{{ $t('member_user_00105') }}</div>
+      <div class="user_new_job" style="width: 260px">{{ $t('member_user_00105') }}</div>
       <div class="user_new_time">{{ $t('member_user_00106') }}</div>
-      <div class="user_new_zt">{{ $t('member_user_00104') }}</div>
+      <div class="user_new_tdzt">{{ $t('member_user_00104') }}</div>
       <div class="user_new_yqh">{{ $t('member_user_00107') }}</div>
       <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
     </div>
-    <div v-for="row in list" :key="row.id" class="jobnotice_list">
-      <div class="user_new_job">
+    <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
+      <div class="user_new_job" style="width: 260px">
         <NuxtLink :to="`/jobs/${row.job_id}`" class="user_new_jobname">{{ row.job_name || $t('common.job') }}</NuxtLink>
+        <div v-if="row.job_salary" class="user_new_jobxz">{{ row.job_salary }}</div>
         <div class="user_new_comname">
           <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`">{{ row.com_name }}</NuxtLink>
         </div>
       </div>
-      <div class="user_new_time">{{ row.datetime_n }}</div>
-      <div class="user_new_zt">{{ browseLabel(row) }}</div>
+      <div class="user_new_time">
+        <span class="msg_zt_s">{{ row.datetime_n }}</span>
+      </div>
+      <MemberApplySteps :is-browse="row.is_browse" :invited="row.invited" :withdrawn="!!row.body" />
       <div class="user_new_yqh">
-        <a v-if="row.apply_url" :href="row.apply_url" target="_blank" rel="noopener">{{ $t('ui.apply_official') }}</a>
+        <span>{{ row.status === 0 ? $t('wap_com_00243') : $t('wap_com_00242') }}</span>
       </div>
       <div class="user_new_cz">
-        <a v-if="!row.quxiao" href="javascript:;" class="user_new_yqh_sc" @click="withdraw(row.id)">{{ $t('common.cancel') }}</a>
-        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+        <a v-if="row.is_browse === 1 && !row.body" href="javascript:;" class="user_new_yqh_ch" @click="withdraw(row.id)">{{ $t('common.cancel') }}</a>
+        <a v-else href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
-    <p v-if="msg">{{ msg }}</p>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in list"
+          :key="'h5-' + row.id"
+          :title="row.job_name || $t('common.job')"
+          :pay="row.job_salary"
+          :sub="row.com_name"
+          :time="row.datetime_n"
+          :to="`/jobs/${row.job_id}`"
+          :tags="[browseLabel(row)]"
+        />
+      </div>
+    </div>
+    <p v-if="msg" class="muted">{{ msg }}</p>
   </MemberPanel>
 </template>

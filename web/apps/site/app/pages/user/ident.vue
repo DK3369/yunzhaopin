@@ -64,24 +64,32 @@ useSeoMeta({ title: t('wap_user_00340') })
 <template>
   <MemberPanel :title="$t('wap_user_00340')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <form v-else class="form" @submit.prevent="save">
-      <h2>{{ $t('wap_01030') }}</h2>
+    <form v-else class="form verification_form" @submit.prevent="save">
+      <MemberResumeH1 :title="$t('wap_01030')" />
       <p class="muted">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</p>
-      <input v-model="idcard" :placeholder="$t('wap_01087')" :disabled="data?.idcard_status === 1" />
+      <MemberField :label="$t('wap_01087')">
+        <input v-model="idcard" :disabled="data?.idcard_status === 1" />
+      </MemberField>
       <img v-if="idcardPic" :src="mediaUrl(idcardPic)" alt="" width="160" />
       <input v-if="data?.idcard_status !== 1" type="file" accept="image/jpeg,image/png,image/webp" @change="onPic" />
-      <button v-if="data?.idcard_status !== 1" type="submit">{{ $t('wap_user_00176') }}</button>
+      <button v-if="data?.idcard_status !== 1" type="submit" class="verification_form_btn">{{ $t('wap_user_00176') }}</button>
     </form>
-    <article class="jobnotice_list">
-      <h3>{{ $t('wap_user_00180') }}</h3>
-      <p>{{ data?.telphone || $t('wap_user_00177') }} · {{ data?.moblie_status === 1 ? $t('wap_user_00127') : $t('wap_user_00182') }}</p>
-      <NuxtLink to="/user/binding">{{ $t('wap_00389') }}</NuxtLink>
-    </article>
-    <article class="jobnotice_list">
-      <h3>{{ $t('wap_user_00179') }}</h3>
-      <p>{{ data?.email || $t('wap_user_00177') }} · {{ data?.email_status === 1 ? $t('wap_user_00127') : $t('wap_user_00181') }}</p>
-      <NuxtLink to="/user/binding">{{ $t('wap_00389') }}</NuxtLink>
-    </article>
+    <div class="account_settings_list">
+      <div class="account_settings_list_left">
+        <i class="account_settings_list_left_icon account_settings_list_left_icon_sj" />
+        <div class="account_settings_tit">{{ $t('wap_user_00180') }}</div>
+        {{ data?.telphone || $t('wap_user_00177') }} · {{ data?.moblie_status === 1 ? $t('wap_user_00127') : $t('wap_user_00182') }}
+      </div>
+      <NuxtLink to="/user/binding" class="account_settings_bth_hv">{{ $t('wap_00389') }}</NuxtLink>
+    </div>
+    <div class="account_settings_list">
+      <div class="account_settings_list_left">
+        <i class="account_settings_list_left_icon account_settings_list_left_icon_yx" />
+        <div class="account_settings_tit">{{ $t('wap_user_00179') }}</div>
+        {{ data?.email || $t('wap_user_00177') }} · {{ data?.email_status === 1 ? $t('wap_user_00127') : $t('wap_user_00181') }}
+      </div>
+      <NuxtLink to="/user/binding" class="account_settings_bth_hv">{{ $t('wap_00389') }}</NuxtLink>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

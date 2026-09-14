@@ -113,15 +113,21 @@ useSeoMeta({ title: t('wap_00389') })
         @click.prevent="startBind(o)"
       >{{ o.name }}</a>
     </p>
-    <form class="form" @submit.prevent="bindMobile">
-      <input v-model="mobile" :placeholder="$t('common.phone')" />
-      <button type="button" @click="sendMobile">{{ $t('common.submit') }}</button>
-      <input v-model="mobileCode" :placeholder="$t('wap_01371')" />
-      <button type="submit">{{ $t('common.save') }}</button>
+    <form class="form verification_form" @submit.prevent="bindMobile">
+      <MemberField :label="$t('common.phone')">
+        <input v-model="mobile" />
+      </MemberField>
+      <button type="button" class="verification_form_btn" @click="sendMobile">{{ $t('common.submit') }}</button>
+      <MemberField :label="$t('wap_01371')">
+        <input v-model="mobileCode" />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
     </form>
-    <form class="form" @submit.prevent="sendEmail">
-      <input v-model="email" :placeholder="$t('member_user_00282')" />
-      <button type="submit">{{ $t('common.submit') }}</button>
+    <form class="form verification_form" @submit.prevent="sendEmail">
+      <MemberField :label="$t('member_user_00282')">
+        <input v-model="email" />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <p class="muted">{{ $t('ajax_00001') }}</p>
     <p><NuxtLink to="/email-verify">{{ $t('wap_user_00179') }}</NuxtLink></p>

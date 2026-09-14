@@ -56,17 +56,24 @@ useSeoMeta({ title: t('wap_user_00203') })
 
 <template>
   <MemberPanel :title="$t('wap_user_00203')">
-    <form class="form" @submit.prevent="submit">
-      <input v-model="form.infotype" />
-      <textarea v-model="form.content" rows="5" required />
-      <input v-model="form.moblie" :placeholder="$t('wap_01619')" />
+    <form class="form verification_form" @submit.prevent="submit">
+      <MemberField :label="$t('wap_user_00203')" area>
+        <textarea v-model="form.content" rows="5" required />
+      </MemberField>
+      <MemberField :label="$t('wap_01619')">
+        <input v-model="form.moblie" />
+      </MemberField>
       <template v-if="String(settings.sy_advice_mobilecode || '') === '1'">
-        <button type="button" @click="sendSms">{{ $t('admin_user_00166') }}</button>
-        <input v-model="form.moblie_code" :placeholder="$t('wap_01371')" />
+        <button type="button" class="verification_form_btn" @click="sendSms">{{ $t('admin_user_00166') }}</button>
+        <MemberField :label="$t('wap_01371')">
+          <input v-model="form.moblie_code" />
+        </MemberField>
       </template>
       <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />
-      <input v-model="form.captcha_input" :placeholder="$t('wap_00110')" />
-      <button type="submit">{{ $t('common.submit') }}</button>
+      <MemberField :label="$t('wap_00110')">
+        <input v-model="form.captcha_input" />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

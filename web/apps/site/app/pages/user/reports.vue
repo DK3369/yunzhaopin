@@ -24,27 +24,28 @@ useSeoMeta({ title: t('ui.my_reports') })
 <template>
   <MemberPanel :title="$t('ui.my_reports')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <form class="form" @submit.prevent="submit">
-      <select v-model.number="form.target_kind">
-        <option :value="1">{{ $t('common.job') }}</option>
-        <option :value="2">{{ $t('common.company') }}</option>
-        <option :value="3">{{ $t('common.resume') }}</option>
-        <option :value="4">{{ $t('common.article') }}</option>
-        <option :value="5">{{ $t('ui.user_kind') }}</option>
-        <option :value="6">{{ $t('wap_00160') }}</option>
-      </select>
-      <input v-model.number="form.target_id" type="number" placeholder="target_id" />
-      <input v-model="form.reason_code" placeholder="reason_code" />
-      <textarea v-model="form.detail" rows="3" :placeholder="$t('ui.detail')" />
-      <button type="submit">{{ $t('common.submit') }}</button>
+    <form class="form verification_form" @submit.prevent="submit">
+      <MemberField :label="$t('common.job')">
+        <select v-model.number="form.target_kind">
+          <option :value="1">{{ $t('common.job') }}</option>
+          <option :value="2">{{ $t('common.company') }}</option>
+          <option :value="3">{{ $t('common.resume') }}</option>
+          <option :value="4">{{ $t('common.article') }}</option>
+          <option :value="5">{{ $t('ui.user_kind') }}</option>
+          <option :value="6">{{ $t('wap_00160') }}</option>
+        </select>
+      </MemberField>
+      <MemberField :label="$t('ui.detail')" area>
+        <textarea v-model="form.detail" rows="3" />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_reports') }}</p>
-    <div class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
-        <h3>kind {{ row.target_kind }} #{{ row.target_id }}</h3>
-        <p class="muted">status {{ row.status }}</p>
-      </article>
+    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
+      <div class="user_new_job">
+        <span class="user_new_jobname">#{{ row.target_id }}</span>
+        <div class="user_new_comname">{{ row.status }}</div>
+      </div>
     </div>
   </MemberPanel>
 </template>

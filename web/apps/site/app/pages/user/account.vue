@@ -95,17 +95,22 @@ useSeoMeta({ title: t('wap_user_00338') })
 <template>
   <MemberPanel :title="$t('wap_user_00338')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <h2>{{ $t('member_user_00220') }}</h2>
-    <form class="form" @submit.prevent="doRename">
-      <input v-model="rename.old_password" type="password" :placeholder="$t('wap_01097')" required />
-      <input v-model="rename.new_username" required />
-      <button type="submit">{{ $t('common.save') }}</button>
+    <form class="form verification_form" @submit.prevent="doRename">
+      <MemberField :label="$t('wap_01097')">
+        <input v-model="rename.old_password" type="password" required />
+      </MemberField>
+      <MemberField :label="$t('member_user_00220')">
+        <input v-model="rename.new_username" required />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
     </form>
-    <h2>{{ $t('wap_user_00338') }}</h2>
+    <MemberResumeH1 :title="$t('wap_user_00338')" />
     <p v-if="logoutSt?.pending" class="muted">{{ $t('common.yes') }} {{ logoutSt.status }}</p>
-    <form class="form" @submit.prevent="applyLogout">
-      <input v-model="logoutPw" type="password" :placeholder="$t('wap_01097')" required />
-      <button type="submit">{{ $t('common.submit') }}</button>
+    <form class="form verification_form" @submit.prevent="applyLogout">
+      <MemberField :label="$t('wap_01097')">
+        <input v-model="logoutPw" type="password" required />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <h2>{{ $t('wap_user_00339') }}</h2>
     <form class="form" @submit.prevent="doSplit">

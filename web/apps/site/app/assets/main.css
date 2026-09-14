@@ -764,26 +764,27 @@ html.force-pc .site-h5 {
 }
 
 @media (min-width: 1200px) {
+  /* PHP：210 左栏 + 980 右栏，不要再给右栏加白底/内边距，否则 yun_m_rightbox 980px 会撑破 */
   .member-shell {
     display: flex;
-    gap: 16px;
+    gap: 10px;
     width: 1200px;
     margin: 16px auto 40px;
     align-items: flex-start;
+    background: transparent;
   }
   .member-shell .yun_m_leftsidebar {
     width: 210px;
     flex: none;
-    background: #fff;
     position: relative;
     z-index: 20;
   }
   .member-shell .yun_m_rightsidebar {
-    flex: 1;
-    background: #fff;
-    min-height: 480px;
-    padding: 20px 24px 40px;
-    box-sizing: border-box;
+    width: 980px;
+    flex: none;
+    background: transparent;
+    padding: 0;
+    min-height: 0;
     overflow: visible;
   }
   .member-shell .member-nav-more {
@@ -819,11 +820,27 @@ html.force-pc .site-h5 {
   .member-shell-com .memberSubRight--full {
     width: 100% !important;
     overflow: visible !important;
-    background: #fff;
-    min-height: 480px;
-    padding: 16px 20px 32px;
+    background: transparent;
+    min-height: 0;
+    padding: 0;
     box-sizing: border-box;
   }
+  .member-page .user_new_tit::after,
+  .member-page .user_new_listtit::after,
+  .member-page .jobnotice_list::after,
+  .member-page .resume_box_list::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .verification_formname {
+    color: #333;
+    font-size: 14px;
+    padding: 8px 0 4px;
+  }
+  .verification_form_code input,
+  .verification_form_code select,
+  .verification_form_code textarea,
   .member-page .form input,
   .member-page .form select,
   .member-page .form textarea,
@@ -831,15 +848,34 @@ html.force-pc .site-h5 {
   .yun_m_rightsidebar .form select,
   .yun_m_rightsidebar .form textarea {
     display: block;
-    width: 100%;
-    max-width: 520px;
+    width: 400px;
+    max-width: 100%;
     margin: 8px 0;
-    padding: 8px 10px;
-    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border: 1px solid #eee;
+    border-radius: 4px;
     box-sizing: border-box;
+    height: 36px;
   }
+  .verification_form_code textarea,
+  .member-page .form textarea {
+    height: auto;
+    min-height: 88px;
+    line-height: 1.5;
+  }
+  .verification_form_btn,
   .member-page .form button,
-  .yun_m_rightsidebar button {
+  .yun_m_rightsidebar button.verification_form_btn {
+    display: inline-block;
+    background: #06a7ff;
+    color: #fff;
+    border: 0;
+    border-radius: 40px;
+    padding: 8px 28px;
+    margin: 12px 8px 0 0;
+    cursor: pointer;
+  }
+  .member-page .form button {
     margin: 8px 8px 0 0;
   }
   .yun_new_top .lang-switch,
@@ -1468,51 +1504,84 @@ html.force-pc .site-h5 {
 }
 
 @media (max-width: 1199px) {
-  .yun_m_rightbox.member-page-body,
-  .com_body.member-page-body {
-    background: transparent;
-    padding: 0;
+  .member-shell,
+  .member-shell.yun_w1200 {
+    display: block;
+    width: 100%;
     margin: 0;
-    box-shadow: none;
+    gap: 0;
+  }
+  .member-shell .yun_m_rightsidebar,
+  .yun_m_rightbox,
+  .yun_m_rightbox.member-page-body,
+  .resume_box_list,
+  .com_body.member-page-body {
+    width: 100% !important;
+    float: none !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .member-shell-com .memberSubCont,
+  .member-shell-com .memberSubRight--full,
+  .member-shell-com .memberSubject,
+  .member-shell-com .admin_mainbody {
+    width: 100% !important;
+    margin: 0 !important;
+    float: none !important;
   }
   .user_new_listtit {
     display: none;
   }
-  .jobnotice_list {
-    background: #fff;
-    margin: 0.16rem 0.24rem;
+  .m_cardbox {
+    padding: 0 0.24rem 0.4rem;
+  }
+  .verification_form_code--area {
+    height: auto;
+  }
+  .verification_form_code textarea {
+    width: 100%;
+    min-height: 2.4rem;
+    border: 0;
     padding: 0.24rem;
-    border-radius: 0.08rem;
-    overflow: hidden;
-  }
-  .jobnotice_list .user_new_job,
-  .jobnotice_list .user_new_time,
-  .jobnotice_list .user_new_zt,
-  .jobnotice_list .user_new_yqh,
-  .jobnotice_list .user_new_cz {
-    float: none;
-    width: auto;
-    display: block;
-    padding: 0.04rem 0;
-  }
-  .member-page .form input,
-  .member-page .form select,
-  .member-page .form textarea {
-    display: block;
-    width: calc(100% - 0.48rem);
-    margin: 0.16rem 0.24rem;
-    padding: 0.16rem;
-    border: 1px solid #eee;
     box-sizing: border-box;
   }
-  .member-page .form button {
+  .member-page .form:not(.verification_form) {
+    background: #fff;
     margin: 0.16rem 0.24rem;
+    padding: 0.32rem 0.266667rem;
+    border-radius: 0.213333rem;
+  }
+  .member-page .form:not(.verification_form) input,
+  .member-page .form:not(.verification_form) select,
+  .member-page .form:not(.verification_form) textarea {
+    display: block;
+    width: 100%;
+    margin: 0.16rem 0;
+    padding: 0.2rem 0.266667rem;
+    border: 1px solid #eee;
+    border-radius: 0.16rem;
+    box-sizing: border-box;
+  }
+  .member-page .form:not(.verification_form) button,
+  .verification_form_btn {
+    width: 100%;
+    margin: 0.32rem 0 0;
+    border: 0;
+    cursor: pointer;
   }
   a.com_set_list,
   a.post_body_card_job {
     display: block;
     text-decoration: none;
     color: inherit;
+  }
+  .privacy_body_card li {
+    position: relative;
+    list-style: none;
   }
 }
 

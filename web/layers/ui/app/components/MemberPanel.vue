@@ -1,28 +1,45 @@
 <template>
   <div class="member-page" :class="kind === 'com' ? 'member-page-com' : 'member-page-user'">
-    <div class="site-pc">
-      <div v-if="kind === 'user'" class="user_new_tit">
+    <div v-if="kind === 'user'" class="site-pc">
+      <div class="user_new_tit">
         <span class="user_new_tit_n">{{ title }}</span>
         <span v-if="sub" class="user_new_tit_r">{{ sub }}</span>
+        <slot name="titExtra" />
+        <slot name="pcFilters" />
       </div>
-      <div v-else-if="!$slots.pcTabs" class="newmember_tit">
+    </div>
+    <div v-else class="site-pc">
+      <slot name="pcTabs" />
+      <div v-if="!$slots.pcTabs" class="newmember_tit">
         <ul>
           <li class="newmember_titcur">
             <a href="javascript:;">{{ title }}</a>
           </li>
         </ul>
       </div>
-      <slot name="pcTabs" />
     </div>
-    <div class="site-h5">
-      <slot name="h5Tabs" />
-    </div>
-    <div :class="kind === 'user' ? 'yun_m_rightbox member-page-body' : 'com_body member-page-body'">
+    <slot name="h5Tabs" />
+    <div :class="kind === 'user' ? 'yun_m_rightbox fltR mt20 re member-page-body' : 'com_body member-page-body'">
       <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
-      <slot />
-      <div v-if="!error && empty" class="msg_no">
-        <p>{{ emptyText || $t('ui.no_items') }}</p>
-        <NuxtLink v-if="emptyTo" :to="emptyTo" class="msg_no_sq uesr_submit">{{ emptyAction || $t('common.more') }}</NuxtLink>
+      <div v-if="kind === 'user'" class="resume_box_list">
+        <slot />
+      </div>
+      <slot v-else />
+      <div v-if="!error && empty" class="site-pc">
+        <div class="msg_no">
+          <p>{{ emptyText || $t('ui.no_items') }}</p>
+          <NuxtLink v-if="emptyTo" :to="emptyTo" class="msg_no_sq uesr_submit">{{ emptyAction || $t('common.more') }}</NuxtLink>
+        </div>
+      </div>
+      <div v-if="!error && empty" class="site-h5">
+        <div class="wap_member_bgcar">
+          <div class="wap_member_no">
+            {{ emptyText || $t('ui.no_items') }}
+            <div v-if="emptyTo">
+              <NuxtLink :to="emptyTo" class="wap_member_no_submit">{{ emptyAction || $t('common.more') }}</NuxtLink>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

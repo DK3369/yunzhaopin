@@ -272,6 +272,7 @@ useSeoMeta({ title: t('wap_com_00106') })
       <button type="button" @click="reservePicked(1)">{{ $t('member_com_00261') }}</button>
       <button type="button" @click="reservePicked(2)">{{ $t('member_com_00278') }}</button>
     </p>
+    <div class="site-pc">
     <article v-for="job in list" :key="job.id" class="jobnotice_list">
       <h3>
         <input type="checkbox" :checked="picked.includes(job.id)" @change="togglePick(job.id)" />
@@ -306,6 +307,18 @@ useSeoMeta({ title: t('wap_com_00106') })
         <button v-else type="button" @click="closePromote(job.id, 'urgent')">{{ $t('common.close') }} {{ $t('member_com_00613') }}</button>
       </p>
     </article>
+    </div>
+    <div class="site-h5 more_position_body">
+      <div v-for="job in list" :key="'h5-' + job.id" class="position_body_card">
+        <div class="position_body_card_top">
+          <NuxtLink :to="`/jobs/${job.id}`" class="body_card_top_name">{{ job.name }}</NuxtLink>
+        </div>
+        <div class="position_body_card_bom">
+          <span>{{ jobPhase(job) }}</span>
+          <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
+        </div>
+      </div>
+    </div>
     <p v-if="quoteHint" class="muted">{{ quoteHint }}</p>
     <p v-if="buyHint" class="muted">
       {{ buyHint }}

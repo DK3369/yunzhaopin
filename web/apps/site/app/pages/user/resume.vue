@@ -337,10 +337,55 @@ useSeoMeta({ title: t('wap_user_00204') })
 
 <template>
   <MemberPanel :title="$t('wap_user_00204')" :error="error && !isUnauthErr(error) ? error : undefined">
-    <p v-if="integrity" class="muted">{{ integrity }}%</p>
+    <template #titExtra>
+      <NuxtLink to="/user/expects" class="user_cjbth" style="float: right; margin-top: 7px; margin-right: 10px">{{ $t('wap_user_00197') }}</NuxtLink>
+      <div class="user_czbth_r" style="float: right; background-color: #fff; padding-top: 8px">
+        <NuxtLink to="/user/privacy" class="user_czbth_ys user_czbth_line">{{ $t('wap_user_00215') }}</NuxtLink>
+        <NuxtLink to="/user/recommend" class="user_czbth_pp user_czbth_line">{{ $t('wap_user_00211') }}</NuxtLink>
+      </div>
+    </template>
+    <div class="site-h5 Edit_your_resume_min_body">
+      <div class="resume_min_body_cord">
+        <div class="resume_min_body_cord_data">
+          <div class="resume_min_body_cord_data_left">
+            <div class="data_left_nameandmodification">
+              <div class="data_left_name">{{ form.name || $t('wap_00529') }}</div>
+            </div>
+            <div class="data_left_condition">
+              <ul>
+                <li v-if="integrity">{{ integrity }}%</li>
+              </ul>
+            </div>
+          </div>
+          <div class="resume_min_body_cord_data_logo">
+            <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" width="100%" height="100%" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="site-pc user_resume_list">
+      <div class="user_resume_box">
+        <div class="user_resume_photo">
+          <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" />
+        </div>
+        <div class="user_resume_info">
+          <div class="user_resume_name">{{ form.name }}</div>
+          <div v-if="integrity" class="user_resume_wzd">
+            <span class="user_resume_wzd_name">{{ $t('wap_00328') }}：</span>
+            <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" :style="{ width: `${integrity}%` }" /></div>
+            <span class="user_resume_wzd_r">{{ integrity }}%</span>
+          </div>
+        </div>
+        <div class="user_resume_cz">
+          <div class="user_resume_cz_p">
+            <button type="button" class="user_resume_cz_a" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <p v-if="missingBits.length" class="muted">{{ missingBits.map(missingLabel).join(' · ') }}</p>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <form v-else class="form" @submit.prevent="saveResume">
+    <form v-else class="form verification_form" @submit.prevent="saveResume">
       <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" width="72" height="72" />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onAvatar" />
       <input v-model="form.name" :placeholder="$t('wap_00529')" />
@@ -366,7 +411,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model="form.address" :placeholder="$t('wap_user_00243')" />
       <input v-model="form.qq" placeholder="QQ" />
       <textarea v-model="form.description" rows="4" :placeholder="$t('wap_user_00102')" />
-      <button type="submit">{{ $t('ui.save_resume') }}</button>
+      <button type="submit" class="verification_form_btn">{{ $t('ui.save_resume') }}</button>
       <button type="button" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
       <select v-model.number="topDays">
         <option :value="7">7</option>
@@ -375,7 +420,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <button type="button" @click="buyTop">{{ $t('wap_user_00207') }}</button>
       <p v-if="topMsg">{{ topMsg }}</p>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('home.intention') }}</h2>
+    <MemberResumeH1 :title="$t('home.intention')" icon="yun_resume_h1_iconyx" />
     <p v-if="!(Array.isArray(expects) ? expects : []).length" class="muted">{{ $t('ui.no_expect') }}</p>
     <ul>
       <li v-for="row in Array.isArray(expects) ? expects : []" :key="row.id">{{ row.name || row.id }}</li>
@@ -385,7 +430,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model.number="expectForm.salary" type="number" :placeholder="$t('ui.expect_salary')" />
       <button type="submit">{{ $t('ui.add_expect') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_00457') }}</h2>
+    <MemberResumeH1 :title="$t('wap_00457')" icon="yun_resume_h1_iconjy" />
     <p v-if="!(Array.isArray(works) ? works : []).length" class="muted">{{ $t('ui.no_work') }}</p>
     <ul>
       <li v-for="row in Array.isArray(works) ? works : []" :key="row.id">
@@ -402,7 +447,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model="workForm.edate_n" placeholder="edate YYYY-MM" />
       <button type="submit">{{ workForm.id ? $t('common.save') : $t('ui.add_work') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_00459') }}</h2>
+    <MemberResumeH1 :title="$t('wap_00459')" icon="yun_resume_h1_iconjl" />
     <p v-if="!(Array.isArray(edus) ? edus : []).length" class="muted">{{ $t('ui.no_edu') }}</p>
     <ul>
       <li v-for="row in Array.isArray(edus) ? edus : []" :key="row.id">
@@ -418,7 +463,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model="eduForm.edate_n" placeholder="edate YYYY-MM" />
       <button type="submit">{{ eduForm.id ? $t('common.save') : $t('ui.add_edu') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_00465') }}</h2>
+    <MemberResumeH1 :title="$t('wap_00465')" icon="yun_resume_h1_iconxm" />
     <p v-if="!(Array.isArray(projects) ? projects : []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <ul>
       <li v-for="row in Array.isArray(projects) ? projects : []" :key="row.id">
@@ -435,7 +480,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <textarea v-model="projectForm.content" rows="3" />
       <button type="submit">{{ projectForm.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_00461') }}</h2>
+    <MemberResumeH1 :title="$t('wap_00461')" icon="yun_resume_h1_iconjn" />
     <p v-if="!(Array.isArray(skills) ? skills : []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <ul>
       <li v-for="row in Array.isArray(skills) ? skills : []" :key="row.id">
@@ -449,7 +494,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model.number="skillForm.years" type="number" />
       <button type="submit">{{ skillForm.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_00455') }}</h2>
+    <MemberResumeH1 :title="$t('wap_00455')" icon="yun_resume_h1_iconpx" />
     <p v-if="!(Array.isArray(trainings) ? trainings : []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <ul>
       <li v-for="row in Array.isArray(trainings) ? trainings : []" :key="row.id">
@@ -466,7 +511,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <textarea v-model="trainingForm.content" rows="3" />
       <button type="submit">{{ trainingForm.id ? $t('common.save') : $t('member_user_00077') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_user_00090') }}</h2>
+    <MemberResumeH1 :title="$t('wap_user_00090')" icon="yun_resume_h1_iconry" />
     <p v-if="!(Array.isArray(certs) ? certs : []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <ul>
       <li v-for="row in Array.isArray(certs) ? certs : []" :key="row.id">
@@ -483,7 +528,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <textarea v-model="certForm.content" rows="3" />
       <button type="submit">{{ certForm.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_00493') }}</h2>
+    <MemberResumeH1 :title="$t('wap_00493')" icon="yun_resume_h1_iconqt" />
     <p v-if="!(Array.isArray(others) ? others : []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <ul>
       <li v-for="row in Array.isArray(others) ? others : []" :key="row.id">
@@ -497,7 +542,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <textarea v-model="otherForm.content" rows="3" />
       <button type="submit">{{ otherForm.id ? $t('common.save') : $t('member_user_00076') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_com_00292') }}</h2>
+    <MemberResumeH1 :title="$t('wap_com_00292')" icon="yun_resume_h1_iconpj" />
     <p v-if="!(Array.isArray(languages) ? languages : []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <ul>
       <li v-for="row in Array.isArray(languages) ? languages : []" :key="row.id">
@@ -511,7 +556,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model.number="languageForm.level" type="number" />
       <button type="submit">{{ languageForm.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
-    <h2 class="yun_resume_h1">{{ $t('wap_user_00157') }}</h2>
+    <MemberResumeH1 :title="$t('wap_user_00157')" icon="yun_resume_h1_iconzp" />
     <form class="form" @submit.prevent>
       <input v-model="galleryTitle" />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onShow" />
@@ -521,7 +566,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
       <button type="button" @click="removeShow(row.id)">{{ $t('common.delete') }}</button>
     </article>
-    <h2 class="yun_resume_h1">{{ $t('common.share') }}</h2>
+    <MemberResumeH1 :title="$t('common.share')" icon="yun_resume_h1_iconfj" />
     <form class="form" @submit.prevent="createShare">
       <input v-model.number="shareTtl" type="number" min="60" max="2592000" />
       <button type="submit">{{ $t('common.submit') }}</button>

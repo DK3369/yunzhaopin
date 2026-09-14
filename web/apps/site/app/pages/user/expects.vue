@@ -63,17 +63,34 @@ useSeoMeta({ title: t('home.intention') })
 <template>
   <MemberPanel :title="$t('home.intention')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(list || []).length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
-    <article v-for="row in list" :key="row.id" class="jobnotice_list">
-      <h3>{{ row.name }}</h3>
-      <p class="muted">{{ row.job_classid_n }} · {{ row.city_classid_n }}</p>
-      <input v-model="row.name" />
-      <button type="button" @click="save(row)">{{ $t('common.save') }}</button>
-      <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-    </article>
-    <form class="form" @submit.prevent="add">
-      <input v-model="form.name" :placeholder="$t('ui.intention_job')" required />
-      <input v-model.number="form.salary" type="number" :placeholder="$t('ui.expect_salary')" />
-      <button type="submit">{{ $t('ui.add_expect') }}</button>
+    <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
+      <div class="user_new_job">
+        <span class="user_new_jobname">{{ row.name }}</span>
+        <div class="user_new_comname">{{ row.job_classid_n }} · {{ row.city_classid_n }}</div>
+      </div>
+      <div class="user_new_cz">
+        <a href="javascript:;" class="user_new_yqh_a" @click="save(row)">{{ $t('common.save') }}</a>
+        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in list"
+          :key="'h5-' + row.id"
+          :title="row.name"
+          :sub="`${row.job_classid_n || ''} ${row.city_classid_n || ''}`"
+        />
+      </div>
+    </div>
+    <form class="form verification_form" @submit.prevent="add">
+      <MemberField :label="$t('ui.intention_job')">
+        <input v-model="form.name" required />
+      </MemberField>
+      <MemberField :label="$t('ui.expect_salary')">
+        <input v-model.number="form.salary" type="number" />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('ui.add_expect') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

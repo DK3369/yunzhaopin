@@ -330,6 +330,14 @@ function labelOf(to: string, key: string) {
               <i class="user_nav_fast_word">{{ $t('wap_user_00211') }}</i>
             </NuxtLink>
           </li>
+          <li>
+            <NuxtLink to="/user/resume">
+              <div class="user_nav_fast_img">
+                <img src="/legacy/h5/images/jobhunter_top.png" alt="" width="100%" height="100%" />
+              </div>
+              <i class="user_nav_fast_word">{{ $t('wap_user_00210') }}</i>
+            </NuxtLink>
+          </li>
         </ul>
       </div>
       <p v-if="msg" class="muted">{{ msg }}</p>

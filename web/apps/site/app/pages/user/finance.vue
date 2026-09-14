@@ -42,26 +42,42 @@ useSeoMeta({ title: t('wap_user_00213') })
 <template>
   <MemberPanel :title="$t('wap_user_00213')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <p v-else>{{ $t('ui.balance') }} {{ bal?.balance ?? 0 }}</p>
-    <p>
-      <button type="button" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
-    </p>
-    <div class="stack">
-      <NuxtLink to="/user/integral" class="jobnotice_list">{{ $t('wap_user_00008') }}</NuxtLink>
-      <NuxtLink to="/user/pay" class="jobnotice_list">{{ $t('common_01946') }}</NuxtLink>
-      <NuxtLink to="/redeem" class="jobnotice_list">{{ $t('wap_user_00170') }}</NuxtLink>
-      <NuxtLink to="/invite" class="jobnotice_list">{{ $t('wap_user_00253') }}</NuxtLink>
-    </div>
-    <h2>{{ $t('wap_user_00213') }}</h2>
-    <article v-for="row in pays?.list || []" :key="row.id" class="jobnotice_list">
-      <p>{{ packed(row.detail) }} · {{ row.delta }}</p>
-      <p class="muted">{{ row.ctime_n || row.ctime }}</p>
-    </article>
-    <h2>{{ $t('member_user_00190') }}</h2>
-    <article v-for="row in rewards?.list || []" :key="row.id" class="jobnotice_list">
-      <p>{{ row.item_name || row.item_id }} · {{ row.cost }}</p>
-      <p class="muted">{{ row.created_at_n || row.created_at }}</p>
-    </article>
-    <p v-if="msg">{{ msg }}</p>
+    <template v-else>
+      <div class="financial_management_header">
+        <div class="management_header_card">
+          <div class="management_card_data">
+            <div class="management_data_top">{{ $t('ui.balance') }}</div>
+            <div class="management_data_cen">{{ bal?.balance ?? 0 }}</div>
+            <div class="management_data_bom">
+              <NuxtLink to="/user/integral">{{ $t('wap_user_00008') }}</NuxtLink>
+            </div>
+          </div>
+          <div class="management_card_data">
+            <div class="management_data_top">{{ $t('member_user_00190') }}</div>
+            <div class="management_data_cen">{{ (pays?.list || []).length }}</div>
+            <NuxtLink to="/user/pay" class="management_data_bom">{{ $t('common_01946') }}</NuxtLink>
+          </div>
+        </div>
+        <NuxtLink to="/user/pay" class="management_card_btn">{{ $t('common_01946') }}</NuxtLink>
+      </div>
+      <p>
+        <button type="button" class="verification_form_btn" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
+      </p>
+      <div v-for="row in pays?.list || []" :key="row.id" class="jobnotice_list site-pc">
+        <div class="user_new_job">{{ packed(row.detail) }} · {{ row.delta }}</div>
+        <div class="user_new_time">{{ row.ctime_n || row.ctime }}</div>
+      </div>
+      <div class="site-h5 m_cardbox">
+        <div class="m_cardbgbox">
+          <MemberPostedCard
+            v-for="row in pays?.list || []"
+            :key="'h5-' + row.id"
+            :title="String(packed(row.detail) || row.delta)"
+            :time="row.ctime_n || row.ctime"
+          />
+        </div>
+      </div>
+      <p v-if="msg">{{ msg }}</p>
+    </template>
   </MemberPanel>
 </template>

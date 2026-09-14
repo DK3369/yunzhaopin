@@ -34,12 +34,30 @@ useSeoMeta({ title: t('wap_00328') })
 
 <template>
   <MemberPanel :title="$t('wap_00328')" :error="error" :empty="!error && !list.length">
-    <article v-for="row in list" :key="row.id" class="jobnotice_list">
-      <h3>{{ row.name }}</h3>
-      <p v-if="row.price_yuan || row.price" class="muted">{{ row.price_yuan || row.price }}</p>
-      <button type="button" @click="apply(row.id)">{{ $t('common.confirm') }}</button>
-      <button v-if="Number(row.price || row.price_yuan || 0) > 0" type="button" @click="buy(row.id)">{{ $t('common_01946') }}</button>
-    </article>
+    <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
+      <div class="user_new_job">
+        <span class="user_new_jobname">{{ row.name }}</span>
+        <div v-if="row.price_yuan || row.price" class="user_new_jobxz">{{ row.price_yuan || row.price }}</div>
+      </div>
+      <div class="user_new_cz">
+        <a href="javascript:;" class="user_new_yqh_a" @click="apply(row.id)">{{ $t('common.confirm') }}</a>
+        <a v-if="Number(row.price || row.price_yuan || 0) > 0" href="javascript:;" class="user_new_bth" @click="buy(row.id)">{{ $t('common_01946') }}</a>
+      </div>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in list"
+          :key="'h5-' + row.id"
+          :title="row.name || ''"
+          :pay="String(row.price_yuan || row.price || '')"
+        >
+          <p>
+            <a href="javascript:;" @click="apply(row.id)">{{ $t('common.confirm') }}</a>
+          </p>
+        </MemberPostedCard>
+      </div>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

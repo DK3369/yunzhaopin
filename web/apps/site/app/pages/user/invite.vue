@@ -26,18 +26,18 @@ useSeoMeta({ title: t('ui.invite_reg') })
     <p v-if="summary" class="muted">
       {{ summary.count ?? 0 }} · {{ summary.total_points ?? 0 }}
     </p>
-    <form class="form" @submit.prevent="send">
-      <input v-model="form.email" type="email" :placeholder="$t('member_user_00282')" required />
-      <textarea v-model="form.content" rows="4" :placeholder="$t('wap_user_00102')" />
-      <button type="submit">{{ $t('ui.send_invite_reg') }}</button>
+    <form class="form verification_form" @submit.prevent="send">
+      <MemberField :label="$t('member_user_00282')">
+        <input v-model="form.email" type="email" required />
+      </MemberField>
+      <MemberField :label="$t('wap_user_00102')" area>
+        <textarea v-model="form.content" rows="4" />
+      </MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('ui.send_invite_reg') }}</button>
     </form>
-    <h2>{{ $t('ui.flow') }}</h2>
-    <p v-if="!(refs?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <div class="stack">
-      <article v-for="row in refs?.list || []" :key="row.id" class="jobnotice_list">
-        <h3>{{ row.invitee_uid }}</h3>
-        <p class="muted">{{ row.points }} · {{ row.created_at_n }}</p>
-      </article>
+    <div v-for="row in refs?.list || []" :key="row.id" class="jobnotice_list">
+      <div class="user_new_job">{{ row.invitee_uid }}</div>
+      <div class="user_new_time">{{ row.points }} · {{ row.created_at_n }}</div>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

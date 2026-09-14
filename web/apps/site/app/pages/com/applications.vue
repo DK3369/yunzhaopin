@@ -304,7 +304,7 @@ useSeoMeta({ title: t('member_com_00454') })
       <p v-if="msg" class="muted">{{ msg }}</p>
       <p v-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
 
-      <div class="stack">
+      <div class="stack site-pc">
         <article v-for="row in list" :key="row.id" class="jobnotice_list">
           <label class="pickbox"><input v-model="selected" type="checkbox" :value="row.id" /></label>
           <h3>
@@ -329,6 +329,18 @@ useSeoMeta({ title: t('member_com_00454') })
             <button type="button" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
           </form>
         </article>
+      </div>
+      <div class="site-h5 m_cardbox">
+        <div class="m_cardbgbox">
+          <MemberPostedCard
+            v-for="row in list"
+            :key="'h5-' + row.id"
+            :title="row.uname || String(row.uid)"
+            :pay="browseLabel(row.is_browse)"
+            :sub="row.job_name"
+            :time="row.datetime_n"
+          />
+        </div>
       </div>
 
       <Pager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
