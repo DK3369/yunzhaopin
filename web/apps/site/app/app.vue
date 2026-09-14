@@ -13,7 +13,7 @@ async function applyQueryLang() {
 await applyQueryLang()
 watch(() => route.query.lang, () => applyQueryLang())
 const siteUrl = String(useRuntimeConfig().public.siteUrl || 'http://127.0.0.1:3001').replace(/\/$/, '')
-const { isHome, isAuth, isMember, settings } = useSiteChrome()
+const { isHome, isAuth, isMember, settings, memberKind } = useSiteChrome()
 const { saveSite, gotocity } = useSubSite()
 const api = useApi()
 const siteClosed = computed(() => String(settings.value.sy_web_online || '') === '2')
@@ -152,7 +152,7 @@ onMounted(() => {
     <AppHeader v-if="!isAuth" />
     <MemberPcHeader v-if="isMember" />
     <main :class="mainClass">
-      <MemberShell v-if="isMember" :kind="route.path.startsWith('/com') ? 'com' : 'user'">
+      <MemberShell v-if="isMember" :kind="memberKind">
         <NuxtPage />
       </MemberShell>
       <NuxtPage v-else />

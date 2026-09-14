@@ -17,8 +17,7 @@
           >{{ item.label }}</NuxtLink>
         </nav>
         <div class="pc-topbar__actions">
-          <NuxtLink :to="hireTo" class="pc-topbar__text">{{ $t('common.publish_job') }}</NuxtLink>
-          <NuxtLink to="/jobs" class="pc-topbar__text">{{ $t('common.job') }}</NuxtLink>
+          <NuxtLink v-if="isCompany" to="/com/jobs/new" class="pc-topbar__text">{{ $t('common.publish_job') }}</NuxtLink>
           <template v-if="me">
             <NuxtLink :to="memberHome" class="pc-topbar__text">{{ me.username }}</NuxtLink>
             <a href="javascript:;" class="pc-topbar__text" @click.prevent="logout">{{ $t('common.logout') }}</a>
@@ -80,8 +79,7 @@ const {
 } = useSiteChrome()
 const route = useRoute()
 const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
-
-const hireTo = computed(() => (me.value ? '/com' : '/login?next=/com'))
+const isCompany = computed(() => Number(me.value?.usertype) === 2)
 
 function goBack() {
   if (window.history.length > 1) {

@@ -6,7 +6,7 @@
 
 | | 求职 | 招聘 |
 |---|---|---|
-| 登录后 | `usertype=1` → `/user` | `usertype=2` → `/com` |
+| 登录后 | `usertype=1` → `/user`（前台右侧无发布职位） | `usertype=2` → `/com`（发布职位 → `/com/jobs/new`） |
 | PC 壳 | `MemberShell` 左栏 `yun_m_leftsidebar`（PHP `member/user/left.htm`） | 左栏 `sidebar` + `two_style.css`（PHP `member/com/left.htm`） |
 | H5 壳 | 左栏隐藏；求职右栏外包 `wap_member`；宫格在首页 | **不要**包求职 `wap_member`；宫格在 `/com`（`commemberheader`） |
 
@@ -21,6 +21,8 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 ## 顶栏
 
 登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
+
+前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。
 
 `MemberPanel`：`user_new_tit` 在 `yun_m_rightbox` **外**（对照 `job.htm`）；`member_right_index_h1` 必须在 `yun_m_rightbox` **内**（对照 `atn.htm` / `passwd.htm` / `privacy.htm`），否则标题浮在灰底上看起来没皮。
 
@@ -83,6 +85,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
 - 财务 H5 `financial_management_*` 不包 `.site-h5`（PC 会露出一块没皮的头图）
 - 订单列 class 写成 `paylist_span_dh`（PHP 是 `paylist_span paylist_dh` / `paylist_money` / `paylist_zt`）
+- 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`
 
 ## 菜单对照（求职你列的项）
 
@@ -134,7 +137,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 ## 改代码入口
 
-- 导航：`web/layers/ui/app/composables/useMemberNav.ts`、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）
+- 导航：`web/layers/ui/app/composables/useMemberNav.ts`、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype`；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
 - 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
 - 表单：`MemberField.vue`（求职 `verification_form*` + `verification_text`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
 - 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单

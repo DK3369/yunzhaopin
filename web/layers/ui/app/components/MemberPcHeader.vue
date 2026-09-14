@@ -142,9 +142,8 @@
 import { mediaUrl } from '../utils/site'
 
 const api = useApi()
-const route = useRoute()
-const { siteName, logoPc, phone, settings, me, logout } = useSiteChrome()
-const kind = computed(() => (route.path.startsWith('/com') ? 'com' : 'user'))
+const { siteName, logoPc, phone, settings, me, logout, memberKind } = useSiteChrome()
+const kind = computed(() => memberKind.value)
 const userMsgOpen = ref(false)
 const userInfoOpen = ref(false)
 const comMsgOpen = ref(false)

@@ -317,6 +317,14 @@ export function useSiteChrome() {
     return me.value.usertype === 2 ? '/com' : '/user'
   })
 
+  /** 会员壳 / 顶栏身份：以 /api/auth/me 为准，路径只作未登录时的兜底。 */
+  const memberKind = computed<'user' | 'com'>(() => {
+    const ut = Number(me.value?.usertype || 0)
+    if (ut === 2) return 'com'
+    if (ut === 1) return 'user'
+    return route.path.startsWith('/com') ? 'com' : 'user'
+  })
+
   async function logout() {
     await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined)
     await refreshMe()
@@ -357,6 +365,7 @@ export function useSiteChrome() {
     isMember,
     h5Title,
     memberHome,
+    memberKind,
     logout,
     navActive,
   }
