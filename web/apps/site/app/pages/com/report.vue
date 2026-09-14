@@ -52,7 +52,7 @@ useSeoMeta({ title: t('member_com_00148') })
       <ul>
         <MemberReleaseRow :label="$t('member_com_00331')" area><textarea v-model="reason" rows="3" maxlength="200" /></MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+      <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
     </form>
     <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
       <div class="sysynews_span sysynews_name">{{ row.r_name }} · {{ row.r_reason }}</div>

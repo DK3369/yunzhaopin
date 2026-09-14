@@ -397,6 +397,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <div class="user_czbth_r" style="float: right; background-color: #fff; padding-top: 8px">
         <NuxtLink to="/user/privacy" class="user_czbth_ys user_czbth_line">{{ $t('wap_user_00215') }}</NuxtLink>
         <NuxtLink to="/user/recommend" class="user_czbth_pp user_czbth_line">{{ $t('wap_user_00211') }}</NuxtLink>
+        <NuxtLink to="/user/expects" class="user_czbth_zt">{{ $t('member_user_00273') }}</NuxtLink>
       </div>
     </template>
     <div class="site-h5 Edit_your_resume_min_body" @click="toggleSec('basic')">
@@ -433,26 +434,37 @@ useSeoMeta({ title: t('wap_user_00204') })
           <div class="user_resume_name">
             {{ form.name }}
             <span v-if="expectRows[0]?.name" class="user_resume_job">{{ expectRows[0].name }}</span>
+            <span class="user_resume_mr">{{ $t('wap_js_00098') }}</span>
           </div>
+          <div class="user_resume_p">
+            <template v-if="form.birthday">{{ form.birthday }}</template>
+            <span v-if="form.exp" class="user_resume_line">|</span>
+            <template v-if="form.exp">{{ expDict.find((d) => d.id === form.exp)?.name }}</template>
+            <span v-if="form.education" class="user_resume_line">|</span>
+            <template v-if="form.education">{{ eduDict.find((d) => d.id === form.education)?.name }}</template>
+          </div>
+        </div>
+        <div class="user_resume_c">
           <div v-if="integrity" class="user_resume_wzd">
             <span class="user_resume_wzd_name">{{ $t('wap_00328') }}：</span>
             <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" :style="{ width: `${integrity}%` }" /></div>
             <span class="user_resume_wzd_r">{{ integrity }}%</span>
           </div>
+          <div class="user_resume_p user_resume_pd">{{ data?.lastupdate_n }}</div>
+          <div v-if="data?.hits != null" class="user_resume_p">{{ $t('member_com_00268') }}：{{ data.hits }}</div>
         </div>
         <div class="user_resume_cz">
           <div class="user_resume_cz_p">
-            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon2" @click="refreshResume">{{ $t('wap_user_00199') }}</a>
+            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon1" @click="buyTop">{{ $t('wap_user_00207') }}</a>
           </div>
           <div class="user_resume_cz_p">
             <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon3" @click="toggleSec('basic')">{{ $t('wap_00269') }}</a>
           </div>
           <div class="user_resume_cz_p">
-            <select v-model.number="topDays" class="user_resume_cz_a">
-              <option :value="7">7</option>
-              <option :value="30">30</option>
-            </select>
-            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon1" @click="buyTop">{{ $t('wap_user_00207') }}</a>
+            <NuxtLink :to="`/resumes/${data?.uid}`" class="user_resume_cz_a user_resume_cz_icon4">{{ $t('wap_user_00217') }}</NuxtLink>
+          </div>
+          <div class="user_resume_cz_p">
+            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon2" @click="refreshResume">{{ $t('wap_user_00199') }}</a>
           </div>
         </div>
       </div>

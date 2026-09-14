@@ -16,6 +16,8 @@ type JobRow = {
   minsalary?: number
   maxsalary?: number
   jobhits?: number
+  jobnum?: number
+  jobexpoure?: number
 }
 
 const api = useApi()
@@ -256,71 +258,127 @@ const jobTabs = computed(() => [
 </script>
 
 <template>
-  <MemberPanel :title="$t('wap_com_00106')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
+  <MemberPanel
+    :title="$t('wap_com_00106')"
+    :error="error && !isUnauthErr(error) ? error : undefined"
+    :empty="!error && !list.length"
+    empty-to="/com/jobs/new"
+    :empty-action="$t('wap_00322')"
+  >
     <MemberComScreen :tabs="jobTabs" add-to="/com/jobs/new" :add-label="$t('wap_00322')" />
-    <p v-if="counts" class="muted">
-      {{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }} ·
-      {{ $t('wap_com_00238') }} {{ counts.top_num ?? 0 }}{{ $t('common_02067') }} ·
-      {{ $t('wap_com_00237') }} {{ counts.rec_num ?? 0 }}{{ $t('common_02067') }} ·
-      {{ $t('member_com_00613') }} {{ counts.urgent_num ?? 0 }}{{ $t('common_02067') }}
-    </p>
-    <p>
-      <label>{{ $t('member_com_00282') }}
-        <input v-model.number="days" type="number" min="1" max="365" style="width: 4em">
-        {{ $t('common_02067') }}
-      </label>
-    </p>
-    <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <p>
-      <label><input v-model="allPicked" type="checkbox" /> {{ $t('common.all') }}</label>
-      <button type="button" @click="batch('refresh')">{{ $t('wap_com_00029') }}</button>
-      <button type="button" @click="batch('close')">{{ $t('wap_com_00245') }}</button>
-      <button type="button" @click="batch('delete')">{{ $t('common.delete') }}</button>
-    </p>
-    <p v-if="reserveOn">
-      {{ $t('member_com_00267') }}
-      <input v-model="reserveEnd" type="date" />
-      <input v-model="reserveStart" type="time" />
-      <input v-model="reserveStop" type="time" />
-      <input v-model.number="reserveInterval" type="number" min="1" style="width: 5em" />
-      <button type="button" @click="reservePicked(1)">{{ $t('member_com_00261') }}</button>
-      <button type="button" @click="reservePicked(2)">{{ $t('member_com_00278') }}</button>
-    </p>
-    <div class="site-pc">
-    <table class="com_table">
-      <tr>
-        <th><label><input v-model="allPicked" type="checkbox" /> {{ $t('common.all') }}</label></th>
-        <th>{{ $t('wap_com_00288') }}</th>
-        <th>{{ $t('member_user_00181') }}</th>
-        <th>{{ $t('member_user_00048') }}</th>
-      </tr>
-      <tr v-for="job in list" :key="job.id">
-        <td><input type="checkbox" :checked="picked.includes(job.id)" @change="togglePick(job.id)" /></td>
-        <td>{{ job.name }}</td>
-        <td>{{ jobPhase(job) }}</td>
-        <td>
-          <NuxtLink :to="`/com/jobs/new?id=${job.id}`" class="cblue">{{ $t('common.edit') }}</NuxtLink>
-          <NuxtLink :to="`/poster/job/${job.id}`" class="cblue">{{ $t('ui.poster') }}</NuxtLink>
-          <a href="javascript:;" class="cblue" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00232') }}</a>
-          <a href="javascript:;" class="cblue" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</a>
-          <a href="javascript:;" class="cblue" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</a>
-          <a href="javascript:;" class="cblue" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</a>
-          <a v-if="!job.istop" href="javascript:;" class="cblue" @click="promote(job.id, 'top')">{{ $t('wap_com_00238') }}</a>
-          <a v-if="!job.is_rec" href="javascript:;" class="cblue" @click="promote(job.id, 'rec')">{{ $t('wap_com_00237') }}</a>
-          <a v-if="!job.is_urgent" href="javascript:;" class="cblue" @click="promote(job.id, 'urgent')">{{ $t('member_com_00613') }}</a>
-        </td>
-      </tr>
-    </table>
+    <div class="admincont_box site-pc">
+      <p v-if="counts" class="muted">
+        {{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }} ·
+        {{ $t('wap_com_00238') }} {{ counts.top_num ?? 0 }}{{ $t('common_02067') }} ·
+        {{ $t('wap_com_00237') }} {{ counts.rec_num ?? 0 }}{{ $t('common_02067') }} ·
+        {{ $t('member_com_00613') }} {{ counts.urgent_num ?? 0 }}{{ $t('common_02067') }}
+      </p>
+      <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
+      <table v-if="list.length" class="com_table">
+        <tr>
+          <th width="25"><label><input v-model="allPicked" type="checkbox" class="com_job_list_check" /></label></th>
+          <th>{{ $t('wap_com_00288') }}</th>
+          <th>{{ $t('wap_00794') }}</th>
+          <th>{{ $t('member_com_00268') }}</th>
+          <th>{{ $t('wap_com_00246') }}</th>
+          <th>{{ $t('wap_com_00236') }}</th>
+          <th>{{ $t('member_user_00048') }}</th>
+        </tr>
+        <tr v-for="job in list" :key="job.id">
+          <td align="center">
+            <input type="checkbox" class="com_job_list_check" :checked="picked.includes(job.id)" @change="togglePick(job.id)" />
+          </td>
+          <td>
+            <div class="job_looklist_namebox">
+              <NuxtLink :to="`/jobs/${job.id}`" class="job_looklist_name">{{ job.name }}</NuxtLink>
+            </div>
+            <div class="muted">{{ jobPhase(job) }}</div>
+          </td>
+          <td align="center">
+            {{ job.jobnum ?? 0 }}
+            <NuxtLink v-if="job.jobnum" :to="`/com/applications?job_id=${job.id}`" class="yun_m_job_r_l">{{ $t('wap_com_00427') }}</NuxtLink>
+          </td>
+          <td align="center">{{ job.jobhits ?? 0 }}</td>
+          <td align="center">
+            <a href="javascript:;" class="job_looklist_fx" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00246') }}</a>
+            <NuxtLink :to="`/poster/job/${job.id}`" class="job_looklist_hb">{{ $t('member_com_00270') }}</NuxtLink>
+          </td>
+          <td align="center">
+            <div class="job_looklist_tgbox">
+              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.is_rec }" @click="promote(job.id, 'rec')">{{ $t('wap_01465') }}</a>
+              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.is_urgent }" @click="promote(job.id, 'urgent')">{{ $t('wap_00222') }}</a>
+              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.istop }" @click="promote(job.id, 'top')">{{ $t('wap_user_00335') }}</a>
+              <a v-if="reserveOn" href="javascript:;" class="job_looklist_tg" @click="fillReserve(job.id)">{{ $t('member_com_00267') }}</a>
+            </div>
+          </td>
+          <td align="center">
+            <a href="javascript:;" class="com_bth" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</a>
+            <NuxtLink :to="`/jobs/${job.id}`" class="com_bth">{{ $t('wap_00071') }}</NuxtLink>
+            <a v-if="Number(job.status) === 1" href="javascript:;" class="com_bth" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</a>
+            <a v-else href="javascript:;" class="com_bth" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</a>
+            <NuxtLink :to="`/com/jobs/new?id=${job.id}`" class="com_bth">{{ $t('wap_js_00073') }}</NuxtLink>
+            <a href="javascript:;" class="com_bth" @click="picked = [job.id]; batch('delete')">{{ $t('wap_js_00077') }}</a>
+          </td>
+        </tr>
+      </table>
+      <div v-if="list.length" class="com_Release_job_bot">
+        <label class="com_Release_job_qx"><input v-model="allPicked" type="checkbox" class="com_job_list_check" /> {{ $t('common.all') }}</label>
+        <a href="javascript:;" class="c_btn_02" @click="batch('refresh')">{{ $t('wap_com_00029') }}</a>
+        <a href="javascript:;" class="c_btn_02" @click="batch('close')">{{ $t('wap_com_00245') }}</a>
+        <a href="javascript:;" class="c_btn_02 c_btn_02_w110" @click="batch('delete')">{{ $t('common.delete') }}</a>
+        <span v-if="reserveOn">
+          <input v-model="reserveEnd" type="date" />
+          <input v-model="reserveStart" type="time" />
+          <input v-model="reserveStop" type="time" />
+          <input v-model.number="reserveInterval" type="number" min="1" style="width: 5em" />
+          <a href="javascript:;" class="c_btn_02" @click="reservePicked(1)">{{ $t('member_com_00261') }}</a>
+        </span>
+      </div>
     </div>
     <div class="site-h5 more_position_body">
       <div v-for="job in list" :key="'h5-' + job.id" class="position_body_card">
         <div class="position_body_card_top">
           <NuxtLink :to="`/jobs/${job.id}`" class="body_card_top_name">{{ job.name }}</NuxtLink>
         </div>
+        <div class="position_body_card_center">
+          <div class="body_card_center_left">
+            <div class="more_position_quantity">
+              <div class="position_quantity_exposure">
+                <div class="quantity_exposure_q">{{ $t('wap_00847') }}</div>
+                <div class="quantity_exposure_a">{{ job.jobexpoure ?? 0 }}</div>
+              </div>
+              <div class="position_quantity_exposure">
+                <div class="quantity_exposure_q">{{ $t('wap_00848') }}</div>
+                <div class="quantity_exposure_a">{{ job.jobhits ?? 0 }}</div>
+              </div>
+            </div>
+            <div class="more_position_new_time">
+              <div class="quantity_exposure_q">{{ $t('wap_00849') }}</div>
+              <div class="quantity_exposure_a">{{ expireOf(job, 'top') || jobPhase(job) }}</div>
+            </div>
+          </div>
+          <NuxtLink :to="`/com/applications?job_id=${job.id}`" class="body_card_center_right">
+            <div class="more_position_deliver_number">{{ job.jobnum ?? 0 }}</div>
+            <div class="more_position_deliver">{{ $t('wap_com_00235') }}</div>
+          </NuxtLink>
+        </div>
         <div class="position_body_card_bom">
-          <span>{{ jobPhase(job) }}</span>
-          <span v-if="job.minsalary || job.maxsalary">{{ job.minsalary || '' }}-{{ job.maxsalary || '' }}</span>
-          <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
+          <ul>
+            <li>
+              <div class="body_card_bom_icon"><img src="/legacy/h5/images/job_promotion.png" alt="" /></div>
+              <div class="body_card_bom_name">{{ $t('wap_com_00236') }}</div>
+            </li>
+            <li @click="refreshJob(job.id)">
+              <div class="body_card_bom_icon"><img src="/legacy/h5/images/jobhunter_refresh.png" alt="" /></div>
+              <div class="body_card_bom_name">{{ $t('wap_com_00029') }}</div>
+            </li>
+            <li>
+              <NuxtLink :to="`/com/jobs/new?id=${job.id}`">
+                <div class="body_card_bom_icon"><img src="/legacy/h5/images/jobhunter_preview.png" alt="" /></div>
+                <div class="body_card_bom_name">{{ $t('common.edit') }}</div>
+              </NuxtLink>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -50,6 +50,7 @@ useSeoMeta({ title: t('wap_01142') })
     </div>
     <div v-if="(data?.list || []).length" class="attention_enterprises_tit site-pc">
       <div class="attention_enterprises_span attention_enterprises_name">{{ $t('wap_com_00157') }}</div>
+      <div class="attention_enterprises_span attention_enterprises_job">{{ $t('member_user_00047') }}</div>
       <div class="attention_enterprises_span attention_enterprises_time">{{ $t('member_user_00046') }}</div>
       <div class="attention_enterprises_span attention_enterprises_cz">{{ $t('member_user_00048') }}</div>
     </div>
@@ -57,8 +58,20 @@ useSeoMeta({ title: t('wap_01142') })
       <div class="attention_enterprises_span attention_enterprises_name">
         <NuxtLink v-if="kind === 2" :to="`/companies/${row.target_uid || row.uid}`" class="attention_enterprises_name_a">{{ nameOf(row) }}</NuxtLink>
         <span v-else class="attention_enterprises_name_a">{{ nameOf(row) }}</span>
+        <div class="mt10">
+          {{ row.com_pr }}
+          <span v-if="row.com_pr && row.com_mun" class="look_myresume_comline">|</span>
+          {{ row.com_mun }}
+        </div>
       </div>
-      <div class="attention_enterprises_span attention_enterprises_time">{{ row.ctime_n || row.time_n }}</div>
+      <div class="attention_enterprises_span attention_enterprises_job mt15">
+        <template v-if="row.jobnum || row.job_name">
+          {{ row.jobname || row.job_name }}
+          <a v-if="kind === 2" :href="`/companies/${row.target_uid || row.uid}`" class="attention_enterprises_job_n">{{ $t('common_02057') }}{{ row.jobnum || '' }}{{ $t('wap_user_00151') }}</a>
+        </template>
+        <template v-else>{{ $t('default_00033') }}</template>
+      </div>
+      <div class="attention_enterprises_span attention_enterprises_time mt15">{{ row.ctime_n || row.time_n }}</div>
       <div class="attention_enterprises_span attention_enterprises_cz">
         <a href="javascript:;" class="cblue" @click="toggle(row)">{{ $t('wap_js_00140') }}</a>
       </div>

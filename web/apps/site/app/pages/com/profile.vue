@@ -89,22 +89,28 @@ useSeoMeta({ title: t('member_com_00378') })
           <input v-model="form.shortname" class="com_release_textnew_text" />
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('common.all')">
-          <select v-model.number="form.hy">
-            <option :value="0">{{ $t('common.all') }}</option>
-            <option v-for="h in industries || []" :key="h.id" :value="h.id">{{ h.name }}</option>
-          </select>
+          <span class="com_release_selectbox">
+            <select v-model.number="form.hy">
+              <option :value="0">{{ $t('common.all') }}</option>
+              <option v-for="h in industries || []" :key="h.id" :value="h.id">{{ h.name }}</option>
+            </select>
+          </span>
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('wap_com_00159')">
-          <select v-model.number="form.pr">
-            <option :value="0">{{ $t('wap_com_00159') }}</option>
-            <option v-for="n in natures || []" :key="n.id" :value="n.id">{{ n.name }}</option>
-          </select>
+          <span class="com_release_selectbox">
+            <select v-model.number="form.pr">
+              <option :value="0">{{ $t('wap_com_00159') }}</option>
+              <option v-for="n in natures || []" :key="n.id" :value="n.id">{{ n.name }}</option>
+            </select>
+          </span>
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('member_com_00196')">
-          <select v-model.number="form.mun">
-            <option :value="0">{{ $t('member_com_00196') }}</option>
-            <option v-for="s in sizes || []" :key="s.id" :value="s.id">{{ s.name }}</option>
-          </select>
+          <span class="com_release_selectbox">
+            <select v-model.number="form.mun">
+              <option :value="0">{{ $t('member_com_00196') }}</option>
+              <option v-for="s in sizes || []" :key="s.id" :value="s.id">{{ s.name }}</option>
+            </select>
+          </span>
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('wap_user_00243')">
           <LocationFields
@@ -132,7 +138,7 @@ useSeoMeta({ title: t('member_com_00378') })
           <MapPick v-model:x="form.x" v-model:y="form.y" />
         </MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
+      <button type="submit" class="btn_01">{{ $t('common.save') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
   </MemberPanel>

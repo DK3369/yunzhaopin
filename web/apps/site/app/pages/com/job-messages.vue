@@ -87,7 +87,7 @@ const total = computed(() => inferTotal(data.value))
         </div>
         <form v-else class="job_Consulting_com" @submit.prevent="reply(row.id)">
           <textarea v-model="replyDraft[row.id]" rows="2" required />
-          <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+          <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
         </form>
       </div>
     </div>
@@ -106,7 +106,7 @@ const total = computed(() => inferTotal(data.value))
           </div>
           <form v-else class="com_member_hr_p1" @submit.prevent="reply(row.id)">
             <textarea v-model="replyDraft[row.id]" rows="2" required />
-            <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+            <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
           </form>
         </div>
       </div>

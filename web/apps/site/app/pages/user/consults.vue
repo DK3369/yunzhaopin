@@ -49,7 +49,11 @@ useSeoMeta({ title: t('member_user_00115') })
         <NuxtLink v-if="row.job_uid" :to="`/companies/${row.job_uid}`">{{ row.com_name }}</NuxtLink>
       </div>
       <div class="job_Consulting_span job_Consulting_jobtime">{{ row.datetime_n }}</div>
-      <div class="job_Consulting_span job_Consulting_jobtime">{{ statusLabel(row.status) }}</div>
+      <div class="job_Consulting_span job_Consulting_jobtime">
+        {{ statusLabel(row.status) }}
+        <span v-if="row.statusbody" class="com_m_line">|</span>
+        <span v-if="row.statusbody">{{ row.statusbody }}</span>
+      </div>
       <div class="job_Consulting_span job_Consulting_jobcz">
         <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
@@ -63,7 +67,10 @@ useSeoMeta({ title: t('member_user_00115') })
         <div v-if="row.reply" class="job_Consulting_my">
           <div class="job_Consulting_com">
             <i class="job_Consulting_icon" />
-            <div>{{ $t('wap_user_00155') }}：{{ row.reply }}</div>
+            <div>
+              {{ $t('wap_user_00155') }}：{{ row.reply }}
+              <div v-if="row.reply_time_n || row.reply_time" class="job_Consulting_hftime">{{ $t('admin_user_00369') }}：{{ row.reply_time_n || row.reply_time }}</div>
+            </div>
           </div>
         </div>
         <div v-else class="job_Consulting_my">

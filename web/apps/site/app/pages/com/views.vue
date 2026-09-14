@@ -41,7 +41,7 @@ useSeoMeta({ title: t('member_com_00006') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <MemberHrResumeRows v-else :rows="rows">
       <template #pc-acts="{ row }">
-        <a href="javascript:;" class="List_dete cblue" @click="remove(Number(row.key))">{{ $t('common.delete') }}</a>
+        <a href="javascript:;" class="com_bth" @click="remove(Number(row.key))">{{ $t('common.delete') }}</a>
       </template>
       <template #h5-acts="{ row }">
         <div class="hr_userlist_czicon" @click="remove(Number(row.key))">{{ $t('common.delete') }}</div>

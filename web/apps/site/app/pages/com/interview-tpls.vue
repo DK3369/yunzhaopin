@@ -86,8 +86,8 @@ useSeoMeta({ title: t('wap_com_00404') })
         <MemberReleaseRow :label="$t('wap_01431')" required><input v-model="form.linkman" required class="com_release_textnew_text" /></MemberReleaseRow>
         <MemberReleaseRow :label="$t('ui.linkphone')" required><input v-model="form.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
-      <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
+      <button type="submit" class="btn_01">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
+      <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
     <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">

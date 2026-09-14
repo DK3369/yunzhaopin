@@ -47,7 +47,7 @@ useSeoMeta({ title: t('wap_user_00215') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('wap_user_00215')">
+  <MemberPanel :title="$t('wap_user_00215')" user-wrap="resume_box_list">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <div v-else class="site-h5">
       <div class="privacy_title">

@@ -16,20 +16,25 @@
 
 `.site-pc` / `.site-h5` **显示时不强制 `display:block`**（`display: revert`），避免打扁 PHP 的 flex（`userheader` / `userparticulars` / `hr_userlist`）。隐藏时才 `display: none`。
 
-## `MemberPanel` 求职壳（按路由）
+## `MemberPanel` 求职壳（标题与包层已拆开）
 
-PHP 只给投递/收藏这类列表用 `resume_box_list`。一律套这层会被 float 成白条。
+PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | resume | plain` 绑死。可传 `userTitle` / `userWrap`，否则按 path 推断。旧 prop `shell` 仍映射：`list`→`user_new_tit`+`resume_box_list`，`resume`→`user_new_tit`+`user_resume_list`，`plain`→`h1`+无包层。
 
-| `shell` | 路由 | DOM |
+| 标题 | 包层 | 路由 |
 |---|---|---|
-| `list` | 投递、面试、谁看过、收藏、关注、足迹、消息、咨询、兼职、被下载、举报、测评、速配 | PC 标题 `user_new_tit`；body `yun_m_rightbox` + `resume_box_list` |
-| `resume` | `/user/resume`、`/user/expects` | PC `user_new_tit`；body `user_resume_list` |
-| `plain` | 积分、财务、充值、密码、隐私、绑定、认证、账户、邀请注册、外发、模板、搜索器、意见反馈 | PC 标题 **`member_right_index_h1`**（不要 `user_new_tit`）；只有 `yun_m_rightbox`，**不要** `resume_box_list` |
-| 招聘 | `/com/*` | `com_body` + `newmember_tit`，不套求职右栏 |
+| `user_new_tit` | `resume_box_list` | 申请、面试、谁看过、收藏、足迹、速配 |
+| `member_right_index_h1` | **仍要** `resume_box_list`（对照 PHP 实际有包层） | 关注、消息、咨询、兼职、被下载、举报、测评、隐私、绑定、充值、财务、搜索器、外发、注销、意见反馈 |
+| `member_right_index_h1` | **不要** `resume_box_list` | 积分、密码、认证、账户设置入口、邀请注册、简历模板 |
+| `user_new_tit` | `user_resume_list` | `/user/resume`、`/user/expects` |
+| 招聘 `/com/*` | `com_body` + `newmember_tit` | 空态 PC `com_msg_no*`，H5 `none_position_body*`；**不要**求职 `msg_no` / `uesr_submit` |
 
-可显式传 `shell`，否则按 path 推断。
+求职表单：`MemberField` 给 input 打 `verification_text`。招聘发职位/资料：`MemberReleaseRow`（必须放在 `com_release_box > ul` 里的 `<li>`）给 input 打 `com_release_textnew_text`；提交用 `btn_01`，不要 `verification_form_btn`。
 
-求职表单：`MemberField` 给 input 打 `verification_text`。招聘发职位/资料：`MemberReleaseRow`（必须放在 `com_release_box > ul` 里的 `<li>`）给 input 打 `com_release_textnew_text`。
+`MemberComScreen`：PC `newmember_screenbox`；H5 另出 `m_taball` / `m_taballactive` / `zp_num`。
+
+`MemberSetList`：求职 PC `account_settings*`；招聘 PC `newmember_tit` + `com_set_list`，**不要** `user_new_tit`。
+
+求职/招聘菜单对照短文：[doc/plans/2026-09-14-member-center-user-vs-com.md](../../../doc/plans/2026-09-14-member-center-user-vs-com.md)（点名对照；**现状以本文为准**）。
 
 ## 相同
 
@@ -51,13 +56,13 @@ PHP 只给投递/收藏这类列表用 `resume_box_list`。一律套这层会被
 | 兼职 | `/user/parts` 报名/收藏 | `/com/parts` 发布 + 收到的报名 |
 | 面试 | `/user/interviews` = 收面试（PHP `invite.htm`） | `/com/interviews` = 企业发面试 |
 | 谁看过 | `/user/views` 企业看简历（PHP `look.htm`） | `/com/looks` 谁看过职位；`/com/fans` 对我感兴趣；`/com/views` 看过的简历 |
-| 列表皮 | 投递行才用 `jobnotice_list`；积分 `integral_list_*`；关注 `attention_enterprises_*`；咨询 `job_Consulting_*` + H5 `mag_show`；消息 PC `sysynews_*` / H5 `chatnewcard` + `sx_new_*`；谁看过 `look_myresume_*` / H5 `Posted_look_*` | 应聘 PC `newcom_user_*`（头像+薪资）；H5 `hr_userlist`（`MemberHrUserCard` 喂 `photo`/`info`）；职位 PC `com_table` / H5 `position_body_card`；筛选 `newmember_screenbox`（`MemberComScreen`） |
-| 表单 | 求职 `MemberField` / `verification_form*`；密码/绑定 PC 走 `Binding_pop_box` 弹层，不要永远摊开表单墙；简历小节 `yun_resume_h1` / `yun_resume_exp_list` / H5 `cord_*` | 资料/发职位/兼职/地图 **`com_release_box` / `com_release_name` / `com_release_textnew`**（`MemberReleaseRow`）；认证 `license_*` / H5 `security`；绑定 `Binding_list*` / `bingding_box*` |
+| 列表皮 | 投递行才用 `jobnotice_list`；积分 `integral_list_*`；关注 `attention_enterprises_*`；咨询 `job_Consulting_*` + H5 `mag_show`；消息 PC `sysynews_*` / H5 `chatnewcard` + `sx_new_*`；谁看过 PC 是 `look.htm` 的 `user_new_listtit` + `jobnotice_list` + `user_new_joball*`（H5 `Posted_look_*`） | 应聘 PC `newcom_user_*` + `com_received_zt*`；H5 `hr_userlist`；职位 PC `job_looklist_*` / `com_bth` / `com_Release_job_bot`；H5 `position_body_card*` + `m_taball*`；筛选 `MemberComScreen` |
+| 表单 | 求职 `MemberField` / `verification_form*`；密码/绑定 PC 走 `account_settings` + `Binding_pop_box`；简历小节 `yun_resume_h1` / `yun_resume_exp_list` / H5 `cord_*` | 资料/发职位 **`com_release_*` + `btn_01`**；改密 PC 对照 `vs.htm`（`admin_password` / `com_info_text`），不要抄求职 `account_settings`；认证 `license_*` / H5 `security`；绑定 `Binding_list*` |
 
 ## 禁止
 
 - 用 `jobnotice_list` 冒充非投递列表（积分/充值/关注/咨询/模板/企业应聘等）
-- 求职积分/绑定/隐私/简历编辑套 `resume_box_list`
+- 求职积分/密码/认证套 `resume_box_list`（PHP 这几页没有）；简历编辑套 `resume_box_list`（应是 `user_resume_list`）
 - 招聘资料再用求职 `yun_create*`
 - 企业简历管线 H5 再用求职 `Posted_body_card`
 - 把密码/隐私/消息等塞回求职 PC 左栏
@@ -76,7 +81,7 @@ PHP 只给投递/收藏这类列表用 `resume_box_list`。一律套这层会被
 | 我的简历 | `/user/resume` | 无（企业是职位/资料） | `resume.htm` / WAP `resume.htm`；编辑对照 `expect.htm` | 求职是 |
 | 面试通知 | `/user/interviews` | `/com/interviews` 发出 | 求职 `invite.htm`（≠ Vue 邀请注册）；详情 `audition_*` / H5 `interview_*` | 两端是 |
 | 申请的职位 | `/user/applications` | `/com/applications` 收到的简历 | `job.htm` / WAP `sq.htm`（`Posted_state_*`）；企业 `hr.htm` | 两端是 |
-| 谁看过我 | `/user/views` | `/com/fans` 对我感兴趣 | 求职 `look.htm`（`look_myresume_*` / H5 `Posted_look_*`） | 求职是 |
+| 谁看过我 | `/user/views` | `/com/fans` 对我感兴趣 | 求职 `look.htm`（PC `jobnotice_list` + `user_new_joball*` / H5 `Posted_look_*`） | 求职是 |
 | 我的收藏 | `/user/favorites` | 无对等（有人才库） | `favorite.htm` | 求职是 |
 | 我的关注 | `/user/follows` | `/com/follows` | `atn.htm`（必须 `attention_enterprises_*`） | 求职在「更多」外；招聘更多 |
 | 职位速配 | `/user/recommend` | `/com/recommend` 简历推荐 | `likejob.htm`（`pp*` / `com_member_matched_degree`） | 否（更多/服务） |
@@ -86,7 +91,7 @@ PHP 只给投递/收藏这类列表用 `resume_box_list`。一律套这层会被
 | 求职意向 | `/user/expects` | 无 | 简历小节皮 | 否 |
 | 职位搜索器 | `/user/searches` | `/com/finder` | `finder.htm`（`job_search_box*`） | 求职「更多」 |
 | 简历模板 | `/user/resume-tpls` | `/com/tpls` 企业模板 | `resumetpl.htm` / `comtpl.htm` | 求职「更多」 |
-| 修改密码 | `/user/password` | `/com/password` | `passwd.htm` / `setname.htm`；PC `account_settings` + `Binding_pop_box` 改密 | 否 |
+| 修改密码 | `/user/password` | `/com/password` | 求职 `passwd.htm`（`account_settings` + `Binding_pop_box`）；招聘 `vs.htm`（`admin_password` + `btn_01`） | 否 |
 | 隐私设置 | `/user/privacy` | 无（企业认证/资料） | `privacy.htm`（PC `set-status*` + 公开时黑名单标签） | 否 |
 | 黑名单 | `/user/blacklist` | 无 | 嵌在隐私 | 否 |
 | 我的足迹 | `/user/looks` | `/com/views` 看过的简历 | `look_job.htm`；H5 `m_user_info*` | 求职是 |
@@ -119,7 +124,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 ## 改代码入口
 
 - 导航：`web/layers/ui/app/composables/useMemberNav.ts`、`MemberShell.vue`
-- 列表壳：`MemberPanel.vue`（`shell`）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`（消息/财务/会话等 H5）、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`（PC `newcom_user_*`）、`MemberComScreen.vue`、`MemberPager.vue`
+- 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
 - 表单：`MemberField.vue`（求职 `verification_form*` + `verification_text`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
 - 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单
 - 分页：`useMemberListPage.ts`

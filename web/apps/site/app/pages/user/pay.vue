@@ -195,6 +195,7 @@ useSeoMeta({ title: t('ui.pay') })
             <i class="payment_list_text_icon" />
             {{ p.name }}
             <em class="payment_list_text_dw">{{ p.price_yuan }} {{ $t('wap_00925') }}</em>
+            <span v-if="quotaLines(p).length" class="payment_list_text_zk">{{ quotaLines(p).map((r) => $t(r[1])).join(' · ') }}</span>
           </div>
         </span>
       </div>
@@ -233,15 +234,24 @@ useSeoMeta({ title: t('ui.pay') })
         <input type="button" class="payment_list_other" :value="$t('member_user_00238')" @click="buy(picked)" />
       </div>
     </div>
-    <form v-if="bankOrderNo" class="form verification_form" @submit.prevent="submitBank">
-      <p class="muted">{{ $t('ui.order_no') }} {{ bankOrderNo }}</p>
-      <MemberField :label="$t('model_00022')"><input v-model="bankForm.bank_name" required /></MemberField>
-      <MemberField :label="$t('model_00023')"><input v-model="bankForm.bank_number" required /></MemberField>
-      <MemberField :label="$t('model_00024')"><input v-model="bankForm.bank_price" required /></MemberField>
-      <MemberField :label="$t('member_user_00106')"><input v-model="bankForm.bank_time" type="date" required /></MemberField>
-      <MemberField :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" /></MemberField>
-      <input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" />
-      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+    <form v-if="bankOrderNo" class="payment_list" @submit.prevent="submitBank">
+      <div class="payment_list_s">{{ $t('ui.order_no') }}</div>
+      <div class="payment_list_r">{{ bankOrderNo }}</div>
+      <div class="payment_list_s">{{ $t('model_00022') }}</div>
+      <div class="payment_list_r"><input v-model="bankForm.bank_name" class="payment_list_input" required /></div>
+      <div class="payment_list_s">{{ $t('model_00023') }}</div>
+      <div class="payment_list_r"><input v-model="bankForm.bank_number" class="payment_list_input" required /></div>
+      <div class="payment_list_s">{{ $t('model_00024') }}</div>
+      <div class="payment_list_r"><input v-model="bankForm.bank_price" class="payment_list_zdy" required /></div>
+      <div class="payment_list_s">{{ $t('member_user_00106') }}</div>
+      <div class="payment_list_r"><input v-model="bankForm.bank_time" type="date" class="payment_list_input" required /></div>
+      <div class="payment_list_s">{{ $t('wap_com_00345') }}</div>
+      <div class="payment_list_r"><textarea v-model="bankForm.order_remark" class="payment_list_textarea" rows="3" /></div>
+      <div class="payment_list_s">&nbsp;</div>
+      <div class="payment_list_r">
+        <input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" />
+        <input type="submit" class="payment_list_other" :value="$t('common.submit')" />
+      </div>
     </form>
     <div class="site-pc wxts_box">
       <div class="wxts">{{ $t('wap_user_00205') }}</div>

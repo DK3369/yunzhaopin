@@ -49,19 +49,43 @@ const { data: signSt, refresh: refreshSign } = await useAsyncData('user-home-sig
 const { data: gzh } = await useAsyncData('user-gzh', () =>
   api.post<{ subscribe?: number }>('/v1/mcenter/wechat/subscribe', {}).catch(() => ({ subscribe: 1 })),
 )
+const { data: recJobs } = await useAsyncData('user-home-rec-jobs', () =>
+  api.post('/v1/mcenter/recommend/jobs', { limit: 8 }).catch(() => []),
+)
+type HomeRecJob = { id: number; name?: string; com_name?: string; uid?: number; min_salary?: number; max_salary?: number }
+const recJobList = computed((): HomeRecJob[] => {
+  const raw = recJobs.value
+  if (Array.isArray(raw)) return raw as HomeRecJob[]
+  if (raw && typeof raw === 'object' && 'list' in raw) return ((raw as { list?: HomeRecJob[] }).list || []) as HomeRecJob[]
+  return []
+})
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
 const { wxQr } = useSiteChrome()
 const msg = ref('')
 useSeoMeta({ title: t('member_user_00183') })
 
-const expectList = computed(() => {
+type HomeExpect = {
+  id?: number
+  name?: string
+  job_classid_n?: string
+  job_name?: string
+  jobstatus_n?: string
+  report_n?: string
+  hits?: number
+}
+const expectList = computed((): HomeExpect[] => {
   const raw = expects.value
-  if (Array.isArray(raw)) return raw
-  return raw?.list || []
+  if (Array.isArray(raw)) return raw as HomeExpect[]
+  if (raw && typeof raw === 'object' && 'list' in raw) return ((raw as { list?: HomeExpect[] }).list || []) as HomeExpect[]
+  return []
 })
 const defExpect = computed(() => {
   const id = Number(resume.value?.def_job || 0)
-  return expectList.value.find((e: { id?: number }) => Number(e.id) === id) || expectList.value[0] || null
+  return expectList.value.find((e) => Number(e.id) === id) || expectList.value[0] || null
+})
+const extraExpects = computed(() => {
+  const defId = Number(defExpect.value?.id || 0)
+  return expectList.value.filter((e) => Number(e.id) !== defId)
 })
 const integrity = computed(() => Number(completion.value?.score || 0))
 const missingBits = computed(() => completion.value?.missing || [])
@@ -133,6 +157,7 @@ function labelOf(to: string, key: string) {
         <div class="yun_wtbd_tip_tit">{{ $t('wap_user_00205') }}</div>
         <div class="yun_wtbd_tip_p">
           {{ $t('wap_user_00191') }}
+          <a v-if="wxQr" href="javascript:;" class="wxtitle yun_wtbd_tip_bth">{{ $t('member_user_00150') }}</a>
           <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
         </div>
       </div>
@@ -207,32 +232,76 @@ function labelOf(to: string, key: string) {
               </p>
             </div>
             <div class="user_resume_p user_resume_pd">{{ resume?.lastupdate_n }}</div>
+            <div v-if="defExpect?.hits != null" class="user_resume_p">{{ $t('member_com_00268') }}：{{ defExpect.hits }}</div>
           </div>
           <div class="user_resume_cz">
             <div class="user_resume_cz_p">
-              <i class="user_resume_cz_icon1" />
-              <button type="button" class="user_resume_cz_a" @click="refreshMyResume">{{ $t('wap_user_00199') }}</button>
+              <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon2" @click="refreshMyResume">{{ $t('wap_user_00199') }}</a>
             </div>
             <div class="user_resume_cz_p">
-              <i class="user_resume_cz_icon2" />
-              <NuxtLink :to="`/resumes/${resume?.uid || data?.uid}`" class="user_resume_cz_a">{{ $t('wap_user_00217') }}</NuxtLink>
+              <NuxtLink :to="`/resumes/${resume?.uid || data?.uid}`" class="user_resume_cz_a user_resume_cz_icon4">{{ $t('wap_user_00217') }}</NuxtLink>
             </div>
             <div class="user_resume_cz_p">
-              <i class="user_resume_cz_icon3" />
-              <NuxtLink to="/user/recommend" class="user_resume_cz_a">{{ $t('wap_user_00211') }}</NuxtLink>
+              <NuxtLink to="/user/resume" class="user_resume_cz_a user_resume_cz_icon1">{{ $t('wap_user_00207') }} <span class="user_resume_cz_yzd">{{ $t('wap_user_00335') }}</span></NuxtLink>
             </div>
             <div class="user_resume_cz_p">
-              <i class="user_resume_cz_icon4" />
-              <NuxtLink to="/user/resume" class="user_resume_cz_a">{{ $t('wap_00269') }}</NuxtLink>
+              <NuxtLink to="/user/resume" class="user_resume_cz_a user_resume_cz_icon3">{{ $t('wap_00269') }}</NuxtLink>
             </div>
           </div>
         </div>
         <div v-else class="member_right_no_job">
           <div class="member_right_no_job_box">
+            <div class="yun_m_index_job_icon" />
             <div class="member_right_no_jobr">
               {{ $t('member_user_00128') }}
               <NuxtLink to="/user/resume" class="member_right_no_jobr_bth">{{ $t('wap_user_00197') }}</NuxtLink>
             </div>
+          </div>
+        </div>
+        <div v-for="row in extraExpects" :key="'ex-' + row.id" class="member_index_resume_box">
+          <div class="member_index_resume_t">
+            <div class="member_index_resume_t_left">
+              <div class="member_index_resume_t_name fltL">
+                <div class="member_index_resume_t_name_l member_index_resume_t_name_w80 fltL">{{ $t('member_com_00013') }}</div>
+                {{ row.name }}
+              </div>
+              <div class="member_index_resume_job fltL">
+                <span class="member_index_resume_t_name_l member_index_resume_t_name_w80 fltL">{{ $t('wap_user_00015') }}</span>
+                <span class="member_index_resume_jobname">{{ row.job_classid_n || row.job_name || row.name }}</span>
+              </div>
+            </div>
+            <div class="member_index_resume_t_cz fltR">
+              <div class="member_index_resume_t_cz_b">
+                <NuxtLink to="/user/resume" class="member_index_resume_t_cz_bth">{{ $t('wap_00269') }}</NuxtLink>
+                <NuxtLink :to="`/resumes/${resume?.uid || data?.uid}`" class="member_index_resume_t_cz_bth mt15">{{ $t('wap_user_00217') }}</NuxtLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="member_right_box_banner fltL" />
+      <div class="yun_m_index_job mt20 fltL">
+        <div class="yun_m_index_job_tit"><span class="yun_m_index_job_tit_s">{{ $t('member_user_00134') }}</span></div>
+        <div v-if="!resume?.name && !defExpect" class="member_right_no_job">
+          <div class="member_right_no_job_box">
+            <div class="yun_m_index_job_icon" />
+            <div class="member_right_no_jobr">
+              {{ $t('member_user_00128') }}
+              <NuxtLink to="/user/resume" class="member_right_no_jobr_bth">{{ $t('wap_user_00197') }}</NuxtLink>
+            </div>
+          </div>
+        </div>
+        <div v-else id="joblist" class="member_right_job_box">
+          <div v-if="!recJobList.length" id="nojoblist" class="member_right_no_job">
+            <div class="member_right_no_job_box">
+              <div class="yun_m_index_job_icon" />
+              <div class="yun_m_index_job_tip">{{ $t('member_user_00137') }}</div>
+            </div>
+          </div>
+          <div v-for="job in recJobList" :key="'rj-' + job.id" class="yun_m_index_joblist">
+            <NuxtLink :to="`/jobs/${job.id}`" class="yun_m_index_jobname">{{ job.name }}</NuxtLink>
+            <span v-if="job.min_salary || job.max_salary" class="yun_m_index_jobxz">{{ job.min_salary }}-{{ job.max_salary }}</span>
+            <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="yun_m_index_jobcom">{{ job.com_name }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -357,6 +426,7 @@ function labelOf(to: string, key: string) {
         </ul>
       </div>
       <p v-if="msg" class="muted">{{ msg }}</p>
+      <div class="taskbar">
       <div class="taskbar_box">
         <NuxtLink v-for="item in h5Links" :key="item.to" :to="item.to">
           <div class="taskbar_enterprise">
@@ -379,6 +449,7 @@ function labelOf(to: string, key: string) {
             <div class="taskbar_datum_word">{{ $t('wap_user_00342') }}</div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>

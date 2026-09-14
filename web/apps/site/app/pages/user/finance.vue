@@ -64,7 +64,8 @@ const payTotal = computed(() => inferTotal(pays.value))
         <NuxtLink to="/user/pay" class="management_card_btn">{{ $t('common_01946') }}</NuxtLink>
       </div>
       <p>
-        <button type="button" class="verification_form_btn" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
+        <button type="button" class="integral_list_bth_a site-pc" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
+        <button type="button" class="verification_form_btn site-h5" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
       </p>
       <div v-if="(pays?.list || []).length" class="paylist_tit site-pc">
         <span class="paylist_span paylist_span_dh">{{ $t('ui.detail') }}</span>

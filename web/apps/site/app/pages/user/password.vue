@@ -32,15 +32,15 @@ useSeoMeta({ title: t('member_user_00226') })
         <div class="account_settings_list_left">
           <i class="account_settings_list_left_icon account_settings_list_left_icon_user" />
           <div class="account_settings_tit">{{ $t('wap_user_00336') }}</div>
-          {{ $t('member_user_00535') }}
+          <div class="account_settings_tip">{{ $t('member_user_00535') }}</div>
         </div>
-        <NuxtLink to="/user/account" class="account_settings_bth_hv">{{ $t('wap_js_00073') }}</NuxtLink>
+        <NuxtLink to="/user/account" class="account_settings_bth">{{ $t('wap_js_00073') }}</NuxtLink>
       </div>
       <div class="account_settings_list">
         <div class="account_settings_list_left">
           <i class="account_settings_list_left_icon account_settings_list_left_icon_m" />
           <div class="account_settings_tit">{{ $t('member_user_00536') }}</div>
-          {{ $t('member_user_00537') }}
+          <div class="account_settings_tip">{{ $t('member_user_00537') }}</div>
         </div>
         <a href="javascript:;" class="account_settings_bth_hv" @click.prevent="showPass = true">{{ $t('wap_js_00073') }}</a>
       </div>
@@ -62,7 +62,7 @@ useSeoMeta({ title: t('member_user_00226') })
         <div class="account_settings_list_left">
           <i class="account_settings_list_left_icon account_settings_list_left_icon_sf" />
           <div class="account_settings_tit">{{ $t('wap_01030') }}</div>
-          {{ $t('member_user_00210') }}
+          <div class="account_settings_tip">{{ $t('member_user_00210') }}</div>
         </div>
         <NuxtLink to="/user/ident" class="account_settings_bth_hv">{{ $t('member_user_00235') }}</NuxtLink>
       </div>

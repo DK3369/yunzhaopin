@@ -257,9 +257,12 @@ function labelOf(to: string, key?: string) {
               <img v-if="profile?.logo" :src="mediaUrl(profile.logo)" alt="" width="100%" height="100%" />
             </div>
             <div class="company_center">
-              <div class="company_center_top">{{ profile?.name || data?.username || data?.uid }}</div>
+              <div class="compauNamers">
+                <div class="company_center_top">{{ profile?.name || data?.username || data?.uid }}</div>
+              </div>
               <NuxtLink :to="`/companies/${profile?.uid || data?.uid}`" class="company_center_bto">
                 <i class="company_center_bto_name">{{ $t('wap_com_00095') }}</i>
+                <img src="/legacy/h5/images/comtop1.png" class="company_center_bto_nav" alt="" />
               </NuxtLink>
             </div>
           </div>
@@ -291,6 +294,18 @@ function labelOf(to: string, key?: string) {
           </div>
         </div>
         <div class="comvipDaoBnagc">
+          <div class="comvip_nav comvipDaohang">
+            <div class="comvip_nav_left">
+              <div class="comvipDaoText">
+                <img src="/legacy/h5/images/comtop5.png" alt="" />
+                <span class="spancomva1">{{ $t('wap_com_00087') }}</span>
+              </div>
+              <div class="comvipDaoTips">
+                <span>{{ $t('wap_com_00083') }}</span>
+              </div>
+            </div>
+            <NuxtLink to="/com/member-right" class="comvip_nav_right">{{ $t('wap_com_00098') }}</NuxtLink>
+          </div>
           <div class="comvipDaoBorder">
             <div class="comvipDaoOline">
               <div class="comvipDaineTite">
@@ -346,6 +361,7 @@ function labelOf(to: string, key?: string) {
         </div>
       </div>
       <p v-if="msg" class="muted">{{ msg }}</p>
+      <div class="taskbar">
       <div class="taskbar_box">
         <NuxtLink v-for="item in h5Task" :key="item.to" :to="item.to">
           <div class="taskbar_enterprise">
@@ -368,6 +384,7 @@ function labelOf(to: string, key?: string) {
             <div class="taskbar_datum_word">{{ $t('wap_user_00342') }}</div>
           </div>
         </div>
+      </div>
       </div>
       <div class="companyDatapage">
         <div v-if="webtel" class="companyDataTell">{{ webtel }}</div>

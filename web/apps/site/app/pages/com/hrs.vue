@@ -72,7 +72,7 @@ useSeoMeta({ title: t('ui.hr') })
         <ul>
           <MemberReleaseRow :label="$t('ui.desc')"><input v-model="note" class="com_release_textnew_text" /></MemberReleaseRow>
         </ul>
-        <button type="submit" class="verification_form_btn">{{ $t('ui.add') }}</button>
+        <button type="submit" class="btn_01">{{ $t('ui.add') }}</button>
       </form>
       <table class="com_table site-pc">
         <tr>
@@ -106,7 +106,7 @@ useSeoMeta({ title: t('ui.hr') })
         <ul>
           <MemberReleaseRow :label="$t('ui.hr')" required><input v-model="joinCode" required class="com_release_textnew_text" /></MemberReleaseRow>
         </ul>
-        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+        <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
       </form>
       <div v-for="co in companies || []" :key="co.company_uid" class="sysynews_list site-pc">
         <div class="sysynews_span sysynews_name">{{ co.company_uid }} · {{ co.role }}</div>

@@ -142,7 +142,7 @@ const ivTotal = computed(() => inferTotal(data.value))
         <MemberReleaseRow :label="$t('common_02051')" required><input v-model="form.linkman" required class="com_release_textnew_text" /></MemberReleaseRow>
         <MemberReleaseRow :label="$t('common.phone')" required><input v-model="form.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
+      <button type="submit" class="btn_01">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

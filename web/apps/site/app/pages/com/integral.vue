@@ -214,7 +214,7 @@ useSeoMeta({ title: t('wap_user_00008') })
           <MemberReleaseRow :label="$t('wap_user_00008')"><input v-model.number="points" type="number" min="1" /></MemberReleaseRow>
           <MemberReleaseRow :label="$t('ui.desc')"><input v-model="note" class="com_release_textnew_text" /></MemberReleaseRow>
         </ul>
-        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+        <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
       </form>
       <div v-for="row in transfers?.list || []" :key="row.id" class="site-pc paylist_list">
         <span class="paylist_span paylist_span_dh">{{ row.from_uid }} → {{ row.to_uid }}</span>

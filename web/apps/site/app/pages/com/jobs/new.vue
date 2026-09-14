@@ -326,7 +326,7 @@ useSeoMeta({ title: t('wap_00322') })
         </label>
       </MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('ui.submit_audit') }}</button>
+      <button type="submit" class="btn_01">{{ $t('ui.submit_audit') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
   </MemberPanel>

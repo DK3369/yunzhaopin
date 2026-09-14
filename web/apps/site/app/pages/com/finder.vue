@@ -50,7 +50,7 @@ useSeoMeta({ title: t('member_com_00086') })
         <MemberReleaseRow :label="$t('ui.min_salary')"><input v-model="form.minsalary" type="number" /></MemberReleaseRow>
         <MemberReleaseRow :label="$t('ui.max_salary')"><input v-model="form.maxsalary" type="number" /></MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('member_com_00556') }}</button>
+      <button type="submit" class="btn_01">{{ $t('member_com_00556') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
     <div v-for="row in data?.list || []" :key="row.id" class="job_search_box">

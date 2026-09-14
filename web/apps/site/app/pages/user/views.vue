@@ -38,19 +38,25 @@ const total = computed(() => inferTotal(data.value))
         </ul>
       </div>
     </div>
-    <div v-if="(data?.list || []).length" class="look_myresume_tit site-pc">
-      <div class="look_myresume_span look_myresume_comname">{{ $t('common.company') }}</div>
-      <div class="look_myresume_span look_myresume_resumetime">{{ $t('member_user_00104') }}</div>
-      <div class="look_myresume_span look_myresume_resumecz">{{ $t('member_user_00048') }}</div>
+    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
+      <div class="user_new_job">{{ $t('common.company') }}</div>
+      <div class="user_new_job" style="width: 280px">{{ $t('wap_01536') }}</div>
+      <div class="user_new_zt">{{ $t('member_user_00197') }}</div>
+      <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
     </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="look_myresume_list site-pc">
-      <div class="look_myresume_span look_myresume_comname">
+    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
+      <div class="user_new_job">
         <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`" class="user_new_jobname">{{ row.com_name || row.com_id }}</NuxtLink>
         <span v-else class="user_new_jobname">{{ row.com_name || row.id }}</span>
-        <div class="look_myresume_comxz">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></div>
+        <div class="look_myresume_comxz">{{ row.com_pr || row.pr_n }} <span v-if="row.com_mun || row.mun_n" class="look_myresume_comline">|</span> {{ row.com_mun || row.mun_n }}</div>
       </div>
-      <div class="look_myresume_span look_myresume_resumetime">{{ row.datetime_n }}</div>
-      <div class="look_myresume_span look_myresume_resumecz">
+      <div class="user_new_job" style="width: 280px">
+        <div v-if="row.com_job" class="user_new_joball">{{ row.com_job }}</div>
+        <span v-if="row.com_job_num" class="user_new_joball_n">{{ row.com_job_num }}</span>
+        <NuxtLink v-if="row.com_name" to="/jobs" class="user_new_joball_more">{{ $t('common.more') }}</NuxtLink>
+      </div>
+      <div class="user_new_zt">{{ row.datetime_n }}</div>
+      <div class="user_new_cz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>

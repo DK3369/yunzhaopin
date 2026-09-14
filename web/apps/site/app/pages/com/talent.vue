@@ -137,8 +137,8 @@ useSeoMeta({ title: t('member_com_00597') })
       <ul>
         <MemberReleaseRow :label="$t('wap_00807')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
-      <button type="button" class="verification_form_btn" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
+      <button type="submit" class="btn_01">{{ $t('common.save') }}</button>
+      <button type="button" class="btn_01" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

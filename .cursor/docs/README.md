@@ -20,4 +20,4 @@
 | 路径 | 怎么用 |
 |---|---|
 | `.cursor/plans/` | 某次执行稿；未落地的条目不要当已做 |
-| 仓库根 `doc/plans/`、`PROJECT_PLAN.md` | 历史，条数会过期 |
+| 仓库根 `doc/plans/`、`PROJECT_PLAN.md` | 历史，条数会过期。会员中心点名对照见 [2026-09-14-member-center-user-vs-com.md](../../doc/plans/2026-09-14-member-center-user-vs-com.md)，**现状仍以** [features/member-center.md](./features/member-center.md) **为准** |

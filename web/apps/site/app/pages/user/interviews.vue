@@ -102,17 +102,30 @@ useSeoMeta({ title: t('wap_user_00216') })
       <div class="user_new_cz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
-      <p v-if="openId === row.id" class="invitation_cont">
+      <div v-if="openId === row.id" class="invitation_cont site-pc">
+        <div class="invitation_user">{{ $t('wap_00529') }} <span class="invitation_user_name">{{ row.username || row.fname }}</span></div>
+        <div class="invitation_cont">
+          <i class="invitation_cont_job">{{ row.job_name }}</i>
+        </div>
+        <div class="invitation_cont_tip">{{ $t('member_user_00107') }}</div>
         <div class="invitation_cont_p"><span class="invitation_cont_pn">{{ $t('wap_user_00255') }}</span><em class="audition_list_e">{{ row.intertime }}</em></div>
         <div class="invitation_cont_p"><span class="invitation_cont_pn">{{ $t('wap_user_00243') }}</span><em class="audition_list_e">{{ row.address }}</em></div>
-        <div class="invitation_cont_p"><span class="invitation_cont_pn">{{ $t('common_02051') }}</span><em class="audition_list_e">{{ row.linkman }}</em> TEL：<em class="invitation_cont_tel">{{ row.linktel }}</em></div>
-        <div v-if="row.content" class="audition_list"><span class="audition_list_span">{{ row.content }}</span></div>
-      </p>
-      <form v-if="rejectId === row.id" class="form verification_form" @submit.prevent="reject(row.id)">
-        <MemberField :label="$t('wap_01053')">
-          <input v-model="remark" />
-        </MemberField>
-        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+        <div v-if="row.content" class="invitation_cont_p nocontent"><span class="invitation_cont_pn">{{ $t('ui.detail') }}</span><em>{{ row.content }}</em></div>
+        <div class="invitation_cont_p">
+          <span class="invitation_cont_pn">{{ $t('common_02051') }}</span>
+          <em class="audition_list_e">{{ row.linkman }}</em>
+          TEL：<em class="invitation_cont_tel">{{ row.linktel }}</em>
+        </div>
+        <div class="invitation_cont_jy">
+          <div class="invitation_cont_d">{{ row.fname }}</div>
+          <div class="invitation_cont_d">{{ row.datetime_n }}</div>
+        </div>
+      </div>
+      <form v-if="rejectId === row.id" class="invite_no" @submit.prevent="reject(row.id)">
+        <textarea v-model="remark" class="invite_notextarea" :placeholder="$t('wap_01053')" />
+        <div class="invite_nobth">
+          <button type="submit" class="invite_nobth_bth">{{ $t('common.confirm') }}</button>
+        </div>
       </form>
     </div>
     <div class="site-h5 m_cardbox">

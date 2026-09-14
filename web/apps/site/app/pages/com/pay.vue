@@ -183,7 +183,7 @@ useSeoMeta({ title: t('common_01946') })
         <MemberReleaseRow :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" class="com_release_textnew_text" /></MemberReleaseRow>
         <MemberReleaseRow :label="$t('ui.image')"><input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" /></MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+      <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
     </form>
     <MemberResumeH1 :title="$t('common_02029')" />
     <div v-if="(orders?.list || []).length" class="site-pc paylist_tit">

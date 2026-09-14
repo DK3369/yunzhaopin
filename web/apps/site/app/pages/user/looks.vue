@@ -29,8 +29,11 @@ const total = computed(() => inferTotal(data.value))
 <template>
   <MemberPanel
     :title="$t('wap_user_00275')"
+    :sub="$t('member_user_00102')"
     :error="error && !isUnauthErr(error) ? error : undefined"
     :empty="!error && !(data?.list || []).length"
+    empty-to="/jobs"
+    :empty-action="$t('wap_user_00254')"
   >
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
     <div class="site-h5 m_tab">
@@ -43,17 +46,22 @@ const total = computed(() => inferTotal(data.value))
     </div>
     <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
       <div class="user_new_job">{{ $t('member_user_00105') }}</div>
-      <div class="user_new_time">{{ $t('member_user_00104') }}</div>
+      <div class="user_new_time">{{ $t('member_user_00106') }}</div>
+      <div class="user_new_zt">{{ $t('member_user_00197') }}</div>
+      <div class="user_new_yqh">{{ $t('member_user_00107') }}</div>
       <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
     </div>
     <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
       <div class="user_new_job">
-        <NuxtLink v-if="row.job_id" :to="`/jobs/${row.job_id}`" class="user_new_jobname">{{ row.job_name || $t('common.job') }}</NuxtLink>
-        <span v-else class="user_new_jobname">{{ row.job_name || row.id }}</span>
-        <div v-if="salaryOf(row)" class="user_new_jobxz">{{ salaryOf(row) }}</div>
+        <NuxtLink v-if="row.job_id" :to="`/jobs/${row.job_id}`" class="interview_application_name">{{ row.job_name || $t('common.job') }}</NuxtLink>
+        <span v-else class="interview_application_name">{{ row.job_name || row.id }}</span>
         <div class="user_new_comname">{{ row.com_name }}</div>
       </div>
-      <div class="user_new_time">{{ row.datetime_n }}</div>
+      <div class="user_new_time">
+        <span class="user_new_xz_n">{{ salaryOf(row) }}</span>
+      </div>
+      <div class="user_new_zt">{{ row.datetime_n }}</div>
+      <div class="user_new_yqh">{{ row.status_n || row.status || '' }}</div>
       <div class="user_new_cz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>

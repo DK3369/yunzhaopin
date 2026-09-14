@@ -207,7 +207,7 @@ useSeoMeta({ title: t('member_com_00480') })
           <MapPick v-model:x="form.x" v-model:y="form.y" />
         </MemberReleaseRow>
       </ul>
-      <button type="submit" class="verification_form_btn">{{ form.id ? $t('common.save') : $t('member_com_00480') }}</button>
+      <button type="submit" class="btn_01">{{ form.id ? $t('common.save') : $t('member_com_00480') }}</button>
     </form>
     <MemberResumeH1 :title="$t('ui.published')" />
     <table v-if="(data?.list || []).length" class="com_table site-pc">

@@ -18,6 +18,8 @@ type Row = {
   edu_n?: string
   age?: number | string
   salary?: string
+  telphone?: string
+  linktel?: string
 }
 type Counts = {
   total: number
@@ -141,6 +143,17 @@ function removeRow(id: number) {
   if (!window.confirm(t('member_com_00083'))) return Promise.resolve()
   return run(() => api.post('/v1/mcenter/applications/delete', { id }))
 }
+function browseZt(s?: number) {
+  const n = Number(s)
+  if (n === 2) return 'com_received_zt_yck'
+  if (n === 3) return 'com_received_zt_dtz'
+  if (n === 4) return 'com_received_zt_bhs'
+  if (n === 5) return 'com_received_zt_bhw'
+  if (n === 7) return 'com_received_zt_wjt'
+  return 'com_received_zt_dcl'
+}
+const ypOpen = ref(false)
+const moreOpen = ref(false)
 function browseLabel(s?: number) {
   const map: Record<number, string> = {
     1: t('wap_user_00260'),
@@ -272,11 +285,30 @@ useSeoMeta({ title: t('member_com_00454') })
       @update:keyword="filters.keyword = $event"
       @search="applyFilters"
     >
-      <select v-model="filters.job_id">
-        <option value="">{{ $t('wap_user_00154') }}</option>
-        <option v-for="j in myJobs?.list || []" :key="j.id" :value="j.id">{{ j.name }}</option>
-      </select>
+      <div class="ypjob" @click="ypOpen = !ypOpen">
+        <div class="ypjob_name">{{ (myJobs?.list || []).find((j) => String(j.id) === String(filters.job_id))?.name || $t('wap_user_00154') }}</div>
+        <div v-show="ypOpen" class="ypjob_box">
+          <a href="javascript:;" @click.stop="filters.job_id = ''; ypOpen = false; applyFilters()">{{ $t('common.all') }}</a>
+          <a v-for="j in myJobs?.list || []" :key="j.id" href="javascript:;" @click.stop="filters.job_id = String(j.id); ypOpen = false; applyFilters()">{{ j.name }}</a>
+        </div>
+      </div>
+      <a href="javascript:;" class="joblist_search_more" @click.prevent="moreOpen = !moreOpen">{{ $t('common.more') }}</a>
     </MemberComScreen>
+    <div v-if="moreOpen" class="jlsx_bg site-pc" @click.self="moreOpen = false">
+      <div class="jlsx_box">
+        <div class="jlsx_boxname">{{ $t('wap_00459') }}</div>
+        <div class="jlsx_boxjy">
+          <a href="javascript:;" :class="{ jlsx_boxjy_cur: !filters.edu }" @click="filters.edu = ''">{{ $t('common.all') }}</a>
+          <a v-for="d in eduDict" :key="d.id" href="javascript:;" :class="{ jlsx_boxjy_cur: String(filters.edu) === String(d.id) }" @click="filters.edu = String(d.id)">{{ d.name }}</a>
+        </div>
+        <div class="jlsx_boxname">{{ $t('wap_00457') }}</div>
+        <div class="jlsx_boxjy">
+          <a href="javascript:;" :class="{ jlsx_boxjy_cur: !filters.exp }" @click="filters.exp = ''">{{ $t('common.all') }}</a>
+          <a v-for="d in expDict" :key="d.id" href="javascript:;" :class="{ jlsx_boxjy_cur: String(filters.exp) === String(d.id) }" @click="filters.exp = String(d.id)">{{ d.name }}</a>
+        </div>
+        <a href="javascript:;" class="com_bth" @click="moreOpen = false; applyFilters()">{{ $t('common.search') }}</a>
+      </div>
+    </div>
 
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
@@ -286,6 +318,7 @@ useSeoMeta({ title: t('member_com_00454') })
           <th><label><input v-model="allChecked" type="checkbox" /> {{ $t('wap_js_00074') }}</label></th>
           <th>{{ $t('wap_00456') }}</th>
           <th>{{ $t('wap_com_00288') }}</th>
+          <th>{{ $t('common.phone') }}</th>
           <th>{{ $t('member_user_00048') }}</th>
         </tr>
         <tr v-for="row in list" :key="row.id">
@@ -301,7 +334,7 @@ useSeoMeta({ title: t('member_com_00454') })
               </div>
               <div>
                 <a href="javascript:;" class="newcom_user_name" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a>
-                <span class="newcom_user_zt">{{ browseLabel(row.is_browse) }}</span>
+                <span class="com_received_zt" :class="browseZt(row.is_browse)"><i class="com_received_zt_icon" />{{ browseLabel(row.is_browse) }}</span>
                 <span v-if="row.invited" class="hr_yyy">{{ $t('wap_user_00216') }}</span>
                 <div v-if="rowInfo(row).length" class="newcom_user_infop">{{ rowInfo(row).join(' · ') }}</div>
                 <div v-if="row.salary">{{ $t('wap_00925') }}：{{ row.salary }}</div>
@@ -313,12 +346,18 @@ useSeoMeta({ title: t('member_com_00454') })
             <div class="com_received_tdtime">{{ row.datetime_n }}</div>
           </td>
           <td>
-            <a href="javascript:;" class="cblue" @click="pick(row)">{{ $t('wap_com_00046') }}</a>
-            <a href="javascript:;" class="cblue" @click="openRemark(row)">{{ $t('member_user_00242') }}</a>
-            <select :value="row.is_browse" @change="setState(row.id, Number(($event.target as HTMLSelectElement).value))">
-              <option v-for="s in [1, 2, 3, 4, 5, 7]" :key="s" :value="s">{{ browseLabel(s) }}</option>
-            </select>
-            <a href="javascript:;" class="List_dete cblue" @click="removeRow(row.id)">{{ $t('wap_js_00077') }}</a>
+            <span class="newcom_user_tel">{{ row.telphone || row.linktel || '—' }}</span>
+          </td>
+          <td>
+            <a href="javascript:;" class="com_bth" @click="pick(row)">{{ $t('wap_com_00046') }}</a>
+            <a href="javascript:;" class="com_bth" @click="openRemark(row)">{{ $t('member_user_00242') }}</a>
+            <div class="com_received_username_bjbox">
+              <a href="javascript:;" class="com_received_username_bj">{{ $t('member_user_00181') }}</a>
+              <div class="com_received_username_bjbox_show">
+                <a v-for="s in [1, 2, 3, 4, 5, 7]" :key="s" href="javascript:;" class="com_received_username_bjbox_show_a" @click="setState(row.id, s)">{{ browseLabel(s) }}</a>
+              </div>
+            </div>
+            <a href="javascript:;" class="com_bth" @click="removeRow(row.id)">{{ $t('wap_js_00077') }}</a>
           </td>
         </tr>
       </table>
@@ -349,29 +388,32 @@ useSeoMeta({ title: t('member_com_00454') })
         <ul>
           <MemberReleaseRow :label="$t('member_user_00242')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
         </ul>
-        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
-        <button type="button" class="verification_form_btn" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
+        <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
+        <button type="button" class="btn_01" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
       </form>
       <MemberPager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
     </template>
 
-    <h2>{{ $t('wap_com_00046') }}</h2>
-    <form class="com_release_box" @submit.prevent="sendInvite()">
-      <ul>
-        <MemberReleaseRow v-if="invite.seeker_uid" :label="$t('common.resume')">
-          <span>{{ invite.seeker_uid }} · {{ invite.job_id }}</span>
-        </MemberReleaseRow>
-        <MemberReleaseRow :label="$t('wap_00040')" required><input v-model="invite.intertime" type="datetime-local" required /></MemberReleaseRow>
-        <MemberReleaseRow :label="$t('wap_user_00243')" required><input v-model="invite.address" required class="com_release_textnew_text" /></MemberReleaseRow>
-        <MemberReleaseRow :label="$t('common_02051')"><input v-model="invite.linkman" class="com_release_textnew_text" /></MemberReleaseRow>
-        <MemberReleaseRow :label="$t('common.phone')" required><input v-model="invite.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
-        <MemberReleaseRow :label="$t('wap_user_00102')" area><textarea v-model="invite.content" rows="3" /></MemberReleaseRow>
-        <MemberReleaseRow :label="$t('member_com_00512')">
-          <input v-model="invite.save_yqmb" type="checkbox" />
-        </MemberReleaseRow>
-      </ul>
-      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
-    </form>
+    <template v-if="invite.seeker_uid">
+      <h2>{{ $t('wap_com_00046') }}</h2>
+      <form class="com_release_box" @submit.prevent="sendInvite()">
+        <ul>
+          <MemberReleaseRow :label="$t('common.resume')">
+            <span>{{ invite.seeker_uid }} · {{ invite.job_id }}</span>
+          </MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_00040')" required><input v-model="invite.intertime" type="datetime-local" required /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_user_00243')" required><input v-model="invite.address" required class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('common_02051')"><input v-model="invite.linkman" class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('common.phone')" required><input v-model="invite.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_user_00102')" area><textarea v-model="invite.content" rows="3" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('member_com_00512')">
+            <input v-model="invite.save_yqmb" type="checkbox" />
+          </MemberReleaseRow>
+        </ul>
+        <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
+        <button type="button" class="btn_01" @click="invite.seeker_uid = 0">{{ $t('common.cancel') }}</button>
+      </form>
+    </template>
   </MemberPanel>
 </template>
 

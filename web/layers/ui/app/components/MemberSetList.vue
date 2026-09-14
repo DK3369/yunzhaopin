@@ -1,8 +1,24 @@
 <template>
   <div>
-    <div class="site-pc">
-      <div class="user_new_tit">
-        <span class="user_new_tit_n">{{ title }}</span>
+    <div v-if="kind === 'com'" class="site-pc">
+      <div class="newmember_tit">
+        <ul>
+          <li class="newmember_titcur">
+            <a href="javascript:;">{{ title }}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="com_body">
+        <NuxtLink v-for="item in items" :key="item.to" :to="item.to" class="com_set_list">
+          <div class="com_set_listname">{{ item.label }}</div>
+          <div v-if="item.hint" class="com_set_listp">{{ item.hint }}</div>
+        </NuxtLink>
+      </div>
+    </div>
+    <div v-else class="site-pc">
+      <div class="member_right_index_h1 fltL">
+        <span class="member_right_h1_span fltL">{{ title }}</span>
+        <i class="member_right_h1_icon user_bg" />
       </div>
       <div class="yun_m_rightbox">
         <div class="account_settings">

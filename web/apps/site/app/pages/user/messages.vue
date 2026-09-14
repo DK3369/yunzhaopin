@@ -11,6 +11,17 @@ const { data: dash } = await useAsyncData('user-msg-dash', () =>
     .post<{ wkyqnum?: number; commsgnum?: number; sxnum?: number }>('/v1/mcenter/dashboard', {})
     .catch(() => null),
 )
+const picked = ref<number[]>([])
+const openId = ref(0)
+const allPicked = computed({
+  get: () => {
+    const list = data.value?.list || []
+    return list.length > 0 && picked.value.length === list.length
+  },
+  set: (v: boolean) => {
+    picked.value = v ? (data.value?.list || []).map((r: { id: number }) => r.id) : []
+  },
+})
 async function read(id: number) {
   await api.post('/v1/mcenter/messages/read', { id })
   refresh()
@@ -21,6 +32,16 @@ async function remove(id: number) {
 }
 async function readAll() {
   await api.post('/v1/mcenter/messages/read-all', {})
+  refresh()
+}
+async function removePicked() {
+  for (const id of picked.value) await api.post('/v1/mcenter/messages/delete', { id })
+  picked.value = []
+  refresh()
+}
+async function readPicked() {
+  for (const id of picked.value) await api.post('/v1/mcenter/messages/read', { id })
+  picked.value = []
   refresh()
 }
 useSeoMeta({ title: t('common.message') })
@@ -88,25 +109,43 @@ const total = computed(() => inferTotal(data.value))
         />
       </div>
     </div>
-    <p class="user_czbth">
+    <p class="user_czbth site-pc">
       <a href="javascript:;" class="user_new_yqh_a" @click="readAll">{{ $t('common.confirm') }}</a>
     </p>
     <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
+      <div class="sysynews_span">&nbsp;</div>
       <div class="sysynews_span sysynews_name">{{ $t('common.message') }}</div>
       <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
       <div class="sysynews_span sysynews_cz">{{ $t('member_user_00048') }}</div>
     </div>
     <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name" :style="row.remind_status === 0 ? 'font-weight:bold' : ''">
+      <div class="sysynews_span">
+        <input type="checkbox" :checked="picked.includes(row.id)" @change="picked = picked.includes(row.id) ? picked.filter((x) => x !== row.id) : [...picked, row.id]" />
+      </div>
+      <div class="sysynews_span sysynews_name" :style="row.remind_status === 0 ? 'font-weight:bold' : ''" @click="openId = openId === row.id ? 0 : row.id">
         {{ row.body || row.content || row.title || row.id }}
         <span v-if="row.remind_status === 0" class="sysynews_span_nolook">{{ $t('wap_user_00260') }}</span>
       </div>
       <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
       <div class="sysynews_span sysynews_cz">
-        <a href="javascript:;" class="cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
+        <a href="javascript:;" class="cblue" @click="read(row.id); openId = row.id">{{ $t('wap_00071') }}</a>
         <span class="jobnotice_cz_line">|</span>
         <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
+      <div v-if="openId === row.id" class="sys_tm">
+        <p><i>{{ $t('member_user_00104') }}：</i><span>{{ row.datetime_n }}</span></p>
+        <p><i>{{ $t('common.message') }}：</i><span>{{ row.body || row.content || row.title }}</span></p>
+        <div class="sys_bot">
+          <a href="javascript:;" class="sys_bot_del" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+          <a href="javascript:;" class="sys_bot_qx" @click="openId = 0">{{ $t('common.cancel') }}</a>
+        </div>
+      </div>
+    </div>
+    <div v-if="(data?.list || []).length" class="checkall_toyota site-pc">
+      <label><input v-model="allPicked" type="checkbox" /> {{ $t('common.all') }}</label>
+      <input type="button" class="job_operation_bth" :value="$t('common.delete')" @click="removePicked" />
+      <input type="button" class="job_operation_bth" :value="$t('common.confirm')" @click="readPicked" />
+      <input type="button" class="job_operation_bth" :value="$t('wap_user_00260')" @click="readAll" />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
