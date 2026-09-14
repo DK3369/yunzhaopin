@@ -173,4 +173,4 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - 分页：`useMemberListPage.ts`
 - 页：`web/apps/site/app/pages/user/*`、`pages/com/*`
 - CSS：`legacyCss.ts`；切皮与壳：`web/apps/site/app/assets/main.css`
-- H5 底栏 / PC 页脚：[`AppFooter.vue`](../../web/layers/ui/app/components/AppFooter.vue)（对照 `wap/footer.htm` / `default/footer.htm`）
+- H5 底栏 / PC 页脚：[`AppFooter.vue`](../../web/layers/ui/app/components/AppFooter.vue)（对照 `wap/footer.htm` / `default/footer.htm`）。五列落地页见 [pc-footer.md](./pc-footer.md)

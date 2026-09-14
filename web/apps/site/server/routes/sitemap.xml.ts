@@ -18,6 +18,8 @@ const STATIC = [
   '/redeem',
   '/hr',
   '/links',
+  '/top',
+  '/subscribe',
   '/map',
   '/login',
   '/register',

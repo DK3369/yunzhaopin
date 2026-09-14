@@ -73,7 +73,17 @@ useHead({
 
 const mainClass = computed(() => {
   if (isHome.value || isAuth.value || isMember.value) return ''
-  if (route.path.startsWith('/jobs') || route.path.startsWith('/companies') || route.path.startsWith('/resumes')) return ''
+  const p = route.path
+  if (p.startsWith('/jobs') || p.startsWith('/companies') || p.startsWith('/resumes')) return ''
+  if (
+    p.startsWith('/get') ||
+    p.startsWith('/pages') ||
+    p === '/top' ||
+    p === '/subscribe' ||
+    p === '/links'
+  ) {
+    return ''
+  }
   return 'site-inner'
 })
 

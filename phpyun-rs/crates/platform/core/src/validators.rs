@@ -156,6 +156,25 @@ pub fn path_hex_token(v: &str) -> Result<(), ValidationError> {
     }
 }
 
+/// CMS `phpyun_description.name` (Chinese titles). Rejects path / query metacharacters.
+pub fn desc_page_name(v: &str) -> Result<(), ValidationError> {
+    let n = v.trim();
+    let chars = n.chars().count();
+    if chars < 1 || chars > 64 {
+        return Err(ValidationError::new("desc_name_length"));
+    }
+    if n.chars()
+        .any(|c| c.is_control() || matches!(c, '/' | '\\' | '?' | '#' | '&' | '%' | '\0'))
+    {
+        return Err(ValidationError::new("desc_name_charset"));
+    }
+    Ok(())
+}
+
+pub fn ensure_desc_page_name(v: &str) -> Result<(), crate::ApiError> {
+    desc_page_name(v).map_err(|e| crate::ApiError::param_invalid(e.code))
+}
+
 /// `ApiError`-flavoured wrapper around [`path_token`] for handler use.
 ///
 /// Calling pattern at handler entry:
@@ -251,5 +270,14 @@ mod tests {
         assert!(http_url("javascript:alert(1)").is_err());
         assert!(http_url("data:text/html,x").is_err());
         assert!(http_url("ftp://example.com").is_err());
+    }
+
+    #[test]
+    fn desc_page_name_allows_cjk() {
+        assert!(desc_page_name("关于我们").is_ok());
+        assert!(desc_page_name("人力资源许可证").is_ok());
+        assert!(desc_page_name("about/index").is_err());
+        assert!(desc_page_name("a?b").is_err());
+        assert!(desc_page_name("").is_err());
     }
 }

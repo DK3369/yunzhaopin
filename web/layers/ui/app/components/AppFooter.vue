@@ -73,7 +73,9 @@
             {{ copyright || `© ${new Date().getFullYear()} ${siteName}` }}
             <i class="hp_foot_bt_cr">
               <a v-if="record" href="https://beian.miit.gov.cn" target="_blank" rel="nofollow">{{ record }}</a>
-              <a v-if="secord" href="https://www.beian.gov.cn" target="_blank" rel="nofollow">{{ secord }}</a>
+              <a v-if="secord" href="https://www.beian.gov.cn" target="_blank" rel="nofollow">
+                <img src="/legacy/pc/images/icon_ga.png" alt="" />{{ secord }}
+              </a>
             </i>
           </p>
           <p v-if="address || email">

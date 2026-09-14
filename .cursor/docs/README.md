@@ -13,6 +13,7 @@
 | 后端 i18n（四层：Vue / Rust msg / dict_i18n / packed） | [rust/i18n.md](./rust/i18n.md) |
 | 采集英文岗、补 JD、官网申请记原投递表 | [features/job-scrape.md](./features/job-scrape.md) |
 | PC/H5 会员中心套肤（求职 `/user` · 招聘 `/com`） | [features/member-center.md](./features/member-center.md) |
+| PC 页脚五列与关于我们/排行榜/订阅落地页 | [features/pc-footer.md](./features/pc-footer.md) |
 | 字段编码 UTF-8 / MySQL utf8mb4 | [`.cursor/rules/utf8.mdc`](../rules/utf8.mdc) |
 
 ## 不要当现状的

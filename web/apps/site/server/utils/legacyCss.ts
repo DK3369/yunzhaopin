@@ -22,6 +22,7 @@ const PC_FILES: CssFile[] = [
   { disk: 'uploads/app/template/default/style/map.css', href: '/legacy/pc/style/map.css', note: 'map.css 地图' },
   { disk: 'uploads/app/template/default/style/evaluate.css', href: '/legacy/pc/style/evaluate.css', note: 'evaluate.css 评价' },
   { disk: 'uploads/app/template/default/style/integral.css', href: '/legacy/pc/style/integral.css', note: 'integral.css 积分' },
+  { disk: 'uploads/app/template/default/style/top.css', href: '/legacy/pc/style/top.css', note: 'top.css 排行榜' },
   { disk: 'uploads/app/template/member/user/images/m_css.css', href: '/legacy/member/user/m_css.css', note: 'm_css.css 个人会员' },
   { disk: 'uploads/app/template/member/user/images/m_resume.css', href: '/legacy/member/user/m_resume.css', note: 'm_resume.css 简历编辑' },
   { disk: 'uploads/app/template/member/com/images/m_style.css', href: '/legacy/member/com/m_style.css', note: 'm_style.css 企业会员' },

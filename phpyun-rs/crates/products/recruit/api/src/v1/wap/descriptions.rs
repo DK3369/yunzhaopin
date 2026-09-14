@@ -204,7 +204,7 @@ pub async fn get_by_name(
     ValidatedJson(b): ValidatedJson<GetByNameBody>,
 ) -> AppResult<ApiResponse<DescDetail>> {
     let name = b.name;
-    phpyun_core::validators::ensure_path_token(&name)?;
+    phpyun_core::validators::ensure_desc_page_name(&name)?;
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), &name).await?;
     let d = row.ok_or_else(|| phpyun_core::ApiError::param_invalid("description_not_found"))?;
     Ok(ApiResponse::data(d.into()))
@@ -261,7 +261,7 @@ pub async fn get_legal_page(
 pub struct GetByNameBody {
     #[validate(
         length(min = 1, max = 64),
-        custom(function = "phpyun_core::validators::path_token")
+        custom(function = "phpyun_core::validators::desc_page_name")
     )]
     pub name: String,
 }

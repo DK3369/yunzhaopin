@@ -84,6 +84,8 @@ export type CompanyLike = {
   welfare_n?: string[] | string
   rating?: number
   rating_name?: string | null
+  lastupdate?: number
+  lastupdate_n?: string
   open_jobs?: Array<{ id: number; name: string }>
   booth_name?: string
 }
@@ -122,6 +124,8 @@ const MODULE_PATH: Record<string, string> = {
   link: '/links',
   links: '/links',
   utype: '/utype',
+  top: '/top',
+  subscribe: '/subscribe',
 }
 
 /** PHP detail query (`id`/`eid`/`uid`) belongs on these modules. */
@@ -299,8 +303,10 @@ function mapPhpQuery(query: URLSearchParams): string | undefined {
   const c = (query.get('c') || '').toLowerCase()
   if (m === 'member') return '/user'
   const key = m === 'wap' ? c : m
-  if (key && MODULE_PATH[key]) return withModuleId(key, MODULE_PATH[key], query)
+  // `index.php?c=top` 的 m 为空或 index，不要先命中 MODULE_PATH.index → `/`
+  if (key && key !== 'index' && MODULE_PATH[key]) return withModuleId(key, MODULE_PATH[key], query)
   if (c && MODULE_PATH[c]) return withModuleId(c, MODULE_PATH[c], query)
+  if (key === 'index') return '/'
   return undefined
 }
 
@@ -383,6 +389,43 @@ export function descHref(item: { id: number; link_url?: string | null }): string
   const path = u.startsWith('/') ? u : `/${u}`
   if (/^\/about\//i.test(path) || path.toLowerCase().includes('/about/')) return `/get/${item.id}`
   return mapNavUrl(path)
+}
+
+/** `/pages/{code}` 文件名 → `phpyun_description.name`（含备案/人资证）。 */
+export const ABOUT_CODE_NAMES: Record<string, string[]> = {
+  about: ['关于我们', 'About Us', 'About'],
+  index: ['关于我们', 'About Us', 'About'],
+  protocol: ['注册协议', 'Registration Agreement', 'Terms'],
+  service: ['注册协议', 'Registration Agreement', 'Terms'],
+  privacy: ['隐私政策', 'Privacy Policy', 'Privacy'],
+  yinsi: ['隐私政策', 'Privacy Policy', 'Privacy'],
+  contact: ['联系我们', 'Contact Us', 'Contact'],
+  phpyun: ['法律声明'],
+  legal: ['法律声明'],
+  indexzy: ['经营资源'],
+  yh: ['银行帐户', '银行账户'],
+  jinjia: ['品牌推广'],
+  charge: ['收费标准'],
+  gg: ['广告投放'],
+  kf: ['客服中心'],
+  ask: ['常见问题'],
+  new: ['职场指南'],
+  jyxkz: ['ICP经营许可证', '经营许可证'],
+  rlzy: ['人力资源许可证'],
+}
+
+export function isExternalHref(url?: string | null): boolean {
+  return /^(https?:)?\/\//i.test(String(url || '').trim())
+}
+
+export function descListMatchesCode(
+  linkUrl: string | null | undefined,
+  code: string,
+): boolean {
+  const u = String(linkUrl || '').toLowerCase().replace(/\\/g, '/')
+  const c = String(code || '').toLowerCase()
+  if (!u || !c) return false
+  return u.includes(`/about/${c}.html`) || u.endsWith(`about/${c}.html`)
 }
 
 export function listFailMsg(err: unknown, rateLimit: string, fallback: string): string {

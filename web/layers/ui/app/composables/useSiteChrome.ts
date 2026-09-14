@@ -207,6 +207,8 @@ export function useSiteChrome() {
     '/eval': 'common_01801',
     '/links': 'default_00256',
     '/redeem': 'common_06524',
+    '/top': 'default_00156',
+    '/subscribe': 'ui.subscribe_svc',
   }
 
   function labelForFooter(name: string, to: string) {
@@ -300,6 +302,9 @@ export function useSiteChrome() {
       '/redeem': t('ui.redeem'),
       '/specials': t('wap_com_00310'),
       '/gongzhao': t('default_00134'),
+      '/links': t('default_00256'),
+      '/top': t('default_00156'),
+      '/subscribe': t('ui.subscribe_svc'),
       '/user': t('common.user_center'),
       '/com': t('common.user_center'),
     }
