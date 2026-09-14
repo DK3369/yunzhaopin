@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr, mediaUrl } from '~/utils/site'
+import { isUnauthErr, mediaUrl, isMemberModuleOn } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { comItems } = useMemberNav()
@@ -75,13 +75,15 @@ async function sign() {
   }
 }
 
-const h5Task = [
-  { to: '/com/profile', icon: '/legacy/h5/images/enterprise_data.png', key: 'wap_com_00096' },
-  { to: '/com/pay', icon: '/legacy/h5/images/caiwuegl.png', key: 'wap_user_00213' },
-  { to: '/com/otherservice', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00196' },
-  { to: '/com/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
-  { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
-]
+const h5Task = computed(() =>
+  [
+    { to: '/com/profile', icon: '/legacy/h5/images/enterprise_data.png', key: 'wap_com_00096' },
+    { to: '/com/pay', icon: '/legacy/h5/images/caiwuegl.png', key: 'wap_user_00213' },
+    { to: '/com/otherservice', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00196' },
+    { to: '/com/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
+    { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
+  ].filter((item) => isMemberModuleOn(settings.value, item.to)),
+)
 function labelOf(to: string, key?: string) {
   return comItems.value.find((i) => i.to === to)?.label || (key ? t(key) : t('common.more'))
 }

@@ -17,7 +17,7 @@
           >{{ item.label }}</NuxtLink>
         </nav>
         <div class="pc-topbar__actions">
-          <NuxtLink v-if="isCompany" to="/com/jobs/new" class="pc-topbar__text">{{ $t('common.publish_job') }}</NuxtLink>
+          <NuxtLink v-if="showPublishJob" to="/com/jobs/new" class="pc-topbar__text">{{ $t('common.publish_job') }}</NuxtLink>
           <template v-if="me">
             <NuxtLink :to="memberHome" class="pc-topbar__text">{{ me.username }}</NuxtLink>
             <a href="javascript:;" class="pc-topbar__text" @click.prevent="logout">{{ $t('common.logout') }}</a>
@@ -64,6 +64,8 @@
 </template>
 
 <script setup lang="ts">
+import { isMemberModuleOn } from '../utils/site'
+
 const {
   siteName,
   logoPc,
@@ -76,10 +78,12 @@ const {
   h5Title,
   logout,
   navActive,
+  settings,
 } = useSiteChrome()
 const route = useRoute()
 const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
 const isCompany = computed(() => Number(me.value?.usertype) === 2)
+const showPublishJob = computed(() => isCompany.value && isMemberModuleOn(settings.value, '/com/jobs/new'))
 
 function goBack() {
   if (window.history.length > 1) {

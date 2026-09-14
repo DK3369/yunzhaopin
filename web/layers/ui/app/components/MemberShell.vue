@@ -12,6 +12,7 @@
               </NuxtLink>
             </li>
             <li
+              v-if="userMore.length"
               class="member-nav-more"
               :class="{ yun_m_left_cur: moreActive(userMore) }"
               @mouseenter="userMoreOpen = true"
@@ -59,6 +60,7 @@
                 </span>
               </li>
               <li
+                v-if="comMore.length"
                 class="more_box member-nav-more"
                 :class="{ left_nav_newcur: moreActive(comMore) }"
                 @mouseenter="comMoreOpen = true"

@@ -194,6 +194,26 @@ export function isPathModuleOn(settings: Record<string, string>, path: string): 
   return isNavModuleOn(settings, to)
 }
 
+/** 会员路径对不上前台 URL（`/user/parts` ≠ `/parts`），单独映射到 `sy_{m}_web`。 */
+const MEMBER_PATH_TO_MODULE: Record<string, string> = {
+  '/user/parts': 'part',
+  '/com/parts': 'part',
+  '/com/fairs': 'zph',
+  '/com/specials': 'special',
+  '/user/eval-logs': 'evaluate',
+  '/eval': 'evaluate',
+  '/questions': 'ask',
+  '/com/jobs/new': 'job',
+}
+
+export function isMemberModuleOn(settings: Record<string, string>, path: string): boolean {
+  if (!path) return true
+  const keys = Object.keys(MEMBER_PATH_TO_MODULE).sort((a, b) => b.length - a.length)
+  const hit = keys.find((k) => path === k || path.startsWith(`${k}/`))
+  if (hit) return String(settings[`sy_${MEMBER_PATH_TO_MODULE[hit]}_web`] || '') !== '2'
+  return isPathModuleOn(settings, path)
+}
+
 /** PHP 前台快捷登录：开关在 `phpyun_admin_config`（工具 → 登陆）。微信仍可按环境探测。 */
 export const OAUTH_FRONT_PROVIDERS = [
   { name: 'WeChat', path: '/v1/wap/oauth/wechat/authorize-url', key: 'wechat', flag: 'wx_author' },

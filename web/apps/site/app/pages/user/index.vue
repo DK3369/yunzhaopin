@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr, mediaUrl } from '~/utils/site'
+import { isUnauthErr, mediaUrl, isMemberModuleOn } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
@@ -60,7 +60,7 @@ const recJobList = computed((): HomeRecJob[] => {
   return []
 })
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
-const { wxQr } = useSiteChrome()
+const { wxQr, settings } = useSiteChrome()
 const msg = ref('')
 useSeoMeta({ title: t('member_user_00183') })
 
@@ -132,14 +132,16 @@ async function sign() {
   }
 }
 
-const h5Links = [
-  { to: '/user/resume', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00204' },
-  { to: '/user/privacy', icon: '/legacy/h5/images/ys.png', key: 'wap_user_00215' },
-  { to: '/user/otherservice', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00196' },
-  { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
-  { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
-  { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
-]
+const h5Links = computed(() =>
+  [
+    { to: '/user/resume', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00204' },
+    { to: '/user/privacy', icon: '/legacy/h5/images/ys.png', key: 'wap_user_00215' },
+    { to: '/user/otherservice', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00196' },
+    { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
+    { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
+    { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
+  ].filter((item) => isMemberModuleOn(settings.value, item.to)),
+)
 function labelOf(to: string, key: string) {
   return userItems.value.find((i) => i.to === to)?.label || t(key)
 }

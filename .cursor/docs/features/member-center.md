@@ -10,6 +10,19 @@
 | PC 壳 | `MemberShell` 左栏 `yun_m_leftsidebar`（PHP `member/user/left.htm`） | 左栏 `sidebar` + `two_style.css`（PHP `member/com/left.htm`） |
 | H5 壳 | 左栏隐藏；求职右栏外包 `wap_member`；宫格在首页 | **不要**包求职 `wap_member`；宫格在 `/com`（`commemberheader`） |
 
+会员入口跟首页同一套模块开关：`sy_{module}_web != 2`（[`isMemberModuleOn`](../../web/layers/ui/app/utils/site.ts)）。不要拿 `/v1/wap/nav` 当会员左栏。简历/投递/面试/密码等核心项始终显示。依赖站点模块的入口：
+
+| 会员路径 | 模块 |
+|---|---|
+| `/user/parts` `/com/parts` | `part` |
+| `/com/fairs` | `zph` |
+| `/com/specials` | `special` |
+| `/user/eval-logs` `/eval` | `evaluate` |
+| `/questions` | `ask` |
+| `/com/jobs/new`（前台发布职位） | `job` |
+
+组里滤空后整组不渲染。职位模块关时招聘顶栏不显示发布职位；左栏「职位管理」仍在。
+
 打包 CSS：`web/apps/site/server/utils/legacyCss.ts`。PC：`m_css.css` / `m_resume.css` / `m_style.css` / `two_style.css`。H5：`memberwap.css` / `memberuserwap.css` / `combase.css` / `yun_wap_member.css`。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。
 
 壳只 **render 一次 slot**。右栏宽度对齐 PHP：求职 210 + 980。PC 上 `.yun_m_rightsidebar > .wap_member` 用 `display: contents`，不占一层。
@@ -22,7 +35,7 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
 
-前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。
+前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`（`sy_job_web` 关则藏）。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。
 
 `MemberPanel`：`user_new_tit` 在 `yun_m_rightbox` **外**（对照 `job.htm`）；`member_right_index_h1` 必须在 `yun_m_rightbox` **内**（对照 `atn.htm` / `passwd.htm` / `privacy.htm`），否则标题浮在灰底上看起来没皮。
 
@@ -49,6 +62,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 ## 相同
 
 - 登录后按 `usertype` 进对应壳；积分 / 充值 / 密码 / 绑定 / 消息、意见反馈 `/advice` 两端都有
+- 模块关了两端都藏对应入口（兼职、招聘会、专题、测评、问答、发布职位）
 - packed / i18n；列表不要用首页 `job-card`
 - 一套 `/user` `/com` 路由，用 `.site-pc` / `.site-h5` 切皮，不另开 wap
 - 分页：`MemberPager` 输出 PHP `page.class.php` 的 `div.diggg`
@@ -86,6 +100,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 财务 H5 `financial_management_*` 不包 `.site-h5`（PC 会露出一块没皮的头图）
 - 订单列 class 写成 `paylist_span_dh`（PHP 是 `paylist_span paylist_dh` / `paylist_money` / `paylist_zt`）
 - 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`
+- 会员左栏/宫格写死兼职、招聘会、专题、测评，不看首页 `sy_*_web`
 
 ## 菜单对照（求职你列的项）
 
@@ -137,7 +152,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 ## 改代码入口
 
-- 导航：`web/layers/ui/app/composables/useMemberNav.ts`、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype`；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
+- 导航：`web/layers/ui/app/composables/useMemberNav.ts`（按 `isMemberModuleOn` 过滤）、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype` + 职位模块；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
 - 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
 - 表单：`MemberField.vue`（求职 `verification_form*` + `verification_text`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
 - 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单

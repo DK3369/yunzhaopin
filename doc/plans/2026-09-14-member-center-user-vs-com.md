@@ -11,6 +11,7 @@ PHP 对照：`uploads/app/template/member/{user,com}/*.htm`、`uploads/app/templ
 - 登录后按 `usertype` 进对应壳（1→`/user`，2→`/com`）
 - 一套路由切皮；packed / i18n；分页 `MemberPager` → `div.diggg`
 - 两端都有：积分、充值、密码、绑定、消息、意见反馈 `/advice`
+- 模块关了两端都藏对应入口（跟首页 `sy_*_web`：兼职 `part`、招聘会 `zph`、专题 `special`、测评 `evaluate`、问答 `ask`；招聘「发布职位」跟 `job`）
 - 列表不用首页 `job-card`；H5 消息/财务/会话用 `MemberSxNewsCard`，不用 `MemberPostedCard` 冒充
 - 不改 PHP 模板；不新开企业导航自定义 `customize`
 - PC 会员壳：左 210 / 右 980、`.site-pc` / `.site-h5` 切皮、打包 `/legacy/pc.css` `/legacy/h5.css`
@@ -18,10 +19,10 @@ PHP 对照：`uploads/app/template/member/{user,com}/*.htm`、`uploads/app/templ
 
 ## 不同
 
-- **左栏**：求职 `yun_m_leftsidebar`（首页、简历、面试通知、申请、谁看过、收藏、足迹 + 更多）；招聘 `sidebar`（企业中心、职位、简历管理、面试、会员服务、人才库、招聘会、资料、**账号绑定** + 更多服务）。密码/隐私/消息不进求职 PC 左栏。招聘第 9 项是 `/com/binding`，不是 `/com/set`。
+- **左栏**：求职 `yun_m_leftsidebar`（首页、简历、面试通知、申请、谁看过、收藏、足迹 + 更多）；招聘 `sidebar`（企业中心、职位、简历管理、面试、会员服务、人才库、招聘会、资料、**账号绑定** + 更多服务）。密码/隐私/消息不进求职 PC 左栏。招聘第 9 项是 `/com/binding`，不是 `/com/set`。招聘会随 `sy_zph_web` 藏；兼职/专题/测评/问答随对应 `sy_*_web` 藏。
 - **首页**：求职 `yun_m_*` + 简历卡 + 推荐岗 `yun_m_index_job*`；H5 `userheader` / `taskbar`。招聘 PC `membRighTops`；H5 `commemberheader` / `comvip_nav` / `taskbar`。
 - **核心对象**：求职=简历/投递/被看；招聘=职位/应聘管线/下载。
-- **顶栏**：登录后求职 PC 是 `user_header`，招聘 PC 是企业 `header_fixed`，都不要前台深色 `pc-topbar`。H5 两端首页都不要再叠蓝条返回。前台 `pc-topbar` 右侧读 `usertype`：求职只有用户名→`/user`+退出；招聘才「发布职位」→`/com/jobs/new`。求职进 `/com` 会被中间件打回 `/user`。
+- **顶栏**：登录后求职 PC 是 `user_header`，招聘 PC 是企业 `header_fixed`，都不要前台深色 `pc-topbar`。H5 两端首页都不要再叠蓝条返回。前台 `pc-topbar` 右侧读 `usertype`：求职只有用户名→`/user`+退出；招聘才「发布职位」→`/com/jobs/new`（`sy_job_web` 关则藏）。求职进 `/com` 会被中间件打回 `/user`。
 - **PC 右栏**：求职 PHP 对左栏 `fltR`；Vue 已是 flex（210+980），壳内取消二次 float，否则白底塌掉。招聘 `com_body` 不 float，右栏 `.site-pc` 同样 `flow-root`。
 - **标题壳**：求职有 `user_new_tit`（在白盒外）与 `member_right_index_h1`（在 `yun_m_rightbox` 内）两套；招聘一律 `newmember_tit`（在 `com_body` 内）。PHP 里隐私/绑定/充值/财务/搜索器/外发/注销/意见反馈虽是 h1 标题，body 仍有 `resume_box_list`；积分/密码/模板没有。
 - **表单**：求职 `verification_*`；招聘 `com_release_*` + `btn_01`。招聘改密对照 `vs.htm`，不要抄求职 `account_settings`。
@@ -64,8 +65,16 @@ PHP 对照：`uploads/app/template/member/{user,com}/*.htm`、`uploads/app/templ
 | 财务管理 | `/user/finance` | `/com/orders` | `paylist.htm` |
 | 充值 | `/user/pay` | `/com/pay` | `pay.htm` |
 | 简历外发 | `/user/outbox` | 无 | `resumeout.htm` |
-| 兼职 | `/user/parts` 报名 | `/com/parts` 发布 | `partapply.htm` / `partlist.htm` |
+| 兼职 | `/user/parts` 报名（`sy_part_web`） | `/com/parts` 发布（`sy_part_web`） | `partapply.htm` / `partlist.htm` |
 | 意见反馈 | `/advice` | `/advice` | `message.htm` |
+
+## 配置驱动（跟首页同一套 `sy_*_web`）
+
+不要拿后台 nid=1 导航当会员左栏。会员核心项始终显示；下面这些跟首页模块开关走（`!= 2` 为开）：
+
+- 求职更多/H5 其他服务：兼职 `part`、测评 `evaluate`、问答 `ask`
+- 招聘左栏：招聘会 `zph`；更多/H5 其他服务：兼职 `part`、专题 `special`、问答 `ask`；顶栏发布职位 `job`
+- 组滤空后不渲染。H5 首页宫格意见反馈跟 `advice`
 
 ## 命名陷阱
 
