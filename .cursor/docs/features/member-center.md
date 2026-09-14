@@ -68,7 +68,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - packed / i18n；列表不要用首页 `job-card`
 - 一套 `/user` `/com` 路由，用 `.site-pc` / `.site-h5` 切皮，不另开 wap
 - 分页：`MemberPager` 输出 PHP `page.class.php` 的 `div.diggg`
-- H5 非职位列表用 `MemberSxNewsCard`（`sx_new_*`），不要拿 `MemberPostedCard` 冒充消息/咨询/订单/会话
+- H5 消息/咨询/订单/会话用 `MemberSxNewsCard`（`sx_new_*`）；谁看过/足迹/收藏/关注用 `MemberPostedCard`（对照 WAP `Posted_*` / `likejob.htm` 的 `com_member_hr`）。不要用 `sysynews_*` 冒充测评/被下载/举报
+- 退出登录都在 H5 `/user/set` `/com/set` 底栏 `logout_btn`，不在会员首页宫格最后一项
 - 禁止改 `uploads/` PHP 模板
 
 ## 不同
