@@ -199,7 +199,6 @@ function labelOf(to: string, key: string) {
       <div class="yun_m_index_resume">
         <div class="yun_m_index_resume_tit">
           <div class="yun_m_index_resume_span">{{ $t('wap_user_00204') }}</div>
-        </div>
         <div v-if="resume?.name || defExpect" class="user_resume_box">
           <div class="user_resume_photo">
             <NuxtLink to="/user/resume">
@@ -249,7 +248,14 @@ function labelOf(to: string, key: string) {
             </div>
           </div>
         </div>
-        <div v-else class="member_right_no_job">
+        <div v-if="missingBits.length && (resume?.name || defExpect)" class="user_resume_boxtip">
+          <div class="user_resume_boxtip_c">
+            <div class="user_resume_boxtip_h1">{{ missingBits.map(missingLabel).join(' · ') }}</div>
+            <div class="user_resume_boxtip_p">{{ $t('common_01975') }}</div>
+            <NuxtLink to="/user/resume" class="user_resume_boxtip_bth">{{ $t('wap_user_00197') }}</NuxtLink>
+          </div>
+        </div>
+        <div v-else-if="!(resume?.name || defExpect)" class="member_right_no_job">
           <div class="member_right_no_job_box">
             <div class="yun_m_index_job_icon" />
             <div class="member_right_no_jobr">
@@ -277,6 +283,7 @@ function labelOf(to: string, key: string) {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
       <div class="member_right_box_banner fltL" />
@@ -343,6 +350,7 @@ function labelOf(to: string, key: string) {
             <div class="userheader_datum_job_name">
               <i>{{ resume?.name || data?.username || data?.uid }}</i>
               <div v-if="integrity" class="userheader_datum_job_name_number">
+                <img src="/legacy/h5/images/dskke.png" alt="" />
                 <span>{{ integrity }}%</span>
               </div>
             </div>
@@ -359,6 +367,7 @@ function labelOf(to: string, key: string) {
           <NuxtLink to="/user/resume" class="userheader_datum_right">
             <div class="userheader_datum_right_word">
               <span>{{ resume?.name ? $t('wap_user_00208') : $t('wap_user_00197') }}</span>
+              <img src="/legacy/h5/images/comtop1.png" alt="" />
             </div>
           </NuxtLink>
         </div>

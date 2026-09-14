@@ -16,11 +16,11 @@
       </div>
     </div>
     <div v-else class="site-pc">
-      <div class="member_right_index_h1 fltL">
-        <span class="member_right_h1_span fltL">{{ title }}</span>
-        <i class="member_right_h1_icon user_bg" />
-      </div>
-      <div class="yun_m_rightbox">
+      <div class="yun_m_rightbox fltR mt20 re">
+        <div class="member_right_index_h1 fltL">
+          <span class="member_right_h1_span fltL">{{ title }}</span>
+          <i class="member_right_h1_icon user_bg" />
+        </div>
         <div class="account_settings">
           <div v-for="item in items" :key="item.to" class="account_settings_list">
             <div class="account_settings_list_left">

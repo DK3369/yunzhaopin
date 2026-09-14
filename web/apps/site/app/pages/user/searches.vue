@@ -60,7 +60,7 @@ useSeoMeta({ title: t('member_user_00108') })
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <div v-for="row in data?.list || []" :key="row.id" class="job_search_box">
+    <div v-for="row in data?.list || []" :key="row.id" class="job_search_box site-pc">
       <div class="job_search_box_left">
         <div class="job_search_box_jobmane">
           <NuxtLink v-if="row.search_to" :to="row.search_to" class="index_Job_Finder_cont_name_a">{{ row.name }}</NuxtLink>
@@ -76,6 +76,15 @@ useSeoMeta({ title: t('member_user_00108') })
         </div>
         <a href="javascript:;" class="cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + row.id"
+        :title="String(row.name || '')"
+        :sub="String(row.para_n || row.para || '')"
+        :to="row.search_to"
+      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

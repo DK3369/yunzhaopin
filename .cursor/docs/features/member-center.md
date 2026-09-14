@@ -16,6 +16,12 @@
 
 `.site-pc` / `.site-h5` **显示时不强制 `display:block`**（`display: revert`），避免打扁 PHP 的 flex（`userheader` / `userparticulars` / `hr_userlist`）。隐藏时才 `display: none`。
 
+## 顶栏
+
+登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
+
+`MemberPanel`：`user_new_tit` 在 `yun_m_rightbox` **外**（对照 `job.htm`）；`member_right_index_h1` 必须在 `yun_m_rightbox` **内**（对照 `atn.htm` / `passwd.htm` / `privacy.htm`），否则标题浮在灰底上看起来没皮。
+
 ## `MemberPanel` 求职壳（标题与包层已拆开）
 
 PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | resume | plain` 绑死。可传 `userTitle` / `userWrap`，否则按 path 推断。旧 prop `shell` 仍映射：`list`→`user_new_tit`+`resume_box_list`，`resume`→`user_new_tit`+`user_resume_list`，`plain`→`h1`+无包层。
@@ -123,7 +129,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 ## 改代码入口
 
-- 导航：`web/layers/ui/app/composables/useMemberNav.ts`、`MemberShell.vue`
+- 导航：`web/layers/ui/app/composables/useMemberNav.ts`、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）
 - 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
 - 表单：`MemberField.vue`（求职 `verification_form*` + `verification_text`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
 - 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单

@@ -1,30 +1,30 @@
 <template>
   <div class="member-page" :class="kind === 'com' ? 'member-page-com' : 'member-page-user'">
-    <div v-if="kind === 'user'" class="site-pc">
-      <div v-if="userTitle === 'h1'" class="member_right_index_h1 fltL">
-        <span class="member_right_h1_span fltL">{{ title }}</span>
-        <i class="member_right_h1_icon user_bg" />
-        <slot name="titExtra" />
-      </div>
-      <div v-else class="user_new_tit">
+    <div v-if="kind === 'user' && userTitle === 'user_new_tit'" class="site-pc">
+      <div class="user_new_tit">
         <span class="user_new_tit_n">{{ title }}</span>
         <span v-if="sub" class="user_new_tit_r">{{ sub }}</span>
         <slot name="titExtra" />
         <slot name="pcFilters" />
       </div>
     </div>
-    <div v-else class="site-pc">
-      <slot name="pcTabs" />
-      <div v-if="!$slots.pcTabs" class="newmember_tit">
-        <ul>
-          <li class="newmember_titcur">
-            <a href="javascript:;">{{ title }}</a>
-          </li>
-        </ul>
-      </div>
-    </div>
     <slot name="h5Tabs" />
     <div :class="bodyClass">
+      <div v-if="kind === 'user' && userTitle === 'h1'" class="site-pc member_right_index_h1 fltL">
+        <span class="member_right_h1_span fltL">{{ title }}</span>
+        <i class="member_right_h1_icon user_bg" />
+        <slot name="titExtra" />
+      </div>
+      <div v-if="kind === 'com'" class="site-pc">
+        <slot name="pcTabs" />
+        <div v-if="!$slots.pcTabs" class="newmember_tit">
+          <ul>
+            <li class="newmember_titcur">
+              <a href="javascript:;">{{ title }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
       <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
       <div v-if="kind === 'user' && userWrap === 'resume_box_list'" class="resume_box_list">
         <slot />

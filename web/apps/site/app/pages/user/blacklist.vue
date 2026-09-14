@@ -55,7 +55,7 @@ useSeoMeta({ title: t('member_user_00044') })
       <input v-model="keyword" class="black_text" :placeholder="$t('member_user_00563')" />
       <input type="button" class="black_sumit" :value="$t('common.search')" @click="search" />
     </div>
-    <div class="blacklist">
+    <div class="blacklist site-pc">
       <ul class="clearfix" id="company_blench">
         <li v-for="row in hits" :key="'h-' + row.uid">
           <a href="javascript:;" @click="add(row.uid)">{{ row.name || row.uid }}</a>
@@ -65,6 +65,22 @@ useSeoMeta({ title: t('member_user_00044') })
           <NuxtLink :to="`/companies/${row.blocked_uid}`">{{ row.com_name || row.reason || row.blocked_uid }}</NuxtLink>
         </li>
       </ul>
+    </div>
+    <div class="site-h5">
+      <div class="blacklist_tip">{{ $t('wap_01124') }}</div>
+      <div class="blacklist_box">
+        <div class="sw_list">
+          <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="blacklist_p">
+            <NuxtLink :to="`/companies/${row.blocked_uid}`">{{ row.com_name || row.reason || row.blocked_uid }}</NuxtLink>
+            <div class="blacklist_pdel" @click="remove(row.blocked_uid)">
+              <img src="/legacy/h5/images/resume_del.png" alt="" width="100%" height="100%" />
+            </div>
+          </div>
+        </div>
+        <div class="blacklist_tip_bth">
+          <span class="blacklist_tip_bth_a_tj">{{ $t('wap_01125') }}</span>
+        </div>
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>

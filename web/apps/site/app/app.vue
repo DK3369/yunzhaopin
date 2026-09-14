@@ -150,6 +150,7 @@ onMounted(() => {
   <div v-if="siteBlocked" class="site-closed site-inner" v-html="blockHtml" />
   <div v-else class="site-root">
     <AppHeader v-if="!isAuth" />
+    <MemberPcHeader v-if="isMember" />
     <main :class="mainClass">
       <MemberShell v-if="isMember" :kind="route.path.startsWith('/com') ? 'com' : 'user'">
         <NuxtPage />

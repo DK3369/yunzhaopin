@@ -1,6 +1,6 @@
 <template>
-  <!-- PC：深色单行顶栏 -->
-  <div class="site-pc">
+  <!-- 会员中心 PC 用 PHP user_header / 企业 header，见 MemberPcHeader -->
+  <div v-if="!isMember" class="site-pc">
     <header class="pc-topbar">
       <div class="pc-topbar__inner">
         <NuxtLink to="/" class="pc-topbar__logo" :title="siteName">
@@ -52,7 +52,7 @@
         </div>
       </div>
     </div>
-    <template v-else>
+    <template v-else-if="!isMemberHome">
       <div class="header_fixed">
         <div class="header_bg">
           <a class="header_back" href="javascript:;" @click.prevent="goBack" />
@@ -72,11 +72,14 @@ const {
   nav,
   me,
   isHome,
+  isMember,
   memberHome,
   h5Title,
   logout,
   navActive,
 } = useSiteChrome()
+const route = useRoute()
+const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
 
 const hireTo = computed(() => (me.value ? '/com' : '/login?next=/com'))
 
