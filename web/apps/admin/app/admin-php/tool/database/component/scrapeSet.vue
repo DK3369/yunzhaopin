@@ -74,7 +74,7 @@
                 <el-button type="success" size="medium" @click="runNow" :disabled="runLoading || form.running">{{ lc('admin_tool_00702') }}</el-button>
             </div>
             <div v-if="form.last_msg" class="tableDome_tip" style="margin-top:12px;">
-                <el-alert :title="form.last_msg" type="info" :closable="false"></el-alert>
+                <el-alert :title="packedLog(form.last_msg)" type="info" :closable="false"></el-alert>
             </div>
             <div class="moduleTable" style="margin-top:16px;">
                 <div class="TableTite" style="margin-bottom:8px;">{{ lc('admin_tool_00704') }}</div>
@@ -109,6 +109,7 @@
 <script>
 const httpPost = (...a) => window.httpPost(...a)
 const lc = (...a) => window.lc(...a)
+const packedLog = (...a) => (window.yunAdminPacked ? window.yunAdminPacked(...a) : String(a[0] ?? ''))
 const message = typeof window !== 'undefined' && window.message ? window.message : { success(){}, error(){}, warning(){}, confirm(){}, alert(){}, open(){} }
 
 export default {

@@ -156,7 +156,7 @@ pub async fn sign(
             integral_repo::add_balance(db, user.uid, i64::from(reward), now).await?;
         }
         let remark = if signday > 1 {
-            format!("wap_00128{signday}天")
+            format!("wap_00128{signday}common_02067")
         } else {
             "wap_00125".to_string()
         };

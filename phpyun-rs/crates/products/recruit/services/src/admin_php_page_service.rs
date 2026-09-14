@@ -298,8 +298,8 @@ pub async fn php_page(
             let name = setting_repo::find(state.db.reader(), "integral_pricename")
                 .await?
                 .map(|s| s.value)
-                .unwrap_or_else(|| "积分".into());
-            Ok(json!({ "integral_pricename": name }))
+                .unwrap_or_default();
+            Ok(json!({ "integral_pricename": enum_labels::integral_price_name(&name) }))
         }
         "messagelog_base" => Ok(json!({
             "ports": {
@@ -813,9 +813,9 @@ async fn ad_base(state: &AppState) -> AppResult<Value> {
         }));
     }
     let class_one = vec![
-        json!({ "id": 1, "name": "PC" }),
-        json!({ "id": 2, "name": "WAP" }),
-        json!({ "id": 3, "name": "common_01924" }),
+        json!({ "id": 1, "name": enum_labels::ad_place_label(1) }),
+        json!({ "id": 2, "name": enum_labels::ad_place_label(2) }),
+        json!({ "id": 3, "name": enum_labels::ad_place_label(3) }),
     ];
     let mut class_data = Vec::new();
     for one in &class_one {

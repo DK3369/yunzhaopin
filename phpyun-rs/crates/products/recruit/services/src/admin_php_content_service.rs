@@ -2866,11 +2866,7 @@ async fn ads_get_base(state: &AppState) -> AppResult<Value> {
     let class_data = [1, 2, 3]
         .into_iter()
         .map(|id| {
-            let label = match id {
-                1 => "PC",
-                2 => "WAP",
-                _ => "common_01924",
-            };
+            let label = enum_labels::ad_place_label(id);
             let children = class_two.get(&id).cloned().unwrap_or_default();
             let mut row = json!({ "label": label, "value": id.to_string() });
             if !children.is_empty() {
@@ -3066,12 +3062,8 @@ async fn ads_upsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     Ok(PhpOut::Data(json!({})))
 }
 
-fn place_n(place: i32) -> &'static str {
-    match place {
-        1 => "PC",
-        2 => "WAP",
-        _ => "common_01924",
-    }
+fn place_n(place: i32) -> String {
+    enum_labels::ad_place_label(place)
 }
 
 async fn ad_class_index(state: &AppState, body: &Value) -> AppResult<Value> {
@@ -3114,10 +3106,12 @@ async fn ad_class_index(state: &AppState, body: &Value) -> AppResult<Value> {
             })
         })
         .collect();
-    let pricename = setting_repo::find(db, "integral_pricename")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let pricename = enum_labels::integral_price_name(
+        &setting_repo::find(db, "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_default(),
+    );
     let pic_max = setting_repo::find(db, "pic_maxsize")
         .await?
         .map(|s| s.value)
@@ -3481,10 +3475,12 @@ async fn finance_order_index(state: &AppState, body: &Value) -> AppResult<Value>
     let total = vip_repo::php_count_orders(db, &f).await?;
     let sum = vip_repo::php_sum_orders(db, &f).await?;
     let list: Vec<Value> = rows.iter().map(finance_order_json).collect();
-    let pricename = setting_repo::find(db, "integral_pricename")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let pricename = enum_labels::integral_price_name(
+        &setting_repo::find(db, "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_default(),
+    );
     Ok(json!({
         "data": list,
         "list": list,
@@ -3507,10 +3503,12 @@ async fn finance_order_edit(state: &AppState, body: &Value) -> AppResult<Value> 
     let r = vip_repo::php_find_order(state.db.reader(), id)
         .await?
         .ok_or_else(|| ApiError::business("common_01237"))?;
-    let pricename = setting_repo::find(state.db.reader(), "integral_pricename")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let pricename = enum_labels::integral_price_name(
+        &setting_repo::find(state.db.reader(), "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_default(),
+    );
     let (htpics, preview_pics) = order_ht_pics(state, r.id, 0, 500).await?;
     let row = finance_order_json(&r);
     Ok(json!({
@@ -3741,7 +3739,12 @@ async fn finance_order_htpic_del(state: &AppState, body: &Value) -> AppResult<Ph
 }
 
 fn cfg_pick(cfg: &HashMap<String, String>, key: &str) -> String {
-    cfg.get(key).cloned().unwrap_or_default()
+    let v = cfg.get(key).cloned().unwrap_or_default();
+    if key == "integral_pricename" {
+        enum_labels::integral_price_name(&v)
+    } else {
+        v
+    }
 }
 
 fn strip_site_url(cfg: &HashMap<String, String>, url: &str) -> String {
@@ -3949,10 +3952,12 @@ async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
     let db = state.db.reader();
     let rows = pay_repo::php_list_pay(db, &f, offset, limit).await?;
     let total = pay_repo::php_count_pay(db, &f).await?;
-    let pricename = setting_repo::find(db, "integral_pricename")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let pricename = enum_labels::integral_price_name(
+        &setting_repo::find(db, "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_default(),
+    );
     let list: Vec<Value> = rows
         .into_iter()
         .map(|r| {
@@ -4034,10 +4039,12 @@ async fn finance_recharge_index(state: &AppState) -> AppResult<Value> {
         .filter(|s| s.display == 1)
         .map(|s| json!({ "id": s.id, "name": s.name, "display": s.display, "sort": s.sort }))
         .collect();
-    let pricename = setting_repo::find(db, "integral_pricename")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let pricename = enum_labels::integral_price_name(
+        &setting_repo::find(db, "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_default(),
+    );
     let priceunit = setting_repo::find(db, "integral_priceunit")
         .await?
         .map(|s| s.value)
@@ -4270,12 +4277,17 @@ async fn finance_searchname(state: &AppState, body: &Value, by_user: bool) -> Ap
 }
 
 async fn cfg_of(state: &AppState, key: &str) -> String {
-    setting_repo::find(state.db.reader(), key)
+    let v = setting_repo::find(state.db.reader(), key)
         .await
         .ok()
         .flatten()
         .map(|s| s.value)
-        .unwrap_or_default()
+        .unwrap_or_default();
+    if key == "integral_pricename" {
+        enum_labels::integral_price_name(&v)
+    } else {
+        v
+    }
 }
 
 async fn upsert_cfg(
@@ -6817,10 +6829,12 @@ async fn user_gap_pay_log(state: &AppState, body: &Value) -> AppResult<Value> {
         .await?
         .map(|s| s.value)
         .unwrap_or_default();
-    let pricename = setting_repo::find(db, "integral_pricename")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let pricename = enum_labels::integral_price_name(
+        &setting_repo::find(db, "integral_pricename")
+            .await?
+            .map(|s| s.value)
+            .unwrap_or_default(),
+    );
     let list: Vec<Value> = rows
         .into_iter()
         .map(|r| {
@@ -10678,10 +10692,12 @@ async fn shop_reward_add(
         let db = state.db.reader();
         let class = redeem_repo::list_classes(db, Some(0)).await?;
         let class: Vec<Value> = class.iter().map(redeem_class_json).collect();
-        let integral_pricename = setting_repo::find(db, "integral_pricename")
-            .await?
-            .map(|s| s.value)
-            .unwrap_or_else(|| enum_labels::label("wap_user_00008"));
+        let integral_pricename = enum_labels::integral_price_name(
+            &setting_repo::find(db, "integral_pricename")
+                .await?
+                .map(|s| s.value)
+                .unwrap_or_default(),
+        );
         let info = if id > 0 {
             match redeem_repo::php_get_reward(db, id).await? {
                 Some(r) => {

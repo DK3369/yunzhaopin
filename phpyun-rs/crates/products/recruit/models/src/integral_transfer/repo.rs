@@ -187,9 +187,9 @@ pub async fn execute(
     let order_id_debit = gen_order_id(now);
     let order_id_credit = gen_order_id(now);
     let remark = if note.is_empty() {
-        "用户积分转账".to_string()
+        "common_07067".to_string()
     } else {
-        format!("积分转账：{note}")
+        format!("common_07068{note}")
     };
 
     sqlx::query(

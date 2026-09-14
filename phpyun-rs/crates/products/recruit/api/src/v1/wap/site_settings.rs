@@ -51,7 +51,7 @@ pub struct SettingsListBody {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    lang: Lang,
+    _lang: Lang,
     ClientIp(ip): ClientIp,
     body: Option<Json<SettingsListBody>>,
 ) -> AppResult<ApiResponse<Value>> {
@@ -62,7 +62,7 @@ pub async fn list(
             .map(|reason| ReportReasonView {
                 id: reason.id,
                 code: reason.id.to_string(),
-                name: localize_reason(reason.id, &reason.name, lang).to_owned(),
+                name: phpyun_services::enum_labels::report_reason_name(reason.id, &reason.name),
             })
             .collect();
         return Ok(ApiResponse::data(json!(data)));
@@ -89,32 +89,6 @@ pub struct ReportReasonView {
     /// Pass this value as `reason_code` when submitting a report.
     pub code: String,
     pub name: String,
-}
-
-fn localize_reason(id: u64, database_name: &str, lang: Lang) -> &str {
-    match lang {
-        Lang::ZhCN => database_name,
-        Lang::ZhTW => match id {
-            1 => "非建設性提問",
-            2 => "不友善言論、垃圾內容與不適宜討論的內容",
-            3 => "不構成提問或問題表意不明確",
-            4 => "問題已失效或過期",
-            5 => "廣告等垃圾資訊",
-            6 => "違法違規內容",
-            7 => "不宜公開討論的政治內容",
-            _ => database_name,
-        },
-        Lang::En => match id {
-            1 => "Non-constructive content",
-            2 => "Abusive, spam, or inappropriate content",
-            3 => "Unclear or invalid question",
-            4 => "Outdated or no longer relevant",
-            5 => "Advertising or spam",
-            6 => "Illegal or prohibited content",
-            7 => "Sensitive political content",
-            _ => database_name,
-        },
-    }
 }
 
 /// Single public setting

@@ -1176,8 +1176,10 @@ pub async fn rating_base_data(state: &AppState) -> AppResult<serde_json::Value> 
     let name = phpyun_models::site_setting::repo::find(state.db.reader(), "integral_pricename")
         .await?
         .map(|s| s.value)
-        .unwrap_or_else(|| "积分".into());
-    Ok(serde_json::json!({ "config": { "integral_pricename": name } }))
+        .unwrap_or_default();
+    Ok(serde_json::json!({
+        "config": { "integral_pricename": crate::enum_labels::integral_price_name(&name) }
+    }))
 }
 
 pub async fn list_rating_services(state: &AppState) -> AppResult<serde_json::Value> {

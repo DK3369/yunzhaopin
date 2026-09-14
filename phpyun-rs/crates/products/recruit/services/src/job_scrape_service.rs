@@ -160,7 +160,7 @@ pub async fn admin_run(state: &AppState) -> AppResult<Value> {
         }));
     }
     let now = clock::now_ts();
-    let _ = setting_repo::upsert(state.db.pool(), KEY_LAST_MSG, "采集进行中", "", false, now).await;
+    let _ = setting_repo::upsert(state.db.pool(), KEY_LAST_MSG, "admin_tool_00737", "", false, now).await;
     let bg = state.clone();
     tokio::spawn(async move {
         let res = run_inner(&bg).await;

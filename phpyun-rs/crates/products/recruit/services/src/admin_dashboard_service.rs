@@ -318,7 +318,7 @@ pub async fn home_data(
             "version": format!("phpyun-rs {}", env!("CARGO_PKG_VERSION")),
             "soft": info.os,
             "kongjian": kongjian,
-            "phpbanben": format!("前端 Nuxt {}  后端 Rust {}", info.nuxt, info.rustc),
+            "phpbanben": format!("Nuxt {} / Rust {}", info.nuxt, info.rustc),
             "banben": mysql,
             "yonghu": info.user,
             "server": server

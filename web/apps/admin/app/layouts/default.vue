@@ -212,7 +212,7 @@ async function logout() {
 async function clearCache() {
   try {
     await ElMessageBox.confirm(
-      locale.value === 'en' ? 'Clear the cache?' : '确定清除缓存？',
+      lc('common_07066', null, '确定清除缓存？'),
       lc('common_01520', null, '提示'),
       {
         type: 'warning',

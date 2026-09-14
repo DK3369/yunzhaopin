@@ -87,7 +87,7 @@
                             <td>
                                 <div class="TableSelect" style="display: flex;align-items: center;">
                                     <el-select v-model="save.ratingid" :placeholder="lc('wap_user_00100')" @change="ratingFun">
-                                        <el-option v-for="item in ratinglist" :key="item.id" :label="item.name"
+                                        <el-option v-for="item in ratinglist" :key="item.id" :label="packedLog(item.name)"
                                             :value="item.id">
                                         </el-option>
                                     </el-select>

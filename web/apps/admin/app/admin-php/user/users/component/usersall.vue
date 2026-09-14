@@ -920,7 +920,9 @@
                                         </template>
                                         <el-table-column prop="order_id" :label="lc('admin_user_00295')"></el-table-column>
                                         <el-table-column prop="consume_price_n" :label="lc('member_user_00254')"></el-table-column>
-                                        <el-table-column prop="consume_remark" :label="lc('admin_user_00290')"></el-table-column>
+                                        <el-table-column :label="lc('admin_user_00290')">
+                                            <template #default="scope">{{ packedLog(scope.row.consume_remark) }}</template>
+                                        </el-table-column>
                                         <el-table-column prop="pay_time_n" :label="lc('wap_com_00344')"></el-table-column>
                                         <el-table-column prop="consume_state_n" :label="lc('member_user_00181')"></el-table-column>
                                     </el-table>

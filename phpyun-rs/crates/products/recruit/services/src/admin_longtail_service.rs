@@ -272,10 +272,15 @@ fn shanghai_today_bounds(now_utc: i64) -> (i64, i64) {
 }
 
 async fn cfg(state: &AppState, key: &str) -> AppResult<String> {
-    Ok(phpyun_models::site_setting::repo::find(state.db.reader(), key)
+    let v = phpyun_models::site_setting::repo::find(state.db.reader(), key)
         .await?
         .map(|s| s.value)
-        .unwrap_or_default())
+        .unwrap_or_default();
+    if key == "integral_pricename" {
+        Ok(enum_labels::integral_price_name(&v))
+    } else {
+        Ok(v)
+    }
 }
 
 /// PHP `company::getCache_action`.
@@ -2192,7 +2197,11 @@ fn works_php(rows: Vec<Work>) -> Vec<Value> {
                 "sdate": w.sdate,
                 "edate": w.edate,
                 "sdate_n": date_n(w.sdate),
-                "edate_n": if w.edate > 0 { date_n(w.edate) } else { "wap_js_00170".into() },
+                "edate_n": if w.edate > 0 {
+                    date_n(w.edate)
+                } else {
+                    enum_labels::label("wap_js_00170")
+                },
                 "department": w.department,
                 "title": w.title,
                 "content": w.content,

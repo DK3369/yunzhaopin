@@ -286,7 +286,7 @@ fn inject_country_menu(items: &mut Vec<AdminMenuItem>) {
     items.push(AdminMenuItem {
         id: COUNTRY_MENU_ID,
         keyid,
-        name: "国家".to_string(),
+        name: "common_07065".to_string(),
         url: String::new(),
         path: "country".to_string(),
         classname,

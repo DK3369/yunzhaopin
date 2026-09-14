@@ -261,6 +261,41 @@ pub fn several() -> String {
     label("admin_user_company_00328")
 }
 
+/// Ad placement: PC/WAP stay as product names; other → 未定义.
+pub fn ad_place_label(place: i32) -> String {
+    match place {
+        1 => "PC".into(),
+        2 => "WAP".into(),
+        _ => label("common_01924"),
+    }
+}
+
+/// Site setting `integral_pricename`. Empty / default 积分 → current-lang copy.
+/// Custom names (admin typed) stay as stored.
+pub fn integral_price_name(raw: &str) -> String {
+    let t = raw.trim();
+    if t.is_empty() || t == "积分" || t == "積分" || t.eq_ignore_ascii_case("points") {
+        label("wap_user_00008")
+    } else {
+        t.to_string()
+    }
+}
+
+/// Q&A report reasons: known ids → numbered keys; unknown keep DB name.
+pub fn report_reason_name(id: u64, database_name: &str) -> String {
+    let key = match id {
+        1 => "common_01553",
+        2 => "common_00353",
+        3 => "common_00692",
+        4 => "common_01079",
+        5 => "common_01361",
+        6 => "common_01548",
+        7 => "common_00843",
+        _ => return database_name.to_string(),
+    };
+    label(key)
+}
+
 /// Template-cache module id → numbered key (`set_config_settplcache`).
 pub const TPL_CACHE_MODELS: &[(&str, &str)] = &[
     ("job", "default_00246"),
@@ -434,5 +469,14 @@ mod tests {
             .and_then(|v| v.as_str())
             .unwrap_or("")
             .contains("首页"));
+        assert_eq!(ad_place_label(1), "PC");
+        assert_eq!(ad_place_label(3), "Undefined");
+        assert_eq!(integral_price_name(""), "Points");
+        assert_eq!(integral_price_name("积分"), "Points");
+        assert_eq!(integral_price_name("MyCoin"), "MyCoin");
+        assert_eq!(
+            report_reason_name(1, "非建设性提问"),
+            "Non-constructive Question"
+        );
     }
 }

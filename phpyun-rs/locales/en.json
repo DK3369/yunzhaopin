@@ -862,7 +862,20 @@
     "common_07061": "Store job",
     "common_07062": "Store job description",
     "common_07063": "Category description",
-    "common_07064": "Toolbox details"
+    "common_07064": "Toolbox details",
+    "common_07065": "Country",
+    "common_07066": "Clear the cache?",
+    "common_07067": "Points transfer",
+    "common_07068": "Points transfer: ",
+    "common_01924": "Undefined",
+    "common_01553": "Non-constructive Question",
+    "common_00353": "Unfriendly, spam, or unsuitable content",
+    "common_00692": "Not a question or unclear meaning",
+    "common_01079": "Question completed, invalid or expired",
+    "common_01361": "Ads or spam",
+    "common_01548": "Illegal or non-compliant content",
+    "common_00843": "Political content unsuitable for public discussion",
+    "admin_tool_00737": "Scraping in progress"
   },
   "recommend": {
     "disabled": "Recommendations are disabled",

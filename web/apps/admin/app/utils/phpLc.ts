@@ -105,6 +105,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00734: '公司板地址在「第三方数据」维护；本页只管聚合站 URL 和定时。',
     admin_tool_00735: '职位收藏：收藏了职位：',
     admin_tool_00736: '收藏管理：取消收藏职位：',
+    admin_tool_00737: '采集进行中',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -164,6 +165,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00734: 'Company board URLs live under Third Data. This page still controls the aggregator URL and schedule.',
     admin_tool_00735: 'Favorites: favorited job ',
     admin_tool_00736: 'Favorites: removed job ',
+    admin_tool_00737: 'Scraping in progress',
   },
 }
 
@@ -221,6 +223,7 @@ const NAME_ALIAS: Record<string, string> = {
   邮件服务器: 'admin_tool_00728',
   第三方数据: 'admin_tool_00729',
   计划任务: 'admin_system_00273',
+  国家: 'common_07065',
 }
 
 let mergedFixes = false
