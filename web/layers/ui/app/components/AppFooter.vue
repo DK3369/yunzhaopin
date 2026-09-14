@@ -47,7 +47,6 @@
                     <li><NuxtLink to="/companies">{{ $t('common.company') }}</NuxtLink></li>
                     <li><NuxtLink to="/fairs">{{ $t('member_com_00293') }}</NuxtLink></li>
                     <li><NuxtLink to="/articles">{{ $t('common.article') }}</NuxtLink></li>
-                    <li><NuxtLink to="/data-show">{{ $t('wap_00124') }}</NuxtLink></li>
                   </ul>
                 </dd>
               </dl>
@@ -121,12 +120,9 @@
             <div class="wap_footer_name">{{ isCompany ? $t('common.publish_job') : me ? $t('common.publish_resume') : $t('common.publish') }}</div>
           </NuxtLink>
           <NuxtLink class="wap_footernav" :to="me ? messageTo : '/login'">
-            <div class="wap_footericon" style="position: relative">
+            <div class="wap_footericon">
+              <div v-if="unreadTotal > 0" class="Unread_message">{{ unreadTotal > 99 ? '99+' : unreadTotal }}</div>
               <img :src="tabIcon('news')" alt="" style="width: 100%" />
-              <em
-                v-if="unreadTotal > 0"
-                style="position: absolute; top: -4px; right: -6px; min-width: 16px; height: 16px; line-height: 16px; border-radius: 8px; background: #f33; color: #fff; font-size: 11px; text-align: center; padding: 0 4px"
-              >{{ unreadTotal > 99 ? '99+' : unreadTotal }}</em>
             </div>
             <div class="wap_footer_name">{{ $t('common.message') }}</div>
           </NuxtLink>

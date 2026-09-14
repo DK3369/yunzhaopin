@@ -2,6 +2,8 @@
 
 一套 Nuxt 路由，CSS 用 `.site-pc`（≥1200）/ `.site-h5`（≤1199）切皮，**不另开 wap 应用**。接口仍是 `/v1/mcenter/*`。只改 `web/`，**不改** `uploads/` PHP。
 
+招聘大数据只在后台「运营 → 营销」配参数；前台**没有** `/data-show` 页和入口（PHP 也不把它写进 WAP/PC 导航）。H5 底栏对齐 `wap/footer.htm`：五项 `width:20%` + float，图标 `.wap_footericon` 绝对定位，中间发布 `.wap_footer_fb` 上凸；消息角标用 `Unread_message`，不要改 icon 的 `position`。
+
 ## 入口
 
 | | 求职 | 招聘 |
@@ -111,6 +113,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 招聘改密 H5 抄求职 `verification_form` / `MemberField`（应对 WAP `password.htm` 的 `security` / `security_text_t`）
 - H5 会员首页再给 `wap_member` 垫左右 padding（会挤窄 `userheader`）
 - 其他服务仍用 PHP 的 `position_management_body{position:absolute}`（Vue 已有蓝条，宫格会飞出视口）
+- 前台挂 `/data-show` 或页脚「招聘大数据」（后台只配参数；PHP 导航没有这项）
+- H5 底栏 `.wap_footerbox` 改 flex / `overflow-x:hidden`（会裁上凸发布钮）；消息角标给 `.wap_footericon` 写 `position:relative`（会把五项挤乱）
 
 ## 菜单对照（求职你列的项）
 
@@ -169,3 +173,4 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - 分页：`useMemberListPage.ts`
 - 页：`web/apps/site/app/pages/user/*`、`pages/com/*`
 - CSS：`legacyCss.ts`；切皮与壳：`web/apps/site/app/assets/main.css`
+- H5 底栏 / PC 页脚：[`AppFooter.vue`](../../web/layers/ui/app/components/AppFooter.vue)（对照 `wap/footer.htm` / `default/footer.htm`）
