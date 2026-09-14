@@ -389,7 +389,12 @@ impl Modify for UniqueOperationId {
         v1::wap::claim::claim,
         // wap: home + links + search + advice
         v1::wap::home::home,
+        v1::wap::rankings::rankings,
+        v1::wap::subscribe::meta,
+        v1::wap::subscribe::create,
+        v1::wap::subscribe::send_email,
         v1::wap::links::list,
+        v1::wap::links::apply,
         v1::wap::search::search,
         v1::wap::advice::submit,
         // mcenter: integral
@@ -938,7 +943,13 @@ impl Modify for UniqueOperationId {
             v1::wap::home::HomeData,
             v1::wap::home::AnnouncementSummary,
             v1::wap::home::HotKeyword,
+            v1::wap::rankings::RankingsData,
+            v1::wap::rankings::RankKeyword,
+            v1::wap::subscribe::SubscribeMetaView,
+            v1::wap::subscribe::SubscribeForm,
+            v1::wap::subscribe::SendEmailForm,
             v1::wap::links::LinkItem,
+            v1::wap::links::LinkApplyForm,
             v1::wap::search::SearchData,
             // SearchData reuses per-domain Summary directly; no separate SearchJob/SearchCompany etc.
             v1::wap::advice::AdviceForm,

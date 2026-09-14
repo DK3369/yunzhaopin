@@ -62,12 +62,28 @@ pub struct LinkApplyForm {
     pub name: String,
     #[validate(length(min = 1, max = 255))]
     pub url: String,
+    /// PHP `type`: `1` text / `2` image. Additive, default text.
+    #[serde(default)]
+    #[validate(length(max = 8))]
+    pub link_type: String,
+    /// Image URL when `link_type=2`. Additive.
+    #[serde(default)]
+    #[validate(length(max = 255))]
+    pub pic: String,
     #[validate(length(min = 1, max = 64))]
     pub captcha_cid: String,
     #[validate(length(min = 1, max = 16))]
     pub captcha_input: String,
 }
 
+/// Apply for a friend link (pending review).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/friend-links/apply",
+    tag = "wap",
+    request_body = LinkApplyForm,
+    responses((status = 200, description = "ok"))
+)]
 pub async fn apply(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
@@ -82,6 +98,16 @@ pub async fn apply(
     .await?
     .then_some(())
     .ok_or_else(phpyun_core::ApiError::captcha)?;
-    let id = friend_link_service::apply(&state, &f.name, &f.url, &ip).await?;
+    let id = friend_link_service::apply(
+        &state,
+        friend_link_service::ApplyInput {
+            name: &f.name,
+            url: &f.url,
+            link_type: &f.link_type,
+            pic: &f.pic,
+        },
+        &ip,
+    )
+    .await?;
     Ok(ApiResponse::data(phpyun_core::dto::CreatedId { id }))
 }

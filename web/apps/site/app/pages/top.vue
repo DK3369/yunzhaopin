@@ -3,31 +3,44 @@ import { formatSalary, type CompanyLike, type JobLike } from '~/utils/site'
 
 type ResumeRow = { uid: number; display_name?: string; expect_name?: string; lastupdate_n?: string }
 type ArticleRow = { id: number; title: string; hits?: number }
-type HotRow = { keyword: string; hits?: number; scope?: string }
+type HotRow = { keyword: string; hits?: number; num?: number; type_name?: string; to?: string }
+
+type RankingsData = {
+  rec_jobs?: JobLike[]
+  companies?: CompanyLike[]
+  latest_jobs?: JobLike[]
+  resumes?: ResumeRow[]
+  keywords?: HotRow[]
+  articles?: ArticleRow[]
+  urgent_jobs?: JobLike[]
+}
 
 const { t } = useI18n()
 const api = useApi()
 const { siteName } = useSiteChrome()
+const { applyToQuery } = useSubSite()
 
-async function takeList<T>(p: Promise<{ list?: T[] } | T[] | null | undefined>): Promise<T[]> {
-  const r = await p.catch(() => null)
-  if (!r) return []
-  if (Array.isArray(r)) return r
-  return r.list || []
+const emptyRankings: RankingsData = {
+  rec_jobs: [],
+  companies: [],
+  latest_jobs: [],
+  resumes: [],
+  keywords: [],
+  articles: [],
+  urgent_jobs: [],
 }
 
 const { data } = await useAsyncData('site-rank-top', async () => {
-  const [recJobs, companies, latestJobs, resumes, keywords, articles, urgentJobs] = await Promise.all([
-    takeList<JobLike>(api.get('/v1/wap/jobs', { rec: true, page: 1, page_size: 10 })),
-    takeList<CompanyLike>(api.get('/v1/wap/companies', { page: 1, page_size: 10 })),
-    takeList<JobLike>(api.get('/v1/wap/jobs', { page: 1, page_size: 10 })),
-    takeList<ResumeRow>(api.get('/v1/wap/resumes', { page: 1, page_size: 10 })),
-    takeList<HotRow>(api.get('/v1/wap/hot-searches', { scope: 'job', limit: 10 })),
-    takeList<ArticleRow>(api.get('/v1/wap/articles', { page: 1, page_size: 20 })),
-    takeList<JobLike>(api.get('/v1/wap/jobs', { urgent: true, page: 1, page_size: 10 })),
-  ])
-  const articleRank = [...articles].sort((a, b) => Number(b.hits || 0) - Number(a.hits || 0)).slice(0, 10)
-  return { recJobs, companies, latestJobs, resumes, keywords, articles: articleRank, urgentJobs }
+  const row = await api.get<RankingsData>('/v1/wap/rankings', applyToQuery({})).catch(() => emptyRankings)
+  return {
+    recJobs: row.rec_jobs || [],
+    companies: row.companies || [],
+    latestJobs: row.latest_jobs || [],
+    resumes: row.resumes || [],
+    keywords: row.keywords || [],
+    articles: row.articles || [],
+    urgentJobs: row.urgent_jobs || [],
+  }
 })
 
 function jobPay(job: JobLike) {
@@ -113,10 +126,11 @@ useHead({ link: [{ rel: 'canonical', href: '/top' }] })
       <ul class="post_Top_box_list">
         <li v-for="(row, i) in data?.keywords || []" :key="`${row.keyword}-${i}`">
           <span :class="{ Top_box_span: i < 3 }">{{ i + 1 }}</span>
-          <NuxtLink :to="{ path: '/jobs', query: { keyword: row.keyword } }" style="width: 110px">
+          <NuxtLink :to="{ path: row.to || '/jobs', query: { keyword: row.keyword } }" style="width: 110px">
             {{ row.keyword }}
           </NuxtLink>
-          <em>{{ row.hits }}</em>
+          <u class="fl">{{ row.type_name }}</u>
+          <em>{{ row.num ?? row.hits }}</em>
         </li>
       </ul>
     </div>

@@ -53,6 +53,12 @@ pub struct CompanySummary {
     /// Homepage famous-company hover (PHP `hotjob` 插件最多 3 条在招).
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub open_jobs: Vec<CompanyOpenJob>,
+    /// PHP `phpyun_company.lastupdate` (varchar: `YYYY-MM-DD` or unix). Additive.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lastupdate: Option<String>,
+    /// Formatted `Y-m-d` for list cards (PHP `comlist` `|date_format:"%Y-%m-%d"`).
+    #[serde(default)]
+    pub lastupdate_n: String,
 }
 
 /// Brief job row for the famous-company hover panel.

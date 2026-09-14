@@ -33,6 +33,7 @@ pub mod part;
 pub mod pay_callback;
 pub mod poster;
 pub mod qna;
+pub mod rankings;
 pub mod ratings;
 pub mod redeem;
 pub mod regions;
@@ -46,6 +47,7 @@ pub mod site_settings;
 pub mod sms;
 pub mod specials;
 pub mod stats;
+pub mod subscribe;
 pub mod tiny;
 pub mod upload;
 pub mod wechat;
@@ -80,6 +82,7 @@ pub fn router() -> Router<AppState> {
         .merge(announcements::routes())
         .merge(zph::routes())
         .merge(qna::routes())
+        .merge(rankings::routes())
         .merge(integral::routes())
         .merge(site::routes())
         .merge(claim::routes())
@@ -89,6 +92,7 @@ pub fn router() -> Router<AppState> {
         .merge(advice::routes())
         .merge(company_sub::routes())
         .merge(stats::routes())
+        .merge(subscribe::routes())
         .merge(resume_share::routes())
         .merge(map::routes())
         .merge(share::routes())
@@ -200,6 +204,8 @@ pub fn get_allowed_paths() -> Vec<&'static str> {
     v.extend_from_slice(hot_searches::GET_ALLOWED_PATHS);
     v.extend_from_slice(descriptions::GET_ALLOWED_PATHS);
     v.extend_from_slice(company_sub::GET_ALLOWED_PATHS);
+    v.extend_from_slice(rankings::GET_ALLOWED_PATHS);
+    v.extend_from_slice(subscribe::GET_ALLOWED_PATHS);
     v
 }
 
@@ -223,6 +229,8 @@ mod get_alias_tests {
             "/v1/wap/legal",
             "/v1/wap/initjobs",
             "/v1/wap/initads",
+            "/v1/wap/rankings",
+            "/v1/wap/subscribe/meta",
         ] {
             assert!(v.contains(&p), "missing GET alias {p}");
         }

@@ -142,7 +142,23 @@ pub fn company_summary_from_dict(
             .map(|s| dicts.welfare_labels(s))
             .unwrap_or_default(),
         open_jobs: Vec::new(),
+        lastupdate: c.lastupdate.clone(),
+        lastupdate_n: company_lastupdate_n(c.lastupdate.as_deref()),
     }
+}
+
+fn company_lastupdate_n(raw: Option<&str>) -> String {
+    let s = raw.unwrap_or("").trim();
+    if s.is_empty() {
+        return String::new();
+    }
+    if s.len() >= 10 && s.as_bytes().get(4) == Some(&b'-') {
+        return s.chars().take(10).collect();
+    }
+    if let Ok(ts) = s.parse::<i64>() {
+        return phpyun_core::utils::fmt_date(ts);
+    }
+    s.to_string()
 }
 
 /// Fill `job_num` on list cards (one grouped COUNT). Best-effort: leave 0 on error.

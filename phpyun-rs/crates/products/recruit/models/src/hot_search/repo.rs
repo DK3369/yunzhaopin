@@ -69,3 +69,15 @@ pub async fn top(pool: &MySqlPool, scope: &str, limit: u64) -> Result<Vec<HotSea
         .fetch_all(pool)
         .await
 }
+
+/// PHP `{yun:}key order=num{/yun}`: approved keywords across types, `num` DESC.
+pub async fn top_checked(pool: &MySqlPool, limit: u64) -> Result<Vec<HotSearch>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {SELECT_FIELDS} FROM phpyun_hot_key \
+         WHERE COALESCE(`check`, 0) = 1 AND {PREDICATE} ORDER BY num DESC LIMIT ?"
+    );
+    sqlx::query_as::<_, HotSearch>(&sql)
+        .bind(limit)
+        .fetch_all(pool)
+        .await
+}

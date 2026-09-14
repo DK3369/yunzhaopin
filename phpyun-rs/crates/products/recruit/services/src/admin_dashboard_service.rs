@@ -11,6 +11,7 @@ use crate::friend_link_service;
 use crate::home_service;
 use crate::hot_search_service;
 use crate::qna_service;
+use crate::ranking_service;
 use crate::redeem_service;
 use crate::region_service;
 use crate::site_setting_service;
@@ -738,6 +739,7 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     category_service::invalidate_all();
     ad_service::invalidate_all();
     home_service::invalidate_all().await;
+    ranking_service::invalidate_all().await;
     friend_link_service::invalidate_all().await;
     hot_search_service::invalidate_all().await;
     data_show_service::invalidate_all().await;

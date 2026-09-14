@@ -355,6 +355,7 @@
 /v1/wap/forgetpw/send-email
 /v1/wap/forgetpw/send-sms
 /v1/wap/friend-links
+/v1/wap/friend-links/apply
 /v1/wap/gongzhao
 /v1/wap/gongzhao/detail
 /v1/wap/home
@@ -436,6 +437,7 @@
 /v1/wap/questions/detail
 /v1/wap/ratings/list
 /v1/wap/ratings/summary
+/v1/wap/rankings
 /v1/wap/redeem/classes
 /v1/wap/redeem/rewards
 /v1/wap/redeem/rewards/detail
@@ -473,6 +475,9 @@
 /v1/wap/specials/industries
 /v1/wap/specials/jobs
 /v1/wap/stats/overview
+/v1/wap/subscribe
+/v1/wap/subscribe/meta
+/v1/wap/subscribe/send-email
 /v1/wap/tiny-resumes
 /v1/wap/tiny-resumes/delete
 /v1/wap/tiny-resumes/list

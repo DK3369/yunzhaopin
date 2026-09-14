@@ -4,8 +4,9 @@
 //! and the list is rendered on every page footer.
 
 use phpyun_core::cache::SimpleCache;
-use phpyun_core::{AppResult, AppState};
+use phpyun_core::{ApiError, AppResult, AppState};
 use phpyun_models::friend_link::{entity::FriendLink, repo as friend_link_repo};
+use phpyun_models::site_setting::repo as setting_repo;
 use std::sync::Arc;
 
 const TTL_SECS: u64 = 300;
@@ -32,26 +33,51 @@ pub async fn list(state: &AppState, category: Option<&str>) -> AppResult<Arc<Vec
         .await
 }
 
+pub struct ApplyInput<'a> {
+    pub name: &'a str,
+    pub url: &'a str,
+    pub link_type: &'a str,
+    pub pic: &'a str,
+}
+
 pub async fn apply(
     state: &AppState,
-    name: &str,
-    url: &str,
+    input: ApplyInput<'_>,
     client_ip: &str,
 ) -> AppResult<u64> {
-    let name = name.trim();
-    let url = url.trim();
-    if name.is_empty() || url.is_empty() {
-        return Err(phpyun_core::ApiError::param_invalid("link_required"));
-    }
     let _ = client_ip;
+    let allowed = setting_repo::find(state.db.reader(), "sy_linksq")
+        .await?
+        .map(|s| s.value.trim().to_string())
+        .unwrap_or_else(|| "0".into());
+    if allowed != "1" {
+        return Err(ApiError::business("linksq_closed"));
+    }
+    let name = input.name.trim();
+    let url = input.url.trim();
+    if name.is_empty() || url.is_empty() {
+        return Err(ApiError::param_invalid("link_required"));
+    }
+    let link_type = match input.link_type.trim() {
+        "2" => "2",
+        _ => "1",
+    };
+    let pic = if link_type == "2" {
+        input.pic.trim()
+    } else {
+        ""
+    };
+    if pic.len() > 255 {
+        return Err(ApiError::param_invalid("link_pic"));
+    }
     Ok(friend_link_repo::upsert(
         state.db.pool(),
         friend_link_repo::FriendLinkUpsert {
             id: None,
             link_name: name,
             link_url: url,
-            pic: "",
-            link_type: "1",
+            pic,
+            link_type,
             link_sorting: 0,
             link_state: 0,
         },

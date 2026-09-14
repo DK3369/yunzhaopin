@@ -72,6 +72,8 @@ pub struct ArticleFilter<'a> {
     pub describe_tag: Option<&'a str>,
     /// PHP `pic=1`: require a non-empty `newsphoto`.
     pub cover_only: bool,
+    /// PHP `{yun:}article order=hits{/yun}`. Empty keeps sort+datetime.
+    pub order: Option<&'a str>,
     pub did: u32,
     pub datetime_min: Option<i64>,
     pub author_kw: Option<&'a str>,
@@ -88,7 +90,14 @@ pub async fn list_public(
     ));
     push_did_scope(&mut qb, f.did);
     push_filters(&mut qb, f);
-    qb.push(" ORDER BY n.sort DESC, n.datetime DESC LIMIT ");
+    match f.order {
+        Some("hits") => {
+            qb.push(" ORDER BY n.hits DESC, n.id DESC LIMIT ");
+        }
+        _ => {
+            qb.push(" ORDER BY n.sort DESC, n.datetime DESC LIMIT ");
+        }
+    }
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);

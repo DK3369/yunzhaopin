@@ -222,7 +222,7 @@ pub struct ResumeSummary {
     pub is_top: bool,
 }
 
-struct ResumeShowCfg {
+pub(crate) struct ResumeShowCfg {
     user_name: i32,
     user_pic: i32,
     male_icon: String,
@@ -237,7 +237,7 @@ fn cfg_i32(map: &std::collections::HashMap<String, String>, key: &str, default: 
         .unwrap_or(default)
 }
 
-async fn load_resume_show_cfg(state: &AppState) -> ResumeShowCfg {
+pub(crate) async fn load_resume_show_cfg(state: &AppState) -> ResumeShowCfg {
     let cfg = phpyun_models::site_setting::repo::find_many(
         state.db.reader(),
         &[
@@ -311,7 +311,7 @@ fn age_from_birthday(b: &str) -> Option<u16> {
 }
 
 impl ResumeSummary {
-    fn from_with_dict(
+    pub(crate) fn from_with_dict(
         r: phpyun_models::resume::entity::Resume,
         state: &AppState,
         dicts: &phpyun_services::dict_service::LocalizedDicts,
@@ -621,7 +621,7 @@ fn apply_expect(
     }
 }
 
-async fn attach_expect_fields(
+pub(crate) async fn attach_expect_fields(
     state: &AppState,
     dicts: &phpyun_services::dict_service::LocalizedDicts,
     list: &mut [ResumeSummary],
