@@ -14,6 +14,15 @@ const { data, error } = await useAsyncData(
   () => `job-${locale.value}-${id}`,
   () => api.get('/v1/wap/jobs/detail', { id }),
 )
+function apiErrKey(e: unknown): string {
+  if (!e || typeof e !== 'object') return ''
+  const o = e as { key?: string; data?: { key?: string }; cause?: { key?: string } }
+  return String(o.key || o.data?.key || o.cause?.key || '')
+}
+const jobGone = computed(() => {
+  const key = apiErrKey(error.value)
+  return key === 'job_not_found' || key === 'job_pending'
+})
 const job = computed(
   () => ((data.value as { job?: Record<string, unknown> } | null)?.job || {}) as Record<string, unknown>,
 )
@@ -1077,6 +1086,6 @@ useHead({
   </div>
   <div v-else class="site-inner">
     <h1>{{ $t('common.job') }}</h1>
-    <p class="muted">{{ error ? $t('ui.load_failed') : $t('default_00033') }}</p>
+    <p class="muted">{{ error && !jobGone ? $t('ui.load_failed') : $t('default_00033') }}</p>
   </div>
 </template>
