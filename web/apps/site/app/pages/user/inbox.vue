@@ -32,15 +32,13 @@ useSeoMeta({ title: t('admin_user_00263') })
       <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + row.id"
-          :title="String(row.uname || row.com_id || row.id)"
-          :time="row.datetime_n"
-          :to="row.com_id ? `/companies/${row.com_id}` : undefined"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + row.id"
+        :title="String(row.uname || row.com_id || row.id)"
+        :time="row.datetime_n"
+        :to="row.com_id ? `/companies/${row.com_id}` : undefined"
+      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

@@ -159,16 +159,13 @@ useSeoMeta({ title: t('wap_user_00338') })
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in sessionList"
-          :key="'h5-' + row.id"
-          variant="issue"
-          :title="row.device || row.ip || ''"
-          :sub="row.ip_loc"
-          :time="row.login_at_n || row.last_seen_at_n"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in sessionList"
+        :key="'h5-' + row.id"
+        :title="row.device || row.ip || ''"
+        :sub="row.ip_loc"
+        :time="row.login_at_n || row.last_seen_at_n"
+      />
     </div>
     <p v-if="sessionList.length > 1">
       <button type="button" class="verification_form_btn" @click="revokeOthers">{{ $t('model_00093') }}</button>

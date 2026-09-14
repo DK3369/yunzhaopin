@@ -73,19 +73,35 @@ useSeoMeta({ title: t('member_user_00115') })
     </div>
     <div class="site-h5 m_cardbox">
       <div class="m_cardbgbox">
-        <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="issue_post_body_card">
-          <div class="Posted_card_top">
-            <div class="Posted_card_name">{{ row.job_name || $t('common.job') }}</div>
-            <div class="Posted_card_pay">{{ statusLabel(row.status) }}</div>
+        <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="m_cardbg">
+          <div class="com_member_hr_name">
+            <NuxtLink v-if="row.job_uid" :to="`/companies/${row.job_uid}`">{{ row.com_name }}</NuxtLink>
+            <span v-else>{{ row.com_name }}</span>
+            <div class="wap_member_date_r">{{ statusLabel(row.status) }}</div>
           </div>
-          <div class="Posted_card_bom">
-            <div class="Posted_bom_box">
-              <div class="Posted_box_name">{{ row.com_name }}</div>
+          <div class="mag_show">
+            <div v-if="row.job_name" class="com_member_hr_p1">
+              <span class="member_c9">{{ $t('wap_user_00163') }}</span>{{ row.job_name }}
             </div>
-            <div class="Posted_bom_time">{{ row.datetime_n }}</div>
+            <div class="com_member_hr_p1">
+              <span class="member_c9">{{ $t('wap_user_00162') }}</span>{{ row.content }}
+            </div>
+            <div v-if="row.reply" class="com_member_hr_p1">
+              <span class="member_c9">{{ $t('wap_user_00155') }}</span>{{ row.reply }}
+            </div>
+            <div v-else class="com_member_hr_p1">
+              <span class="member_c9">{{ $t('wap_user_00155') }}</span>
+              <font color="red">{{ $t('wap_01138') }}</font>
+            </div>
+            <div class="com_member_hr_p1" style="position: relative">
+              <span class="member_c9">{{ $t('wap_01137') }}</span>{{ row.datetime_n }}
+              <div class="sx_new_icon">
+                <a href="javascript:;" @click="remove(row.id)">
+                  <img src="/legacy/h5/images/resume_del.png" alt="" />
+                </a>
+              </div>
+            </div>
           </div>
-          <p>{{ row.content }}</p>
-          <p v-if="row.reply" class="job_Consulting_com">{{ $t('wap_user_00155') }}：{{ row.reply }}</p>
         </div>
       </div>
     </div>

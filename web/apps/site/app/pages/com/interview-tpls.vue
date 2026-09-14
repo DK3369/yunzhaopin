@@ -98,6 +98,14 @@ useSeoMeta({ title: t('wap_com_00404') })
         <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
       </div>
     </div>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in list"
+        :key="'h5-' + row.id"
+        :title="row.name"
+        :time="`${row.address} · ${row.linkman}`"
+      />
+    </div>
   </MemberPanel>
 </template>
 

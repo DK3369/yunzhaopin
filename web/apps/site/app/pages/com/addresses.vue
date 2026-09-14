@@ -132,6 +132,14 @@ useSeoMeta({ title: t('ui.map_addr') })
           <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
         </div>
       </div>
+      <div class="site-h5 m_cardbox">
+        <MemberSxNewsCard
+          v-for="row in list"
+          :key="'h5-' + row.id"
+          :title="`${row.link_man} · ${row.link_address}`"
+          :time="row.link_moblie"
+        />
+      </div>
     </template>
   </MemberPanel>
 </template>

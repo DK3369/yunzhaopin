@@ -92,18 +92,22 @@ const total = computed(() => inferTotal(data.value))
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="issue_post_body_card">
-          <div class="Posted_card_top">
-            <div class="Posted_card_name">{{ row.job_name || $t('common.job') }}</div>
-            <div class="Posted_card_pay">{{ row.username }}</div>
+      <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="m_cardbg">
+        <div class="com_member_hr_name">
+          <span>{{ row.username }}</span>
+          <div class="wap_member_date_r">{{ row.job_name }}</div>
+        </div>
+        <div class="mag_show">
+          <div class="com_member_hr_p1">
+            <span class="member_c9">{{ $t('wap_user_00162') }}</span>{{ row.content }}
           </div>
-          <div v-if="row.reply" class="job_Consulting_com">{{ $t('wap_user_00155') }}：{{ row.reply }}</div>
-          <form v-else class="job_Consulting_com" @submit.prevent="reply(row.id)">
+          <div v-if="row.reply" class="com_member_hr_p1">
+            <span class="member_c9">{{ $t('wap_user_00155') }}</span>{{ row.reply }}
+          </div>
+          <form v-else class="com_member_hr_p1" @submit.prevent="reply(row.id)">
             <textarea v-model="replyDraft[row.id]" rows="2" required />
             <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
           </form>
-          <div class="Posted_card_time">{{ row.content }}</div>
         </div>
       </div>
     </div>

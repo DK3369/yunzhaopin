@@ -61,15 +61,13 @@ const total = computed(() => inferTotal(data.value))
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + row.id"
-          variant="issue"
-          :title="String(row.body || row.content || row.title || row.id)"
-          :time="row.datetime_n"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + row.id"
+        :title="String(row.body || row.content || row.title || row.id)"
+        :time="row.datetime_n"
+        :on-delete="() => remove(row.id)"
+      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

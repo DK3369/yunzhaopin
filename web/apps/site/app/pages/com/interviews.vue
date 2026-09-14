@@ -126,6 +126,14 @@ const ivTotal = computed(() => inferTotal(data.value))
         <a href="javascript:;" class="List_dete cblue" @click="removeTpl(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])"
+        :key="'h5-tpl-' + row.id"
+        :title="row.name"
+        :time="`${row.address} · ${row.linkman}`"
+      />
+    </div>
     <form class="com_release_box" @submit.prevent="saveTpl">
       <ul>
         <MemberReleaseRow :label="$t('wap_com_00288')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>

@@ -53,6 +53,14 @@ const total = computed(() => inferTotal(data.value))
       <div class="sysynews_span sysynews_name">#{{ row.target_id }}</div>
       <div class="sysynews_span sysynews_time">{{ row.status }}</div>
     </div>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + row.id"
+        :title="`#${row.target_id}`"
+        :time="String(row.status ?? '')"
+      />
+    </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

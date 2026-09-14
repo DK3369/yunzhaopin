@@ -25,6 +25,15 @@ function jzrText(n?: number) {
   return `${t('member_com_00373')} ${sign}${v}`
 }
 
+const yearMap = computed(() => {
+  const raw = year.value
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return [] as Array<{ k: string; v: string }>
+  return Object.entries(raw as Record<string, unknown>).map(([k, v]) => ({
+    k,
+    v: typeof v === 'object' ? JSON.stringify(v) : String(v ?? ''),
+  }))
+})
+
 useSeoMeta({ title: t('admin_tool_00224') })
 </script>
 
@@ -62,8 +71,14 @@ useSeoMeta({ title: t('admin_tool_00224') })
         <li>{{ $t('ui.dl_resume') }} {{ data?.resume_downloads ?? 0 }}</li>
         <li>{{ $t('wap_user_00008') }} {{ data?.integral_balance ?? 0 }}</li>
       </ul>
-      <h2>{{ $t('ui.year_report') }}</h2>
-      <pre>{{ JSON.stringify(year, null, 2) }}</pre>
+      <div v-if="yearMap.length" class="membSubGuaTwo">
+        <ul>
+          <li v-for="row in yearMap" :key="row.k">
+            <div class="twoDivTite"><span>{{ row.k }}</span></div>
+            <div class="twoDivNum"><span>{{ row.v }}</span></div>
+          </li>
+        </ul>
+      </div>
     </template>
   </MemberPanel>
 </template>

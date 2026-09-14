@@ -1,7 +1,12 @@
 <template>
   <div class="member-page" :class="kind === 'com' ? 'member-page-com' : 'member-page-user'">
     <div v-if="kind === 'user'" class="site-pc">
-      <div class="user_new_tit">
+      <div v-if="userShell === 'plain'" class="member_right_index_h1 fltL">
+        <span class="member_right_h1_span fltL">{{ title }}</span>
+        <i class="member_right_h1_icon user_bg" />
+        <slot name="titExtra" />
+      </div>
+      <div v-else class="user_new_tit">
         <span class="user_new_tit_n">{{ title }}</span>
         <span v-if="sub" class="user_new_tit_r">{{ sub }}</span>
         <slot name="titExtra" />

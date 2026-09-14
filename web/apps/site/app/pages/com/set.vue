@@ -9,7 +9,6 @@ const items = computed(() => [
   { to: '/com/gallery', label: t('wap_com_00401') },
   { to: '/com/binding', label: t('member_user_00059') },
   { to: '/com/password', label: t('wap_00817') },
-  { to: '/user/account', label: t('member_com_00538') },
   { to: '/com/otherservice', label: t('wap_user_00196') },
   { to: '/advice', label: t('wap_user_00203') },
 ])

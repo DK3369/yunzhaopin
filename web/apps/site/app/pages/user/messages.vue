@@ -28,7 +28,7 @@ const total = computed(() => inferTotal(data.value))
 </script>
 
 <template>
-  <MemberPanel :title="$t('common.message')" :error="error" :empty="!error && !(data?.list || []).length">
+  <MemberPanel :title="$t('common.message')" :error="error" :empty="false">
     <div class="site-pc job_list_tit">
       <ul>
         <li class="job_list_tit_cur">
@@ -42,13 +42,50 @@ const total = computed(() => inferTotal(data.value))
         </li>
       </ul>
     </div>
-    <div class="site-h5 m_tab">
-      <div class="m_tabbox category">
-        <ul>
-          <li class="m_tabactive">{{ $t('common.message') }}</li>
-          <li @click="navigateTo('/user/interviews')">{{ $t('wap_user_00216') }}</li>
-          <li @click="navigateTo('/user/consults')">{{ $t('wap_user_00364') }}</li>
-        </ul>
+    <div class="site-h5">
+      <div class="chatnewcardbg">
+        <div class="chatnewcardheader">{{ $t('common.message') }}</div>
+        <div class="chatnewcard">
+          <ul>
+            <li @click="navigateTo('/user/interviews')">
+              <div class="card_logo">
+                <img src="/legacy/h5/images/resume.png" alt="" width="100%" height="100%" />
+                <div v-if="dash?.wkyqnum" class="card_logo_circle">{{ dash.wkyqnum }}</div>
+              </div>
+              <i class="card_word">{{ $t('wap_user_00216') }}</i>
+            </li>
+            <li @click="navigateTo('/user/applications')">
+              <div class="card_logo">
+                <img src="/legacy/h5/images/copy.png" alt="" width="100%" height="100%" />
+              </div>
+              <i class="card_word">{{ $t('wap_01133') }}</i>
+            </li>
+            <li @click="navigateTo('/user/consults')">
+              <div class="card_logo">
+                <img src="/legacy/h5/images/genius_consult.png" alt="" width="100%" height="100%" />
+                <div v-if="dash?.commsgnum" class="card_logo_circle">{{ dash.commsgnum }}</div>
+              </div>
+              <i class="card_word">{{ $t('wap_user_00364') }}</i>
+            </li>
+            <li>
+              <div class="card_logo">
+                <img src="/legacy/h5/images/sixin.png" alt="" width="100%" height="100%" />
+                <div v-if="dash?.sxnum" class="card_logo_circle">{{ dash.sxnum }}</div>
+              </div>
+              <i class="card_word">{{ $t('wap_user_00363') }}</i>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="m_cardbox">
+        <MemberSxNewsCard
+          v-for="row in data?.list || []"
+          :key="'h5-' + row.id"
+          :kicker="$t('wap_user_00361')"
+          :title="String(row.body || row.content || row.title || row.id)"
+          :time="row.datetime_n"
+          :on-delete="() => remove(row.id)"
+        />
       </div>
     </div>
     <p class="user_czbth">
@@ -69,16 +106,6 @@ const total = computed(() => inferTotal(data.value))
         <a href="javascript:;" class="cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
         <span class="jobnotice_cz_line">|</span>
         <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
-      </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + row.id"
-          :title="String(row.body || row.content || row.title || row.id)"
-          :time="row.datetime_n"
-        />
       </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />

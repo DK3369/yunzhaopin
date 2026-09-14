@@ -1733,3 +1733,38 @@ html.force-pc .site-h5 {
   }
 }
 
+.Binding_pop_mask {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.Binding_pop_mask .Binding_pop_box {
+  background: #fff;
+  padding: 10px;
+  width: 430px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.chatnewcard > ul > li {
+  cursor: pointer;
+}
+.card_logo {
+  position: relative;
+}
+.card_logo_circle {
+  position: absolute;
+  top: -0.08rem;
+  right: -0.08rem;
+  background: #f30;
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.03rem 0.15rem;
+  font-size: 0.28rem;
+  line-height: 1.2;
+}
+

@@ -55,16 +55,13 @@ useSeoMeta({ title: t('ui.orders') })
       <span class="paylist_span paylist_span_zt">{{ o.status_n }} · {{ o.package_code }}</span>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="o in orders?.list || []"
-          :key="'h5-' + o.order_no"
-          variant="issue"
-          :title="String(o.order_no)"
-          :pay="String(o.amount_yuan)"
-          :time="o.status_n"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="o in orders?.list || []"
+        :key="'h5-' + o.order_no"
+        :title="String(o.order_no)"
+        :sub="String(o.amount_yuan)"
+        :time="o.status_n"
+      />
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

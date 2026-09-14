@@ -6,16 +6,21 @@ const { data, error, refresh } = await useAsyncData('privacy-resume', () =>
   api.post<{ status?: number; nametype?: number }>('/v1/mcenter/resume/list', {}),
 )
 const status = ref(1)
-const nametype = ref(1)
 watch(
   data,
   (row) => {
     if (!row) return
     status.value = Number(row.status || 1)
-    nametype.value = Number(row.nametype || 1)
   },
   { immediate: true },
 )
+const { data: blacks, refresh: refreshBlacks } = await useAsyncData('privacy-blacklist', () =>
+  api.post<{ list?: Array<{ id: number; blocked_uid?: number; com_name?: string; reason?: string }> }>(
+    '/v1/mcenter/blacklist/list',
+    { page: 1, page_size: 50 },
+  ).catch(() => ({ list: [] })),
+)
+const blackRows = computed(() => blacks.value?.list || [])
 const msg = ref('')
 async function changeStatus(v: number) {
   status.value = v
@@ -28,12 +33,12 @@ async function changeStatus(v: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-async function saveName() {
+async function removeBlack(uid?: number) {
+  if (!uid) return
   msg.value = ''
   try {
-    await api.post('/v1/mcenter/resume', { nametype: nametype.value })
-    msg.value = t('ui.saved')
-    await refresh()
+    await api.post('/v1/mcenter/blacklist/remove', { uid })
+    await refreshBlacks()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -116,21 +121,18 @@ useSeoMeta({ title: t('wap_user_00215') })
           </a>
         </dd>
       </dl>
-      <form class="form verification_form" @submit.prevent="saveName">
-        <MemberField :label="$t('wap_00529')">
-          <select v-model.number="nametype">
-            <option :value="1">{{ $t('wap_00529') }}</option>
-            <option :value="2">{{ $t('common_02430') }}</option>
-          </select>
-        </MemberField>
-        <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
-      </form>
-      <div class="blacklist">
+      <div v-if="status === 1" class="blacklist">
         <p class="yun_usertitle">
           <span>{{ $t('member_user_00257') }}</span>
           <span class="blacklist_tip">{{ $t('member_user_00558') }}</span>
           <NuxtLink to="/user/blacklist">+{{ $t('wap_js_00091') }}</NuxtLink>
         </p>
+        <ul v-if="blackRows.length" class="clearfix" id="company_blench">
+          <li v-for="row in blackRows" :key="row.id">
+            <a href="javascript:;" class="close" @click="removeBlack(row.blocked_uid)">x</a>
+            <NuxtLink :to="`/companies/${row.blocked_uid}`">{{ row.com_name || row.reason || row.blocked_uid }}</NuxtLink>
+          </li>
+        </ul>
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>

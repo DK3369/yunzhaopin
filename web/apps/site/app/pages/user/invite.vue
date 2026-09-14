@@ -32,10 +32,6 @@ const total = computed(() => inferTotal(refs.value))
         <span class="yun_usermember_integral_n">{{ summary?.count ?? 0 }}</span>
       </div>
     </div>
-    <div class="site-pc member_right_index_h1 fltL">
-      <span class="member_right_h1_span fltL">{{ $t('ui.invite_reg') }}</span>
-      <i class="member_right_h1_icon user_bg" />
-    </div>
     <p v-if="summary" class="muted">
       {{ summary.count ?? 0 }} · {{ summary.total_points ?? 0 }}
     </p>
@@ -53,16 +49,13 @@ const total = computed(() => inferTotal(refs.value))
       <div class="sysynews_span sysynews_time">{{ row.points }} · {{ row.created_at_n }}</div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in refs?.list || []"
-          :key="'h5-' + row.id"
-          variant="issue"
-          :title="String(row.invitee_uid)"
-          :pay="String(row.points ?? '')"
-          :time="row.created_at_n"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in refs?.list || []"
+        :key="'h5-' + row.id"
+        :title="String(row.invitee_uid)"
+        :sub="String(row.points ?? '')"
+        :time="row.created_at_n"
+      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>

@@ -94,6 +94,14 @@ useSeoMeta({ title: t('ui.hr') })
           <a href="javascript:;" class="cblue" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</a>
         </div>
       </div>
+      <div class="site-h5 m_cardbox">
+        <MemberSxNewsCard
+          v-for="row in hrs || []"
+          :key="'h5-' + row.hr_uid"
+          :title="`${row.hr_uid} · ${row.role || ''}`"
+          :time="row.joined_at_n"
+        />
+      </div>
       <form class="com_release_box" @submit.prevent="join">
         <ul>
           <MemberReleaseRow :label="$t('ui.hr')" required><input v-model="joinCode" required class="com_release_textnew_text" /></MemberReleaseRow>

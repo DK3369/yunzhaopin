@@ -29,16 +29,14 @@ useSeoMeta({ title: t('wap_00194') })
         <div class="sysynews_span sysynews_time">{{ row.score }} · {{ row.created_at_n }}</div>
       </div>
       <div class="site-h5 m_cardbox">
-        <div class="m_cardbgbox">
-          <MemberPostedCard
-            v-for="row in data?.list || []"
-            :key="'h5-' + row.id"
-            :title="row.paper_name || $t('wap_00194')"
-            :pay="String(row.score ?? '')"
-            :time="row.created_at_n"
-            :to="`/user/eval-logs/${row.id}`"
-          />
-        </div>
+        <MemberSxNewsCard
+          v-for="row in data?.list || []"
+          :key="'h5-' + row.id"
+          :title="row.paper_name || $t('wap_00194')"
+          :sub="String(row.score ?? '')"
+          :time="row.created_at_n"
+          :to="`/user/eval-logs/${row.id}`"
+        />
       </div>
       <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     </div>

@@ -29,12 +29,24 @@ useSeoMeta({ title: t('wap_com_00310') })
 <template>
   <MemberPanel :title="$t('wap_com_00310')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <div v-for="row in list" :key="row.id" class="issue_post_body_card">
-      <div class="Posted_card_top">
-        <NuxtLink :to="`/specials/${row.sid}`" class="Posted_card_name">{{ row.title || row.sid }}</NuxtLink>
-        <div class="Posted_card_pay">{{ row.datetime_n }}</div>
+    <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">
+        <NuxtLink :to="`/specials/${row.sid}`">{{ row.title || row.sid }}</NuxtLink>
       </div>
-      <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
+      <div class="sysynews_span sysynews_cz">
+        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in list"
+        :key="'h5-' + row.id"
+        :title="String(row.title || row.sid)"
+        :time="row.datetime_n"
+        :to="`/specials/${row.sid}`"
+        :on-delete="() => remove(row.id)"
+      />
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

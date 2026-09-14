@@ -81,6 +81,7 @@ async function bindMobile() {
     await api.post('/v1/mcenter/cert/mobile/verify', { moblie: mobile.value, moblie_code: mobileCode.value })
     msg.value = t('common.success')
     await refreshMe()
+    pop.value = ''
   } catch (e: unknown) {
     msg.value = fail(e)
   }
@@ -90,6 +91,7 @@ async function sendEmail() {
   try {
     await api.post('/v1/mcenter/cert/email/send', { email: email.value })
     msg.value = t('common.success')
+    pop.value = ''
   } catch (e: unknown) {
     msg.value = fail(e)
   }
@@ -105,6 +107,7 @@ function iconClass(provider: string) {
 
 useSeoMeta({ title: t('member_user_00059') })
 const boundList = computed(() => data.value?.providers || [])
+const pop = ref<'mobile' | 'email' | ''>('')
 </script>
 
 <template>
@@ -125,6 +128,26 @@ const boundList = computed(() => data.value?.providers || [])
         <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('member_user_00474') }}</div>
       </div>
       <div class="site-pc">
+        <div class="Binding_list">
+          <div class="Binding_list_left">
+            <div class="Bingding_icon"><i class="binding_sj_icon" /></div>
+            <span class="bingding_yx_wr">{{ $t('wap_user_00180') }}</span>
+          </div>
+          <div class="Binding_list_text Binding_list_text_mt">{{ me?.moblie ? maskPhone(String(me.moblie)) : $t('wap_user_00182') }}</div>
+          <div class="Binding_oper">
+            <a href="javascript:;" class="Binding_submit" @click.prevent="pop = 'mobile'">{{ $t('wap_js_00073') }}</a>
+          </div>
+        </div>
+        <div class="Binding_list">
+          <div class="Binding_list_left">
+            <div class="Bingding_icon"><i class="binding_yx_icon" /></div>
+            <span class="bingding_yx_wr">{{ $t('wap_user_00179') }}</span>
+          </div>
+          <div class="Binding_list_text Binding_list_text_mt">{{ me?.email ? maskEmail(String(me.email)) : $t('wap_user_00181') }}</div>
+          <div class="Binding_oper">
+            <a href="javascript:;" class="Binding_submit" @click.prevent="pop = 'email'">{{ $t('wap_js_00073') }}</a>
+          </div>
+        </div>
         <div v-for="p in boundList" :key="p" class="Binding_list">
           <div class="Binding_list_left">
             <div :class="[iconClass(p).box, 'Bingding_icon_cur']"><i :class="iconClass(p).i" /></div>
@@ -149,6 +172,18 @@ const boundList = computed(() => data.value?.providers || [])
         </div>
       </div>
       <ul class="site-h5 bingding_box">
+        <li>
+          <div class="bingding_box_iconbg"><i class="bingding_box_iconsj" /></div>
+          <div class="bingding_box_name">{{ $t('wap_user_00180') }}</div>
+          <div class="bingding_box_p">{{ me?.moblie ? maskPhone(String(me.moblie)) : $t('wap_user_00182') }}</div>
+          <span class="bingding_box_bth" @click="pop = 'mobile'">{{ $t('wap_js_00073') }}</span>
+        </li>
+        <li>
+          <div class="bingding_box_iconbg"><i class="bingding_box_iconyx" /></div>
+          <div class="bingding_box_name">{{ $t('wap_user_00179') }}</div>
+          <div class="bingding_box_p">{{ me?.email ? maskEmail(String(me.email)) : $t('wap_user_00181') }}</div>
+          <span class="bingding_box_bth" @click="pop = 'email'">{{ $t('wap_js_00073') }}</span>
+        </li>
         <li v-for="p in boundList" :key="'h5b-' + p">
           <div class="bingding_box_iconbg" :class="iconClass(p).h5bg"><i :class="iconClass(p).h5" /></div>
           <div class="bingding_box_name">{{ p }}</div>
@@ -162,16 +197,37 @@ const boundList = computed(() => data.value?.providers || [])
           <span class="bingding_box_bth" @click="startBind(o)">{{ $t('wap_user_00119') }}</span>
         </li>
       </ul>
-      <form class="form verification_form" @submit.prevent="bindMobile">
-        <MemberField :label="$t('common.phone')"><input v-model="mobile" /></MemberField>
-        <button type="button" class="verification_form_btn" @click="sendMobile">{{ $t('common.submit') }}</button>
-        <MemberField :label="$t('wap_01371')"><input v-model="mobileCode" /></MemberField>
-        <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
-      </form>
-      <form class="form verification_form" @submit.prevent="sendEmail">
-        <MemberField :label="$t('member_user_00282')"><input v-model="email" /></MemberField>
-        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
-      </form>
+      <div v-if="pop === 'mobile'" class="Binding_pop_mask" @click.self="pop = ''">
+        <form class="Binding_pop_box" @submit.prevent="bindMobile">
+          <div class="Binding_pop_box_msg">{{ $t('wap_user_00180') }}</div>
+          <div class="Binding_pop_box_list">
+            <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('common.phone') }}</span>
+            <input v-model="mobile" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
+          </div>
+          <div class="Binding_pop_box_list">
+            <span class="Binding_pop_box_list_left">{{ $t('wap_01371') }}</span>
+            <input v-model="mobileCode" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
+            <button type="button" class="layui-btn layui-btn-primary" @click="sendMobile">{{ $t('common.submit') }}</button>
+          </div>
+          <div class="Binding_pop_sub">
+            <button type="submit" class="layui-btn layui-btn-normal">{{ $t('common.save') }}</button>
+            <button type="button" class="layui-btn layui-btn-primary" @click="pop = ''">{{ $t('common.cancel') }}</button>
+          </div>
+        </form>
+      </div>
+      <div v-if="pop === 'email'" class="Binding_pop_mask" @click.self="pop = ''">
+        <form class="Binding_pop_box" @submit.prevent="sendEmail">
+          <div class="Binding_pop_box_msg">{{ $t('wap_user_00179') }}</div>
+          <div class="Binding_pop_box_list">
+            <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('member_user_00282') }}</span>
+            <input v-model="email" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
+          </div>
+          <div class="Binding_pop_sub">
+            <button type="submit" class="layui-btn layui-btn-normal">{{ $t('common.submit') }}</button>
+            <button type="button" class="layui-btn layui-btn-primary" @click="pop = ''">{{ $t('common.cancel') }}</button>
+          </div>
+        </form>
+      </div>
       <p class="muted">{{ $t('ajax_00001') }}</p>
       <p><NuxtLink to="/email-verify">{{ $t('wap_user_00179') }}</NuxtLink></p>
       <p v-if="msg">{{ msg }}</p>

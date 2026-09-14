@@ -112,16 +112,13 @@ useSeoMeta({ title: t('member_user_00188') })
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + row.id"
-          variant="issue"
-          :title="`${row.com_name} · ${row.job_name}`"
-          :sub="row.email"
-          :time="row.addtime_n"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + row.id"
+        :title="`${row.com_name} · ${row.job_name}`"
+        :sub="row.email"
+        :time="row.addtime_n"
+      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

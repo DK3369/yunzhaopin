@@ -24,14 +24,11 @@ useSeoMeta({ title: t('wap_01142') })
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + (row.target_uid || row.uid)"
-          variant="issue"
-          :title="String(row.name || row.target_uid || '')"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + (row.target_uid || row.uid)"
+        :title="String(row.name || row.target_uid || '')"
+      />
     </div>
   </MemberPanel>
 </template>

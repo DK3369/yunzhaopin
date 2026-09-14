@@ -60,7 +60,7 @@ useSeoMeta({ title: t('member_user_00226') })
     </form>
     <h2>{{ $t('member_user_00058') }}</h2>
     <p v-if="!sessionList.length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in sessionList" :key="row.id" class="sysynews_list">
+    <article v-for="row in sessionList" :key="row.id" class="sysynews_list site-pc">
       <div class="sysynews_span sysynews_name">
         {{ row.device || row.ip }}
         <span v-if="row.is_current" class="muted">{{ $t('common.yes') }}</span>
@@ -70,6 +70,15 @@ useSeoMeta({ title: t('member_user_00226') })
         <a v-if="!row.is_current" href="javascript:;" class="List_dete cblue" @click="revokeSession(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </article>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in sessionList"
+        :key="'h5-' + row.id"
+        :title="row.device || row.ip || ''"
+        :sub="row.ip_loc"
+        :time="row.login_at_n || row.last_seen_at_n"
+      />
+    </div>
     <p v-if="sessionList.length > 1">
       <button type="button" @click="revokeOthers">{{ $t('model_00093') }}</button>
     </p>

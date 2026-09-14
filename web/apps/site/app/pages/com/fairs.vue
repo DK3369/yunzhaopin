@@ -9,12 +9,21 @@ useSeoMeta({ title: t('wap_00558') })
 
 <template>
   <MemberPanel :title="$t('wap_00558')" :error="error" :empty="!error && !(Array.isArray(data?.list) ? data.list.length : false)">
-    <div v-for="row in data?.list || []" :key="row.id" class="issue_post_body_card">
-      <div class="Posted_card_top">
-        <NuxtLink v-if="row.zid" :to="`/fairs/${row.zid}?tab=reserve`" class="Posted_card_name">{{ row.title || row.name || row.zid }}</NuxtLink>
-        <span v-else class="Posted_card_name">{{ row.title || row.name || row.id }}</span>
-        <div class="Posted_card_pay">{{ row.start_at_n || row.datetime_n }}</div>
+    <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">
+        <NuxtLink v-if="row.zid" :to="`/fairs/${row.zid}?tab=reserve`">{{ row.title || row.name || row.zid }}</NuxtLink>
+        <span v-else>{{ row.title || row.name || row.id }}</span>
       </div>
+      <div class="sysynews_span sysynews_time">{{ row.start_at_n || row.datetime_n }}</div>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + row.id"
+        :title="String(row.title || row.name || row.zid || row.id)"
+        :time="row.start_at_n || row.datetime_n"
+        :to="row.zid ? `/fairs/${row.zid}?tab=reserve` : undefined"
+      />
     </div>
   </MemberPanel>
 </template>

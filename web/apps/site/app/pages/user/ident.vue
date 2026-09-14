@@ -66,9 +66,56 @@ useSeoMeta({ title: t('wap_user_00340') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <template v-else>
     <MemberUserSetTabs />
-    <form class="form verification_form" @submit.prevent="save">
+    <div class="site-h5 issue_post_body">
+      <div class="issue_post_body_card">
+        <div class="post_body_card_job">
+          <div class="body_card_job_box">
+            <div class="card_job_box_post">{{ $t('wap_01030') }}</div>
+            <div v-if="data?.idcard_status === 1" class="Binding_state">{{ $t('wap_user_00128') }}</div>
+            <span v-else class="Binding_state_no">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</span>
+          </div>
+        </div>
+        <NuxtLink to="/user/binding" class="post_body_card_job">
+          <div class="body_card_job_box">
+            <div class="card_job_box_post">{{ $t('wap_user_00180') }}</div>
+            <div class="card_job_box_name_require">
+              <div class="card_job_box_name">{{ data?.telphone || $t('wap_user_00177') }}</div>
+              <div :class="data?.moblie_status === 1 ? 'Binding_state' : 'Binding_state_no'">
+                {{ data?.moblie_status === 1 ? $t('wap_user_00127') : $t('wap_user_00182') }}
+              </div>
+            </div>
+          </div>
+          <div class="body_card_job_icon">
+            <img src="/legacy/h5/images/issue_add.png" alt="" />
+          </div>
+        </NuxtLink>
+        <NuxtLink to="/user/binding" class="post_body_card_job">
+          <div class="body_card_job_box">
+            <div class="card_job_box_post">{{ $t('wap_user_00179') }}</div>
+            <div class="card_job_box_name_require">
+              <div class="card_job_box_name">{{ data?.email || $t('wap_user_00177') }}</div>
+              <div :class="data?.email_status === 1 ? 'Binding_state' : 'Binding_state_no'">
+                {{ data?.email_status === 1 ? $t('wap_user_00127') : $t('wap_user_00181') }}
+              </div>
+            </div>
+          </div>
+          <div class="body_card_job_icon">
+            <img src="/legacy/h5/images/issue_add.png" alt="" />
+          </div>
+        </NuxtLink>
+      </div>
+    </div>
+    <form class="site-pc form verification_form" @submit.prevent="save">
       <MemberResumeH1 :title="$t('wap_01030')" />
       <p class="muted">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</p>
+      <MemberField :label="$t('wap_01087')">
+        <input v-model="idcard" :disabled="data?.idcard_status === 1" class="verification_text" />
+      </MemberField>
+      <img v-if="idcardPic" :src="mediaUrl(idcardPic)" alt="" width="160" />
+      <input v-if="data?.idcard_status !== 1" type="file" accept="image/jpeg,image/png,image/webp" @change="onPic" />
+      <button v-if="data?.idcard_status !== 1" type="submit" class="verification_form_btn">{{ $t('wap_user_00176') }}</button>
+    </form>
+    <form class="site-h5 verification_form" @submit.prevent="save">
       <MemberField :label="$t('wap_01087')">
         <input v-model="idcard" :disabled="data?.idcard_status === 1" />
       </MemberField>
@@ -76,7 +123,7 @@ useSeoMeta({ title: t('wap_user_00340') })
       <input v-if="data?.idcard_status !== 1" type="file" accept="image/jpeg,image/png,image/webp" @change="onPic" />
       <button v-if="data?.idcard_status !== 1" type="submit" class="verification_form_btn">{{ $t('wap_user_00176') }}</button>
     </form>
-    <div class="account_settings">
+    <div class="site-pc account_settings">
       <div class="account_settings_list">
       <div class="account_settings_list_left">
         <i class="account_settings_list_left_icon account_settings_list_left_icon_sj" />

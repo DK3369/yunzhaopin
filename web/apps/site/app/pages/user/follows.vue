@@ -64,16 +64,13 @@ useSeoMeta({ title: t('wap_01142') })
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + (row.target_uid || row.uid)"
-          variant="issue"
-          :title="nameOf(row)"
-          :time="row.ctime_n || row.time_n"
-          :to="kind === 2 ? `/companies/${row.target_uid || row.uid}` : undefined"
-        />
-      </div>
+      <MemberSxNewsCard
+        v-for="row in data?.list || []"
+        :key="'h5-' + (row.target_uid || row.uid)"
+        :title="nameOf(row)"
+        :time="row.ctime_n || row.time_n"
+        :to="kind === 2 ? `/companies/${row.target_uid || row.uid}` : undefined"
+      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

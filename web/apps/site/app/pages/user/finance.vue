@@ -77,15 +77,12 @@ const payTotal = computed(() => inferTotal(pays.value))
         <span class="paylist_span paylist_span_time">{{ row.ctime_n || row.ctime }}</span>
       </div>
       <div class="site-h5 m_cardbox">
-        <div class="m_cardbgbox">
-          <MemberPostedCard
-            v-for="row in pays?.list || []"
-            :key="'h5-' + row.id"
-            variant="issue"
-            :title="String(packed(row.detail) || row.delta)"
-            :time="row.ctime_n || row.ctime"
-          />
-        </div>
+        <MemberSxNewsCard
+          v-for="row in pays?.list || []"
+          :key="'h5-' + row.id"
+          :title="String(packed(row.detail) || row.delta)"
+          :time="row.ctime_n || row.ctime"
+        />
       </div>
       <MemberPager :page="page" :page-size="pageSize" :total="payTotal" @update:page="go" />
       <p v-if="msg">{{ msg }}</p>

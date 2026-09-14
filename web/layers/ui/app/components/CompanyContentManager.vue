@@ -125,6 +125,14 @@ async function remove(row: Row) {
           <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
         </div>
       </div>
+      <div class="site-h5 m_cardbox">
+        <MemberSxNewsCard
+          v-for="row in list"
+          :key="'h5-' + row.id"
+          :title="row.title"
+          :time="`${row.status_n} · ${row.ctime_n}`"
+        />
+      </div>
       <MemberPager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
     </template>
     <p>
