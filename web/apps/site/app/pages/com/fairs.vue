@@ -9,7 +9,7 @@ useSeoMeta({ title: t('wap_00558') })
 
 <template>
   <MemberPanel :title="$t('wap_00558')" :error="error" :empty="!error && !(Array.isArray(data?.list) ? data.list.length : false)">
-    <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
+    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
       <h3>
         <NuxtLink v-if="row.zid" :to="`/fairs/${row.zid}?tab=reserve`">{{ row.title || row.name || row.zid }}</NuxtLink>
         <span v-else>{{ row.title || row.name || row.id }}</span>

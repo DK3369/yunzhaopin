@@ -1,17 +1,45 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { isUnauthErr, mediaUrl } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { comItems } = useMemberNav()
 const { data, error } = await useAsyncData('me-com', () => api.post('/v1/wap/me', {}))
+const { data: profile } = await useAsyncData('com-home-profile', () =>
+  api
+    .post<{ name?: string; logo?: string; uid?: number; r_status?: number }>('/v1/mcenter/company/list', {})
+    .catch(() => null),
+)
 const { data: dash } = await useAsyncData('com-dash', () =>
   api
     .post<{
       applies_received: number
       applies_unread: number
+      interviews_sent?: number
+      resume_downloads?: number
       job_msg_unanswered?: number
       unread_messages?: number
     }>('/v1/mcenter/com-dashboard', {})
+    .catch(() => null),
+)
+const { data: counts } = await useAsyncData('com-home-job-counts', () =>
+  api
+    .post<{
+      total: number
+      online: number
+      breakjob_num?: number
+      top_num?: number
+      rec_num?: number
+      urgent_num?: number
+    }>('/v1/mcenter/jobs/counts', {})
+    .catch(() => null),
+)
+const { data: today } = await useAsyncData('com-home-today', () =>
+  api
+    .post<{
+      look_job?: { num?: number }
+      apply?: { num?: number }
+      invite?: { num?: number }
+    }>('/v1/mcenter/com-stats/today', {})
     .catch(() => null),
 )
 const { data: fans } = await useAsyncData('com-fans-n', () =>
@@ -23,57 +51,38 @@ const { data: looks } = await useAsyncData('com-looks-n', () =>
 const { data: gzh } = await useAsyncData('com-gzh', () =>
   api.post<{ subscribe?: number }>('/v1/mcenter/wechat/subscribe', {}).catch(() => ({ subscribe: 1 })),
 )
+const { data: signSt, refresh: refreshSign } = await useAsyncData('com-home-sign', () =>
+  api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
+)
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
 const { wxQr } = useSiteChrome()
+const msg = ref('')
 useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
   await refreshNuxtData('auth-me')
   await navigateTo('/login')
 }
+async function sign() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/sign', {})
+    msg.value = t('common.success')
+    await refreshSign()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 
-const links = [
-  { to: '/com/profile', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/gallery', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
-  { to: '/com/jobs/new', icon: '/legacy/h5/images/job_add.png' },
-  { to: '/com/parts', icon: '/legacy/h5/images/job_training.png' },
-  { to: '/com/applications', icon: '/legacy/h5/images/Please_resume.png' },
-  { to: '/com/looks', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/fans', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/talent', icon: '/legacy/h5/images/Please_resume.png' },
-  { to: '/com/cert', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/messages', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/job-messages', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/downloads', icon: '/legacy/h5/images/Please_resume.png' },
-  { to: '/com/interviews', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/follows', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/fairs', icon: '/legacy/h5/images/diy_tit4_zph.png' },
-  { to: '/com/orders', icon: '/legacy/h5/images/financial_management.png' },
-  { to: '/com/pay', icon: '/legacy/h5/images/financial_management.png' },
-  { to: '/com/stats', icon: '/legacy/h5/images/sz.png' },
-  { to: '/com/password', icon: '/legacy/h5/images/sz.png' },
-  { to: '/com/set', icon: '/legacy/h5/images/sz.png' },
-  { to: '/com/otherservice', icon: '/legacy/h5/images/sz.png' },
-  { to: '/com/binding', icon: '/legacy/h5/images/sz.png' },
-  { to: '/com/finder', icon: '/legacy/h5/images/Please_resume.png' },
-  { to: '/com/news', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/products', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/banners', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/addresses', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/interview-tpls', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/integral', icon: '/legacy/h5/images/financial_management.png' },
-  { to: '/com/hrs', icon: '/legacy/h5/images/company.png' },
-  { to: '/com/recommend', icon: '/legacy/h5/images/Please_resume.png' },
-  { to: '/com/specials', icon: '/legacy/h5/images/diy_tit4_zph.png' },
-  { to: '/redeem/orders', icon: '/legacy/h5/images/financial_management.png' },
-  { to: '/com/broadcasts', icon: '/legacy/h5/images/icon_communication.png' },
-  { to: '/com/warnings', icon: '/legacy/h5/images/fk.png' },
-  { to: '/com/member-right', icon: '/legacy/h5/images/financial_management.png' },
-  { to: '/advice', icon: '/legacy/h5/images/fk.png' },
+const h5Task = [
+  { to: '/com/profile', icon: '/legacy/h5/images/enterprise_data.png', key: 'wap_com_00096' },
+  { to: '/com/pay', icon: '/legacy/h5/images/caiwuegl.png', key: 'wap_user_00213' },
+  { to: '/com/otherservice', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00196' },
+  { to: '/com/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
+  { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
 ]
-function labelOf(to: string) {
-  return comItems.value.find((i) => i.to === to)?.label || t('common.more')
+function labelOf(to: string, key?: string) {
+  return comItems.value.find((i) => i.to === to)?.label || (key ? t(key) : t('common.more'))
 }
 </script>
 
@@ -103,6 +112,9 @@ function labelOf(to: string) {
                 <span>{{ dash.applies_unread }}</span>
               </div>
             </NuxtLink>
+            <div class="membRiTopImg">
+              <img src="/legacy/member/com/memimg1.png" alt="" />
+            </div>
           </li>
           <li class="membRighTops_mr">
             <NuxtLink to="/com/fans" class="membRiTopText">
@@ -113,8 +125,11 @@ function labelOf(to: string) {
                 <span>{{ fans?.total ?? 0 }}</span>
               </div>
             </NuxtLink>
+            <div class="membRiTopImg">
+              <img src="/legacy/member/com/memimg3.png" alt="" />
+            </div>
           </li>
-          <li class="membRighTops_mr">
+          <li>
             <NuxtLink to="/com/looks" class="membRiTopText">
               <div class="membRiTopInfo">
                 <span>{{ $t('wap_user_00276') }}</span>
@@ -123,12 +138,81 @@ function labelOf(to: string) {
                 <span>{{ looks?.total ?? 0 }}</span>
               </div>
             </NuxtLink>
+            <div class="membRiTopImg">
+              <img src="/legacy/member/com/memimg4.png" alt="" />
+            </div>
           </li>
         </ul>
       </div>
+      <div class="memberSubGuanl">
+        <div class="memberSubzaopi">
+          <div class="membSubGuanTite">
+            <span>{{ $t('member_com_00150') }}</span>
+            <NuxtLink to="/com/added">{{ $t('wap_com_00393') }} ></NuxtLink>
+          </div>
+          <div class="membSubGuaTwo">
+            <ul>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('member_com_00134') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ counts?.online ?? 0 }}</span>
+                  <b>{{ $t('common_02052') }}</b>
+                </div>
+              </li>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('member_com_00136') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ counts?.breakjob_num ?? 0 }}</span>
+                  <b>{{ $t('common_02088') }}</b>
+                </div>
+              </li>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('member_com_00137') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ dash?.interviews_sent ?? 0 }}</span>
+                  <b>{{ $t('common_02088') }}</b>
+                </div>
+              </li>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('member_com_00135') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ dash?.resume_downloads ?? 0 }}</span>
+                  <b>{{ $t('common_02088') }}</b>
+                </div>
+              </li>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('wap_user_00209') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ counts?.top_num ?? 0 }}</span>
+                  <b>{{ $t('common_02067') }}</b>
+                </div>
+              </li>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('wap_com_00041') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ counts?.rec_num ?? 0 }}</span>
+                  <b>{{ $t('common_02067') }}</b>
+                </div>
+              </li>
+              <li>
+                <div class="twoDivTite"><span>{{ $t('wap_com_00043') }}</span></div>
+                <div class="twoDivNum">
+                  <span>{{ counts?.urgent_num ?? 0 }}</span>
+                  <b>{{ $t('common_02067') }}</b>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="yun_m_rightbox">
-        <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
-        <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
+        <p>
+          <NuxtLink to="/com/jobs/new">{{ $t('wap_00322') }}</NuxtLink>
+          ·
+          <NuxtLink to="/com/applications">{{ $t('wap_com_00105') }}</NuxtLink>
+          ·
+          <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
+        </p>
       </div>
     </div>
     <div class="site-h5">
@@ -136,31 +220,120 @@ function labelOf(to: string) {
         {{ $t('common_00655') }}
         <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
       </p>
-      <div class="userheader">
-        <div class="userheader_datum userheaderToubuds">
-          <div class="userheader_datum_left">
-            <div class="userheader_datum_job_name">
-              <i>{{ data?.username || data?.uid }}</i>
+      <div class="commemberheaderbg">
+        <div class="commemberheader commemberTops">
+          <div class="compauNamImgs">
+            <img
+              :src="signSt?.signed_today ? '/legacy/h5/images/comtop2.png' : '/legacy/h5/images/comtop22.png'"
+              alt=""
+              @click="signSt?.signed_today ? undefined : sign()"
+            />
+            <NuxtLink to="/com/set">
+              <img src="/legacy/h5/images/comtop4.png" alt="" />
+            </NuxtLink>
+          </div>
+          <div class="company">
+            <div class="company_left">
+              <img v-if="profile?.logo" :src="mediaUrl(profile.logo)" alt="" width="100%" height="100%" />
             </div>
-            <div class="userheader_datum_job_state">
-              <div class="userheader_datum_job_data">{{ $t('common.company') }}</div>
+            <div class="company_center">
+              <div class="company_center_top">{{ profile?.name || data?.username || data?.uid }}</div>
+              <NuxtLink :to="`/companies/${profile?.uid || data?.uid}`" class="company_center_bto">
+                <i class="company_center_bto_name">{{ $t('wap_com_00095') }}</i>
+              </NuxtLink>
+            </div>
+          </div>
+          <div class="particulars_new">
+            <ul>
+              <li>
+                <NuxtLink to="/com/applications">
+                  <i class="particulars_number">{{ dash?.applies_received ?? 0 }}</i>
+                  <i class="particulars_word">{{ $t('wap_00794') }}</i>
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/com/interviews">
+                  <i class="particulars_number">{{ dash?.interviews_sent ?? today?.invite?.num ?? 0 }}</i>
+                  <i class="particulars_word">{{ $t('wap_com_00046') }}</i>
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/com/looks">
+                  <i class="particulars_number">{{ looks?.total ?? today?.look_job?.num ?? 0 }}</i>
+                  <i class="particulars_word">{{ $t('wap_com_00112') }}</i>
+                </NuxtLink>
+              </li>
+              <li>
+                <i class="particulars_number">{{ counts?.online ?? 0 }}</i>
+                <i class="particulars_word">{{ $t('wap_com_00111') }}</i>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="comvipDaoBnagc">
+          <div class="comvipDaoBorder">
+            <div class="comvipDaoOline">
+              <div class="comvipDaineTite">
+                <b>{{ counts?.online ?? 0 }}</b>
+                <span>{{ $t('wap_com_00094') }}</span>
+              </div>
+              <div class="comvipDaineLink">
+                <NuxtLink v-if="counts?.online" to="/com/jobs">
+                  <span>{{ $t('wap_com_00109') }}</span>
+                </NuxtLink>
+                <NuxtLink v-else to="/com/jobs/new">
+                  <span>{{ $t('wap_com_00047') }}</span>
+                </NuxtLink>
+              </div>
+            </div>
+            <div class="Member_Center" style="padding-top: 0.42rem">
+              <ul>
+                <li>
+                  <NuxtLink to="/com/jobs">
+                    <div class="Member_Center_img">
+                      <img src="/legacy/h5/images/yun_cy_icon6.png" alt="" width="100%" height="100%" />
+                    </div>
+                    <i class="Member_Center_word">{{ $t('wap_com_00106') }}</i>
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink to="/com/applications">
+                    <div class="Member_Center_img">
+                      <img src="/legacy/h5/images/yun_cy_icon5.png" alt="" width="100%" height="100%" />
+                    </div>
+                    <i class="Member_Center_word">{{ $t('wap_com_00105') }}</i>
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink to="/com/stats">
+                    <div class="Member_Center_img">
+                      <img src="/legacy/h5/images/yun_cy_icon3.png" alt="" width="100%" height="100%" />
+                    </div>
+                    <i class="Member_Center_word">{{ $t('wap_com_00103') }}</i>
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink to="/com/member-right">
+                    <div class="Member_Center_img">
+                      <img src="/legacy/h5/images/yun_cy_icon4.png" alt="" width="100%" height="100%" />
+                    </div>
+                    <i class="Member_Center_word">{{ $t('wap_com_00097') }}</i>
+                  </NuxtLink>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-      <div>
-        <NuxtLink v-for="item in links" :key="item.to" :to="item.to">
+      <p v-if="msg" class="muted">{{ msg }}</p>
+      <div class="taskbar_box">
+        <NuxtLink v-for="item in h5Task" :key="item.to" :to="item.to">
           <div class="taskbar_enterprise">
             <div class="taskbar_datum">
               <div class="taskbar_datum_img">
                 <img :src="item.icon" alt="" width="100%" height="100%" />
               </div>
-              <div class="taskbar_datum_word">
-                {{ labelOf(item.to) }}
-                <span v-if="item.to === '/com/applications' && dash?.applies_unread" class="yun_m_n">{{ dash.applies_unread }}</span>
-                <span v-else-if="item.to === '/com/job-messages' && dash?.job_msg_unanswered" class="yun_m_n">{{ dash.job_msg_unanswered }}</span>
-                <span v-else-if="item.to === '/com/messages' && dash?.unread_messages" class="yun_m_n">{{ dash.unread_messages }}</span>
-              </div>
+              <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
             </div>
             <div class="taskbar_nav">
               <div class="taskbar_nav_img">

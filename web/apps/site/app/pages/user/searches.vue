@@ -34,9 +34,8 @@ useSeoMeta({ title: t('member_user_00108') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_user_00108') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
+  <MemberPanel :title="$t('member_user_00108')" :error="error && !isUnauthErr(error) ? error : undefined">
+    <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
     <form class="form" @submit.prevent="create">
       <input v-model="form.name" required :placeholder="$t('wap_00529')" />
       <input v-model="form.keyword" :placeholder="$t('common.job')" />
@@ -48,12 +47,12 @@ useSeoMeta({ title: t('member_user_00108') })
     <p v-if="msg">{{ msg }}</p>
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <div class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>{{ row.name }}</h3>
         <p class="muted">{{ row.para_n || row.para }}</p>
         <NuxtLink v-if="row.search_to" :to="row.search_to">{{ $t('wap_com_00427') }}</NuxtLink>
         <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
       </article>
     </div>
-  </section>
+  </MemberPanel>
 </template>

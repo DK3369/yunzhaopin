@@ -93,8 +93,7 @@ useSeoMeta({ title: t('wap_00389') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_00389') }}</h1>
+  <MemberPanel :title="$t('wap_00389')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-if="me?.moblie" class="muted">{{ $t('common.phone') }} {{ maskPhone(String(me.moblie)) }}</p>
     <p v-if="me?.email" class="muted">{{ $t('member_user_00282') }} {{ maskEmail(String(me.email)) }}</p>
@@ -127,5 +126,5 @@ useSeoMeta({ title: t('wap_00389') })
     <p class="muted">{{ $t('ajax_00001') }}</p>
     <p><NuxtLink to="/email-verify">{{ $t('wap_user_00179') }}</NuxtLink></p>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

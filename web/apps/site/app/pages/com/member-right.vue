@@ -42,13 +42,12 @@ useSeoMeta({ title: t('wap_com_00097') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_com_00097') }}</h1>
+  <MemberPanel :title="$t('wap_com_00097')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <div class="job-card">
+      <div class="jobnotice_list">
         <h2>{{ $t('wap_01229') }}</h2>
         <template v-if="current?.active">
           <p>{{ $t('wap_00025') }}: {{ current.package_code }}</p>
@@ -73,7 +72,7 @@ useSeoMeta({ title: t('wap_com_00097') })
       <h2>{{ $t('member_com_00610') }}</h2>
       <p v-if="!packList.length" class="muted">{{ $t('ui.no_data') }}</p>
       <div class="stack">
-        <article v-for="p in packList" :key="p.id" class="job-card">
+        <article v-for="p in packList" :key="p.id" class="jobnotice_list">
           <h3>{{ p.name }}</h3>
           <p>{{ $t('default_00093') }}: ¥{{ p.price_yuan }} · {{ p.duration_days }}d</p>
           <ul v-if="descLines(p.desc).length">
@@ -85,5 +84,5 @@ useSeoMeta({ title: t('wap_com_00097') })
     <p>
       <NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink>
     </p>
-  </section>
+  </MemberPanel>
 </template>

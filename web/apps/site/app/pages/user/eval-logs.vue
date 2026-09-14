@@ -10,12 +10,11 @@ useSeoMeta({ title: t('wap_00194') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_00194') }}</h1>
+  <MemberPanel :title="$t('wap_00194')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink :to="`/user/eval-logs/${row.id}`">{{ row.paper_name || $t('wap_00194') }} #{{ row.paper_id || row.id }}</NuxtLink>
         </h3>
@@ -23,5 +22,5 @@ useSeoMeta({ title: t('wap_00194') })
         <p class="muted">{{ row.created_at_n }}</p>
       </article>
     </div>
-  </section>
+  </MemberPanel>
 </template>

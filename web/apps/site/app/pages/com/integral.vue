@@ -141,21 +141,20 @@ useSeoMeta({ title: t('wap_user_00008') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00008') }}</h1>
+  <MemberPanel :title="$t('wap_user_00008')">
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
       <p class="balance">{{ $t('ui.balance') }}: {{ bal?.balance ?? 0 }}</p>
       <nav class="stack">
-        <NuxtLink to="/com/member-right" class="job-card">{{ $t('wap_com_00097') }}</NuxtLink>
-        <NuxtLink to="/com/pay" class="job-card">{{ $t('member_com_00041') }}</NuxtLink>
-        <NuxtLink to="/com/orders" class="job-card">{{ $t('common_02029') }}</NuxtLink>
+        <NuxtLink to="/com/member-right" class="jobnotice_list">{{ $t('wap_com_00097') }}</NuxtLink>
+        <NuxtLink to="/com/pay" class="jobnotice_list">{{ $t('member_com_00041') }}</NuxtLink>
+        <NuxtLink to="/com/orders" class="jobnotice_list">{{ $t('common_02029') }}</NuxtLink>
       </nav>
 
       <h2>{{ $t('wap_01021') }}</h2>
-      <article v-for="(row, i) in tasks" :key="i" class="job-card">
+      <article v-for="(row, i) in tasks" :key="i" class="jobnotice_list">
         <p>{{ row.title }} <span v-if="row.reward" class="muted">{{ row.reward }}</span></p>
         <p v-if="row.done" class="muted">{{ row.doneText }}</p>
         <p v-else-if="row.sign">
@@ -168,7 +167,7 @@ useSeoMeta({ title: t('wap_user_00008') })
 
       <h2>{{ $t('wap_01020') }}</h2>
       <p v-if="!(consumes?.list || []).length" class="muted">{{ $t('ui.no_data') }}</p>
-      <article v-for="row in consumes?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in consumes?.list || []" :key="row.id" class="jobnotice_list">
         <p>{{ row.detail }} · {{ row.delta }}</p>
         <p class="muted">{{ row.ctime_n }}</p>
       </article>
@@ -180,7 +179,7 @@ useSeoMeta({ title: t('wap_user_00008') })
 
       <h2>{{ $t('wap_user_00170') }}</h2>
       <p v-if="!(exchanges?.list || []).length" class="muted">{{ $t('default_00284') }}</p>
-      <article v-for="row in exchanges?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in exchanges?.list || []" :key="row.id" class="jobnotice_list">
         <p>{{ row.item_name || row.item_id }} · {{ row.cost }}</p>
         <p class="muted">{{ row.created_at_n || row.created_at }}</p>
       </article>
@@ -197,7 +196,7 @@ useSeoMeta({ title: t('wap_user_00008') })
         <input v-model="note" :placeholder="$t('ui.desc')" />
         <button type="submit">{{ $t('common.submit') }}</button>
       </form>
-      <article v-for="row in transfers?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in transfers?.list || []" :key="row.id" class="jobnotice_list">
         <p>{{ row.from_uid }} → {{ row.to_uid }} · {{ row.points }}</p>
         <p class="muted">{{ row.note }}</p>
       </article>
@@ -211,7 +210,7 @@ useSeoMeta({ title: t('wap_user_00008') })
     <p>
       <NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink>
     </p>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

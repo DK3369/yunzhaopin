@@ -53,7 +53,7 @@ useSeoMeta({ title: t('member_com_00148') })
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="!list.length" class="muted">{{ $t('member_com_00656') }}</p>
-    <article v-for="row in list" :key="row.id" class="job-card">
+    <article v-for="row in list" :key="row.id" class="jobnotice_list">
       <p>{{ $t('member_com_00333') }} {{ row.r_name }}</p>
       <p>{{ $t('member_com_00331') }} {{ row.r_reason }}</p>
       <p class="muted">{{ row.inputtime_n }} · {{ row.result || $t('admin_user_00371') }}</p>

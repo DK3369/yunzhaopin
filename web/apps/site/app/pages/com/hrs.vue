@@ -65,22 +65,21 @@ useSeoMeta({ title: t('ui.hr') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.hr') }}</h1>
+  <MemberPanel :title="$t('ui.hr')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
       <form class="form" @submit.prevent="createCode">
         <input v-model="note" :placeholder="$t('ui.desc')" />
         <button type="submit">{{ $t('ui.add') }}</button>
       </form>
-      <article v-for="c in codes || []" :key="c.id" class="job-card">
+      <article v-for="c in codes || []" :key="c.id" class="jobnotice_list">
         <p>{{ c.code }} · {{ c.note }}</p>
         <p class="muted">{{ c.expires_at_n }} · {{ c.remaining }}</p>
         <button type="button" @click="revoke(c.id)">{{ $t('common.delete') }}</button>
       </article>
       <h2>{{ $t('ui.hr') }}</h2>
       <p v-if="!(hrs || []).length" class="muted">{{ $t('ui.no_data') }}</p>
-      <article v-for="row in hrs || []" :key="row.hr_uid" class="job-card">
+      <article v-for="row in hrs || []" :key="row.hr_uid" class="jobnotice_list">
         <p>{{ row.hr_uid }} · {{ row.role }}</p>
         <p class="muted">{{ row.joined_at_n }}</p>
         <button type="button" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</button>
@@ -90,10 +89,10 @@ useSeoMeta({ title: t('ui.hr') })
         <input v-model="joinCode" required />
         <button type="submit">{{ $t('common.submit') }}</button>
       </form>
-      <article v-for="co in companies || []" :key="co.company_uid" class="job-card">
+      <article v-for="co in companies || []" :key="co.company_uid" class="jobnotice_list">
         <p>{{ co.company_uid }} · {{ co.role }}</p>
       </article>
       <p v-if="msg">{{ msg }}</p>
     </template>
-  </section>
+  </MemberPanel>
 </template>

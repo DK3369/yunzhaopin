@@ -76,8 +76,7 @@ useSeoMeta({ title: t('wap_com_00404') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_com_00404') }}</h1>
+  <MemberPanel :title="$t('wap_com_00404')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="save">
       <input v-model="form.name" required :placeholder="$t('wap_00529')" />
@@ -93,7 +92,7 @@ useSeoMeta({ title: t('wap_com_00404') })
     <p v-if="msg">{{ msg }}</p>
     <p v-if="!list.length" class="muted">{{ $t('ui.no_tpl') }}</p>
     <div class="stack">
-      <article v-for="row in list" :key="row.id" class="job-card">
+      <article v-for="row in list" :key="row.id" class="jobnotice_list">
         <h3>{{ row.name }}</h3>
         <p class="muted">{{ row.address }} · {{ row.linkman }} {{ row.linktel }}</p>
         <div class="row">
@@ -102,7 +101,7 @@ useSeoMeta({ title: t('wap_com_00404') })
         </div>
       </article>
     </div>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

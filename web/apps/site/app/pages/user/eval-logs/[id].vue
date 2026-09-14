@@ -27,8 +27,7 @@ useSeoMeta({ title: t('wap_00194') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ data?.paper_name || $t('wap_00194') }}</h1>
+  <MemberPanel :title="data?.paper_name || $t('wap_00194')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p>
       <NuxtLink to="/user/eval-logs">{{ $t('wap_00194') }}</NuxtLink>
     </p>
@@ -44,5 +43,5 @@ useSeoMeta({ title: t('wap_00194') })
         <li v-for="row in answers" :key="row.k">{{ row.k }} · {{ row.v }}</li>
       </ul>
     </template>
-  </section>
+  </MemberPanel>
 </template>

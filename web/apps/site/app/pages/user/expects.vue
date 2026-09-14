@@ -63,7 +63,7 @@ useSeoMeta({ title: t('home.intention') })
 <template>
   <MemberPanel :title="$t('home.intention')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(list || []).length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
-    <article v-for="row in list" :key="row.id" class="look_resume_list">
+    <article v-for="row in list" :key="row.id" class="jobnotice_list">
       <h3>{{ row.name }}</h3>
       <p class="muted">{{ row.job_classid_n }} · {{ row.city_classid_n }}</p>
       <input v-model="row.name" />

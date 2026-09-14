@@ -35,7 +35,7 @@ useSeoMeta({ title: t('member_com_00555') })
 <template>
   <MemberPanel :title="$t('member_com_00555')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <article v-for="row in list" :key="row.id" class="look_resume_list">
+    <article v-for="row in list" :key="row.id" class="jobnotice_list">
       <h3>
         <NuxtLink :to="`/resumes/${row.eid || row.uid}`">{{ row.user_name || row.eid || row.uid }}</NuxtLink>
       </h3>

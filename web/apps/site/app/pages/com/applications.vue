@@ -246,8 +246,9 @@ useSeoMeta({ title: t('member_com_00454') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_com_00454') }}</h1>
+  <MemberPanel :title="$t('member_com_00454')" :error="error && !isUnauthErr(error) ? error : undefined">
+    <template #pcTabs><MemberHrTabs /></template>
+    <template #h5Tabs><MemberHrTabs /></template>
 
     <form class="filters" @submit.prevent="applyFilters">
       <select v-model="filters.job_id">
@@ -304,7 +305,7 @@ useSeoMeta({ title: t('member_com_00454') })
       <p v-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
 
       <div class="stack">
-        <article v-for="row in list" :key="row.id" class="job-card">
+        <article v-for="row in list" :key="row.id" class="jobnotice_list">
           <label class="pickbox"><input v-model="selected" type="checkbox" :value="row.id" /></label>
           <h3>
             <a href="#" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a>
@@ -344,7 +345,7 @@ useSeoMeta({ title: t('member_com_00454') })
       <label><input v-model="invite.save_yqmb" type="checkbox" /> {{ $t('member_com_00512') }}</label>
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

@@ -40,29 +40,28 @@ useSeoMeta({ title: t('wap_user_00213') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00213') }}</h1>
+  <MemberPanel :title="$t('wap_user_00213')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else>{{ $t('ui.balance') }} {{ bal?.balance ?? 0 }}</p>
     <p>
       <button type="button" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
     </p>
     <div class="stack">
-      <NuxtLink to="/user/integral" class="job-card">{{ $t('wap_user_00008') }}</NuxtLink>
-      <NuxtLink to="/user/pay" class="job-card">{{ $t('common_01946') }}</NuxtLink>
-      <NuxtLink to="/redeem" class="job-card">{{ $t('wap_user_00170') }}</NuxtLink>
-      <NuxtLink to="/invite" class="job-card">{{ $t('wap_user_00253') }}</NuxtLink>
+      <NuxtLink to="/user/integral" class="jobnotice_list">{{ $t('wap_user_00008') }}</NuxtLink>
+      <NuxtLink to="/user/pay" class="jobnotice_list">{{ $t('common_01946') }}</NuxtLink>
+      <NuxtLink to="/redeem" class="jobnotice_list">{{ $t('wap_user_00170') }}</NuxtLink>
+      <NuxtLink to="/invite" class="jobnotice_list">{{ $t('wap_user_00253') }}</NuxtLink>
     </div>
     <h2>{{ $t('wap_user_00213') }}</h2>
-    <article v-for="row in pays?.list || []" :key="row.id" class="job-card">
+    <article v-for="row in pays?.list || []" :key="row.id" class="jobnotice_list">
       <p>{{ packed(row.detail) }} · {{ row.delta }}</p>
       <p class="muted">{{ row.ctime_n || row.ctime }}</p>
     </article>
     <h2>{{ $t('member_user_00190') }}</h2>
-    <article v-for="row in rewards?.list || []" :key="row.id" class="job-card">
+    <article v-for="row in rewards?.list || []" :key="row.id" class="jobnotice_list">
       <p>{{ row.item_name || row.item_id }} · {{ row.cost }}</p>
       <p class="muted">{{ row.created_at_n || row.created_at }}</p>
     </article>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

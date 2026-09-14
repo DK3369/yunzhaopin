@@ -73,8 +73,7 @@ useSeoMeta({ title: t('ui.com_banner') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.com_banner') }}</h1>
+  <MemberPanel :title="$t('ui.com_banner')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
@@ -91,7 +90,7 @@ useSeoMeta({ title: t('ui.com_banner') })
       <p v-if="msg">{{ msg }}</p>
       <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
       <div class="stack">
-        <article v-for="row in list" :key="row.id" class="job-card">
+        <article v-for="row in list" :key="row.id" class="jobnotice_list">
           <img v-if="row.pic" :src="row.pic_n || mediaUrl(row.pic)" alt="" width="240" />
           <p class="muted">{{ row.link }}</p>
           <div class="row">
@@ -104,7 +103,7 @@ useSeoMeta({ title: t('ui.com_banner') })
     <p>
       <NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink>
     </p>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

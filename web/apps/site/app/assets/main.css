@@ -775,6 +775,8 @@ html.force-pc .site-h5 {
     width: 210px;
     flex: none;
     background: #fff;
+    position: relative;
+    z-index: 20;
   }
   .member-shell .yun_m_rightsidebar {
     flex: 1;
@@ -782,6 +784,63 @@ html.force-pc .site-h5 {
     min-height: 480px;
     padding: 20px 24px 40px;
     box-sizing: border-box;
+    overflow: visible;
+  }
+  .member-shell .member-nav-more {
+    position: relative;
+    z-index: 100;
+  }
+  .member-shell-com {
+    display: block;
+    background: transparent;
+  }
+  .member-shell-com .member-shell-com-body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .member-shell-com .sidebar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 200px;
+    flex: none;
+    z-index: 20;
+    background: #fff;
+  }
+  .member-shell-com .memberSubCont {
+    width: auto !important;
+    flex: 1;
+    margin: 0 0 0 12px !important;
+    overflow: visible;
+  }
+  .member-shell-com .memberSubRight--full {
+    width: 100% !important;
+    overflow: visible !important;
+    background: #fff;
+    min-height: 480px;
+    padding: 16px 20px 32px;
+    box-sizing: border-box;
+  }
+  .member-page .form input,
+  .member-page .form select,
+  .member-page .form textarea,
+  .yun_m_rightsidebar .form input,
+  .yun_m_rightsidebar .form select,
+  .yun_m_rightsidebar .form textarea {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    margin: 8px 0;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+  .member-page .form button,
+  .yun_m_rightsidebar button {
+    margin: 8px 8px 0 0;
   }
   .yun_new_top .lang-switch,
   .yun_new_top .lang-switch a {
@@ -1406,5 +1465,54 @@ html.force-pc .site-h5 {
 .job-jd strong,
 .job-jd b {
   font-weight: 700;
+}
+
+@media (max-width: 1199px) {
+  .yun_m_rightbox.member-page-body,
+  .com_body.member-page-body {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+  .user_new_listtit {
+    display: none;
+  }
+  .jobnotice_list {
+    background: #fff;
+    margin: 0.16rem 0.24rem;
+    padding: 0.24rem;
+    border-radius: 0.08rem;
+    overflow: hidden;
+  }
+  .jobnotice_list .user_new_job,
+  .jobnotice_list .user_new_time,
+  .jobnotice_list .user_new_zt,
+  .jobnotice_list .user_new_yqh,
+  .jobnotice_list .user_new_cz {
+    float: none;
+    width: auto;
+    display: block;
+    padding: 0.04rem 0;
+  }
+  .member-page .form input,
+  .member-page .form select,
+  .member-page .form textarea {
+    display: block;
+    width: calc(100% - 0.48rem);
+    margin: 0.16rem 0.24rem;
+    padding: 0.16rem;
+    border: 1px solid #eee;
+    box-sizing: border-box;
+  }
+  .member-page .form button {
+    margin: 0.16rem 0.24rem;
+  }
+  a.com_set_list,
+  a.post_body_card_job {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
 }
 

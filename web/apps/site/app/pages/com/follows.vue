@@ -13,7 +13,7 @@ useSeoMeta({ title: t('wap_01142') })
 
 <template>
   <MemberPanel :title="$t('wap_01142')" :error="error" :empty="!error && !(data?.list || []).length">
-    <article v-for="row in data?.list || []" :key="row.target_uid || row.uid" class="look_resume_list">
+    <article v-for="row in data?.list || []" :key="row.target_uid || row.uid" class="jobnotice_list">
       <p>{{ row.name || row.target_uid }}</p>
       <button type="button" @click="toggle(row)">{{ $t('common.delete') }}</button>
     </article>

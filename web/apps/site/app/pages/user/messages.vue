@@ -27,18 +27,18 @@ useSeoMeta({ title: t('common.message') })
 <template>
   <MemberPanel :title="$t('common.message')" :error="error" :empty="!error && !(data?.list || []).length">
     <nav class="stack" style="margin-bottom: 12px">
-      <NuxtLink to="/user/interviews" class="job-card">
+      <NuxtLink to="/user/interviews" class="jobnotice_list">
         {{ $t('wap_user_00216') }}
         <span v-if="dash?.wkyqnum" class="yun_m_n">{{ dash.wkyqnum }}</span>
       </NuxtLink>
-      <NuxtLink to="/user/applications" class="job-card">{{ $t('wap_01133') }}</NuxtLink>
-      <NuxtLink to="/user/consults" class="job-card">
+      <NuxtLink to="/user/applications" class="jobnotice_list">{{ $t('wap_01133') }}</NuxtLink>
+      <NuxtLink to="/user/consults" class="jobnotice_list">
         {{ $t('wap_user_00364') }}
         <span v-if="dash?.commsgnum" class="yun_m_n">{{ dash.commsgnum }}</span>
       </NuxtLink>
     </nav>
     <p><button type="button" @click="readAll">{{ $t('common.confirm') }}</button></p>
-    <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
+    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
       <p>{{ row.body || row.content || row.title || row.id }}</p>
       <p class="muted">{{ row.datetime_n }}</p>
     <p>

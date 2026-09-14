@@ -55,8 +55,7 @@ useSeoMeta({ title: t('wap_user_00203') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00203') }}</h1>
+  <MemberPanel :title="$t('wap_user_00203')">
     <form class="form" @submit.prevent="submit">
       <input v-model="form.infotype" />
       <textarea v-model="form.content" rows="5" required />
@@ -70,5 +69,5 @@ useSeoMeta({ title: t('wap_user_00203') })
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

@@ -97,8 +97,7 @@ useSeoMeta({ title: t('ui.map_addr') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.map_addr') }}</h1>
+  <MemberPanel :title="$t('ui.map_addr')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
@@ -125,7 +124,7 @@ useSeoMeta({ title: t('ui.map_addr') })
       <p v-if="msg">{{ msg }}</p>
       <p v-if="!list.length" class="muted">{{ $t('ui.no_addr') }}</p>
       <div class="stack">
-        <article v-for="row in list" :key="row.id" class="job-card">
+        <article v-for="row in list" :key="row.id" class="jobnotice_list">
           <h3>{{ row.link_man }} · {{ row.link_address }}</h3>
           <p class="muted">{{ row.link_moblie }}</p>
           <p class="muted">x {{ row.x }} y {{ row.y }}</p>
@@ -136,7 +135,7 @@ useSeoMeta({ title: t('ui.map_addr') })
         </article>
       </div>
     </template>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

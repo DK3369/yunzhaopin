@@ -29,28 +29,27 @@ useSeoMeta({ title: t('admin_tool_00224') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('admin_tool_00224') }}</h1>
+  <MemberPanel :title="$t('admin_tool_00224')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
       <div v-if="today" class="stack">
-        <article class="job-card">
+        <article class="jobnotice_list">
           <h2>{{ $t('member_com_00371') }}</h2>
           <p>{{ today.look_resume?.num ?? 0 }} · {{ jzrText(today.look_resume?.jzr) }}</p>
         </article>
-        <article class="job-card">
+        <article class="jobnotice_list">
           <h2>{{ $t('member_com_00372') }}</h2>
           <p>{{ today.look_job?.num ?? 0 }} · {{ jzrText(today.look_job?.jzr) }}</p>
         </article>
-        <article class="job-card">
+        <article class="jobnotice_list">
           <h2>{{ $t('wap_00451') }}</h2>
           <p>{{ today.down_resume?.num ?? 0 }} · {{ jzrText(today.down_resume?.jzr) }}</p>
         </article>
-        <article class="job-card">
+        <article class="jobnotice_list">
           <h2>{{ $t('wap_com_00235') }}</h2>
           <p>{{ today.apply?.num ?? 0 }} · {{ jzrText(today.apply?.jzr) }}</p>
         </article>
-        <article class="job-card">
+        <article class="jobnotice_list">
           <h2>{{ $t('wap_user_00216') }}</h2>
           <p>{{ today.invite?.num ?? 0 }} · {{ jzrText(today.invite?.jzr) }}</p>
         </article>
@@ -64,5 +63,5 @@ useSeoMeta({ title: t('admin_tool_00224') })
       <h2>{{ $t('ui.year_report') }}</h2>
       <pre>{{ JSON.stringify(year, null, 2) }}</pre>
     </template>
-  </section>
+  </MemberPanel>
 </template>

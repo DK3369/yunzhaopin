@@ -161,8 +161,7 @@ useSeoMeta({ title: t('member_com_00480') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_com_00480') }}</h1>
+  <MemberPanel :title="$t('member_com_00480')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="save">
       <input v-model="form.name" :placeholder="$t('wap_com_00288')" required />
@@ -200,7 +199,7 @@ useSeoMeta({ title: t('member_com_00480') })
     <h2>{{ $t('ui.published') }}</h2>
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_parts') }}</p>
     <div class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>{{ row.name || row.id }}</h3>
         <p class="muted">{{ partState(row) }}</p>
         <button type="button" @click="fill(row)">{{ $t('common.edit') }}</button>
@@ -213,7 +212,7 @@ useSeoMeta({ title: t('member_com_00480') })
     <h2>{{ $t('ui.recv_applies') }}</h2>
     <p v-if="!(applies?.list || []).length" class="muted">{{ $t('ui.no_apply') }}</p>
     <div class="stack">
-      <article v-for="row in applies?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in applies?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink :to="`/resumes/${row.uid}`">{{ row.uname || row.uid }}</NuxtLink>
           · {{ row.job_name || row.job_id }}
@@ -230,5 +229,5 @@ useSeoMeta({ title: t('member_com_00480') })
       <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>
     </p>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

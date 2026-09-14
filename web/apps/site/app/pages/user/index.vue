@@ -111,12 +111,9 @@ async function sign() {
 const h5Links = [
   { to: '/user/resume', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00204' },
   { to: '/user/privacy', icon: '/legacy/h5/images/ys.png', key: 'wap_user_00215' },
-  { to: '/user/parts', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00220' },
+  { to: '/user/otherservice', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00196' },
   { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
   { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
-  { to: '/user/otherservice', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00196' },
-  { to: '/user/eval-logs', icon: '/legacy/h5/images/sz.png', key: 'wap_00194' },
-  { to: '/user/looks', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00275' },
   { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
 ]
 function labelOf(to: string, key: string) {
@@ -233,10 +230,6 @@ function labelOf(to: string, key: string) {
         </div>
       </div>
       <p v-if="msg" class="muted">{{ msg }}</p>
-      <div class="yun_m_rightbox">
-        <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
-        <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
-      </div>
     </div>
     <div class="site-h5">
       <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">

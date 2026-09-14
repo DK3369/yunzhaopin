@@ -22,8 +22,7 @@ useSeoMeta({ title: t('ui.invite_reg') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.invite_reg') }}</h1>
+  <MemberPanel :title="$t('ui.invite_reg')">
     <p v-if="summary" class="muted">
       {{ summary.count ?? 0 }} · {{ summary.total_points ?? 0 }}
     </p>
@@ -35,11 +34,11 @@ useSeoMeta({ title: t('ui.invite_reg') })
     <h2>{{ $t('ui.flow') }}</h2>
     <p v-if="!(refs?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <div class="stack">
-      <article v-for="row in refs?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in refs?.list || []" :key="row.id" class="jobnotice_list">
         <h3>{{ row.invitee_uid }}</h3>
         <p class="muted">{{ row.points }} · {{ row.created_at_n }}</p>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

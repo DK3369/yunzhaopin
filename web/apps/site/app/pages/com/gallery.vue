@@ -43,19 +43,18 @@ useSeoMeta({ title: t('wap_user_00157') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00157') }}</h1>
+  <MemberPanel :title="$t('wap_user_00157')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent>
       <input v-model="title" />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onFile" />
     </form>
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
       <h3>{{ row.title || row.id }}</h3>
       <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
       <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
     </article>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

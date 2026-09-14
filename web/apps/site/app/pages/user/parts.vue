@@ -38,13 +38,12 @@ useSeoMeta({ title: t('wap_user_00303') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00303') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
+  <MemberPanel :title="$t('wap_user_00303')" :error="error && !isUnauthErr(error) ? error : undefined">
+    <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
     <h2>{{ $t('ui.apply') }}</h2>
     <p v-if="!(applies?.list || []).length" class="muted">{{ $t('ui.no_apply') }}</p>
     <div class="stack">
-      <article v-for="row in applies?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in applies?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink v-if="row.job_id" :to="`/parts/${row.job_id}`">{{ row.job_name || row.job_id }}</NuxtLink>
           <span v-else>{{ row.job_name || row.job_id }}</span>
@@ -56,7 +55,7 @@ useSeoMeta({ title: t('wap_user_00303') })
     <h2>{{ $t('member_user_00103') }}</h2>
     <p v-if="!(collects?.list || []).length" class="muted">{{ $t('ui.no_fav') }}</p>
     <div class="stack">
-      <article v-for="row in collects?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in collects?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink v-if="row.job_id" :to="`/parts/${row.job_id}`">{{ row.job_name || row.job_id }}</NuxtLink>
           <span v-else>{{ row.job_name || row.job_id }}</span>
@@ -66,5 +65,5 @@ useSeoMeta({ title: t('wap_user_00303') })
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

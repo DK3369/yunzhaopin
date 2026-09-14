@@ -25,12 +25,10 @@ useSeoMeta({ title: t('member_user_00115') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_user_00115') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+  <MemberPanel :title="$t('member_user_00115')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
+    <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
+    <div class="stack">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink v-if="row.job_id" :to="`/jobs/${row.job_id}`">{{ row.job_name || $t('common.job') }}</NuxtLink>
           <span v-else>{{ row.job_name || $t('common_02082') }}</span>
@@ -38,7 +36,7 @@ useSeoMeta({ title: t('member_user_00115') })
         <p>
           <NuxtLink v-if="row.job_uid" :to="`/companies/${row.job_uid}`">{{ row.com_name }}</NuxtLink>
         </p>
-        <p class="muted">{{ statusLabel(row.status, row.reply) }} · {{ row.datetime_n }}</p>
+        <p class="muted">{{ statusLabel(row.status) }} · {{ row.datetime_n }}</p>
         <p>{{ row.content }}</p>
         <p v-if="row.reply" class="muted">{{ row.reply }}</p>
         <p v-else class="muted">{{ $t('member_user_00481') }}</p>
@@ -46,5 +44,5 @@ useSeoMeta({ title: t('member_user_00115') })
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

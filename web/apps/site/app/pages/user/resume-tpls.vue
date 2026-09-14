@@ -34,7 +34,7 @@ useSeoMeta({ title: t('wap_00328') })
 
 <template>
   <MemberPanel :title="$t('wap_00328')" :error="error" :empty="!error && !list.length">
-    <article v-for="row in list" :key="row.id" class="look_resume_list">
+    <article v-for="row in list" :key="row.id" class="jobnotice_list">
       <h3>{{ row.name }}</h3>
       <p v-if="row.price_yuan || row.price" class="muted">{{ row.price_yuan || row.price }}</p>
       <button type="button" @click="apply(row.id)">{{ $t('common.confirm') }}</button>

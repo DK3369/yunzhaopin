@@ -16,29 +16,41 @@ async function remove(id: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: t('wap_user_00276') })
+useSeoMeta({ title: t('wap_com_00407') })
 </script>
 
 <template>
-  <section>
-    <nav class="m_tab">
-      <NuxtLink to="/user/views">{{ $t('wap_user_00276') }}</NuxtLink>
-      <NuxtLink to="/user/looks">{{ $t('wap_user_00275') }}</NuxtLink>
-    </nav>
-    <h1>{{ $t('wap_user_00276') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_who_viewed') }}</p>
-    <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
-        <h3>
-          <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`">{{ row.com_name || row.com_id }}</NuxtLink>
-          <span v-else>{{ row.com_name || row.id }}</span>
-        </h3>
-        <p class="muted">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></p>
-        <p class="muted">{{ row.datetime_n }}</p>
-        <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-      </article>
+  <MemberPanel
+    :title="$t('wap_com_00407')"
+    :error="error && !isUnauthErr(error) ? error : undefined"
+    :empty="!error && !(data?.list || []).length"
+    :empty-text="$t('ui.no_who_viewed')"
+  >
+    <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
+    <div class="site-h5 m_tab">
+      <div class="m_tabbox category">
+        <ul>
+          <li class="m_tabactive">{{ $t('wap_com_00407') }}</li>
+          <li @click="navigateTo('/user/looks')">{{ $t('wap_user_00275') }}</li>
+        </ul>
+      </div>
+    </div>
+    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
+      <div class="user_new_job">{{ $t('common.company') }}</div>
+      <div class="user_new_time">{{ $t('member_user_00104') }}</div>
+      <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
+    </div>
+    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
+      <div class="user_new_job">
+        <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`" class="user_new_jobname">{{ row.com_name || row.com_id }}</NuxtLink>
+        <span v-else class="user_new_jobname">{{ row.com_name || row.id }}</span>
+        <div class="user_new_comname">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></div>
+      </div>
+      <div class="user_new_time">{{ row.datetime_n }}</div>
+      <div class="user_new_cz">
+        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

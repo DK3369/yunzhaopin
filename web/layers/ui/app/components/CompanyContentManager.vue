@@ -102,8 +102,7 @@ async function remove(row: Row) {
 </script>
 
 <template>
-  <section>
-    <h1>{{ props.title }}</h1>
+  <MemberPanel :title="props.title" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
@@ -121,7 +120,7 @@ async function remove(row: Row) {
 
       <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
       <div class="stack">
-        <article v-for="row in list" :key="row.id" class="job-card">
+        <article v-for="row in list" :key="row.id" class="jobnotice_list">
           <h3>{{ row.title }}</h3>
           <p class="muted">
             {{ $t('wap_com_00406') }}: {{ row.status_n }} · {{ row.ctime_n }}
@@ -140,7 +139,7 @@ async function remove(row: Row) {
     <p>
       <NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink>
     </p>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

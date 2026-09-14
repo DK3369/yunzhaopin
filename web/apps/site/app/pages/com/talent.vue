@@ -85,15 +85,16 @@ useSeoMeta({ title: t('member_com_00597') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_com_00597') }}</h1>
+  <MemberPanel :title="$t('member_com_00597')" :error="error && !isUnauthErr(error) ? error : undefined">
+    <template #pcTabs><MemberHrTabs /></template>
+    <template #h5Tabs><MemberHrTabs /></template>
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <h2>{{ $t('ui.public_resumes') }}</h2>
     <p v-if="!(publicResumes?.list || []).length" class="muted">{{ $t('ui.no_public_resume') }}</p>
     <div class="stack">
-      <article v-for="r in publicResumes?.list || []" :key="r.uid" class="job-card">
+      <article v-for="r in publicResumes?.list || []" :key="r.uid" class="jobnotice_list">
         <h3>{{ r.display_name || r.name }}</h3>
         <p class="muted">{{ r.education_n }} · {{ r.exp_n }}</p>
         <NuxtLink :to="`/resumes/${r.uid}`">{{ $t('wap_com_00427') }}</NuxtLink>
@@ -103,7 +104,7 @@ useSeoMeta({ title: t('member_com_00597') })
     <h2>{{ $t('ui.favorited') }}</h2>
     <p v-if="!list.length" class="muted">{{ $t('ui.talent_empty') }}</p>
     <div class="stack">
-      <article v-for="row in list" :key="row.id" class="job-card">
+      <article v-for="row in list" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink :to="`/resumes/${row.eid || row.seeker_uid}`">
             {{ row.uname || row.seeker_uid }}
@@ -125,7 +126,7 @@ useSeoMeta({ title: t('member_com_00597') })
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

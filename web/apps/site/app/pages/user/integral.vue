@@ -66,8 +66,7 @@ useSeoMeta({ title: t('wap_user_00008') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00008') }}</h1>
+  <MemberPanel :title="$t('wap_user_00008')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <template v-else>
       <p>{{ $t('ui.balance') }} {{ bal?.balance ?? 0 }}</p>
@@ -76,7 +75,7 @@ useSeoMeta({ title: t('wap_user_00008') })
       </p>
       <h2>{{ $t('wap_01021') }}</h2>
       <div class="stack">
-        <article v-for="(row, i) in tasks" :key="i" class="job-card">
+        <article v-for="(row, i) in tasks" :key="i" class="jobnotice_list">
           <h3>{{ row.title }} <span v-if="row.reward" class="muted">{{ row.reward }}</span></h3>
           <p v-if="row.done" class="muted">{{ row.doneText }}</p>
           <p v-else-if="row.sign">
@@ -90,12 +89,12 @@ useSeoMeta({ title: t('wap_user_00008') })
       <h2>{{ $t('ui.flow') }}</h2>
       <p v-if="!(hist?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
       <div class="stack">
-        <article v-for="(row, i) in hist?.list || []" :key="row.id || i" class="job-card">
+        <article v-for="(row, i) in hist?.list || []" :key="row.id || i" class="jobnotice_list">
           <h3>{{ row.item_id || row.id }}</h3>
           <p class="muted">{{ row.cost ?? row.delta ?? '' }} · {{ row.status ?? '' }} · {{ row.created_at || row.ctime }}</p>
         </article>
       </div>
       <p v-if="msg">{{ msg }}</p>
     </template>
-  </section>
+  </MemberPanel>
 </template>

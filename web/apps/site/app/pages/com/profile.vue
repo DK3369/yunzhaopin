@@ -78,8 +78,7 @@ useSeoMeta({ title: t('member_com_00378') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_com_00378') }}</h1>
+  <MemberPanel :title="$t('member_com_00378')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="save">
       <input v-model="form.name" :placeholder="$t('wap_com_00157')" />
@@ -112,5 +111,5 @@ useSeoMeta({ title: t('member_com_00378') })
       <button type="submit">{{ $t('common.save') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
-  </section>
+  </MemberPanel>
 </template>

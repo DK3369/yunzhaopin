@@ -60,7 +60,7 @@ useSeoMeta({ title: t('member_user_00226') })
     </form>
     <h2>{{ $t('member_user_00058') }}</h2>
     <p v-if="!sessionList.length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in sessionList" :key="row.id" class="job-card">
+    <article v-for="row in sessionList" :key="row.id" class="jobnotice_list">
       <h3>{{ row.device || row.ip }} <span v-if="row.is_current" class="muted">{{ $t('common.yes') }}</span></h3>
       <p class="muted">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</p>
       <button v-if="!row.is_current" type="button" @click="revokeSession(row.id)">{{ $t('common.delete') }}</button>

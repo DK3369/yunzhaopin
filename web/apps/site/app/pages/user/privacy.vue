@@ -32,8 +32,7 @@ useSeoMeta({ title: t('wap_user_00215') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00215') }}</h1>
+  <MemberPanel :title="$t('wap_user_00215')">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form v-else class="form" @submit.prevent="save">
       <p class="muted">{{ $t('ui.privacy_hint') }}</p>
@@ -50,5 +49,5 @@ useSeoMeta({ title: t('wap_user_00215') })
     </form>
     <p><NuxtLink to="/user/blacklist">{{ $t('member_user_00044') }}</NuxtLink></p>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

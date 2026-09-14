@@ -93,8 +93,7 @@ useSeoMeta({ title: t('wap_user_00338') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_user_00338') }}</h1>
+  <MemberPanel :title="$t('wap_user_00338')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <h2>{{ $t('member_user_00220') }}</h2>
     <form class="form" @submit.prevent="doRename">
@@ -126,7 +125,7 @@ useSeoMeta({ title: t('wap_user_00338') })
     </form>
     <h2>{{ $t('member_user_00058') }}</h2>
     <p v-if="!sessionList.length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in sessionList" :key="row.id" class="job-card">
+    <article v-for="row in sessionList" :key="row.id" class="jobnotice_list">
       <h3>{{ row.device || row.ip }} <span v-if="row.is_current" class="muted">{{ $t('common.yes') }}</span></h3>
       <p class="muted">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</p>
       <button v-if="!row.is_current" type="button" @click="revokeSession(row.id)">{{ $t('common.delete') }}</button>
@@ -135,5 +134,5 @@ useSeoMeta({ title: t('wap_user_00338') })
       <button type="button" @click="revokeOthers">{{ $t('model_00093') }}</button>
     </p>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

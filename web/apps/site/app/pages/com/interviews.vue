@@ -94,7 +94,7 @@ useSeoMeta({ title: t('wap_user_00216') })
 
 <template>
   <MemberPanel :title="$t('wap_user_00216')" :error="error" :empty="false">
-    <article v-for="row in data?.list || []" :key="row.id" class="look_resume_list">
+    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
       <p>
         <NuxtLink :to="`/resumes/${row.uid}`">{{ row.uname || row.uid }}</NuxtLink>
         · {{ row.job_name || row.job_id }} · {{ browseLabel(row.is_browse) }}
@@ -104,7 +104,7 @@ useSeoMeta({ title: t('wap_user_00216') })
     </article>
     <p v-if="!error && !(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <h2>{{ $t('member_com_00512') }}</h2>
-    <article v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="look_resume_list">
+    <article v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="jobnotice_list">
       <h3>{{ row.name }}</h3>
       <p class="muted">{{ row.address }} · {{ row.linkman }} {{ row.linktel }}</p>
       <button type="button" @click="fill(row)">{{ $t('common.edit') }}</button>

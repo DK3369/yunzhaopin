@@ -16,8 +16,6 @@ const siteUrl = String(useRuntimeConfig().public.siteUrl || 'http://127.0.0.1:30
 const { isHome, isAuth, isMember, settings } = useSiteChrome()
 const { saveSite, gotocity } = useSubSite()
 const api = useApi()
-const { userItems, comItems } = useMemberNav()
-const memberItems = computed(() => (route.path.startsWith('/com') ? comItems.value : userItems.value))
 const siteClosed = computed(() => String(settings.value.sy_web_online || '') === '2')
 const ipBanned = computed(() => String(settings.value.sy_client_ip_banned || '') === '1')
 const moduleOff = computed(() => {
@@ -153,7 +151,7 @@ onMounted(() => {
   <div v-else class="site-root">
     <AppHeader v-if="!isAuth" />
     <main :class="mainClass">
-      <MemberShell v-if="isMember" :items="memberItems" :kind="route.path.startsWith('/com') ? 'com' : 'user'">
+      <MemberShell v-if="isMember" :kind="route.path.startsWith('/com') ? 'com' : 'user'">
         <NuxtPage />
       </MemberShell>
       <NuxtPage v-else />

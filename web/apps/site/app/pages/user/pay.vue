@@ -148,8 +148,7 @@ useSeoMeta({ title: t('ui.pay') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.pay') }}</h1>
+  <MemberPanel :title="$t('ui.pay')">
     <p class="muted">{{ $t('ui.pay_hint') }}</p>
     <p>
       <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
@@ -157,7 +156,7 @@ useSeoMeta({ title: t('ui.pay') })
       <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
     </p>
     <div v-if="channel === 'bank' && bankList.length" class="stack">
-      <article v-for="b in bankList" :key="b.id" class="job-card">
+      <article v-for="b in bankList" :key="b.id" class="jobnotice_list">
         <h3>{{ b.name }}</h3>
         <p class="muted">{{ b.bank_name }} {{ b.bank_number }}</p>
         <p v-if="b.bank_address" class="muted">{{ b.bank_address }}</p>
@@ -165,7 +164,7 @@ useSeoMeta({ title: t('ui.pay') })
     </div>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <div class="stack">
-      <article v-for="p in packages" :key="p.code" class="job-card">
+      <article v-for="p in packages" :key="p.code" class="jobnotice_list">
         <h3>{{ p.name }}</h3>
         <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
         <ul v-if="quotaLines(p).length" class="muted">
@@ -189,7 +188,7 @@ useSeoMeta({ title: t('ui.pay') })
     <h2>{{ $t('ui.orders') }}</h2>
     <p v-if="!(orders?.list || []).length" class="muted">{{ $t('ui.no_orders') }}</p>
     <div class="stack">
-      <article v-for="o in orders?.list || []" :key="o.order_no" class="job-card">
+      <article v-for="o in orders?.list || []" :key="o.order_no" class="jobnotice_list">
         <h3>{{ o.order_no }}</h3>
         <p class="muted">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
         <button v-if="canFillBank(o)" type="button" @click="fillBank(o)">{{ $t('wap_01805') }}</button>
@@ -197,5 +196,5 @@ useSeoMeta({ title: t('ui.pay') })
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

@@ -21,8 +21,7 @@ useSeoMeta({ title: t('ui.com_tpl') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.com_tpl') }}</h1>
+  <MemberPanel :title="$t('ui.com_tpl')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <p v-if="msg">{{ msg }}</p>
     <div class="stack">
@@ -33,5 +32,5 @@ useSeoMeta({ title: t('ui.com_tpl') })
       </article>
     </div>
     <p><NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink></p>
-  </section>
+  </MemberPanel>
 </template>

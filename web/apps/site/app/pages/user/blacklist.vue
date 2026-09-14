@@ -46,19 +46,18 @@ useSeoMeta({ title: t('member_user_00044') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_user_00044') }}</h1>
+  <MemberPanel :title="$t('member_user_00044')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="search">
       <input v-model="keyword" required :placeholder="$t('wap_com_00157')" />
       <button type="submit">{{ $t('wap_js_00086') }}</button>
     </form>
-    <article v-for="row in hits" :key="row.uid" class="job-card">
+    <article v-for="row in hits" :key="row.uid" class="jobnotice_list">
       <h3>{{ row.name || row.uid }}</h3>
       <button type="button" @click="add(row.uid)">{{ $t('wap_01060') }}</button>
     </article>
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
       <h3>
         <NuxtLink :to="`/companies/${row.blocked_uid}`">{{ row.com_name || row.reason || row.blocked_uid }}</NuxtLink>
       </h3>
@@ -66,5 +65,5 @@ useSeoMeta({ title: t('member_user_00044') })
       <button type="button" @click="remove(row.blocked_uid)">{{ $t('common.delete') }}</button>
     </article>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

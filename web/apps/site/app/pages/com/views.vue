@@ -22,12 +22,13 @@ useSeoMeta({ title: t('member_com_00006') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_com_00006') }}</h1>
+  <MemberPanel :title="$t('member_com_00006')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
+    <template #pcTabs><MemberHrTabs /></template>
+    <template #h5Tabs><MemberHrTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_views') }}</p>
     <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink :to="`/resumes/${row.resume_id || row.uid}`">{{ row.resume_name || row.uid }}</NuxtLink>
         </h3>
@@ -39,7 +40,7 @@ useSeoMeta({ title: t('member_com_00006') })
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>
 
 <style scoped>

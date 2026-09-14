@@ -13,28 +13,51 @@ async function remove(targetId: number) {
   await api.post('/v1/mcenter/favorites/remove', { kind: kind.value, target_id: targetId })
   refresh()
 }
+function titleOf(row: { target_id: number; detail?: Record<string, string> }) {
+  const d = row.detail || {}
+  return d.name || d.job_name || d.com_name || d.display_name || String(row.target_id)
+}
 useSeoMeta({ title: t('member_user_00103') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_user_00103') }}</h1>
-    <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <p>
-      <button type="button" @click="kind = 1">{{ $t('common.job') }}</button>
-      <button type="button" @click="kind = 2">{{ $t('common.company') }}</button>
-      <button type="button" @click="kind = 3">{{ $t('ui.user_kind') }}</button>
-    </p>
-    <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_fav') }}</p>
-    <div class="stack">
-      <article v-for="row in data?.list || []" :key="row.target_id" class="job-card">
-        <h3>
-          <NuxtLink v-if="kind === 1" :to="`/jobs/${row.target_id}`">{{ row.detail?.name || row.detail?.job_name || row.target_id }}</NuxtLink>
-          <NuxtLink v-else-if="kind === 2" :to="`/companies/${row.target_id}`">{{ row.detail?.name || row.detail?.com_name || row.target_id }}</NuxtLink>
-          <span v-else>{{ row.detail?.name || row.detail?.com_name || row.detail?.display_name || row.target_id }}</span>
-        </h3>
-        <button type="button" @click="remove(row.target_id)">{{ $t('ui.unfav') }}</button>
-      </article>
+  <MemberPanel
+    :title="$t('member_user_00103')"
+    :sub="$t('member_user_00102')"
+    :error="error && !isUnauthErr(error) ? error : undefined"
+    :empty="!error && !(data?.list || []).length"
+    :empty-text="$t('ui.no_fav')"
+    empty-to="/jobs"
+    :empty-action="$t('wap_user_00254')"
+  >
+    <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
+    <div class="site-h5 m_tab">
+      <div class="m_tabbox category">
+        <ul>
+          <li :class="{ m_tabactive: kind === 1 }" @click="kind = 1">{{ $t('common.job') }}</li>
+          <li :class="{ m_tabactive: kind === 2 }" @click="kind = 2">{{ $t('common.company') }}</li>
+          <li :class="{ m_tabactive: kind === 3 }" @click="kind = 3">{{ $t('ui.user_kind') }}</li>
+        </ul>
+      </div>
     </div>
-  </section>
+    <p class="site-pc">
+      <button type="button" :class="{ on: kind === 1 }" @click="kind = 1">{{ $t('common.job') }}</button>
+      <button type="button" :class="{ on: kind === 2 }" @click="kind = 2">{{ $t('common.company') }}</button>
+      <button type="button" :class="{ on: kind === 3 }" @click="kind = 3">{{ $t('ui.user_kind') }}</button>
+    </p>
+    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
+      <div class="user_new_job">{{ $t('member_user_00105') }}</div>
+      <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
+    </div>
+    <div v-for="row in data?.list || []" :key="row.target_id" class="jobnotice_list">
+      <div class="user_new_job">
+        <NuxtLink v-if="kind === 1" :to="`/jobs/${row.target_id}`" class="user_new_jobname">{{ titleOf(row) }}</NuxtLink>
+        <NuxtLink v-else-if="kind === 2" :to="`/companies/${row.target_id}`" class="user_new_jobname">{{ titleOf(row) }}</NuxtLink>
+        <span v-else class="user_new_jobname">{{ titleOf(row) }}</span>
+      </div>
+      <div class="user_new_cz">
+        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.target_id)">{{ $t('ui.unfav') }}</a>
+      </div>
+    </div>
+  </MemberPanel>
 </template>

@@ -22,8 +22,7 @@ useSeoMeta({ title: t('ui.my_reports') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('ui.my_reports') }}</h1>
+  <MemberPanel :title="$t('ui.my_reports')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <form class="form" @submit.prevent="submit">
       <select v-model.number="form.target_kind">
@@ -42,10 +41,10 @@ useSeoMeta({ title: t('ui.my_reports') })
     <p v-if="msg">{{ msg }}</p>
     <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_reports') }}</p>
     <div class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>kind {{ row.target_kind }} #{{ row.target_id }}</h3>
         <p class="muted">status {{ row.status }}</p>
       </article>
     </div>
-  </section>
+  </MemberPanel>
 </template>

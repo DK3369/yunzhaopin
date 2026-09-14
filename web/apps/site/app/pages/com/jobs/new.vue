@@ -177,8 +177,7 @@ useSeoMeta({ title: t('wap_00322') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('wap_00322') }}</h1>
+  <MemberPanel :title="$t('wap_00322')">
     <form class="form" @submit.prevent="submit">
       <input v-model="form.name" :placeholder="$t('wap_com_00288')" required :disabled="nameLocked" />
       <select v-model.number="form.job1" required>
@@ -295,5 +294,5 @@ useSeoMeta({ title: t('wap_00322') })
       <button type="submit">{{ $t('ui.submit_audit') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
-  </section>
+  </MemberPanel>
 </template>

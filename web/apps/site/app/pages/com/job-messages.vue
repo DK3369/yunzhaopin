@@ -47,8 +47,7 @@ useSeoMeta({ title: t('member_user_00115') })
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('member_user_00115') }}</h1>
+  <MemberPanel :title="$t('member_user_00115')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p>
       <label>
         <input v-model="onlyUnanswered" type="checkbox" />
@@ -58,7 +57,7 @@ useSeoMeta({ title: t('member_user_00115') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="job-card">
+      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
         <h3>
           <NuxtLink v-if="row.jobid" :to="`/jobs/${row.jobid}`">{{ row.job_name || $t('common.job') }}</NuxtLink>
           <span v-else>{{ row.job_name || $t('common_02082') }}</span>
@@ -74,5 +73,5 @@ useSeoMeta({ title: t('member_user_00115') })
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>
-  </section>
+  </MemberPanel>
 </template>

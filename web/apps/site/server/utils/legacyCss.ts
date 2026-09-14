@@ -23,7 +23,9 @@ const PC_FILES: CssFile[] = [
   { disk: 'uploads/app/template/default/style/evaluate.css', href: '/legacy/pc/style/evaluate.css', note: 'evaluate.css 评价' },
   { disk: 'uploads/app/template/default/style/integral.css', href: '/legacy/pc/style/integral.css', note: 'integral.css 积分' },
   { disk: 'uploads/app/template/member/user/images/m_css.css', href: '/legacy/member/user/m_css.css', note: 'm_css.css 个人会员' },
+  { disk: 'uploads/app/template/member/user/images/m_resume.css', href: '/legacy/member/user/m_resume.css', note: 'm_resume.css 简历编辑' },
   { disk: 'uploads/app/template/member/com/images/m_style.css', href: '/legacy/member/com/m_style.css', note: 'm_style.css 企业会员' },
+  { disk: 'uploads/app/template/member/com/images/two_style.css', href: '/legacy/member/com/two_style.css', note: 'two_style.css 企业中心首页' },
 ]
 
 const H5_FILES: CssFile[] = [
@@ -32,6 +34,10 @@ const H5_FILES: CssFile[] = [
   { disk: 'uploads/app/template/wap/css/css.css', href: '/legacy/h5/css/css.css', note: 'css.css 公共' },
   { disk: 'uploads/app/template/wap/css/job.css', href: '/legacy/h5/css/job.css', note: 'job.css 职位' },
   { disk: 'uploads/app/template/wap/css/member/memberwap.css', href: '/legacy/h5/css/member/memberwap.css', note: 'memberwap.css 会员' },
+  { disk: 'uploads/app/template/wap/css/member/memberuserwap.css', href: '/legacy/h5/css/member/memberuserwap.css', note: 'memberuserwap.css 求职会员' },
+  { disk: 'uploads/app/template/wap/css/combase.css', href: '/legacy/h5/css/combase.css', note: 'combase.css 企业会员' },
+  { disk: 'uploads/app/template/wap/css/yun_wap_member.css', href: '/legacy/h5/css/yun_wap_member.css', note: 'yun_wap_member.css 会员图标' },
+  { disk: 'uploads/app/template/wap/css/member_style.css', href: '/legacy/h5/css/member_style.css', note: 'member_style.css 会员补充' },
 ]
 
 const mem = new Map<string, string>()
@@ -46,8 +52,12 @@ function repoRoot(): string {
 function rewriteUrls(css: string, cssHref: string): string {
   const dir = cssHref.replace(/[^/]+$/, '')
   return css.replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (full, quote: string, raw: string) => {
-    const src = String(raw || '').trim()
+    let src = String(raw || '').trim()
     if (!src || /^(data:|https?:|\/\/|#)/i.test(src) || src.startsWith('/')) return full
+    // PHP 会员 CSS 放在 images/ 目录里，`../images/foo.png` 实际就是同目录 foo.png。
+    if (/^\.\.\/images\//i.test(src) && /\/legacy\/member\//.test(cssHref)) {
+      src = src.replace(/^\.\.\/images\//i, '')
+    }
     try {
       const abs = new URL(src, `https://dummy.local${dir}`).pathname
       return `url(${quote}${abs}${quote})`

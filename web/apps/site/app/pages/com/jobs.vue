@@ -272,7 +272,7 @@ useSeoMeta({ title: t('wap_com_00106') })
       <button type="button" @click="reservePicked(1)">{{ $t('member_com_00261') }}</button>
       <button type="button" @click="reservePicked(2)">{{ $t('member_com_00278') }}</button>
     </p>
-    <article v-for="job in list" :key="job.id" class="look_resume_list">
+    <article v-for="job in list" :key="job.id" class="jobnotice_list">
       <h3>
         <input type="checkbox" :checked="picked.includes(job.id)" @change="togglePick(job.id)" />
         {{ job.name }}
