@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { isUnauthErr, mediaUrl } from '~/utils/site'
+import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
 const { data, error } = await useAsyncData(
-  () => `com-followers-${page.value}`,
-  () => api.post('/v1/mcenter/followers', { page: page.value, page_size: pageSize }),
+  () => `com-fans-${page.value}`,
+  () => api.post('/v1/mcenter/fans', { page: page.value, page_size: pageSize }),
 )
 const rows = computed(() =>
   (data.value?.list || []).map((row: Record<string, unknown>) => ({
-    key: Number(row.id || row.uid),
-    name: String(row.uname || row.username || row.uid || ''),
-    time: String(row.datetime_n || row.time || ''),
+    key: Number(row.uid),
+    name: String(row.username || row.uid || ''),
+    time: String(row.last_datetime_n || ''),
     to: `/resumes/${row.uid}`,
-    photo: row.photo ? mediaUrl(String(row.photo)) : undefined,
-    info: [row.sex_n, row.edu_n, row.exp_n].map((x) => String(x || '')).filter(Boolean),
+    info: Number(row.fav_count || 0) > 0 ? [String(row.fav_count)] : [],
   })),
 )
 const total = computed(() => inferTotal(data.value))

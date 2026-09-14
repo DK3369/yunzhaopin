@@ -68,7 +68,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - packed / i18n；列表不要用首页 `job-card`
 - 一套 `/user` `/com` 路由，用 `.site-pc` / `.site-h5` 切皮，不另开 wap
 - 分页：`MemberPager` 输出 PHP `page.class.php` 的 `div.diggg`
-- H5 消息/咨询/订单/会话用 `MemberSxNewsCard`（`sx_new_*`）；谁看过/足迹/收藏/关注用 `MemberPostedCard`（对照 WAP `Posted_*` / `likejob.htm` 的 `com_member_hr`）。不要用 `sysynews_*` 冒充测评/被下载/举报
+- H5 **消息/咨询**才用 `MemberSxNewsCard`（`sx_new_*`）。谁看过/足迹/收藏/关注用 `MemberPostedCard`（对照 WAP `Posted_*` / `likejob.htm` 的 `com_member_hr`）。财务/订单流水 H5 用 `detail_body_card`（对照 `paylog.htm`），PC 继续 `paylist_*`。邀请/外发/会话用 `job_search_box` / `MemberPostedCard`，不要消息卡。招聘会/专题/HR/投诉/地址 PC `com_table`、H5 `com_cardlist`。不要用 `sysynews_*` 冒充测评/被下载/举报/财务/招聘会
 - 退出登录都在 H5 `/user/set` `/com/set` 底栏 `logout_btn`，不在会员首页宫格最后一项
 - 禁止改 `uploads/` PHP 模板
 
@@ -83,7 +83,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 核心对象 | 简历、投递、被看 | 职位、应聘管线、下载 |
 | 兼职 | `/user/parts` 报名/收藏 | `/com/parts` 发布 + 收到的报名 |
 | 面试 | `/user/interviews` = 收面试（PHP `invite.htm`） | `/com/interviews` = 企业发面试 |
-| 谁看过 | `/user/views` 企业看简历（PHP `look.htm`） | `/com/looks` 谁看过职位；`/com/fans` 对我感兴趣；`/com/views` 看过的简历 |
+| 谁看过 | `/user/views` 企业看简历（PHP `look.htm`） | `/com/looks` 谁看过职位；`/com/fans` 对我感兴趣（列表调 `/v1/mcenter/fans`，与首页计数同源，**不要** `followers`）；`/com/views` 看过的简历 |
 | 列表皮 | 投递行才用 `jobnotice_list`；积分 `integral_list_*`；关注 `attention_enterprises_*`；咨询 `job_Consulting_*` + H5 `mag_show`；消息 PC `sysynews_*` / H5 `chatnewcard` + `sx_new_*`；谁看过 PC 是 `look.htm` 的 `user_new_listtit` + `jobnotice_list` + `user_new_joball*`（H5 `Posted_look_*`） | 应聘 PC `newcom_user_*` + `com_received_zt*`；H5 `hr_userlist`；职位 PC `job_looklist_*` / `com_bth` / `com_Release_job_bot`；H5 `position_body_card*` + `m_taball*`；筛选 `MemberComScreen` |
 | 表单 | 求职 `MemberField` / `verification_form*`；密码/绑定 PC 走 `account_settings` + `Binding_pop_box`；简历小节 `yun_resume_h1` / `yun_resume_exp_list` / H5 `cord_*` | 资料/发职位 **`com_release_*` + `btn_01`**；改密 PC 对照 `vs.htm`（`admin_password` / `com_info_text`），不要抄求职 `account_settings`；认证 `license_*` / H5 `security`；绑定 `Binding_list*` |
 
@@ -106,7 +106,9 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`
 - 会员左栏/宫格写死兼职、招聘会、专题、测评，不看首页 `sy_*_web`
 - H5 求职首页宫格最后一项做成退出登录（PHP 最后是意见反馈；退出在 `/user/set`）
-- 测评 / 被下载 / 举报用 `sysynews_*` 冒充消息列表
+- 测评 / 被下载 / 举报 / 邀请 / 外发 / 财务流水 / 订单 / 会话 / 招聘会 / 专题 / HR / 投诉 / 地址用 `sysynews_*` 或 `MemberSxNewsCard` 冒充消息列表
+- 招聘 `/com/fans` 调 `/v1/mcenter/followers`（应对 `/v1/mcenter/fans`，PHP `attention_me`）
+- 招聘改密 H5 抄求职 `verification_form` / `MemberField`（应对 WAP `password.htm` 的 `security` / `security_text_t`）
 - H5 会员首页再给 `wap_member` 垫左右 padding（会挤窄 `userheader`）
 - 其他服务仍用 PHP 的 `position_management_body{position:absolute}`（Vue 已有蓝条，宫格会飞出视口）
 
@@ -156,7 +158,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - Vue `/user/invite` = **邀请注册**（PHP 是弹层）
 - `/user/views` = 谁看过我（PHP `look.htm`）
 - `/user/looks` = 足迹（PHP `look_job.htm`）
-- `/com/looks` = 谁看过职位；`/com/views` = 企业看过的简历；`/com/fans` = 对我感兴趣
+- `/com/looks` = 谁看过职位；`/com/views` = 企业看过的简历；`/com/fans` = 对我感兴趣（接口 `/v1/mcenter/fans`，不是 `followers`）
 
 ## 改代码入口
 

@@ -87,20 +87,29 @@ useSeoMeta({ title: t('ui.hr') })
         </tr>
       </table>
       <MemberResumeH1 :title="$t('ui.hr')" />
-      <div v-for="row in hrs || []" :key="row.hr_uid" class="sysynews_list site-pc">
-        <div class="sysynews_span sysynews_name">{{ row.hr_uid }} · {{ row.role }}</div>
-        <div class="sysynews_span sysynews_time">{{ row.joined_at_n }}</div>
-        <div class="sysynews_span sysynews_cz">
-          <a href="javascript:;" class="cblue" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</a>
+      <table v-if="(hrs || []).length" class="com_table site-pc">
+        <tr>
+          <th>{{ $t('ui.hr') }}</th>
+          <th>{{ $t('member_user_00106') }}</th>
+          <th>{{ $t('member_user_00048') }}</th>
+        </tr>
+        <tr v-for="row in hrs || []" :key="row.hr_uid">
+          <td>{{ row.hr_uid }} · {{ row.role }}</td>
+          <td>{{ row.joined_at_n }}</td>
+          <td><a href="javascript:;" class="com_bth cblue" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</a></td>
+        </tr>
+      </table>
+      <div class="site-h5">
+        <div v-for="row in hrs || []" :key="'h5-' + row.hr_uid" class="com_cardlist">
+          <div class="com_cardlist_tit">{{ row.hr_uid }} · {{ row.role || '' }}</div>
+          <div class="com_cardlist_p">
+            <span class="com_cardlist_p_name">{{ $t('member_user_00106') }}</span>
+            {{ row.joined_at_n }}
+          </div>
+          <div class="com_card_cz">
+            <span class="com_card_delete" @click="removeHr(row.hr_uid)" />
+          </div>
         </div>
-      </div>
-      <div class="site-h5 m_cardbox">
-        <MemberSxNewsCard
-          v-for="row in hrs || []"
-          :key="'h5-' + row.hr_uid"
-          :title="`${row.hr_uid} · ${row.role || ''}`"
-          :time="row.joined_at_n"
-        />
       </div>
       <form class="com_release_box" @submit.prevent="join">
         <ul>
@@ -108,8 +117,24 @@ useSeoMeta({ title: t('ui.hr') })
         </ul>
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
       </form>
-      <div v-for="co in companies || []" :key="co.company_uid" class="sysynews_list site-pc">
-        <div class="sysynews_span sysynews_name">{{ co.company_uid }} · {{ co.role }}</div>
+      <table v-if="(companies || []).length" class="com_table site-pc">
+        <tr>
+          <th>{{ $t('common.company') }}</th>
+          <th>{{ $t('member_user_00181') }}</th>
+        </tr>
+        <tr v-for="co in companies || []" :key="co.company_uid">
+          <td>{{ co.company_uid }}</td>
+          <td>{{ co.role }}</td>
+        </tr>
+      </table>
+      <div class="site-h5">
+        <div v-for="co in companies || []" :key="'co-' + co.company_uid" class="com_cardlist">
+          <div class="com_cardlist_tit">{{ co.company_uid }}</div>
+          <div class="com_cardlist_p">
+            <span class="com_cardlist_p_name">{{ $t('member_user_00181') }}</span>
+            {{ co.role }}
+          </div>
+        </div>
       </div>
       <p v-if="msg">{{ msg }}</p>
     </template>

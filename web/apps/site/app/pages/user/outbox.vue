@@ -113,13 +113,19 @@ useSeoMeta({ title: t('member_user_00188') })
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in data?.list || []"
-        :key="'h5-' + row.id"
-        :title="`${row.com_name} · ${row.job_name}`"
-        :sub="row.email"
-        :time="row.addtime_n"
-      />
+      <div class="m_cardbgbox">
+        <template v-for="row in data?.list || []" :key="'h5-' + row.id">
+          <MemberPostedCard
+            variant="issue"
+            :title="`${row.com_name} · ${row.job_name}`"
+            :sub="row.email"
+            :time="row.addtime_n"
+          />
+          <p>
+            <a href="javascript:;" class="cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+          </p>
+        </template>
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

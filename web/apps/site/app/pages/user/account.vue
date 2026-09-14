@@ -169,24 +169,32 @@ useSeoMeta({ title: t('wap_user_00338') })
       </ul>
     </div>
     <div v-if="!sessionList.length" class="msg_no"><p>{{ $t('ui.no_items') }}</p></div>
-    <div v-for="row in sessionList" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">
-        {{ row.device || row.ip }}
-        <span v-if="row.is_current">{{ $t('common.yes') }}</span>
+    <div v-for="row in sessionList" :key="row.id" class="job_search_box site-pc">
+      <div class="job_search_box_left">
+        <div class="job_search_box_jobmane">
+          {{ row.device || row.ip }}
+          <span v-if="row.is_current">{{ $t('common.yes') }}</span>
+        </div>
+        <div class="job_search_box_tj">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</div>
       </div>
-      <div class="sysynews_span sysynews_time">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</div>
-      <div class="sysynews_span sysynews_cz">
+      <div class="job_search_box_right">
         <a v-if="!row.is_current" href="javascript:;" class="cblue" @click="revokeSession(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in sessionList"
-        :key="'h5-' + row.id"
-        :title="row.device || row.ip || ''"
-        :sub="row.ip_loc"
-        :time="row.login_at_n || row.last_seen_at_n"
-      />
+      <div class="m_cardbgbox">
+        <template v-for="row in sessionList" :key="'h5-' + row.id">
+          <MemberPostedCard
+            variant="issue"
+            :title="row.device || row.ip || ''"
+            :sub="row.ip_loc"
+            :time="row.login_at_n || row.last_seen_at_n"
+          />
+          <p v-if="!row.is_current">
+            <a href="javascript:;" class="cblue" @click="revokeSession(row.id)">{{ $t('common.delete') }}</a>
+          </p>
+        </template>
+      </div>
     </div>
     <p v-if="sessionList.length > 1">
       <button type="button" class="verification_form_btn" @click="revokeOthers">{{ $t('model_00093') }}</button>

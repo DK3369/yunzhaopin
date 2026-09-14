@@ -91,33 +91,62 @@ useSeoMeta({ title: t('member_user_00226') })
         </div>
       </form>
     </div>
-    <form class="site-h5 verification_form security" @submit.prevent="submit">
-      <MemberField :label="$t('wap_01097')"><input v-model="form.old_password" type="password" /></MemberField>
-      <MemberField :label="$t('wap_01099')"><input v-model="form.new_password" type="password" /></MemberField>
-      <MemberField :label="$t('wap_com_00343')"><input v-model="form.confirm" type="password" /></MemberField>
-      <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
+    <form class="site-h5" @submit.prevent="submit">
+      <ul class="security">
+        <li>
+          <span class="security_anme">{{ $t('wap_01096') }}</span>
+          <div class="security_text">
+            <input v-model="form.old_password" type="password" class="security_text_t" :placeholder="$t('wap_01097')" />
+          </div>
+        </li>
+        <li>
+          <span class="security_anme">{{ $t('wap_user_00305') }}</span>
+          <div class="security_text">
+            <input v-model="form.new_password" type="password" class="security_text_t" :placeholder="$t('wap_01099')" />
+          </div>
+        </li>
+        <li>
+          <span class="security_anme">{{ $t('wap_01098') }}</span>
+          <div class="security_text">
+            <input v-model="form.confirm" type="password" class="security_text_t" :placeholder="$t('wap_com_00343')" />
+          </div>
+        </li>
+      </ul>
+      <div class="security_bth">
+        <button type="submit" class="security_bth_but">{{ $t('common.submit') }}</button>
+      </div>
     </form>
     <div v-if="sessionList.length" class="site-pc">
-      <div v-for="row in sessionList" :key="row.id" class="sysynews_list">
-        <div class="sysynews_span sysynews_name">
-          {{ row.device || row.ip }}
-          <span v-if="row.is_current" class="muted">{{ $t('common.yes') }}</span>
-        </div>
-        <div class="sysynews_span sysynews_time">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</div>
-        <div class="sysynews_span sysynews_cz">
-          <a v-if="!row.is_current" href="javascript:;" class="com_bth" @click="revokeSession(row.id)">{{ $t('common.delete') }}</a>
-        </div>
-      </div>
+      <table class="com_table">
+        <tr>
+          <th>{{ $t('member_user_00058') }}</th>
+          <th>{{ $t('member_user_00106') }}</th>
+          <th>{{ $t('member_user_00048') }}</th>
+        </tr>
+        <tr v-for="row in sessionList" :key="row.id">
+          <td>
+            {{ row.device || row.ip }}
+            <span v-if="row.is_current" class="muted">{{ $t('common.yes') }}</span>
+          </td>
+          <td>{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</td>
+          <td>
+            <a v-if="!row.is_current" href="javascript:;" class="com_bth" @click="revokeSession(row.id)">{{ $t('common.delete') }}</a>
+          </td>
+        </tr>
+      </table>
       <a href="javascript:;" class="com_bth" @click="revokeOthers">{{ $t('member_com_00083') }}</a>
     </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in sessionList"
-        :key="'h5-' + row.id"
-        :title="row.device || row.ip || ''"
-        :sub="row.ip_loc"
-        :time="row.login_at_n || row.last_seen_at_n"
-      />
+    <div class="site-h5">
+      <div v-for="row in sessionList" :key="'h5-' + row.id" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.device || row.ip }}</div>
+        <div class="com_cardlist_p">
+          <span class="com_cardlist_p_name">{{ $t('member_user_00106') }}</span>
+          {{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}
+        </div>
+        <div v-if="!row.is_current" class="com_card_cz">
+          <span class="com_card_delete" @click="revokeSession(row.id)" />
+        </div>
+      </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

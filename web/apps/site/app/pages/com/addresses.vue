@@ -124,21 +124,43 @@ useSeoMeta({ title: t('ui.map_addr') })
         <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
       </form>
       <p v-if="msg">{{ msg }}</p>
-      <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
-        <div class="sysynews_span sysynews_name">{{ row.link_man }} · {{ row.link_address }}</div>
-        <div class="sysynews_span sysynews_time">{{ row.link_moblie }}</div>
-        <div class="sysynews_span sysynews_cz">
-          <a href="javascript:;" class="cblue" @click="edit(row)">{{ $t('common.edit') }}</a>
-          <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+      <table v-if="list.length" class="com_table site-pc">
+        <tr>
+          <th>{{ $t('wap_01431') }}</th>
+          <th>{{ $t('ui.map_addr') }}</th>
+          <th>{{ $t('common.phone') }}</th>
+          <th>{{ $t('member_user_00048') }}</th>
+        </tr>
+        <tr v-for="row in list" :key="row.id">
+          <td>{{ row.link_man }}</td>
+          <td>{{ row.link_address }}</td>
+          <td>{{ row.link_moblie }}</td>
+          <td>
+            <a href="javascript:;" class="com_bth cblue" @click="edit(row)">{{ $t('common.edit') }}</a>
+            <a href="javascript:;" class="com_bth cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+          </td>
+        </tr>
+      </table>
+      <div class="site-h5">
+        <div v-for="row in list" :key="'h5-' + row.id" class="com_cardlist">
+          <div class="com_cardlist_tit">{{ row.link_address || row.link_man }}</div>
+          <div class="com_cardlist_p">
+            <span class="com_cardlist_p_name">{{ $t('wap_01431') }}</span>
+            {{ row.link_man }}
+          </div>
+          <div class="com_cardlist_p">
+            <span class="com_cardlist_p_name">{{ $t('common.phone') }}</span>
+            {{ row.link_moblie }}
+          </div>
+          <div class="interview_card_bom">
+            <div class="card_bom_icon">
+              <a href="javascript:;" @click="edit(row)">{{ $t('common.edit') }}</a>
+            </div>
+            <div class="card_bom_icon">
+              <a href="javascript:;" @click="remove(row)">{{ $t('common.delete') }}</a>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="site-h5 m_cardbox">
-        <MemberSxNewsCard
-          v-for="row in list"
-          :key="'h5-' + row.id"
-          :title="`${row.link_man} · ${row.link_address}`"
-          :time="row.link_moblie"
-        />
       </div>
     </template>
   </MemberPanel>

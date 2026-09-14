@@ -54,21 +54,31 @@ useSeoMeta({ title: t('member_com_00148') })
       </ul>
       <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
     </form>
-    <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">{{ row.r_name }} · {{ row.r_reason }}</div>
-      <div class="sysynews_span sysynews_time">{{ row.inputtime_n }} · {{ row.result || $t('admin_user_00371') }}</div>
-      <div class="sysynews_span sysynews_cz">
-        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+    <table v-if="list.length" class="com_table site-pc">
+      <tr>
+        <th>{{ $t('member_com_00148') }}</th>
+        <th>{{ $t('member_user_00106') }}</th>
+        <th>{{ $t('member_user_00048') }}</th>
+      </tr>
+      <tr v-for="row in list" :key="row.id">
+        <td>{{ row.r_name }} · {{ row.r_reason }}</td>
+        <td>{{ row.inputtime_n }} · {{ row.result || $t('admin_user_00371') }}</td>
+        <td>
+          <a href="javascript:;" class="com_bth cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+        </td>
+      </tr>
+    </table>
+    <div class="site-h5">
+      <div v-for="row in list" :key="'h5-' + row.id" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.r_name }} · {{ row.r_reason }}</div>
+        <div class="com_cardlist_p">
+          <span class="com_cardlist_p_name">{{ $t('member_user_00106') }}</span>
+          {{ row.inputtime_n }} · {{ row.result || $t('admin_user_00371') }}
+        </div>
+        <div class="com_card_cz">
+          <span class="com_card_delete" @click="remove(row.id)" />
+        </div>
       </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in list"
-        :key="'h5-' + row.id"
-        :title="`${row.r_name} · ${row.r_reason}`"
-        :time="`${row.inputtime_n} · ${row.result || $t('admin_user_00371')}`"
-        :on-delete="() => remove(row.id)"
-      />
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

@@ -271,14 +271,25 @@ useSeoMeta({ title: t('ui.pay') })
         <a v-if="canCancel(o)" href="javascript:;" class="cblue" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
       </span>
     </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="o in orders?.list || []"
-        :key="'h5-' + o.order_no"
-        :title="String(o.order_no)"
-        :sub="String(o.amount_yuan)"
-        :time="o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n"
-      />
+    <div class="site-h5 detail_body">
+      <div v-for="o in orders?.list || []" :key="'h5-' + o.order_no" class="detail_body_card">
+        <div class="detail_card_title">
+          <div class="detail_card_add">{{ o.order_no }}</div>
+          <div class="detail_card_state">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</div>
+        </div>
+        <div class="detail_card_odd">
+          <div class="detail_odd_q">{{ $t('ui.order_no') }}</div>
+          <div class="detail_odd_a">{{ o.order_no }}</div>
+        </div>
+        <div class="detail_card_recharge">
+          <div class="detail_odd_q">{{ $t('wap_00925') }}</div>
+          <div class="detail_odd_a">{{ o.amount_yuan }}</div>
+        </div>
+        <div v-if="canFillBank(o) || canCancel(o)" class="detail_card_btns">
+          <div v-if="canFillBank(o)" class="detail_card_yes" @click="fillBank(o)">{{ $t('wap_01805') }}</div>
+          <div v-if="canCancel(o)" class="detail_card_cancel" @click="cancelOrder(o)">{{ $t('common.cancel') }}</div>
+        </div>
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="orderTotal" @update:page="page = $event" />
     <p v-if="msg">{{ msg }}</p>

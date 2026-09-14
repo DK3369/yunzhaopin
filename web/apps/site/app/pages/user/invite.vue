@@ -49,22 +49,23 @@ const rows = computed(() => refs.value?.list || [])
       <button type="submit" class="verification_form_btn site-h5">{{ $t('ui.send_invite_reg') }}</button>
       <input type="submit" class="uesr_submit site-pc" :value="$t('ui.send_invite_reg')" />
     </form>
-    <div v-if="rows.length" class="sysynews_tit site-pc">
-      <div class="sysynews_span sysynews_name">{{ $t('member_user_00220') }}</div>
-      <div class="sysynews_span sysynews_time">{{ $t('wap_user_00008') }}</div>
-    </div>
-    <div v-for="row in rows" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">{{ row.invitee_uid }}</div>
-      <div class="sysynews_span sysynews_time">{{ row.points }} · {{ row.created_at_n }}</div>
+    <div v-for="row in rows" :key="row.id" class="job_search_box site-pc">
+      <div class="job_search_box_left">
+        <div class="job_search_box_jobmane">{{ row.invitee_uid }}</div>
+        <div class="job_search_box_tj">{{ row.points }} · {{ row.created_at_n }}</div>
+      </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in rows"
-        :key="'h5-' + row.id"
-        :title="String(row.invitee_uid)"
-        :sub="String(row.points ?? '')"
-        :time="row.created_at_n"
-      />
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in rows"
+          :key="'h5-' + row.id"
+          variant="issue"
+          :title="String(row.invitee_uid)"
+          :pay="String(row.points ?? '')"
+          :time="row.created_at_n"
+        />
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg" class="muted">{{ msg }}</p>

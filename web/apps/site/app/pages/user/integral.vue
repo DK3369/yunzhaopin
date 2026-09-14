@@ -134,14 +134,18 @@ useSeoMeta({ title: t('wap_user_00008') })
         <span class="paylist_span paylist_money">{{ row.cost ?? row.delta ?? '' }}</span>
         <span class="paylist_span paylist_time">{{ row.created_at || row.ctime }}</span>
       </div>
-      <div class="site-h5 m_cardbox">
-        <MemberSxNewsCard
-          v-for="(row, i) in hist?.list || []"
-          :key="'h-' + (row.id || i)"
-          :title="String(row.item_id || row.id || '')"
-          :sub="String(row.cost ?? row.delta ?? '')"
-          :time="String(row.created_at || row.ctime || '')"
-        />
+      <div class="site-h5 detail_body">
+        <div v-if="(hist?.list || []).length" class="detail_body_card">
+          <ul>
+            <li v-for="(row, i) in hist?.list || []" :key="'h-' + (row.id || i)">
+              <div class="detail_box">
+                <div class="detail_box_title">{{ row.item_id || row.id }}</div>
+                <div class="detail_box_time">{{ row.created_at || row.ctime }}</div>
+              </div>
+              <div class="detail_integral">{{ row.cost ?? row.delta ?? '' }}</div>
+            </li>
+          </ul>
+        </div>
       </div>
       <MemberPager :page="page" :page-size="pageSize" :total="histTotal" @update:page="page = $event" />
       <p v-if="msg" class="muted">{{ msg }}</p>
