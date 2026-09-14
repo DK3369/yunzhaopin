@@ -1119,7 +1119,7 @@
                         </div>
                         <div class="huiyuanFrom">
                             <el-select v-model="rid" :placeholder="lc('wap_user_00100')" @change="rateChange">
-                                <el-option v-for="(item, index) in ratingarr" :key="index" :label="item" :value="index">
+                                <el-option v-for="(item, index) in ratingarr" :key="index" :label="packedLog(item)" :value="index">
                                 </el-option>
                             </el-select>
                         </div>
@@ -1458,7 +1458,7 @@
                 <div class="tck_setname">
                     <el-checkbox-group v-model="ruleFormPackage.package">
                         <el-checkbox :label="ratingkey" v-for="(ratingItem, ratingkey) in ratingarr" :key="ratingkey">{{
-                            ratingItem }}</el-checkbox>
+                            packedLog(ratingItem) }}</el-checkbox>
                     </el-checkbox-group>
                 </div>
                 <div>

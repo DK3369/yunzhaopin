@@ -1,6 +1,7 @@
 //! Admin dashboard aggregation: pending counts for each review queue plus the last 24h of registrations/applications/postings overview.
 
 use crate::ad_service;
+use crate::enum_labels;
 use crate::category_service;
 use crate::country_service;
 use crate::data_show_service;
@@ -660,7 +661,7 @@ pub fn php_cache_payload(
             "source": { "name": "admin_yunying_00139", "value": {} },
             "rating": { "name": "admin_user_company_00018", "value": {} },
             "openautho": { "name": "admin_00749", "value": { "1": "wap_js_00098", "2": "admin_user_company_00304" } },
-            "is_depower": { "name": "admin_user_00068", "value": { "1": "是", "2": "否" } }
+            "is_depower": { "name": "admin_user_00068", "value": { "1": enum_labels::yes_no_key("1"), "2": enum_labels::yes_no_key("2") } }
         },
         "hbNum": 0,
         "hb_isopen": "0"

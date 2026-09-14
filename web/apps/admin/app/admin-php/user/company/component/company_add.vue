@@ -317,7 +317,7 @@
                     </td>
                     <td>
                         <el-select v-model="rating_name" :placeholder="lc('wap_user_00100')">
-                            <el-option v-for="(item, index) in ratingarr" :key="index" :label="item"
+                            <el-option v-for="(item, index) in ratingarr" :key="index" :label="packedLog(item)"
                                        :value="index">
                             </el-option>
                         </el-select>

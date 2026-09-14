@@ -28,6 +28,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="pay_remark" :label="lc('admin_user_00290')">
+                    <template #default="scope">{{ packedLog(scope.row.pay_remark) }}</template>
                 </el-table-column>
                 <el-table-column prop="pay_time_n" :label="lc('wap_com_00344')" width="150"></el-table-column>
                 <el-table-column prop="pay_state_n" :label="lc('member_user_00181')" width="150">

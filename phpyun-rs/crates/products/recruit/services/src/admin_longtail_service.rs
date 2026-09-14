@@ -30,6 +30,8 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use uuid::Uuid;
 
+use crate::enum_labels;
+
 async fn audit_write(
     state: &AppState,
     actor: &AuthenticatedUser,
@@ -314,7 +316,7 @@ pub async fn company_php_cache(
     let (today, today_etime) = shanghai_today_bounds(clock::now_ts());
     let mut payload = serde_json::json!({
         "gwinfo": advisors,
-        "source": {},
+        "source": enum_labels::source_label_map(),
         "ratingarr": ratingarr.clone(),
         "search_list": {
             "rating": { "name": "admin_user_company_00018", "value": ratingarr },
@@ -326,12 +328,12 @@ pub async fn company_php_cache(
                 "1": "wap_user_00165", "2": "admin_user_00138", "3": "wap_user_00167",
                 "4": "wap_user_00166", "5": "admin_user_00184"
             }},
-            "source": { "name": "admin_yunying_00139", "value": {} },
-            "rec": { "name": "admin_user_company_00145", "value": { "1": "是", "2": "否", "3": "wap_com_00319" } },
+            "source": { "name": "admin_yunying_00139", "value": enum_labels::source_search_map() },
+            "rec": { "name": "admin_user_company_00145", "value": { "1": enum_labels::yes_no_key("1"), "2": enum_labels::yes_no_key("2"), "3": "wap_com_00319" } },
             "gw": { "name": "admin_01231", "value": isgw },
-            "has_job": { "name": "admin_user_00045", "value": { "1": "是", "2": "否" } },
-            "fact_status": { "name": "wap_00274", "value": { "1": "是", "2": "否" } },
-            "map_status": { "name": "member_com_00204", "value": { "1": "是", "2": "否" } }
+            "has_job": { "name": "admin_user_00045", "value": { "1": enum_labels::yes_no_key("1"), "2": enum_labels::yes_no_key("2") } },
+            "fact_status": { "name": "wap_00274", "value": { "1": enum_labels::yes_no_key("1"), "2": enum_labels::yes_no_key("2") } },
+            "map_status": { "name": "member_com_00204", "value": { "1": enum_labels::yes_no_key("1"), "2": enum_labels::yes_no_key("2") } }
         },
         "hbBgA": hb_bg,
         "config": {

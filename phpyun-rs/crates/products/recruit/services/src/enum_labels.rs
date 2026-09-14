@@ -2,6 +2,7 @@
 //! Do not hardcode Chinese in match arms; do not `if lang == en` concatenate copy.
 
 use phpyun_core::i18n;
+use serde_json::{json, Map, Value};
 
 /// Lookup `messages.{key}` then `errors.{key}` then the bare key.
 pub fn label(key: &str) -> String {
@@ -159,6 +160,30 @@ pub fn source_name(id: i32) -> String {
     key_or_empty(source_label_key(id))
 }
 
+/// search_list options: numbered keys for Vue `localizeSearchList`.
+pub fn source_search_map() -> Map<String, Value> {
+    SOURCE_LIST
+        .iter()
+        .map(|(k, v)| ((*k).to_string(), json!(*v)))
+        .collect()
+}
+
+/// Table lookup `source[id]`: already translated for `current_lang()`.
+pub fn source_label_map() -> Map<String, Value> {
+    SOURCE_LIST
+        .iter()
+        .filter_map(|(k, _)| {
+            let id: i32 = k.parse().ok()?;
+            let name = source_name(id);
+            if name.is_empty() {
+                None
+            } else {
+                Some(((*k).to_string(), json!(name)))
+            }
+        })
+        .collect()
+}
+
 pub fn wx_bind_msg(wxid: &str, unionid: &str) -> String {
     match (wxid.is_empty(), unionid.is_empty()) {
         (true, _) => label("common_02122"),
@@ -205,6 +230,29 @@ pub fn sex_filter_key(v: &str) -> &'static str {
     }
 }
 
+/// Radio / select labels (final copy). PHP `user_sex`.
+pub fn sex_choice_map() -> Value {
+    json!({
+        "1": label("common_02092"),
+        "2": label("common_02069"),
+    })
+}
+
+/// Job form gender requirement: 女 / 不限.
+pub fn com_sex_map() -> Value {
+    json!({
+        "2": label("common_02069"),
+        "3": label("common_01936"),
+    })
+}
+
+pub fn com_sex_arr() -> Value {
+    json!([
+        { "id": "2", "name": label("common_02069") },
+        { "id": "3", "name": label("common_01936") },
+    ])
+}
+
 pub fn unlimited() -> String {
     label("common_01936")
 }
@@ -237,6 +285,121 @@ pub const TPL_CACHE_MODELS: &[(&str, &str)] = &[
     ("error", "common_07007"),
 ];
 
+/// Admin SEO tab names (`set_seo` seomodel). Values are numbered keys.
+pub const SEO_MODELS: &[(&str, &str)] = &[
+    ("index", "wap_00191"),
+    ("job", "default_00246"),
+    ("resume", "default_00312"),
+    ("part", "wap_user_00220"),
+    ("company", "default_00262"),
+    ("article", "common_07034"),
+    ("hr", "default_00138"),
+    ("zph", "member_com_00293"),
+    ("ask", "wap_user_00223"),
+    ("evaluate", "default_00126"),
+    ("once", "common_07035"),
+    ("tiny", "common_07036"),
+    ("redeem", "wap_00398"),
+    ("map", "wap_00317"),
+    ("special", "common_07037"),
+    ("login", "common_07038"),
+    ("other", "common_07039"),
+];
+
+pub fn seo_model_map() -> Map<String, Value> {
+    SEO_MODELS
+        .iter()
+        .map(|(k, key)| ((*k).to_string(), json!(label(key))))
+        .collect()
+}
+
+fn seo_var(key: &str) -> Value {
+    json!(label(key))
+}
+
+/// Insertable SEO template variable labels (`seoconfig`).
+pub fn seo_config() -> Value {
+    json!({
+        "public": {
+            "webname": seo_var("admin_system_00331"),
+            "webkeyword": seo_var("common_07040"),
+            "webdesc": seo_var("common_07041"),
+            "weburl": seo_var("common_07042"),
+            "city": seo_var("common_07043"),
+            "seacrh_class": seo_var("common_07044"),
+            "search_city": seo_var("common_07045"),
+            "search_job": seo_var("common_07046"),
+        },
+        "other": { "spename": seo_var("member_com_00343") },
+        "article": {
+            "news_class": seo_var("admin_00170"),
+            "news_title": seo_var("member_com_00043"),
+            "news_keyword": seo_var("common_07047"),
+            "news_source": seo_var("common_07048"),
+            "news_author": seo_var("common_07049"),
+            "news_desc": seo_var("member_com_00042"),
+            "gg_title": seo_var("admin_00102"),
+            "gg_desc": seo_var("common_07050"),
+            "gz_title": seo_var("admin_00144"),
+            "gz_desc": seo_var("common_07051"),
+        },
+        "company": {
+            "company_name": seo_var("wap_com_00157"),
+            "company_name_desc": seo_var("wap_com_00160"),
+            "company_product": seo_var("company_00018"),
+            "company_news": seo_var("company_00019"),
+            "company_news_desc": seo_var("common_07052"),
+            "industry_class": seo_var("member_com_00091"),
+        },
+        "job": {
+            "industry_class": seo_var("member_com_00091"),
+            "job_class": seo_var("wap_user_00018"),
+            "job_name": seo_var("wap_com_00288"),
+            "job_desc": seo_var("wap_com_00289"),
+            "job_salary": seo_var("common_06669"),
+            "company_name": seo_var("wap_com_00157"),
+        },
+        "part": { "part_name": seo_var("wap_com_00326") },
+        "zph": { "zph_title": seo_var("admin_00821"), "zph_desc": seo_var("common_07053") },
+        "ask": {
+            "ask_title": seo_var("admin_00787"),
+            "ask_desc": seo_var("common_07054"),
+            "ask_class_name": seo_var("admin_system_00357"),
+        },
+        "resume": {
+            "resume_username": seo_var("common_07055"),
+            "resume_job": seo_var("common_07056"),
+            "resume_city": seo_var("common_07057"),
+        },
+        "tiny": {
+            "tiny_username": seo_var("common_07058"),
+            "tiny_job": seo_var("common_07059"),
+            "tiny_desc": seo_var("common_07060"),
+        },
+        "once": {
+            "once_name": seo_var("admin_user_weipin_00034"),
+            "once_job": seo_var("common_07061"),
+            "once_desc": seo_var("common_07062"),
+        },
+        "hr": {
+            "hr_class": seo_var("admin_00219"),
+            "hr_desc": seo_var("common_07063"),
+            "hr_name": seo_var("common_07064"),
+        },
+        "gg": { "gg_title": seo_var("admin_00102"), "gg_desc": seo_var("common_07050") },
+        "friend": { "company_name": seo_var("wap_com_00157") },
+    })
+}
+
+pub fn seo_public_config() -> Value {
+    json!({
+        "webname": seo_var("admin_system_00331"),
+        "webkeyword": seo_var("common_07040"),
+        "webdesc": seo_var("common_07041"),
+        "weburl": seo_var("common_07042"),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -250,5 +413,26 @@ mod tests {
         assert!(!pay_state_html(2).contains("支付成功"));
         assert_eq!(sex_or_unlimited(1), "Male");
         assert_eq!(source_name(1), "Web");
+        assert_eq!(
+            source_search_map().get("1").and_then(|v| v.as_str()),
+            Some("member_user_00094")
+        );
+        assert_eq!(
+            source_label_map().get("1").and_then(|v| v.as_str()),
+            Some("Web")
+        );
+        assert_eq!(
+            sex_choice_map().get("1").and_then(|v| v.as_str()),
+            Some("Male")
+        );
+        assert_eq!(
+            seo_model_map().get("job").and_then(|v| v.as_str()),
+            Some("Find jobs")
+        );
+        assert!(!seo_model_map()
+            .get("index")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .contains("首页"));
     }
 }

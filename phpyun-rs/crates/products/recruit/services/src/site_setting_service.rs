@@ -2,6 +2,7 @@
 //!
 //! Public endpoint: read-only access to keys with `is_public=1`. Admin endpoint: full access plus create/update/delete.
 
+use crate::enum_labels;
 use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::bank::repo as bank_repo;
 use phpyun_models::domain::repo as domain_repo;
@@ -286,65 +287,12 @@ pub async fn payset_bank_delete(
     Ok(())
 }
 
-const SEO_MODEL: &[(&str, &str)] = &[
-    ("index", "首页"),
-    ("job", "找工作"),
-    ("resume", "找人才"),
-    ("part", "兼职"),
-    ("company", "公司"),
-    ("article", "新闻公告"),
-    ("hr", "工具箱"),
-    ("zph", "招聘会"),
-    ("ask", "问答"),
-    ("evaluate", "测评"),
-    ("once", "店铺"),
-    ("tiny", "普工"),
-    ("redeem", "商城"),
-    ("map", "地图"),
-    ("special", "专题"),
-    ("login", "登录注册"),
-    ("other", "其它"),
-];
-
 fn seo_model_map() -> Map<String, Value> {
-    SEO_MODEL
-        .iter()
-        .map(|(k, v)| ((*k).to_string(), json!(*v)))
-        .collect()
+    enum_labels::seo_model_map()
 }
 
 fn seo_config() -> Value {
-    json!({
-        "public": {
-            "webname": "网站名称", "webkeyword": "网站关键字", "webdesc": "网站描述",
-            "weburl": "网址", "city": "当前城市", "seacrh_class": "搜索类别",
-            "search_city": "搜索城市", "search_job": "搜索职能",
-        },
-        "other": { "spename": "专题名称" },
-        "article": {
-            "news_class": "新闻类别", "news_title": "新闻标题", "news_keyword": "新闻关键字",
-            "news_source": "新闻来源", "news_author": "新闻作者", "news_desc": "新闻描述",
-            "gg_title": "公告标题", "gg_desc": "公告描述", "gz_title": "公招标题", "gz_desc": "公招描述",
-        },
-        "company": {
-            "company_name": "企业名称", "company_name_desc": "企业简介",
-            "company_product": "企业产品", "company_news": "企业新闻",
-            "company_news_desc": "企业新闻描述", "industry_class": "行业类别",
-        },
-        "job": {
-            "industry_class": "行业类别", "job_class": "职位类别", "job_name": "职位名称",
-            "job_desc": "职位描述", "job_salary": "职位薪资", "company_name": "企业名称",
-        },
-        "part": { "part_name": "兼职名称" },
-        "zph": { "zph_title": "招聘会标题", "zph_desc": "招聘会描述" },
-        "ask": { "ask_title": "问答标题", "ask_desc": "问答描述", "ask_class_name": "分类名称" },
-        "resume": { "resume_username": "简历姓名", "resume_job": "简历意向职位", "resume_city": "简历工作城市" },
-        "tiny": { "tiny_username": "普工简历名称", "tiny_job": "普工简历职位", "tiny_desc": "普工简历描述" },
-        "once": { "once_name": "店铺名称", "once_job": "店铺招聘职位", "once_desc": "店铺招聘描述" },
-        "hr": { "hr_class": "类别名称", "hr_desc": "类别描述", "hr_name": "工具箱详情" },
-        "gg": { "gg_title": "公告标题", "gg_desc": "公告描述" },
-        "friend": { "company_name": "企业名称" },
-    })
+    enum_labels::seo_config()
 }
 
 fn seo_php(row: &seo::SeoRow) -> Value {

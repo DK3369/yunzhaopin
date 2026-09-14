@@ -6325,11 +6325,11 @@ async fn user_gap_logout_index(state: &AppState, body: &Value) -> AppResult<Valu
     let data: Vec<Value> = rows
         .into_iter()
         .map(|r| {
-            let usertype_name = match r.usertype {
+            let usertype_name = enum_labels::label(match r.usertype {
                 1 => "admin_user_00304",
                 2 => "wap_user_00153",
                 _ => "common_02004",
-            };
+            });
             json!({
                 "id": r.id,
                 "uid": r.uid,
@@ -8271,7 +8271,8 @@ async fn user_gap_logout_num(state: &AppState) -> AppResult<Value> {
 
 async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {
     let dicts = dict_service::get(state).await?;
-    let source = kv_obj(SOURCE_MAP);
+    let source_keys = kv_obj(SOURCE_MAP);
+    let source_labels = Value::Object(enum_labels::source_label_map());
     let search_list = vec![
         search_item(
             "status",
@@ -8283,7 +8284,7 @@ async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {
                 ("4", "wap_user_00166"),
             ]),
         ),
-        search_item("source", "admin_yunying_00139", source.clone()),
+        search_item("source", "admin_yunying_00139", source_keys.clone()),
         search_item(
             "service",
             "member_com_00107",
@@ -8334,12 +8335,12 @@ async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {
             "integrity",
             "member_user_00151",
             kv_obj(&[
-                ("1", "55%以上"),
-                ("2", "65%以上"),
-                ("3", "75%以上"),
-                ("4", "85%以上"),
-                ("55", "等于55%"),
-                ("65", "等于65%"),
+                ("1", "admin_tool_00626"),
+                ("2", "common_07027"),
+                ("3", "admin_tool_00627"),
+                ("4", "common_07028"),
+                ("55", "common_07029"),
+                ("65", "common_07030"),
             ]),
         ),
     ];
@@ -8374,16 +8375,17 @@ async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {
         ("rtype_lastdate", "wap_00326"),
     ]);
     Ok(json!({
-        "source": source,
+        "source": source_labels,
         "search_list": search_list,
         "exportType": export_type,
     }))
 }
 
 async fn user_gap_user_config(state: &AppState) -> AppResult<Value> {
-    let source = kv_obj(SOURCE_MAP);
+    let source_keys = kv_obj(SOURCE_MAP);
+    let source_labels = Value::Object(enum_labels::source_label_map());
     let search_list = vec![
-        search_item("source", "admin_yunying_00139", source.clone()),
+        search_item("source", "admin_yunying_00139", source_keys),
         search_item(
             "status",
             "member_user_00181",
@@ -8398,7 +8400,7 @@ async fn user_gap_user_config(state: &AppState) -> AppResult<Value> {
     let domains = domain_repo::list_all(state.db.reader()).await?;
     Ok(json!({
         "search_list": search_list,
-        "source": source,
+        "source": source_labels,
         "domainList": domain_object(&domains),
     }))
 }
@@ -9489,7 +9491,7 @@ async fn company_check_guwen(state: &AppState, body: &Value) -> AppResult<PhpOut
 /// The ledger kinds behind `company_statis_detail.type` (PHP
 /// `statis.model::$typeN`). Kind 1 is a literal in PHP, not a lang key.
 const STATIS_DETAIL_TYPES: &[(i32, &str)] = &[
-    (1, "上架|发布 职位"),
+    (1, "common_07031"),
     (2, "wap_com_00029"),
     (3, "wap_00451"),
     (4, "resume_00029"),
@@ -9896,9 +9898,20 @@ async fn email_log_repeat(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             Err(_) => bad += 1,
         }
     }
-    let mut msg = format!("{}{ok}条", msg_t("common_01132"));
+    let lang = i18n::current_lang();
+    let ok_s = ok.to_string();
+    let mut msg = format!(
+        "{}{}",
+        msg_t("common_01132"),
+        i18n::t_args("messages.common_07032", lang, &[("ok", &ok_s)]),
+    );
     if bad > 0 {
-        msg.push_str(&format!("，失败：{bad}条"));
+        let bad_s = bad.to_string();
+        msg.push_str(&i18n::t_args(
+            "messages.common_07033",
+            lang,
+            &[("bad", &bad_s)],
+        ));
     }
     Ok(PhpOut::Text("common_01132", msg))
 }
@@ -10039,7 +10052,7 @@ async fn sms_log_index(state: &AppState, body: &Value) -> AppResult<Value> {
 fn sms_port_n(port: i32) -> String {
     match port {
         1 => msg_t("member_user_00094"),
-        2 => "WAP".into(),
+        2 => msg_t("common_07006"),
         5 => msg_t("wap_js_00101"),
         7 => msg_t("ajax_00010"),
         8 => msg_t("wap_00121"),
@@ -10108,9 +10121,20 @@ async fn sms_log_repeat(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             Err(_) => bad += 1,
         }
     }
-    let mut msg = format!("{}{ok}条", msg_t("common_01131"));
+    let lang = i18n::current_lang();
+    let ok_s = ok.to_string();
+    let mut msg = format!(
+        "{}{}",
+        msg_t("common_01131"),
+        i18n::t_args("messages.common_07032", lang, &[("ok", &ok_s)]),
+    );
     if bad > 0 {
-        msg.push_str(&format!("，失败：{bad}条"));
+        let bad_s = bad.to_string();
+        msg.push_str(&i18n::t_args(
+            "messages.common_07033",
+            lang,
+            &[("bad", &bad_s)],
+        ));
     }
     Ok(PhpOut::Text("common_01131", msg))
 }
@@ -12171,9 +12195,7 @@ async fn set_module_seoshezhi(state: &AppState, body: &Value) -> AppResult<PhpOu
     Ok(PhpOut::Data(json!({
         "seo": seo,
         "Dname": domain_object(&domains),
-        "seoconfig": { "public": {
-            "webname": "网站名称", "webkeyword": "网站关键字", "webdesc": "网站描述", "weburl": "网址"
-        }}
+        "seoconfig": { "public": enum_labels::seo_public_config() }
     })))
 }
 
@@ -14542,10 +14564,10 @@ fn column_form(items: &[(&str, &str, &str, &str)]) -> Vec<Value> {
         .collect()
 }
 
-fn map_pairs(items: &[(&str, &str)]) -> Vec<Value> {
+fn map_pairs<R: AsRef<str>>(items: &[(&str, R)]) -> Vec<Value> {
     items
         .iter()
-        .map(|(search, replace)| json!({ "search": search, "replace": replace }))
+        .map(|(search, replace)| json!({ "search": search, "replace": replace.as_ref() }))
         .collect()
 }
 
@@ -14674,58 +14696,63 @@ async fn fabutool_wx_pub_temp(state: &AppState, body: &Value) -> AppResult<Value
                 .unwrap_or(false)
         });
     }
+    let unlim = enum_labels::unlimited();
+    let several = enum_labels::several();
+    let profile = enum_labels::label("wap_com_00160");
+    let job_desc = enum_labels::label("wap_com_00289");
+    let webname = enum_labels::label("admin_system_00331");
     Ok(json!({
         "info": info,
         "temptype": temptype,
         "typecolumn": typecolumn,
         "totalcolumn": total_cols,
         "job_map": map_pairs(&[
-            ("{职位名称}", "xx职位"),
-            ("{职位网址}", "#"),
-            ("{企业名称}", "xx企业"),
-            ("{企业描述}", "企业简介"),
-            ("{企业网址}", "#"),
-            ("{薪资待遇}", "10000-15000"),
-            ("{招聘人数}", "若干"),
-            ("{年龄要求}", "不限"),
-            ("{性别要求}", "不限"),
-            ("{经验要求}", "不限"),
-            ("{学历要求}", "不限"),
-            ("{一级城市}", "省"),
-            ("{二级城市}", "市"),
-            ("{三级城市}", "区"),
-            ("{联系电话}", "0527-83698666"),
-            ("{工作地点}", "地址"),
-            ("{职位福利}", "五险一金"),
-            ("{职位描述}", "职位描述"),
+            ("{职位名称}", "xx职位".to_string()),
+            ("{职位网址}", "#".to_string()),
+            ("{企业名称}", "xx企业".to_string()),
+            ("{企业描述}", profile.clone()),
+            ("{企业网址}", "#".to_string()),
+            ("{薪资待遇}", "10000-15000".to_string()),
+            ("{招聘人数}", several),
+            ("{年龄要求}", unlim.clone()),
+            ("{性别要求}", unlim.clone()),
+            ("{经验要求}", unlim.clone()),
+            ("{学历要求}", unlim),
+            ("{一级城市}", "省".to_string()),
+            ("{二级城市}", "市".to_string()),
+            ("{三级城市}", "区".to_string()),
+            ("{联系电话}", "0527-83698666".to_string()),
+            ("{工作地点}", "地址".to_string()),
+            ("{职位福利}", "五险一金".to_string()),
+            ("{职位描述}", job_desc),
         ]),
         "resume_map": map_pairs(&[
-            ("{期望职位}", "xx职位"),
-            ("{简历网址}", "#"),
-            ("{姓名}", "张三"),
-            ("{年龄}", "25"),
-            ("{经验}", "3年"),
-            ("{学历}", "本科"),
-            ("{期望薪资}", "10000-18000"),
+            ("{期望职位}", "xx职位".to_string()),
+            ("{简历网址}", "#".to_string()),
+            ("{姓名}", "张三".to_string()),
+            ("{年龄}", "25".to_string()),
+            ("{经验}", "3年".to_string()),
+            ("{学历}", "本科".to_string()),
+            ("{期望薪资}", "10000-18000".to_string()),
         ]),
         "company_map": map_pairs(&[
-            ("{企业名称}", "xx企业"),
-            ("{企业描述}", "企业简介"),
-            ("{企业网址}", "#"),
-            ("{职位名称}", "xx职位"),
-            ("{职位网址}", "#"),
-            ("{职位薪资}", "15000-25000"),
-            ("{企业联系人}", "联系人"),
-            ("{企业联系电话}", "18888888888"),
+            ("{企业名称}", "xx企业".to_string()),
+            ("{企业描述}", profile),
+            ("{企业网址}", "#".to_string()),
+            ("{职位名称}", "xx职位".to_string()),
+            ("{职位网址}", "#".to_string()),
+            ("{职位薪资}", "15000-25000".to_string()),
+            ("{企业联系人}", "联系人".to_string()),
+            ("{企业联系电话}", "18888888888".to_string()),
         ]),
         "public_map": map_pairs(&[
-            ("{移动端二维码}", "#"),
-            ("{小程序外链}", "https://wxaurl.cn/xxx"),
+            ("{移动端二维码}", "#".to_string()),
+            ("{小程序外链}", "https://wxaurl.cn/xxx".to_string()),
         ]),
         "total_map": map_pairs(&[
-            ("{网站名称}", "网站名称"),
-            ("{网站地址}", "https://zzzz.com"),
-            ("{当前日期}", "2026-01-01"),
+            ("{网站名称}", webname),
+            ("{网站地址}", "https://zzzz.com".to_string()),
+            ("{当前日期}", "2026-01-01".to_string()),
         ]),
     }))
 }

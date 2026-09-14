@@ -16,22 +16,8 @@ use phpyun_models::job::repo as job_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use serde_json::{json, Map, Value};
 
-use crate::{admin_dashboard_service, category_service, dict_service, redeem_service};
+use crate::{admin_dashboard_service, category_service, dict_service, enum_labels, redeem_service};
 use phpyun_models::vip::repo as vip_repo;
-
-const SOURCE: &[(&str, &str)] = &[
-    ("1", "网页"),
-    ("2", "手机"),
-    ("4", "微信"),
-    ("6", "采集"),
-    ("8", "QQ登录"),
-    ("9", "微信扫一扫"),
-    ("10", "微博"),
-    ("11", "PC快速投递"),
-    ("12", "WAP快速投递"),
-    ("21", "账户分离"),
-    ("26", "预留信息"),
-];
 
 const USERSET_KEYS: &[&str] = &[
     "user_height_resume",
@@ -318,7 +304,7 @@ pub async fn php_page(
         "messagelog_base" => Ok(json!({
             "ports": {
                 "1": "member_user_00094",
-                "2": "WAP",
+                "2": "common_07006",
                 "5": "wap_js_00101",
                 "7": "ajax_00010",
                 "8": "wap_00121"
@@ -379,10 +365,7 @@ async fn job_get_cache_data(state: &AppState) -> AppResult<Value> {
     let (job_name, _, _) = job_cache(&jobs);
     let (city_name, _, _) = job_cache(&cities);
     let (comdata, comclass_name) = comdata_from(&dicts);
-    let mut source = Map::new();
-    for (k, v) in SOURCE {
-        source.insert((*k).into(), Value::String((*v).into()));
-    }
+    let source = enum_labels::source_search_map();
     let pkgs = vip_repo::list_admin_rating_names(state.db.reader(), 1).await?;
     let mut rating = Map::new();
     for (id, name) in pkgs {
@@ -498,7 +481,7 @@ pub async fn resume_member_cache(state: &AppState) -> AppResult<Value> {
         industry_name.insert(id.to_string(), Value::String(name));
     }
     Ok(json!({
-        "user_sex": { "1": "男", "2": "女" },
+        "user_sex": enum_labels::sex_choice_map(),
         "userdata": userdata,
         "userclass_name": userclass_name,
         "industry_index": industry_index,
@@ -522,11 +505,12 @@ async fn tiny_get_cache(state: &AppState) -> AppResult<Value> {
         .collect();
     let domains = domain_repo::list_all(state.db.reader()).await?;
     Ok(json!({
-        "user_sex": { "1": "男", "2": "女" },
+        "user_sex": enum_labels::sex_choice_map(),
         "user_word": user_word,
         "search_list": [
             search_kv("sex", "admin_01323", str_map(&[
-                ("1", "男"), ("2", "女"),
+                ("1", enum_labels::sex_filter_key("1")),
+                ("2", enum_labels::sex_filter_key("2")),
             ])),
             search_kv("exp", "wap_00526", {
                 let mut m = Map::new();
@@ -570,7 +554,7 @@ async fn friendlink_get_cache(state: &AppState) -> AppResult<Value> {
 async fn admin_member_get_cache(state: &AppState) -> AppResult<Value> {
     let domains = domain_repo::list_all(state.db.reader()).await?;
     Ok(json!({
-        "source": str_map(SOURCE),
+        "source": enum_labels::source_label_map(),
         "dname": domain_object(&domains),
     }))
 }
@@ -583,7 +567,7 @@ async fn userset_base(state: &AppState) -> AppResult<Value> {
     Ok(json!({
         "userdata": userdata,
         "userclass_name": userclass_name,
-        "user_sex": { "1": "男", "2": "女" },
+        "user_sex": enum_labels::sex_choice_map(),
         "job_name": job_name,
         "job_index": job_index,
         "job_type": job_type,
@@ -924,10 +908,7 @@ async fn data_collection_cache(state: &AppState) -> AppResult<Value> {
         "jobExpArr": named_from(comdata.get("job_exp"), &comclass_name),
         "jobMarriageArr": named_from(comdata.get("job_marriage"), &comclass_name),
         "jobReportArr": named_from(comdata.get("job_report"), &comclass_name),
-        "comSexArr": [
-            { "id": "2", "name": "女" },
-            { "id": "3", "name": "不限" },
-        ],
+        "comSexArr": enum_labels::com_sex_arr(),
         "userReportArr": named_from(userdata.get("user_report"), &userclass_name),
     }))
 }
@@ -1222,12 +1203,12 @@ pub async fn job_php_add_form(
         "userclass_name": userclass_name,
         "comdata": comdata,
         "comclass_name": comclass_name,
-        "com_sex": { "2": "女", "3": "不限" },
-        "com_sexreq": { "2": "女", "3": "不限" },
+        "com_sex": enum_labels::com_sex_map(),
+        "com_sexreq": enum_labels::com_sex_map(),
     });
     payload["cache_userdata"] = Value::Object(userdata.clone());
     payload["cache_userclassname"] = Value::Object(userclass_name);
-    payload["cache_com_sexreq"] = json!({ "2": "女", "3": "不限" });
+    payload["cache_com_sexreq"] = enum_labels::com_sex_map();
     let map_key = setting_repo::find(state.db.reader(), "map_key")
         .await?
         .map(|s| s.value)

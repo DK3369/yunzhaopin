@@ -1,6 +1,6 @@
 import { bffUrl } from '~/utils/bff'
 import type { ApiEnvelope } from '~/utils/envelope'
-import { lc, readStoredLocale, rustLangFor } from '~/utils/phpLc'
+import { lc, readStoredLocale, rustLangFor, translatePackedText } from '~/utils/phpLc'
 import { resolvePhpAction } from '~/utils/phpMap'
 
 type PhpEnvelope = { error: number; msg?: string; data?: unknown }
@@ -42,7 +42,7 @@ function localizeSearchList(data: unknown): void {
     const opts = entry.value
     if (!opts || typeof opts !== 'object') continue
     for (const [k, v] of Object.entries(opts as Record<string, unknown>)) {
-      if (typeof v === 'string') (opts as Record<string, unknown>)[k] = lc(v)
+      if (typeof v === 'string') (opts as Record<string, unknown>)[k] = translatePackedText(v)
     }
   }
 }
