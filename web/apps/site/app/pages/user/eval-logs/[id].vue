@@ -44,17 +44,14 @@ useSeoMeta({ title: t('wap_00194') })
       <div v-if="data.paper_id" class="site-pc">
         <NuxtLink :to="`/eval/${data.paper_id}`" class="uesr_submit">{{ $t('wap_00194') }}</NuxtLink>
       </div>
-      <div v-for="row in answers" :key="row.k" class="sysynews_list site-pc">
-        <div class="sysynews_span sysynews_name">{{ row.k }}</div>
-        <div class="sysynews_span sysynews_time">{{ row.v }}</div>
+      <div v-for="row in answers" :key="row.k" class="yun_send_resume_list site-pc">
+        <div class="yun_send_resume_list_name">{{ row.k }}</div>
+        <div class="yun_send_resume_list_right">{{ row.v }}</div>
       </div>
-      <div class="site-h5 m_cardbox">
-        <MemberSxNewsCard
-          v-for="row in answers"
-          :key="'h5-' + row.k"
-          :title="row.k"
-          :sub="row.v"
-        />
+      <div class="site-h5 mag_show">
+        <div v-for="row in answers" :key="'h5-' + row.k" class="com_member_hr_p1">
+          <span class="member_c9">{{ row.k }}</span>{{ row.v }}
+        </div>
       </div>
     </template>
   </MemberPanel>

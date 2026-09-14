@@ -49,18 +49,23 @@ useSeoMeta({ title: t('wap_user_00211') })
         <NuxtLink :to="`/jobs/${row.id}`" class="user_new_yqh_a">{{ $t('wap_com_00235') }}</NuxtLink>
       </div>
     </div>
-    <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in list"
-          :key="'h5-' + row.id"
-          :title="row.name"
-          :pay="`${row.min_salary || ''} - ${row.max_salary || ''}`"
-          :sub="row.com_name"
-          :to="`/jobs/${row.id}`"
-        >
-          <div class="com_member_matched_degree">{{ row.pre || row.match || '' }}%</div>
-        </MemberPostedCard>
+    <div class="site-h5 main_member_cot_box">
+      <div
+        v-for="row in list"
+        :key="'h5-' + row.id"
+        class="com_member_hr"
+        @click="navigateTo(`/jobs/${row.id}`)"
+      >
+        <div class="com_member_hr_name">{{ row.name }}</div>
+        <div class="user_member_box">
+          <div class="com_member_company">{{ row.com_name }}</div>
+          <div class="com_member_particulars">
+            <div>{{ row.min_salary }}-{{ row.max_salary }}</div>
+            <div v-if="row.edu_n || row.job_edu"> | {{ row.edu_n || row.job_edu }}{{ $t('home.education_suffix') }}</div>
+            <div v-if="row.exp_n || row.job_exp"> | {{ row.exp_n || row.job_exp }}{{ $t('home.experience_suffix') }}</div>
+          </div>
+          <div class="com_member_matched_degree">{{ $t('wap_user_00273') }}{{ row.pre || row.match || '' }}%</div>
+        </div>
       </div>
     </div>
   </MemberPanel>

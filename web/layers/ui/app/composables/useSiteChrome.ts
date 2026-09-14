@@ -267,9 +267,12 @@ export function useSiteChrome() {
   const isAuth = computed(() =>
     ['/login', '/register', '/forgetpw', '/loginlock', '/oauth-bind', '/app-login'].includes(route.path),
   )
-  const isMember = computed(
-    () => route.path.startsWith('/user') || route.path.startsWith('/com'),
-  )
+  const isMember = computed(() => {
+    const p = route.path
+    if (p.startsWith('/user') || p.startsWith('/com')) return true
+    if (p === '/advice' && Number(me.value?.uid || 0) > 0) return true
+    return false
+  })
 
   const { userItems, comItems } = useMemberNav()
 

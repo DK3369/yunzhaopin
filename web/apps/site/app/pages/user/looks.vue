@@ -66,18 +66,21 @@ const total = computed(() => inferTotal(data.value))
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
-    <div class="site-h5 m_user_infocont">
-      <MemberUserInfoRow
-        v-for="row in data?.list || []"
-        :key="'h5-' + row.id"
-        :title="row.job_name || $t('common.job')"
-        :pay="salaryOf(row)"
-        :sub="row.com_name"
-        :time="row.datetime_n"
-        :to="row.job_id ? `/jobs/${row.job_id}` : undefined"
-      >
-        <a href="javascript:;" class="m_user_info_a" @click="remove(row.id)">{{ $t('common.delete') }}</a>
-      </MemberUserInfoRow>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in data?.list || []"
+          :key="'h5-' + row.id"
+          variant="issue"
+          :title="row.job_name || $t('common.job')"
+          :pay="salaryOf(row)"
+          :sub="row.com_name"
+          :time="row.datetime_n"
+          :to="row.job_id ? `/jobs/${row.job_id}` : undefined"
+          :look-text="$t('wap_user_00275')"
+          :on-look-del="() => remove(row.id)"
+        />
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>

@@ -85,6 +85,7 @@ const H1_WITH_LIST = [
   '/user/reports',
   '/user/eval-logs',
   '/user/privacy',
+  '/user/blacklist',
   '/user/binding',
   '/user/pay',
   '/user/finance',
@@ -108,7 +109,8 @@ const props = defineProps<{
   userWrap?: MemberUserWrap
 }>()
 const route = useRoute()
-const kind = computed(() => props.kind || (route.path.startsWith('/com') ? 'com' : 'user'))
+const { memberKind } = useSiteChrome()
+const kind = computed(() => props.kind || memberKind.value)
 
 function pathMatches(path: string, prefixes: string[]) {
   return prefixes.some((x) => path === x || path.startsWith(`${x}/`))

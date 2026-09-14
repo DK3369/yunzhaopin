@@ -35,7 +35,9 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
 
-前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`（`sy_job_web` 关则藏）。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。
+前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`（`sy_job_web` 关则藏）。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。登录后访问 `/advice` 也走会员壳（求职/招聘按 `usertype`），未登录仍是前台反馈页。
+
+H5 求职首页 `userheader` 必须全宽：`MemberShell` 在 `/user` `/com` 加 `member-shell-home`，去掉 `wap_member` 左右 padding。其他服务 H5 宫格把 PHP 的 `position_management_body{position:absolute}` 改回文档流（Vue 已有 `header_h`）。
 
 `MemberPanel`：`user_new_tit` 在 `yun_m_rightbox` **外**（对照 `job.htm`）；`member_right_index_h1` 必须在 `yun_m_rightbox` **内**（对照 `atn.htm` / `passwd.htm` / `privacy.htm`），否则标题浮在灰底上看起来没皮。
 
@@ -75,7 +77,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 |---|---|---|
 | PC 主链 | 首页、简历、面试通知、申请的职位、对我感兴趣、收藏、足迹 +「更多」 | 企业中心、职位、简历管理、面试、会员服务、人才库、招聘会、企业资料、**账号绑定** +「更多服务」 |
 | 账户入口 | 密码/隐私/黑名单/注销/绑定/认证走 `/user/set`、H5 宫格、顶栏，**不进 PC 左栏** | PC 左栏第 9 项是 `/com/binding`；`/com/set` 只作 H5 设置汇总，**不要**链到 `/user/account` |
-| 首页 | `yun_m_*` 统计 + 简历完整度；H5 `userheader` / `heiseVipDao` / `taskbar_*` | PC `membRighTops` + `twoDivimg` 资源卡；H5 `commemberheader` / `comvipDao*` / `comzhtip` / `taskbar_nav_word` |
+| H5 首页宫格 | 简历、隐私、其他服务、财务、账户设置，**最后一项意见反馈**（`taskbar_enterprise_last`）。退出在 `/user/set`，不要把退出当宫格最后一项。右侧「更多」只在有摘要时出现（简历「去完善」、其他服务兼职/问答） | 企业资料、财务、其他服务，**最后一项账户设置**。退出在 `/com/set`。其他服务摘要用 `wap_com_00089` |
+| 意见反馈 `/advice` | 登录后进求职会员壳 | 登录后进招聘会员壳（`usertype=2`） |
 | 核心对象 | 简历、投递、被看 | 职位、应聘管线、下载 |
 | 兼职 | `/user/parts` 报名/收藏 | `/com/parts` 发布 + 收到的报名 |
 | 面试 | `/user/interviews` = 收面试（PHP `invite.htm`） | `/com/interviews` = 企业发面试 |
@@ -101,6 +104,10 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 订单列 class 写成 `paylist_span_dh`（PHP 是 `paylist_span paylist_dh` / `paylist_money` / `paylist_zt`）
 - 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`
 - 会员左栏/宫格写死兼职、招聘会、专题、测评，不看首页 `sy_*_web`
+- H5 求职首页宫格最后一项做成退出登录（PHP 最后是意见反馈；退出在 `/user/set`）
+- 测评 / 被下载 / 举报用 `sysynews_*` 冒充消息列表
+- H5 会员首页再给 `wap_member` 垫左右 padding（会挤窄 `userheader`）
+- 其他服务仍用 PHP 的 `position_management_body{position:absolute}`（Vue 已有蓝条，宫格会飞出视口）
 
 ## 菜单对照（求职你列的项）
 
@@ -116,17 +123,17 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 职位速配 | `/user/recommend` | `/com/recommend` 简历推荐 | `likejob.htm`（`pp*` / `com_member_matched_degree`） | 否（更多/服务） |
 | 消息 | `/user/messages` | `/com/messages` | `sysnews.htm` / WAP `chatnewcard` + `sxnews.htm`；企业 `msg.htm` | 否（顶栏） |
 | 企业回复咨询 | `/user/consults` | `/com/job-messages` | `commsg.htm`（PC `job_Consulting_*` / H5 `mag_show`） | 否 |
-| 职业测评 | `/user/eval-logs` | 无 | 无对等列表皮：`job_list_tit` + 空态 + pager | **否** |
+| 职业测评 | `/user/eval-logs` | 无 | 无对等列表皮：`job_list_tit` + `job_search_box` / H5 `Posted_*`，**不要** `sysynews_*` | **否** |
+| 被下载简历 | `/user/inbox` | `/com/downloads` 企业下载 | 求职按谁看过同类皮：`user_new_listtit` + `jobnotice_list` / H5 `Posted_*`，**不要** `sysynews_*` | **求职否** |
+| 我的举报 | `/user/reports` | `/com/report` 投诉记录 | 求职无对等列表皮：`job_list_tit` + `job_search_box`，**不要** `sysynews_*` | **求职否** |
 | 求职意向 | `/user/expects` | 无 | 简历小节皮 | 否 |
 | 职位搜索器 | `/user/searches` | `/com/finder` | `finder.htm`（`job_search_box*`） | 求职「更多」 |
 | 简历模板 | `/user/resume-tpls` | `/com/tpls` 企业模板 | `resumetpl.htm` / `comtpl.htm` | 求职「更多」 |
 | 修改密码 | `/user/password` | `/com/password` | 求职 `passwd.htm`（`account_settings` + `Binding_pop_box`）；招聘 `vs.htm`（`admin_password` + `btn_01`） | 否 |
 | 隐私设置 | `/user/privacy` | 无（企业认证/资料） | `privacy.htm`（PC `set-status*` + 公开时黑名单标签） | 否 |
 | 黑名单 | `/user/blacklist` | 无 | 嵌在隐私 | 否 |
-| 我的足迹 | `/user/looks` | `/com/views` 看过的简历 | `look_job.htm`；H5 `m_user_info*` | 求职是 |
-| 被下载简历 | `/user/inbox` | `/com/downloads` 企业下载 | 求职无专用列表皮：`job_list_tit` | **求职否** |
+| 我的足迹 | `/user/looks` | `/com/views` 看过的简历 | `look_job.htm`；H5 `Posted_*`（对照 WAP `look.htm` lookjob） | 求职是 |
 | 邀请注册 | `/user/invite` | 无独立页 | PHP 是弹层；Vue 独立页，**不要**套关注/面试皮 | 求职「更多」 |
-| 我的举报 | `/user/reports` | `/com/report` 投诉记录 | 求职无对等列表皮：`job_list_tit` | **求职否** |
 | 注销账号 | `/user/account` | 企业 set 底栏退出 | `logout.htm` | 否 |
 | 绑定账号 | `/user/binding` | `/com/binding` | `binding.htm`（`Binding_list*` / 手机邮箱弹层） | 招聘 PC 左栏第 9 项 |
 | 认证与绑定 | `/user/ident` | `/com/cert` | WAP `ident.htm`（`issue_post_body_card`） / `comcert.htm` | 否 |
@@ -136,7 +143,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 充值 | `/user/pay` | `/com/pay` | `pay.htm`（`payment_list_*`） | 否 |
 | 简历外发 | `/user/outbox` | 无 | `resumeout.htm` | 求职「更多」 |
 | 兼职 | `/user/parts` 报名 | `/com/parts` 发布 | `partapply.htm` / `partlist.htm` | 求职「更多」 |
-| 意见反馈 | `/advice` | `/advice` | `member/user/message.htm`（`resume_fk_box` / `message_box`） | 否 |
+| 意见反馈 | `/advice` | `/advice` | `member/user/message.htm`（PC `resume_fk_box` / `message_box`；H5 `verification_form`）。**登录后进会员壳** | 否 |
 
 招聘多出来：职位管理/发布、应聘/下载/谁看过职位/粉丝/看过的简历/人才库（`MemberHrTabs`）、面试模板、企业资料/环境/新闻/产品/横幅/地图/模板、会员套餐/增值、招聘会、专题、消费记录、统计、预警、群发、HR 账号。
 

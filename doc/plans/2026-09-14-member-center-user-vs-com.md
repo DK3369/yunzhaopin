@@ -20,7 +20,8 @@ PHP 对照：`uploads/app/template/member/{user,com}/*.htm`、`uploads/app/templ
 ## 不同
 
 - **左栏**：求职 `yun_m_leftsidebar`（首页、简历、面试通知、申请、谁看过、收藏、足迹 + 更多）；招聘 `sidebar`（企业中心、职位、简历管理、面试、会员服务、人才库、招聘会、资料、**账号绑定** + 更多服务）。密码/隐私/消息不进求职 PC 左栏。招聘第 9 项是 `/com/binding`，不是 `/com/set`。招聘会随 `sy_zph_web` 藏；兼职/专题/测评/问答随对应 `sy_*_web` 藏。
-- **首页**：求职 `yun_m_*` + 简历卡 + 推荐岗 `yun_m_index_job*`；H5 `userheader` / `taskbar`。招聘 PC `membRighTops`；H5 `commemberheader` / `comvip_nav` / `taskbar`。
+- **首页**：求职 `yun_m_*` + 简历卡 + 推荐岗 `yun_m_index_job*`；H5 `userheader` / `taskbar`（最后一项意见反馈，退出在 set）。招聘 PC `membRighTops`；H5 `commemberheader` / `comvip_nav` / `taskbar`（最后一项账户设置）。
+- **意见反馈**：`/advice` 未登录走前台；登录后进对应会员壳（求职 `yun_m_rightbox`，招聘 `com_body`）。
 - **核心对象**：求职=简历/投递/被看；招聘=职位/应聘管线/下载。
 - **顶栏**：登录后求职 PC 是 `user_header`，招聘 PC 是企业 `header_fixed`，都不要前台深色 `pc-topbar`。H5 两端首页都不要再叠蓝条返回。前台 `pc-topbar` 右侧读 `usertype`：求职只有用户名→`/user`+退出；招聘才「发布职位」→`/com/jobs/new`（`sy_job_web` 关则藏）。求职进 `/com` 会被中间件打回 `/user`。
 - **PC 右栏**：求职 PHP 对左栏 `fltR`；Vue 已是 flex（210+980），壳内取消二次 float，否则白底塌掉。招聘 `com_body` 不 float，右栏 `.site-pc` 同样 `flow-root`。

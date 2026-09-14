@@ -1708,6 +1708,51 @@ html.force-pc .site-h5 {
     display: block;
     width: 100%;
   }
+  /* PHP 首页 userheader 全宽；wap_member 的左右 padding 只给子页 */
+  .member-shell-home .yun_m_rightsidebar > .wap_member {
+    padding: 0;
+  }
+  /* PHP 相对 header 绝对定位；Vue 已有 header_h，改回文档流否则宫格飞出视口 */
+  .member-page .position_management_body,
+  .site-h5.position_management_body {
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: auto;
+    width: 100%;
+    padding-left: 0.32rem;
+    padding-right: 0.32rem;
+  }
+  .member-page .verification_form {
+    margin-top: 0;
+  }
+  .member-page .financial_management_header {
+    height: auto;
+    min-height: 4.586667rem;
+    overflow: visible;
+  }
+  .member-page .management_header_card {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    height: auto;
+    margin: 0.32rem;
+  }
+  a.taskbar_enterprise,
+  a.taskbar_enterprise_last {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+  }
+  .member-page .management_body_card > ul > li,
+  .site-h5 .management_body_card > ul > li,
+  .member-page .com_member_hr {
+    cursor: pointer;
+  }
+  .member-page .blacklist_tip_bth_a_tj {
+    cursor: pointer;
+  }
   .member-resume-section-form {
     background: #fff;
     margin: 0.16rem 0.24rem 0.32rem;

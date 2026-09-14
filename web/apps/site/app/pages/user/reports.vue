@@ -52,21 +52,23 @@ const total = computed(() => inferTotal(data.value))
       </ul>
     </div>
     <p v-if="msg">{{ msg }}</p>
-    <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
-      <div class="sysynews_span sysynews_name">{{ $t('ui.my_reports') }}</div>
-      <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
-    </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">#{{ row.target_id }}</div>
-      <div class="sysynews_span sysynews_time">{{ row.status }}</div>
+    <div v-for="row in data?.list || []" :key="row.id" class="job_search_box site-pc">
+      <div class="job_search_box_left">
+        <div class="job_search_box_jobmane">#{{ row.target_id }}</div>
+        <div class="job_search_box_tj">{{ row.status }} · {{ row.created_at_n || row.ctime_n || '' }}</div>
+      </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in data?.list || []"
-        :key="'h5-' + row.id"
-        :title="`#${row.target_id}`"
-        :time="String(row.status ?? '')"
-      />
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in data?.list || []"
+          :key="'h5-' + row.id"
+          variant="issue"
+          :title="`#${row.target_id}`"
+          :sub="String(row.status ?? '')"
+          :time="row.created_at_n || row.ctime_n"
+        />
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

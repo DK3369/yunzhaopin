@@ -11,6 +11,7 @@ const { data, error, refresh } = await useAsyncData(
 const keyword = ref('')
 const hits = ref<Array<{ uid: number; name?: string }>>([])
 const msg = ref('')
+const showAdd = ref(false)
 async function search() {
   msg.value = ''
   try {
@@ -78,7 +79,14 @@ useSeoMeta({ title: t('member_user_00044') })
           </div>
         </div>
         <div class="blacklist_tip_bth">
-          <span class="blacklist_tip_bth_a_tj">{{ $t('wap_01125') }}</span>
+          <span class="blacklist_tip_bth_a_tj" @click="showAdd = !showAdd">{{ $t('wap_01125') }}</span>
+        </div>
+        <div v-if="showAdd" class="black_sumit_box" style="padding: 0.24rem">
+          <input v-model="keyword" class="black_text" :placeholder="$t('member_user_00563')" />
+          <input type="button" class="black_sumit" :value="$t('common.search')" @click="search" />
+          <div v-for="row in hits" :key="'h5h-' + row.uid" class="blacklist_p" @click="add(row.uid)">
+            {{ row.name || row.uid }}
+          </div>
         </div>
       </div>
     </div>

@@ -60,7 +60,7 @@ const recJobList = computed((): HomeRecJob[] => {
   return []
 })
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
-const { wxQr, settings } = useSiteChrome()
+const { wxQr, settings, phone, worktime } = useSiteChrome()
 const msg = ref('')
 useSeoMeta({ title: t('member_user_00183') })
 
@@ -106,11 +106,6 @@ function ageOf(birthday?: string) {
   if (!y) return 0
   return new Date().getFullYear() - y
 }
-async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  await refreshNuxtData('auth-me')
-  await navigateTo('/login')
-}
 async function refreshMyResume() {
   msg.value = ''
   try {
@@ -132,16 +127,24 @@ async function sign() {
   }
 }
 
+const otherserviceHint = computed(() => {
+  const bits: string[] = []
+  if (isMemberModuleOn(settings.value, '/user/parts')) bits.push(t('wap_user_00220'))
+  if (isMemberModuleOn(settings.value, '/questions')) bits.push(t('wap_00331'))
+  if (!bits.length) return ''
+  return `${bits.join('')}${t('wap_00786')}`
+})
+const resumeHint = computed(() => (resume.value?.name || defExpect.value ? t('wap_user_00194') : ''))
 const h5Links = computed(() =>
   [
-    { to: '/user/resume', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00204' },
-    { to: '/user/privacy', icon: '/legacy/h5/images/ys.png', key: 'wap_user_00215' },
-    { to: '/user/otherservice', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00196' },
-    { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213' },
-    { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
-    { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
+    { to: '/user/resume', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00204', hint: resumeHint.value },
+    { to: '/user/privacy', icon: '/legacy/h5/images/ys.png', key: 'wap_user_00215', hint: '' },
+    { to: '/user/otherservice', icon: '/legacy/h5/images/job_training.png', key: 'wap_user_00196', hint: otherserviceHint.value },
+    { to: '/user/finance', icon: '/legacy/h5/images/financial_management.png', key: 'wap_user_00213', hint: '' },
+    { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214', hint: '' },
   ].filter((item) => isMemberModuleOn(settings.value, item.to)),
 )
+const adviceOn = computed(() => isMemberModuleOn(settings.value, '/advice'))
 function labelOf(to: string, key: string) {
   return userItems.value.find((i) => i.to === to)?.label || t(key)
 }
@@ -317,15 +320,6 @@ function labelOf(to: string, key: string) {
       <p v-if="msg" class="muted">{{ msg }}</p>
     </div>
     <div class="site-h5">
-      <div v-if="missingBits.length" class="heiseVipDao">
-        <div class="vip_nav">
-          <div class="vip_nav_img">
-            <img src="/legacy/h5/images/inform.png" alt="" width="100%" height="100%" />
-          </div>
-          <i class="vip_nav_word">{{ missingBits.map(missingLabel).join(' · ') }}</i>
-          <NuxtLink to="/user/resume" class="vip_nav_remind">{{ $t('wap_user_00197') }}</NuxtLink>
-        </div>
-      </div>
       <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
         {{ $t('common_00655') }}
         <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
@@ -402,8 +396,26 @@ function labelOf(to: string, key: string) {
           </ul>
         </div>
       </div>
+      <div v-if="missingBits.length" class="heiseVipDao">
+        <div class="vip_nav">
+          <div class="vip_nav_img">
+            <img src="/legacy/h5/images/inform.png" alt="" width="100%" height="100%" />
+          </div>
+          <i class="vip_nav_word">{{ missingBits.map(missingLabel).join(' · ') }}</i>
+          <NuxtLink to="/user/resume" class="vip_nav_remind">{{ $t('wap_user_00197') }}</NuxtLink>
+        </div>
+      </div>
+      <div class="min_body">
       <div class="user_nav_fast mt10">
         <ul>
+          <li>
+            <NuxtLink to="/user/resume">
+              <div class="user_nav_fast_img">
+                <img src="/legacy/h5/images/jobhunter_top.png" alt="" width="100%" height="100%" />
+              </div>
+              <i class="user_nav_fast_word">{{ $t('wap_user_00210') }}</i>
+            </NuxtLink>
+          </li>
           <li @click="refreshMyResume">
             <div class="user_nav_fast_img">
               <img src="/legacy/h5/images/jobhunter_refresh.png" alt="" width="100%" height="100%" />
@@ -426,39 +438,41 @@ function labelOf(to: string, key: string) {
               <i class="user_nav_fast_word">{{ $t('wap_user_00211') }}</i>
             </NuxtLink>
           </li>
-          <li>
-            <NuxtLink to="/user/resume">
-              <div class="user_nav_fast_img">
-                <img src="/legacy/h5/images/jobhunter_top.png" alt="" width="100%" height="100%" />
-              </div>
-              <i class="user_nav_fast_word">{{ $t('wap_user_00210') }}</i>
-            </NuxtLink>
-          </li>
         </ul>
       </div>
       <p v-if="msg" class="muted">{{ msg }}</p>
-      <div class="taskbar">
       <div class="taskbar_box">
-        <NuxtLink v-for="item in h5Links" :key="item.to" :to="item.to">
-          <div class="taskbar_enterprise">
-            <div class="taskbar_datum">
-              <div class="taskbar_datum_img">
-                <img :src="item.icon" alt="" width="100%" height="100%" />
-              </div>
-              <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
+        <NuxtLink v-for="item in h5Links" :key="item.to" :to="item.to" class="taskbar_enterprise">
+          <div class="taskbar_datum">
+            <div class="taskbar_datum_img">
+              <img :src="item.icon" alt="" width="100%" height="100%" />
             </div>
-            <div class="taskbar_nav">
-              <div class="taskbar_nav_word">{{ $t('common.more') }}</div>
-              <div class="taskbar_nav_img">
-                <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
-              </div>
+            <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
+          </div>
+          <div class="taskbar_nav">
+            <div v-if="item.hint" class="taskbar_nav_word">{{ item.hint }}</div>
+            <div class="taskbar_nav_img">
+              <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
             </div>
           </div>
         </NuxtLink>
-        <div class="taskbar_enterprise_last" @click="logout">
+        <NuxtLink v-if="adviceOn" to="/advice" class="taskbar_enterprise_last">
           <div class="taskbar_datum">
-            <div class="taskbar_datum_word">{{ $t('wap_user_00342') }}</div>
+            <div class="taskbar_datum_img">
+              <img src="/legacy/h5/images/fk.png" alt="" width="100%" height="100%" />
+            </div>
+            <div class="taskbar_datum_word">{{ $t('wap_user_00203') }}</div>
           </div>
+          <div class="taskbar_nav">
+            <div class="taskbar_nav_img">
+              <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
+      <div class="companyDatapage">
+        <div v-if="phone" class="companyDataTell">
+          <span>{{ $t('wap_user_00184') }} {{ phone }} <span v-if="worktime">({{ worktime }})</span></span>
         </div>
       </div>
       </div>

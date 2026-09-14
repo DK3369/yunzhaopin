@@ -59,11 +59,6 @@ const { wxQr, settings } = useSiteChrome()
 const webtel = computed(() => String(settings.value.sy_comwebtel || settings.value.sy_freewebtel || ''))
 const msg = ref('')
 useSeoMeta({ title: t('member_com_00290') })
-async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  await refreshNuxtData('auth-me')
-  await navigateTo('/login')
-}
 async function sign() {
   msg.value = ''
   try {
@@ -77,11 +72,16 @@ async function sign() {
 
 const h5Task = computed(() =>
   [
-    { to: '/com/profile', icon: '/legacy/h5/images/enterprise_data.png', key: 'wap_com_00096' },
-    { to: '/com/pay', icon: '/legacy/h5/images/caiwuegl.png', key: 'wap_user_00213' },
-    { to: '/com/otherservice', icon: '/legacy/h5/images/resume_index.png', key: 'wap_user_00196' },
-    { to: '/com/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214' },
-    { to: '/advice', icon: '/legacy/h5/images/fk.png', key: 'wap_user_00203' },
+    { to: '/com/profile', icon: '/legacy/h5/images/enterprise_data.png', key: 'wap_com_00096', hint: '', last: false },
+    { to: '/com/pay', icon: '/legacy/h5/images/caiwuegl.png', key: 'wap_user_00213', hint: '', last: false },
+    {
+      to: '/com/otherservice',
+      icon: '/legacy/h5/images/resume_index.png',
+      key: 'wap_user_00196',
+      hint: t('wap_com_00089'),
+      last: false,
+    },
+    { to: '/com/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214', hint: '', last: true },
   ].filter((item) => isMemberModuleOn(settings.value, item.to)),
 )
 function labelOf(to: string, key?: string) {
@@ -363,30 +363,26 @@ function labelOf(to: string, key?: string) {
         </div>
       </div>
       <p v-if="msg" class="muted">{{ msg }}</p>
-      <div class="taskbar">
       <div class="taskbar_box">
-        <NuxtLink v-for="item in h5Task" :key="item.to" :to="item.to">
-          <div class="taskbar_enterprise">
-            <div class="taskbar_datum">
-              <div class="taskbar_datum_img">
-                <img :src="item.icon" alt="" width="100%" height="100%" />
-              </div>
-              <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
+        <NuxtLink
+          v-for="item in h5Task"
+          :key="item.to"
+          :to="item.to"
+          :class="item.last ? 'taskbar_enterprise_last' : 'taskbar_enterprise'"
+        >
+          <div class="taskbar_datum">
+            <div class="taskbar_datum_img">
+              <img :src="item.icon" alt="" width="100%" height="100%" />
             </div>
-            <div class="taskbar_nav">
-              <div class="taskbar_nav_word">{{ $t('common.more') }}</div>
-              <div class="taskbar_nav_img">
-                <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
-              </div>
+            <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
+          </div>
+          <div class="taskbar_nav">
+            <div v-if="item.hint" class="taskbar_nav_word">{{ item.hint }}</div>
+            <div class="taskbar_nav_img">
+              <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
             </div>
           </div>
         </NuxtLink>
-        <div class="taskbar_enterprise_last" @click="logout">
-          <div class="taskbar_datum">
-            <div class="taskbar_datum_word">{{ $t('wap_user_00342') }}</div>
-          </div>
-        </div>
-      </div>
       </div>
       <div class="companyDatapage">
         <div v-if="webtel" class="companyDataTell">{{ webtel }}</div>

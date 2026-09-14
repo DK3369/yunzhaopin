@@ -70,6 +70,7 @@ const total = computed(() => inferTotal(data.value))
           :sub="row.com_job"
           :time="row.datetime_n"
           :to="row.com_id ? `/companies/${row.com_id}` : undefined"
+          :tags="[row.com_pr || row.pr_n, row.com_mun || row.mun_n].filter((x): x is string => Boolean(x))"
           :look-job="row.com_job"
           :look-text="$t('wap_user_00276')"
           :on-look-del="() => remove(row.id)"

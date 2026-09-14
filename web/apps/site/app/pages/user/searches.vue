@@ -78,13 +78,18 @@ useSeoMeta({ title: t('member_user_00108') })
       </div>
     </div>
     <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in data?.list || []"
-        :key="'h5-' + row.id"
-        :title="String(row.name || '')"
-        :sub="String(row.para_n || row.para || '')"
-        :to="row.search_to"
-      />
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in data?.list || []"
+          :key="'h5-' + row.id"
+          variant="issue"
+          :title="String(row.name || '')"
+          :sub="String(row.para_n || row.para || '')"
+          :to="row.search_to"
+          :on-look-del="() => remove(row.id)"
+          :look-text="$t('common.delete')"
+        />
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

@@ -1,5 +1,11 @@
 <template>
-  <div class="yun_w1200 member-shell" :class="kind === 'com' ? 'member-shell-com' : 'member-shell-user'">
+  <div
+    class="yun_w1200 member-shell"
+    :class="[
+      kind === 'com' ? 'member-shell-com' : 'member-shell-user',
+      isMemberHome ? 'member-shell-home' : '',
+    ]"
+  >
     <template v-if="kind === 'user'">
       <div class="yun_m_leftsidebar site-pc">
         <div class="yun_m_leftsidebar_box">
@@ -110,6 +116,7 @@ const api = useApi()
 const route = useRoute()
 const userMoreOpen = ref(false)
 const comMoreOpen = ref(false)
+const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
 
 const { data: userDash } = useAsyncData(
   () => `member-shell-user-dash-${props.kind}`,

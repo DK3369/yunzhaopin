@@ -21,25 +21,26 @@ useSeoMeta({ title: t('wap_00194') })
           <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_00194') }}</a></li>
         </ul>
       </div>
-      <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
-        <div class="sysynews_span sysynews_name">{{ $t('wap_00194') }}</div>
-        <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
-      </div>
-      <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
-        <div class="sysynews_span sysynews_name">
-          <NuxtLink :to="`/user/eval-logs/${row.id}`">{{ row.paper_name || $t('wap_00194') }}</NuxtLink>
+      <div v-for="row in data?.list || []" :key="row.id" class="job_search_box site-pc">
+        <div class="job_search_box_left">
+          <div class="job_search_box_jobmane">
+            <NuxtLink :to="`/user/eval-logs/${row.id}`" class="index_Job_Finder_cont_name_a">{{ row.paper_name || $t('wap_00194') }}</NuxtLink>
+          </div>
+          <div class="job_search_box_tj">{{ row.score }} · {{ row.created_at_n }}</div>
         </div>
-        <div class="sysynews_span sysynews_time">{{ row.score }} · {{ row.created_at_n }}</div>
       </div>
       <div class="site-h5 m_cardbox">
-        <MemberSxNewsCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + row.id"
-          :title="row.paper_name || $t('wap_00194')"
-          :sub="String(row.score ?? '')"
-          :time="row.created_at_n"
-          :to="`/user/eval-logs/${row.id}`"
-        />
+        <div class="m_cardbgbox">
+          <MemberPostedCard
+            v-for="row in data?.list || []"
+            :key="'h5-' + row.id"
+            variant="issue"
+            :title="row.paper_name || $t('wap_00194')"
+            :pay="String(row.score ?? '')"
+            :time="row.created_at_n"
+            :to="`/user/eval-logs/${row.id}`"
+          />
+        </div>
       </div>
       <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     </template>
