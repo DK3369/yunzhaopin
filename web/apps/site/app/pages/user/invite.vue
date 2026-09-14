@@ -22,19 +22,23 @@ async function send() {
 }
 useSeoMeta({ title: t('ui.invite_reg') })
 const total = computed(() => inferTotal(refs.value))
+const rows = computed(() => refs.value?.list || [])
 </script>
 
 <template>
-  <MemberPanel :title="$t('ui.invite_reg')">
+  <MemberPanel :title="$t('ui.invite_reg')" user-wrap="none" :empty="false">
     <div class="site-h5 yun_usermember_financebg">
       <div class="yun_usermember_integral">
         {{ $t('ui.invite_reg') }}
         <span class="yun_usermember_integral_n">{{ summary?.count ?? 0 }}</span>
       </div>
     </div>
-    <p v-if="summary" class="muted">
-      {{ summary.count ?? 0 }} · {{ summary.total_points ?? 0 }}
-    </p>
+    <div class="site-pc resume_Prompt_box">
+      <div class="resume_Prompt">
+        <i class="resume_Prompt_icon" />
+        {{ $t('ui.invite_reg') }} {{ summary?.count ?? 0 }} · {{ summary?.total_points ?? 0 }}
+      </div>
+    </div>
     <form class="form verification_form" @submit.prevent="send">
       <MemberField :label="$t('member_user_00282')">
         <input v-model="form.email" type="email" required />
@@ -42,15 +46,20 @@ const total = computed(() => inferTotal(refs.value))
       <MemberField :label="$t('wap_user_00102')" area>
         <textarea v-model="form.content" rows="4" />
       </MemberField>
-      <button type="submit" class="verification_form_btn">{{ $t('ui.send_invite_reg') }}</button>
+      <button type="submit" class="verification_form_btn site-h5">{{ $t('ui.send_invite_reg') }}</button>
+      <input type="submit" class="uesr_submit site-pc" :value="$t('ui.send_invite_reg')" />
     </form>
-    <div v-for="row in refs?.list || []" :key="row.id" class="sysynews_list site-pc">
+    <div v-if="rows.length" class="sysynews_tit site-pc">
+      <div class="sysynews_span sysynews_name">{{ $t('member_user_00220') }}</div>
+      <div class="sysynews_span sysynews_time">{{ $t('wap_user_00008') }}</div>
+    </div>
+    <div v-for="row in rows" :key="row.id" class="sysynews_list site-pc">
       <div class="sysynews_span sysynews_name">{{ row.invitee_uid }}</div>
       <div class="sysynews_span sysynews_time">{{ row.points }} · {{ row.created_at_n }}</div>
     </div>
     <div class="site-h5 m_cardbox">
       <MemberSxNewsCard
-        v-for="row in refs?.list || []"
+        v-for="row in rows"
         :key="'h5-' + row.id"
         :title="String(row.invitee_uid)"
         :sub="String(row.points ?? '')"
@@ -58,6 +67,6 @@ const total = computed(() => inferTotal(refs.value))
       />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
-    <p v-if="msg">{{ msg }}</p>
+    <p v-if="msg" class="muted">{{ msg }}</p>
   </MemberPanel>
 </template>

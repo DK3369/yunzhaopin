@@ -28,20 +28,34 @@ useSeoMeta({ title: t('wap_00194') })
 
 <template>
   <MemberPanel :title="data?.paper_name || $t('wap_00194')" :error="error && !isUnauthErr(error) ? error : undefined">
-    <p>
-      <NuxtLink to="/user/eval-logs">{{ $t('wap_00194') }}</NuxtLink>
-    </p>
+    <div class="resume_Prompt_box">
+      <div class="resume_Prompt">
+        <i class="resume_Prompt_icon" />
+        <NuxtLink to="/user/eval-logs" class="cblue">{{ $t('wap_00194') }}</NuxtLink>
+      </div>
+    </div>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <template v-else-if="data">
-      <p>{{ data.score }}</p>
-      <p v-if="data.comment">{{ data.comment }}</p>
-      <p class="muted">{{ data.created_at_n }}</p>
-      <p v-if="data.paper_id">
-        <NuxtLink :to="`/eval/${data.paper_id}`">{{ $t('wap_00194') }}</NuxtLink>
-      </p>
-      <ul v-if="answers.length" class="stack">
-        <li v-for="row in answers" :key="row.k">{{ row.k }} · {{ row.v }}</li>
-      </ul>
+      <div class="wxts_box">
+        <div class="wxts">{{ data.paper_name || $t('wap_00194') }} · {{ data.score }}</div>
+        {{ data.created_at_n }}
+        <p v-if="data.comment">{{ data.comment }}</p>
+      </div>
+      <div v-if="data.paper_id" class="site-pc">
+        <NuxtLink :to="`/eval/${data.paper_id}`" class="uesr_submit">{{ $t('wap_00194') }}</NuxtLink>
+      </div>
+      <div v-for="row in answers" :key="row.k" class="sysynews_list site-pc">
+        <div class="sysynews_span sysynews_name">{{ row.k }}</div>
+        <div class="sysynews_span sysynews_time">{{ row.v }}</div>
+      </div>
+      <div class="site-h5 m_cardbox">
+        <MemberSxNewsCard
+          v-for="row in answers"
+          :key="'h5-' + row.k"
+          :title="row.k"
+          :sub="row.v"
+        />
+      </div>
     </template>
   </MemberPanel>
 </template>

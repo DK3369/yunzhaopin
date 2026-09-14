@@ -90,7 +90,7 @@ useSeoMeta({ title: t('home.intention') })
         </div>
       </template>
       <template #form>
-        <form @submit.prevent="add">
+        <form class="verification_form" @submit.prevent="add">
           <MemberField :label="$t('ui.intention_job')">
             <input v-model="form.name" required />
           </MemberField>

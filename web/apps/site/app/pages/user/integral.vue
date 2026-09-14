@@ -130,9 +130,9 @@ useSeoMeta({ title: t('wap_user_00008') })
       </div>
       <MemberResumeH1 :title="$t('ui.flow')" />
       <div v-for="(row, i) in hist?.list || []" :key="row.id || i" class="site-pc paylist_list">
-        <span class="paylist_span paylist_span_dh">{{ row.item_id || row.id }}</span>
-        <span class="paylist_span paylist_span_money">{{ row.cost ?? row.delta ?? '' }}</span>
-        <span class="paylist_span paylist_span_time">{{ row.created_at || row.ctime }}</span>
+        <span class="paylist_span paylist_dh">{{ row.item_id || row.id }}</span>
+        <span class="paylist_span paylist_money">{{ row.cost ?? row.delta ?? '' }}</span>
+        <span class="paylist_span paylist_time">{{ row.created_at || row.ctime }}</span>
       </div>
       <div class="site-h5 m_cardbox">
         <MemberSxNewsCard

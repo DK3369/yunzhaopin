@@ -196,16 +196,16 @@ useSeoMeta({ title: t('wap_user_00008') })
       </div>
       <MemberResumeH1 :title="$t('wap_01020')" />
       <div v-for="row in consumes?.list || []" :key="row.id" class="site-pc paylist_list">
-        <span class="paylist_span paylist_span_dh">{{ row.detail }}</span>
-        <span class="paylist_span paylist_span_money">{{ row.delta }}</span>
-        <span class="paylist_span paylist_span_time">{{ row.ctime_n }}</span>
+        <span class="paylist_span paylist_dh">{{ row.detail }}</span>
+        <span class="paylist_span paylist_money">{{ row.delta }}</span>
+        <span class="paylist_span paylist_time">{{ row.ctime_n }}</span>
       </div>
       <MemberPager :page="consumePage" :page-size="PAGE_SIZE" :total="Number(consumes?.total || 0)" @update:page="(p) => (consumePage = p)" />
       <MemberResumeH1 :title="$t('wap_user_00170')" />
       <div v-for="row in exchanges?.list || []" :key="row.id" class="site-pc paylist_list">
-        <span class="paylist_span paylist_span_dh">{{ row.item_name || row.item_id }}</span>
-        <span class="paylist_span paylist_span_money">{{ row.cost }}</span>
-        <span class="paylist_span paylist_span_time">{{ row.created_at_n || row.created_at }}</span>
+        <span class="paylist_span paylist_dh">{{ row.item_name || row.item_id }}</span>
+        <span class="paylist_span paylist_money">{{ row.cost }}</span>
+        <span class="paylist_span paylist_time">{{ row.created_at_n || row.created_at }}</span>
       </div>
       <MemberPager :page="exchangePage" :page-size="PAGE_SIZE" :total="Number(exchanges?.total || 0)" @update:page="(p) => (exchangePage = p)" />
       <form class="com_release_box" @submit.prevent="transfer">
@@ -217,9 +217,9 @@ useSeoMeta({ title: t('wap_user_00008') })
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
       </form>
       <div v-for="row in transfers?.list || []" :key="row.id" class="site-pc paylist_list">
-        <span class="paylist_span paylist_span_dh">{{ row.from_uid }} → {{ row.to_uid }}</span>
-        <span class="paylist_span paylist_span_money">{{ row.points }}</span>
-        <span class="paylist_span paylist_span_time">{{ row.note }}</span>
+        <span class="paylist_span paylist_dh">{{ row.from_uid }} → {{ row.to_uid }}</span>
+        <span class="paylist_span paylist_money">{{ row.points }}</span>
+        <span class="paylist_span paylist_time">{{ row.note }}</span>
       </div>
       <MemberPager :page="transferPage" :page-size="PAGE_SIZE" :total="Number(transfers?.total || 0)" @update:page="(p) => (transferPage = p)" />
       <p v-if="msg">{{ msg }}</p>

@@ -56,7 +56,9 @@ useSeoMeta({ title: t('wap_user_00203') })
 
 <template>
   <MemberPanel :title="$t('wap_user_00203')">
-    <div class="resume_Prompt">{{ $t('wap_js_00125') }}</div>
+    <div class="resume_Prompt_box">
+      <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('wap_js_00125') }}</div>
+    </div>
     <form class="resume_fk_box" @submit.prevent="submit">
       <ul class="message_box">
         <li>

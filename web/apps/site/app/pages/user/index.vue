@@ -151,7 +151,7 @@ function labelOf(to: string, key: string) {
     <p class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
-  <div v-else>
+  <div v-else class="member-page member-page-user">
     <div class="site-pc">
       <div v-if="gzhNeed" class="yun_wtbd_tip">
         <div class="yun_wtbd_tip_tit">{{ $t('wap_user_00205') }}</div>

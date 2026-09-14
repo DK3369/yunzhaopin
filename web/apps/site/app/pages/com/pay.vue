@@ -187,15 +187,15 @@ useSeoMeta({ title: t('common_01946') })
     </form>
     <MemberResumeH1 :title="$t('common_02029')" />
     <div v-if="(orders?.list || []).length" class="site-pc paylist_tit">
-      <span class="paylist_span paylist_span_dh">{{ $t('ui.order_no') }}</span>
-      <span class="paylist_span paylist_span_money">{{ $t('wap_00925') }}</span>
-      <span class="paylist_span paylist_span_zt">{{ $t('member_user_00104') }}</span>
+      <span class="paylist_span paylist_dh">{{ $t('ui.order_no') }}</span>
+      <span class="paylist_span paylist_money">{{ $t('wap_00925') }}</span>
+      <span class="paylist_span paylist_zt">{{ $t('member_user_00104') }}</span>
     </div>
     <div v-for="o in orders?.list || []" :key="o.order_no" class="site-pc paylist_list">
-      <span class="paylist_span paylist_span_dh">{{ o.order_no }}</span>
-      <span class="paylist_span paylist_span_money">{{ o.amount_yuan }}</span>
-      <span class="paylist_span paylist_span_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
-      <span class="paylist_span paylist_span_cz">
+      <span class="paylist_span paylist_dh">{{ o.order_no }}</span>
+      <span class="paylist_span paylist_money">{{ o.amount_yuan }}</span>
+      <span class="paylist_span paylist_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
+      <span class="paylist_span paylist_cz">
         <a v-if="canFillBank(o)" href="javascript:;" class="cblue" @click="fillBank(o)">{{ $t('wap_01805') }}</a>
         <a v-if="canCancel(o)" href="javascript:;" class="cblue" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
       </span>

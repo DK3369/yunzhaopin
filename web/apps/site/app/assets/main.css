@@ -776,16 +776,30 @@ html.force-pc .site-h5 {
   .member-shell .yun_m_leftsidebar {
     width: 210px;
     flex: none;
+    float: none;
     position: relative;
     z-index: 20;
   }
+  /* PHP 的 yun_m_rightsidebar 是 float:right；这里已是 flex 项，再 float 会让子级 fltR 把白底裁成 0 高 */
   .member-shell .yun_m_rightsidebar {
     width: 980px;
     flex: none;
+    flex-shrink: 0;
+    float: none;
     background: transparent;
     padding: 0;
-    min-height: 0;
+    min-height: auto;
     overflow: visible;
+  }
+  .member-shell .yun_m_rightsidebar .yun_m_rightbox,
+  .yun_m_rightbox.member-page-body {
+    float: none !important;
+    width: 100% !important;
+  }
+  /* 包住 PHP 的 float 子块（首页 date_box / 列表行），不要 overflow:hidden 以免裁掉左栏「更多」 */
+  .member-page,
+  .member-shell .yun_m_rightsidebar .site-pc {
+    display: flow-root;
   }
   /* H5 才需要 wap_member 盒；PC 不占一层，避免打乱 980 右栏 */
   .member-shell .yun_m_rightsidebar > .wap_member {
@@ -825,17 +839,28 @@ html.force-pc .site-h5 {
     width: 100% !important;
     overflow: visible !important;
     background: transparent;
-    min-height: 0;
+    min-height: auto;
     padding: 0;
     box-sizing: border-box;
   }
+  .member-shell-com .memberSubRight--full .site-pc {
+    display: flow-root;
+  }
   .member-page .user_new_tit::after,
   .member-page .user_new_listtit::after,
+  .member-page .member_right_index_h1::after,
   .member-page .jobnotice_list::after,
-  .member-page .resume_box_list::after {
+  .member-page .resume_box_list::after,
+  .member-page .paylist_tit::after,
+  .member-page .paylist_list::after {
     content: "";
     display: table;
     clear: both;
+  }
+  .member-page .muted {
+    color: #818488;
+    line-height: 1.6;
+    padding: 8px 16px 0;
   }
   .member-page .diggg {
     margin-top: 10px;

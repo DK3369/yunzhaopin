@@ -74,6 +74,9 @@ useSeoMeta({ title: t('wap_user_00340') })
             <div v-if="data?.idcard_status === 1" class="Binding_state">{{ $t('wap_user_00128') }}</div>
             <span v-else class="Binding_state_no">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</span>
           </div>
+          <div class="body_card_job_icon">
+            <img src="/legacy/h5/images/issue_add.png" alt="" />
+          </div>
         </div>
         <NuxtLink to="/user/binding" class="post_body_card_job">
           <div class="body_card_job_box">
@@ -106,22 +109,48 @@ useSeoMeta({ title: t('wap_user_00340') })
       </div>
     </div>
     <form class="site-pc form verification_form" @submit.prevent="save">
-      <MemberResumeH1 :title="$t('wap_01030')" />
-      <p class="muted">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</p>
+      <div class="account_settings_list">
+        <div class="account_settings_list_left">
+          <i class="account_settings_list_left_icon account_settings_list_left_icon_sf" />
+          <div class="account_settings_tit">{{ $t('wap_01030') }}</div>
+          <div class="account_settings_tip">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</div>
+        </div>
+      </div>
       <MemberField :label="$t('wap_01087')">
         <input v-model="idcard" :disabled="data?.idcard_status === 1" class="verification_text" />
       </MemberField>
       <img v-if="idcardPic" :src="mediaUrl(idcardPic)" alt="" width="160" />
       <input v-if="data?.idcard_status !== 1" type="file" accept="image/jpeg,image/png,image/webp" @change="onPic" />
-      <button v-if="data?.idcard_status !== 1" type="submit" class="verification_form_btn">{{ $t('wap_user_00176') }}</button>
+      <input
+        v-if="data?.idcard_status !== 1"
+        type="submit"
+        class="uesr_submit"
+        :value="$t('wap_user_00176')"
+      />
     </form>
-    <form class="site-h5 verification_form" @submit.prevent="save">
-      <MemberField :label="$t('wap_01087')">
-        <input v-model="idcard" :disabled="data?.idcard_status === 1" />
-      </MemberField>
-      <img v-if="idcardPic" :src="mediaUrl(idcardPic)" alt="" width="160" />
-      <input v-if="data?.idcard_status !== 1" type="file" accept="image/jpeg,image/png,image/webp" @change="onPic" />
-      <button v-if="data?.idcard_status !== 1" type="submit" class="verification_form_btn">{{ $t('wap_user_00176') }}</button>
+    <form class="site-h5 wap_member_box" @submit.prevent="save">
+      <div class="com_cardlist">
+        <span class="sfyz_icon">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</span>
+        <div class="sfyz_box">
+          <input v-model="idcard" :disabled="data?.idcard_status === 1" :placeholder="$t('wap_01087')" />
+        </div>
+        <div class="idcard_box">
+          <img
+            v-if="idcardPic"
+            :src="mediaUrl(idcardPic)"
+            alt=""
+            class="idcard_boximg"
+          />
+          <input
+            v-if="data?.idcard_status !== 1"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="idcard_boxfile"
+            @change="onPic"
+          />
+        </div>
+      </div>
+      <button v-if="data?.idcard_status !== 1" type="submit" class="new_m_bth">{{ $t('wap_user_00176') }}</button>
     </form>
     <div class="site-pc account_settings">
       <div class="account_settings_list">

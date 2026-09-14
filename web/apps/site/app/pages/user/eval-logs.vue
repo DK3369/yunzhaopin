@@ -15,12 +15,15 @@ useSeoMeta({ title: t('wap_00194') })
 <template>
   <MemberPanel :title="$t('wap_00194')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <div v-else>
+    <template v-else>
       <div class="job_list_tit">
         <ul>
           <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_00194') }}</a></li>
         </ul>
+      </div>
+      <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
+        <div class="sysynews_span sysynews_name">{{ $t('wap_00194') }}</div>
+        <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
       </div>
       <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
         <div class="sysynews_span sysynews_name">
@@ -39,6 +42,6 @@ useSeoMeta({ title: t('wap_00194') })
         />
       </div>
       <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
-    </div>
+    </template>
   </MemberPanel>
 </template>

@@ -143,6 +143,6 @@ const userWrap = computed<MemberUserWrap>(() => {
   return inferUserWrap(route.path.split('?')[0])
 })
 const bodyClass = computed(() =>
-  kind.value === 'user' ? 'yun_m_rightbox fltR mt20 re member-page-body' : 'com_body member-page-body',
+  kind.value === 'user' ? 'yun_m_rightbox mt20 re member-page-body' : 'com_body member-page-body',
 )
 </script>

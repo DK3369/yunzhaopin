@@ -13,6 +13,8 @@ PHP 对照：`uploads/app/template/member/{user,com}/*.htm`、`uploads/app/templ
 - 两端都有：积分、充值、密码、绑定、消息、意见反馈 `/advice`
 - 列表不用首页 `job-card`；H5 消息/财务/会话用 `MemberSxNewsCard`，不用 `MemberPostedCard` 冒充
 - 不改 PHP 模板；不新开企业导航自定义 `customize`
+- PC 会员壳：左 210 / 右 980、`.site-pc` / `.site-h5` 切皮、打包 `/legacy/pc.css` `/legacy/h5.css`
+- 订单列表列宽：`paylist_span` + `paylist_dh` / `paylist_money` / `paylist_zt`（不要 `paylist_span_dh`）
 
 ## 不同
 
@@ -20,6 +22,7 @@ PHP 对照：`uploads/app/template/member/{user,com}/*.htm`、`uploads/app/templ
 - **首页**：求职 `yun_m_*` + 简历卡 + 推荐岗 `yun_m_index_job*`；H5 `userheader` / `taskbar`。招聘 PC `membRighTops`；H5 `commemberheader` / `comvip_nav` / `taskbar`。
 - **核心对象**：求职=简历/投递/被看；招聘=职位/应聘管线/下载。
 - **顶栏**：登录后求职 PC 是 `user_header`，招聘 PC 是企业 `header_fixed`，都不要前台深色 `pc-topbar`。H5 两端首页都不要再叠蓝条返回。
+- **PC 右栏**：求职 PHP 对左栏 `fltR`；Vue 已是 flex（210+980），壳内取消二次 float，否则白底塌掉。招聘 `com_body` 不 float，右栏 `.site-pc` 同样 `flow-root`。
 - **标题壳**：求职有 `user_new_tit`（在白盒外）与 `member_right_index_h1`（在 `yun_m_rightbox` 内）两套；招聘一律 `newmember_tit`（在 `com_body` 内）。PHP 里隐私/绑定/充值/财务/搜索器/外发/注销/意见反馈虽是 h1 标题，body 仍有 `resume_box_list`；积分/密码/模板没有。
 - **表单**：求职 `verification_*`；招聘 `com_release_*` + `btn_01`。招聘改密对照 `vs.htm`，不要抄求职 `account_settings`。
 - **空态**：求职 `msg_no`；招聘 `com_msg_no*` / H5 `none_position_body*`。

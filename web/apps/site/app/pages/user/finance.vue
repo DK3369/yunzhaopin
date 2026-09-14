@@ -46,7 +46,7 @@ const payTotal = computed(() => inferTotal(pays.value))
   <MemberPanel :title="$t('wap_user_00213')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <template v-else>
-      <div class="financial_management_header">
+      <div class="site-h5 financial_management_header">
         <div class="management_header_card">
           <div class="management_card_data">
             <div class="management_data_top">{{ $t('ui.balance') }}</div>
@@ -63,19 +63,29 @@ const payTotal = computed(() => inferTotal(pays.value))
         </div>
         <NuxtLink to="/user/pay" class="management_card_btn">{{ $t('common_01946') }}</NuxtLink>
       </div>
-      <p>
-        <button type="button" class="integral_list_bth_a site-pc" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
-        <button type="button" class="verification_form_btn site-h5" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
+      <div class="site-pc job_list_tit">
+        <ul>
+          <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('member_user_00239') }}</a></li>
+          <li><NuxtLink to="/user/pay">{{ $t('common_01946') }}</NuxtLink></li>
+          <li><NuxtLink to="/user/integral">{{ $t('wap_user_00008') }}</NuxtLink></li>
+        </ul>
+      </div>
+      <p class="site-pc">
+        <span v-if="signSt?.signed_today" class="integral_list_bth_s">{{ $t('wap_01022') }}</span>
+        <a v-else href="javascript:;" class="integral_list_bth_a" @click="sign">{{ $t('wap_01023') }}</a>
+      </p>
+      <p class="site-h5">
+        <button type="button" class="verification_form_btn" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
       </p>
       <div v-if="(pays?.list || []).length" class="paylist_tit site-pc">
-        <span class="paylist_span paylist_span_dh">{{ $t('ui.detail') }}</span>
-        <span class="paylist_span paylist_span_money">{{ $t('wap_00925') }}</span>
-        <span class="paylist_span paylist_span_time">{{ $t('member_user_00106') }}</span>
+        <span class="paylist_span paylist_dh">{{ $t('ui.detail') }}</span>
+        <span class="paylist_span paylist_money">{{ $t('wap_00925') }}</span>
+        <span class="paylist_span paylist_time">{{ $t('member_user_00106') }}</span>
       </div>
       <div v-for="row in pays?.list || []" :key="row.id" class="paylist_list site-pc">
-        <span class="paylist_span paylist_span_dh">{{ packed(row.detail) }}</span>
-        <span class="paylist_span paylist_span_money">{{ row.delta }}</span>
-        <span class="paylist_span paylist_span_time">{{ row.ctime_n || row.ctime }}</span>
+        <span class="paylist_span paylist_dh">{{ packed(row.detail) }}</span>
+        <span class="paylist_span paylist_money">{{ row.delta }}</span>
+        <span class="paylist_span paylist_time">{{ row.ctime_n || row.ctime }}</span>
       </div>
       <div class="site-h5 m_cardbox">
         <MemberSxNewsCard

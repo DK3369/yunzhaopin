@@ -27,6 +27,9 @@ const total = computed(() => inferTotal(data.value))
 <template>
   <MemberPanel :title="$t('ui.my_reports')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
+    <div class="resume_Prompt_box">
+      <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('wap_js_00125') }}</div>
+    </div>
     <form class="form verification_form" @submit.prevent="submit">
       <MemberField :label="$t('common.job')">
         <select v-model.number="form.target_kind">
@@ -49,6 +52,10 @@ const total = computed(() => inferTotal(data.value))
       </ul>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
+      <div class="sysynews_span sysynews_name">{{ $t('ui.my_reports') }}</div>
+      <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
+    </div>
     <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
       <div class="sysynews_span sysynews_name">#{{ row.target_id }}</div>
       <div class="sysynews_span sysynews_time">{{ row.status }}</div>

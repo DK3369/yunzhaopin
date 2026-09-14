@@ -95,6 +95,11 @@ useSeoMeta({ title: t('wap_user_00338') })
 <template>
   <MemberPanel :title="$t('wap_user_00338')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
+    <div class="job_list_tit site-pc">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('member_user_00220') }}</a></li>
+      </ul>
+    </div>
     <form class="form verification_form" @submit.prevent="doRename">
       <MemberField :label="$t('wap_01097')">
         <input v-model="rename.old_password" type="password" required />
@@ -104,7 +109,11 @@ useSeoMeta({ title: t('wap_user_00338') })
       </MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
     </form>
-    <MemberResumeH1 :title="$t('wap_user_00338')" />
+    <div class="job_list_tit">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_user_00338') }}</a></li>
+      </ul>
+    </div>
     <div v-if="logoutSt?.pending" class="msg_no">
       <p>{{ $t('wap_00749') }}</p>
       <p>{{ $t('wap_00750') }}</p>
@@ -127,14 +136,22 @@ useSeoMeta({ title: t('wap_user_00338') })
         <button type="submit" class="msg_no_sq uesr_submit">{{ $t('member_user_00521') }}</button>
       </form>
     </template>
-    <h2>{{ $t('wap_user_00339') }}</h2>
+    <div class="job_list_tit">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_user_00339') }}</a></li>
+      </ul>
+    </div>
     <form class="form verification_form" @submit.prevent="doSplit">
       <MemberField :label="$t('wap_01097')"><input v-model="split.old_password" type="password" required /></MemberField>
       <MemberField :label="$t('member_user_00220')"><input v-model="split.new_username" required /></MemberField>
       <MemberField :label="$t('wap_01099')"><input v-model="split.new_password" type="password" required /></MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
-    <h2>{{ $t('admin_user_00162') }}</h2>
+    <div class="job_list_tit">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('admin_user_00162') }}</a></li>
+      </ul>
+    </div>
     <form class="form verification_form" @submit.prevent="applyUsertype">
       <MemberField :label="$t('admin_user_00162')">
         <select v-model.number="applyUt">
@@ -146,7 +163,11 @@ useSeoMeta({ title: t('wap_user_00338') })
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="utSt?.pending" class="muted">{{ $t('common.yes') }}</p>
-    <h2>{{ $t('member_user_00058') }}</h2>
+    <div class="job_list_tit">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('member_user_00058') }}</a></li>
+      </ul>
+    </div>
     <div v-if="!sessionList.length" class="msg_no"><p>{{ $t('ui.no_items') }}</p></div>
     <div v-for="row in sessionList" :key="row.id" class="sysynews_list site-pc">
       <div class="sysynews_span sysynews_name">

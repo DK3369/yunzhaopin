@@ -14,6 +14,8 @@
 
 壳只 **render 一次 slot**。右栏宽度对齐 PHP：求职 210 + 980。PC 上 `.yun_m_rightsidebar > .wap_member` 用 `display: contents`，不占一层。
 
+PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经在 **flex** 里，再 `fltR` 会让 flex 项把白底高度裁成 0（整页像没皮）。会员壳里 **不要** `fltR`；`.yun_m_rightbox` 改 `float:none; width:100%`，`.member-page` / 右栏 `.site-pc` 用 `display: flow-root` 包住首页 `yun_m_index_date_box` 等 float 子块。不要 `overflow:hidden`（会裁掉左栏「更多」飞出层）。
+
 `.site-pc` / `.site-h5` **显示时不强制 `display:block`**（`display: revert`），避免打扁 PHP 的 flex（`userheader` / `userparticulars` / `hr_userlist`）。隐藏时才 `display: none`。
 
 ## 顶栏
@@ -78,6 +80,9 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 把简历拆成十几条 WAP 子路由（仍在 `/user/resume` 同页编辑，点小节再展开表单）
 - `.site-pc` / `.site-h5` 显示时写死 `display: block`（会打扁 flex）
 - H5 用首页 `job-card`；消息/咨询用 `MemberPostedCard` 冒充
+- 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
+- 财务 H5 `financial_management_*` 不包 `.site-h5`（PC 会露出一块没皮的头图）
+- 订单列 class 写成 `paylist_span_dh`（PHP 是 `paylist_span paylist_dh` / `paylist_money` / `paylist_zt`）
 
 ## 菜单对照（求职你列的项）
 

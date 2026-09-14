@@ -90,7 +90,8 @@ useSeoMeta({ title: t('member_user_00188') })
       <div class="yun_send_resume_list">
         <div class="yun_send_resume_list_name">&nbsp;</div>
         <div class="yun_send_resume_list_right">
-          <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+          <button type="submit" class="verification_form_btn site-h5">{{ $t('common.submit') }}</button>
+          <input type="submit" class="uesr_submit site-pc" :value="$t('common.submit')" />
         </div>
       </div>
     </form>
