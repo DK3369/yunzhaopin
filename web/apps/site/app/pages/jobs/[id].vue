@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { dictReqLabel, formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 import { seoJoin } from '~/utils/seo'
-import { pushRecentJob } from '~/utils/recentViews'
+import { pushRecentJob, removeRecentJob } from '~/utils/recentViews'
 import { ApiError } from '~/utils/envelope'
 
 const route = useRoute()
@@ -23,6 +23,13 @@ const jobGone = computed(() => {
   const key = apiErrKey(error.value)
   return key === 'job_not_found' || key === 'job_pending'
 })
+watch(
+  jobGone,
+  (gone) => {
+    if (gone) removeRecentJob(id)
+  },
+  { immediate: true },
+)
 const job = computed(
   () => ((data.value as { job?: Record<string, unknown> } | null)?.job || {}) as Record<string, unknown>,
 )

@@ -384,6 +384,9 @@ async fn run_inner(state: &AppState) -> AppResult<RunStats> {
         &stats.error,
     )
     .await;
+    if stats.inserted > 0 || stats.updated > 0 || stats.dropped > 0 {
+        crate::home_service::invalidate_all().await;
+    }
     Ok(stats)
 }
 

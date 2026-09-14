@@ -38,6 +38,14 @@ export function pushRecentJob(item: RecentJob) {
   writeJson(JOB_KEY, next)
 }
 
+export function removeRecentJob(id: number) {
+  if (!id) return
+  writeJson(
+    JOB_KEY,
+    readRecentJobs().filter((x) => x.id !== id),
+  )
+}
+
 export function readRecentResumes(): RecentResume[] {
   return readJson<RecentResume>(RESUME_KEY)
     .filter((x) => Number(x?.uid) > 0 && String(x?.name || ''))
