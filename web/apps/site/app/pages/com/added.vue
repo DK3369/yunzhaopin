@@ -50,22 +50,25 @@ useSeoMeta({ title: t('wap_com_00393') })
       <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
     </p>
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <section v-for="g in groups" :key="g.id">
-      <h2>{{ g.name }}</h2>
-      <article v-for="d in g.details || []" :key="d.id" class="payment_list_text">
-        <p>¥{{ d.service_price }}</p>
-        <ul class="muted">
-          <li v-if="d.job_num">{{ $t('wap_com_00106') }} {{ d.job_num }}</li>
-          <li v-if="d.breakjob_num">{{ $t('wap_com_00029') }} {{ d.breakjob_num }}</li>
-          <li v-if="d.resume">{{ $t('wap_00451') }} {{ d.resume }}</li>
-          <li v-if="d.interview">{{ $t('wap_user_00216') }} {{ d.interview }}</li>
-          <li v-if="d.top_num">{{ $t('wap_com_00238') }} {{ d.top_num }}{{ $t('common_02067') }}</li>
-          <li v-if="d.rec_num">{{ $t('wap_com_00237') }} {{ d.rec_num }}{{ $t('common_02067') }}</li>
-          <li v-if="d.urgent_num">{{ $t('member_com_00613') }} {{ d.urgent_num }}{{ $t('common_02067') }}</li>
-        </ul>
-        <button type="button" @click="buy(d.id)">{{ $t('common.submit') }}</button>
-      </article>
-    </section>
+    <div v-for="g in groups" :key="g.id" class="payment_list">
+      <div class="payment_list_s">{{ g.name }}</div>
+      <div class="payment_list_r">
+        <span v-for="d in g.details || []" :key="d.id" class="payment_list_text">
+          <div class="payment_list_text_n">
+            ¥{{ d.service_price }}
+            <em class="payment_list_text_dw">{{ $t('wap_00925') }}</em>
+          </div>
+          <p v-if="d.job_num" class="muted">{{ $t('wap_com_00106') }} {{ d.job_num }}</p>
+          <p v-if="d.breakjob_num" class="muted">{{ $t('wap_com_00029') }} {{ d.breakjob_num }}</p>
+          <p v-if="d.resume" class="muted">{{ $t('wap_00451') }} {{ d.resume }}</p>
+          <p v-if="d.interview" class="muted">{{ $t('wap_user_00216') }} {{ d.interview }}</p>
+          <p v-if="d.top_num" class="muted">{{ $t('wap_com_00238') }} {{ d.top_num }}{{ $t('common_02067') }}</p>
+          <p v-if="d.rec_num" class="muted">{{ $t('wap_com_00237') }} {{ d.rec_num }}{{ $t('common_02067') }}</p>
+          <p v-if="d.urgent_num" class="muted">{{ $t('member_com_00613') }} {{ d.urgent_num }}{{ $t('common_02067') }}</p>
+          <input type="button" class="payment_list_other" :value="$t('common.submit')" @click="buy(d.id)" />
+        </span>
+      </div>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

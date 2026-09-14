@@ -19,9 +19,12 @@
       </div>
     </div>
     <slot name="h5Tabs" />
-    <div :class="kind === 'user' ? 'yun_m_rightbox fltR mt20 re member-page-body' : 'com_body member-page-body'">
+    <div :class="bodyClass">
       <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
-      <div v-if="kind === 'user'" class="resume_box_list">
+      <div v-if="kind === 'user' && userShell === 'list'" class="resume_box_list">
+        <slot />
+      </div>
+      <div v-else-if="kind === 'user' && userShell === 'resume'" class="user_resume_list">
         <slot />
       </div>
       <slot v-else />
@@ -46,6 +49,24 @@
 </template>
 
 <script setup lang="ts">
+export type MemberUserShell = 'list' | 'resume' | 'plain'
+
+const USER_LIST_PREFIXES = [
+  '/user/applications',
+  '/user/interviews',
+  '/user/views',
+  '/user/favorites',
+  '/user/follows',
+  '/user/looks',
+  '/user/messages',
+  '/user/consults',
+  '/user/parts',
+  '/user/inbox',
+  '/user/reports',
+  '/user/eval-logs',
+  '/user/recommend',
+]
+
 const props = defineProps<{
   title: string
   sub?: string
@@ -55,7 +76,20 @@ const props = defineProps<{
   emptyTo?: string
   emptyAction?: string
   kind?: 'user' | 'com'
+  shell?: MemberUserShell
 }>()
 const route = useRoute()
 const kind = computed(() => props.kind || (route.path.startsWith('/com') ? 'com' : 'user'))
+
+function inferUserShell(path: string): MemberUserShell {
+  const p = path.split('?')[0]
+  if (p === '/user/resume' || p.startsWith('/user/resume/') || p === '/user/expects') return 'resume'
+  if (USER_LIST_PREFIXES.some((x) => p === x || p.startsWith(`${x}/`))) return 'list'
+  return 'plain'
+}
+
+const userShell = computed(() => props.shell || inferUserShell(route.path))
+const bodyClass = computed(() =>
+  kind.value === 'user' ? 'yun_m_rightbox fltR mt20 re member-page-body' : 'com_body member-page-body',
+)
 </script>

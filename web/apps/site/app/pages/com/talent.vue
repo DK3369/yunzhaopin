@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { isUnauthErr, mediaUrl } from '~/utils/site'
 
 type PoolRow = {
   id: number
@@ -104,6 +104,7 @@ useSeoMeta({ title: t('member_com_00597') })
         time: [r.education_n, r.exp_n].filter(Boolean).join(' · '),
         to: `/resumes/${r.uid}`,
         info: [String(r.education_n || ''), String(r.exp_n || '')].filter(Boolean),
+        photo: r.photo ? mediaUrl(String(r.photo)) : undefined,
       }))"
     >
       <template #pc-acts="{ row }">
@@ -132,8 +133,10 @@ useSeoMeta({ title: t('member_com_00597') })
         <div class="hr_userlist_czicon" @click="remove(list.find((x) => x.id === Number(row.key))!)">{{ $t('common.delete') }}</div>
       </template>
     </MemberHrResumeRows>
-    <form v-if="remarkFor" class="form verification_form" @submit.prevent="saveRemark">
-      <MemberField :label="$t('wap_00807')" area><textarea v-model="remarkText" rows="3" /></MemberField>
+    <form v-if="remarkFor" class="com_release_box" @submit.prevent="saveRemark">
+      <ul>
+        <MemberReleaseRow :label="$t('wap_00807')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
       <button type="button" class="verification_form_btn" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
     </form>

@@ -15,16 +15,21 @@ useSeoMeta({ title: t('admin_user_00263') })
 <template>
   <MemberPanel :title="$t('admin_user_00263')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
-    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
-      <div class="user_new_job">{{ $t('common.company') }}</div>
-      <div class="user_new_time">{{ $t('member_user_00104') }}</div>
+    <div class="job_list_tit">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('admin_user_00263') }}</a></li>
+      </ul>
     </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job">
-        <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`" class="user_new_jobname">{{ row.uname || row.com_id }}</NuxtLink>
-        <span v-else class="user_new_jobname">{{ row.uname || row.com_id || row.id }}</span>
+    <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
+      <div class="sysynews_span sysynews_name">{{ $t('common.company') }}</div>
+      <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
+    </div>
+    <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">
+        <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`">{{ row.uname || row.com_id }}</NuxtLink>
+        <span v-else>{{ row.uname || row.com_id || row.id }}</span>
       </div>
-      <div class="user_new_time">{{ row.datetime_n }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
     </div>
     <div class="site-h5 m_cardbox">
       <div class="m_cardbgbox">

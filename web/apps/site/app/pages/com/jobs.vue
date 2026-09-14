@@ -13,6 +13,9 @@ type JobRow = {
   xsdate?: number
   rec_time?: number
   urgent_time?: number
+  minsalary?: number
+  maxsalary?: number
+  jobhits?: number
 }
 
 const api = useApi()
@@ -316,6 +319,7 @@ const jobTabs = computed(() => [
         </div>
         <div class="position_body_card_bom">
           <span>{{ jobPhase(job) }}</span>
+          <span v-if="job.minsalary || job.maxsalary">{{ job.minsalary || '' }}-{{ job.maxsalary || '' }}</span>
           <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
         </div>
       </div>

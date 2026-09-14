@@ -78,19 +78,23 @@ useSeoMeta({ title: t('ui.com_banner') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="form verification_form" @submit.prevent="save">
-        <MemberField :label="$t('ui.image')"><input v-model="form.pic" required /></MemberField>
-        <MemberField :label="$t('ui.link')"><input v-model="form.link" /></MemberField>
-        <MemberField :label="$t('ui.sort')"><input v-model.number="form.sort" type="number" min="0" /></MemberField>
+      <form class="com_release_box" @submit.prevent="save">
+        <ul>
+          <MemberReleaseRow :label="$t('ui.image')" required><input v-model="form.pic" required class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.link')"><input v-model="form.link" class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.sort')"><input v-model.number="form.sort" type="number" min="0" /></MemberReleaseRow>
+        </ul>
         <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
         <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
       </form>
       <p v-if="msg">{{ msg }}</p>
-      <div v-for="row in list" :key="row.id" class="user_resume_box">
-        <img v-if="row.pic" :src="row.pic_n || mediaUrl(row.pic)" alt="" width="240" />
-        <p class="muted">{{ row.link }}</p>
-        <a href="javascript:;" class="cblue" @click="edit(row)">{{ $t('common.edit') }}</a>
-        <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+      <div v-for="row in list" :key="row.id" class="combanner_box">
+        <img v-if="row.pic" :src="row.pic_n || mediaUrl(row.pic)" alt="" width="300" />
+        <div class="combanner_box_tip">{{ row.link }}</div>
+        <div class="combanner_box_b">
+          <a href="javascript:;" class="combanner_box_bth" @click="edit(row)">{{ $t('common.edit') }}</a>
+          <a href="javascript:;" class="combanner_box_bth" @click="remove(row)">{{ $t('common.delete') }}</a>
+        </div>
       </div>
     </template>
     <p>

@@ -38,19 +38,19 @@ const total = computed(() => inferTotal(data.value))
         </ul>
       </div>
     </div>
-    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
-      <div class="user_new_job">{{ $t('common.company') }}</div>
-      <div class="user_new_time">{{ $t('member_user_00104') }}</div>
-      <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
+    <div v-if="(data?.list || []).length" class="look_myresume_tit site-pc">
+      <div class="look_myresume_span look_myresume_comname">{{ $t('common.company') }}</div>
+      <div class="look_myresume_span look_myresume_resumetime">{{ $t('member_user_00104') }}</div>
+      <div class="look_myresume_span look_myresume_resumecz">{{ $t('member_user_00048') }}</div>
     </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job">
+    <div v-for="row in data?.list || []" :key="row.id" class="look_myresume_list site-pc">
+      <div class="look_myresume_span look_myresume_comname">
         <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`" class="user_new_jobname">{{ row.com_name || row.com_id }}</NuxtLink>
         <span v-else class="user_new_jobname">{{ row.com_name || row.id }}</span>
-        <div class="user_new_comname look_myresume_comxz">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></div>
+        <div class="look_myresume_comxz">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></div>
       </div>
-      <div class="user_new_time">{{ row.datetime_n }}</div>
-      <div class="user_new_cz">
+      <div class="look_myresume_span look_myresume_resumetime">{{ row.datetime_n }}</div>
+      <div class="look_myresume_span look_myresume_resumecz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>

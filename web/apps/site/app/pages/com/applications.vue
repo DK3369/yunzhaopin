@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { isUnauthErr, mediaUrl } from '~/utils/site'
 
 type Row = {
   id: number
@@ -12,6 +12,12 @@ type Row = {
   job_name?: string
   uname?: string
   apply_url?: string
+  photo?: string
+  sex_n?: string
+  exp_n?: string
+  edu_n?: string
+  age?: number | string
+  salary?: string
 }
 type Counts = {
   total: number
@@ -146,6 +152,9 @@ function browseLabel(s?: number) {
   }
   return map[Number(s)] ?? String(s ?? '')
 }
+function rowInfo(row: Row) {
+  return [row.sex_n, row.exp_n, row.edu_n, row.age ? String(row.age) : ''].filter(Boolean) as string[]
+}
 
 // ==================== Remark ====================
 
@@ -277,14 +286,32 @@ useSeoMeta({ title: t('member_com_00454') })
           <th><label><input v-model="allChecked" type="checkbox" /> {{ $t('wap_js_00074') }}</label></th>
           <th>{{ $t('wap_00456') }}</th>
           <th>{{ $t('wap_com_00288') }}</th>
-          <th>{{ $t('member_user_00106') }}</th>
           <th>{{ $t('member_user_00048') }}</th>
         </tr>
         <tr v-for="row in list" :key="row.id">
-          <td><input v-model="selected" type="checkbox" :value="row.id" /></td>
-          <td><a href="javascript:;" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a></td>
-          <td>{{ row.job_name || row.job_id }}</td>
-          <td>{{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</td>
+          <td>
+            <span class="newcom_user_infoheckb">
+              <input v-model="selected" type="checkbox" class="newcom_user_infoheck" :value="row.id" />
+            </span>
+          </td>
+          <td>
+            <div class="newcom_user_info">
+              <div v-if="row.photo" class="newcom_user_pic">
+                <img :src="mediaUrl(row.photo)" alt="" />
+              </div>
+              <div>
+                <a href="javascript:;" class="newcom_user_name" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a>
+                <span class="newcom_user_zt">{{ browseLabel(row.is_browse) }}</span>
+                <span v-if="row.invited" class="hr_yyy">{{ $t('wap_user_00216') }}</span>
+                <div v-if="rowInfo(row).length" class="newcom_user_infop">{{ rowInfo(row).join(' · ') }}</div>
+                <div v-if="row.salary">{{ $t('wap_00925') }}：{{ row.salary }}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div>{{ $t('wap_00787') }}<a href="javascript:;" class="newcom_user_td">{{ row.job_name || row.job_id }}</a></div>
+            <div class="com_received_tdtime">{{ row.datetime_n }}</div>
+          </td>
           <td>
             <a href="javascript:;" class="cblue" @click="pick(row)">{{ $t('wap_com_00046') }}</a>
             <a href="javascript:;" class="cblue" @click="openRemark(row)">{{ $t('member_user_00242') }}</a>
@@ -304,11 +331,13 @@ useSeoMeta({ title: t('member_com_00454') })
             v-for="row in list"
             :key="'h5-' + row.id"
             :name="row.uname || String(row.uid)"
+            :photo="row.photo ? mediaUrl(row.photo) : undefined"
             :job="row.job_name"
             :time="row.datetime_n"
             :state-text="browseLabel(row.is_browse)"
             :is-browse="row.is_browse"
             :invited="row.invited"
+            :info="rowInfo(row)"
             @open="openResume(row)"
           >
             <div class="hr_userlist_czicon" @click="pick(row)">{{ $t('wap_com_00046') }}</div>
@@ -316,10 +345,10 @@ useSeoMeta({ title: t('member_com_00454') })
           </MemberHrUserCard>
         </div>
       </div>
-      <form v-if="remarkFor" class="form verification_form" @submit.prevent="saveRemark">
-        <MemberField :label="$t('member_user_00242')" area>
-          <textarea v-model="remarkText" rows="3" />
-        </MemberField>
+      <form v-if="remarkFor" class="com_release_box" @submit.prevent="saveRemark">
+        <ul>
+          <MemberReleaseRow :label="$t('member_user_00242')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
+        </ul>
         <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
         <button type="button" class="verification_form_btn" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
       </form>
@@ -327,14 +356,20 @@ useSeoMeta({ title: t('member_com_00454') })
     </template>
 
     <h2>{{ $t('wap_com_00046') }}</h2>
-    <form class="form verification_form" @submit.prevent="sendInvite()">
-      <p v-if="invite.seeker_uid" class="muted">{{ invite.seeker_uid }} · {{ invite.job_id }}</p>
-      <MemberField :label="$t('wap_00040')"><input v-model="invite.intertime" type="datetime-local" required /></MemberField>
-      <MemberField :label="$t('wap_user_00243')"><input v-model="invite.address" required /></MemberField>
-      <MemberField :label="$t('common_02051')"><input v-model="invite.linkman" /></MemberField>
-      <MemberField :label="$t('common.phone')"><input v-model="invite.linktel" required /></MemberField>
-      <MemberField :label="$t('wap_user_00102')" area><textarea v-model="invite.content" rows="3" /></MemberField>
-      <label><input v-model="invite.save_yqmb" type="checkbox" /> {{ $t('member_com_00512') }}</label>
+    <form class="com_release_box" @submit.prevent="sendInvite()">
+      <ul>
+        <MemberReleaseRow v-if="invite.seeker_uid" :label="$t('common.resume')">
+          <span>{{ invite.seeker_uid }} · {{ invite.job_id }}</span>
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_00040')" required><input v-model="invite.intertime" type="datetime-local" required /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00243')" required><input v-model="invite.address" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common_02051')"><input v-model="invite.linkman" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common.phone')" required><input v-model="invite.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00102')" area><textarea v-model="invite.content" rows="3" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('member_com_00512')">
+          <input v-model="invite.save_yqmb" type="checkbox" />
+        </MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
   </MemberPanel>

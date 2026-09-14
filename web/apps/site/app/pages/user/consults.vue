@@ -85,7 +85,7 @@ useSeoMeta({ title: t('member_user_00115') })
             <div class="Posted_bom_time">{{ row.datetime_n }}</div>
           </div>
           <p>{{ row.content }}</p>
-          <p v-if="row.reply">{{ $t('wap_user_00155') }}：{{ row.reply }}</p>
+          <p v-if="row.reply" class="job_Consulting_com">{{ $t('wap_user_00155') }}：{{ row.reply }}</p>
         </div>
       </div>
     </div>

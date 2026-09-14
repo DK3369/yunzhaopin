@@ -154,6 +154,9 @@ function labelOf(to: string, key?: string) {
           <div class="membSubGuaTwo">
             <ul>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('member_com_00134') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ counts?.online ?? 0 }}</span>
@@ -161,6 +164,9 @@ function labelOf(to: string, key?: string) {
                 </div>
               </li>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('member_com_00136') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ counts?.breakjob_num ?? 0 }}</span>
@@ -168,6 +174,9 @@ function labelOf(to: string, key?: string) {
                 </div>
               </li>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('member_com_00137') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ dash?.interviews_sent ?? 0 }}</span>
@@ -175,6 +184,9 @@ function labelOf(to: string, key?: string) {
                 </div>
               </li>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('member_com_00135') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ dash?.resume_downloads ?? 0 }}</span>
@@ -182,6 +194,9 @@ function labelOf(to: string, key?: string) {
                 </div>
               </li>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('wap_user_00209') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ counts?.top_num ?? 0 }}</span>
@@ -189,6 +204,9 @@ function labelOf(to: string, key?: string) {
                 </div>
               </li>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('wap_com_00041') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ counts?.rec_num ?? 0 }}</span>
@@ -196,6 +214,9 @@ function labelOf(to: string, key?: string) {
                 </div>
               </li>
               <li>
+                <div class="twoDivimg">
+                  <img src="/legacy/member/com/tuayuan.png" alt="" />
+                </div>
                 <div class="twoDivTite"><span>{{ $t('wap_com_00043') }}</span></div>
                 <div class="twoDivNum">
                   <span>{{ counts?.urgent_num ?? 0 }}</span>
@@ -205,15 +226,6 @@ function labelOf(to: string, key?: string) {
             </ul>
           </div>
         </div>
-      </div>
-      <div class="yun_m_rightbox">
-        <p>
-          <NuxtLink to="/com/jobs/new">{{ $t('wap_00322') }}</NuxtLink>
-          ·
-          <NuxtLink to="/com/applications">{{ $t('wap_com_00105') }}</NuxtLink>
-          ·
-          <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
-        </p>
       </div>
     </div>
     <div class="site-h5">
@@ -344,6 +356,7 @@ function labelOf(to: string, key?: string) {
               <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
             </div>
             <div class="taskbar_nav">
+              <div class="taskbar_nav_word">{{ $t('common.more') }}</div>
               <div class="taskbar_nav_img">
                 <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
               </div>

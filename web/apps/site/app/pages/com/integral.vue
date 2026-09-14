@@ -208,10 +208,12 @@ useSeoMeta({ title: t('wap_user_00008') })
         <span class="paylist_span paylist_span_time">{{ row.created_at_n || row.created_at }}</span>
       </div>
       <MemberPager :page="exchangePage" :page-size="PAGE_SIZE" :total="Number(exchanges?.total || 0)" @update:page="(p) => (exchangePage = p)" />
-      <form class="form verification_form" @submit.prevent="transfer">
-        <MemberField label="uid"><input v-model.number="toUid" type="number" min="1" /></MemberField>
-        <MemberField :label="$t('wap_user_00008')"><input v-model.number="points" type="number" min="1" /></MemberField>
-        <MemberField :label="$t('ui.desc')"><input v-model="note" /></MemberField>
+      <form class="com_release_box" @submit.prevent="transfer">
+        <ul>
+          <MemberReleaseRow label="uid"><input v-model.number="toUid" type="number" min="1" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_user_00008')"><input v-model.number="points" type="number" min="1" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.desc')"><input v-model="note" class="com_release_textnew_text" /></MemberReleaseRow>
+        </ul>
         <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
       </form>
       <div v-for="row in transfers?.list || []" :key="row.id" class="site-pc paylist_list">

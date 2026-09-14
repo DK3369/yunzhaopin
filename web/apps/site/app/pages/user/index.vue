@@ -129,10 +129,13 @@ function labelOf(to: string, key: string) {
   </section>
   <div v-else>
     <div class="site-pc">
-        <p v-if="gzhNeed" class="muted" style="padding: 8px 0">
-          {{ $t('common_00655') }}
+      <div v-if="gzhNeed" class="yun_wtbd_tip">
+        <div class="yun_wtbd_tip_tit">{{ $t('wap_user_00205') }}</div>
+        <div class="yun_wtbd_tip_p">
+          {{ $t('wap_user_00191') }}
           <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
-        </p>
+        </div>
+      </div>
         <div class="yun_m_index_date_box">
         <div class="yun_m_index_date_box_c">
           <div class="yun_m_index_date_list">
@@ -236,6 +239,15 @@ function labelOf(to: string, key: string) {
       <p v-if="msg" class="muted">{{ msg }}</p>
     </div>
     <div class="site-h5">
+      <div v-if="missingBits.length" class="heiseVipDao">
+        <div class="vip_nav">
+          <div class="vip_nav_img">
+            <img src="/legacy/h5/images/inform.png" alt="" width="100%" height="100%" />
+          </div>
+          <i class="vip_nav_word">{{ missingBits.map(missingLabel).join(' · ') }}</i>
+          <NuxtLink to="/user/resume" class="vip_nav_remind">{{ $t('wap_user_00197') }}</NuxtLink>
+        </div>
+      </div>
       <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
         {{ $t('common_00655') }}
         <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
@@ -355,6 +367,7 @@ function labelOf(to: string, key: string) {
               <div class="taskbar_datum_word">{{ labelOf(item.to, item.key) }}</div>
             </div>
             <div class="taskbar_nav">
+              <div class="taskbar_nav_word">{{ $t('common.more') }}</div>
               <div class="taskbar_nav_img">
                 <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
               </div>

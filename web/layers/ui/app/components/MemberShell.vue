@@ -39,7 +39,9 @@
         </div>
       </div>
       <div class="yun_m_rightsidebar">
-        <slot />
+        <div class="wap_member member-shell-slot">
+          <slot />
+        </div>
       </div>
     </template>
     <div v-else class="memberSubject">

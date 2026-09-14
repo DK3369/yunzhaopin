@@ -107,10 +107,12 @@ async function remove(row: Row) {
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="form verification_form" @submit.prevent="save">
-        <MemberField :label="$t('wap_user_00103')"><input v-model="form.title" required /></MemberField>
-        <MemberField :label="$t('ui.image')"><input v-model="form.file" /></MemberField>
-        <MemberField :label="$t('ui.body')" area><textarea v-model="form.body" required rows="6" /></MemberField>
+      <form class="com_release_box" @submit.prevent="save">
+        <ul>
+          <MemberReleaseRow :label="$t('wap_user_00103')" required><input v-model="form.title" required class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.image')"><input v-model="form.file" class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.body')" area><textarea v-model="form.body" required rows="6" /></MemberReleaseRow>
+        </ul>
         <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
         <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
       </form>

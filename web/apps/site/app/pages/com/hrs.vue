@@ -68,8 +68,10 @@ useSeoMeta({ title: t('ui.hr') })
   <MemberPanel :title="$t('ui.hr')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
-      <form class="form verification_form" @submit.prevent="createCode">
-        <MemberField :label="$t('ui.desc')"><input v-model="note" /></MemberField>
+      <form class="com_release_box" @submit.prevent="createCode">
+        <ul>
+          <MemberReleaseRow :label="$t('ui.desc')"><input v-model="note" class="com_release_textnew_text" /></MemberReleaseRow>
+        </ul>
         <button type="submit" class="verification_form_btn">{{ $t('ui.add') }}</button>
       </form>
       <table class="com_table site-pc">
@@ -85,19 +87,21 @@ useSeoMeta({ title: t('ui.hr') })
         </tr>
       </table>
       <MemberResumeH1 :title="$t('ui.hr')" />
-      <div v-for="row in hrs || []" :key="row.hr_uid" class="attention_enterprises_list site-pc">
-        <div class="attention_enterprises_span attention_enterprises_name">{{ row.hr_uid }} · {{ row.role }}</div>
-        <div class="attention_enterprises_span attention_enterprises_time">{{ row.joined_at_n }}</div>
-        <div class="attention_enterprises_span attention_enterprises_cz">
+      <div v-for="row in hrs || []" :key="row.hr_uid" class="sysynews_list site-pc">
+        <div class="sysynews_span sysynews_name">{{ row.hr_uid }} · {{ row.role }}</div>
+        <div class="sysynews_span sysynews_time">{{ row.joined_at_n }}</div>
+        <div class="sysynews_span sysynews_cz">
           <a href="javascript:;" class="cblue" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</a>
         </div>
       </div>
-      <form class="form verification_form" @submit.prevent="join">
-        <MemberField><input v-model="joinCode" required /></MemberField>
+      <form class="com_release_box" @submit.prevent="join">
+        <ul>
+          <MemberReleaseRow :label="$t('ui.hr')" required><input v-model="joinCode" required class="com_release_textnew_text" /></MemberReleaseRow>
+        </ul>
         <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
       </form>
-      <div v-for="co in companies || []" :key="co.company_uid" class="attention_enterprises_list site-pc">
-        <div class="attention_enterprises_span attention_enterprises_name">{{ co.company_uid }} · {{ co.role }}</div>
+      <div v-for="co in companies || []" :key="co.company_uid" class="sysynews_list site-pc">
+        <div class="sysynews_span sysynews_name">{{ co.company_uid }} · {{ co.role }}</div>
       </div>
       <p v-if="msg">{{ msg }}</p>
     </template>

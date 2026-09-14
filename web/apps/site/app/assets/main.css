@@ -24,7 +24,7 @@ html.force-pc {
   font-size: 16px;
 }
 html.force-pc .site-pc {
-  display: block;
+  display: revert;
 }
 html.force-pc .site-h5 {
   display: none !important;
@@ -207,7 +207,7 @@ html.force-pc .site-h5 {
 
 @media (min-width: 1200px) {
   .site-pc {
-    display: block;
+    display: revert;
   }
   .site-h5 {
     display: none !important;
@@ -458,7 +458,7 @@ html.force-pc .site-h5 {
     display: none !important;
   }
   .site-h5 {
-    display: block;
+    display: revert;
   }
   a.mqnewlist.site-h5 {
     display: inline-block;
@@ -787,6 +787,10 @@ html.force-pc .site-h5 {
     min-height: 0;
     overflow: visible;
   }
+  /* H5 才需要 wap_member 盒；PC 不占一层，避免打乱 980 右栏 */
+  .member-shell .yun_m_rightsidebar > .wap_member {
+    display: contents;
+  }
   .member-shell .member-nav-more {
     position: relative;
     z-index: 100;
@@ -904,6 +908,69 @@ html.force-pc .site-h5 {
   }
   .member-page .form button {
     margin: 8px 8px 0 0;
+  }
+  .com_release_box {
+    float: none;
+    width: auto;
+    background: #fff;
+    padding: 10px 20px 24px;
+    box-sizing: border-box;
+  }
+  .com_release_box > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .com_release_box .com_release_textnew input,
+  .com_release_box .com_release_textnew select,
+  .com_release_box .com_release_textnew textarea,
+  .yun_m_rightsidebar .com_release_box .com_release_textnew input,
+  .yun_m_rightsidebar .com_release_box .com_release_textnew select,
+  .yun_m_rightsidebar .com_release_box .com_release_textnew textarea {
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 0;
+    height: 38px;
+    line-height: 38px;
+    box-sizing: border-box;
+    background: transparent;
+  }
+  .com_release_box .com_release_textnew textarea,
+  .com_release_textnew--area textarea {
+    height: auto;
+    min-height: 88px;
+    line-height: 1.5;
+    padding: 8px;
+  }
+  .com_release_box .com_release_bth,
+  .com_release_box .verification_form_btn {
+    margin-top: 16px;
+  }
+  .yun_resume_joblist {
+    position: relative;
+    background: #fff;
+    margin-bottom: 12px;
+    padding: 0 20px 16px;
+  }
+  .yun_resume_joblist .yun_resume_handle {
+    position: absolute;
+    right: 20px;
+    top: 12px;
+  }
+  .member-resume-section-form {
+    background: #fff;
+    padding: 8px 20px 20px;
+    margin-bottom: 12px;
+  }
+  .newcom_user_pic img {
+    width: 58px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: 4px;
   }
   .yun_new_top .lang-switch,
   .yun_new_top .lang-switch a {
@@ -1611,6 +1678,48 @@ html.force-pc .site-h5 {
     margin: 0.32rem 0 0;
     border: 0;
     cursor: pointer;
+  }
+  .member-shell .yun_m_rightsidebar > .wap_member {
+    display: block;
+    width: 100%;
+  }
+  .member-resume-section-form {
+    background: #fff;
+    margin: 0.16rem 0.24rem 0.32rem;
+    padding: 0.24rem;
+    border-radius: 0.213333rem;
+  }
+  .com_release_box {
+    background: #fff;
+    margin: 0.16rem 0.24rem;
+    padding: 0.24rem;
+    border-radius: 0.213333rem;
+  }
+  .com_release_box > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .com_release_box .com_release_name {
+    float: none;
+    width: auto;
+    padding: 0.16rem 0 0.08rem;
+  }
+  .com_release_box .com_release_textnew {
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .com_release_box .com_release_textnew input,
+  .com_release_box .com_release_textnew select,
+  .com_release_box .com_release_textnew textarea {
+    width: 100%;
+    display: block;
+    border: 0;
+    height: auto;
+    min-height: 0.88rem;
+    padding: 0.16rem 0.2rem;
+    box-sizing: border-box;
   }
   a.com_set_list,
   a.post_body_card_job {

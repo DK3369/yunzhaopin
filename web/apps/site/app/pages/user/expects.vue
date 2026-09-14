@@ -61,37 +61,46 @@ useSeoMeta({ title: t('home.intention') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('home.intention')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(list || []).length">
+  <MemberPanel :title="$t('home.intention')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="false">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
-    <div v-for="row in list" :key="row.id" class="user_resume_box site-pc">
-      <div class="user_resume_info">
-        <div class="user_resume_name">{{ row.name }}</div>
-        <div class="user_resume_p">{{ row.job_classid_n }} · {{ row.city_classid_n }}</div>
-      </div>
-      <div class="user_resume_cz">
-        <a href="javascript:;" class="user_resume_cz_a" @click="save(row)">{{ $t('common.save') }}</a>
-        <a href="javascript:;" class="user_resume_cz_a" @click="remove(row.id)">{{ $t('common.delete') }}</a>
-      </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in list"
-          :key="'h5-' + row.id"
-          :title="row.name"
-          :sub="`${row.job_classid_n || ''} ${row.city_classid_n || ''}`"
-        />
-      </div>
-    </div>
-    <form class="form verification_form" @submit.prevent="add">
-      <MemberField :label="$t('ui.intention_job')">
-        <input v-model="form.name" required />
-      </MemberField>
-      <MemberField :label="$t('ui.expect_salary')">
-        <input v-model.number="form.salary" type="number" />
-      </MemberField>
-      <button type="submit" class="verification_form_btn">{{ $t('ui.add_expect') }}</button>
-    </form>
+    <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" :open="true" @toggle="() => {}">
+      <template #pc>
+        <div v-for="row in list" :key="row.id" class="user_resume_box">
+          <div class="user_resume_info">
+            <div class="user_resume_name">{{ row.name }}</div>
+            <div class="user_resume_p">{{ row.job_classid_n }} · {{ row.city_classid_n }}</div>
+          </div>
+          <div class="user_resume_cz">
+            <a href="javascript:;" class="user_resume_cz_a" @click="save(row)">{{ $t('common.save') }}</a>
+            <a href="javascript:;" class="user_resume_cz_a" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+          </div>
+        </div>
+      </template>
+      <template #h5>
+        <div v-for="row in list" :key="'h5-' + row.id" class="resume_min_body_cord_intention">
+          <div class="cord_intention_bom">
+            <div class="data_left_condition">
+              <ul>
+                <li>{{ row.name }}</li>
+                <li v-if="row.job_classid_n">{{ row.job_classid_n }}</li>
+                <li v-if="row.city_classid_n">{{ row.city_classid_n }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template #form>
+        <form @submit.prevent="add">
+          <MemberField :label="$t('ui.intention_job')">
+            <input v-model="form.name" required />
+          </MemberField>
+          <MemberField :label="$t('ui.expect_salary')">
+            <input v-model.number="form.salary" type="number" />
+          </MemberField>
+          <button type="submit" class="verification_form_btn">{{ $t('ui.add_expect') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

@@ -78,20 +78,22 @@ useSeoMeta({ title: t('wap_com_00404') })
 <template>
   <MemberPanel :title="$t('wap_com_00404')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="form verification_form" @submit.prevent="save">
-      <MemberField :label="$t('wap_00529')"><input v-model="form.name" required /></MemberField>
-      <MemberField :label="$t('wap_user_00102')" area><textarea v-model="form.content" rows="4" required /></MemberField>
-      <MemberField :label="$t('ui.interview_place')"><input v-model="form.address" required /></MemberField>
-      <MemberField :label="$t('wap_01431')"><input v-model="form.linkman" required /></MemberField>
-      <MemberField :label="$t('ui.linkphone')"><input v-model="form.linktel" required /></MemberField>
+    <form class="com_release_box" @submit.prevent="save">
+      <ul>
+        <MemberReleaseRow :label="$t('wap_00529')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00102')" area required><textarea v-model="form.content" rows="4" required /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.interview_place')" required><input v-model="form.address" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_01431')" required><input v-model="form.linkman" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.linkphone')" required><input v-model="form.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
       <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <div v-for="row in list" :key="row.id" class="attention_enterprises_list site-pc">
-      <div class="attention_enterprises_span attention_enterprises_name">{{ row.name }}</div>
-      <div class="attention_enterprises_span attention_enterprises_time">{{ row.address }} · {{ row.linkman }}</div>
-      <div class="attention_enterprises_span attention_enterprises_cz">
+    <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">{{ row.name }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.address }} · {{ row.linkman }}</div>
+      <div class="sysynews_span sysynews_cz">
         <a href="javascript:;" class="cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
         <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
       </div>

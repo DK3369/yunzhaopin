@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mediaUrl } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
@@ -13,6 +15,9 @@ const rows = computed(() =>
     time: String(row.datetime_n || ''),
     to: `/resumes/${row.eid || row.uid}`,
     downloaded: true,
+    photo: row.photo ? mediaUrl(String(row.photo)) : undefined,
+    info: [row.sex_n, row.edu_n, row.exp_n].map((x) => String(x || '')).filter(Boolean),
+    salary: row.salary ? String(row.salary) : undefined,
   })),
 )
 const total = computed(() => inferTotal(data.value))

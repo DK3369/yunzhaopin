@@ -26,8 +26,15 @@ const total = computed(() => inferTotal(refs.value))
 
 <template>
   <MemberPanel :title="$t('ui.invite_reg')">
-    <div class="yun_usermember_integral_box site-h5">
-      <div class="yun_usermember_integral_box_h1">{{ $t('ui.invite_reg') }}</div>
+    <div class="site-h5 yun_usermember_financebg">
+      <div class="yun_usermember_integral">
+        {{ $t('ui.invite_reg') }}
+        <span class="yun_usermember_integral_n">{{ summary?.count ?? 0 }}</span>
+      </div>
+    </div>
+    <div class="site-pc member_right_index_h1 fltL">
+      <span class="member_right_h1_span fltL">{{ $t('ui.invite_reg') }}</span>
+      <i class="member_right_h1_icon user_bg" />
     </div>
     <p v-if="summary" class="muted">
       {{ summary.count ?? 0 }} · {{ summary.total_points ?? 0 }}
@@ -41,9 +48,21 @@ const total = computed(() => inferTotal(refs.value))
       </MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('ui.send_invite_reg') }}</button>
     </form>
-    <div v-for="row in refs?.list || []" :key="row.id" class="attention_enterprises_list site-pc">
-      <div class="attention_enterprises_span attention_enterprises_name">{{ row.invitee_uid }}</div>
-      <div class="attention_enterprises_span attention_enterprises_time">{{ row.points }} · {{ row.created_at_n }}</div>
+    <div v-for="row in refs?.list || []" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">{{ row.invitee_uid }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.points }} · {{ row.created_at_n }}</div>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="row in refs?.list || []"
+          :key="'h5-' + row.id"
+          variant="issue"
+          :title="String(row.invitee_uid)"
+          :pay="String(row.points ?? '')"
+          :time="row.created_at_n"
+        />
+      </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>

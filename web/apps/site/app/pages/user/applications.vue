@@ -158,6 +158,10 @@ useSeoMeta({ title: t('wap_user_00270') })
           :to="`/jobs/${row.job_id}`"
         >
           <MemberApplyH5State :is-browse="row.is_browse" :invited="row.invited" :withdrawn="!!row.body" />
+          <div class="Posted_state_hrtip">
+            <a v-if="row.is_browse === 1 && !row.body" href="javascript:;" @click="withdraw(row.id)">{{ $t('common.cancel') }}</a>
+            <a v-else href="javascript:;" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+          </div>
         </MemberPostedCard>
       </div>
     </div>

@@ -95,7 +95,16 @@ async function sendEmail() {
   }
 }
 
+function iconClass(provider: string) {
+  const p = provider.toLowerCase()
+  if (p.includes('qq')) return { box: 'Bingding_icon', i: 'binding_qq_icon', h5: 'bingding_box_iconqq', h5bg: 'bingding_yx_qq' }
+  if (p.includes('sina') || p.includes('weibo')) return { box: 'Bingding_sinaicon', i: 'binding_xl_icon', h5: 'bingding_box_iconxl', h5bg: 'bingding_yx_xl' }
+  if (p.includes('wx') || p.includes('weixin') || p.includes('wechat')) return { box: 'Bingding_icon', i: 'binding_wx_icon', h5: 'bingding_box_iconwx', h5bg: 'bingding_yx_g' }
+  return { box: 'Bingding_icon', i: 'binding_qq_icon', h5: 'bingding_box_iconqq', h5bg: '' }
+}
+
 useSeoMeta({ title: t('member_user_00059') })
+const boundList = computed(() => data.value?.providers || [])
 </script>
 
 <template>
@@ -112,16 +121,44 @@ useSeoMeta({ title: t('member_user_00059') })
           <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('member_user_00059') }}</a></li>
         </ul>
       </nav>
-      <h2>{{ $t('wap_00389') }}</h2>
-      <p v-if="me?.moblie" class="muted">{{ $t('common.phone') }} {{ maskPhone(String(me.moblie)) }}</p>
-      <p v-if="me?.email" class="muted">{{ $t('member_user_00282') }} {{ maskEmail(String(me.email)) }}</p>
-      <ul class="bingding_box">
-        <li v-for="p in data?.providers || []" :key="p">
+      <div class="resume_Prompt_box">
+        <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('member_user_00474') }}</div>
+      </div>
+      <div class="site-pc">
+        <div v-for="p in boundList" :key="p" class="Binding_list">
+          <div class="Binding_list_left">
+            <div :class="[iconClass(p).box, 'Bingding_icon_cur']"><i :class="iconClass(p).i" /></div>
+            <span class="bingding_yx_wr">{{ p }}</span>
+          </div>
+          <div class="Binding_list_text Binding_list_text_mt">{{ $t('wap_user_00127') }}</div>
+          <div class="Binding_oper">
+            <a href="javascript:;" class="Binding_submit_qx" @click="unbind(p)">{{ $t('member_user_00054') }}</a>
+          </div>
+        </div>
+        <div v-for="o in oauth" :key="o.provider" class="Binding_list">
+          <div class="Binding_list_left">
+            <div :class="iconClass(o.provider).box"><i :class="iconClass(o.provider).i" /></div>
+            <span class="bingding_yx_wr">{{ o.name }}</span>
+          </div>
+          <div class="Binding_list_text">
+            <span class="Binding_list_text_zt"><i class="Binding_list_text_zticon" />{{ $t('wap_user_00181') }}</span>
+          </div>
+          <div class="Binding_oper">
+            <a href="javascript:;" class="Binding_submit" @click.prevent="startBind(o)">{{ $t('wap_user_00119') }}</a>
+          </div>
+        </div>
+      </div>
+      <ul class="site-h5 bingding_box">
+        <li v-for="p in boundList" :key="'h5b-' + p">
+          <div class="bingding_box_iconbg" :class="iconClass(p).h5bg"><i :class="iconClass(p).h5" /></div>
           <div class="bingding_box_name">{{ p }}</div>
-          <span class="bingding_box_bth_jc" @click="unbind(p)">{{ $t('wap_js_00065') }}</span>
+          <div class="bingding_box_p">{{ $t('wap_user_00127') }}</div>
+          <span class="bingding_box_bth_jc" @click="unbind(p)">{{ $t('wap_user_00138') }}</span>
         </li>
-        <li v-for="o in oauth" :key="o.provider">
+        <li v-for="o in oauth" :key="'h5o-' + o.provider">
+          <div class="bingding_box_iconbg"><i :class="iconClass(o.provider).h5" /></div>
           <div class="bingding_box_name">{{ o.name }}</div>
+          <div class="bingding_box_p">{{ $t('wap_user_00135') }}</div>
           <span class="bingding_box_bth" @click="startBind(o)">{{ $t('wap_user_00119') }}</span>
         </li>
       </ul>

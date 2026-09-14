@@ -11,8 +11,12 @@ type ChildRow = {
   content?: string
   sdate?: number
   edate?: number
+  sdate_n?: string
+  edate_n?: string
+  date_n?: string
   years?: number
   level?: number
+  education_n?: string
 }
 
 const api = useApi()
@@ -264,51 +268,102 @@ async function delChild(kind: string, row: ChildRow, reload: () => Promise<unkno
     msg.value = fail(e)
   }
 }
+const openSec = ref('')
+function toggleSec(name: string) {
+  openSec.value = openSec.value === name ? '' : name
+}
+function childList(v: unknown): ChildRow[] {
+  if (!v) return []
+  if (Array.isArray(v)) return v as ChildRow[]
+  if (typeof v === 'object' && v && 'list' in v) return ((v as { list?: ChildRow[] }).list || []) as ChildRow[]
+  return []
+}
+const expectRows = computed(() => childList(expects.value))
+const workRows = computed(() => childList(works.value))
+const eduRows = computed(() => childList(edus.value))
+const projectRows = computed(() => childList(projects.value))
+const skillRows = computed(() => childList(skills.value))
+const trainingRows = computed(() => childList(trainings.value))
+const certRows = computed(() => childList(certs.value))
+const otherRows = computed(() => childList(others.value))
+const languageRows = computed(() => childList(languages.value))
+function timeOf(row: ChildRow) {
+  if (row.date_n) return String(row.date_n)
+  const s = row.sdate_n || ''
+  const e = row.edate_n || ''
+  if (s || e) return `${s}-${e || '—'}`
+  return ''
+}
 function fillWork(row: ChildRow) {
   workForm.id = row.id
   workForm.name = String(row.name || '')
   workForm.title = String(row.title || '')
   workForm.department = String(row.department || '')
+  workForm.sdate_n = String(row.sdate_n || '')
+  workForm.edate_n = String(row.edate_n || '')
+  openSec.value = 'work'
 }
 function fillEdu(row: ChildRow) {
   eduForm.id = row.id
   eduForm.name = String(row.name || '')
   eduForm.specialty = String(row.specialty || '')
+  eduForm.sdate_n = String(row.sdate_n || '')
+  eduForm.edate_n = String(row.edate_n || '')
+  openSec.value = 'edu'
 }
 function fillProject(row: ChildRow) {
   projectForm.id = row.id
   projectForm.name = String(row.name || '')
   projectForm.role = String(row.role || '')
   projectForm.content = String(row.content || '')
+  projectForm.sdate_n = String(row.sdate_n || '')
+  projectForm.edate_n = String(row.edate_n || '')
+  openSec.value = 'project'
 }
 function fillSkill(row: ChildRow) {
   skillForm.id = row.id
   skillForm.name = String(row.name || '')
   skillForm.years = Number(row.years || 0)
   skillForm.level = Number(row.level || 0)
+  openSec.value = 'skill'
 }
 function fillTraining(row: ChildRow) {
   trainingForm.id = row.id
   trainingForm.name = String(row.name || '')
   trainingForm.title = String(row.title || '')
   trainingForm.content = String(row.content || '')
+  trainingForm.sdate_n = String(row.sdate_n || '')
+  trainingForm.edate_n = String(row.edate_n || '')
+  openSec.value = 'training'
 }
 function fillCert(row: ChildRow) {
   certForm.id = row.id
   certForm.name = String(row.name || '')
   certForm.title = String(row.title || '')
   certForm.content = String(row.content || '')
+  certForm.sdate_n = String(row.sdate_n || '')
+  certForm.edate_n = String(row.edate_n || '')
+  openSec.value = 'cert'
 }
 function fillOther(row: ChildRow) {
   otherForm.id = row.id
   otherForm.name = String(row.name || '')
   otherForm.content = String(row.content || '')
+  openSec.value = 'other'
 }
 function fillLanguage(row: ChildRow) {
   languageForm.id = row.id
   languageForm.name = String(row.name || '')
   languageForm.level = Number(row.level || 0)
+  openSec.value = 'language'
 }
+watch(
+  () => form.name,
+  (name) => {
+    if (!name && !openSec.value) openSec.value = 'basic'
+  },
+  { immediate: true },
+)
 const topDays = ref(7)
 const topMsg = ref('')
 async function buyTop() {
@@ -344,32 +399,41 @@ useSeoMeta({ title: t('wap_user_00204') })
         <NuxtLink to="/user/recommend" class="user_czbth_pp user_czbth_line">{{ $t('wap_user_00211') }}</NuxtLink>
       </div>
     </template>
-    <div class="site-h5 Edit_your_resume_min_body">
+    <div class="site-h5 Edit_your_resume_min_body" @click="toggleSec('basic')">
       <div class="resume_min_body_cord">
         <div class="resume_min_body_cord_data">
           <div class="resume_min_body_cord_data_left">
             <div class="data_left_nameandmodification">
               <div class="data_left_name">{{ form.name || $t('wap_00529') }}</div>
+              <div class="data_left_modification">
+                <img src="/legacy/h5/images/icon_question.png" alt="" width="100%" height="100%" />
+              </div>
             </div>
             <div class="data_left_condition">
               <ul>
                 <li v-if="integrity">{{ integrity }}%</li>
+                <li v-if="form.exp">{{ expDict.find((d) => d.id === form.exp)?.name }}</li>
+                <li v-if="form.education">{{ eduDict.find((d) => d.id === form.education)?.name }}</li>
               </ul>
             </div>
           </div>
-          <div class="resume_min_body_cord_data_logo">
+          <div class="resume_min_body_cord_data_logo" @click.stop>
             <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" width="100%" height="100%" />
+            <input type="file" accept="image/jpeg,image/png,image/webp" @change="onAvatar" />
           </div>
         </div>
       </div>
     </div>
-    <div class="site-pc user_resume_list">
+    <div class="site-pc">
       <div class="user_resume_box">
         <div class="user_resume_photo">
           <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" />
         </div>
         <div class="user_resume_info">
-          <div class="user_resume_name">{{ form.name }}</div>
+          <div class="user_resume_name">
+            {{ form.name }}
+            <span v-if="expectRows[0]?.name" class="user_resume_job">{{ expectRows[0].name }}</span>
+          </div>
           <div v-if="integrity" class="user_resume_wzd">
             <span class="user_resume_wzd_name">{{ $t('wap_00328') }}：</span>
             <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" :style="{ width: `${integrity}%` }" /></div>
@@ -378,206 +442,323 @@ useSeoMeta({ title: t('wap_user_00204') })
         </div>
         <div class="user_resume_cz">
           <div class="user_resume_cz_p">
-            <button type="button" class="user_resume_cz_a" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
+            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon2" @click="refreshResume">{{ $t('wap_user_00199') }}</a>
+          </div>
+          <div class="user_resume_cz_p">
+            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon3" @click="toggleSec('basic')">{{ $t('wap_00269') }}</a>
+          </div>
+          <div class="user_resume_cz_p">
+            <select v-model.number="topDays" class="user_resume_cz_a">
+              <option :value="7">7</option>
+              <option :value="30">30</option>
+            </select>
+            <a href="javascript:;" class="user_resume_cz_a user_resume_cz_icon1" @click="buyTop">{{ $t('wap_user_00207') }}</a>
           </div>
         </div>
       </div>
+      <div v-if="missingBits.length" class="user_resume_boxtip">
+        <div class="user_resume_boxtip_c">
+          <div class="user_resume_boxtip_h1">{{ missingBits.map(missingLabel).join(' · ') }}</div>
+          <a href="javascript:;" class="user_resume_boxtip_bth" @click="toggleSec('basic')">{{ $t('wap_00269') }}</a>
+        </div>
+      </div>
     </div>
-    <p v-if="missingBits.length" class="muted">{{ missingBits.map(missingLabel).join(' · ') }}</p>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <form v-else class="form verification_form" @submit.prevent="saveResume">
-      <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" width="72" height="72" />
-      <input type="file" accept="image/jpeg,image/png,image/webp" @change="onAvatar" />
-      <input v-model="form.name" :placeholder="$t('wap_00529')" />
-      <select v-model.number="form.sex">
-        <option :value="1">{{ $t('common_02092') }}</option>
-        <option :value="2">{{ $t('common_02069') }}</option>
-      </select>
-      <input v-model="form.birthday" :placeholder="$t('ui.birthday')" />
-      <select v-model.number="form.education">
-        <option :value="0">{{ $t('wap_00459') }}</option>
-        <option v-for="d in eduDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
-      </select>
-      <select v-model.number="form.exp">
-        <option :value="0">{{ $t('wap_00457') }}</option>
-        <option v-for="d in expDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
-      </select>
-      <input v-model="form.living" :placeholder="$t('wap_user_00242')" />
-      <input v-model="form.domicile" :placeholder="$t('member_user_00158')" />
-      <input v-model="form.height" :placeholder="$t('member_user_00165')" />
-      <input v-model="form.weight" :placeholder="$t('member_user_00160')" />
-      <input v-model="form.telphone" :placeholder="$t('common.phone')" />
-      <input v-model="form.email" :placeholder="$t('member_user_00282')" />
-      <input v-model="form.address" :placeholder="$t('wap_user_00243')" />
-      <input v-model="form.qq" placeholder="QQ" />
-      <textarea v-model="form.description" rows="4" :placeholder="$t('wap_user_00102')" />
+    <p v-if="topMsg" class="muted">{{ topMsg }}</p>
+    <form v-if="!error && openSec === 'basic'" class="verification_form" @submit.prevent="saveResume">
+      <MemberField :label="$t('wap_00529')"><input v-model="form.name" /></MemberField>
+      <MemberField :label="$t('common_02092')">
+        <select v-model.number="form.sex">
+          <option :value="1">{{ $t('common_02092') }}</option>
+          <option :value="2">{{ $t('common_02069') }}</option>
+        </select>
+      </MemberField>
+      <MemberField :label="$t('ui.birthday')"><input v-model="form.birthday" /></MemberField>
+      <MemberField :label="$t('wap_00459')">
+        <select v-model.number="form.education">
+          <option :value="0">{{ $t('wap_00459') }}</option>
+          <option v-for="d in eduDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
+        </select>
+      </MemberField>
+      <MemberField :label="$t('wap_00457')">
+        <select v-model.number="form.exp">
+          <option :value="0">{{ $t('wap_00457') }}</option>
+          <option v-for="d in expDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
+        </select>
+      </MemberField>
+      <MemberField :label="$t('wap_user_00242')"><input v-model="form.living" /></MemberField>
+      <MemberField :label="$t('member_user_00158')"><input v-model="form.domicile" /></MemberField>
+      <MemberField :label="$t('member_user_00165')"><input v-model="form.height" /></MemberField>
+      <MemberField :label="$t('member_user_00160')"><input v-model="form.weight" /></MemberField>
+      <MemberField :label="$t('common.phone')"><input v-model="form.telphone" /></MemberField>
+      <MemberField :label="$t('member_user_00282')"><input v-model="form.email" /></MemberField>
+      <MemberField :label="$t('wap_user_00243')"><input v-model="form.address" /></MemberField>
+      <MemberField label="QQ"><input v-model="form.qq" /></MemberField>
+      <MemberField :label="$t('wap_user_00102')" area><textarea v-model="form.description" rows="4" /></MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('ui.save_resume') }}</button>
-      <button type="button" @click="refreshResume">{{ $t('wap_user_00199') }}</button>
-      <select v-model.number="topDays">
-        <option :value="7">7</option>
-        <option :value="30">30</option>
-      </select>
-      <button type="button" @click="buyTop">{{ $t('wap_user_00207') }}</button>
-      <p v-if="topMsg">{{ topMsg }}</p>
     </form>
-    <MemberResumeH1 :title="$t('home.intention')" icon="yun_resume_h1_iconyx" />
-    <p v-if="!(Array.isArray(expects) ? expects : []).length" class="muted">{{ $t('ui.no_expect') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(expects) ? expects : []" :key="row.id">{{ row.name || row.id }}</li>
-    </ul>
-    <form class="form" @submit.prevent="saveExpect">
-      <input v-model="expectForm.name" :placeholder="$t('ui.intention_job')" />
-      <input v-model.number="expectForm.salary" type="number" :placeholder="$t('ui.expect_salary')" />
-      <button type="submit">{{ $t('ui.add_expect') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_00457')" icon="yun_resume_h1_iconjy" />
-    <p v-if="!(Array.isArray(works) ? works : []).length" class="muted">{{ $t('ui.no_work') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(works) ? works : []" :key="row.id">
-        {{ row.name }} {{ row.title }}
-        <button type="button" @click="fillWork(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('works', row, refreshWorks)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('works', { ...workForm }, refreshWorks)">
-      <input v-model="workForm.name" :placeholder="$t('common.company')" />
-      <input v-model="workForm.title" :placeholder="$t('wap_com_00288')" />
-      <input v-model="workForm.department" placeholder="department" />
-      <input v-model="workForm.sdate_n" placeholder="sdate YYYY-MM" />
-      <input v-model="workForm.edate_n" placeholder="edate YYYY-MM" />
-      <button type="submit">{{ workForm.id ? $t('common.save') : $t('ui.add_work') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_00459')" icon="yun_resume_h1_iconjl" />
-    <p v-if="!(Array.isArray(edus) ? edus : []).length" class="muted">{{ $t('ui.no_edu') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(edus) ? edus : []" :key="row.id">
-        {{ row.name }} {{ row.specialty }}
-        <button type="button" @click="fillEdu(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('edus', row, refreshEdus)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('edus', { ...eduForm }, refreshEdus)">
-      <input v-model="eduForm.name" :placeholder="$t('ui.edu')" />
-      <input v-model="eduForm.specialty" placeholder="specialty" />
-      <input v-model="eduForm.sdate_n" placeholder="sdate YYYY-MM" />
-      <input v-model="eduForm.edate_n" placeholder="edate YYYY-MM" />
-      <button type="submit">{{ eduForm.id ? $t('common.save') : $t('ui.add_edu') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_00465')" icon="yun_resume_h1_iconxm" />
-    <p v-if="!(Array.isArray(projects) ? projects : []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(projects) ? projects : []" :key="row.id">
-        {{ row.name }} {{ row.role }}
-        <button type="button" @click="fillProject(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('projects', row, refreshProjects)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('projects', { ...projectForm }, refreshProjects)">
-      <input v-model="projectForm.name" :placeholder="$t('wap_com_00288')" />
-      <input v-model="projectForm.role" />
-      <input v-model="projectForm.sdate_n" placeholder="sdate YYYY-MM" />
-      <input v-model="projectForm.edate_n" placeholder="edate YYYY-MM" />
-      <textarea v-model="projectForm.content" rows="3" />
-      <button type="submit">{{ projectForm.id ? $t('common.save') : $t('common.submit') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_00461')" icon="yun_resume_h1_iconjn" />
-    <p v-if="!(Array.isArray(skills) ? skills : []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(skills) ? skills : []" :key="row.id">
-        {{ row.name }}
-        <button type="button" @click="fillSkill(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('skills', row, refreshSkills)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('skills', { ...skillForm }, refreshSkills)">
-      <input v-model="skillForm.name" required />
-      <input v-model.number="skillForm.years" type="number" />
-      <button type="submit">{{ skillForm.id ? $t('common.save') : $t('common.submit') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_00455')" icon="yun_resume_h1_iconpx" />
-    <p v-if="!(Array.isArray(trainings) ? trainings : []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(trainings) ? trainings : []" :key="row.id">
-        {{ row.name }} {{ row.title }}
-        <button type="button" @click="fillTraining(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('trainings', row, refreshTrainings)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('trainings', { ...trainingForm }, refreshTrainings)">
-      <input v-model="trainingForm.name" :placeholder="$t('member_user_00077')" />
-      <input v-model="trainingForm.title" />
-      <input v-model="trainingForm.sdate_n" placeholder="sdate YYYY-MM" />
-      <input v-model="trainingForm.edate_n" placeholder="edate YYYY-MM" />
-      <textarea v-model="trainingForm.content" rows="3" />
-      <button type="submit">{{ trainingForm.id ? $t('common.save') : $t('member_user_00077') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_user_00090')" icon="yun_resume_h1_iconry" />
-    <p v-if="!(Array.isArray(certs) ? certs : []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(certs) ? certs : []" :key="row.id">
-        {{ row.name }} {{ row.title }}
-        <button type="button" @click="fillCert(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('certs', row, refreshCerts)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('certs', { ...certForm }, refreshCerts)">
-      <input v-model="certForm.name" :placeholder="$t('wap_user_00090')" />
-      <input v-model="certForm.title" />
-      <input v-model="certForm.sdate_n" placeholder="sdate YYYY-MM" />
-      <input v-model="certForm.edate_n" placeholder="edate YYYY-MM" />
-      <textarea v-model="certForm.content" rows="3" />
-      <button type="submit">{{ certForm.id ? $t('common.save') : $t('common.submit') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_00493')" icon="yun_resume_h1_iconqt" />
-    <p v-if="!(Array.isArray(others) ? others : []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(others) ? others : []" :key="row.id">
-        {{ row.name }}
-        <button type="button" @click="fillOther(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('others', row, refreshOthers)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('others', { ...otherForm }, refreshOthers)">
-      <input v-model="otherForm.name" :placeholder="$t('member_user_00076')" />
-      <textarea v-model="otherForm.content" rows="3" />
-      <button type="submit">{{ otherForm.id ? $t('common.save') : $t('member_user_00076') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_com_00292')" icon="yun_resume_h1_iconpj" />
-    <p v-if="!(Array.isArray(languages) ? languages : []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <ul>
-      <li v-for="row in Array.isArray(languages) ? languages : []" :key="row.id">
-        {{ row.name }}
-        <button type="button" @click="fillLanguage(row)">{{ $t('common.edit') }}</button>
-        <button type="button" @click="delChild('languages', row, refreshLanguages)">{{ $t('common.delete') }}</button>
-      </li>
-    </ul>
-    <form class="form" @submit.prevent="saveChild('languages', { ...languageForm }, refreshLanguages)">
-      <input v-model="languageForm.name" required />
-      <input v-model.number="languageForm.level" type="number" />
-      <button type="submit">{{ languageForm.id ? $t('common.save') : $t('common.submit') }}</button>
-    </form>
-    <MemberResumeH1 :title="$t('wap_user_00157')" icon="yun_resume_h1_iconzp" />
-    <form class="form" @submit.prevent>
-      <input v-model="galleryTitle" />
-      <input type="file" accept="image/jpeg,image/png,image/webp" @change="onShow" />
-    </form>
-    <article v-for="row in shows?.list || []" :key="row.id" class="user_resume_box">
-      <h3>{{ row.title || row.id }}</h3>
-      <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
-      <button type="button" class="user_resume_cz_a" @click="removeShow(row.id)">{{ $t('common.delete') }}</button>
-    </article>
-    <MemberResumeH1 :title="$t('common.share')" icon="yun_resume_h1_iconfj" />
-    <form class="form" @submit.prevent="createShare">
-      <input v-model.number="shareTtl" type="number" min="60" max="2592000" />
-      <button type="submit">{{ $t('common.submit') }}</button>
-    </form>
-    <article v-for="row in shareTokens?.list || []" :key="row.token" class="user_resume_box">
-      <h3>
-        <NuxtLink :to="`/share/resume/${row.token}`">{{ row.token }}</NuxtLink>
-      </h3>
-      <p class="muted">{{ row.view_count }} · {{ row.expires_at_n }}</p>
-      <button v-if="row.active" type="button" @click="revokeShare(row.token)">{{ $t('common.delete') }}</button>
-    </article>
+    <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" :open="openSec === 'expect'" @toggle="toggleSec('expect')">
+      <template #pc>
+        <ul v-if="expectRows.length" class="yun_resume_job_intention_list">
+          <li v-for="row in expectRows" :key="row.id">{{ row.name || row.id }}</li>
+        </ul>
+        <p v-else class="muted">{{ $t('ui.no_expect') }}</p>
+      </template>
+      <template #h5>
+        <div v-for="row in expectRows" :key="'h5-e-' + row.id" class="resume_min_body_cord_intention">
+          <div class="cord_intention_bom">
+            <div class="data_left_condition">
+              <ul>
+                <li>{{ row.name }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveExpect">
+          <MemberField :label="$t('ui.intention_job')"><input v-model="expectForm.name" /></MemberField>
+          <MemberField :label="$t('ui.expect_salary')"><input v-model.number="expectForm.salary" type="number" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ $t('ui.add_expect') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeSection :title="$t('wap_00457')" icon="yun_resume_h1_iconjl" :open="openSec === 'work'" @toggle="toggleSec('work')">
+      <template #pc>
+        <p v-if="!workRows.length" class="muted">{{ $t('ui.no_work') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('works', { ...workForm }, refreshWorks)">
+          <MemberField :label="$t('common.company')"><input v-model="workForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="workForm.title" /></MemberField>
+          <MemberField label="department"><input v-model="workForm.department" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="workForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="workForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ workForm.id ? $t('common.save') : $t('ui.add_work') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in workRows"
+      :key="'w-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.title"
+      :time="timeOf(row)"
+      @edit="fillWork(row)"
+      @remove="delChild('works', row, refreshWorks)"
+    />
+    <MemberResumeSection :title="$t('wap_00459')" icon="yun_resume_h1_iconjy" :open="openSec === 'edu'" @toggle="toggleSec('edu')">
+      <template #pc>
+        <p v-if="!eduRows.length" class="muted">{{ $t('ui.no_edu') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('edus', { ...eduForm }, refreshEdus)">
+          <MemberField :label="$t('ui.edu')"><input v-model="eduForm.name" /></MemberField>
+          <MemberField label="specialty"><input v-model="eduForm.specialty" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="eduForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="eduForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ eduForm.id ? $t('common.save') : $t('ui.add_edu') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in eduRows"
+      :key="'edu-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.specialty || row.education_n"
+      :time="timeOf(row)"
+      @edit="fillEdu(row)"
+      @remove="delChild('edus', row, refreshEdus)"
+    />
+    <MemberResumeSection :title="$t('wap_00465')" icon="yun_resume_h1_iconxm" :open="openSec === 'project'" @toggle="toggleSec('project')">
+      <template #pc>
+        <p v-if="!projectRows.length" class="muted">{{ $t('ui.no_items') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('projects', { ...projectForm }, refreshProjects)">
+          <MemberField :label="$t('wap_com_00288')"><input v-model="projectForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="projectForm.role" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="projectForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="projectForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="projectForm.content" rows="3" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ projectForm.id ? $t('common.save') : $t('common.submit') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in projectRows"
+      :key="'p-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.role"
+      :time="timeOf(row)"
+      :body="row.content"
+      @edit="fillProject(row)"
+      @remove="delChild('projects', row, refreshProjects)"
+    />
+    <MemberResumeSection :title="$t('wap_00461')" icon="yun_resume_h1_iconjn" :open="openSec === 'skill'" @toggle="toggleSec('skill')">
+      <template #pc>
+        <p v-if="!skillRows.length" class="muted">{{ $t('ui.no_items') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('skills', { ...skillForm }, refreshSkills)">
+          <MemberField :label="$t('wap_00461')"><input v-model="skillForm.name" required /></MemberField>
+          <MemberField :label="$t('common_02067')"><input v-model.number="skillForm.years" type="number" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ skillForm.id ? $t('common.save') : $t('common.submit') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in skillRows"
+      :key="'sk-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.years ? String(row.years) : ''"
+      @edit="fillSkill(row)"
+      @remove="delChild('skills', row, refreshSkills)"
+    />
+    <MemberResumeSection :title="$t('wap_00455')" icon="yun_resume_h1_iconpx" :open="openSec === 'training'" @toggle="toggleSec('training')">
+      <template #pc>
+        <p v-if="!trainingRows.length" class="muted">{{ $t('ui.no_items') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('trainings', { ...trainingForm }, refreshTrainings)">
+          <MemberField :label="$t('member_user_00077')"><input v-model="trainingForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="trainingForm.title" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="trainingForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="trainingForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="trainingForm.content" rows="3" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ trainingForm.id ? $t('common.save') : $t('member_user_00077') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in trainingRows"
+      :key="'tr-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.title"
+      :time="timeOf(row)"
+      :body="row.content"
+      @edit="fillTraining(row)"
+      @remove="delChild('trainings', row, refreshTrainings)"
+    />
+    <MemberResumeSection :title="$t('wap_user_00090')" icon="yun_resume_h1_iconry" :open="openSec === 'cert'" @toggle="toggleSec('cert')">
+      <template #pc>
+        <p v-if="!certRows.length" class="muted">{{ $t('ui.no_items') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('certs', { ...certForm }, refreshCerts)">
+          <MemberField :label="$t('wap_user_00090')"><input v-model="certForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="certForm.title" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="certForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="certForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="certForm.content" rows="3" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ certForm.id ? $t('common.save') : $t('common.submit') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in certRows"
+      :key="'c-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.title"
+      :time="timeOf(row)"
+      :body="row.content"
+      @edit="fillCert(row)"
+      @remove="delChild('certs', row, refreshCerts)"
+    />
+    <MemberResumeSection :title="$t('wap_00493')" icon="yun_resume_h1_iconqt" :open="openSec === 'other'" @toggle="toggleSec('other')">
+      <template #pc>
+        <p v-if="!otherRows.length" class="muted">{{ $t('ui.no_items') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('others', { ...otherForm }, refreshOthers)">
+          <MemberField :label="$t('member_user_00076')"><input v-model="otherForm.name" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="otherForm.content" rows="3" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ otherForm.id ? $t('common.save') : $t('member_user_00076') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in otherRows"
+      :key="'o-' + row.id"
+      :title="String(row.name || '')"
+      :body="row.content"
+      @edit="fillOther(row)"
+      @remove="delChild('others', row, refreshOthers)"
+    />
+    <MemberResumeSection :title="$t('wap_com_00292')" icon="yun_resume_h1_iconpj" :open="openSec === 'language'" @toggle="toggleSec('language')">
+      <template #pc>
+        <p v-if="!languageRows.length" class="muted">{{ $t('ui.no_items') }}</p>
+      </template>
+      <template #h5 />
+      <template #form>
+        <form class="verification_form" @submit.prevent="saveChild('languages', { ...languageForm }, refreshLanguages)">
+          <MemberField :label="$t('wap_com_00292')"><input v-model="languageForm.name" required /></MemberField>
+          <MemberField :label="$t('wap_00459')"><input v-model.number="languageForm.level" type="number" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ languageForm.id ? $t('common.save') : $t('common.submit') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeExpItem
+      v-for="row in languageRows"
+      :key="'lg-' + row.id"
+      :title="String(row.name || '')"
+      :sub="row.level ? String(row.level) : ''"
+      @edit="fillLanguage(row)"
+      @remove="delChild('languages', row, refreshLanguages)"
+    />
+    <MemberResumeSection :title="$t('wap_user_00157')" icon="yun_resume_h1_iconzp" :open="openSec === 'show'" @toggle="toggleSec('show')">
+      <template #pc>
+        <div v-for="row in shows?.list || []" :key="row.id" class="user_resume_box">
+          <div class="user_resume_name">{{ row.title || row.id }}</div>
+          <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
+          <a href="javascript:;" class="user_resume_cz_a" @click="removeShow(row.id)">{{ $t('common.delete') }}</a>
+        </div>
+      </template>
+      <template #h5>
+        <div v-for="row in shows?.list || []" :key="'h5s-' + row.id" class="work_list">
+          <div class="cord_work_experience_two_word">{{ row.title || row.id }}</div>
+        </div>
+      </template>
+      <template #form>
+        <form class="verification_form" @submit.prevent>
+          <MemberField :label="$t('wap_user_00103')"><input v-model="galleryTitle" /></MemberField>
+          <input type="file" accept="image/jpeg,image/png,image/webp" @change="onShow" />
+        </form>
+      </template>
+    </MemberResumeSection>
+    <MemberResumeSection :title="$t('common.share')" icon="yun_resume_h1_iconfj" :open="openSec === 'share'" @toggle="toggleSec('share')">
+      <template #pc>
+        <div v-for="row in shareTokens?.list || []" :key="row.token" class="user_resume_box">
+          <div class="user_resume_name">
+            <NuxtLink :to="`/share/resume/${row.token}`">{{ row.token }}</NuxtLink>
+          </div>
+          <div class="user_resume_p">{{ row.view_count }} · {{ row.expires_at_n }}</div>
+          <a v-if="row.active" href="javascript:;" class="user_resume_cz_a" @click="revokeShare(row.token)">{{ $t('common.delete') }}</a>
+        </div>
+      </template>
+      <template #h5>
+        <div v-for="row in shareTokens?.list || []" :key="'h5sh-' + row.token" class="work_list">
+          <NuxtLink :to="`/share/resume/${row.token}`">{{ row.token }}</NuxtLink>
+        </div>
+      </template>
+      <template #form>
+        <form class="verification_form" @submit.prevent="createShare">
+          <MemberField :label="$t('member_user_00106')"><input v-model.number="shareTtl" type="number" min="60" max="2592000" /></MemberField>
+          <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+        </form>
+      </template>
+    </MemberResumeSection>
+    <div class="site-h5 Edit_your_resume_tail">
+      <div class="Edit_your_resume_Update_your_resume" @click="refreshResume">{{ $t('wap_user_00199') }}</div>
+      <NuxtLink :to="`/resumes/${data?.uid}`" class="Edit_your_resume_Preview_your_resume">{{ $t('wap_user_00217') }}</NuxtLink>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

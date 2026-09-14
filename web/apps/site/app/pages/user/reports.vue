@@ -43,10 +43,15 @@ const total = computed(() => inferTotal(data.value))
       </MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
+    <div class="job_list_tit">
+      <ul>
+        <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('ui.my_reports') }}</a></li>
+      </ul>
+    </div>
     <p v-if="msg">{{ msg }}</p>
-    <div v-for="row in data?.list || []" :key="row.id" class="job_list_tit site-pc" style="display:block">
-      <span class="user_new_jobname">#{{ row.target_id }}</span>
-      <span class="muted">{{ row.status }}</span>
+    <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">#{{ row.target_id }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.status }}</div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

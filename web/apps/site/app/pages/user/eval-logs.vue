@@ -17,11 +17,16 @@ useSeoMeta({ title: t('wap_00194') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
     <div v-else>
-      <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
-        <div class="user_new_job">
-          <NuxtLink :to="`/user/eval-logs/${row.id}`" class="user_new_jobname">{{ row.paper_name || $t('wap_00194') }}</NuxtLink>
+      <div class="job_list_tit">
+        <ul>
+          <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_00194') }}</a></li>
+        </ul>
+      </div>
+      <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
+        <div class="sysynews_span sysynews_name">
+          <NuxtLink :to="`/user/eval-logs/${row.id}`">{{ row.paper_name || $t('wap_00194') }}</NuxtLink>
         </div>
-        <div class="user_new_time">{{ row.score }} · {{ row.created_at_n }}</div>
+        <div class="sysynews_span sysynews_time">{{ row.score }} · {{ row.created_at_n }}</div>
       </div>
       <div class="site-h5 m_cardbox">
         <div class="m_cardbgbox">

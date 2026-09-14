@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { isUnauthErr, mediaUrl } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
@@ -14,7 +14,9 @@ const rows = computed(() =>
     name: String(row.uname || row.uid || ''),
     job: String(row.job_name || row.job_id || ''),
     time: String(row.datetime_n || ''),
-    to: row.uid ? `/resumes/${row.eid || row.uid}` : undefined,
+    photo: row.photo ? mediaUrl(String(row.photo)) : undefined,
+    info: [row.sex_n, row.edu_n, row.exp_n].map((x) => String(x || '')).filter(Boolean),
+    salary: row.salary ? String(row.salary) : undefined,
   })),
 )
 const total = computed(() => inferTotal(data.value))

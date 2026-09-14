@@ -118,20 +118,22 @@ const ivTotal = computed(() => inferTotal(data.value))
     </MemberHrResumeRows>
     <MemberPager :page="page" :page-size="pageSize" :total="ivTotal" @update:page="go" />
     <MemberResumeH1 :title="$t('member_com_00512')" />
-    <div v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="attention_enterprises_list site-pc">
-      <div class="attention_enterprises_span attention_enterprises_name">{{ row.name }}</div>
-      <div class="attention_enterprises_span attention_enterprises_time">{{ row.address }} · {{ row.linkman }}</div>
-      <div class="attention_enterprises_span attention_enterprises_cz">
+    <div v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">{{ row.name }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.address }} · {{ row.linkman }}</div>
+      <div class="sysynews_span sysynews_cz">
         <a href="javascript:;" class="cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
         <a href="javascript:;" class="List_dete cblue" @click="removeTpl(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
-    <form class="form verification_form" @submit.prevent="saveTpl">
-      <MemberField :label="$t('wap_com_00288')"><input v-model="form.name" required /></MemberField>
-      <MemberField :label="$t('wap_user_00102')" area><textarea v-model="form.content" rows="3" required /></MemberField>
-      <MemberField :label="$t('wap_00040')"><input v-model="form.address" required /></MemberField>
-      <MemberField :label="$t('common_02051')"><input v-model="form.linkman" required /></MemberField>
-      <MemberField :label="$t('common.phone')"><input v-model="form.linktel" required /></MemberField>
+    <form class="com_release_box" @submit.prevent="saveTpl">
+      <ul>
+        <MemberReleaseRow :label="$t('wap_com_00288')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00102')" area required><textarea v-model="form.content" rows="3" required /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_00040')" required><input v-model="form.address" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common_02051')" required><input v-model="form.linkman" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common.phone')" required><input v-model="form.linktel" required class="com_release_textnew_text" /></MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>

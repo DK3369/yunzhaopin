@@ -163,44 +163,50 @@ useSeoMeta({ title: t('member_com_00480') })
 <template>
   <MemberPanel :title="$t('member_com_00480')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="form com_release_job verification_form" @submit.prevent="save">
-      <MemberField :label="$t('wap_com_00288')"><input v-model="form.name" required /></MemberField>
-      <MemberField :label="$t('wap_com_00311')">
-        <select v-model.number="form.type">
-          <option :value="0">{{ $t('wap_com_00311') }}</option>
-          <option v-for="c in typeItems" :key="c.id" :value="c.id">{{ c.name }}</option>
-        </select>
-      </MemberField>
-      <LocationFields
-        v-model:province-id="form.provinceid"
-        v-model:city-id="form.cityid"
-        v-model:district-id="form.three_cityid"
-      />
-      <MemberField :label="$t('wap_00040')"><input v-model="form.address" /></MemberField>
-      <MemberField :label="$t('ui.headcount')"><input v-model.number="form.number" type="number" min="1" /></MemberField>
-      <MemberField :label="$t('wap_com_00303')">
-        <select v-model.number="form.sex">
-          <option :value="0">{{ $t('common.not_limited') }}</option>
-          <option v-for="c in sexItems" :key="c.id" :value="c.id">{{ c.name }}</option>
-        </select>
-      </MemberField>
-      <MemberField :label="$t('wap_00925')"><input v-model.number="form.salary" type="number" min="1" required /></MemberField>
-      <MemberField>
-        <select v-model.number="form.salary_type">
-          <option :value="0">{{ $t('common.all') }}</option>
-          <option v-for="c in salaryTypeItems" :key="c.id" :value="c.id">{{ c.name }}</option>
-        </select>
-      </MemberField>
-      <MemberField :label="$t('wap_user_00220')">
-        <select v-model.number="form.billing_cycle">
-          <option :value="0">{{ $t('wap_user_00220') }}</option>
-          <option v-for="c in cycleItems" :key="c.id" :value="c.id">{{ c.name }}</option>
-        </select>
-      </MemberField>
-      <MemberField :label="$t('common_02051')"><input v-model="form.linkman" /></MemberField>
-      <MemberField :label="$t('common.phone')"><input v-model="form.linktel" /></MemberField>
-      <MemberField :label="$t('ui.job_desc')" area><textarea v-model="form.content" rows="4" /></MemberField>
-      <MapPick v-model:x="form.x" v-model:y="form.y" />
+    <form class="com_release_box" @submit.prevent="save">
+      <ul>
+        <MemberReleaseRow :label="$t('wap_com_00288')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_com_00311')">
+          <select v-model.number="form.type">
+            <option :value="0">{{ $t('wap_com_00311') }}</option>
+            <option v-for="c in typeItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00243')">
+          <LocationFields
+            v-model:province-id="form.provinceid"
+            v-model:city-id="form.cityid"
+            v-model:district-id="form.three_cityid"
+          />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_00040')"><input v-model="form.address" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.headcount')"><input v-model.number="form.number" type="number" min="1" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_com_00303')">
+          <select v-model.number="form.sex">
+            <option :value="0">{{ $t('common.not_limited') }}</option>
+            <option v-for="c in sexItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_00925')" required><input v-model.number="form.salary" type="number" min="1" required /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_00925')">
+          <select v-model.number="form.salary_type">
+            <option :value="0">{{ $t('common.all') }}</option>
+            <option v-for="c in salaryTypeItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00220')">
+          <select v-model.number="form.billing_cycle">
+            <option :value="0">{{ $t('wap_user_00220') }}</option>
+            <option v-for="c in cycleItems" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common_02051')"><input v-model="form.linkman" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common.phone')"><input v-model="form.linktel" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.job_desc')" area><textarea v-model="form.content" rows="4" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00243')">
+          <MapPick v-model:x="form.x" v-model:y="form.y" />
+        </MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ form.id ? $t('common.save') : $t('member_com_00480') }}</button>
     </form>
     <MemberResumeH1 :title="$t('ui.published')" />

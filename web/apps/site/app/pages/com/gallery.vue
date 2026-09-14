@@ -45,14 +45,18 @@ useSeoMeta({ title: t('wap_user_00157') })
 <template>
   <MemberPanel :title="$t('wap_user_00157')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="form verification_form" @submit.prevent>
-      <MemberField :label="$t('wap_user_00103')"><input v-model="title" /></MemberField>
-      <input type="file" accept="image/jpeg,image/png,image/webp" @change="onFile" />
+    <form class="com_release_box" @submit.prevent>
+      <ul>
+        <MemberReleaseRow :label="$t('wap_user_00103')"><input v-model="title" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.image')"><input type="file" accept="image/jpeg,image/png,image/webp" @change="onFile" /></MemberReleaseRow>
+      </ul>
     </form>
-    <div v-for="row in data?.list || []" :key="row.id" class="user_resume_box">
-      <h3>{{ row.title || row.id }}</h3>
-      <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
-      <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+    <div class="com_banner_show_box">
+      <div v-for="row in data?.list || []" :key="row.id" class="com_add_show_box">
+        <p>{{ row.title || row.id }}</p>
+        <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
+        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

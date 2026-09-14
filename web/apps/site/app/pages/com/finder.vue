@@ -42,12 +42,14 @@ useSeoMeta({ title: t('member_com_00086') })
 <template>
   <MemberPanel :title="$t('member_com_00086')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="form verification_form" @submit.prevent="create">
-      <MemberField :label="$t('wap_00529')"><input v-model="form.name" required /></MemberField>
-      <MemberField :label="$t('common.resume')"><input v-model="form.keyword" /></MemberField>
-      <MemberField :label="$t('common_02110')"><input v-model.number="form.cityid" type="number" /></MemberField>
-      <MemberField :label="$t('ui.min_salary')"><input v-model="form.minsalary" type="number" /></MemberField>
-      <MemberField :label="$t('ui.max_salary')"><input v-model="form.maxsalary" type="number" /></MemberField>
+    <form class="com_release_box" @submit.prevent="create">
+      <ul>
+        <MemberReleaseRow :label="$t('wap_00529')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common.resume')"><input v-model="form.keyword" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common_02110')"><input v-model.number="form.cityid" type="number" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.min_salary')"><input v-model="form.minsalary" type="number" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.max_salary')"><input v-model="form.maxsalary" type="number" /></MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ $t('member_com_00556') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>

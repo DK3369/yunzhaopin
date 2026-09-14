@@ -29,22 +29,42 @@ useSeoMeta({ title: t('ui.orders') })
 <template>
   <MemberPanel :title="$t('ui.orders')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <h2>{{ $t('ui.buyable') }}</h2>
-    <p v-if="!packages.length" class="muted">{{ $t('ui.no_packages') }}</p>
-    <div class="stack">
-      <article v-for="p in packages" :key="p.code" class="payment_list_text">
-        <h3>{{ p.name }}</h3>
-        <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
-        <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
-      </article>
+    <div class="payment_list">
+      <div class="payment_list_s">{{ $t('ui.buyable') }}</div>
+      <div class="payment_list_r">
+        <p v-if="!packages.length" class="muted">{{ $t('ui.no_packages') }}</p>
+        <span v-for="p in packages" :key="p.code" class="payment_list_text">
+          <div class="payment_list_text_n">
+            {{ p.name }}
+            <em class="payment_list_text_dw">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</em>
+          </div>
+          <input type="button" class="payment_list_other" :value="$t('common.submit')" @click="buy(p.code)" />
+        </span>
+      </div>
     </div>
-    <h2>{{ $t('ui.my_orders') }}</h2>
+    <MemberResumeH1 :title="$t('ui.my_orders')" />
     <p v-if="!(orders?.list || []).length" class="muted">{{ $t('ui.no_orders') }}</p>
-    <div class="stack">
-      <article v-for="o in orders?.list || []" :key="o.order_no" class="paylist_list">
-        <h3>{{ o.order_no }}</h3>
-        <p class="muted">{{ o.package_code }} · {{ o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
-      </article>
+    <div v-if="(orders?.list || []).length" class="site-pc paylist_tit">
+      <span class="paylist_span paylist_span_dh">{{ $t('ui.order_no') }}</span>
+      <span class="paylist_span paylist_span_money">{{ $t('wap_00925') }}</span>
+      <span class="paylist_span paylist_span_zt">{{ $t('member_user_00104') }}</span>
+    </div>
+    <div v-for="o in orders?.list || []" :key="o.order_no" class="site-pc paylist_list">
+      <span class="paylist_span paylist_span_dh">{{ o.order_no }}</span>
+      <span class="paylist_span paylist_span_money">{{ o.amount_yuan }}</span>
+      <span class="paylist_span paylist_span_zt">{{ o.status_n }} · {{ o.package_code }}</span>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="o in orders?.list || []"
+          :key="'h5-' + o.order_no"
+          variant="issue"
+          :title="String(o.order_no)"
+          :pay="String(o.amount_yuan)"
+          :time="o.status_n"
+        />
+      </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

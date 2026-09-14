@@ -85,8 +85,8 @@ const total = computed(() => inferTotal(data.value))
             <div>{{ $t('wap_user_00155') }}：{{ row.reply }}</div>
           </div>
         </div>
-        <form v-else class="form verification_form" @submit.prevent="reply(row.id)">
-          <MemberField area><textarea v-model="replyDraft[row.id]" rows="2" required /></MemberField>
+        <form v-else class="job_Consulting_com" @submit.prevent="reply(row.id)">
+          <textarea v-model="replyDraft[row.id]" rows="2" required />
           <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
         </form>
       </div>
@@ -98,6 +98,11 @@ const total = computed(() => inferTotal(data.value))
             <div class="Posted_card_name">{{ row.job_name || $t('common.job') }}</div>
             <div class="Posted_card_pay">{{ row.username }}</div>
           </div>
+          <div v-if="row.reply" class="job_Consulting_com">{{ $t('wap_user_00155') }}：{{ row.reply }}</div>
+          <form v-else class="job_Consulting_com" @submit.prevent="reply(row.id)">
+            <textarea v-model="replyDraft[row.id]" rows="2" required />
+            <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+          </form>
           <div class="Posted_card_time">{{ row.content }}</div>
         </div>
       </div>

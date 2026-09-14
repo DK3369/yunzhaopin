@@ -102,7 +102,12 @@ useSeoMeta({ title: t('wap_user_00216') })
       <div class="user_new_cz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
-      <p v-if="openId === row.id" class="audition_list muted">{{ row.content }} · {{ row.linkman }} {{ row.linktel }} · {{ row.intertime }} {{ row.address }}</p>
+      <p v-if="openId === row.id" class="invitation_cont">
+        <div class="invitation_cont_p"><span class="invitation_cont_pn">{{ $t('wap_user_00255') }}</span><em class="audition_list_e">{{ row.intertime }}</em></div>
+        <div class="invitation_cont_p"><span class="invitation_cont_pn">{{ $t('wap_user_00243') }}</span><em class="audition_list_e">{{ row.address }}</em></div>
+        <div class="invitation_cont_p"><span class="invitation_cont_pn">{{ $t('common_02051') }}</span><em class="audition_list_e">{{ row.linkman }}</em> TEL：<em class="invitation_cont_tel">{{ row.linktel }}</em></div>
+        <div v-if="row.content" class="audition_list"><span class="audition_list_span">{{ row.content }}</span></div>
+      </p>
       <form v-if="rejectId === row.id" class="form verification_form" @submit.prevent="reject(row.id)">
         <MemberField :label="$t('wap_01053')">
           <input v-model="remark" />
@@ -130,15 +135,16 @@ useSeoMeta({ title: t('wap_user_00216') })
               <div class="card_interview_time">{{ row.job_name }}</div>
             </NuxtLink>
             <div class="interview_box_icons">
+              <div v-if="row.is_browse !== 3 && row.is_browse !== 4" class="interview_box_icon" @click="accept(row.id)">{{ $t('wap_user_00262') }}</div>
+              <div v-if="row.is_browse !== 3 && row.is_browse !== 4" class="interview_box_icon" @click="rejectId = row.id">{{ $t('wap_01053') }}</div>
               <div class="interview_box_icon" @click="remove(row.id)">
                 <img src="/legacy/h5/images/resume_del.png" alt="" width="100%" height="100%" />
               </div>
             </div>
           </div>
-          <p v-if="row.is_browse !== 3 && row.is_browse !== 4">
-            <a href="javascript:;" class="user_new_bth" @click="accept(row.id)">{{ $t('wap_user_00262') }}</a>
-            <a href="javascript:;" class="user_new_btjh" @click="rejectId = row.id">{{ $t('wap_01053') }}</a>
-            <a href="javascript:;" @click="shield(row.id)">{{ $t('wap_01060') }}</a>
+          <p v-if="openId === row.id" class="interview_job_box">
+            <div class="card_interview_text">{{ row.address }} {{ row.linkman }} {{ row.linktel }}</div>
+            <div v-if="row.content" class="card_interview_time">{{ row.content }}</div>
           </p>
         </div>
       </div>

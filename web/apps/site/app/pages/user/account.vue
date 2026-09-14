@@ -148,13 +148,13 @@ useSeoMeta({ title: t('wap_user_00338') })
     <p v-if="utSt?.pending" class="muted">{{ $t('common.yes') }}</p>
     <h2>{{ $t('member_user_00058') }}</h2>
     <div v-if="!sessionList.length" class="msg_no"><p>{{ $t('ui.no_items') }}</p></div>
-    <div v-for="row in sessionList" :key="row.id" class="attention_enterprises_list site-pc">
-      <div class="attention_enterprises_span attention_enterprises_name">
+    <div v-for="row in sessionList" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">
         {{ row.device || row.ip }}
         <span v-if="row.is_current">{{ $t('common.yes') }}</span>
       </div>
-      <div class="attention_enterprises_span attention_enterprises_time">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</div>
-      <div class="attention_enterprises_span attention_enterprises_cz">
+      <div class="sysynews_span sysynews_time">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</div>
+      <div class="sysynews_span sysynews_cz">
         <a v-if="!row.is_current" href="javascript:;" class="cblue" @click="revokeSession(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>

@@ -173,14 +173,16 @@ useSeoMeta({ title: t('common_01946') })
         </span>
       </div>
     </div>
-    <form v-if="bankOrderNo" class="form verification_form" @submit.prevent="submitBank">
-      <p class="muted">{{ $t('ui.order_no') }} {{ bankOrderNo }}</p>
-      <MemberField :label="$t('model_00022')"><input v-model="bankForm.bank_name" required /></MemberField>
-      <MemberField :label="$t('model_00023')"><input v-model="bankForm.bank_number" required /></MemberField>
-      <MemberField :label="$t('model_00024')"><input v-model="bankForm.bank_price" required /></MemberField>
-      <MemberField :label="$t('member_user_00106')"><input v-model="bankForm.bank_time" type="date" required /></MemberField>
-      <MemberField :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" /></MemberField>
-      <input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" />
+    <form v-if="bankOrderNo" class="com_release_box" @submit.prevent="submitBank">
+      <ul>
+        <MemberReleaseRow :label="$t('ui.order_no')"><span>{{ bankOrderNo }}</span></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('model_00022')" required><input v-model="bankForm.bank_name" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('model_00023')" required><input v-model="bankForm.bank_number" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('model_00024')" required><input v-model="bankForm.bank_price" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('member_user_00106')" required><input v-model="bankForm.bank_time" type="date" required /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.image')"><input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" /></MemberReleaseRow>
+      </ul>
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <MemberResumeH1 :title="$t('common_02029')" />

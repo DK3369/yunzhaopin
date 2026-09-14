@@ -102,28 +102,32 @@ useSeoMeta({ title: t('ui.map_addr') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="form yun_createbox verification_form" @submit.prevent="save">
-        <div class="yun_createlist">
-          <MemberField :label="$t('wap_01431')"><input v-model="form.link_man" required /></MemberField>
-          <MemberField :label="$t('common.phone')"><input v-model="form.link_moblie" required /></MemberField>
-          <MemberField :label="$t('wap_com_00014')"><input v-model="form.link_phone" /></MemberField>
-          <MemberField :label="$t('member_user_00282')"><input v-model="form.email" /></MemberField>
-          <MemberField :label="$t('ui.map_addr')"><input v-model="form.link_address" /></MemberField>
-          <LocationFields
-            v-model:province-id="form.province_id"
-            v-model:city-id="form.city_id"
-            v-model:district-id="form.three_city_id"
-          />
-          <MapPick v-model:x="form.x" v-model:y="form.y" />
-          <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
-          <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
-        </div>
+      <form class="com_release_box" @submit.prevent="save">
+        <ul>
+          <MemberReleaseRow :label="$t('wap_01431')" required><input v-model="form.link_man" required class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('common.phone')" required><input v-model="form.link_moblie" required class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_com_00014')"><input v-model="form.link_phone" class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('member_user_00282')"><input v-model="form.email" class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.map_addr')"><input v-model="form.link_address" class="com_release_textnew_text" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_user_00243')">
+            <LocationFields
+              v-model:province-id="form.province_id"
+              v-model:city-id="form.city_id"
+              v-model:district-id="form.three_city_id"
+            />
+          </MemberReleaseRow>
+          <MemberReleaseRow :label="$t('wap_user_00243')">
+            <MapPick v-model:x="form.x" v-model:y="form.y" />
+          </MemberReleaseRow>
+        </ul>
+        <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
+        <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
       </form>
       <p v-if="msg">{{ msg }}</p>
-      <div v-for="row in list" :key="row.id" class="attention_enterprises_list site-pc">
-        <div class="attention_enterprises_span attention_enterprises_name">{{ row.link_man }} · {{ row.link_address }}</div>
-        <div class="attention_enterprises_span attention_enterprises_time">{{ row.link_moblie }}</div>
-        <div class="attention_enterprises_span attention_enterprises_cz">
+      <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
+        <div class="sysynews_span sysynews_name">{{ row.link_man }} · {{ row.link_address }}</div>
+        <div class="sysynews_span sysynews_time">{{ row.link_moblie }}</div>
+        <div class="sysynews_span sysynews_cz">
           <a href="javascript:;" class="cblue" @click="edit(row)">{{ $t('common.edit') }}</a>
           <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
         </div>
