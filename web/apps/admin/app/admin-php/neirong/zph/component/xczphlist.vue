@@ -276,7 +276,7 @@
             <div class="shbox">
                 <div class="shinfo">
                     <div class="shcomname">{{info.name}}
-                        <el-tag type="danger" size="small">{{info.rating_name}}</el-tag>
+                        <el-tag type="danger" size="small">{{ packedLog(info.rating_name) }}</el-tag>
                     </div>
                     <div class="sh_zwsz_add">{{ lc("admin_company_booth_value", [curr_comdata.zphname, curr_comdata.space_n]) }}</div>
                     <div class="sh_zwsz">

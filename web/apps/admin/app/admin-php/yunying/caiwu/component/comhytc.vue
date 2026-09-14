@@ -70,7 +70,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <span style="margin-right: 10px;">{{ lc("admin_package_name_value", [package_data.rating_name]) }}</span>
+                                    <span style="margin-right: 10px;">{{ lc("admin_package_name_value", [packedLog(package_data.rating_name)]) }}</span>
                                     <span style="margin-right: 10px;">{{ lc('admin_01243') }}
                                         <span v-if="expireTimeStatus" style="color: red">{{ package_data.time_ymd }}</span>
                                         <span v-else>{{ package_data.time_ymd }}</span>

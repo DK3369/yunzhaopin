@@ -15,6 +15,7 @@ import {
   rustLangFor as rustLangForWeb,
   type WebLocale,
 } from '../../../../layers/base/app/utils/locale'
+import { isAutoKey, runPackedTranslate } from '../../../../layers/base/app/utils/packedText'
 
 export type AdminLocale = WebLocale
 
@@ -38,9 +39,6 @@ export function readStoredLocale(): AdminLocale {
 export function rustLangFor(locale: AdminLocale): string {
   return rustLangForWeb(locale, ADMIN_LOCALE_KEY)
 }
-
-/** PHP `Yun_I18n::isAutoKey` */
-const AUTO_KEY_RE = /^([a-z][a-z0-9_]*)_([0-9]{5})$/
 
 /**
  * PHP `zh_cn.php` / `en_us.php` define `admin_yunying_00201` twice: first 「短信」/SMS
@@ -227,120 +225,18 @@ const NAME_ALIAS: Record<string, string> = {
 
 let mergedFixes = false
 
-function isAutoKey(key: string): boolean {
-  const m = AUTO_KEY_RE.exec(key)
-  if (!m) return false
-  return m[1].split('_').length <= 3
-}
-
-/** Leading `common_01234` even when concatenated with a suffix.
- * Module segments are letters only so `common_02032common_01174` splits. */
-const AUTO_KEY_PREFIX_RE = /^([a-z]+(?:_[a-z]+){0,2})_([0-9]{5})/
-
-function leadingAutoKey(text: string): string {
-  const m = AUTO_KEY_PREFIX_RE.exec(text)
-  if (!m) return ''
-  const key = `${m[1]}_${m[2]}`
-  return isAutoKey(key) ? key : ''
-}
-
-type ZhPrefix = { zh: string; key: string }
-
-let zhPrefixList: ZhPrefix[] | null = null
-let zhPrefixLocale = ''
-let zhPrefixCount = 0
-
-function zhPrefixCatalog(): ZhPrefix[] {
-  const i18n = composer()
-  const loc = i18n?.locale.value || ''
-  const root = i18n?.messages?.value?.zh
-  const n = root && typeof root === 'object' ? Object.keys(root).length : 0
-  if (zhPrefixList && zhPrefixLocale === loc && zhPrefixCount === n) return zhPrefixList
-  const items: ZhPrefix[] = []
-  const seen = new Set<string>()
-  const push = (zh: string, key: string) => {
-    const t = String(zh || '')
-    if (t.length < 2 || t.includes('{') || seen.has(t)) return
-    seen.add(t)
-    items.push({ zh: t, key })
-  }
-  for (const [key, zh] of Object.entries(LC_FIRST_WINS.zh)) push(zh, key)
-  if (root && typeof root === 'object') {
-    for (const [key, val] of Object.entries(root)) {
-      if (typeof val === 'string' && isAutoKey(key)) push(val, key)
-    }
-  }
-  items.sort((a, b) => b.zh.length - a.zh.length)
-  zhPrefixList = items
-  zhPrefixLocale = loc
-  zhPrefixCount = n
-  return items
-}
-
-function longestZhPrefix(text: string): ZhPrefix | undefined {
-  for (const row of zhPrefixCatalog()) {
-    if (text.startsWith(row.zh)) return row
-  }
-  return undefined
-}
-
-const CJK_RE = /[\u3400-\u9fff]/
-
-function joinPacked(left: string, next: string): string {
-  if (!left) return next
-  if (!next) return left
-  const a = left.charAt(left.length - 1)
-  const b = next.charAt(0)
-  if (/[A-Za-z0-9]/.test(a) && /[A-Za-z]/.test(b)) return `${left} ${next}`
-  return left + next
-}
-
-/**
- * Member-log `content` is stored as a numbered key, Chinese, or key+suffix
- * (`common_02313`, `用户:namecommon_02313`). Unwrap keys and longest Chinese
- * prefixes using the zh pack so English admin shows English.
- */
 export function translatePackedText(text: unknown): string {
-  let s = String(text ?? '')
-  if (!s) return ''
   const i18n = composer()
   if (i18n) {
     void i18n.locale.value
     applyPhpLcFixes()
   }
-  const zhOnlyKeys = activeLocale(i18n) === 'zh'
-  let out = ''
-  let guard = 0
-  while (s && guard++ < 80) {
-    const key = leadingAutoKey(s)
-    if (key) {
-      out = joinPacked(out, lc(key))
-      s = s.slice(key.length)
-      continue
-    }
-    if (!zhOnlyKeys) {
-      const hit = longestZhPrefix(s)
-      if (hit) {
-        out = joinPacked(out, lc(hit.key))
-        s = s.slice(hit.zh.length)
-        continue
-      }
-    }
-    if (zhOnlyKeys) {
-      out += s
-      break
-    }
-    if (!CJK_RE.test(s.charAt(0))) {
-      let i = 1
-      while (i < s.length && !CJK_RE.test(s.charAt(i)) && !leadingAutoKey(s.slice(i))) i++
-      out += s.slice(0, i)
-      s = s.slice(i)
-      continue
-    }
-    out += s.charAt(0)
-    s = s.slice(1)
-  }
-  return out
+  return runPackedTranslate(text, {
+    locale: activeLocale(i18n),
+    lc,
+    extraZh: LC_FIRST_WINS.zh,
+    zhRoot: i18n?.messages?.value?.zh as Record<string, unknown> | undefined,
+  })
 }
 
 function aliasKey(text: string): string {

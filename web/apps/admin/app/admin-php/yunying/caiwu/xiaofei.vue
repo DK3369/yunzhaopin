@@ -45,6 +45,7 @@
 				<el-table-column prop="comname" :label="lc('admin_yunying_00096')" min-width="160"></el-table-column>
 				<el-table-column prop="price_str" :label="lc('member_user_00254')" width="150"></el-table-column>
 				<el-table-column prop="pay_remark" :label="lc('admin_user_00290')">
+                    <template #default="scope">{{ packedLog(scope.row.pay_remark) }}</template>
 				</el-table-column>
 				<el-table-column prop="pay_time" :label="lc('wap_com_00344')" width="180" align="center" sortable="custom">
 				</el-table-column>

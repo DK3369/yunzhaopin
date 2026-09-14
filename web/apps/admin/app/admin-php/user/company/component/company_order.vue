@@ -23,10 +23,12 @@
                       :default-sort="{ prop: 'id', order: 'descending' }" @selection-change="handleSelectionChange"  @sort-change='sortChange' height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
                 <el-table-column prop="order_id" :label="lc('admin_user_00295')" width="150"></el-table-column>
-                <el-table-column prop="order_type_n" :label="lc('member_user_00240')" width="150"></el-table-column>
+                <el-table-column prop="order_type_n" :label="lc('member_user_00240')" width="150">
+                    <template #default="scope">{{ packedLog(scope.row.order_type_n) }}</template>
+                </el-table-column>
                 <el-table-column prop="order_type_n" :label="lc('wap_user_00318')" width="150">
                     <template #default="scope">
-                        {{scope.row.type_n}}{{scope.row.rating_name}}
+                        {{ packedLog((scope.row.type_n || '') + (scope.row.rating_name || '')) }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="order_price" :label="lc('admin_user_company_00044')" width="150" sortable="custom">
@@ -161,7 +163,7 @@
                                 <span>{{ lc('wap_user_00318') }}</span>
                             </div>
                             <div class="jiliTanJinCont">
-                                <span>{{curr_dtl.type_n}}</span>
+                                <span>{{ packedLog(curr_dtl.type_n) }}{{ packedLog(curr_dtl.rating_name) }}</span>
                             </div>
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type == 2">

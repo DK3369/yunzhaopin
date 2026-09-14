@@ -68,6 +68,7 @@ use crate::admin_cms_service;
 use crate::admin_dashboard_service;
 use crate::admin_longtail_service;
 use crate::admin_report_service;
+use crate::enum_labels;
 use crate::description_service;
 use crate::dict_service;
 use crate::friend_link_service;
@@ -1610,12 +1611,8 @@ fn city_n(dicts: &dict_service::LocalizedDicts, p: i32, c: i32, t: i32) -> Strin
     parts.join("-")
 }
 
-fn sex_n(sex: i32) -> &'static str {
-    match sex {
-        1 => "男",
-        2 => "女",
-        _ => "",
-    }
+fn sex_n(sex: i32) -> String {
+    enum_labels::sex_n(sex)
 }
 
 fn php_time_min(body: &Value) -> Option<i64> {
@@ -3225,55 +3222,16 @@ async fn ad_class_upsort(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     Ok(PhpOut::Data(json!({})))
 }
 
-fn pay_name(code: &str) -> &'static str {
-    match code {
-        "alipay" => "支付宝",
-        "tenpay" => "财富通",
-        "bank" => "银行转帐",
-        "alipaydual" => "支付宝双接口",
-        "alipayescow" => "担保交易",
-        "adminpay" => "管理员充值",
-        "balance" => "余额支付",
-        "admincut" => "管理员扣款",
-        "wapalipay" => "支付宝手机支付",
-        _ => "",
-    }
+fn pay_name(code: &str) -> String {
+    enum_labels::pay_name(code)
 }
 
-fn order_kind_name(kind: i32) -> &'static str {
-    match kind {
-        1 => "购买会员",
-        2 => "积分充值",
-        3 => "银行转帐",
-        4 => "金额充值",
-        5 => "购买增值包",
-        10 => "职位置顶",
-        11 => "职位紧急",
-        12 => "职位推荐",
-        13 => "自动刷新",
-        14 => "简历置顶",
-        16 => "刷新职位",
-        17 => "刷新兼职",
-        19 => "下载简历",
-        20 => "发布职位",
-        21 => "发布兼职",
-        23 => "面试邀请",
-        24 => "兼职推荐",
-        25 => "店铺招聘",
-        28 => "招聘会报名",
-        _ => "",
-    }
+fn order_kind_name(kind: i32) -> String {
+    enum_labels::order_kind_name(kind)
 }
 
-fn pay_state_html(state: i32) -> &'static str {
-    match state {
-        0 => "<font color=red>支付失败</font>",
-        1 => "<font color=green>等待付款</font>",
-        2 => "<font color=#3d7dfd>支付成功</font>",
-        3 => "<font color=#c30ad9>等待确认</font>",
-        4 => "<font color=red>交易关闭</font>",
-        _ => "",
-    }
+fn pay_state_html(state: i32) -> String {
+    enum_labels::pay_state_html(state)
 }
 
 fn json_present_i32(v: &Value, key: &str) -> Option<i32> {
@@ -3302,6 +3260,7 @@ fn finance_order_json(r: &vip_repo::PhpOrderRow) -> Value {
         "rating_name_n": r.rating_name,
         "order_state": r.order_state.to_string(),
         "order_state_n": pay_state_html(r.order_state),
+        "order_state_text": enum_labels::pay_state_text(r.order_state),
         "order_type": r.order_type,
         "order_type_n": pay_name(&r.order_type),
         "order_time": fmt_dt(r.order_time),
@@ -3477,36 +3436,36 @@ async fn finance_order_search_type(state: &AppState) -> AppResult<Value> {
         .collect();
     Ok(json!({
         "pay": {
-            "alipay": "支付宝",
-            "tenpay": "财富通",
-            "bank": "银行转帐",
-            "alipaydual": "支付宝双接口",
-            "alipayescow": "担保交易",
-            "adminpay": "管理员充值",
-            "balance": "余额支付",
-            "admincut": "管理员扣款",
-            "wapalipay": "支付宝手机支付",
+            "alipay": enum_labels::pay_name("alipay"),
+            "tenpay": enum_labels::pay_name("tenpay"),
+            "bank": enum_labels::pay_name("bank"),
+            "alipaydual": enum_labels::pay_name("alipaydual"),
+            "alipayescow": enum_labels::pay_name("alipayescow"),
+            "adminpay": enum_labels::pay_name("adminpay"),
+            "balance": enum_labels::pay_name("balance"),
+            "admincut": enum_labels::pay_name("admincut"),
+            "wapalipay": enum_labels::pay_name("wapalipay"),
         },
         "ordertype": {
-            "1": "购买会员",
-            "2": "积分充值",
-            "3": "银行转帐",
-            "4": "金额充值",
-            "5": "购买增值包",
-            "10": "职位置顶",
-            "11": "职位紧急",
-            "12": "职位推荐",
-            "13": "自动刷新",
-            "14": "简历置顶",
-            "16": "刷新职位",
-            "17": "刷新兼职",
-            "19": "下载简历",
-            "20": "发布职位",
-            "21": "发布兼职",
-            "23": "面试邀请",
-            "24": "兼职推荐",
-            "25": "店铺招聘",
-            "28": "招聘会报名",
+            "1": enum_labels::order_kind_name(1),
+            "2": enum_labels::order_kind_name(2),
+            "3": enum_labels::order_kind_name(3),
+            "4": enum_labels::order_kind_name(4),
+            "5": enum_labels::order_kind_name(5),
+            "10": enum_labels::order_kind_name(10),
+            "11": enum_labels::order_kind_name(11),
+            "12": enum_labels::order_kind_name(12),
+            "13": enum_labels::order_kind_name(13),
+            "14": enum_labels::order_kind_name(14),
+            "16": enum_labels::order_kind_name(16),
+            "17": enum_labels::order_kind_name(17),
+            "19": enum_labels::order_kind_name(19),
+            "20": enum_labels::order_kind_name(20),
+            "21": enum_labels::order_kind_name(21),
+            "23": enum_labels::order_kind_name(23),
+            "24": enum_labels::order_kind_name(24),
+            "25": enum_labels::order_kind_name(25),
+            "28": enum_labels::order_kind_name(28),
         },
         "ratingarr": ratingarr,
     }))
@@ -3655,25 +3614,20 @@ async fn finance_order_xls(state: &AppState, body: &Value) -> AppResult<Value> {
     }
     let mut csv = String::from("id,username,comname,order_id,order_type,type,order_price,order_time,order_state,crm_name\n");
     for r in &rows {
-        let state_plain = match r.order_state {
-            0 => "支付失败",
-            1 => "等待付款",
-            2 => "支付成功",
-            3 => "等待确认",
-            4 => "交易关闭",
-            _ => "",
-        };
+        let state_plain = enum_labels::pay_state_text(r.order_state);
+        let ot = pay_name(&r.order_type);
+        let kind = order_kind_name(r.r#type);
         csv.push_str(&format!(
             "{},{},{},{},{},{},{},{},{},{}\n",
             r.id,
             csv_cell(&r.username),
             csv_cell(&r.comname),
             csv_cell(&r.order_id),
-            csv_cell(pay_name(&r.order_type)),
-            csv_cell(order_kind_name(r.r#type)),
+            csv_cell(&ot),
+            csv_cell(&kind),
             r.order_price,
             fmt_dt(r.order_time),
-            csv_cell(state_plain),
+            csv_cell(&state_plain),
             csv_cell(&r.crm_name),
         ));
     }
@@ -4005,7 +3959,7 @@ async fn finance_pay_index(state: &AppState, body: &Value) -> AppResult<Value> {
             let price_str = if r.r#type == 1 {
                 format!("{}{}", r.order_price, pricename)
             } else {
-                format!("{}元", r.order_price)
+                format!("{}{}", r.order_price, enum_labels::label("common_02056"))
             };
             json!({
                 "id": r.id,
@@ -6250,19 +6204,7 @@ fn class_map(dicts: &dict_service::LocalizedDicts, var: &str) -> Value {
     Value::Object(m)
 }
 
-const SOURCE_MAP: &[(&str, &str)] = &[
-    ("1", "网页"),
-    ("2", "手机"),
-    ("4", "微信"),
-    ("6", "采集"),
-    ("8", "QQ登录"),
-    ("9", "微信扫一扫"),
-    ("10", "微博"),
-    ("11", "PC快速投递"),
-    ("12", "WAP快速投递"),
-    ("21", "账户分离"),
-    ("26", "预留信息"),
-];
+const SOURCE_MAP: &[(&str, &str)] = enum_labels::SOURCE_LIST;
 
 async fn user_gap_resume_num(state: &AppState) -> AppResult<Value> {
     let db = state.db.reader();
@@ -6349,6 +6291,7 @@ async fn user_gap_mem_index(state: &AppState, body: &Value) -> AppResult<Value> 
                 "status": r.status,
                 "lock_info": r.lock_info,
                 "source": r.source,
+                "source_n": source_name(r.source),
                 "did": r.did,
                 "login_address": r.login_address,
                 "moblie_address": r.moblie_address,
@@ -6840,15 +6783,8 @@ async fn user_gap_invite_log(state: &AppState, body: &Value) -> AppResult<Value>
 }
 
 /// PHP `db.data.php` `paystate` after `strip_tags`.
-fn pay_state_text(state: i32) -> &'static str {
-    match state {
-        0 => "支付失败",
-        1 => "等待付款",
-        2 => "支付成功",
-        3 => "等待确认",
-        4 => "交易关闭",
-        _ => "",
-    }
+fn pay_state_text(state: i32) -> String {
+    enum_labels::pay_state_text(state)
 }
 
 /// PHP `users_member::payLog_action` — 消费记录（`company_pay.com_id = uid`）.
@@ -6892,7 +6828,7 @@ async fn user_gap_pay_log(state: &AppState, body: &Value) -> AppResult<Value> {
             let tag = if r.r#type == 1 {
                 format!("{unit}{pricename}")
             } else {
-                "元".to_string()
+                enum_labels::label("common_02056")
             };
             json!({
                 "id": r.id,
@@ -7544,28 +7480,7 @@ fn set_config_save_logo(body: &Value) -> AppResult<PhpOut> {
 }
 
 /// Keys from PHP `uploads/config/db.data.php` `modelconfig` (read-only copy).
-const TPL_CACHE_MODELS: &[(&str, &str)] = &[
-    ("job", "找工作"),
-    ("resume", "找人才"),
-    ("part", "兼职"),
-    ("company", "找企业"),
-    ("wap", "手机端"),
-    ("article", "资讯"),
-    ("announcement", "公告"),
-    ("hr", "工具箱"),
-    ("zph", "招聘会"),
-    ("ask", "问答"),
-    ("evaluate", "测评"),
-    ("once", "店铺招聘"),
-    ("tiny", "普工简历"),
-    ("redeem", "商城"),
-    ("map", "地图"),
-    ("special", "专题招聘"),
-    ("login", "登录"),
-    ("register", "注册"),
-    ("gongzhao", "公招"),
-    ("error", "错误提醒"),
-];
+const TPL_CACHE_MODELS: &[(&str, &str)] = enum_labels::TPL_CACHE_MODELS;
 
 fn tpl_cache_key(model: &str) -> String {
     format!("sy_{model}_cache")
@@ -7581,7 +7496,7 @@ async fn set_config_settplcache(state: &AppState) -> AppResult<Value> {
         let cache = map.get(&tpl_cache_key(k)).cloned().unwrap_or_default();
         new_model.insert(
             (*k).to_string(),
-            json!({ "value": *label, "cache": cache }),
+            json!({ "value": enum_labels::label(label), "cache": cache }),
         );
     }
     Ok(json!({
@@ -8400,13 +8315,17 @@ async fn user_gap_resume_config(state: &AppState) -> AppResult<Value> {
         search_item(
             "sex",
             "wap_com_00303",
-            kv_obj(&[("3", "不限"), ("1", "男"), ("2", "女")]),
+            kv_obj(&[
+                ("3", enum_labels::sex_filter_key("3")),
+                ("1", enum_labels::sex_filter_key("1")),
+                ("2", enum_labels::sex_filter_key("2")),
+            ]),
         ),
         search_item("marriage", "wap_com_00282", class_map(&dicts, "user_marriage")),
         search_item(
             "remark",
             "admin_01317",
-            kv_obj(&[("1", "是"), ("2", "否")]),
+            kv_obj(&[("1", enum_labels::yes_no_key("1")), ("2", enum_labels::yes_no_key("2"))]),
         ),
         search_item("edu", "wap_com_00283", class_map(&dicts, "user_edu")),
         search_item("exp", "wap_user_00240", class_map(&dicts, "user_word")),
@@ -8473,7 +8392,7 @@ async fn user_gap_user_config(state: &AppState) -> AppResult<Value> {
         search_item(
             "def_job",
             "admin_user_company_00294",
-            kv_obj(&[("1", "是"), ("2", "否")]),
+            kv_obj(&[("1", enum_labels::yes_no_key("1")), ("2", enum_labels::yes_no_key("2"))]),
         ),
     ];
     let domains = domain_repo::list_all(state.db.reader()).await?;
@@ -9164,15 +9083,7 @@ fn csv_city_labels(dicts: &dict_service::LocalizedDicts, csv: &str) -> (String, 
 }
 
 fn wx_bind_msg(wxid: &str, unionid: &str) -> String {
-    let zh = !matches!(i18n::current_lang(), i18n::Lang::En);
-    match (wxid.is_empty(), unionid.is_empty()) {
-        (true, _) if zh => "公众号未绑定".into(),
-        (true, _) => "Official account is not bound".into(),
-        (_, true) if zh => "公众号已绑定".into(),
-        (_, true) => "Official account is bound".into(),
-        _ if zh => "公众号已绑定，微信开放平台已绑定".into(),
-        _ => "Official account is bound, and WeChat Open Platform is bound".into(),
-    }
+    enum_labels::wx_bind_msg(wxid, unionid)
 }
 
 fn port_label(port: i32) -> &'static str {
@@ -9261,6 +9172,7 @@ async fn user_gap_company_index(state: &AppState, body: &Value) -> AppResult<Val
                 "wxBindmsg": wx_bind_msg(&r.wxid, &r.unionid),
                 "lock_info": r.lock_info,
                 "source": r.source,
+                "source_n": source_name(r.source),
                 "login_ip": r.login_ip,
                 "login_address": r.login_address,
                 "moblie_address": r.moblie_address,
@@ -9337,6 +9249,7 @@ async fn user_gap_user_index(state: &AppState, body: &Value) -> AppResult<Value>
                 "usertype": r.usertype,
                 "status": r.status,
                 "source": r.source,
+                "source_n": source_name(r.source),
                 "wxid": r.wxid,
                 "wxopenid": r.wxopenid,
                 "unionid": r.unionid,
@@ -9439,6 +9352,7 @@ async fn user_gap_resume_index(state: &AppState, body: &Value) -> AppResult<Valu
                 "ctime": r.ctime,
                 "ctime_n": fmt_dt(r.ctime),
                 "source": r.source,
+                "source_n": source_name(r.source),
                 "add_ip": r.add_ip,
                 "ip_address": r.ip_address,
                 "city_classid": r.city_classid,
@@ -9756,20 +9670,7 @@ async fn company_add_tuiwen_task(
 }
 
 fn msg_t(key: &str) -> String {
-    let lang = i18n::current_lang();
-    for prefix in ["messages.", "errors."] {
-        let prefixed = format!("{prefix}{key}");
-        let t = i18n::t(&prefixed, lang);
-        if t != prefixed {
-            return t;
-        }
-    }
-    let t = i18n::t(key, lang);
-    if t != key {
-        t
-    } else {
-        key.to_string()
-    }
+    enum_labels::label(key)
 }
 
 fn is_system_sender(kw: &str) -> bool {
@@ -10147,23 +10048,7 @@ fn sms_port_n(port: i32) -> String {
 }
 
 fn sms_result_n(state: i32) -> String {
-    match state {
-        0 => String::new(),
-        401 => "手机号为空".into(),
-        402 => "短信内容为空".into(),
-        403 => "appKey为空".into(),
-        404 => "appSecret为空".into(),
-        405 => "手机号码格式错误".into(),
-        406 => "禁用手机号".into(),
-        407 => "短信内容含有敏感字词".into(),
-        410 => "短信秘钥认证错误".into(),
-        411 => "网站无有效短信签名".into(),
-        412 => "短信余额不足".into(),
-        413 => "短信发送失败".into(),
-        501 => "检测是空号".into(),
-        502 => "空号检测归属地失败".into(),
-        n => n.to_string(),
-    }
+    enum_labels::sms_result_n(state)
 }
 
 async fn sms_log_del(
@@ -10772,7 +10657,7 @@ async fn shop_reward_add(
         let integral_pricename = setting_repo::find(db, "integral_pricename")
             .await?
             .map(|s| s.value)
-            .unwrap_or_else(|| "积分".into());
+            .unwrap_or_else(|| enum_labels::label("wap_user_00008"));
         let info = if id > 0 {
             match redeem_repo::php_get_reward(db, id).await? {
                 Some(r) => {
@@ -11400,27 +11285,7 @@ fn admin_nav_tree(rows: &[rbac_php::PhpAdminNavRow], keyid: i64) -> Vec<Value> {
         .collect()
 }
 
-const PHP_MODULE_KEYS: &[(&str, &str)] = &[
-    ("job", "找工作"),
-    ("resume", "找人才"),
-    ("part", "兼职"),
-    ("company", "找企业"),
-    ("wap", "手机端"),
-    ("article", "资讯"),
-    ("announcement", "公告"),
-    ("hr", "工具箱"),
-    ("zph", "招聘会"),
-    ("ask", "问答"),
-    ("evaluate", "测评"),
-    ("once", "店铺招聘"),
-    ("tiny", "普工简历"),
-    ("redeem", "商城"),
-    ("map", "地图"),
-    ("special", "专题招聘"),
-    ("login", "登录"),
-    ("register", "注册"),
-    ("gongzhao", "公招"),
-];
+const PHP_MODULE_KEYS: &[(&str, &str)] = enum_labels::TPL_CACHE_MODELS;
 
 async fn role_user_index(state: &AppState, body: &Value) -> AppResult<Value> {
     let (page, per, offset, limit) = page_of(body);
@@ -12162,10 +12027,13 @@ async fn set_module_index(state: &AppState) -> AppResult<Value> {
     let cfg = settings_hash(state).await.unwrap_or_default();
     let mut module = serde_json::Map::new();
     for (key, label) in PHP_MODULE_KEYS {
+        if *key == "error" {
+            continue;
+        }
         module.insert(
             (*key).to_string(),
             json!({
-                "value": label,
+                "value": enum_labels::label(label),
                 "web": cfg.get(&format!("sy_{key}_web")).cloned().unwrap_or_default(),
                 "ssl": cfg.get(&format!("sy_{key}ssl")).cloned().unwrap_or_default(),
                 "domain": cfg.get(&format!("sy_{key}domain")).cloned().unwrap_or_default(),
@@ -12182,6 +12050,9 @@ async fn set_module_save(state: &AppState, user: &AuthenticatedUser, body: &Valu
         _ => return Err(ApiError::param_invalid("param_invalid")),
     };
     for (key, _) in PHP_MODULE_KEYS {
+        if *key == "error" {
+            continue;
+        }
         let Some(item) = obj.get(*key) else { continue };
         let web = json_i32(item, "web");
         let ssl = json_i32(item, "ssl");
@@ -14107,7 +13978,7 @@ fn range_n(sdate: i64, edate: i64) -> (String, String) {
     let end = if edate > 0 {
         fmt_date(edate)
     } else if sdate > 0 {
-        String::from("至今")
+        String::from(enum_labels::label("wap_js_00170"))
     } else {
         String::new()
     };
@@ -14217,7 +14088,7 @@ async fn company_job_get_html(state: &AppState, body: &Value) -> AppResult<Value
     } else if job.minsalary > 0 {
         job.minsalary.to_string()
     } else {
-        String::from("面议")
+        String::from(enum_labels::label("common_02045"))
     };
     Ok(Value::String(format!(
         "<div><p><b>{}</b> · {}</p><p>薪资：{}</p><p>{}</p><p>电话：{}</p><p>地址：{}</p></div>",
@@ -15038,7 +14909,7 @@ fn days_gt(code: i32) -> Option<i64> {
 
 fn job_salary(min: i32, max: i32) -> String {
     if min <= 0 && max <= 0 {
-        "面议".into()
+        enum_labels::label("common_02045")
     } else if max <= 0 || max == min {
         min.to_string()
     } else {
@@ -15085,11 +14956,7 @@ fn job_body_html(
     let desc = clip(&html_plain(&j.description), 200);
     let com_desc = clip(&html_plain(&j.content), 200);
     let welfare = dicts.welfare_labels(&j.welfare).join(" ");
-    let sex = match j.sex {
-        1 => "男",
-        2 => "女",
-        _ => "不限",
-    };
+    let sex = enum_labels::sex_or_unlimited(j.sex);
     let map = vec![
         ("{职位名称}", j.name.clone()),
         (
@@ -15105,9 +14972,9 @@ fn job_body_html(
         ),
         ("{薪资待遇}", job_salary(j.minsalary, j.maxsalary)),
         ("common_01436", job_salary(j.minsalary, j.maxsalary)),
-        ("{招聘人数}", if j.number > 0 { j.number.to_string() } else { "若干".into() }),
-        ("{年龄要求}", if j.age.is_empty() { "不限".into() } else { j.age.clone() }),
-        ("{性别要求}", sex.to_string()),
+        ("{招聘人数}", if j.number > 0 { j.number.to_string() } else { enum_labels::several() }),
+        ("{年龄要求}", if j.age.is_empty() { enum_labels::unlimited() } else { j.age.clone() }),
+        ("{性别要求}", sex),
         ("{经验要求}", dicts.user_or_com(j.exp).to_string()),
         ("{学历要求}", dicts.user_or_com(j.edu).to_string()),
         ("{一级城市}", dicts.city(j.provinceid).to_string()),
@@ -15828,11 +15695,7 @@ fn resume_promo_html(
          <tr style=\"background:#f8f8f8;font-weight:bold\"><td>姓名</td><td>年龄</td><td>学历</td><td>经验</td><td>性别</td><td>操作</td></tr>"
     );
     for r in rows {
-        let sex = match r.sex {
-            1 => "男",
-            2 => "女",
-            _ => "不限",
-        };
+        let sex = enum_labels::sex_or_unlimited(r.sex);
         html.push_str(&format!(
             "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{sex}</td>\
              <td><a href=\"{web}/index.php?m=resume&c=show&id={}\">查看</a></td></tr>",
@@ -15862,11 +15725,7 @@ fn job_promo_html(
          <tr style=\"background:#f8f8f8;font-weight:bold\"><td>职位</td><td>地点</td><td>薪资</td><td>学历</td><td>经验</td><td>性别</td><td>操作</td></tr>"
     );
     for j in rows {
-        let sex = match j.sex {
-            1 => "男",
-            2 => "女",
-            _ => "不限",
-        };
+        let sex = enum_labels::sex_or_unlimited(j.sex);
         html.push_str(&format!(
             "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{sex}</td>\
              <td><a href=\"{web}/index.php?m=job&c=comapply&id={}\">查看</a></td></tr>",
@@ -15976,7 +15835,11 @@ fn tpl_row_json(cfg: &HashMap<String, String>, r: &gap_extra::PhpAdminTplRow, in
         "pic": r.pic,
         "pic_n": pic_n,
         "status": r.status,
-        "status_n": if r.status == 1 { "开启" } else { "关闭" },
+        "status_n": if r.status == 1 {
+            enum_labels::label("member_com_00287")
+        } else {
+            enum_labels::label("resume_00030")
+        },
         "price": r.price,
         "service_uid": r.service_uid,
     });
@@ -16361,28 +16224,11 @@ async fn get_tj(
 }
 
 fn source_name(id: i32) -> String {
-    match id {
-        1 => "网页".into(),
-        2 => "手机".into(),
-        4 => "微信".into(),
-        6 => "采集".into(),
-        8 => "QQ登录".into(),
-        9 => "微信扫一扫".into(),
-        10 => "微博".into(),
-        11 => "PC快速投递".into(),
-        12 => "WAP快速投递".into(),
-        21 => "账户分离".into(),
-        26 => "预留信息".into(),
-        _ => String::new(),
-    }
+    enum_labels::source_name(id)
 }
 
 fn sex_name(id: i32) -> String {
-    match id {
-        1 => "男".into(),
-        2 => "女".into(),
-        _ => String::new(),
-    }
+    enum_labels::sex_name(id)
 }
 
 fn salary_bucket(min: i32, max: i32) -> (String, String) {

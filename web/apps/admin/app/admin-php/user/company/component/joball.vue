@@ -86,7 +86,7 @@
                 <el-table-column :label="lc('admin_00750')" min-width="100" v-if="!simple">
                     <template #default="props">
                         <div class="">
-                            <span class="" v-if="props.row.rating_name"> {{ props.row.rating_name }}</span>
+                            <span class="" v-if="props.row.rating_name"> {{ packedLog(props.row.rating_name) }}</span>
                             <div class=""> <span class="gsd"> {{ props.row.crm_salesman }}</span></div>
                         </div>
                     </template>

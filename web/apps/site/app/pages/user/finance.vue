@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import { isUnauthErr } from '~/utils/site'
+import { runPackedTranslate } from '../../../../../layers/base/app/utils/packedText'
 
 const api = useApi()
-const { t } = useI18n()
+const { t, te, locale, getLocaleMessage } = useI18n()
+function packed(text: unknown) {
+  const loc = String(locale.value).toLowerCase().startsWith('en') ? 'en' : 'zh'
+  const zhRoot = getLocaleMessage('zh') as Record<string, unknown>
+  return runPackedTranslate(text, {
+    locale: loc,
+    lc: (k) => (te(k) ? String(t(k)) : k),
+    zhRoot,
+  })
+}
 const { data: bal, error } = await useAsyncData('user-finance-bal', () =>
   api.post('/v1/mcenter/integral/balance', {}),
 )
@@ -45,7 +55,7 @@ useSeoMeta({ title: t('wap_user_00213') })
     </div>
     <h2>{{ $t('wap_user_00213') }}</h2>
     <article v-for="row in pays?.list || []" :key="row.id" class="job-card">
-      <p>{{ row.detail }} · {{ row.delta }}</p>
+      <p>{{ packed(row.detail) }} · {{ row.delta }}</p>
       <p class="muted">{{ row.ctime_n || row.ctime }}</p>
     </article>
     <h2>{{ $t('member_user_00190') }}</h2>

@@ -104,7 +104,9 @@
                 </el-popover>
               </template>
             </el-table-column>
-            <el-table-column prop="rating_name" :label="lc('admin_user_company_00018')"></el-table-column>
+            <el-table-column :label="lc('admin_user_company_00018')">
+              <template #default="scope">{{ packedLog(scope.row.rating_name) }}</template>
+            </el-table-column>
             <el-table-column :label="lc('admin_company_00023')">
               <template #default="scope">
                 <template v-if="scope.row.linktel">{{ scope.row.linktel }}</template>

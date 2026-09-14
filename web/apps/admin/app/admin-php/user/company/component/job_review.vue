@@ -3,7 +3,7 @@
         <div class="shinfo">
             <div class="shcomname">{{info.jobname}}</div>
             <div class="jobshcom">{{info.com_name}}
-                <el-tag type="danger" v-if="info.rating_name" size="small">{{info.rating_name}}</el-tag></div>
+                <el-tag type="danger" v-if="info.rating_name" size="small">{{ packedLog(info.rating_name) }}</el-tag></div>
             <div class="sh_zwsz_add">
                 {{ lc("admin_contact_person_value", [info.linkman]) }} <span class="shcomtel_n">{{ lc("admin_contact_phone_value", [info.tel]) }} </span> <span v-if="info.crm_name">{{ lc("admin_salesperson_value", [info.crm_name]) }}</span>
             </div>

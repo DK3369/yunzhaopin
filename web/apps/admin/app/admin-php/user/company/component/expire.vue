@@ -31,7 +31,9 @@
                 <el-table-column prop="uid" :label="lc('admin_user_00130')" width="120" sortable="custom"></el-table-column>
                 <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
                 <el-table-column prop="username" :label="lc('admin_user_00140')"></el-table-column>
-                <el-table-column prop="rating_name" :label="lc('admin_user_company_00018')"></el-table-column>
+                <el-table-column :label="lc('admin_user_company_00018')">
+                    <template #default="scope">{{ packedLog(scope.row.rating_name) }}</template>
+                </el-table-column>
                 <el-table-column prop="vip_etime_n" :label="lc('admin_00733')"></el-table-column>
                 <el-table-column prop="ywy" :label="lc('admin_user_company_00049')">
                     <template #default="props">

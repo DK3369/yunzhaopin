@@ -748,6 +748,14 @@ async fn ensure_company(
     let short = clip_chars(&stored_name, COMPANY_NAME_MAX);
     let addr = clip_chars(location, ADDRESS_MAX);
     let last = now.to_string();
+    let mut rating_name = "admin_user_company_00402".to_string();
+    if let Ok(opts) = company_repo::list_rating_options(state.db.reader()).await {
+        if let Some(r) = opts.into_iter().find(|r| r.id == 1) {
+            if !r.name.is_empty() {
+                rating_name = r.name;
+            }
+        }
+    }
     if let Err(e) = company_repo::insert_admin_created(
         state.db.pool(),
         company_repo::AdminCompanyInsert {
@@ -770,7 +778,7 @@ async fn ensure_company(
             content: location,
             lastupdate: &last,
             rating: 1,
-            rating_name: "普通会员",
+            rating_name: &rating_name,
             vipstime: 0,
             vipetime: 0,
         },

@@ -67,8 +67,8 @@
                 <el-table-column prop="chongzhi" :label="lc('admin_yunying_00075')" min-width="150">
                     <template #default="scope">
                         <div class="cz_button">
-                            {{scope.row.order_id}}<br />{{scope.row.order_type_n}}<br />
-                            {{scope.row.type_n}}{{scope.row.rating_name}}
+                            {{scope.row.order_id}}<br />{{ packedLog(scope.row.order_type_n) }}<br />
+                            {{ packedLog((scope.row.type_n || '') + (scope.row.rating_name || '')) }}
                         </div>
                     </template>
                 </el-table-column>
@@ -159,8 +159,8 @@
                         </div>
                     </template>
 
-                    <div class="dd_list">{{ lc("admin_order_type_value", [detail.type_n]) }}</div>
-                    <div class="dd_list">{{ lc("admin_payment_status_value", [detail.order_state_n]) }}</div>
+                    <div class="dd_list">{{ lc("admin_order_type_value", [packedLog(detail.type_n)]) }}</div>
+                    <div class="dd_list">{{ lc("admin_payment_status_value", [packedLog(detail.order_state_text || detail.order_state_n)]) }}</div>
                     <div class="dd_list">{{ lc("admin_contract_status_value", [lc(htpics.length > 0 ? 'wap_user_00123' : 'admin_yunying_00088')]) }}</div>
                     <template v-if="detail.type==3 || detail.order_type =='bank'">
                         <div class="dd_list"><span class="dd_name">{{ lc('admin_user_company_00043') }}</span>
@@ -571,9 +571,12 @@ export default {
                         if (res.error == 0) {
                             _this.pay = res.data.pay;
                             _this.ordertype = res.data.ordertype;
-                            _this.ratingarr = res.data.ratingarr;
-							if(res.data.ratingarr.length>0){
-								res.data.ratingarr.unshift({value:0,label:lc('wap_js_00075')});
+                            _this.ratingarr = (res.data.ratingarr || []).map((x) => ({
+                                ...x,
+                                label: _this.packedLog(x.label),
+                            }));
+							if(_this.ratingarr.length>0){
+								_this.ratingarr.unshift({value:0,label:lc('wap_js_00075')});
 							}
                             var type_cascader = [];
                             var one = {};
@@ -581,11 +584,8 @@ export default {
                             
                             for(let i in  _this.ordertype){
                                 one = {value:i,label:_this.ordertype[i]};
-                                if(i=='1'){
-                                    one = {value:i,label:_this.ordertype[i],children:res.data.ratingarr};
-									if(res.data.ratingarr.length>0){
-										one.children = res.data.ratingarr
-									}
+                                if(i=='1' && _this.ratingarr.length>0){
+                                    one = {value:i,label:_this.ordertype[i],children:_this.ratingarr};
                                 }
                                 type_cascader.push(one);
                             }

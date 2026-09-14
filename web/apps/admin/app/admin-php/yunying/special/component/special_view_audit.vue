@@ -3,7 +3,7 @@
     <div class="shinfo">
       <div class="shcomname">
         <template v-if="info.name">{{ info.name }}</template>
-        <el-tag v-if="info.rating_name" type="danger" size="small">{{ info.rating_name }}</el-tag>
+        <el-tag v-if="info.rating_name" type="danger" size="small">{{ packedLog(info.rating_name) }}</el-tag>
       </div>
       <div class="sh_zwsz_add">
         <template v-if="info.linkman">{{ lc("admin_contact_person_value", [info.linkman]) }}{{ info.linkjob ? '（' + info.linkjob + '）' : '' }}</template>

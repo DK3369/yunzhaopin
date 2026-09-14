@@ -197,12 +197,12 @@
                             <div class="username">
                                 <span
                                     v-if="today <= scope.row.vipetime || (scope.row.vipetime == '0' && scope.row.rating > '0')">
-                                    {{ scope.row.rating_name }}
+                                    {{ packedLog(scope.row.rating_name) }}
                                     <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;"
                                         @click="editRating(scope.row.uid, scope.row.r_status)" width="14" height="14">
                                 </span>
                                 <span v-else style="color: red;">
-                                    {{ scope.row.oldrating_name ? scope.row.oldrating_name : scope.row.rating_name }}
+                                    {{ packedLog(scope.row.oldrating_name ? scope.row.oldrating_name : scope.row.rating_name) }}
                                     <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;"
                                         @click="editRating(scope.row.uid, scope.row.r_status)" width="14" height="14">
                                 </span>
@@ -370,7 +370,7 @@
             <div class="shbox" v-if="comdrawersh">
                 <div class="shinfo">
                     <div class="shcomname">{{ curr_com.name }}
-                        <el-tag type="danger" size="small">{{ curr_com.rating_name }}</el-tag>
+                        <el-tag type="danger" size="small">{{ packedLog(curr_com.rating_name) }}</el-tag>
                     </div>
                     <div class="sh_zwsz_add">
                         <span v-if="curr_com.linkman">{{ lc("admin_contact_person_value", [curr_com.linkman]) }}<span v-if="curr_com.linkjob">({{
@@ -496,7 +496,7 @@
                         <div class="shinfologo"><img :src="curr_com.logo_n" width="60" height="60"></div>
                         <div class="shcomname">{{ lc('admin_user_company_00066') }}</div>
                         <div class="shcomdj">{{ lc('admin_user_company_00122') }}
-                            <el-tag type="danger" size="small">{{ curr_com.rating_name }}</el-tag>
+                            <el-tag type="danger" size="small">{{ packedLog(curr_com.rating_name) }}</el-tag>
                             <span class="cominfo_dq">{{ curr_com.vipetime>0 ? curr_com.vipetime_n + lc('admin_user_company_00155') : lc('common_01936')}}</span>
                             <el-button type="text" @click="editRating(curr_com.uid, curr_com.r_status)"><i
                                     class="el-icon-edit"></i>{{ lc('admin_00648') }}

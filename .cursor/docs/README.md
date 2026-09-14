@@ -10,6 +10,7 @@
 | 主题 | 文件 |
 |---|---|
 | Rust 进程 / 分层 / 契约 / 编译 | [rust/README.md](./rust/README.md) |
+| 后端 i18n（四层：Vue / Rust msg / dict_i18n / packed） | [rust/i18n.md](./rust/i18n.md) |
 | 采集英文岗、补 JD、官网申请记原投递表 | [features/job-scrape.md](./features/job-scrape.md) |
 | 字段编码 UTF-8 / MySQL utf8mb4 | [`.cursor/rules/utf8.mdc`](../rules/utf8.mdc) |
 
