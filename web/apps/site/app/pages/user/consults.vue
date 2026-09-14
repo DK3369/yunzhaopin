@@ -3,8 +3,10 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('job-msg-mine', () =>
-  api.post('/v1/mcenter/job-messages/mine', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `job-msg-mine-${page.value}`,
+  () => api.post('/v1/mcenter/job-messages/mine', { page: page.value, page_size: pageSize }),
 )
 const msg = ref('')
 function statusLabel(status?: number) {
@@ -21,48 +23,73 @@ async function remove(id: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('member_user_00115') })
 </script>
 
 <template>
   <MemberPanel :title="$t('member_user_00115')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
-    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
-      <div class="user_new_job">{{ $t('member_user_00105') }}</div>
-      <div class="user_new_time">{{ $t('member_user_00104') }}</div>
-      <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
+    <div class="resume_Prompt_box">
+      <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('wap_com_00408') }}</div>
     </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job">
-        <NuxtLink v-if="row.job_id" :to="`/jobs/${row.job_id}`" class="user_new_jobname">{{ row.job_name || $t('common.job') }}</NuxtLink>
-        <span v-else class="user_new_jobname">{{ row.job_name || $t('common_02082') }}</span>
-        <div class="user_new_comname">
-          <NuxtLink v-if="row.job_uid" :to="`/companies/${row.job_uid}`">{{ row.com_name }}</NuxtLink>
+    <div v-if="(data?.list || []).length" class="job_Consulting_tit site-pc">
+      <span class="job_Consulting_span job_Consulting_jobname">{{ $t('wap_com_00288') }}</span>
+      <span class="job_Consulting_span job_Consulting_comname">{{ $t('wap_com_00157') }}</span>
+      <span class="job_Consulting_span job_Consulting_jobtime">{{ $t('member_user_00061') }}</span>
+      <span class="job_Consulting_span job_Consulting_jobtime">{{ $t('wap_com_00406') }}</span>
+      <span class="job_Consulting_span job_Consulting_jobcz">{{ $t('member_user_00048') }}</span>
+    </div>
+    <div v-for="row in data?.list || []" :key="row.id" class="job_Consulting_list site-pc">
+      <div class="job_Consulting_span job_Consulting_jobname">
+        <NuxtLink v-if="row.job_id" :to="`/jobs/${row.job_id}`" class="job_Consulting_jobname_a">{{ row.job_name || $t('common.job') }}</NuxtLink>
+        <span v-else>{{ row.job_name || $t('common_02082') }}</span>
+      </div>
+      <div class="job_Consulting_span job_Consulting_comname">
+        <NuxtLink v-if="row.job_uid" :to="`/companies/${row.job_uid}`">{{ row.com_name }}</NuxtLink>
+      </div>
+      <div class="job_Consulting_span job_Consulting_jobtime">{{ row.datetime_n }}</div>
+      <div class="job_Consulting_span job_Consulting_jobtime">{{ statusLabel(row.status) }}</div>
+      <div class="job_Consulting_span job_Consulting_jobcz">
+        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
+      <div class="job_Consulting_box">
+        <i class="List_Title_span_zx_icon" />
+        <div class="job_Consulting_my">
+          <div class="job_Consulting_my_box">
+            <span class="job_Consulting_my_ask">{{ $t('member_user_00480') }}</span>{{ row.content }}
+          </div>
+        </div>
+        <div v-if="row.reply" class="job_Consulting_my">
+          <div class="job_Consulting_com">
+            <i class="job_Consulting_icon" />
+            <div>{{ $t('wap_user_00155') }}：{{ row.reply }}</div>
+          </div>
+        </div>
+        <div v-else class="job_Consulting_my">
+          <span class="job_Consulting_zt"><i class="job_Consulting_zticon" />{{ $t('member_user_00481') }}</span>
         </div>
       </div>
-      <div class="user_new_time">{{ statusLabel(row.status) }} · {{ row.datetime_n }}</div>
-      <div class="user_new_cz">
-        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
-      </div>
-      <p class="muted">{{ row.content }}</p>
-      <p v-if="row.reply" class="muted">{{ row.reply }}</p>
-      <p v-else class="muted">{{ $t('member_user_00481') }}</p>
     </div>
     <div class="site-h5 m_cardbox">
       <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in data?.list || []"
-          :key="'h5-' + row.id"
-          :title="row.job_name || $t('common.job')"
-          :pay="statusLabel(row.status)"
-          :sub="row.com_name"
-          :time="row.datetime_n"
-          :to="row.job_id ? `/jobs/${row.job_id}` : undefined"
-        >
-          <p class="muted">{{ row.content }}</p>
-        </MemberPostedCard>
+        <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="issue_post_body_card">
+          <div class="Posted_card_top">
+            <div class="Posted_card_name">{{ row.job_name || $t('common.job') }}</div>
+            <div class="Posted_card_pay">{{ statusLabel(row.status) }}</div>
+          </div>
+          <div class="Posted_card_bom">
+            <div class="Posted_bom_box">
+              <div class="Posted_box_name">{{ row.com_name }}</div>
+            </div>
+            <div class="Posted_bom_time">{{ row.datetime_n }}</div>
+          </div>
+          <p>{{ row.content }}</p>
+          <p v-if="row.reply">{{ $t('wap_user_00155') }}：{{ row.reply }}</p>
+        </div>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

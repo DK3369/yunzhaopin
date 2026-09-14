@@ -250,112 +250,92 @@ useSeoMeta({ title: t('member_com_00454') })
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
 
-    <form class="filters" @submit.prevent="applyFilters">
+    <MemberComScreen
+      :tabs="tabs.map((tab) => ({
+        value: tab.v,
+        label: tab.label,
+        on: state === tab.v,
+        count: tab.n,
+        select: () => pickState(tab.v),
+      }))"
+      :keyword="filters.keyword"
+      searchable
+      @update:keyword="filters.keyword = $event"
+      @search="applyFilters"
+    >
       <select v-model="filters.job_id">
-        <option value="">{{ $t('wap_user_00154') }}·{{ $t('common_01936') }}</option>
+        <option value="">{{ $t('wap_user_00154') }}</option>
         <option v-for="j in myJobs?.list || []" :key="j.id" :value="j.id">{{ j.name }}</option>
       </select>
-      <select v-model="filters.edu">
-        <option value="">{{ $t('wap_com_00301') }}·{{ $t('common_01936') }}</option>
-        <option v-for="d in eduDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
-      </select>
-      <select v-model="filters.exp">
-        <option value="">{{ $t('wap_user_00240') }}·{{ $t('common_01936') }}</option>
-        <option v-for="d in expDict || []" :key="d.id" :value="d.id">{{ d.name }}</option>
-      </select>
-      <select v-model="filters.sex">
-        <option value="">{{ $t('wap_com_00303') }}·{{ $t('common_01936') }}</option>
-        <option value="1">{{ $t('common_02092') }}</option>
-        <option value="2">{{ $t('common_02069') }}</option>
-      </select>
-      <select v-model="filters.uptime">
-        <option value="">{{ $t('wap_00326') }}·{{ $t('common_01936') }}</option>
-        <option v-for="o in uptimeOpts" :key="o.v" :value="o.v">{{ o.label }}</option>
-      </select>
-      <select v-model="filters.resume_state">
-        <option value="">{{ $t('member_com_00110') }}·{{ $t('common_01936') }}</option>
-        <option v-for="o in resumeStateOpts" :key="o.v" :value="o.v">{{ o.label }}</option>
-      </select>
-      <input v-model="filters.keyword" :placeholder="$t('admin_00149')" />
-      <button type="submit">{{ $t('wap_00238') }}</button>
-      <button type="button" @click="resetFilters">{{ $t('wap_00327') }}</button>
-    </form>
-
-    <nav class="tabs">
-      <button
-        v-for="tab in tabs"
-        :key="String(tab.v)"
-        type="button"
-        :class="{ on: state === tab.v }"
-        @click="pickState(tab.v)"
-      >
-        {{ tab.label }}<span v-if="tab.n != null" class="muted"> ({{ tab.n }})</span>
-      </button>
-    </nav>
+    </MemberComScreen>
 
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
-      <p v-if="list.length" class="bulk">
-        <label><input v-model="allChecked" type="checkbox" /> {{ $t('wap_js_00074') }}</label>
-        <button type="button" :disabled="!selected.length" @click="batchRead">
-          {{ $t('member_com_00492') }}
-        </button>
-      </p>
       <p v-if="msg" class="muted">{{ msg }}</p>
-      <p v-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
-
-      <div class="stack site-pc">
-        <article v-for="row in list" :key="row.id" class="jobnotice_list">
-          <label class="pickbox"><input v-model="selected" type="checkbox" :value="row.id" /></label>
-          <h3>
-            <a href="#" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a>
-            · {{ row.job_name || row.job_id }}
-          </h3>
-          <p class="muted">{{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</p>
-          <p v-if="row.apply_url">
-            <a :href="row.apply_url" target="_blank" rel="noopener">{{ $t('ui.apply_official') }}</a>
-          </p>
-          <p class="acts">
-            <button type="button" @click="pick(row)">{{ $t('wap_com_00046') }}</button>
-            <button type="button" @click="openRemark(row)">{{ $t('member_user_00242') }}</button>
+      <table v-if="list.length" class="com_table site-pc">
+        <tr>
+          <th><label><input v-model="allChecked" type="checkbox" /> {{ $t('wap_js_00074') }}</label></th>
+          <th>{{ $t('wap_00456') }}</th>
+          <th>{{ $t('wap_com_00288') }}</th>
+          <th>{{ $t('member_user_00106') }}</th>
+          <th>{{ $t('member_user_00048') }}</th>
+        </tr>
+        <tr v-for="row in list" :key="row.id">
+          <td><input v-model="selected" type="checkbox" :value="row.id" /></td>
+          <td><a href="javascript:;" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a></td>
+          <td>{{ row.job_name || row.job_id }}</td>
+          <td>{{ row.datetime_n }} · {{ browseLabel(row.is_browse) }}</td>
+          <td>
+            <a href="javascript:;" class="cblue" @click="pick(row)">{{ $t('wap_com_00046') }}</a>
+            <a href="javascript:;" class="cblue" @click="openRemark(row)">{{ $t('member_user_00242') }}</a>
             <select :value="row.is_browse" @change="setState(row.id, Number(($event.target as HTMLSelectElement).value))">
               <option v-for="s in [1, 2, 3, 4, 5, 7]" :key="s" :value="s">{{ browseLabel(s) }}</option>
             </select>
-            <button type="button" @click="removeRow(row.id)">{{ $t('wap_js_00077') }}</button>
-          </p>
-          <form v-if="remarkFor?.id === row.id" class="form" @submit.prevent="saveRemark">
-            <textarea v-model="remarkText" rows="3" :placeholder="$t('member_user_00242')" />
-            <button type="submit">{{ $t('common.submit') }}</button>
-            <button type="button" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
-          </form>
-        </article>
-      </div>
-      <div class="site-h5 m_cardbox">
-        <div class="m_cardbgbox">
-          <MemberPostedCard
+            <a href="javascript:;" class="List_dete cblue" @click="removeRow(row.id)">{{ $t('wap_js_00077') }}</a>
+          </td>
+        </tr>
+      </table>
+      <p v-if="list.length" class="site-pc">
+        <button type="button" class="com_topbth" :disabled="!selected.length" @click="batchRead">{{ $t('member_com_00492') }}</button>
+      </p>
+      <div class="site-h5 resume_management_body_card">
+        <div class="management_body_card_content">
+          <MemberHrUserCard
             v-for="row in list"
             :key="'h5-' + row.id"
-            :title="row.uname || String(row.uid)"
-            :pay="browseLabel(row.is_browse)"
-            :sub="row.job_name"
+            :name="row.uname || String(row.uid)"
+            :job="row.job_name"
             :time="row.datetime_n"
-          />
+            :state-text="browseLabel(row.is_browse)"
+            :is-browse="row.is_browse"
+            :invited="row.invited"
+            @open="openResume(row)"
+          >
+            <div class="hr_userlist_czicon" @click="pick(row)">{{ $t('wap_com_00046') }}</div>
+            <div class="hr_userlist_czicon" @click="removeRow(row.id)">{{ $t('common.delete') }}</div>
+          </MemberHrUserCard>
         </div>
       </div>
-
-      <Pager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
+      <form v-if="remarkFor" class="form verification_form" @submit.prevent="saveRemark">
+        <MemberField :label="$t('member_user_00242')" area>
+          <textarea v-model="remarkText" rows="3" />
+        </MemberField>
+        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+        <button type="button" class="verification_form_btn" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
+      </form>
+      <MemberPager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
     </template>
 
     <h2>{{ $t('wap_com_00046') }}</h2>
-    <form class="form" @submit.prevent="sendInvite()">
+    <form class="form verification_form" @submit.prevent="sendInvite()">
       <p v-if="invite.seeker_uid" class="muted">{{ invite.seeker_uid }} · {{ invite.job_id }}</p>
-      <input v-model="invite.intertime" type="datetime-local" required />
-      <input v-model="invite.address" :placeholder="$t('wap_00040')" required />
-      <input v-model="invite.linkman" :placeholder="$t('common_02051')" />
-      <input v-model="invite.linktel" :placeholder="$t('common.phone')" required />
-      <textarea v-model="invite.content" rows="3" />
+      <MemberField :label="$t('wap_00040')"><input v-model="invite.intertime" type="datetime-local" required /></MemberField>
+      <MemberField :label="$t('wap_user_00243')"><input v-model="invite.address" required /></MemberField>
+      <MemberField :label="$t('common_02051')"><input v-model="invite.linkman" /></MemberField>
+      <MemberField :label="$t('common.phone')"><input v-model="invite.linktel" required /></MemberField>
+      <MemberField :label="$t('wap_user_00102')" area><textarea v-model="invite.content" rows="3" /></MemberField>
       <label><input v-model="invite.save_yqmb" type="checkbox" /> {{ $t('member_com_00512') }}</label>
-      <button type="submit">{{ $t('common.submit') }}</button>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
   </MemberPanel>
 </template>

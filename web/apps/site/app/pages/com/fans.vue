@@ -3,9 +3,20 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error } = await useAsyncData('com-followers', () =>
-  api.post('/v1/mcenter/followers', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error } = await useAsyncData(
+  () => `com-followers-${page.value}`,
+  () => api.post('/v1/mcenter/followers', { page: page.value, page_size: pageSize }),
 )
+const rows = computed(() =>
+  (data.value?.list || []).map((row: Record<string, unknown>) => ({
+    key: Number(row.id || row.uid),
+    name: String(row.uname || row.username || row.uid || ''),
+    time: String(row.datetime_n || row.time || ''),
+    to: `/resumes/${row.uid}`,
+  })),
+)
+const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('wap_com_00407') })
 </script>
 
@@ -14,14 +25,7 @@ useSeoMeta({ title: t('wap_com_00407') })
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id || row.uid" class="jobnotice_list">
-        <h3>
-          <NuxtLink :to="`/resumes/${row.uid}`">{{ row.uname || row.username || row.uid }}</NuxtLink>
-        </h3>
-        <p class="muted">{{ row.datetime_n || row.time }}</p>
-      </article>
-    </div>
+    <MemberHrResumeRows v-else :rows="rows" />
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

@@ -146,65 +146,80 @@ useSeoMeta({ title: t('wap_user_00008') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <p class="balance">{{ $t('ui.balance') }}: {{ bal?.balance ?? 0 }}</p>
-      <nav class="stack">
-        <NuxtLink to="/com/member-right" class="jobnotice_list">{{ $t('wap_com_00097') }}</NuxtLink>
-        <NuxtLink to="/com/pay" class="jobnotice_list">{{ $t('member_com_00041') }}</NuxtLink>
-        <NuxtLink to="/com/orders" class="jobnotice_list">{{ $t('common_02029') }}</NuxtLink>
-      </nav>
-
-      <h2>{{ $t('wap_01021') }}</h2>
-      <article v-for="(row, i) in tasks" :key="i" class="jobnotice_list">
-        <p>{{ row.title }} <span v-if="row.reward" class="muted">{{ row.reward }}</span></p>
-        <p v-if="row.done" class="muted">{{ row.doneText }}</p>
-        <p v-else-if="row.sign">
-          <button type="button" :disabled="!!signSt?.signed_today" @click="sign">{{ row.go }}</button>
-        </p>
-        <p v-else-if="row.to">
-          <NuxtLink :to="row.to">{{ row.go }}</NuxtLink>
-        </p>
-      </article>
-
-      <h2>{{ $t('wap_01020') }}</h2>
-      <p v-if="!(consumes?.list || []).length" class="muted">{{ $t('ui.no_data') }}</p>
-      <article v-for="row in consumes?.list || []" :key="row.id" class="jobnotice_list">
-        <p>{{ row.detail }} · {{ row.delta }}</p>
-        <p class="muted">{{ row.ctime_n }}</p>
-      </article>
-      <Pager
-        v-model:page="consumePage"
-        :page-size="PAGE_SIZE"
-        :total="Number(consumes?.total || 0)"
-      />
-
-      <h2>{{ $t('wap_user_00170') }}</h2>
-      <p v-if="!(exchanges?.list || []).length" class="muted">{{ $t('default_00284') }}</p>
-      <article v-for="row in exchanges?.list || []" :key="row.id" class="jobnotice_list">
-        <p>{{ row.item_name || row.item_id }} · {{ row.cost }}</p>
-        <p class="muted">{{ row.created_at_n || row.created_at }}</p>
-      </article>
-      <Pager
-        v-model:page="exchangePage"
-        :page-size="PAGE_SIZE"
-        :total="Number(exchanges?.total || 0)"
-      />
-
-      <h2>{{ $t('common.submit') }}</h2>
-      <form class="form" @submit.prevent="transfer">
-        <input v-model.number="toUid" type="number" min="1" placeholder="uid" />
-        <input v-model.number="points" type="number" min="1" />
-        <input v-model="note" :placeholder="$t('ui.desc')" />
-        <button type="submit">{{ $t('common.submit') }}</button>
+      <div class="site-h5 yun_usermember_financebg">
+        <div class="yun_usermember_integral">
+          {{ $t('wap_01018') }}{{ $t('wap_user_00008') }}：
+          <span class="yun_usermember_integral_n">{{ bal?.balance ?? 0 }}</span>
+        </div>
+      </div>
+      <div class="site-h5 yun_usermember_integral_b">
+        <div class="yun_usermember_integral_line" />
+        <ul class="yun_usermember_integral_nav">
+          <li><NuxtLink to="/com/member-right"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconmx" />{{ $t('wap_com_00097') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/pay"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_icongz" />{{ $t('member_com_00041') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/orders"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconsc" />{{ $t('common_02029') }}</NuxtLink></li>
+        </ul>
+      </div>
+      <div class="site-pc job_list_tit">
+        <ul>
+          <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_user_00008') }}</a></li>
+          <li><NuxtLink to="/com/pay">{{ $t('member_com_00041') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/orders">{{ $t('common_02029') }}</NuxtLink></li>
+        </ul>
+      </div>
+      <p class="site-pc muted">{{ $t('ui.balance') }} {{ bal?.balance ?? 0 }}</p>
+      <div class="site-pc integral_list_box">
+        <ul class="integral_list">
+          <li v-for="(row, i) in tasks" :key="i">
+            <div class="integral_list_n integral_list_n_c1">{{ row.reward }}</div>
+            <div class="integral_listname">{{ row.title }}</div>
+            <div class="integral_list_p">{{ row.reward }}</div>
+            <div class="integral_list_bth">
+              <span v-if="row.done" class="integral_list_bth_s">{{ row.doneText }}</span>
+              <a v-else-if="row.sign" href="javascript:;" class="integral_list_bth_a" @click="sign">{{ row.go }}</a>
+              <NuxtLink v-else-if="row.to" :to="row.to" class="integral_list_bth_a">{{ row.go }}</NuxtLink>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="site-h5 yun_usermember_integral_box">
+        <div class="yun_usermember_integral_box_h1">{{ $t('wap_01021') }}</div>
+        <ul class="yun_usermember_integral_list">
+          <li v-for="(row, i) in tasks" :key="'h5-' + i">
+            <div class="yun_integral_name">{{ row.title }}</div>
+            <div class="yun_integral_n">{{ row.reward }}</div>
+            <span v-if="row.done" class="yun_integral_bth">{{ row.doneText }}</span>
+            <a v-else-if="row.sign" href="javascript:;" class="yun_integral_a" @click="sign">{{ row.go }}</a>
+            <NuxtLink v-else-if="row.to" :to="row.to" class="yun_integral_a">{{ row.go }}</NuxtLink>
+          </li>
+        </ul>
+      </div>
+      <MemberResumeH1 :title="$t('wap_01020')" />
+      <div v-for="row in consumes?.list || []" :key="row.id" class="site-pc paylist_list">
+        <span class="paylist_span paylist_span_dh">{{ row.detail }}</span>
+        <span class="paylist_span paylist_span_money">{{ row.delta }}</span>
+        <span class="paylist_span paylist_span_time">{{ row.ctime_n }}</span>
+      </div>
+      <MemberPager :page="consumePage" :page-size="PAGE_SIZE" :total="Number(consumes?.total || 0)" @update:page="(p) => (consumePage = p)" />
+      <MemberResumeH1 :title="$t('wap_user_00170')" />
+      <div v-for="row in exchanges?.list || []" :key="row.id" class="site-pc paylist_list">
+        <span class="paylist_span paylist_span_dh">{{ row.item_name || row.item_id }}</span>
+        <span class="paylist_span paylist_span_money">{{ row.cost }}</span>
+        <span class="paylist_span paylist_span_time">{{ row.created_at_n || row.created_at }}</span>
+      </div>
+      <MemberPager :page="exchangePage" :page-size="PAGE_SIZE" :total="Number(exchanges?.total || 0)" @update:page="(p) => (exchangePage = p)" />
+      <form class="form verification_form" @submit.prevent="transfer">
+        <MemberField label="uid"><input v-model.number="toUid" type="number" min="1" /></MemberField>
+        <MemberField :label="$t('wap_user_00008')"><input v-model.number="points" type="number" min="1" /></MemberField>
+        <MemberField :label="$t('ui.desc')"><input v-model="note" /></MemberField>
+        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
       </form>
-      <article v-for="row in transfers?.list || []" :key="row.id" class="jobnotice_list">
-        <p>{{ row.from_uid }} → {{ row.to_uid }} · {{ row.points }}</p>
-        <p class="muted">{{ row.note }}</p>
-      </article>
-      <Pager
-        v-model:page="transferPage"
-        :page-size="PAGE_SIZE"
-        :total="Number(transfers?.total || 0)"
-      />
+      <div v-for="row in transfers?.list || []" :key="row.id" class="site-pc paylist_list">
+        <span class="paylist_span paylist_span_dh">{{ row.from_uid }} → {{ row.to_uid }}</span>
+        <span class="paylist_span paylist_span_money">{{ row.points }}</span>
+        <span class="paylist_span paylist_span_time">{{ row.note }}</span>
+      </div>
+      <MemberPager :page="transferPage" :page-size="PAGE_SIZE" :total="Number(transfers?.total || 0)" @update:page="(p) => (transferPage = p)" />
       <p v-if="msg">{{ msg }}</p>
     </template>
     <p>

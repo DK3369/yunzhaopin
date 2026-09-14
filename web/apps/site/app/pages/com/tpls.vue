@@ -24,12 +24,18 @@ useSeoMeta({ title: t('ui.com_tpl') })
   <MemberPanel :title="$t('ui.com_tpl')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <p v-if="msg">{{ msg }}</p>
-    <div class="stack">
-      <article v-for="row in data || []" :key="row.id">
-        <h3>{{ row.name }}</h3>
-        <p class="muted">kind {{ row.kind }} status {{ row.status }}</p>
-        <button type="button" @click="apply(row)">{{ $t('ui.apply_tpl') }}</button>
-      </article>
+    <div class="resume_template_box">
+      <dl v-for="row in data || []" :key="row.id" class="resume_template">
+        <dd>
+          <div class="resume_template_pd">
+            <div class="resume_template_name">{{ row.name }}</div>
+            <div class="resume_template_p">kind {{ row.kind }}</div>
+          </div>
+          <div class="resume_template_cz">
+            <a href="javascript:;" class="resume_template_bth" @click="apply(row)">{{ $t('ui.apply_tpl') }}</a>
+          </div>
+        </dd>
+      </dl>
     </div>
     <p><NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink></p>
   </MemberPanel>

@@ -102,37 +102,31 @@ useSeoMeta({ title: t('ui.map_addr') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="form" @submit.prevent="save">
-        <input v-model="form.link_man" required :placeholder="$t('wap_01431')" />
-        <input v-model="form.link_moblie" required :placeholder="$t('common.phone')" />
-        <input v-model="form.link_phone" :placeholder="$t('wap_com_00014')" />
-        <input v-model="form.email" :placeholder="$t('member_user_00282')" />
-        <input v-model="form.link_address" :placeholder="$t('ui.map_addr')" />
-        <LocationFields
-          v-model:province-id="form.province_id"
-          v-model:city-id="form.city_id"
-          v-model:district-id="form.three_city_id"
-        />
-        <input v-model="form.x" :placeholder="$t('ui.lng')" />
-        <input v-model="form.y" :placeholder="$t('ui.lat')" />
-        <MapPick v-model:x="form.x" v-model:y="form.y" />
-        <div class="row">
-          <button type="submit">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
-          <button v-if="editing" type="button" @click="reset">{{ $t('common.cancel') }}</button>
+      <form class="form yun_createbox verification_form" @submit.prevent="save">
+        <div class="yun_createlist">
+          <MemberField :label="$t('wap_01431')"><input v-model="form.link_man" required /></MemberField>
+          <MemberField :label="$t('common.phone')"><input v-model="form.link_moblie" required /></MemberField>
+          <MemberField :label="$t('wap_com_00014')"><input v-model="form.link_phone" /></MemberField>
+          <MemberField :label="$t('member_user_00282')"><input v-model="form.email" /></MemberField>
+          <MemberField :label="$t('ui.map_addr')"><input v-model="form.link_address" /></MemberField>
+          <LocationFields
+            v-model:province-id="form.province_id"
+            v-model:city-id="form.city_id"
+            v-model:district-id="form.three_city_id"
+          />
+          <MapPick v-model:x="form.x" v-model:y="form.y" />
+          <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
+          <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
         </div>
       </form>
       <p v-if="msg">{{ msg }}</p>
-      <p v-if="!list.length" class="muted">{{ $t('ui.no_addr') }}</p>
-      <div class="stack">
-        <article v-for="row in list" :key="row.id" class="jobnotice_list">
-          <h3>{{ row.link_man }} · {{ row.link_address }}</h3>
-          <p class="muted">{{ row.link_moblie }}</p>
-          <p class="muted">x {{ row.x }} y {{ row.y }}</p>
-          <div class="row">
-            <button type="button" @click="edit(row)">{{ $t('common.edit') }}</button>
-            <button type="button" @click="remove(row)">{{ $t('common.delete') }}</button>
-          </div>
-        </article>
+      <div v-for="row in list" :key="row.id" class="attention_enterprises_list site-pc">
+        <div class="attention_enterprises_span attention_enterprises_name">{{ row.link_man }} · {{ row.link_address }}</div>
+        <div class="attention_enterprises_span attention_enterprises_time">{{ row.link_moblie }}</div>
+        <div class="attention_enterprises_span attention_enterprises_cz">
+          <a href="javascript:;" class="cblue" @click="edit(row)">{{ $t('common.edit') }}</a>
+          <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+        </div>
       </div>
     </template>
   </MemberPanel>

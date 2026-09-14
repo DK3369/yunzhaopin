@@ -47,7 +47,7 @@ useSeoMeta({ title: t('wap_com_00097') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <div class="jobnotice_list">
+      <div class="com_vip_box">
         <h2>{{ $t('wap_01229') }}</h2>
         <template v-if="current?.active">
           <p>{{ $t('wap_00025') }}: {{ current.package_code }}</p>
@@ -63,22 +63,21 @@ useSeoMeta({ title: t('wap_com_00097') })
           </p>
         </template>
         <p>
-          <NuxtLink to="/com/pay">{{ $t('member_com_00041') }}</NuxtLink>
-          ·
-          <NuxtLink to="/com/added">{{ $t('wap_com_00393') }}</NuxtLink>
+          <NuxtLink to="/com/pay" class="com_topbth">{{ $t('member_com_00041') }}</NuxtLink>
+          <NuxtLink to="/com/added" class="com_topbth">{{ $t('wap_com_00393') }}</NuxtLink>
         </p>
       </div>
-
-      <h2>{{ $t('member_com_00610') }}</h2>
-      <p v-if="!packList.length" class="muted">{{ $t('ui.no_data') }}</p>
-      <div class="stack">
-        <article v-for="p in packList" :key="p.id" class="jobnotice_list">
-          <h3>{{ p.name }}</h3>
-          <p>{{ $t('default_00093') }}: ¥{{ p.price_yuan }} · {{ p.duration_days }}d</p>
+      <MemberResumeH1 :title="$t('member_com_00610')" />
+      <div class="payment_list">
+        <div v-for="p in packList" :key="p.id" class="payment_list_text">
+          <div class="payment_list_text_n">
+            {{ p.name }}
+            <em class="payment_list_text_dw">¥{{ p.price_yuan }} / {{ p.duration_days }}d</em>
+          </div>
           <ul v-if="descLines(p.desc).length">
             <li v-for="(line, i) in descLines(p.desc)" :key="i">{{ line }}</li>
           </ul>
-        </article>
+        </div>
       </div>
     </template>
     <p>

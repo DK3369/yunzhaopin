@@ -144,54 +144,101 @@ useSeoMeta({ title: t('wap_com_00075') })
   <MemberPanel :title="$t('wap_com_00075')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <template v-else>
-      <p class="cert-tip">{{ statusText(data) }}</p>
-      <form class="form" @submit.prevent="submit">
-        <label>
-          <i class="req">*</i>{{ $t('wap_user_00080') }}
-          <input v-model="form.company_name" type="text" />
-        </label>
-        <label v-if="data?.com_social_credit === 1">
-          <i class="req">*</i>{{ $t('admin_user_company_00063') }}
-          <input
-            v-model="form.social_credit"
-            type="text"
-            maxlength="18"
-            :placeholder="$t('wap_00837')"
-          />
-        </label>
-        <label>
-          <i class="req">*</i>{{ $t('wap_com_00054') }}
-          <span class="muted">{{ $t('wap_com_00034') }}</span>
-          <img v-if="preview.check" :src="mediaUrl(preview.check)" alt="" width="160" />
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('check', $event)" />
-        </label>
-        <label v-if="data?.com_cert_owner === 1">
-          <i class="req">*</i>{{ $t('member_com_00067') }}
-          <span class="muted">{{ $t('wap_00842') }}</span>
-          <img v-if="preview.owner_cert" :src="mediaUrl(preview.owner_cert)" alt="" width="160" />
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('owner_cert', $event)" />
-        </label>
-        <label v-if="data?.com_cert_wt === 1">
-          <i class="req">*</i>{{ $t('common_01902') }}/{{ $t('admin_user_company_00302') }}
-          <span class="muted">{{ $t('wap_00843') }}</span>
-          <p v-if="data?.exa_cert_wt" class="muted">
-            {{ $t('wap_com_00057') }}
-            <a :href="data.exa_cert_wt" target="_blank" rel="noopener">{{ $t('wap_com_00063') }}</a>
+      <div class="license_box site-pc">
+        <div class="license_tip">{{ statusText(data) }}</div>
+        <form class="authentication" @submit.prevent="submit">
+          <div class="authentication_list">
+            <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('wap_user_00080') }}</span>
+            <input v-model="form.company_name" type="text" class="authentication_text" />
+          </div>
+          <div v-if="data?.com_social_credit === 1" class="authentication_list">
+            <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('admin_user_company_00063') }}</span>
+            <input v-model="form.social_credit" type="text" maxlength="18" class="authentication_text" :placeholder="$t('wap_00837')" />
+          </div>
+          <div class="authentication_list">
+            <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('wap_com_00054') }}</span>
+            <img v-if="preview.check" :src="mediaUrl(preview.check)" alt="" class="authentication_img" width="160" />
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('check', $event)" />
+          </div>
+          <div v-if="data?.com_cert_owner === 1" class="authentication_list">
+            <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('member_com_00067') }}</span>
+            <img v-if="preview.owner_cert" :src="mediaUrl(preview.owner_cert)" alt="" width="160" />
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('owner_cert', $event)" />
+          </div>
+          <div v-if="data?.com_cert_wt === 1" class="authentication_list">
+            <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{{ $t('common_01902') }}</span>
+            <p v-if="data?.exa_cert_wt" class="muted">
+              {{ $t('wap_com_00057') }}
+              <a :href="data.exa_cert_wt" target="_blank" rel="noopener">{{ $t('wap_com_00063') }}</a>
+            </p>
+            <img v-if="preview.wt_cert" :src="mediaUrl(preview.wt_cert)" alt="" width="160" />
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('wt_cert', $event)" />
+          </div>
+          <div v-if="data?.com_cert_other === 1" class="authentication_list">
+            <span class="authentication_list_name">{{ $t('member_com_00189') }}</span>
+            <img v-if="preview.other_cert" :src="mediaUrl(preview.other_cert)" alt="" width="160" />
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('other_cert', $event)" />
+          </div>
+          <p v-if="data?.pic_type || data?.file_maxsize" class="muted">
+            {{ $t('wap_com_00050') }} {{ data?.pic_type }} {{ data?.file_maxsize }}M
           </p>
-          <img v-if="preview.wt_cert" :src="mediaUrl(preview.wt_cert)" alt="" width="160" />
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('wt_cert', $event)" />
-        </label>
-        <label v-if="data?.com_cert_other === 1">
-          {{ $t('member_com_00189') }}
-          <span class="muted">{{ $t('wap_com_00055') }}</span>
-          <img v-if="preview.other_cert" :src="mediaUrl(preview.other_cert)" alt="" width="160" />
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload('other_cert', $event)" />
-        </label>
-        <p v-if="data?.pic_type || data?.file_maxsize" class="muted">
-          {{ $t('wap_com_00050') }} {{ data?.pic_type }} {{ data?.file_maxsize }}M
-        </p>
-        <button type="submit">{{ $t('common.submit') }}</button>
-      </form>
+          <input class="license_list_bth" type="submit" :value="$t('common.submit')" />
+        </form>
+      </div>
+      <div class="site-h5">
+        <div class="security">{{ statusText(data) }}</div>
+        <form @submit.prevent="submit">
+          <ul class="security">
+            <li>
+              <span class="security_anme">{{ $t('wap_com_00061') }}</span>
+              <div class="security_text"><input v-model="form.company_name" class="security_text_t" /></div>
+            </li>
+            <li v-if="data?.com_social_credit === 1">
+              <span class="security_anme">{{ $t('wap_com_00062') }}</span>
+              <div class="security_text"><input v-model="form.social_credit" class="security_text_t" :placeholder="$t('wap_00837')" /></div>
+            </li>
+          </ul>
+          <div class="yunset_identity_box">
+            <div class="yunset_identity">
+              <div v-if="preview.check" class="yunset_identity_pic_img"><img :src="mediaUrl(preview.check)" alt="" /></div>
+              <div class="yunset_identity_pic">
+                <input type="file" accept="image/*" class="yunset_identity_pic_file" @change="upload('check', $event)" />
+              </div>
+              <div class="yunset_identity_tip">{{ $t('wap_com_00054') }}</div>
+            </div>
+          </div>
+          <div v-if="data?.com_cert_owner === 1" class="yunset_identity_box">
+            <div class="yunset_identity">
+              <div v-if="preview.owner_cert" class="yunset_identity_pic_img"><img :src="mediaUrl(preview.owner_cert)" alt="" /></div>
+              <div class="yunset_identity_pic">
+                <input type="file" accept="image/*" class="yunset_identity_pic_file" @change="upload('owner_cert', $event)" />
+              </div>
+              <div class="yunset_identity_tip">{{ $t('wap_00842') }}</div>
+            </div>
+          </div>
+          <div v-if="data?.com_cert_wt === 1" class="yunset_identity_box">
+            <div class="yunset_identity">
+              <div v-if="preview.wt_cert" class="yunset_identity_pic_img"><img :src="mediaUrl(preview.wt_cert)" alt="" /></div>
+              <div class="yunset_identity_pic">
+                <input type="file" accept="image/*" class="yunset_identity_pic_file" @change="upload('wt_cert', $event)" />
+              </div>
+              <div class="yunset_identity_tip">{{ $t('wap_00843') }}</div>
+            </div>
+          </div>
+          <div v-if="data?.com_cert_other === 1" class="yunset_identity_box">
+            <div class="yunset_identity">
+              <div v-if="preview.other_cert" class="yunset_identity_pic_img"><img :src="mediaUrl(preview.other_cert)" alt="" /></div>
+              <div class="yunset_identity_pic">
+                <input type="file" accept="image/*" class="yunset_identity_pic_file" @change="upload('other_cert', $event)" />
+              </div>
+              <div class="yunset_identity_tip">{{ $t('member_com_00189') }}</div>
+            </div>
+          </div>
+          <div class="security_bth">
+            <button type="submit" class="security_bth_but">{{ $t('common.submit') }}</button>
+          </div>
+        </form>
+      </div>
       <p v-if="msg">{{ msg }}</p>
     </template>
   </MemberPanel>

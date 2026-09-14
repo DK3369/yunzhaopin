@@ -3,8 +3,10 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('my-reports', () =>
-  api.post('/v1/mcenter/reports/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `my-reports-${page.value}`,
+  () => api.post('/v1/mcenter/reports/list', { page: page.value, page_size: pageSize }),
 )
 const form = reactive({ target_kind: 1, target_id: 0, reason_code: 'spam', detail: '' })
 const msg = ref('')
@@ -19,6 +21,7 @@ async function submit() {
   }
 }
 useSeoMeta({ title: t('ui.my_reports') })
+const total = computed(() => inferTotal(data.value))
 </script>
 
 <template>
@@ -41,11 +44,10 @@ useSeoMeta({ title: t('ui.my_reports') })
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
-      <div class="user_new_job">
-        <span class="user_new_jobname">#{{ row.target_id }}</span>
-        <div class="user_new_comname">{{ row.status }}</div>
-      </div>
+    <div v-for="row in data?.list || []" :key="row.id" class="job_list_tit site-pc" style="display:block">
+      <span class="user_new_jobname">#{{ row.target_id }}</span>
+      <span class="muted">{{ row.status }}</span>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

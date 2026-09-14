@@ -18,8 +18,11 @@ type JobRow = {
 const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
-const { data, error, refresh } = await useAsyncData('com-jobs', () =>
-  api.post('/v1/mcenter/jobs/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const w = ref<number | null>(null)
+const { data, error, refresh } = await useAsyncData(
+  () => `com-jobs-${page.value}-${w.value ?? 'all'}`,
+  () => api.post('/v1/mcenter/jobs/list', { page: page.value, page_size: pageSize, ...(w.value === null ? {} : { w: w.value }) }),
 )
 const { data: counts, refresh: refreshCounts } = await useAsyncData('com-job-counts', () =>
   api
@@ -239,11 +242,19 @@ async function reservePicked(status: number) {
   }
 }
 useSeoMeta({ title: t('wap_com_00106') })
+const jobTotal = computed(() => inferTotal(data.value, list.value))
+const jobTabs = computed(() => [
+  { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.online, select: () => { w.value = 1; go(1) } },
+  { value: 0, label: t('wap_user_00006'), on: w.value === 0, select: () => { w.value = 0; go(1) } },
+  { value: 3, label: t('wap_user_00167'), on: w.value === 3, select: () => { w.value = 3; go(1) } },
+  { value: 4, label: t('wap_com_00245'), on: w.value === 4, select: () => { w.value = 4; go(1) } },
+  { value: null, label: t('common.all'), on: w.value === null, count: counts.value?.total, select: () => { w.value = null; go(1) } },
+])
 </script>
 
 <template>
   <MemberPanel :title="$t('wap_com_00106')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
-    <p><NuxtLink to="/com/jobs/new">{{ $t('wap_00322') }}</NuxtLink></p>
+    <MemberComScreen :tabs="jobTabs" add-to="/com/jobs/new" :add-label="$t('wap_00322')" />
     <p v-if="counts" class="muted">
       {{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }} ·
       {{ $t('wap_com_00238') }} {{ counts.top_num ?? 0 }}{{ $t('common_02067') }} ·
@@ -273,40 +284,30 @@ useSeoMeta({ title: t('wap_com_00106') })
       <button type="button" @click="reservePicked(2)">{{ $t('member_com_00278') }}</button>
     </p>
     <div class="site-pc">
-    <article v-for="job in list" :key="job.id" class="jobnotice_list">
-      <h3>
-        <input type="checkbox" :checked="picked.includes(job.id)" @change="togglePick(job.id)" />
-        {{ job.name }}
-      </h3>
-      <p class="muted">{{ $t('member_user_00181') }} {{ jobPhase(job) }}</p>
-      <p class="muted">
-        <span v-if="job.istop">{{ $t('wap_com_00238') }} {{ expireOf(job, 'top') }}</span>
-        <span v-if="job.is_rec"> {{ $t('wap_com_00237') }} {{ expireOf(job, 'rec') }}</span>
-        <span v-if="job.is_urgent"> {{ $t('member_com_00613') }} {{ expireOf(job, 'urgent') }}</span>
-      </p>
-      <p>
-        <NuxtLink :to="`/com/jobs/new?id=${job.id}`">{{ $t('common.edit') }}</NuxtLink>
-        <NuxtLink :to="`/poster/job/${job.id}`">{{ $t('ui.poster') }}</NuxtLink>
-        <button type="button" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00232') }}</button>
-        <button type="button" @click="copyShare(job.id, 'link')">{{ $t('wap_com_00233') }}</button>
-        <button type="button" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</button>
-        <button type="button" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</button>
-        <button type="button" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</button>
-        <template v-if="reserveOn">
-          <button type="button" @click="fillReserve(job.id)">{{ $t('wap_00225') }}</button>
-          <button type="button" @click="reserveOne(job.id, 1)">{{ $t('member_com_00267') }}</button>
-          <button type="button" @click="reserveOne(job.id, 2)">{{ $t('member_com_00278') }}</button>
-        </template>
-      </p>
-      <p>
-        <button v-if="!job.istop" type="button" @click="promote(job.id, 'top')">{{ $t('wap_com_00238') }}</button>
-        <button v-else type="button" @click="closePromote(job.id, 'top')">{{ $t('wap_com_00231') }}</button>
-        <button v-if="!job.is_rec" type="button" @click="promote(job.id, 'rec')">{{ $t('wap_com_00237') }}</button>
-        <button v-else type="button" @click="closePromote(job.id, 'rec')">{{ $t('common.close') }} {{ $t('wap_com_00237') }}</button>
-        <button v-if="!job.is_urgent" type="button" @click="promote(job.id, 'urgent')">{{ $t('member_com_00613') }}</button>
-        <button v-else type="button" @click="closePromote(job.id, 'urgent')">{{ $t('common.close') }} {{ $t('member_com_00613') }}</button>
-      </p>
-    </article>
+    <table class="com_table">
+      <tr>
+        <th><label><input v-model="allPicked" type="checkbox" /> {{ $t('common.all') }}</label></th>
+        <th>{{ $t('wap_com_00288') }}</th>
+        <th>{{ $t('member_user_00181') }}</th>
+        <th>{{ $t('member_user_00048') }}</th>
+      </tr>
+      <tr v-for="job in list" :key="job.id">
+        <td><input type="checkbox" :checked="picked.includes(job.id)" @change="togglePick(job.id)" /></td>
+        <td>{{ job.name }}</td>
+        <td>{{ jobPhase(job) }}</td>
+        <td>
+          <NuxtLink :to="`/com/jobs/new?id=${job.id}`" class="cblue">{{ $t('common.edit') }}</NuxtLink>
+          <NuxtLink :to="`/poster/job/${job.id}`" class="cblue">{{ $t('ui.poster') }}</NuxtLink>
+          <a href="javascript:;" class="cblue" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00232') }}</a>
+          <a href="javascript:;" class="cblue" @click="refreshJob(job.id)">{{ $t('wap_com_00029') }}</a>
+          <a href="javascript:;" class="cblue" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</a>
+          <a href="javascript:;" class="cblue" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</a>
+          <a v-if="!job.istop" href="javascript:;" class="cblue" @click="promote(job.id, 'top')">{{ $t('wap_com_00238') }}</a>
+          <a v-if="!job.is_rec" href="javascript:;" class="cblue" @click="promote(job.id, 'rec')">{{ $t('wap_com_00237') }}</a>
+          <a v-if="!job.is_urgent" href="javascript:;" class="cblue" @click="promote(job.id, 'urgent')">{{ $t('member_com_00613') }}</a>
+        </td>
+      </tr>
+    </table>
     </div>
     <div class="site-h5 more_position_body">
       <div v-for="job in list" :key="'h5-' + job.id" class="position_body_card">
@@ -319,6 +320,7 @@ useSeoMeta({ title: t('wap_com_00106') })
         </div>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="jobTotal" @update:page="go" />
     <p v-if="quoteHint" class="muted">{{ quoteHint }}</p>
     <p v-if="buyHint" class="muted">
       {{ buyHint }}

@@ -21,6 +21,38 @@ useSeoMeta({ title: t('member_user_00226') })
 
 <template>
   <MemberPanel :title="$t('member_user_00226')">
+    <MemberUserSetTabs />
+    <div class="site-pc account_settings">
+      <div class="account_settings_list">
+        <div class="account_settings_list_left">
+          <i class="account_settings_list_left_icon account_settings_list_left_icon_user" />
+          <div class="account_settings_tit">{{ $t('wap_user_00336') }}</div>
+          {{ $t('member_user_00535') }}
+        </div>
+        <NuxtLink to="/user/account" class="account_settings_bth_hv">{{ $t('wap_js_00073') }}</NuxtLink>
+      </div>
+      <div class="account_settings_list">
+        <div class="account_settings_list_left">
+          <i class="account_settings_list_left_icon account_settings_list_left_icon_m" />
+          <div class="account_settings_tit">{{ $t('member_user_00536') }}</div>
+          {{ $t('member_user_00537') }}
+        </div>
+      </div>
+      <div class="account_settings_list">
+        <div class="account_settings_list_left">
+          <i class="account_settings_list_left_icon account_settings_list_left_icon_yx" />
+          <div class="account_settings_tit">{{ $t('wap_user_00179') }}</div>
+        </div>
+        <NuxtLink to="/user/binding" class="account_settings_bth_hv">{{ $t('member_user_00234') }}</NuxtLink>
+      </div>
+      <div class="account_settings_list">
+        <div class="account_settings_list_left">
+          <i class="account_settings_list_left_icon account_settings_list_left_icon_sj" />
+          <div class="account_settings_tit">{{ $t('wap_user_00180') }}</div>
+        </div>
+        <NuxtLink to="/user/binding" class="account_settings_bth_hv">{{ $t('member_user_00234') }}</NuxtLink>
+      </div>
+    </div>
     <form class="form verification_form" @submit.prevent="submit">
       <MemberField :label="$t('wap_01096')">
         <input v-model="form.old_password" type="password" :placeholder="$t('wap_01097')" />

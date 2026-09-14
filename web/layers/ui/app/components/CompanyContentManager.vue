@@ -107,34 +107,23 @@ async function remove(row: Row) {
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="form" @submit.prevent="save">
-        <input v-model="form.title" required :placeholder="$t('wap_user_00103')" />
-        <input v-model="form.file" :placeholder="$t('ui.image')" />
-        <textarea v-model="form.body" required rows="6" :placeholder="$t('ui.body')" />
-        <div class="row">
-          <button type="submit">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
-          <button v-if="editing" type="button" @click="reset">{{ $t('common.cancel') }}</button>
-        </div>
+      <form class="form verification_form" @submit.prevent="save">
+        <MemberField :label="$t('wap_user_00103')"><input v-model="form.title" required /></MemberField>
+        <MemberField :label="$t('ui.image')"><input v-model="form.file" /></MemberField>
+        <MemberField :label="$t('ui.body')" area><textarea v-model="form.body" required rows="6" /></MemberField>
+        <button type="submit" class="verification_form_btn">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
+        <button v-if="editing" type="button" class="verification_form_btn" @click="reset">{{ $t('common.cancel') }}</button>
       </form>
       <p v-if="msg">{{ msg }}</p>
-
-      <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
-      <div class="stack">
-        <article v-for="row in list" :key="row.id" class="jobnotice_list">
-          <h3>{{ row.title }}</h3>
-          <p class="muted">
-            {{ $t('wap_com_00406') }}: {{ row.status_n }} · {{ row.ctime_n }}
-          </p>
-          <p v-if="row.statusbody" class="muted">
-            {{ $t('common_02158') }}: {{ row.statusbody }}
-          </p>
-          <div class="row">
-            <button type="button" @click="edit(row)">{{ $t('common.edit') }}</button>
-            <button type="button" @click="remove(row)">{{ $t('common.delete') }}</button>
-          </div>
-        </article>
+      <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
+        <div class="sysynews_span sysynews_name">{{ row.title }}</div>
+        <div class="sysynews_span sysynews_time">{{ row.status_n }} · {{ row.ctime_n }}</div>
+        <div class="sysynews_span sysynews_cz">
+          <a href="javascript:;" class="cblue" @click="edit(row)">{{ $t('common.edit') }}</a>
+          <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+        </div>
       </div>
-      <Pager v-model:page="page" :page-size="PAGE_SIZE" :total="total" />
+      <MemberPager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
     </template>
     <p>
       <NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink>

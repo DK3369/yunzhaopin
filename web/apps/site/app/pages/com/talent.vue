@@ -44,6 +44,11 @@ async function add(row: { uid: number; eid?: number; def_job?: number }) {
   }
 }
 
+function addByUid(uid: number) {
+  const r = (publicResumes.value?.list || []).find((x: { uid: number }) => Number(x.uid) === uid)
+  if (r) return add(r)
+}
+
 const remarkFor = ref(0)
 const remarkText = ref('')
 
@@ -91,40 +96,47 @@ useSeoMeta({ title: t('member_com_00597') })
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
-    <h2>{{ $t('ui.public_resumes') }}</h2>
-    <p v-if="!(publicResumes?.list || []).length" class="muted">{{ $t('ui.no_public_resume') }}</p>
-    <div class="stack">
-      <article v-for="r in publicResumes?.list || []" :key="r.uid" class="jobnotice_list">
-        <h3>{{ r.display_name || r.name }}</h3>
-        <p class="muted">{{ r.education_n }} · {{ r.exp_n }}</p>
-        <NuxtLink :to="`/resumes/${r.uid}`">{{ $t('wap_com_00427') }}</NuxtLink>
-        <button type="button" @click="add(r)">{{ $t('ui.add_to_talent') }}</button>
-      </article>
-    </div>
-    <h2>{{ $t('ui.favorited') }}</h2>
-    <p v-if="!list.length" class="muted">{{ $t('ui.talent_empty') }}</p>
-    <div class="stack">
-      <article v-for="row in list" :key="row.id" class="jobnotice_list">
-        <h3>
-          <NuxtLink :to="`/resumes/${row.eid || row.seeker_uid}`">
-            {{ row.uname || row.seeker_uid }}
-          </NuxtLink>
-        </h3>
-        <p v-if="row.remark" class="muted">{{ $t('ui.remark') }}: {{ row.remark }}</p>
-        <p v-if="row.ctime_n" class="muted">{{ row.ctime_n }}</p>
-        <div class="row">
-          <button type="button" @click="openRemark(row)">{{ $t('wap_com_00069') }}</button>
-          <button type="button" @click="remove(row)">{{ $t('common.delete') }}</button>
-        </div>
-        <form v-if="remarkFor === row.id" class="form" @submit.prevent="saveRemark">
-          <textarea v-model="remarkText" rows="3" :placeholder="$t('wap_00807')" />
-          <div class="row">
-            <button type="submit">{{ $t('common.save') }}</button>
-            <button type="button" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
-          </div>
-        </form>
-      </article>
-    </div>
+    <MemberResumeH1 :title="$t('ui.public_resumes')" />
+    <MemberHrResumeRows
+      :rows="(publicResumes?.list || []).map((r: Record<string, unknown>) => ({
+        key: Number(r.uid),
+        name: String(r.display_name || r.name || r.uid || ''),
+        time: [r.education_n, r.exp_n].filter(Boolean).join(' · '),
+        to: `/resumes/${r.uid}`,
+        info: [String(r.education_n || ''), String(r.exp_n || '')].filter(Boolean),
+      }))"
+    >
+      <template #pc-acts="{ row }">
+        <a href="javascript:;" class="cblue" @click="addByUid(Number(row.key))">{{ $t('ui.add_to_talent') }}</a>
+      </template>
+      <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="addByUid(Number(row.key))">{{ $t('ui.add_to_talent') }}</div>
+      </template>
+    </MemberHrResumeRows>
+    <MemberResumeH1 :title="$t('ui.favorited')" />
+    <MemberHrResumeRows
+      :rows="list.map((row) => ({
+        key: row.id,
+        name: String(row.uname || row.seeker_uid),
+        time: row.ctime_n,
+        to: `/resumes/${row.eid || row.seeker_uid}`,
+        info: row.remark ? [row.remark] : [],
+      }))"
+    >
+      <template #pc-acts="{ row }">
+        <a href="javascript:;" class="cblue" @click="openRemark(list.find((x) => x.id === Number(row.key))!)">{{ $t('wap_com_00069') }}</a>
+        <a href="javascript:;" class="List_dete cblue" @click="remove(list.find((x) => x.id === Number(row.key))!)">{{ $t('common.delete') }}</a>
+      </template>
+      <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="openRemark(list.find((x) => x.id === Number(row.key))!)">{{ $t('wap_com_00069') }}</div>
+        <div class="hr_userlist_czicon" @click="remove(list.find((x) => x.id === Number(row.key))!)">{{ $t('common.delete') }}</div>
+      </template>
+    </MemberHrResumeRows>
+    <form v-if="remarkFor" class="form verification_form" @submit.prevent="saveRemark">
+      <MemberField :label="$t('wap_00807')" area><textarea v-model="remarkText" rows="3" /></MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
+      <button type="button" class="verification_form_btn" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
+    </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

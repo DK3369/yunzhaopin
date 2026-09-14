@@ -29,11 +29,13 @@ useSeoMeta({ title: t('wap_com_00310') })
 <template>
   <MemberPanel :title="$t('wap_com_00310')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <article v-for="row in list" :key="row.id" class="jobnotice_list">
-      <NuxtLink :to="`/specials/${row.sid}`">{{ row.title || row.sid }}</NuxtLink>
-      <p class="muted">{{ row.datetime_n }}</p>
-      <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-    </article>
+    <div v-for="row in list" :key="row.id" class="issue_post_body_card">
+      <div class="Posted_card_top">
+        <NuxtLink :to="`/specials/${row.sid}`" class="Posted_card_name">{{ row.title || row.sid }}</NuxtLink>
+        <div class="Posted_card_pay">{{ row.datetime_n }}</div>
+      </div>
+      <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

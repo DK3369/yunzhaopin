@@ -45,16 +45,15 @@ useSeoMeta({ title: t('wap_user_00157') })
 <template>
   <MemberPanel :title="$t('wap_user_00157')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="form" @submit.prevent>
-      <input v-model="title" />
+    <form class="form verification_form" @submit.prevent>
+      <MemberField :label="$t('wap_user_00103')"><input v-model="title" /></MemberField>
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onFile" />
     </form>
-    <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
+    <div v-for="row in data?.list || []" :key="row.id" class="user_resume_box">
       <h3>{{ row.title || row.id }}</h3>
       <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
-      <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-    </article>
+      <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

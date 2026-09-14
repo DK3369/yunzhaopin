@@ -207,15 +207,19 @@ function labelOf(to: string, key: string) {
           </div>
           <div class="user_resume_cz">
             <div class="user_resume_cz_p">
+              <i class="user_resume_cz_icon1" />
               <button type="button" class="user_resume_cz_a" @click="refreshMyResume">{{ $t('wap_user_00199') }}</button>
             </div>
             <div class="user_resume_cz_p">
+              <i class="user_resume_cz_icon2" />
               <NuxtLink :to="`/resumes/${resume?.uid || data?.uid}`" class="user_resume_cz_a">{{ $t('wap_user_00217') }}</NuxtLink>
             </div>
             <div class="user_resume_cz_p">
+              <i class="user_resume_cz_icon3" />
               <NuxtLink to="/user/recommend" class="user_resume_cz_a">{{ $t('wap_user_00211') }}</NuxtLink>
             </div>
             <div class="user_resume_cz_p">
+              <i class="user_resume_cz_icon4" />
               <NuxtLink to="/user/resume" class="user_resume_cz_a">{{ $t('wap_00269') }}</NuxtLink>
             </div>
           </div>

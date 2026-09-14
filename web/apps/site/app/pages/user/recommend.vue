@@ -19,14 +19,19 @@ useSeoMeta({ title: t('wap_user_00211') })
     :empty-action="$t('wap_user_00254')"
   >
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
+    <div class="resume_Prompt_box">
+      <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('member_user_00191') }}</div>
+    </div>
     <div v-if="list.length" class="user_new_listtit site-pc">
       <div class="user_new_job">{{ $t('member_user_00105') }}</div>
       <div class="user_new_time">{{ $t('wap_00925') }}</div>
+      <div class="user_new_zt">{{ $t('member_user_00194') }}</div>
+      <div class="user_new_yqh">{{ $t('member_user_00196') }}</div>
       <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
     </div>
     <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
       <div class="user_new_job">
-        <NuxtLink :to="`/jobs/${row.id}`" class="user_new_jobname">{{ row.name }}</NuxtLink>
+        <NuxtLink :to="`/jobs/${row.id}`" class="user_new_jobname ppjobname">{{ row.name }}</NuxtLink>
         <div class="user_new_comname">
           <NuxtLink v-if="row.uid" :to="`/companies/${row.uid}`">{{ row.com_name }}</NuxtLink>
         </div>
@@ -34,8 +39,14 @@ useSeoMeta({ title: t('wap_user_00211') })
       <div class="user_new_time">
         <span class="user_new_xz_n">{{ row.min_salary }} - {{ row.max_salary }}</span>
       </div>
+      <div class="user_new_zt">
+        <span>{{ row.edu_n || row.job_edu }}</span>
+        <span class="look_myresume_comline">|</span>
+        <span>{{ row.exp_n || row.job_exp }}</span>
+      </div>
+      <div class="user_new_yqh ppxz">{{ row.pre || row.match || '' }}%</div>
       <div class="user_new_cz">
-        <NuxtLink :to="`/jobs/${row.id}`" class="user_new_yqh_a">{{ $t('common.more') }}</NuxtLink>
+        <NuxtLink :to="`/jobs/${row.id}`" class="user_new_yqh_a">{{ $t('wap_com_00235') }}</NuxtLink>
       </div>
     </div>
     <div class="site-h5 m_cardbox">
@@ -47,7 +58,9 @@ useSeoMeta({ title: t('wap_user_00211') })
           :pay="`${row.min_salary || ''} - ${row.max_salary || ''}`"
           :sub="row.com_name"
           :to="`/jobs/${row.id}`"
-        />
+        >
+          <div class="com_member_matched_degree">{{ row.pre || row.match || '' }}%</div>
+        </MemberPostedCard>
       </div>
     </div>
   </MemberPanel>

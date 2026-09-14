@@ -42,23 +42,26 @@ useSeoMeta({ title: t('member_com_00086') })
 <template>
   <MemberPanel :title="$t('member_com_00086')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="form" @submit.prevent="create">
-      <input v-model="form.name" required :placeholder="$t('wap_00529')" />
-      <input v-model="form.keyword" :placeholder="$t('common.resume')" />
-      <input v-model.number="form.cityid" type="number" :placeholder="$t('common_02110')" />
-      <input v-model="form.minsalary" type="number" :placeholder="$t('ui.min_salary')" />
-      <input v-model="form.maxsalary" type="number" :placeholder="$t('ui.max_salary')" />
-      <button type="submit">{{ $t('member_com_00556') }}</button>
+    <form class="form verification_form" @submit.prevent="create">
+      <MemberField :label="$t('wap_00529')"><input v-model="form.name" required /></MemberField>
+      <MemberField :label="$t('common.resume')"><input v-model="form.keyword" /></MemberField>
+      <MemberField :label="$t('common_02110')"><input v-model.number="form.cityid" type="number" /></MemberField>
+      <MemberField :label="$t('ui.min_salary')"><input v-model="form.minsalary" type="number" /></MemberField>
+      <MemberField :label="$t('ui.max_salary')"><input v-model="form.maxsalary" type="number" /></MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('member_com_00556') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <p v-if="!(data?.list || []).length" class="muted">{{ $t('member_user_00492') }}</p>
-    <div class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
-        <h3>{{ row.name }}</h3>
-        <p class="muted">{{ row.para_n || row.para }}</p>
-        <NuxtLink v-if="row.search_to" :to="row.search_to">{{ $t('common.search') }}</NuxtLink>
-        <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-      </article>
+    <div v-for="row in data?.list || []" :key="row.id" class="job_search_box">
+      <div class="job_search_box_left">
+        <div class="job_search_box_name">{{ row.name }}</div>
+        <div class="job_search_box_p">{{ row.para_n || row.para }}</div>
+      </div>
+      <div class="job_search_box_right">
+        <div class="job_search_box_bth">
+          <NuxtLink v-if="row.search_to" :to="row.search_to" class="job_search_box_bth_a">{{ $t('common.search') }}</NuxtLink>
+        </div>
+        <a href="javascript:;" class="cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
     </div>
   </MemberPanel>
 </template>

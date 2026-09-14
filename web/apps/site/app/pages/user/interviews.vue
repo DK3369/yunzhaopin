@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('yqms', () =>
-  api.post('/v1/mcenter/yqms/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `yqms-${page.value}`,
+  () => api.post('/v1/mcenter/yqms/list', { page: page.value, page_size: pageSize }),
 )
 const openId = ref(0)
 const rejectId = ref(0)
@@ -52,6 +54,7 @@ function browseLabel(state?: number) {
   if (state === 2) return t('wap_user_00258')
   return t('wap_user_00260')
 }
+const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('wap_user_00216') })
 </script>
 
@@ -99,7 +102,7 @@ useSeoMeta({ title: t('wap_user_00216') })
       <div class="user_new_cz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
-      <p v-if="openId === row.id" class="muted">{{ row.content }} · {{ row.linkman }} {{ row.linktel }} · {{ row.intertime }} {{ row.address }}</p>
+      <p v-if="openId === row.id" class="audition_list muted">{{ row.content }} · {{ row.linkman }} {{ row.linktel }} · {{ row.intertime }} {{ row.address }}</p>
       <form v-if="rejectId === row.id" class="form verification_form" @submit.prevent="reject(row.id)">
         <MemberField :label="$t('wap_01053')">
           <input v-model="remark" />
@@ -140,6 +143,7 @@ useSeoMeta({ title: t('wap_user_00216') })
         </div>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

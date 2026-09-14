@@ -89,29 +89,34 @@ useSeoMeta({ title: t('wap_user_00215') })
         </ul>
       </div>
     </div>
-    <div v-if="!error" class="site-pc account_settings">
-      <div class="account_settings_list" @click="changeStatus(1)">
-        <div class="account_settings_list_left">
-          <div class="account_settings_tit">{{ $t('wap_01105') }}</div>
-          {{ $t('wap_01106') }}
-        </div>
-        <div :class="status === 1 ? 'account_settings_bth' : 'account_settings_bth_hv'">{{ $t('wap_js_00005') }}</div>
+    <div v-if="!error" class="site-pc">
+      <div class="resume_Prompt_box">
+        <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('wap_js_00125') }}</div>
       </div>
-      <div class="account_settings_list" @click="changeStatus(3)">
-        <div class="account_settings_list_left">
-          <div class="account_settings_tit">{{ $t('wap_01107') }}</div>
-          {{ $t('wap_01108') }}
-        </div>
-        <div :class="status === 3 ? 'account_settings_bth' : 'account_settings_bth_hv'">{{ $t('ui.company_only_visible') }}</div>
-      </div>
-      <div class="account_settings_list" @click="changeStatus(2)">
-        <div class="account_settings_list_left">
-          <div class="account_settings_tit">{{ $t('wap_01109') }}</div>
-          {{ $t('wap_01110') }}
-        </div>
-        <div :class="status === 2 ? 'account_settings_bth' : 'account_settings_bth_hv'">{{ $t('ui.hidden') }}</div>
-      </div>
-      <form class="form" @submit.prevent="saveName">
+      <dl class="set-status">
+        <dd :class="{ cur: status === 1 }">
+          <a href="javascript:;" @click.prevent="changeStatus(1)">
+            <div class="set-status_p">{{ $t('member_user_00146') }}</div>
+            <span>{{ $t('wap_01106') }}</span>
+            <i class="set-status_q" />
+          </a>
+        </dd>
+        <dd :class="{ cur: status === 3 }">
+          <a href="javascript:;" @click.prevent="changeStatus(3)">
+            <div class="set-status_p">{{ $t('member_user_00256') }}</div>
+            <span>{{ $t('member_user_00556') }}</span>
+            <i class="set-status_q" />
+          </a>
+        </dd>
+        <dd :class="{ cur: status === 2 }">
+          <a href="javascript:;" @click.prevent="changeStatus(2)">
+            <div class="set-status_p">{{ $t('member_user_00258') }}</div>
+            <span>{{ $t('member_user_00557') }}</span>
+            <i class="set-status_q" />
+          </a>
+        </dd>
+      </dl>
+      <form class="form verification_form" @submit.prevent="saveName">
         <MemberField :label="$t('wap_00529')">
           <select v-model.number="nametype">
             <option :value="1">{{ $t('wap_00529') }}</option>
@@ -120,11 +125,12 @@ useSeoMeta({ title: t('wap_user_00215') })
         </MemberField>
         <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
       </form>
-      <div class="account_settings_list">
-        <div class="account_settings_list_left">
-          <div class="account_settings_tit">{{ $t('member_user_00044') }}</div>
-        </div>
-        <NuxtLink to="/user/blacklist" class="account_settings_bth_hv">{{ $t('common.more') }}</NuxtLink>
+      <div class="blacklist">
+        <p class="yun_usertitle">
+          <span>{{ $t('member_user_00257') }}</span>
+          <span class="blacklist_tip">{{ $t('member_user_00558') }}</span>
+          <NuxtLink to="/user/blacklist">+{{ $t('wap_js_00091') }}</NuxtLink>
+        </p>
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>

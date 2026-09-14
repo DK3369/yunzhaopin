@@ -4,11 +4,12 @@ import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const kind = ref(1)
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+watch(kind, () => go(1))
 const { data, error, refresh } = await useAsyncData(
-  () => `fav-${kind.value}`,
-  () => api.post('/v1/mcenter/favorites/list', { kind: kind.value, page: 1, page_size: 20 }),
+  () => `fav-${kind.value}-${page.value}`,
+  () => api.post('/v1/mcenter/favorites/list', { kind: kind.value, page: page.value, page_size: pageSize }),
 )
-watch(kind, () => refresh())
 async function remove(targetId: number) {
   await api.post('/v1/mcenter/favorites/remove', { kind: kind.value, target_id: targetId })
   refresh()
@@ -27,6 +28,7 @@ function toOf(row: { target_id: number }) {
   return ''
 }
 useSeoMeta({ title: t('member_user_00103') })
+const total = computed(() => inferTotal(data.value))
 </script>
 
 <template>
@@ -89,6 +91,7 @@ useSeoMeta({ title: t('member_user_00103') })
         <MemberPostedCard
           v-for="row in data?.list || []"
           :key="'h5-' + row.target_id"
+          :variant="kind === 1 ? 'posted' : 'issue'"
           :title="titleOf(row)"
           :pay="salaryOf(row)"
           :sub="row.detail?.com_name || row.datetime_n"
@@ -97,5 +100,6 @@ useSeoMeta({ title: t('member_user_00103') })
         />
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

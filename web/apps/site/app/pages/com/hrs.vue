@@ -68,30 +68,37 @@ useSeoMeta({ title: t('ui.hr') })
   <MemberPanel :title="$t('ui.hr')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
-      <form class="form" @submit.prevent="createCode">
-        <input v-model="note" :placeholder="$t('ui.desc')" />
-        <button type="submit">{{ $t('ui.add') }}</button>
+      <form class="form verification_form" @submit.prevent="createCode">
+        <MemberField :label="$t('ui.desc')"><input v-model="note" /></MemberField>
+        <button type="submit" class="verification_form_btn">{{ $t('ui.add') }}</button>
       </form>
-      <article v-for="c in codes || []" :key="c.id" class="jobnotice_list">
-        <p>{{ c.code }} · {{ c.note }}</p>
-        <p class="muted">{{ c.expires_at_n }} · {{ c.remaining }}</p>
-        <button type="button" @click="revoke(c.id)">{{ $t('common.delete') }}</button>
-      </article>
-      <h2>{{ $t('ui.hr') }}</h2>
-      <p v-if="!(hrs || []).length" class="muted">{{ $t('ui.no_data') }}</p>
-      <article v-for="row in hrs || []" :key="row.hr_uid" class="jobnotice_list">
-        <p>{{ row.hr_uid }} · {{ row.role }}</p>
-        <p class="muted">{{ row.joined_at_n }}</p>
-        <button type="button" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</button>
-      </article>
-      <h2>{{ $t('common.submit') }}</h2>
-      <form class="form" @submit.prevent="join">
-        <input v-model="joinCode" required />
-        <button type="submit">{{ $t('common.submit') }}</button>
+      <table class="com_table site-pc">
+        <tr>
+          <th>{{ $t('ui.hr') }}</th>
+          <th>{{ $t('member_user_00106') }}</th>
+          <th>{{ $t('member_user_00048') }}</th>
+        </tr>
+        <tr v-for="c in codes || []" :key="c.id">
+          <td>{{ c.code }} · {{ c.note }}</td>
+          <td>{{ c.expires_at_n }}</td>
+          <td><a href="javascript:;" class="List_dete cblue" @click="revoke(c.id)">{{ $t('common.delete') }}</a></td>
+        </tr>
+      </table>
+      <MemberResumeH1 :title="$t('ui.hr')" />
+      <div v-for="row in hrs || []" :key="row.hr_uid" class="attention_enterprises_list site-pc">
+        <div class="attention_enterprises_span attention_enterprises_name">{{ row.hr_uid }} · {{ row.role }}</div>
+        <div class="attention_enterprises_span attention_enterprises_time">{{ row.joined_at_n }}</div>
+        <div class="attention_enterprises_span attention_enterprises_cz">
+          <a href="javascript:;" class="cblue" @click="removeHr(row.hr_uid)">{{ $t('common.delete') }}</a>
+        </div>
+      </div>
+      <form class="form verification_form" @submit.prevent="join">
+        <MemberField><input v-model="joinCode" required /></MemberField>
+        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
       </form>
-      <article v-for="co in companies || []" :key="co.company_uid" class="jobnotice_list">
-        <p>{{ co.company_uid }} · {{ co.role }}</p>
-      </article>
+      <div v-for="co in companies || []" :key="co.company_uid" class="attention_enterprises_list site-pc">
+        <div class="attention_enterprises_span attention_enterprises_name">{{ co.company_uid }} · {{ co.role }}</div>
+      </div>
       <p v-if="msg">{{ msg }}</p>
     </template>
   </MemberPanel>

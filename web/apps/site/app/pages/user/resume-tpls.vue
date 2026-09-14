@@ -8,6 +8,9 @@ const list = computed(() => (Array.isArray(data.value) ? data.value : data.value
   name?: string
   price?: number
   price_yuan?: number
+  pic?: string
+  using?: boolean
+  bought?: boolean
 }>)
 async function apply(id: number) {
   msg.value = ''
@@ -34,29 +37,30 @@ useSeoMeta({ title: t('wap_00328') })
 
 <template>
   <MemberPanel :title="$t('wap_00328')" :error="error" :empty="!error && !list.length">
-    <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job">
-        <span class="user_new_jobname">{{ row.name }}</span>
-        <div v-if="row.price_yuan || row.price" class="user_new_jobxz">{{ row.price_yuan || row.price }}</div>
-      </div>
-      <div class="user_new_cz">
-        <a href="javascript:;" class="user_new_yqh_a" @click="apply(row.id)">{{ $t('common.confirm') }}</a>
-        <a v-if="Number(row.price || row.price_yuan || 0) > 0" href="javascript:;" class="user_new_bth" @click="buy(row.id)">{{ $t('common_01946') }}</a>
-      </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <div class="m_cardbgbox">
-        <MemberPostedCard
-          v-for="row in list"
-          :key="'h5-' + row.id"
-          :title="row.name || ''"
-          :pay="String(row.price_yuan || row.price || '')"
-        >
-          <p>
-            <a href="javascript:;" @click="apply(row.id)">{{ $t('common.confirm') }}</a>
-          </p>
-        </MemberPostedCard>
-      </div>
+    <div class="resume_template_box">
+      <dl v-for="row in list" :key="row.id" class="resume_template">
+        <dt>
+          <img v-if="row.pic" :alt="row.name" :src="row.pic" width="238" height="315" />
+        </dt>
+        <dd>
+          <div class="resume_template_pd">
+            <div class="resume_template_name">{{ row.name }}</div>
+            <div class="resume_template_p">
+              <span class="resume_template_jg">{{ row.price_yuan || row.price || $t('member_user_00572') }}</span>
+            </div>
+          </div>
+          <div class="resume_template_cz">
+            <span v-if="row.using" class="resume_template_bth_sy">{{ $t('member_user_00573') }}</span>
+            <a v-else href="javascript:;" class="resume_template_bth" @click="apply(row.id)">{{ $t('member_user_00284') }}</a>
+            <a
+              v-if="Number(row.price || row.price_yuan || 0) > 0 && !row.bought"
+              href="javascript:;"
+              class="resume_template_ylbth"
+              @click="buy(row.id)"
+            >{{ $t('member_user_00285') }}</a>
+          </div>
+        </dd>
+      </dl>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

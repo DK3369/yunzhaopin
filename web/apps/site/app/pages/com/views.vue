@@ -3,9 +3,20 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-look-resumes', () =>
-  api.post('/v1/mcenter/look-resumes/mine', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-look-resumes-${page.value}`,
+  () => api.post('/v1/mcenter/look-resumes/mine', { page: page.value, page_size: pageSize }),
 )
+const rows = computed(() =>
+  (data.value?.list || []).map((row: Record<string, unknown>) => ({
+    key: Number(row.id),
+    name: String(row.resume_name || row.uid || ''),
+    time: String(row.datetime_n || ''),
+    to: `/resumes/${row.resume_id || row.uid}`,
+  })),
+)
+const total = computed(() => inferTotal(data.value))
 const msg = ref('')
 async function remove(id: number) {
   if (!window.confirm(t('member_com_00083'))) return
@@ -26,19 +37,15 @@ useSeoMeta({ title: t('member_com_00006') })
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_views') }}</p>
-    <div v-else class="stack">
-      <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
-        <h3>
-          <NuxtLink :to="`/resumes/${row.resume_id || row.uid}`">{{ row.resume_name || row.uid }}</NuxtLink>
-        </h3>
-        <p class="muted">{{ row.datetime_n }}</p>
-        <div class="row">
-          <NuxtLink :to="`/resumes/${row.resume_id || row.uid}`">{{ $t('resume_00029') }}</NuxtLink>
-          <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-        </div>
-      </article>
-    </div>
+    <MemberHrResumeRows v-else :rows="rows">
+      <template #pc-acts="{ row }">
+        <a href="javascript:;" class="List_dete cblue" @click="remove(Number(row.key))">{{ $t('common.delete') }}</a>
+      </template>
+      <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="remove(Number(row.key))">{{ $t('common.delete') }}</div>
+      </template>
+    </MemberHrResumeRows>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

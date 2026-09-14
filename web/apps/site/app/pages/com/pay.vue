@@ -150,49 +150,65 @@ useSeoMeta({ title: t('common_01946') })
 <template>
   <MemberPanel :title="$t('common_01946')">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <p>
-      <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
-      <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
-      <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
-    </p>
-    <div v-if="channel === 'bank' && bankList.length" class="stack">
-      <article v-for="b in bankList" :key="b.id" class="jobnotice_list">
-        <h3>{{ b.name }}</h3>
-        <p class="muted">{{ b.bank_name }} {{ b.bank_number }}</p>
-        <p v-if="b.bank_address" class="muted">{{ b.bank_address }}</p>
-      </article>
+    <div class="payment_list">
+      <div class="payment_list_s mt10">{{ $t('member_com_00317') }}：</div>
+      <div class="payment_list_r">
+        <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
+        <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
+        <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+      </div>
     </div>
-    <div class="stack">
-      <article v-for="p in packages" :key="p.code" class="jobnotice_list">
-        <h3>{{ p.name }}</h3>
-        <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
-        <ul v-if="quotaLines(p).length" class="muted">
-          <li v-for="(row, i) in quotaLines(p)" :key="i">
-            {{ $t(row[1]) }} {{ row[0] }}<template v-if="row[2]">{{ $t(row[2]) }}</template>
-          </li>
-        </ul>
-        <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
-      </article>
+    <div v-if="channel === 'bank' && bankList.length" class="wxts_box">
+      <div v-for="b in bankList" :key="b.id" class="wxts">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
     </div>
-    <form v-if="bankOrderNo" class="form" @submit.prevent="submitBank">
+    <div class="payment_list">
+      <div class="payment_list_s mt10">{{ $t('member_com_00316') }}：</div>
+      <div class="payment_list_r">
+        <span v-for="p in packages" :key="p.code" class="payment_list_text">
+          <div class="payment_list_text_n">
+            {{ p.name }}
+            <em class="payment_list_text_dw">{{ p.price_yuan }} {{ $t('wap_00925') }}</em>
+          </div>
+          <input type="button" class="payment_list_other" :value="$t('common.submit')" @click="buy(p.code)" />
+        </span>
+      </div>
+    </div>
+    <form v-if="bankOrderNo" class="form verification_form" @submit.prevent="submitBank">
       <p class="muted">{{ $t('ui.order_no') }} {{ bankOrderNo }}</p>
-      <input v-model="bankForm.bank_name" :placeholder="$t('model_00022')" required />
-      <input v-model="bankForm.bank_number" :placeholder="$t('model_00023')" required />
-      <input v-model="bankForm.bank_price" :placeholder="$t('model_00024')" required />
-      <input v-model="bankForm.bank_time" type="date" required />
-      <input v-model="bankForm.order_remark" :placeholder="$t('wap_com_00345')" />
+      <MemberField :label="$t('model_00022')"><input v-model="bankForm.bank_name" required /></MemberField>
+      <MemberField :label="$t('model_00023')"><input v-model="bankForm.bank_number" required /></MemberField>
+      <MemberField :label="$t('model_00024')"><input v-model="bankForm.bank_price" required /></MemberField>
+      <MemberField :label="$t('member_user_00106')"><input v-model="bankForm.bank_time" type="date" required /></MemberField>
+      <MemberField :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" /></MemberField>
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" />
-      <button type="submit">{{ $t('common.submit') }}</button>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
-    <h2>{{ $t('common_02029') }}</h2>
-    <p v-if="!(orders?.list || []).length" class="muted">{{ $t('ui.no_orders') }}</p>
-    <div class="stack">
-      <article v-for="o in orders?.list || []" :key="o.order_no" class="jobnotice_list">
-        <h3>{{ o.order_no }}</h3>
-        <p class="muted">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
-        <button v-if="canFillBank(o)" type="button" @click="fillBank(o)">{{ $t('wap_01805') }}</button>
-        <button v-if="canCancel(o)" type="button" @click="cancelOrder(o)">{{ $t('common.cancel') }}</button>
-      </article>
+    <MemberResumeH1 :title="$t('common_02029')" />
+    <div v-if="(orders?.list || []).length" class="site-pc paylist_tit">
+      <span class="paylist_span paylist_span_dh">{{ $t('ui.order_no') }}</span>
+      <span class="paylist_span paylist_span_money">{{ $t('wap_00925') }}</span>
+      <span class="paylist_span paylist_span_zt">{{ $t('member_user_00104') }}</span>
+    </div>
+    <div v-for="o in orders?.list || []" :key="o.order_no" class="site-pc paylist_list">
+      <span class="paylist_span paylist_span_dh">{{ o.order_no }}</span>
+      <span class="paylist_span paylist_span_money">{{ o.amount_yuan }}</span>
+      <span class="paylist_span paylist_span_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
+      <span class="paylist_span paylist_span_cz">
+        <a v-if="canFillBank(o)" href="javascript:;" class="cblue" @click="fillBank(o)">{{ $t('wap_01805') }}</a>
+        <a v-if="canCancel(o)" href="javascript:;" class="cblue" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
+      </span>
+    </div>
+    <div class="site-h5 m_cardbox">
+      <div class="m_cardbgbox">
+        <MemberPostedCard
+          v-for="o in orders?.list || []"
+          :key="'h5-' + o.order_no"
+          variant="issue"
+          :title="String(o.order_no)"
+          :pay="String(o.amount_yuan)"
+          :time="o.status_n"
+        />
+      </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

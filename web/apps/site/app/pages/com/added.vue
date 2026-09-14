@@ -52,7 +52,7 @@ useSeoMeta({ title: t('wap_com_00393') })
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <section v-for="g in groups" :key="g.id">
       <h2>{{ g.name }}</h2>
-      <article v-for="d in g.details || []" :key="d.id" class="jobnotice_list">
+      <article v-for="d in g.details || []" :key="d.id" class="payment_list_text">
         <p>¥{{ d.service_price }}</p>
         <ul class="muted">
           <li v-if="d.job_num">{{ $t('wap_com_00106') }} {{ d.job_num }}</li>

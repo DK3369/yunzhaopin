@@ -5,15 +5,14 @@
         <span class="user_new_tit_n">{{ title }}</span>
       </div>
       <div class="yun_m_rightbox">
-        <div class="resume_box_list">
-          <div v-for="item in items" :key="item.to" class="jobnotice_list">
-            <div class="user_new_job">
-              <NuxtLink :to="item.to" class="user_new_jobname">{{ item.label }}</NuxtLink>
-              <div v-if="item.hint" class="user_new_comname">{{ item.hint }}</div>
+        <div class="account_settings">
+          <div v-for="item in items" :key="item.to" class="account_settings_list">
+            <div class="account_settings_list_left">
+              <i class="account_settings_list_left_icon" :class="item.icon || 'account_settings_list_left_icon_user'" />
+              <div class="account_settings_tit">{{ item.label }}</div>
+              <div v-if="item.hint" class="account_settings_tip">{{ item.hint }}</div>
             </div>
-            <div class="user_new_cz">
-              <NuxtLink :to="item.to" class="user_new_yqh_sc">{{ $t('common.more') }}</NuxtLink>
-            </div>
+            <NuxtLink :to="item.to" class="account_settings_bth_hv">{{ $t('wap_js_00073') }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -53,7 +52,7 @@
 withDefaults(
   defineProps<{
     title: string
-    items: Array<{ to: string; label: string; hint?: string }>
+    items: Array<{ to: string; label: string; hint?: string; icon?: string }>
     logoutable?: boolean
     kind?: 'user' | 'com'
   }>(),

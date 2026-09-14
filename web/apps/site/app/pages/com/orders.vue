@@ -32,7 +32,7 @@ useSeoMeta({ title: t('ui.orders') })
     <h2>{{ $t('ui.buyable') }}</h2>
     <p v-if="!packages.length" class="muted">{{ $t('ui.no_packages') }}</p>
     <div class="stack">
-      <article v-for="p in packages" :key="p.code" class="jobnotice_list">
+      <article v-for="p in packages" :key="p.code" class="payment_list_text">
         <h3>{{ p.name }}</h3>
         <p class="muted">{{ p.price_yuan }} {{ $t('wap_00925') }} / {{ p.duration_days }} {{ $t('wap_01197') }}</p>
         <button type="button" @click="buy(p.code)">{{ $t('common.submit') }}</button>
@@ -41,7 +41,7 @@ useSeoMeta({ title: t('ui.orders') })
     <h2>{{ $t('ui.my_orders') }}</h2>
     <p v-if="!(orders?.list || []).length" class="muted">{{ $t('ui.no_orders') }}</p>
     <div class="stack">
-      <article v-for="o in orders?.list || []" :key="o.order_no" class="jobnotice_list">
+      <article v-for="o in orders?.list || []" :key="o.order_no" class="paylist_list">
         <h3>{{ o.order_no }}</h3>
         <p class="muted">{{ o.package_code }} · {{ o.status_n }} · {{ o.amount_yuan }} {{ $t('wap_00925') }}</p>
       </article>

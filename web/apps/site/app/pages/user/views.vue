@@ -3,8 +3,10 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('look-resumes', () =>
-  api.post('/v1/mcenter/look-resumes/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `look-resumes-${page.value}`,
+  () => api.post('/v1/mcenter/look-resumes/list', { page: page.value, page_size: pageSize }),
 )
 const msg = ref('')
 async function remove(id: number) {
@@ -17,6 +19,7 @@ async function remove(id: number) {
   }
 }
 useSeoMeta({ title: t('wap_com_00407') })
+const total = computed(() => inferTotal(data.value))
 </script>
 
 <template>
@@ -44,7 +47,7 @@ useSeoMeta({ title: t('wap_com_00407') })
       <div class="user_new_job">
         <NuxtLink v-if="row.com_id" :to="`/companies/${row.com_id}`" class="user_new_jobname">{{ row.com_name || row.com_id }}</NuxtLink>
         <span v-else class="user_new_jobname">{{ row.com_name || row.id }}</span>
-        <div class="user_new_comname">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></div>
+        <div class="user_new_comname look_myresume_comxz">{{ row.com_job }} <template v-if="row.com_job_num">· {{ row.com_job_num }}</template></div>
       </div>
       <div class="user_new_time">{{ row.datetime_n }}</div>
       <div class="user_new_cz">
@@ -56,13 +59,18 @@ useSeoMeta({ title: t('wap_com_00407') })
         <MemberPostedCard
           v-for="row in data?.list || []"
           :key="'h5-' + row.id"
+          variant="issue"
           :title="row.com_name || String(row.com_id || row.id)"
           :sub="row.com_job"
           :time="row.datetime_n"
           :to="row.com_id ? `/companies/${row.com_id}` : undefined"
+          :look-job="row.com_job"
+          :look-text="$t('wap_user_00276')"
+          :on-look-del="() => remove(row.id)"
         />
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

@@ -1,9 +1,21 @@
 <script setup lang="ts">
 const api = useApi()
 const { t } = useI18n()
-const { data, error } = await useAsyncData('downloads', () =>
-  api.post('/v1/mcenter/resume-downloads/outbox', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error } = await useAsyncData(
+  () => `downloads-${page.value}`,
+  () => api.post('/v1/mcenter/resume-downloads/outbox', { page: page.value, page_size: pageSize }),
 )
+const rows = computed(() =>
+  (data.value?.list || []).map((row: Record<string, unknown>) => ({
+    key: Number(row.id || row.uid),
+    name: String(row.name || row.display_name || row.uname || row.uid || ''),
+    time: String(row.datetime_n || ''),
+    to: `/resumes/${row.eid || row.uid}`,
+    downloaded: true,
+  })),
+)
+const total = computed(() => inferTotal(data.value))
 const msg = ref('')
 
 async function exportCsv() {
@@ -28,13 +40,11 @@ useSeoMeta({ title: t('wap_com_00235') })
   <MemberPanel :title="$t('wap_com_00235')" :error="error" :empty="!error && !(data?.list || []).length">
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
-    <p>
-      <button type="button" @click="exportCsv">{{ $t('common.submit') }} CSV</button>
+    <p class="site-pc">
+      <button type="button" class="com_topbth" @click="exportCsv">{{ $t('common.submit') }} CSV</button>
     </p>
-    <article v-for="row in data?.list || []" :key="row.id || row.uid" class="jobnotice_list">
-      <NuxtLink :to="`/resumes/${row.eid || row.uid}`">{{ row.name || row.display_name || row.uname || row.uid }}</NuxtLink>
-      <p class="muted">{{ row.datetime_n }}</p>
-    </article>
+    <MemberHrResumeRows :rows="rows" />
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

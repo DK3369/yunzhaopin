@@ -104,40 +104,36 @@ useSeoMeta({ title: t('member_user_00059') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <nav class="stack">
-        <NuxtLink to="/com/profile" class="jobnotice_list">{{ $t('wap_user_00341') }}</NuxtLink>
-        <NuxtLink to="/com/cert" class="jobnotice_list">{{ $t('wap_com_00075') }}</NuxtLink>
-        <NuxtLink to="/com/password" class="jobnotice_list">{{ $t('member_com_00070') }}</NuxtLink>
-        <NuxtLink to="/user/account" class="jobnotice_list">{{ $t('member_user_00220') }} / {{ $t('member_com_00538') }}</NuxtLink>
+      <nav class="job_list_tit">
+        <ul>
+          <li><NuxtLink to="/com/profile">{{ $t('wap_user_00341') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/cert">{{ $t('wap_com_00075') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/password">{{ $t('member_com_00070') }}</NuxtLink></li>
+          <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('member_user_00059') }}</a></li>
+        </ul>
       </nav>
       <h2>{{ $t('wap_00389') }}</h2>
       <p v-if="me?.moblie" class="muted">{{ $t('common.phone') }} {{ maskPhone(String(me.moblie)) }}</p>
       <p v-if="me?.email" class="muted">{{ $t('member_user_00282') }} {{ maskEmail(String(me.email)) }}</p>
-      <p v-if="!(data?.providers || []).length" class="muted">{{ $t('ui.no_binding') }}</p>
-      <ul v-else class="stack">
+      <ul class="bingding_box">
         <li v-for="p in data?.providers || []" :key="p">
-          {{ p }}
-          <button type="button" @click="unbind(p)">{{ $t('wap_js_00065') }}</button>
+          <div class="bingding_box_name">{{ p }}</div>
+          <span class="bingding_box_bth_jc" @click="unbind(p)">{{ $t('wap_js_00065') }}</span>
+        </li>
+        <li v-for="o in oauth" :key="o.provider">
+          <div class="bingding_box_name">{{ o.name }}</div>
+          <span class="bingding_box_bth" @click="startBind(o)">{{ $t('wap_user_00119') }}</span>
         </li>
       </ul>
-      <p v-if="oauth.length">
-        <a
-          v-for="o in oauth"
-          :key="o.provider"
-          :href="o.path"
-          style="margin-right: 12px"
-          @click.prevent="startBind(o)"
-        >{{ o.name }}</a>
-      </p>
-      <form class="form" @submit.prevent="bindMobile">
-        <input v-model="mobile" :placeholder="$t('common.phone')" />
-        <button type="button" @click="sendMobile">{{ $t('common.submit') }}</button>
-        <input v-model="mobileCode" :placeholder="$t('wap_01371')" />
-        <button type="submit">{{ $t('common.save') }}</button>
+      <form class="form verification_form" @submit.prevent="bindMobile">
+        <MemberField :label="$t('common.phone')"><input v-model="mobile" /></MemberField>
+        <button type="button" class="verification_form_btn" @click="sendMobile">{{ $t('common.submit') }}</button>
+        <MemberField :label="$t('wap_01371')"><input v-model="mobileCode" /></MemberField>
+        <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
       </form>
-      <form class="form" @submit.prevent="sendEmail">
-        <input v-model="email" :placeholder="$t('member_user_00282')" />
-        <button type="submit">{{ $t('common.submit') }}</button>
+      <form class="form verification_form" @submit.prevent="sendEmail">
+        <MemberField :label="$t('member_user_00282')"><input v-model="email" /></MemberField>
+        <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
       </form>
       <p class="muted">{{ $t('ajax_00001') }}</p>
       <p><NuxtLink to="/email-verify">{{ $t('wap_user_00179') }}</NuxtLink></p>

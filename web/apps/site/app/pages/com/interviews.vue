@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-yqms', () =>
-  api.post('/v1/mcenter/company/yqms/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-yqms-${page.value}`,
+  () => api.post('/v1/mcenter/company/yqms/list', { page: page.value, page_size: pageSize }),
 )
 const { data: tpls, refresh: refreshTpls } = await useAsyncData('com-iv-tpls', () =>
   api.post('/v1/mcenter/interview-templates/list', {}).catch(() => []),
@@ -90,33 +92,47 @@ function browseLabel(state?: number) {
   return t('wap_user_00260')
 }
 useSeoMeta({ title: t('wap_user_00216') })
+const ivRows = computed(() =>
+  (data.value?.list || []).map((row: Record<string, unknown>) => ({
+    key: Number(row.id),
+    name: String(row.uname || row.uid || ''),
+    job: String(row.job_name || row.job_id || ''),
+    time: String(row.datetime_n || ''),
+    to: `/resumes/${row.uid}`,
+    invited: true,
+    info: [String(row.address || ''), String(row.intertime || '')].filter(Boolean),
+  })),
+)
+const ivTotal = computed(() => inferTotal(data.value))
 </script>
 
 <template>
   <MemberPanel :title="$t('wap_user_00216')" :error="error" :empty="false">
-    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
-      <p>
-        <NuxtLink :to="`/resumes/${row.uid}`">{{ row.uname || row.uid }}</NuxtLink>
-        · {{ row.job_name || row.job_id }} · {{ browseLabel(row.is_browse) }}
-      </p>
-      <p class="muted">{{ row.datetime_n }} · {{ row.address }} · {{ row.intertime }}</p>
-      <button type="button" @click="cancel(row.id)">{{ $t('common.delete') }}</button>
-    </article>
-    <p v-if="!error && !(data?.list || []).length" class="muted">{{ $t('ui.no_items') }}</p>
-    <h2>{{ $t('member_com_00512') }}</h2>
-    <article v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="jobnotice_list">
-      <h3>{{ row.name }}</h3>
-      <p class="muted">{{ row.address }} · {{ row.linkman }} {{ row.linktel }}</p>
-      <button type="button" @click="fill(row)">{{ $t('common.edit') }}</button>
-      <button type="button" @click="removeTpl(row.id)">{{ $t('common.delete') }}</button>
-    </article>
-    <form class="form" @submit.prevent="saveTpl">
-      <input v-model="form.name" required :placeholder="$t('wap_com_00288')" />
-      <textarea v-model="form.content" rows="3" required />
-      <input v-model="form.address" required :placeholder="$t('wap_00040')" />
-      <input v-model="form.linkman" required :placeholder="$t('common_02051')" />
-      <input v-model="form.linktel" required :placeholder="$t('common.phone')" />
-      <button type="submit">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
+    <MemberHrResumeRows show-job :rows="ivRows">
+      <template #pc-acts="{ row }">
+        <a href="javascript:;" class="List_dete cblue" @click="cancel(Number(row.key))">{{ $t('common.delete') }}</a>
+      </template>
+      <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="cancel(Number(row.key))">{{ $t('common.delete') }}</div>
+      </template>
+    </MemberHrResumeRows>
+    <MemberPager :page="page" :page-size="pageSize" :total="ivTotal" @update:page="go" />
+    <MemberResumeH1 :title="$t('member_com_00512')" />
+    <div v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="attention_enterprises_list site-pc">
+      <div class="attention_enterprises_span attention_enterprises_name">{{ row.name }}</div>
+      <div class="attention_enterprises_span attention_enterprises_time">{{ row.address }} · {{ row.linkman }}</div>
+      <div class="attention_enterprises_span attention_enterprises_cz">
+        <a href="javascript:;" class="cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
+        <a href="javascript:;" class="List_dete cblue" @click="removeTpl(row.id)">{{ $t('common.delete') }}</a>
+      </div>
+    </div>
+    <form class="form verification_form" @submit.prevent="saveTpl">
+      <MemberField :label="$t('wap_com_00288')"><input v-model="form.name" required /></MemberField>
+      <MemberField :label="$t('wap_user_00102')" area><textarea v-model="form.content" rows="3" required /></MemberField>
+      <MemberField :label="$t('wap_00040')"><input v-model="form.address" required /></MemberField>
+      <MemberField :label="$t('common_02051')"><input v-model="form.linkman" required /></MemberField>
+      <MemberField :label="$t('common.phone')"><input v-model="form.linktel" required /></MemberField>
+      <button type="submit" class="verification_form_btn">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

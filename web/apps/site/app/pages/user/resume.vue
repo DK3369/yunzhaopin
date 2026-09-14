@@ -561,17 +561,17 @@ useSeoMeta({ title: t('wap_user_00204') })
       <input v-model="galleryTitle" />
       <input type="file" accept="image/jpeg,image/png,image/webp" @change="onShow" />
     </form>
-    <article v-for="row in shows?.list || []" :key="row.id" class="jobnotice_list">
+    <article v-for="row in shows?.list || []" :key="row.id" class="user_resume_box">
       <h3>{{ row.title || row.id }}</h3>
       <img v-if="row.picurl" :src="row.picurl" alt="" width="120" />
-      <button type="button" @click="removeShow(row.id)">{{ $t('common.delete') }}</button>
+      <button type="button" class="user_resume_cz_a" @click="removeShow(row.id)">{{ $t('common.delete') }}</button>
     </article>
     <MemberResumeH1 :title="$t('common.share')" icon="yun_resume_h1_iconfj" />
     <form class="form" @submit.prevent="createShare">
       <input v-model.number="shareTtl" type="number" min="60" max="2592000" />
       <button type="submit">{{ $t('common.submit') }}</button>
     </form>
-    <article v-for="row in shareTokens?.list || []" :key="row.token" class="jobnotice_list">
+    <article v-for="row in shareTokens?.list || []" :key="row.token" class="user_resume_box">
       <h3>
         <NuxtLink :to="`/share/resume/${row.token}`">{{ row.token }}</NuxtLink>
       </h3>

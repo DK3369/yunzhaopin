@@ -6,8 +6,10 @@ const msg = ref('')
 const { data: summary } = await useAsyncData('referrals-summary', () =>
   api.post<{ count?: number; total_points?: number }>('/v1/mcenter/referrals/summary', {}).catch(() => null),
 )
-const { data: refs } = await useAsyncData('referrals', () =>
-  api.post('/v1/mcenter/referrals', { page: 1, page_size: 20 }).catch(() => null),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data: refs } = await useAsyncData(
+  () => `referrals-${page.value}`,
+  () => api.post('/v1/mcenter/referrals', { page: page.value, page_size: pageSize }).catch(() => null),
 )
 async function send() {
   msg.value = ''
@@ -19,10 +21,14 @@ async function send() {
   }
 }
 useSeoMeta({ title: t('ui.invite_reg') })
+const total = computed(() => inferTotal(refs.value))
 </script>
 
 <template>
   <MemberPanel :title="$t('ui.invite_reg')">
+    <div class="yun_usermember_integral_box site-h5">
+      <div class="yun_usermember_integral_box_h1">{{ $t('ui.invite_reg') }}</div>
+    </div>
     <p v-if="summary" class="muted">
       {{ summary.count ?? 0 }} · {{ summary.total_points ?? 0 }}
     </p>
@@ -35,10 +41,11 @@ useSeoMeta({ title: t('ui.invite_reg') })
       </MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('ui.send_invite_reg') }}</button>
     </form>
-    <div v-for="row in refs?.list || []" :key="row.id" class="jobnotice_list">
-      <div class="user_new_job">{{ row.invitee_uid }}</div>
-      <div class="user_new_time">{{ row.points }} · {{ row.created_at_n }}</div>
+    <div v-for="row in refs?.list || []" :key="row.id" class="attention_enterprises_list site-pc">
+      <div class="attention_enterprises_span attention_enterprises_name">{{ row.invitee_uid }}</div>
+      <div class="attention_enterprises_span attention_enterprises_time">{{ row.points }} · {{ row.created_at_n }}</div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

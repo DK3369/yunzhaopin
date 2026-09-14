@@ -13,11 +13,13 @@ function packed(text: unknown) {
     zhRoot,
   })
 }
+const { page, pageSize, inferTotal, go } = useMemberListPage()
 const { data: bal, error } = await useAsyncData('user-finance-bal', () =>
   api.post('/v1/mcenter/integral/balance', {}),
 )
-const { data: pays } = await useAsyncData('user-finance-pay', () =>
-  api.post('/v1/mcenter/integral/consumes', { page: 1, page_size: 20 }).catch(() => ({ list: [] })),
+const { data: pays } = await useAsyncData(
+  () => `user-finance-pay-${page.value}`,
+  () => api.post('/v1/mcenter/integral/consumes', { page: page.value, page_size: pageSize }).catch(() => ({ list: [] })),
 )
 const { data: rewards } = await useAsyncData('user-finance-ex', () =>
   api.post('/v1/mcenter/integral/history', { page: 1, page_size: 20 }).catch(() => ({ list: [] })),
@@ -37,6 +39,7 @@ async function sign() {
   }
 }
 useSeoMeta({ title: t('wap_user_00213') })
+const payTotal = computed(() => inferTotal(pays.value))
 </script>
 
 <template>
@@ -63,20 +66,28 @@ useSeoMeta({ title: t('wap_user_00213') })
       <p>
         <button type="button" class="verification_form_btn" :disabled="signSt?.signed_today" @click="sign">{{ $t('wap_01023') }}</button>
       </p>
-      <div v-for="row in pays?.list || []" :key="row.id" class="jobnotice_list site-pc">
-        <div class="user_new_job">{{ packed(row.detail) }} · {{ row.delta }}</div>
-        <div class="user_new_time">{{ row.ctime_n || row.ctime }}</div>
+      <div v-if="(pays?.list || []).length" class="paylist_tit site-pc">
+        <span class="paylist_span paylist_span_dh">{{ $t('ui.detail') }}</span>
+        <span class="paylist_span paylist_span_money">{{ $t('wap_00925') }}</span>
+        <span class="paylist_span paylist_span_time">{{ $t('member_user_00106') }}</span>
+      </div>
+      <div v-for="row in pays?.list || []" :key="row.id" class="paylist_list site-pc">
+        <span class="paylist_span paylist_span_dh">{{ packed(row.detail) }}</span>
+        <span class="paylist_span paylist_span_money">{{ row.delta }}</span>
+        <span class="paylist_span paylist_span_time">{{ row.ctime_n || row.ctime }}</span>
       </div>
       <div class="site-h5 m_cardbox">
         <div class="m_cardbgbox">
           <MemberPostedCard
             v-for="row in pays?.list || []"
             :key="'h5-' + row.id"
+            variant="issue"
             :title="String(packed(row.detail) || row.delta)"
             :time="row.ctime_n || row.ctime"
           />
         </div>
       </div>
+      <MemberPager :page="page" :page-size="pageSize" :total="payTotal" @update:page="go" />
       <p v-if="msg">{{ msg }}</p>
     </template>
   </MemberPanel>

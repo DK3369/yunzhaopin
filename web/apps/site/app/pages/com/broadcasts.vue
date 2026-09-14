@@ -25,10 +25,10 @@ useSeoMeta({ title: t('common.message') })
 <template>
   <MemberPanel :title="$t('common.message')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <article v-for="row in list" :key="row.id" class="jobnotice_list" @click="mark(row.id)">
-      <h3>{{ row.title }}</h3>
+    <div v-for="row in list" :key="row.id" class="sysynews_list" @click="mark(row.id)">
+      <div class="sysynews_span sysynews_name">{{ row.title }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.created_at_n }}</div>
       <p>{{ row.body }}</p>
-      <p class="muted">{{ row.created_at_n }}</p>
-    </article>
+    </div>
   </MemberPanel>
 </template>

@@ -53,14 +53,14 @@ useSeoMeta({ title: t('member_user_00226') })
 
 <template>
   <MemberPanel :title="$t('member_user_00226')">
-    <form class="form" @submit.prevent="submit">
-      <input v-model="form.old_password" type="password" :placeholder="$t('wap_01097')" />
-      <input v-model="form.new_password" type="password" :placeholder="$t('wap_01099')" />
-      <button type="submit">{{ $t('common.submit') }}</button>
+    <form class="form verification_form security" @submit.prevent="submit">
+      <MemberField :label="$t('wap_01097')"><input v-model="form.old_password" type="password" /></MemberField>
+      <MemberField :label="$t('wap_01099')"><input v-model="form.new_password" type="password" /></MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
     <h2>{{ $t('member_user_00058') }}</h2>
     <p v-if="!sessionList.length" class="muted">{{ $t('ui.no_items') }}</p>
-    <article v-for="row in sessionList" :key="row.id" class="jobnotice_list">
+    <article v-for="row in sessionList" :key="row.id" class="attention_enterprises_list">
       <h3>{{ row.device || row.ip }} <span v-if="row.is_current" class="muted">{{ $t('common.yes') }}</span></h3>
       <p class="muted">{{ row.ip }} {{ row.ip_loc }} · {{ row.login_at_n || row.last_seen_at_n }}</p>
       <button v-if="!row.is_current" type="button" @click="revokeSession(row.id)">{{ $t('common.delete') }}</button>

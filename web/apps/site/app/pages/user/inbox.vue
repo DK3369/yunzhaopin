@@ -3,9 +3,12 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error } = await useAsyncData('resume-downloads-inbox', () =>
-  api.post('/v1/mcenter/resume-downloads/inbox', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error } = await useAsyncData(
+  () => `resume-downloads-inbox-${page.value}`,
+  () => api.post('/v1/mcenter/resume-downloads/inbox', { page: page.value, page_size: pageSize }),
 )
+const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('admin_user_00263') })
 </script>
 
@@ -34,5 +37,6 @@ useSeoMeta({ title: t('admin_user_00263') })
         />
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

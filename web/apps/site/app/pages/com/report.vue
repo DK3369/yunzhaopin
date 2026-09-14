@@ -48,17 +48,17 @@ useSeoMeta({ title: t('member_com_00148') })
 <template>
   <MemberPanel :title="$t('member_com_00148')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <form class="stack" @submit.prevent="submit">
-      <textarea v-model="reason" rows="3" :placeholder="$t('member_com_00331')" maxlength="200" />
-      <button type="submit">{{ $t('common.submit') }}</button>
+    <form class="form verification_form" @submit.prevent="submit">
+      <MemberField :label="$t('member_com_00331')" area><textarea v-model="reason" rows="3" maxlength="200" /></MemberField>
+      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
-    <p v-if="!list.length" class="muted">{{ $t('member_com_00656') }}</p>
-    <article v-for="row in list" :key="row.id" class="jobnotice_list">
-      <p>{{ $t('member_com_00333') }} {{ row.r_name }}</p>
-      <p>{{ $t('member_com_00331') }} {{ row.r_reason }}</p>
-      <p class="muted">{{ row.inputtime_n }} · {{ row.result || $t('admin_user_00371') }}</p>
-      <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-    </article>
+    <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name">{{ row.r_name }} · {{ row.r_reason }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.inputtime_n }} · {{ row.result || $t('admin_user_00371') }}</div>
+      <div class="sysynews_span sysynews_cz">
+        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      </div>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

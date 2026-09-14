@@ -3,9 +3,12 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error } = await useAsyncData('eval-logs-mine', () =>
-  api.post('/v1/mcenter/eval-logs', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error } = await useAsyncData(
+  () => `eval-logs-mine-${page.value}`,
+  () => api.post('/v1/mcenter/eval-logs', { page: page.value, page_size: pageSize }),
 )
+const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('wap_00194') })
 </script>
 
@@ -32,6 +35,7 @@ useSeoMeta({ title: t('wap_00194') })
           />
         </div>
       </div>
+      <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     </div>
   </MemberPanel>
 </template>

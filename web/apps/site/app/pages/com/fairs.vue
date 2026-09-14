@@ -9,15 +9,12 @@ useSeoMeta({ title: t('wap_00558') })
 
 <template>
   <MemberPanel :title="$t('wap_00558')" :error="error" :empty="!error && !(Array.isArray(data?.list) ? data.list.length : false)">
-    <article v-for="row in data?.list || []" :key="row.id" class="jobnotice_list">
-      <h3>
-        <NuxtLink v-if="row.zid" :to="`/fairs/${row.zid}?tab=reserve`">{{ row.title || row.name || row.zid }}</NuxtLink>
-        <span v-else>{{ row.title || row.name || row.id }}</span>
-      </h3>
-      <p class="muted">{{ row.start_at_n || row.datetime_n }}</p>
-      <p v-if="row.zid">
-        <NuxtLink :to="`/fairs/${row.zid}?tab=reserve`">{{ $t('wap_01344') }}</NuxtLink>
-      </p>
-    </article>
+    <div v-for="row in data?.list || []" :key="row.id" class="issue_post_body_card">
+      <div class="Posted_card_top">
+        <NuxtLink v-if="row.zid" :to="`/fairs/${row.zid}?tab=reserve`" class="Posted_card_name">{{ row.title || row.name || row.zid }}</NuxtLink>
+        <span v-else class="Posted_card_name">{{ row.title || row.name || row.id }}</span>
+        <div class="Posted_card_pay">{{ row.start_at_n || row.datetime_n }}</div>
+      </div>
+    </div>
   </MemberPanel>
 </template>

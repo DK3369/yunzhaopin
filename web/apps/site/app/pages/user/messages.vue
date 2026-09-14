@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('msgs', () =>
-  api.post('/v1/mcenter/messages', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `msgs-${page.value}`,
+  () => api.post('/v1/mcenter/messages', { page: page.value, page_size: pageSize }),
 )
 const { data: dash } = await useAsyncData('user-msg-dash', () =>
   api
@@ -22,6 +24,7 @@ async function readAll() {
   refresh()
 }
 useSeoMeta({ title: t('common.message') })
+const total = computed(() => inferTotal(data.value))
 </script>
 
 <template>
@@ -51,19 +54,21 @@ useSeoMeta({ title: t('common.message') })
     <p class="user_czbth">
       <a href="javascript:;" class="user_new_yqh_a" @click="readAll">{{ $t('common.confirm') }}</a>
     </p>
-    <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
-      <div class="user_new_job">{{ $t('common.message') }}</div>
-      <div class="user_new_time">{{ $t('member_user_00104') }}</div>
-      <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
+    <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
+      <div class="sysynews_span sysynews_name">{{ $t('common.message') }}</div>
+      <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
+      <div class="sysynews_span sysynews_cz">{{ $t('member_user_00048') }}</div>
     </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job">
-        <span class="user_new_jobname">{{ row.body || row.content || row.title || row.id }}</span>
+    <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
+      <div class="sysynews_span sysynews_name" :style="row.remind_status === 0 ? 'font-weight:bold' : ''">
+        {{ row.body || row.content || row.title || row.id }}
+        <span v-if="row.remind_status === 0" class="sysynews_span_nolook">{{ $t('wap_user_00260') }}</span>
       </div>
-      <div class="user_new_time">{{ row.datetime_n }}</div>
-      <div class="user_new_cz">
-        <a href="javascript:;" class="user_new_yqh_a" @click="read(row.id)">{{ $t('common.confirm') }}</a>
-        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
+      <div class="sysynews_span sysynews_cz">
+        <a href="javascript:;" class="cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
+        <span class="jobnotice_cz_line">|</span>
+        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
     <div class="site-h5 m_cardbox">
@@ -76,5 +81,6 @@ useSeoMeta({ title: t('common.message') })
         />
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

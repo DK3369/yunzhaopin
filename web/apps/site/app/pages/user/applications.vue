@@ -5,17 +5,18 @@ const api = useApi()
 const { t } = useI18n()
 const state = ref<number | null>(null)
 const days = ref<number | null>(null)
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+watch([state, days], () => go(1))
 const { data, error, refresh } = await useAsyncData(
-  () => `my-apps-${state.value ?? 'all'}-${days.value ?? 'all'}`,
+  () => `my-apps-${state.value ?? 'all'}-${days.value ?? 'all'}-${page.value}`,
   () =>
     api.post('/v1/mcenter/my-applications', {
-      page: 1,
-      page_size: 20,
+      page: page.value,
+      page_size: pageSize,
       ...(state.value === null ? {} : { state: state.value }),
       ...(days.value === null ? {} : { days: days.value }),
     }),
 )
-watch([state, days], () => refresh())
 const list = computed(() => data.value?.list || [])
 const msg = ref('')
 async function withdraw(id: number) {
@@ -91,6 +92,7 @@ const sub = computed(() => {
   const n = Number(data.value?.total ?? list.value.length)
   return n ? String(n) : ''
 })
+const total = computed(() => inferTotal(data.value, list.value))
 useSeoMeta({ title: t('wap_user_00270') })
 </script>
 
@@ -154,10 +156,12 @@ useSeoMeta({ title: t('wap_user_00270') })
           :sub="row.com_name"
           :time="row.datetime_n"
           :to="`/jobs/${row.job_id}`"
-          :tags="[browseLabel(row)]"
-        />
+        >
+          <MemberApplyH5State :is-browse="row.is_browse" :invited="row.invited" :withdrawn="!!row.body" />
+        </MemberPostedCard>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg" class="muted">{{ msg }}</p>
   </MemberPanel>
 </template>

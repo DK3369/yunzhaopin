@@ -55,7 +55,8 @@ const { data: signSt, refresh: refreshSign } = await useAsyncData('com-home-sign
   api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
 )
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
-const { wxQr } = useSiteChrome()
+const { wxQr, settings } = useSiteChrome()
+const webtel = computed(() => String(settings.value.sy_comwebtel || settings.value.sy_freewebtel || ''))
 const msg = ref('')
 useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
@@ -216,6 +217,13 @@ function labelOf(to: string, key?: string) {
       </div>
     </div>
     <div class="site-h5">
+      <div v-if="Number(profile?.r_status) !== 1" class="comzhtip">
+        <div class="comzhtip_tit">{{ $t('wap_user_00205') }}</div>
+        <div v-if="Number(profile?.r_status) === 0" class="comzhtip_p1">{{ $t('wap_com_00080') }}</div>
+        <div v-else-if="Number(profile?.r_status) === 3" class="comzhtip_p1">{{ $t('wap_user_00167') }}</div>
+        <div v-else class="comzhtip_p1">{{ $t('wap_com_00080') }}</div>
+        <div v-if="webtel" class="comzhtip_p2">{{ webtel }}</div>
+      </div>
       <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
         {{ $t('common_00655') }}
         <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
@@ -347,6 +355,9 @@ function labelOf(to: string, key?: string) {
             <div class="taskbar_datum_word">{{ $t('wap_user_00342') }}</div>
           </div>
         </div>
+      </div>
+      <div class="companyDatapage">
+        <div v-if="webtel" class="companyDataTell">{{ webtel }}</div>
       </div>
     </div>
   </div>

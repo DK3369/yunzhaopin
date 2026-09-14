@@ -15,8 +15,12 @@ useSeoMeta({ title: t('wap_user_00211') })
 <template>
   <MemberPanel :title="$t('wap_user_00211')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <article v-for="row in list" :key="row.uid" class="jobnotice_list">
-      <NuxtLink :to="`/resumes/${row.uid}`">{{ row.display_name || row.uid }}</NuxtLink>
-    </article>
+    <MemberHrResumeRows
+      :rows="list.map((row) => ({
+        key: row.uid,
+        name: String(row.display_name || row.uid),
+        to: `/resumes/${row.uid}`,
+      }))"
+    />
   </MemberPanel>
 </template>

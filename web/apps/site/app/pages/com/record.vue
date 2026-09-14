@@ -12,10 +12,22 @@ type Row = {
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-entrust-records', () =>
-  api.post('/v1/mcenter/entrust-records/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-entrust-records-${page.value}`,
+  () => api.post('/v1/mcenter/entrust-records/list', { page: page.value, page_size: pageSize }),
 )
 const list = computed(() => (data.value?.list || []) as Row[])
+const rows = computed(() =>
+  list.value.map((row) => ({
+    key: row.id,
+    name: String(row.user_name || row.eid || row.uid || ''),
+    job: row.job_name,
+    time: row.ctime_n,
+    to: `/resumes/${row.eid || row.uid}`,
+  })),
+)
+const total = computed(() => inferTotal(data.value))
 const msg = ref('')
 
 async function remove(id: number) {
@@ -35,16 +47,15 @@ useSeoMeta({ title: t('member_com_00555') })
 <template>
   <MemberPanel :title="$t('member_com_00555')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <article v-for="row in list" :key="row.id" class="jobnotice_list">
-      <h3>
-        <NuxtLink :to="`/resumes/${row.eid || row.uid}`">{{ row.user_name || row.eid || row.uid }}</NuxtLink>
-      </h3>
-      <p class="muted">{{ row.job_name }} · {{ row.ctime_n }}</p>
-      <p>
-        <NuxtLink :to="`/resumes/${row.eid || row.uid}`">{{ $t('wap_user_00216') }}</NuxtLink>
-        <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
-      </p>
-    </article>
+    <MemberHrResumeRows show-job :rows="rows">
+      <template #pc-acts="{ row }">
+        <a href="javascript:;" class="List_dete cblue" @click="remove(Number(row.key))">{{ $t('common.delete') }}</a>
+      </template>
+      <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="remove(Number(row.key))">{{ $t('common.delete') }}</div>
+      </template>
+    </MemberHrResumeRows>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

@@ -56,24 +56,30 @@ useSeoMeta({ title: t('wap_user_00203') })
 
 <template>
   <MemberPanel :title="$t('wap_user_00203')">
-    <form class="form verification_form" @submit.prevent="submit">
-      <MemberField :label="$t('wap_user_00203')" area>
-        <textarea v-model="form.content" rows="5" required />
-      </MemberField>
-      <MemberField :label="$t('wap_01619')">
-        <input v-model="form.moblie" />
-      </MemberField>
-      <template v-if="String(settings.sy_advice_mobilecode || '') === '1'">
-        <button type="button" class="verification_form_btn" @click="sendSms">{{ $t('admin_user_00166') }}</button>
-        <MemberField :label="$t('wap_01371')">
-          <input v-model="form.moblie_code" />
-        </MemberField>
-      </template>
-      <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />
-      <MemberField :label="$t('wap_00110')">
-        <input v-model="form.captcha_input" />
-      </MemberField>
-      <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
+    <div class="resume_Prompt">{{ $t('wap_js_00125') }}</div>
+    <form class="resume_fk_box" @submit.prevent="submit">
+      <ul class="message_box">
+        <li>
+          <span class="msg_fk">{{ $t('admin_system_00199') }}：</span>
+          <textarea v-model="form.content" cols="60" rows="6" class="message_box_text msg_bx_tt" required />
+        </li>
+        <li>
+          <span class="msg_fk">{{ $t('wap_01619') }}：</span>
+          <input v-model="form.moblie" class="yun_send_resume_txt" />
+        </li>
+        <li v-if="String(settings.sy_advice_mobilecode || '') === '1'">
+          <button type="button" class="verification_form_btn" @click="sendSms">{{ $t('admin_user_00166') }}</button>
+          <MemberField :label="$t('wap_01371')"><input v-model="form.moblie_code" /></MemberField>
+        </li>
+        <li>
+          <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />
+          <MemberField :label="$t('wap_00110')"><input v-model="form.captcha_input" /></MemberField>
+        </li>
+        <li>
+          <span>&nbsp;</span>
+          <input type="submit" class="Verification_sc_bth2 uesr_submit" :value="$t('common.submit')" />
+        </li>
+      </ul>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

@@ -63,14 +63,14 @@ useSeoMeta({ title: t('home.intention') })
 <template>
   <MemberPanel :title="$t('home.intention')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(list || []).length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('wap_00376') }}</p>
-    <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job">
-        <span class="user_new_jobname">{{ row.name }}</span>
-        <div class="user_new_comname">{{ row.job_classid_n }} · {{ row.city_classid_n }}</div>
+    <div v-for="row in list" :key="row.id" class="user_resume_box site-pc">
+      <div class="user_resume_info">
+        <div class="user_resume_name">{{ row.name }}</div>
+        <div class="user_resume_p">{{ row.job_classid_n }} · {{ row.city_classid_n }}</div>
       </div>
-      <div class="user_new_cz">
-        <a href="javascript:;" class="user_new_yqh_a" @click="save(row)">{{ $t('common.save') }}</a>
-        <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+      <div class="user_resume_cz">
+        <a href="javascript:;" class="user_resume_cz_a" @click="save(row)">{{ $t('common.save') }}</a>
+        <a href="javascript:;" class="user_resume_cz_a" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
     <div class="site-h5 m_cardbox">

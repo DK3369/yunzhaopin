@@ -58,7 +58,7 @@ export function useMemberNav() {
     { to: '/com/talent', label: t('member_com_00597'), icon: 'com_left_icon3' },
     { to: '/com/fairs', label: t('member_com_00293'), icon: 'com_left_icon12' },
     { to: '/com/profile', label: t('wap_com_00096'), icon: 'com_left_icon8' },
-    { to: '/com/set', label: t('wap_user_00214'), icon: 'com_left_icon11' },
+    { to: '/com/binding', label: t('member_user_00059'), icon: 'com_left_icon11' },
   ])
 
   const comMoreTitle = computed(() => t('member_com_00292'))

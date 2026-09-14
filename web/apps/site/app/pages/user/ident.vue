@@ -64,7 +64,9 @@ useSeoMeta({ title: t('wap_user_00340') })
 <template>
   <MemberPanel :title="$t('wap_user_00340')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <form v-else class="form verification_form" @submit.prevent="save">
+    <template v-else>
+    <MemberUserSetTabs />
+    <form class="form verification_form" @submit.prevent="save">
       <MemberResumeH1 :title="$t('wap_01030')" />
       <p class="muted">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</p>
       <MemberField :label="$t('wap_01087')">
@@ -74,7 +76,8 @@ useSeoMeta({ title: t('wap_user_00340') })
       <input v-if="data?.idcard_status !== 1" type="file" accept="image/jpeg,image/png,image/webp" @change="onPic" />
       <button v-if="data?.idcard_status !== 1" type="submit" class="verification_form_btn">{{ $t('wap_user_00176') }}</button>
     </form>
-    <div class="account_settings_list">
+    <div class="account_settings">
+      <div class="account_settings_list">
       <div class="account_settings_list_left">
         <i class="account_settings_list_left_icon account_settings_list_left_icon_sj" />
         <div class="account_settings_tit">{{ $t('wap_user_00180') }}</div>
@@ -90,6 +93,8 @@ useSeoMeta({ title: t('wap_user_00340') })
       </div>
       <NuxtLink to="/user/binding" class="account_settings_bth_hv">{{ $t('wap_00389') }}</NuxtLink>
     </div>
+    </div>
     <p v-if="msg">{{ msg }}</p>
+    </template>
   </MemberPanel>
 </template>

@@ -80,35 +80,41 @@ useSeoMeta({ title: t('member_com_00378') })
 <template>
   <MemberPanel :title="$t('member_com_00378')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form v-else class="form" @submit.prevent="save">
-      <input v-model="form.name" :placeholder="$t('wap_com_00157')" />
-      <input v-model="form.shortname" :placeholder="$t('ui.shortname')" />
-      <select v-model.number="form.hy">
-        <option :value="0">{{ $t('common.all') }}</option>
-        <option v-for="h in industries || []" :key="h.id" :value="h.id">{{ h.name }}</option>
-      </select>
-      <select v-model.number="form.pr">
-        <option :value="0">{{ $t('wap_com_00159') }}</option>
-        <option v-for="n in natures || []" :key="n.id" :value="n.id">{{ n.name }}</option>
-      </select>
-      <select v-model.number="form.mun">
-        <option :value="0">{{ $t('member_com_00196') }}</option>
-        <option v-for="s in sizes || []" :key="s.id" :value="s.id">{{ s.name }}</option>
-      </select>
-      <LocationFields
-        v-model:province-id="form.provinceid"
-        v-model:city-id="form.cityid"
-        v-model:district-id="form.three_cityid"
-      />
-      <input type="file" accept="image/jpeg,image/png,image/webp" @change="onLogo" />
-      <textarea v-model="form.content" :placeholder="$t('ui.desc')" rows="6" />
-      <input v-model="form.linkman" :placeholder="$t('wap_01431')" />
-      <input v-model="form.linkphone" :placeholder="$t('ui.linkphone')" />
-      <input v-model="form.linkmail" :placeholder="$t('member_user_00282')" />
-      <input v-model="form.x" placeholder="x" />
-      <input v-model="form.y" placeholder="y" />
-      <MapPick v-model:x="form.x" v-model:y="form.y" />
-      <button type="submit">{{ $t('common.save') }}</button>
+    <form v-else class="yun_createbox form" @submit.prevent="save">
+      <div class="yun_createlist">
+        <MemberField :label="$t('wap_com_00157')"><input v-model="form.name" /></MemberField>
+        <MemberField :label="$t('ui.shortname')"><input v-model="form.shortname" /></MemberField>
+        <MemberField :label="$t('common.all')">
+          <select v-model.number="form.hy">
+            <option :value="0">{{ $t('common.all') }}</option>
+            <option v-for="h in industries || []" :key="h.id" :value="h.id">{{ h.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField :label="$t('wap_com_00159')">
+          <select v-model.number="form.pr">
+            <option :value="0">{{ $t('wap_com_00159') }}</option>
+            <option v-for="n in natures || []" :key="n.id" :value="n.id">{{ n.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField :label="$t('member_com_00196')">
+          <select v-model.number="form.mun">
+            <option :value="0">{{ $t('member_com_00196') }}</option>
+            <option v-for="s in sizes || []" :key="s.id" :value="s.id">{{ s.name }}</option>
+          </select>
+        </MemberField>
+        <LocationFields
+          v-model:province-id="form.provinceid"
+          v-model:city-id="form.cityid"
+          v-model:district-id="form.three_cityid"
+        />
+        <input type="file" accept="image/jpeg,image/png,image/webp" @change="onLogo" />
+        <MemberField :label="$t('ui.desc')" area><textarea v-model="form.content" rows="6" /></MemberField>
+        <MemberField :label="$t('wap_01431')"><input v-model="form.linkman" /></MemberField>
+        <MemberField :label="$t('ui.linkphone')"><input v-model="form.linkphone" /></MemberField>
+        <MemberField :label="$t('member_user_00282')"><input v-model="form.linkmail" /></MemberField>
+        <MapPick v-model:x="form.x" v-model:y="form.y" />
+        <button type="submit" class="verification_form_btn">{{ $t('common.save') }}</button>
+      </div>
       <p v-if="msg">{{ msg }}</p>
     </form>
   </MemberPanel>

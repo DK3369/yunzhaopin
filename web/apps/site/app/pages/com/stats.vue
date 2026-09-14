@@ -32,27 +32,29 @@ useSeoMeta({ title: t('admin_tool_00224') })
   <MemberPanel :title="$t('admin_tool_00224')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
-      <div v-if="today" class="stack">
-        <article class="jobnotice_list">
-          <h2>{{ $t('member_com_00371') }}</h2>
-          <p>{{ today.look_resume?.num ?? 0 }} · {{ jzrText(today.look_resume?.jzr) }}</p>
-        </article>
-        <article class="jobnotice_list">
-          <h2>{{ $t('member_com_00372') }}</h2>
-          <p>{{ today.look_job?.num ?? 0 }} · {{ jzrText(today.look_job?.jzr) }}</p>
-        </article>
-        <article class="jobnotice_list">
-          <h2>{{ $t('wap_00451') }}</h2>
-          <p>{{ today.down_resume?.num ?? 0 }} · {{ jzrText(today.down_resume?.jzr) }}</p>
-        </article>
-        <article class="jobnotice_list">
-          <h2>{{ $t('wap_com_00235') }}</h2>
-          <p>{{ today.apply?.num ?? 0 }} · {{ jzrText(today.apply?.jzr) }}</p>
-        </article>
-        <article class="jobnotice_list">
-          <h2>{{ $t('wap_user_00216') }}</h2>
-          <p>{{ today.invite?.num ?? 0 }} · {{ jzrText(today.invite?.jzr) }}</p>
-        </article>
+      <div v-if="today" class="membSubGuaTwo">
+        <ul>
+          <li>
+            <div class="twoDivTite"><span>{{ $t('member_com_00371') }}</span></div>
+            <div class="twoDivNum"><span>{{ today.look_resume?.num ?? 0 }}</span><b>{{ jzrText(today.look_resume?.jzr) }}</b></div>
+          </li>
+          <li>
+            <div class="twoDivTite"><span>{{ $t('member_com_00372') }}</span></div>
+            <div class="twoDivNum"><span>{{ today.look_job?.num ?? 0 }}</span><b>{{ jzrText(today.look_job?.jzr) }}</b></div>
+          </li>
+          <li>
+            <div class="twoDivTite"><span>{{ $t('wap_00451') }}</span></div>
+            <div class="twoDivNum"><span>{{ today.down_resume?.num ?? 0 }}</span><b>{{ jzrText(today.down_resume?.jzr) }}</b></div>
+          </li>
+          <li>
+            <div class="twoDivTite"><span>{{ $t('wap_com_00235') }}</span></div>
+            <div class="twoDivNum"><span>{{ today.apply?.num ?? 0 }}</span><b>{{ jzrText(today.apply?.jzr) }}</b></div>
+          </li>
+          <li>
+            <div class="twoDivTite"><span>{{ $t('wap_user_00216') }}</span></div>
+            <div class="twoDivNum"><span>{{ today.invite?.num ?? 0 }}</span><b>{{ jzrText(today.invite?.jzr) }}</b></div>
+          </li>
+        </ul>
       </div>
       <ul class="stack">
         <li>{{ $t('ui.recv_resume_n') }} {{ data?.applies_received ?? 0 }}（{{ $t('ui.unread') }} {{ data?.applies_unread ?? 0 }}）</li>
