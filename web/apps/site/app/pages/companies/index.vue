@@ -132,7 +132,7 @@ const list = computed(() => data.value?.list || [])
       />
       <FilterRow
         v-if="(natures || []).length"
-        :label="$t('wap_com_00018')"
+        :label="$t('wap_com_00159')"
         param="pr"
         :items="natures || []"
         :current="pr"
@@ -141,7 +141,7 @@ const list = computed(() => data.value?.list || [])
       />
       <FilterRow
         v-if="(sizes || []).length"
-        :label="$t('wap_com_00019')"
+        :label="$t('wap_com_00163')"
         param="mun"
         :items="sizes || []"
         :current="mun"
@@ -150,7 +150,7 @@ const list = computed(() => data.value?.list || [])
       />
       <FilterRow
         v-if="(welfares || []).length"
-        :label="$t('company_00007')"
+        :label="$t('wap_com_00167')"
         param="welfare"
         :items="welfares || []"
         :current="welfare"
@@ -202,8 +202,8 @@ const list = computed(() => data.value?.list || [])
             grandItems: cityItems,
           },
           { key: 'hy', label: $t('admin_user_company_00373'), items: industries || [] },
-          { key: 'pr', label: $t('wap_com_00018'), items: natures || [] },
-          { key: 'mun', label: $t('wap_com_00019'), items: sizes || [] },
+          { key: 'pr', label: $t('wap_com_00159'), items: natures || [] },
+          { key: 'mun', label: $t('wap_com_00163'), items: sizes || [] },
         ]"
       />
     </div>

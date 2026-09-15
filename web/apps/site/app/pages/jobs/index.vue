@@ -246,9 +246,9 @@ const selected = computed(() => {
   const reportN = dictName(reports.value, report.value)
   if (reportN) rows.push({ param: 'report', name: `${t('wap_com_00279')}：${reportN}` })
   const prN = dictName(natures.value, pr.value)
-  if (prN) rows.push({ param: 'pr', name: `${t('wap_com_00018')}：${prN}` })
+  if (prN) rows.push({ param: 'pr', name: `${t('wap_com_00159')}：${prN}` })
   const munN = dictName(sizes.value, mun.value)
-  if (munN) rows.push({ param: 'mun', name: `${t('wap_com_00019')}：${munN}` })
+  if (munN) rows.push({ param: 'mun', name: `${t('wap_com_00163')}：${munN}` })
   const upN = dictName(uptimeItems.value, uptime.value)
   if (upN) rows.push({ param: 'uptime', name: `${t('wap_00326')}：${upN}` })
   const sexN = dictName(sexItems.value, sex.value)
@@ -611,13 +611,13 @@ function goPage(p: number) {
             items: [],
             groups: [
               { label: $t('wap_user_00016'), param: 'salary', items: salaries || [] },
-              { label: $t('company_00007'), param: 'welfare', items: welfares || [] },
+              { label: $t('wap_com_00167'), param: 'welfare', items: welfares || [] },
               { label: $t('home.experience_suffix'), param: 'exp', items: exps || [] },
               { label: $t('home.education_suffix'), param: 'edu', items: edus || [] },
               { label: $t('wap_com_00303'), param: 'sex', items: sexItems },
               { label: $t('wap_com_00279'), param: 'report', items: reports || [] },
-              { label: $t('wap_com_00018'), param: 'pr', items: natures || [] },
-              { label: $t('wap_com_00019'), param: 'mun', items: sizes || [] },
+              { label: $t('wap_com_00159'), param: 'pr', items: natures || [] },
+              { label: $t('wap_com_00163'), param: 'mun', items: sizes || [] },
               { label: $t('wap_00326'), param: 'uptime', items: uptimeItems },
               { label: $t('admin_user_company_00373'), param: 'hy', items: industries || [] },
             ],

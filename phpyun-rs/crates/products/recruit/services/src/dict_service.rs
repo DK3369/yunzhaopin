@@ -18,6 +18,8 @@
 //! English job names: `phpyun_dict_i18n` wins; remaining ids use bundled
 //! `data/job-en.json` then the legacy `e_name` column.
 //! City English uses `e_name` (country tree) then `dict_i18n`.
+//! `comclass` / `userclass` / remaining `industry` English: bundled
+//! `data/{comclass,userclass,industry}-en.json` then `dict_i18n`.
 //!
 //! ## Caching
 //!
@@ -720,7 +722,26 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
     );
 
     let mut i18n = load_i18n(db).await.unwrap_or_default();
-    merge_bundled_job_en(i18n.entry("job".into()).or_default());
+    merge_bundled_en(
+        i18n.entry("job".into()).or_default(),
+        include_str!("../data/job-en.json"),
+        "job-en.json",
+    );
+    merge_bundled_en(
+        i18n.entry("comclass".into()).or_default(),
+        include_str!("../data/comclass-en.json"),
+        "comclass-en.json",
+    );
+    merge_bundled_en(
+        i18n.entry("userclass".into()).or_default(),
+        include_str!("../data/userclass-en.json"),
+        "userclass-en.json",
+    );
+    merge_bundled_en(
+        i18n.entry("industry".into()).or_default(),
+        include_str!("../data/industry-en.json"),
+        "industry-en.json",
+    );
     let (job_ename, city_ename) = tokio::join!(
         load_ename(db, "phpyun_job_class"),
         load_ename(db, "phpyun_city_class"),
@@ -997,11 +1018,10 @@ fn merge_ename(dst: &mut HashMap<(i32, Lang), String>, rows: Vec<(i32, String)>)
     }
 }
 
-/// Seed English job titles compiled into the binary. Does not override DB rows.
-fn merge_bundled_job_en(dst: &mut HashMap<(i32, Lang), String>) {
-    const RAW: &str = include_str!("../data/job-en.json");
-    let Ok(map) = serde_json::from_str::<HashMap<String, String>>(RAW) else {
-        tracing::warn!("bundled job-en.json is not valid JSON");
+/// Seed English dict names compiled into the binary. Does not override DB rows.
+fn merge_bundled_en(dst: &mut HashMap<(i32, Lang), String>, raw: &str, file: &str) {
+    let Ok(map) = serde_json::from_str::<HashMap<String, String>>(raw) else {
+        tracing::warn!(name = file, "bundled dict en json is not valid JSON");
         return;
     };
     for (id, name) in map {
