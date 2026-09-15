@@ -1,16 +1,50 @@
 <template>
-  <div v-if="kind === 'user'" class="site-pc user_header">
-    <div class="w1200">
+  <div v-if="kind === 'user'" class="site-pc user_header member-pc-header">
+    <div class="w1200 member-pc-header__inner">
       <div class="user_headerlogo">
         <NuxtLink to="/" :title="$t('member_user_00116')">
           <img v-if="userLogo" :src="userLogo" :alt="siteName" />
         </NuxtLink>
       </div>
-      <div class="user_headerright">
-        <NuxtLink to="/" class="user_m_fanh" :title="$t('member_user_00116')">{{ $t('member_user_00119') }}</NuxtLink>
-        <LangSwitch />
+      <div class="user_headerright member-pc-header__right">
+        <span v-if="phone" class="user_headertel">{{ $t('common_02162') }}：<span class="user_headertel_n">{{ phone }}</span></span>
+        <div class="yun_m_indexinfo_user_qd" :class="{ 'is-signed': signSt?.signed_today }">
+          <a
+            href="javascript:;"
+            class="yun_m_indexinfo_user_qd_a"
+            :class="{ yqd: signSt?.signed_today }"
+            @click.prevent="sign"
+          >{{ signSt?.signed_today ? $t('wap_01022') : $t('wap_01023') }}</a>
+        </div>
+        <div class="yun_m_headertx" @mouseenter="userInfoOpen = true" @mouseleave="userInfoOpen = false">
+          <NuxtLink to="/user/resume" class="yun_m_headertxa">
+            <img v-if="userPhoto" :src="userPhoto" width="30" height="30" alt="" />
+          </NuxtLink>
+          <div class="yun_m_headertx_hi">{{ userName }}</div>
+          <div class="yun_m_header_info" :style="{ display: userInfoOpen ? 'block' : 'none' }">
+            <div class="user_tc_tit">{{ $t('common.mine') }}{{ $t('wap_user_00008') }}</div>
+            <div class="user_t_jf">
+              <span class="yun_m_index_pay_n">{{ bal?.balance ?? 0 }}</span>
+              <NuxtLink to="/user/pay" class="yun_m_index_pay_a">{{ $t('common_01946') }}</NuxtLink>
+              <NuxtLink to="/user/integral" class="yun_m_index_pay_a">{{ $t('wap_00712') }}{{ $t('wap_user_00008') }}</NuxtLink>
+            </div>
+            <div class="user_tc_tit">{{ $t('member_user_00118') }}</div>
+            <div class="user_tc_tset">
+              <NuxtLink to="/user/password" class="user_set_bth">
+                <i class="user_set_icon user_set_icon1" />{{ $t('wap_user_00214') }}
+              </NuxtLink>
+              <NuxtLink to="/user/account" class="user_set_bth">
+                <i class="user_set_icon user_set_icon4" />{{ $t('member_user_00505') }}
+              </NuxtLink>
+            </div>
+            <div class="user_tcdl">
+              <a href="javascript:;" class="user_tcdlbth" style="border: none" @click.prevent="logout">{{ $t('wap_user_00342') }}</a>
+            </div>
+          </div>
+        </div>
         <div class="yun_m_headermsg" @mouseenter="userMsgOpen = true" @mouseleave="userMsgOpen = false">
-          <i class="yun_m_headermsg_icon" />{{ $t('member_user_00498') }}
+          <i class="yun_m_headermsg_icon" />
+          <span>{{ $t('member_user_00498') }}</span>
           <span v-if="userMsgTotal" class="yun_m_headermsg_n">{{ userMsgTotal }}</span>
           <div class="yun_m_headermsg_box" :style="{ display: userMsgOpen ? 'block' : 'none' }">
             <div class="yun_m_headermsg_list">
@@ -33,76 +67,21 @@
             </div>
           </div>
         </div>
-        <div class="header_m_navright">
-          <div class="yun_m_indexinfo_user_qd" @click="sign">
-            <i class="yun_m_indexinfo_user_qd_icon" />{{ signSt?.signed_today ? $t('wap_01022') : $t('wap_01023') }}
-          </div>
-          <div class="yun_m_headertx" @mouseenter="userInfoOpen = true" @mouseleave="userInfoOpen = false">
-            <NuxtLink to="/user/resume" class="yun_m_headertxa">
-              <img v-if="userPhoto" :src="userPhoto" width="30" height="30" alt="" />
-            </NuxtLink>
-            <div class="yun_m_headertx_hi">{{ userName }}</div>
-            <div class="yun_m_header_info" :style="{ display: userInfoOpen ? 'block' : 'none' }">
-              <div class="user_tc_tit">{{ $t('common.mine') }}{{ $t('wap_user_00008') }}</div>
-              <div class="user_t_jf">
-                <span class="yun_m_index_pay_n">{{ bal?.balance ?? 0 }}</span>
-                <NuxtLink to="/user/pay" class="yun_m_index_pay_a">{{ $t('common_01946') }}</NuxtLink>
-                <NuxtLink to="/user/integral" class="yun_m_index_pay_a">{{ $t('wap_00712') }}{{ $t('wap_user_00008') }}</NuxtLink>
-              </div>
-              <div class="user_tc_tit">{{ $t('member_user_00118') }}</div>
-              <div class="user_tc_tset">
-                <NuxtLink to="/user/password" class="user_set_bth">
-                  <i class="user_set_icon user_set_icon1" />{{ $t('wap_user_00214') }}
-                </NuxtLink>
-                <NuxtLink to="/user/account" class="user_set_bth">
-                  <i class="user_set_icon user_set_icon4" />{{ $t('member_user_00505') }}
-                </NuxtLink>
-              </div>
-              <div class="user_tcdl">
-                <a href="javascript:;" class="user_tcdlbth" style="border: none" @click.prevent="logout">{{ $t('wap_user_00342') }}</a>
-              </div>
-            </div>
-          </div>
-          <span v-if="phone" class="user_headertel">{{ $t('common_02162') }}：<span class="user_headertel_n">{{ phone }}</span></span>
-        </div>
+        <LangSwitch />
+        <NuxtLink to="/" class="user_m_fanh" :title="$t('member_user_00116')">{{ $t('member_user_00119') }}</NuxtLink>
       </div>
     </div>
   </div>
-  <div v-else class="site-pc header">
+  <div v-else class="site-pc header member-pc-header member-pc-header--com">
     <div class="header_fixed">
-      <div class="header-logo fltL">
-        <NuxtLink to="/">
-          <img v-if="comLogo" :src="comLogo" class="png" alt="" />
-        </NuxtLink>
-      </div>
-      <div class="user_headerright">
-        <NuxtLink to="/" class="user_m_fanh" :title="$t('member_user_00116')">{{ $t('member_user_00119') }}</NuxtLink>
-        <LangSwitch />
-        <div class="yun_m_headermsg" @mouseenter="comMsgOpen = true" @mouseleave="comMsgOpen = false">
-          <i class="yun_m_headermsg_icon" />{{ $t('member_user_00498') }}
-          <span v-if="comMsgTotal" class="yun_m_headermsg_n">{{ comMsgTotal }}</span>
-          <div class="yun_m_headermsg_box" :style="{ display: comMsgOpen ? 'block' : 'none' }">
-            <div class="yun_m_headermsg_list">
-              <NuxtLink to="/com/applications">
-                {{ $t('default_00009') }}
-                <em v-if="comDash?.applies_unread" class="yun_m_headermsg_list_n">{{ comDash.applies_unread }}</em>
-              </NuxtLink>
-            </div>
-            <div class="yun_m_headermsg_list">
-              <NuxtLink to="/com/messages">
-                {{ $t('wap_user_00363') }}
-                <em v-if="comDash?.unread_messages" class="yun_m_headermsg_list_n">{{ comDash.unread_messages }}</em>
-              </NuxtLink>
-            </div>
-            <div class="yun_m_headermsg_list">
-              <NuxtLink to="/com/job-messages">
-                {{ $t('wap_com_00408') }}
-                <em v-if="comDash?.job_msg_unanswered" class="yun_m_headermsg_list_n">{{ comDash.job_msg_unanswered }}</em>
-              </NuxtLink>
-            </div>
-          </div>
+      <div class="w1200 member-pc-header__inner">
+        <div class="header-logo">
+          <NuxtLink to="/">
+            <img v-if="comLogo" :src="comLogo" class="png" alt="" />
+          </NuxtLink>
         </div>
-        <div class="header_m_navright">
+        <div class="user_headerright member-pc-header__right">
+          <span v-if="comTel" class="user_headertel">{{ $t('common_02149') }}：<span class="user_headertel_n">{{ comTel }}</span></span>
           <div class="yun_m_headertx" @mouseenter="comInfoOpen = true" @mouseleave="comInfoOpen = false">
             <NuxtLink to="/com/profile" class="yun_m_headertxa">
               <img v-if="comPhoto" :src="comPhoto" width="30" height="30" alt="" />
@@ -133,7 +112,33 @@
               </div>
             </div>
           </div>
-          <span v-if="comTel" class="user_headertel">{{ $t('common_02149') }}：<span class="user_headertel_n">{{ comTel }}</span></span>
+          <div class="yun_m_headermsg" @mouseenter="comMsgOpen = true" @mouseleave="comMsgOpen = false">
+            <i class="yun_m_headermsg_icon" />
+            <span>{{ $t('member_user_00498') }}</span>
+            <span v-if="comMsgTotal" class="yun_m_headermsg_n">{{ comMsgTotal }}</span>
+            <div class="yun_m_headermsg_box" :style="{ display: comMsgOpen ? 'block' : 'none' }">
+              <div class="yun_m_headermsg_list">
+                <NuxtLink to="/com/applications">
+                  {{ $t('default_00009') }}
+                  <em v-if="comDash?.applies_unread" class="yun_m_headermsg_list_n">{{ comDash.applies_unread }}</em>
+                </NuxtLink>
+              </div>
+              <div class="yun_m_headermsg_list">
+                <NuxtLink to="/com/messages">
+                  {{ $t('wap_user_00363') }}
+                  <em v-if="comDash?.unread_messages" class="yun_m_headermsg_list_n">{{ comDash.unread_messages }}</em>
+                </NuxtLink>
+              </div>
+              <div class="yun_m_headermsg_list">
+                <NuxtLink to="/com/job-messages">
+                  {{ $t('wap_com_00408') }}
+                  <em v-if="comDash?.job_msg_unanswered" class="yun_m_headermsg_list_n">{{ comDash.job_msg_unanswered }}</em>
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+          <LangSwitch />
+          <NuxtLink to="/" class="user_m_fanh" :title="$t('member_user_00116')">{{ $t('member_user_00119') }}</NuxtLink>
         </div>
       </div>
     </div>

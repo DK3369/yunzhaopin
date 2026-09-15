@@ -933,12 +933,162 @@ html.force-pc .site-h5 {
     padding-bottom: 14px;
     white-space: normal;
   }
-  .user_header .yun_m_headermsg,
-  .header_fixed .yun_m_headermsg {
+  /* 会员 PC 顶栏：PHP 是 float:right（DOM 与视觉顺序相反），英文会在 70px/75px 里折行；
+     企业 m_style 还把 .yun_m_indexinfo_user_qd 改成 absolute，签到会叠到头像上。改 flex 单行。 */
+  .member-pc-header,
+  .member-pc-header.user_header,
+  .member-pc-header.header {
+    height: 64px;
+    float: none;
+    overflow: visible;
+  }
+  .member-pc-header--com .header_fixed {
+    display: block;
+    height: 64px;
+    float: none;
+    overflow: visible;
+  }
+  .member-pc-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 1200px;
+    height: 64px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .member-pc-header .user_headerlogo,
+  .member-pc-header .header-logo {
+    float: none;
+    position: relative;
     width: auto;
-    min-width: 70px;
-    padding-right: 12px;
+    max-width: 240px;
+    height: 64px;
+    flex: none;
+    display: flex;
+    align-items: center;
+  }
+  .member-pc-header .user_headerlogo img,
+  .member-pc-header .header-logo img {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    max-height: 44px;
+    max-width: 240px;
+    display: block;
+  }
+  .member-pc-header .member-pc-header__right,
+  .member-pc-header .user_headerright {
+    float: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    min-width: 0;
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    color: #7d8395;
+    font-size: 13px;
+  }
+  .member-pc-header .user_headertel,
+  .member-pc-header .yun_m_indexinfo_user_qd,
+  .member-pc-header .yun_m_headertx,
+  .member-pc-header .yun_m_headermsg,
+  .member-pc-header .user_m_fanh,
+  .member-pc-header .lang-switch {
+    float: none;
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    margin: 0;
+    height: auto;
+    width: auto;
+    min-width: 0;
     white-space: nowrap;
+    flex: none;
+  }
+  .member-pc-header .user_headertel {
+    padding-left: 20px;
+    line-height: 1;
+  }
+  .member-pc-header .yun_m_indexinfo_user_qd {
+    margin: 0 !important;
+  }
+  .member-pc-header .yun_m_indexinfo_user_qd_a {
+    width: auto;
+    min-width: 68px;
+    padding: 0 12px;
+    height: 26px;
+    line-height: 26px;
+    white-space: nowrap;
+    font-size: 12px;
+    box-sizing: border-box;
+  }
+  .member-pc-header .yun_m_indexinfo_user_qd.is-signed .yun_m_indexinfo_user_qd_a,
+  .member-pc-header .yun_m_indexinfo_user_qd_a.yqd {
+    background: #ccc;
+    cursor: default;
+  }
+  .member-pc-header .yun_m_headertx {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 0;
+    height: auto;
+  }
+  .member-pc-header .yun_m_headertxa {
+    display: flex;
+    flex: none;
+  }
+  .member-pc-header .yun_m_headertxa img {
+    position: static;
+    display: block;
+  }
+  .member-pc-header .yun_m_headertx_hi {
+    max-width: 108px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .member-pc-header .yun_m_headermsg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    cursor: pointer;
+  }
+  .member-pc-header .yun_m_headermsg_icon {
+    position: static;
+    flex: none;
+  }
+  .member-pc-header .yun_m_headermsg_n {
+    position: static;
+    margin: 0;
+  }
+  .member-pc-header .yun_m_header_info,
+  .member-pc-header .yun_m_headermsg_box {
+    top: calc(100% + 8px);
+    z-index: 1000020;
+    white-space: normal;
+  }
+  .member-pc-header .lang-switch {
+    color: #7d8395;
+    margin: 0;
+    font-size: 13px;
+  }
+  .member-pc-header .lang-switch a {
+    color: #7d8395;
+  }
+  .member-pc-header .lang-switch a.on {
+    color: #333;
+  }
+  .member-pc-header .user_m_fanh {
+    color: #7d8395;
+    margin-left: 0;
   }
   .user_header .user_set_bth,
   .header_fixed .user_set_bth {
