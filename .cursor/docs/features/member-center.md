@@ -25,7 +25,7 @@
 
 组里滤空后整组不渲染。职位模块关时招聘顶栏不显示发布职位；左栏「职位管理」仍在。
 
-打包 CSS：`web/apps/site/server/utils/legacyCss.ts`。PC：`m_css.css` / `m_resume.css` / `m_style.css` / `two_style.css`。H5：`memberwap.css` / `memberuserwap.css` / `combase.css` / `yun_wap_member.css`。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。
+打包 CSS：`web/apps/site/server/utils/legacyCss.ts`。PC：**同一份**里先后打 `m_css.css`（求职）和 `m_style.css`（招聘），同名 class 以后者为准。左栏「更多」浮层 `.user_more` 两端都用这个名字：企业是蓝底 80px 浮动格，会盖掉求职白底，英文会叠字穿层。必须在 `main.css` 里用 `.member-shell-user` / `.member-shell-com` 拆开，flex 换行，**不要**再靠 PHP 那套 80px 格。H5：`memberwap.css` / `memberuserwap.css` / `combase.css` / `yun_wap_member.css`。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。
 
 壳只 **render 一次 slot**。右栏宽度对齐 PHP：求职 210 + 980。PC 上 `.yun_m_rightsidebar > .wap_member` 用 `display: contents`，不占一层。
 
@@ -102,7 +102,10 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 把简历拆成十几条 WAP 子路由（仍在 `/user/resume` 同页编辑，点小节再展开表单）
 - `.site-pc` / `.site-h5` 显示时写死 `display: block`（会打扁 flex）
 - H5 用首页 `job-card`；消息/咨询用 `MemberPostedCard` 冒充
+- 不要 `overflow:hidden`（会裁掉左栏「更多」飞出层）
 - 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
+- 左栏「更多」继续用未拆开的 `.user_more`（PC 打包里企业 `m_style` 会盖掉求职白底；80px 浮动格叠英文会穿层）
+- `.yun_m_left_cur a` 打到 `.user_more a`（当前页在「更多」里时浮层每条都变选中态）
 - 财务 H5 `financial_management_*` 不包 `.site-h5`（PC 会露出一块没皮的头图）
 - 订单列 class 写成 `paylist_span_dh`（PHP 是 `paylist_span paylist_dh` / `paylist_money` / `paylist_zt`）
 - 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`

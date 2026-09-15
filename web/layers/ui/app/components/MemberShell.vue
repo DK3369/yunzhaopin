@@ -31,7 +31,7 @@
               <div v-show="userMoreOpen" class="user_more">
                 <div v-for="g in userMore" :key="g.title" class="user_more_list">
                   <span class="user_more_name">{{ g.title }}</span>
-                  <NuxtLink v-for="it in g.items" :key="it.to" :to="it.to" class="user_more_a">{{ it.label }}</NuxtLink>
+                  <NuxtLink v-for="it in g.items" :key="it.to" :to="it.to" class="user_more_a" :title="it.label">{{ it.label }}</NuxtLink>
                 </div>
               </div>
             </li>
@@ -81,7 +81,7 @@
                 <div v-show="comMoreOpen" class="user_more">
                   <div v-for="g in comMore" :key="g.title" class="user_more_list">
                     <span class="user_more_name">{{ g.title }}</span>
-                    <NuxtLink v-for="it in g.items" :key="it.to" :to="it.to" class="user_more_a">{{ it.label }}</NuxtLink>
+                    <NuxtLink v-for="it in g.items" :key="it.to" :to="it.to" class="user_more_a" :title="it.label">{{ it.label }}</NuxtLink>
                   </div>
                 </div>
               </li>
