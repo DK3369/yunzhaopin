@@ -266,8 +266,20 @@ export function isLoginRequiredErr(err: unknown): boolean {
   return isUnauthErr(err) || errKey(err) === 'session_expired'
 }
 
+/** 与顶栏同一份 `me`：有 uid 才算已登录。 */
+export function isLoggedIn(me?: { uid?: number } | null): boolean {
+  return Number(me?.uid || 0) > 0
+}
+
 export function goLogin(next?: string) {
   return navigateTo({ path: '/login', query: next ? { next } : {} })
+}
+
+/** 未登录直接去 `/login?next=`，不要先打 `/v1/mcenter/*`。 */
+export async function ensureLogin(me?: { uid?: number } | null, next?: string): Promise<boolean> {
+  if (isLoggedIn(me)) return true
+  await goLogin(next)
+  return false
 }
 
 export const DEFAULT_NAV: NavItem[] = [

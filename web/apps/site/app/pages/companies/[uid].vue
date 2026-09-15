@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { goLogin, isLoginRequiredErr, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { ensureLogin, goLogin, isLoginRequiredErr, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -219,6 +219,7 @@ watch(
 )
 async function toggleFollow() {
   followMsg.value = ''
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
       target_kind: 2,

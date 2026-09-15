@@ -90,35 +90,17 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
         if let Some(user) = parts.extensions.get::<AuthenticatedUser>().cloned() {
+            user.require_uid()?;
             return Ok(user);
         }
-        // 1. Try `Authorization: Bearer ...`.
-        let token = parts
-            .headers
-            .get(header::AUTHORIZATION)
-            .and_then(|v| v.to_str().ok())
-            .and_then(|s| s.strip_prefix("Bearer "))
-            .or_else(|| {
-                // 2. Fall back to the cookie (compatibility with the legacy
-                //    PHPYun migration window).
-                parts
-                    .headers
-                    .get(header::COOKIE)
-                    .and_then(|v| v.to_str().ok())
-                    .and_then(|cookies| {
-                        cookies
-                            .split(';')
-                            .map(|c| c.trim())
-                            .find_map(|c| c.strip_prefix("token="))
-                    })
-            })
-            .ok_or_else(ApiError::unauth)?;
+        // 1. `Authorization: Bearer`，否则 Cookie `token=`（前台 httpOnly）。
+        let token = access_token_from_headers(&parts.headers).ok_or_else(ApiError::unauth)?;
 
-        // 3. Verify (only access tokens are accepted; refresh tokens are used
+        // 2. Verify (only access tokens are accepted; refresh tokens are used
         //    solely to mint new access tokens).
         let claims = crate::jwt::verify_access(&state.config.jwt_secret, token)?;
 
-        // 4. Blacklist: after logout / explicit revocation, the jti goes into
+        // 3. Blacklist: after logout / explicit revocation, the jti goes into
         //    the Redis blacklist.
         //    If Redis is unreachable we treat the token as not revoked
         //    (`is_revoked` returns `false` internally) so authentication
@@ -128,14 +110,14 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
             return Err(ApiError::session_expired());
         }
 
-        // 5. Post-password-change revocation: on password change / reset /
+        // 4. Post-password-change revocation: on password change / reset /
         //    account split we bump `pw_epoch`; every access/refresh token
         //    issued before the epoch becomes invalid (`iat < epoch`).
         if crate::jwt_blacklist::is_token_stale(&state.redis, claims.sub, claims.iat).await {
             return Err(ApiError::session_expired());
         }
 
-        // 6. Session-row presence: the JWT may pass signature + blacklist +
+        // 5. Session-row presence: the JWT may pass signature + blacklist +
         //    pw_epoch yet correspond to a row that's been removed or marked
         //    revoked_at!=0 in `phpyun_user_session`. Refuse those — the DB
         //    row is the canonical "this session is alive" signal. Cached
@@ -144,15 +126,38 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
             return Err(ApiError::session_expired());
         }
 
-        Ok(AuthenticatedUser {
+        let user = AuthenticatedUser {
             uid: claims.sub,
             usertype: claims.usertype,
             did: claims.did,
             jti: claims.jti,
             iat: claims.iat,
             exp: claims.exp,
-        })
+        };
+        user.require_uid()?;
+        Ok(user)
     }
+}
+
+/// Bearer 优先，否则 Cookie `token=`。空串 / 只有 cookie 名不算登录。
+fn access_token_from_headers(headers: &header::HeaderMap) -> Option<&str> {
+    if let Some(token) = headers
+        .get(header::AUTHORIZATION)
+        .and_then(|v| v.to_str().ok())
+        .and_then(|s| s.strip_prefix("Bearer "))
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+    {
+        return Some(token);
+    }
+    headers.get(header::COOKIE).and_then(|v| v.to_str().ok()).and_then(|cookies| {
+        cookies.split(';').map(str::trim).find_map(|c| {
+            c.strip_prefix("token=")
+                .map(str::trim)
+                .map(|v| v.trim_matches('"'))
+                .filter(|s| !s.is_empty())
+        })
+    })
 }
 
 // ========== ClientIp ==========
@@ -626,5 +631,37 @@ mod auth_user_tests {
     #[test]
     fn uid_nonzero_passes_require_uid() {
         user(12, USERTYPE_JOBSEEKER).require_uid().unwrap();
+    }
+
+    fn headers(pairs: &[(&str, &str)]) -> header::HeaderMap {
+        let mut h = header::HeaderMap::new();
+        for (k, v) in pairs {
+            h.append(
+                header::HeaderName::from_bytes(k.as_bytes()).unwrap(),
+                header::HeaderValue::from_str(v).unwrap(),
+            );
+        }
+        h
+    }
+
+    #[test]
+    fn bearer_wins_over_cookie() {
+        let h = headers(&[
+            ("authorization", "Bearer abc"),
+            ("cookie", "token=from-cookie"),
+        ]);
+        assert_eq!(access_token_from_headers(&h), Some("abc"));
+    }
+
+    #[test]
+    fn cookie_token_when_no_bearer() {
+        let h = headers(&[("cookie", "lang=en; token=jwt.here; other=1")]);
+        assert_eq!(access_token_from_headers(&h), Some("jwt.here"));
+    }
+
+    #[test]
+    fn empty_cookie_token_is_missing() {
+        let h = headers(&[("cookie", "token=; lang=en")]);
+        assert_eq!(access_token_from_headers(&h), None);
     }
 }

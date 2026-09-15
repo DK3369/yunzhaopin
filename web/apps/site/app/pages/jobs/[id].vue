@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dictReqLabel, formatSalary, formatUnixDate, goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { dictReqLabel, ensureLogin, formatSalary, formatUnixDate, goLogin, isLoggedIn, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 import { seoJoin } from '~/utils/seo'
 import { pushRecentJob, removeRecentJob } from '~/utils/recentViews'
 import { ApiError } from '~/utils/envelope'
@@ -98,11 +98,8 @@ async function loadAskCaptcha() {
 }
 async function postAsk() {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
-  if (me.value.usertype !== 1) {
+  if (!(await ensureLogin(me.value, route.fullPath))) return
+  if (me.value?.usertype !== 1) {
     askMsg.value = t('wap_00256')
     return
   }
@@ -238,14 +235,16 @@ onMounted(async () => {
   } catch {
     /* keep payload hits */
   }
-  try {
-    const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
-      kind: 1,
-      target_id: id,
-    })
-    fav.value = Boolean(r.exists || r.favorited)
-  } catch {
-    /* guest */
+  if (isLoggedIn(me.value)) {
+    try {
+      const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
+        kind: 1,
+        target_id: id,
+      })
+      fav.value = Boolean(r.exists || r.favorited)
+    } catch {
+      /* keep favFromApi */
+    }
   }
   if (comMessageOn.value) await loadAskCaptcha()
 })
@@ -256,7 +255,7 @@ async function apply() {
     return
   }
   const official = officialApplyUrl.value
-  if (!me.value) {
+  if (!isLoggedIn(me.value)) {
     if (official) {
       await navigateTo({ path: '/login', query: { next: `/jobs/${id}` } })
       return
@@ -264,7 +263,7 @@ async function apply() {
     await navigateTo(`/quick-apply/${id}`)
     return
   }
-  if (me.value.usertype !== 1) {
+  if (me.value?.usertype !== 1) {
     applyMsg.value = t('wap_00256')
     return
   }
@@ -354,6 +353,7 @@ async function shareJob() {
   }
 }
 async function toggleFav() {
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     const r = await api.post<{ favorited: boolean }>('/v1/mcenter/favorites', { kind: 1, target_id: id })
     fav.value = Boolean(r.favorited)

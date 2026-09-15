@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
+import { ensureLogin, goLogin, isLoggedIn, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
 import { pushRecentResume } from '~/utils/recentViews'
 
 const route = useRoute()
@@ -163,14 +163,16 @@ onMounted(async () => {
   if (eid > 0) {
     api.post('/v1/wap/resumes/expects/hits', { eid }).catch(() => {})
   }
-  try {
-    const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
-      kind: 3,
-      target_id: uid,
-    })
-    fav.value = Boolean(row.value.in_talentpool) || Boolean(r.exists || r.favorited)
-  } catch {
-    /* guest */
+  if (isLoggedIn(me.value)) {
+    try {
+      const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
+        kind: 3,
+        target_id: uid,
+      })
+      fav.value = Boolean(row.value.in_talentpool) || Boolean(r.exists || r.favorited)
+    } catch {
+      /* keep in_talentpool */
+    }
   }
 })
 async function download(confirm = false) {
@@ -323,6 +325,7 @@ async function submitYqms(confirm = false) {
   }
 }
 async function toggleFav() {
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   const eid = Number(row.value.def_job || expect0.value.id || 0)
   try {
     if (eid) {

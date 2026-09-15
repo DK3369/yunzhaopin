@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { companyName, goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../utils/site'
+import { companyName, ensureLogin, goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../utils/site'
 
 const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' | 'firm' }>(), {
   variant: 'home',
@@ -210,6 +210,7 @@ const welfareTags = computed(() => {
 })
 async function toggleFollow() {
   followMsg.value = ''
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   if (me.value && me.value.usertype !== 1) {
     followMsg.value = t('wap_00030')
     return

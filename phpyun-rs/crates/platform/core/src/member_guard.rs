@@ -3,7 +3,7 @@
 //! Applied as a `from_fn_with_state` layer on `/v1/mcenter/*`. Missing or
 //! invalid credentials short-circuit before the handler: JWT signature, `exp`,
 //! blacklist, pw-epoch, and `phpyun_user_session` are checked via
-//! [`AuthenticatedUser`]. Accepts `Authorization: Bearer` or Cookie `token=`.
+//! [`AuthenticatedUser`] (including `uid != 0`). Accepts `Authorization: Bearer` or Cookie `token=`.
 
 use crate::extractors::AuthenticatedUser;
 use crate::state::AppState;
@@ -16,6 +16,9 @@ pub async fn layer(State(state): State<AppState>, req: Request, next: Next) -> R
     match AuthenticatedUser::from_request_parts(&mut parts, &state).await {
         Err(e) => e.into_response(),
         Ok(user) => {
+            if let Err(e) = user.require_uid() {
+                return e.into_response();
+            }
             parts.extensions.insert(user);
             next.run(Request::from_parts(parts, body)).await
         }
