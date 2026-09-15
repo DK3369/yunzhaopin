@@ -3,7 +3,7 @@
 use phpyun_core::cache;
 use phpyun_core::json::Value;
 use phpyun_core::{
-    extractors::AuthenticatedUser, ApiError, AppResult, AppState,
+    extractors::AuthenticatedUser, rate_limit, ApiError, AppResult, AppState,
 };
 use phpyun_models::site_setting::repo as setting_repo;
 use std::time::Duration;
@@ -121,6 +121,16 @@ pub async fn ensure_list_login(
         }
     }
     Err(ApiError::unauth())
+}
+
+/// Public list endpoints: per-IP Redis cap (Governor is the coarse layer).
+pub async fn ensure_public_list_rate(state: &AppState, ip: &str) -> AppResult<()> {
+    rate_limit::check_wap_list(&state.redis, ip).await
+}
+
+/// Job / resume / company detail: per-uid cap after login.
+pub async fn ensure_public_detail_rate(state: &AppState, uid: u64) -> AppResult<()> {
+    rate_limit::check_wap_detail(&state.redis, uid).await
 }
 
 /// PHP `sy_{module}_web == 2` closes the column.

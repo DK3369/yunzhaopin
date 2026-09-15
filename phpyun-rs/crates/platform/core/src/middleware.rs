@@ -24,7 +24,10 @@ use axum::{
 use serde_json::json;
 use std::{sync::Arc, time::Duration};
 use tower::limit::ConcurrencyLimitLayer;
-use tower_governor::{governor::GovernorConfigBuilder, GovernorError, GovernorLayer};
+use tower_governor::{
+    governor::GovernorConfigBuilder, key_extractor::SmartIpKeyExtractor, GovernorError,
+    GovernorLayer,
+};
 use tower_http::{
     compression::CompressionLayer,
     cors::{AllowOrigin, CorsLayer},
@@ -83,18 +86,21 @@ where
             axum::http::StatusCode::REQUEST_TIMEOUT,
             Duration::from_secs(cfg.request_timeout_secs),
         ));
-    // Local Nuxt SSR + curl all share 127.0.0.1; skip Governor in APP_ENV=dev.
-    let router = if cfg.env == crate::config::AppEnvironment::Dev {
+    // Skip only APP_ENV=test (contract tests). Dev/prod sit behind nginx/BFF;
+    // SmartIpKeyExtractor keys on X-Forwarded-For so 127.0.0.1 peer is not one bucket.
+    let router = if cfg.env == crate::config::AppEnvironment::Test {
         router
     } else {
         // tower_governor `per_second(n)` replenishes 1 token every n seconds.
         // RATE_LIMIT_PER_SECOND=N means N req/s → replenish every 1000/N ms.
         let rps = cfg.rate_limit_per_second.max(1);
         let replenish_ms = (1000 / rps).max(1);
+        let mut governor_builder = GovernorConfigBuilder::default();
+        governor_builder.per_millisecond(replenish_ms);
+        governor_builder.burst_size(cfg.rate_limit_burst.max(1));
         let governor_conf = Arc::new(
-            GovernorConfigBuilder::default()
-                .per_millisecond(replenish_ms)
-                .burst_size(cfg.rate_limit_burst.max(1))
+            governor_builder
+                .key_extractor(SmartIpKeyExtractor)
                 .finish()
                 .expect("invalid governor config"),
         );

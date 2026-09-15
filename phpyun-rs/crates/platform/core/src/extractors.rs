@@ -299,6 +299,18 @@ impl Pagination {
     pub fn sql_limit(&self) -> (u64, u64) {
         (self.offset, self.limit)
     }
+
+    /// Public job / resume / company lists: never more than 20 rows per page.
+    pub fn clamp_public(self) -> Self {
+        let page = self.page.max(1);
+        let page_size = self.page_size.clamp(1, 20);
+        Self {
+            page,
+            page_size,
+            offset: u64::from(page - 1) * u64::from(page_size),
+            limit: u64::from(page_size),
+        }
+    }
 }
 
 impl<S: Send + Sync> FromRequestParts<S> for Pagination {
@@ -663,5 +675,25 @@ mod auth_user_tests {
     fn empty_cookie_token_is_missing() {
         let h = headers(&[("cookie", "token=; lang=en")]);
         assert_eq!(access_token_from_headers(&h), None);
+    }
+}
+
+#[cfg(test)]
+mod pagination_tests {
+    use super::Pagination;
+
+    #[test]
+    fn clamp_public_caps_page_size_and_rewrites_offset() {
+        let p = Pagination {
+            page: 2,
+            page_size: 200,
+            offset: 200,
+            limit: 200,
+        }
+        .clamp_public();
+        assert_eq!(p.page, 2);
+        assert_eq!(p.page_size, 20);
+        assert_eq!(p.offset, 20);
+        assert_eq!(p.limit, 20);
     }
 }

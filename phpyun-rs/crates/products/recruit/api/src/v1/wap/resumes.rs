@@ -14,8 +14,8 @@ use phpyun_core::utils::{
 };
 use phpyun_core::extractors::{MaybeUser, USERTYPE_EMPLOYER, USERTYPE_JOBSEEKER};
 use phpyun_core::{
-    clock, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
-    ValidatedJson, ValidatedJsonOrQuery,
+    clock, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged,
+    Pagination, ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
@@ -447,10 +447,13 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
 pub async fn list_resumes(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ResumeListQuery>,
 ) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
     ensure_resume_browse(&state, user.as_ref()).await?;
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
+    let page = page.clamp_public();
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
     }
@@ -929,6 +932,7 @@ async fn ensure_resume_browse(
     Ok(())
 }
 
+#[allow(dead_code)]
 fn cookie_count(headers: &HeaderMap, name: &str) -> i64 {
     headers
         .get(header::COOKIE)
@@ -980,8 +984,7 @@ async fn resume_m_status(
     0
 }
 
-/// Public resume detail — guests may read the body; contact fields follow
-/// PHP `m_status` (self or downloaded), not merely “logged-in employer”.
+/// Public resume detail — login required; contact fields still follow PHP `m_status`.
 #[utoipa::path(
     post,
     path = "/v1/wap/resumes/detail",
@@ -989,44 +992,42 @@ async fn resume_m_status(
     request_body = UidBody,
     responses(
         (status = 200, description = "ok"),
+        (status = 401, description = "Login required"),
         (status = 404, description = "Not found"),
     )
 )]
 pub async fn resume_detail(
     State(state): State<AppState>,
-    MaybeUser(user): MaybeUser,
+    user: AuthenticatedUser,
     headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<ResumeDetail>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
     let uid = b.uid;
-    let r = resume_service::get_public(&state, uid, user.as_ref()).await?;
-    ensure_resume_view(&state, user.as_ref(), uid).await?;
-    let employer = user
-        .as_ref()
-        .is_some_and(|u| u.usertype == USERTYPE_EMPLOYER);
+    let r = resume_service::get_public(&state, uid, Some(&user)).await?;
+    ensure_resume_view(&state, Some(&user), uid).await?;
+    let employer = user.usertype == USERTYPE_EMPLOYER;
     if employer {
-        if let Some(u) = user.as_ref() {
-            if phpyun_models::blacklist::repo::is_blocked(state.db.reader(), u.uid, uid).await? {
-                return Err(ApiError::business("blacklisted"));
-            }
-            view_service::record_async(&state, u.uid, KIND_RESUME, uid);
-            let eid = if r.def_job > 0 {
-                u64::try_from(r.def_job).unwrap_or(0)
-            } else {
-                0
-            };
-            resume_service::browse_resume_async(
-                &state,
-                u,
-                uid,
-                eid,
-                crate::v1::wap::client_ip(&headers),
-            );
+        if phpyun_models::blacklist::repo::is_blocked(state.db.reader(), user.uid, uid).await? {
+            return Err(ApiError::business("blacklisted"));
         }
+        view_service::record_async(&state, user.uid, KIND_RESUME, uid);
+        let eid = if r.def_job > 0 {
+            u64::try_from(r.def_job).unwrap_or(0)
+        } else {
+            0
+        };
+        resume_service::browse_resume_async(
+            &state,
+            &user,
+            uid,
+            eid,
+            crate::v1::wap::client_ip(&headers),
+        );
     }
-    let m_status = resume_m_status(&state, user.as_ref(), uid).await;
+    let m_status = resume_m_status(&state, Some(&user), uid).await;
     let mut unlocked = m_status == 1;
-    let gate = resume_service::open_resume_check(&state, user.as_ref(), uid).await;
+    let gate = resume_service::open_resume_check(&state, Some(&user), uid).await;
     let visitor_max = phpyun_models::site_setting::repo::find_many(
         state.db.reader(),
         &["sy_resume_visitors"],
@@ -1035,9 +1036,7 @@ pub async fn resume_detail(
     .ok()
     .and_then(|m| m.get("sy_resume_visitors")?.trim().parse().ok())
     .unwrap_or(0);
-    let visitor_blocked = user.is_none()
-        && visitor_max > 0
-        && cookie_count(&headers, "resumevisitors") >= i64::from(visitor_max);
+    let visitor_blocked = false;
     let body_open = gate.resume_check == 1 && !visitor_blocked;
     if visitor_blocked {
         unlocked = false;
@@ -1072,14 +1071,10 @@ pub async fn resume_detail(
     };
     let show_cfg = load_resume_show_cfg(&state).await;
     let applied = if employer {
-        if let Some(u) = user.as_ref() {
-            phpyun_models::apply::repo::count_by_uid_to_company(state.db.reader(), uid, u.uid)
-                .await
-                .unwrap_or(0)
-                > 0
-        } else {
-            false
-        }
+        phpyun_models::apply::repo::count_by_uid_to_company(state.db.reader(), uid, user.uid)
+            .await
+            .unwrap_or(0)
+            > 0
     } else {
         false
     };
@@ -1088,31 +1083,23 @@ pub async fn resume_detail(
     let photo_n = resume_photo_n(&state, &r, &show_cfg);
     let age = r.birthday.as_deref().and_then(age_from_birthday);
     let (downresumes, free_look) = if employer {
-        if let Some(u) = user.as_ref() {
-            phpyun_services::resume_download_service::remaining_for(&state, u)
-                .await
-                .unwrap_or((0, 0))
-        } else {
-            (0, 0)
-        }
+        phpyun_services::resume_download_service::remaining_for(&state, &user)
+            .await
+            .unwrap_or((0, 0))
     } else {
         (0, 0)
     };
     let (in_talentpool, invited) = if employer {
-        if let Some(u) = user.as_ref() {
-            let db = state.db.reader();
-            let ids = [uid];
-            let (p, i) = tokio::join!(
-                phpyun_models::talent_pool::repo::uids_in_pool(db, u.uid, &ids),
-                phpyun_models::apply::repo::invited_seeker_uids(db, u.uid, &ids),
-            );
-            (
-                p.unwrap_or_default().contains(&uid),
-                i.unwrap_or_default().contains(&uid),
-            )
-        } else {
-            (false, false)
-        }
+        let db = state.db.reader();
+        let ids = [uid];
+        let (p, i) = tokio::join!(
+            phpyun_models::talent_pool::repo::uids_in_pool(db, user.uid, &ids),
+            phpyun_models::apply::repo::invited_seeker_uids(db, user.uid, &ids),
+        );
+        (
+            p.unwrap_or_default().contains(&uid),
+            i.unwrap_or_default().contains(&uid),
+        )
     } else {
         (false, false)
     };

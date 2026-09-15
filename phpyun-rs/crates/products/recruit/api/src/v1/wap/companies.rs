@@ -10,8 +10,8 @@ use phpyun_core::dto::{CreatedId, UidBody};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     verify::{self, VerifyKind},
-    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, MaybeUser, Paged, Pagination,
-    ValidatedJson, ValidatedJsonOrQuery,
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged,
+    Pagination, ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
@@ -230,6 +230,7 @@ async fn fill_isatn(
 pub async fn list_companies(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
     headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CompanyListQuery>,
@@ -240,6 +241,8 @@ pub async fn list_companies(
         &crate::v1::wap::request_user_agent(&headers),
     )
     .await?;
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
+    let page = page.clamp_public();
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
     }
@@ -455,20 +458,20 @@ pub struct CompanyPublicContact {
     request_body = UidBody,
     responses(
         (status = 200, description = "ok"),
+        (status = 401, description = "Login required"),
         (status = 403, description = "Company not approved / account locked"),
         (status = 404, description = "Not found"),
     )
 )]
 pub async fn company_detail(
     State(state): State<AppState>,
-    MaybeUser(user): MaybeUser,
+    user: AuthenticatedUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<CompanyDetail>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
     let uid = b.uid;
-    let c = company_service::get_public(&state, uid, user.as_ref()).await?;
-    if let Some(u) = user.as_ref() {
-        view_service::record_async(&state, u.uid, KIND_COMPANY, uid);
-    }
+    let c = company_service::get_public(&state, uid, Some(&user)).await?;
+    view_service::record_async(&state, user.uid, KIND_COMPANY, uid);
     // Number of currently open positions (PHP equivalent: `jobM->getJobNum(['uid'=>uid,'state'=>1,'status'=>0,'r_status'=>1])`)
     let zp_num = phpyun_models::company::repo::count_open_jobs(state.db.reader(), uid)
         .await
@@ -530,18 +533,16 @@ pub async fn company_detail(
             .collect();
 
     // From the logged-in jobseeker's perspective: follow flag + number of applications
-    let (isatn, userid_job) = if let Some(u) = user.as_ref() {
+    let (isatn, userid_job) = {
         let db = state.db.reader();
-        let atn_fut = phpyun_models::atn::repo::exists_pair(db, u.uid, uid);
-        let apply_fut = phpyun_models::apply::repo::count_by_uid_to_company(db, u.uid, uid);
+        let atn_fut = phpyun_models::atn::repo::exists_pair(db, user.uid, uid);
+        let apply_fut = phpyun_models::apply::repo::count_by_uid_to_company(db, user.uid, uid);
         let (a, b) = tokio::join!(atn_fut, apply_fut);
         (
             a.map(|x| if x { 1 } else { 0 }).unwrap_or(0),
             b.map(phpyun_core::numeric::saturating_count_i32)
                 .unwrap_or(0),
         )
-    } else {
-        (0, 0)
     };
 
     let skin = phpyun_models::company_tpl::repo::fetch_applied_tpl(state.db.reader(), uid)
@@ -629,7 +630,7 @@ pub async fn company_detail(
         pre,
         claimable,
         contact: {
-            let ctc = job_service::resolve_company_contact(&state, uid, user.as_ref(), false).await?;
+            let ctc = job_service::resolve_company_contact(&state, uid, Some(&user), false).await?;
             CompanyPublicContact {
                 linkman: ctc.linkman,
                 linktel_n: ctc.linktel_n,
@@ -679,15 +680,16 @@ pub struct CompanyContactQuery {
     path = "/v1/wap/companies/contact",
     tag = "wap",
     request_body = CompanyContactQuery,
-    responses((status = 200, description = "ok", body = CompanyContactView))
+    responses((status = 200, description = "ok", body = CompanyContactView), (status = 401, description = "Login required"))
 )]
 pub async fn company_contact(
     State(state): State<AppState>,
-    MaybeUser(user): MaybeUser,
+    user: AuthenticatedUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<CompanyContactQuery>,
 ) -> AppResult<ApiResponse<CompanyContactView>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
     let isgetprv = b.isgetprv.unwrap_or(0) == 1;
-    let c = job_service::resolve_company_contact(&state, b.uid, user.as_ref(), isgetprv).await?;
+    let c = job_service::resolve_company_contact(&state, b.uid, Some(&user), isgetprv).await?;
     let plain = c.revealed && c.link_code == 1;
     Ok(ApiResponse::data(CompanyContactView {
         uid: b.uid,

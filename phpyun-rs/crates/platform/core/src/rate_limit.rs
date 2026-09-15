@@ -40,6 +40,7 @@ fn prefix(key: &str) -> &'static str {
         (Some("rl"), Some("login")) => "rl:login",
         (Some("rl"), Some("sms")) => "rl:sms",
         (Some("rl"), Some("ip")) => "rl:ip",
+        (Some("rl"), Some("uid")) => "rl:uid",
         (Some("rl"), _) => "rl:other",
         _ => "unknown",
     }
@@ -106,4 +107,30 @@ pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
 /// disturb the main flow).
 pub async fn clear_login_fail(kv: &Kv, account: &str) {
     let _ = kv.del(&login_fail_key(account)).await;
+}
+
+/// Public list dump: 60 requests / minute / IP.
+pub async fn check_wap_list(kv: &Kv, ip: &str) -> Result<(), ApiError> {
+    check_and_incr(
+        kv,
+        &format!("rl:ip:{ip}:wap-list"),
+        LimitRule {
+            max: 60,
+            window: Duration::from_secs(60),
+        },
+    )
+    .await
+}
+
+/// Logged-in detail scrape: 30 requests / minute / uid.
+pub async fn check_wap_detail(kv: &Kv, uid: u64) -> Result<(), ApiError> {
+    check_and_incr(
+        kv,
+        &format!("rl:uid:{uid}:wap-detail"),
+        LimitRule {
+            max: 30,
+            window: Duration::from_secs(60),
+        },
+    )
+    .await
 }

@@ -333,6 +333,7 @@ async fn attach_company_card_fields(
 pub async fn list_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
     headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<JobListQuery>,
@@ -343,19 +344,18 @@ pub async fn list_jobs(
         &crate::v1::wap::request_user_agent(&headers),
     )
     .await?;
-    // Detail mode: body carried an id → defer to the same logic as
-    // `/v1/wap/jobs/detail` so callers get the full job document.
+    // `id` on the list endpoint used to return the full detail document.
+    // Guests must not use that bypass; logged-in callers still pay the detail quota.
     if let Some(id) = q.id {
+        let user = user.ok_or_else(phpyun_core::ApiError::unauth)?;
+        phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
         return Ok(ApiResponse::data(
-            build_job_detail_value(
-                &state,
-                user.as_ref(),
-                id,
-                &crate::v1::wap::client_ip(&headers),
-            )
-            .await?,
+            build_job_detail_value(&state, Some(&user), id, &ip).await?,
         ));
     }
+
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
+    let page = page.clamp_public();
 
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "job", kw.trim().to_string());
@@ -441,20 +441,22 @@ pub async fn list_jobs(
     request_body = IdBody,
     responses(
         (status = 200, description = "ok"),
+        (status = 401, description = "Login required"),
         (status = 404, description = "Not found"),
         (status = 410, description = "Off-shelf / expired"),
     )
 )]
 pub async fn job_detail(
     State(state): State<AppState>,
-    MaybeUser(user): MaybeUser,
+    user: AuthenticatedUser,
     headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
     Ok(ApiResponse::data(
         build_job_detail_value(
             &state,
-            user.as_ref(),
+            Some(&user),
             b.id,
             &crate::v1::wap::client_ip(&headers),
         )
@@ -774,9 +776,12 @@ pub async fn same_company_jobs(
 pub async fn company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<Paged<JobSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
+    let page = page.clamp_public();
     let r = job_service::list_by_company(&state, b.uid, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
@@ -864,13 +869,16 @@ pub struct JobShareText {
     request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = JobShareText),
+        (status = 401, description = "Login required"),
         (status = 404, description = "Job not found"),
     )
 )]
 pub async fn share_text(
     State(state): State<AppState>,
+    user: AuthenticatedUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<JobShareText>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
     let id = b.id;
     let job = phpyun_models::job::repo::find_public_by_id(state.db.reader(), id)
         .await?
@@ -1050,17 +1058,19 @@ pub struct JobContactQuery {
     request_body = JobContactQuery,
     responses(
         (status = 200, description = "ok", body = JobContactView),
+        (status = 401, description = "Login required"),
         (status = 404, description = "Job not found"),
     )
 )]
 pub async fn job_contact(
     State(state): State<AppState>,
-    MaybeUser(user): MaybeUser,
+    user: AuthenticatedUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<JobContactQuery>,
 ) -> AppResult<ApiResponse<JobContactView>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
     let id = b.id;
     let isgetprv = b.isgetprv.unwrap_or(0) == 1;
-    let c = job_service::resolve_job_contact(&state, id, user.as_ref(), isgetprv).await?;
+    let c = job_service::resolve_job_contact(&state, id, Some(&user), isgetprv).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let city_name = phpyun_services::region_service::loc_name(dicts.city(c.city_id), c.city_id);
     Ok(ApiResponse::data(contact_view(c, city_name)))
