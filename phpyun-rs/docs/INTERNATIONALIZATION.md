@@ -19,7 +19,7 @@
 2. 没有 cookie 时用浏览器 `Accept-Language`
 3. 再没有则默认语言
 
-BFF 把上面结果写成**一条** `Accept-Language: zh-CN|en` 转给 Rust，并丢掉 URL 上的 `lang`。页面不要带 `?lang=`，也不要再写 `i18n_redirected` cookie。
+BFF 把上面结果写成**一条** `Accept-Language: en|zh`（默认 `en`）转给 Rust，并丢掉 URL 上的 `lang`。不要发 `zh-CN` / `en-US`。页面不要带 `?lang=`，也不要再写 `i18n_redirected` cookie。
 
 Rust 自身仍是 `?lang=`（仅 curl 调试）→ `Accept-Language` → Cookie → 默认。`en-US` 归一成 `en`。
 

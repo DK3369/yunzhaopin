@@ -14,7 +14,7 @@ export const ADMIN_LOCALE_KEY = 'admin_lang'
 
 const MAX_AGE = 31536000
 
-export function parseWebLocale(raw?: string | null, fallback: WebLocale = 'zh'): WebLocale {
+export function parseWebLocale(raw?: string | null, fallback: WebLocale = 'en'): WebLocale {
   return mapWebLocale(raw) ?? fallback
 }
 
@@ -29,22 +29,8 @@ export function mapWebLocale(raw?: string | null): WebLocale | null {
   return null
 }
 
-export function rustLangFor(locale: WebLocale, key: string = SITE_LOCALE_KEY): string {
-  if (locale === 'en') return 'en'
-  // UI pack is Simplified Chinese only; Traditional browsers still get zh UI
-  // strings, but the API can return zh-TW dictionary names.
-  if (import.meta.client) {
-    try {
-      const raw = localStorage.getItem(key) || ''
-      if (/tw|hk|mo|hant/i.test(raw)) return 'zh-TW'
-    } catch {
-      /* ignore */
-    }
-    if (typeof navigator !== 'undefined' && /tw|hk|mo|hant/i.test(navigator.language)) {
-      return 'zh-TW'
-    }
-  }
-  return 'zh-CN'
+export function rustLangFor(locale: WebLocale, _key: string = SITE_LOCALE_KEY): string {
+  return locale === 'zh' ? 'zh' : 'en'
 }
 
 function readCookie(name: string): string {
@@ -61,7 +47,7 @@ function readCookie(name: string): string {
   }
 }
 
-export function readStoredLocale(key: string = SITE_LOCALE_KEY, fallback: WebLocale = 'zh'): WebLocale {
+export function readStoredLocale(key: string = SITE_LOCALE_KEY, fallback: WebLocale = 'en'): WebLocale {
   if (!import.meta.client) return fallback
   const mappedLs = mapWebLocale(localStorage.getItem(key))
   if (mappedLs) return mappedLs

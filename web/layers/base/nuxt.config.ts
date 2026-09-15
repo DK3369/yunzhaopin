@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     public: {
       siteName: process.env.NUXT_PUBLIC_SITE_NAME || '',
       localeCookieKey: 'lang',
-      localeFallback: 'zh',
+      localeFallback: 'en',
     },
   },
   hooks: {
