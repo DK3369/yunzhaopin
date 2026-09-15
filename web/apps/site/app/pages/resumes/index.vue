@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, listFailMsg, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
+import { catTree, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, resumeBrowseGate, resumeListBlocked } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
 const SALARY_PRESETS: Array<{ min: number; max?: number }> = [
@@ -61,14 +61,7 @@ const idcard = computed(() => boolQuery(route.query.idcard))
 const work = computed(() => boolQuery(route.query.work))
 const recg = computed(() => boolQuery(route.query.recg))
 const { settings, me } = useSiteChrome()
-const resumeGate = computed(() => {
-  const needLogin = String(settings.value.com_search || '') === '1' && !me.value
-  const seekerOff =
-    String(settings.value.sy_user_visit_resume ?? '1') === '0' && Number(me.value?.usertype) === 1
-  if (needLogin) return 'login'
-  if (seekerOff) return 'seeker'
-  return ''
-})
+const resumeGate = computed(() => resumeBrowseGate(settings.value, me.value))
 const moreOpen = ref(
   !!(
     education.value ||
@@ -132,19 +125,21 @@ function resumeListParams(extra: Record<string, unknown> = {}) {
 
 const listKey = computed(
   () =>
-    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${country.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${filterMinSalary.value}-${filterMaxSalary.value}-${filterMinAge.value}-${filterMaxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}`,
+    `resumes-${locale.value}-${page.value}-${keyword.value}-${education.value}-${exp.value}-${job1.value}-${job1Son.value}-${jobPost.value}-${country.value}-${provinceId.value}-${cityId.value}-${threeCityId.value}-${sex.value}-${hy.value}-${tag.value}-${report.value}-${workType.value}-${filterMinSalary.value}-${filterMaxSalary.value}-${filterMinAge.value}-${filterMaxAge.value}-${uptime.value}-${integrity.value}-${order.value}-${photo.value}-${idcard.value}-${work.value}-${recg.value}-${Number(me.value?.usertype || 0)}-${settings.value.com_search || ''}-${settings.value.sy_user_visit_resume || ''}`,
 )
 
 const { data, error } = await useAsyncData(
   () => listKey.value,
   () =>
-    api.get<{ list: Array<Record<string, unknown>>; total: number }>('/v1/wap/resumes', resumeListParams()),
+    resumeListBlocked(settings.value, me.value)
+      ? Promise.resolve({ list: [] as Array<Record<string, unknown>>, total: 0 })
+      : api.get<{ list: Array<Record<string, unknown>>; total: number }>('/v1/wap/resumes', resumeListParams()),
 )
 
 const { data: topResumes } = await useAsyncData(
   () => `resumes-top-${listKey.value}`,
   () =>
-    page.value > 1
+    resumeListBlocked(settings.value, me.value) || page.value > 1
       ? Promise.resolve({ list: [] as Array<Record<string, unknown>> })
       : api
           .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', {
@@ -177,11 +172,13 @@ const { data: ads } = await useAdsBundle('resumes-list-ads', [
 const adsTop = computed(() => ads.value?.['508'] || [])
 const adsSide = computed(() => ads.value?.['36'] || [])
 const { data: recSide } = await useAsyncData(
-  () => `resumes-rec-side-${locale.value}`,
+  () => `resumes-rec-side-${locale.value}-${Number(me.value?.usertype || 0)}-${settings.value.sy_user_visit_resume || ''}`,
   () =>
-    api
-      .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { recg: true, page_size: 18 })
-      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+    resumeListBlocked(settings.value, me.value)
+      ? Promise.resolve({ list: [] as Array<Record<string, unknown>> })
+      : api
+          .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { recg: true, page_size: 18 })
+          .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
 )
 
 const sexItems = computed<DictItem[]>(() => [

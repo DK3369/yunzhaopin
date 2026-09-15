@@ -282,6 +282,24 @@ export function isLoggedIn(me?: { uid?: number } | null): boolean {
   return Number(me?.uid || 0) > 0
 }
 
+/** PHP `com_search` / `sy_user_visit_resume`：不能看人才时不要打 `/v1/wap/resumes`（游客 401、求职 403）。 */
+export function resumeBrowseGate(
+  settings?: { com_search?: string; sy_user_visit_resume?: string } | null,
+  me?: { uid?: number; usertype?: number } | null,
+): '' | 'login' | 'seeker' {
+  if (String(settings?.com_search || '') === '1' && !isLoggedIn(me)) return 'login'
+  if (String(settings?.sy_user_visit_resume ?? '1') === '0' && Number(me?.usertype) === 1) return 'seeker'
+  return ''
+}
+
+export function resumeListBlocked(
+  settings?: Record<string, string> | null,
+  me?: { uid?: number; usertype?: number } | null,
+): boolean {
+  if (!settings || !('com_search' in settings || 'sy_user_visit_resume' in settings)) return true
+  return resumeBrowseGate(settings, me) !== ''
+}
+
 export function goLogin(next?: string) {
   return navigateTo({ path: '/login', query: next ? { next } : {} })
 }

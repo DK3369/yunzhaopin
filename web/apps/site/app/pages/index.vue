@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, formatSalary, goLogin, isLoggedIn, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, goLogin, isLoggedIn, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, resumeBrowseGate, resumeListBlocked, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
 
 type Banner = { image_n?: string; image?: string; link?: string; title?: string; pic_content?: string }
 type ArticleLike = {
@@ -49,11 +49,7 @@ const { applyToQuery, didNum, gotocity } = useSubSite()
 const homeTpltype = computed(() => Number(route.query.tpltype || 0) || 0)
 const pcBannerFlag = useCookie('pc_bannerFlag', { path: '/', maxAge: 3600 })
 const wapBannerFlag = useCookie('wap_bannerFlag', { path: '/', maxAge: 3600 })
-const resumeGate = computed(() => {
-  const needLogin = String(settings.value.com_search || '') === '1' && !isLoggedIn(me.value)
-  if (needLogin) return 'login'
-  return ''
-})
+const resumeGate = computed(() => resumeBrowseGate(settings.value, me.value))
 const talentTip = ref('')
 function talentBlockedMsg() {
   const changeOn = String(settings.value.sy_user_change || '') === '1'
@@ -153,17 +149,24 @@ const adsMid = computed(() => ({
 const { data: friendLinks } = await useAsyncData(localeAsyncKey('home-links'), () =>
   api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
 )
-const { data: resumes, error: resumeError } = await useAsyncData(localeAsyncKey('home-resumes'), async () => {
-  const [rec, latest] = await Promise.all([
-    api
-      .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8, recg: true })
-      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
-    api
-      .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 16 })
-      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
-  ])
-  return { rec: rec.list || [], latest: latest.list || [] }
-})
+const { data: resumes, error: resumeError } = await useAsyncData(
+  () =>
+    `home-resumes-${locale.value}-${Number(me.value?.usertype || 0)}-${settings.value.com_search || ''}-${settings.value.sy_user_visit_resume || ''}`,
+  async () => {
+    if (resumeListBlocked(settings.value, me.value)) {
+      return { rec: [] as Array<Record<string, unknown>>, latest: [] as Array<Record<string, unknown>> }
+    }
+    const [rec, latest] = await Promise.all([
+      api
+        .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8, recg: true })
+        .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+      api
+        .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 16 })
+        .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+    ])
+    return { rec: rec.list || [], latest: latest.list || [] }
+  },
+)
 
 const jobCats = computed(() => catTree(cats.value || [], 11))
 const hotJobs = computed(() => (home.value?.hot_jobs || []) as JobLike[])
@@ -531,8 +534,8 @@ useHead({
         <div class="tjuser_list">
           <p v-if="talentTip" class="muted" style="padding: 8px 0">{{ talentTip }}</p>
           <div v-if="resumeGate" class="firm_login" style="padding: 30px">
-            <p>{{ $t('wap_00376') }}</p>
-            <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
+            <p>{{ resumeGate === 'login' ? $t('wap_00376') : $t('resume_00038') }}</p>
+            <NuxtLink v-if="resumeGate === 'login'" to="/login">{{ $t('common.login') }}</NuxtLink>
           </div>
           <ul v-else>
             <li v-for="r in resumeList" :key="String(r.uid || r.id)">
