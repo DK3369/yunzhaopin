@@ -1,11 +1,13 @@
 /**
- * 全站语言合同：只有 `en` | `zh`。默认 `en`。选了中文才是中文。
+ * 全站语言合同：cookie / Vue 只有 `en` | `zh`。默认 `en`。选了中文才是中文。
  *
  * 前台 cookie `lang`，后台 `admin_lang`，互不污染。不要在页面或
- * `/api/proxy` 带 `?lang=`，不要嗅探浏览器，不要再写 `zh-CN` / `en-US`。
+ * `/api/proxy` 带 `?lang=`，不要嗅探浏览器列表。发给 Rust 的
+ * Accept-Language 是 `en` | `zh-CN`（`zh` → `zh-CN`）。
  */
 
 export type WebLocale = 'en' | 'zh'
+export type RustLangTag = 'en' | 'zh-CN'
 
 export const DEFAULT_WEB_LOCALE: WebLocale = 'en'
 export const SITE_LOCALE_KEY = 'lang'
@@ -28,9 +30,22 @@ export function parseWebLocale(raw?: string | null, fallback: WebLocale = DEFAUL
   return mapWebLocale(raw) ?? fallback
 }
 
-/** Accept-Language / Rust 线上标签：与 cookie 相同，默认 `en`。 */
-export function rustLangFor(locale: WebLocale | string | null | undefined): WebLocale {
-  return parseWebLocale(locale)
+/** Rust / Accept-Language：`zh-CN` | `en`，默认 `en`。cookie 仍是 `zh` | `en`。 */
+export function rustLangFor(locale: WebLocale | string | null | undefined): RustLangTag {
+  return parseWebLocale(locale) === 'zh' ? 'zh-CN' : 'en'
+}
+
+/**
+ * 单条 Accept-Language（`en` / `zh` / `zh-CN`）。带逗号的浏览器列表返回 null，
+ * 不要当站点语言用。
+ */
+export function rustLangFromAcceptLanguage(raw?: string | null): RustLangTag | null {
+  const s = String(raw || '').trim()
+  if (!s || s.includes(',')) return null
+  const tag = s.split(';')[0]?.trim() || ''
+  const mapped = mapWebLocale(tag)
+  if (!mapped) return null
+  return mapped === 'zh' ? 'zh-CN' : 'en'
 }
 
 function readCookie(name: string): string {

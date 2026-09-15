@@ -83,7 +83,7 @@ watch(h5NavPages, (pages) => {
 })
 
 const { data: home, error } = await useAsyncData(
-  () => `home-${homeTpltype.value}`,
+  () => `home-${locale.value}-${homeTpltype.value}`,
   async () => {
   const q = applyToQuery({}) as Record<string, unknown>
   if (homeTpltype.value > 0) q.tpltype = homeTpltype.value
@@ -112,7 +112,7 @@ const { data: home, error } = await useAsyncData(
     urgent_jobs: h.urgent_jobs || [],
   }
   },
-  { watch: [homeTpltype] },
+  { watch: [homeTpltype, locale] },
 )
 const { data: cats } = await useAsyncData(
   () => `job-cats-${locale.value}`,

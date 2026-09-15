@@ -11,7 +11,7 @@ PC 深色页脚五列来自后台「单页」分类 + `is_nav=1` 的描述：[`A
 
 `/pages/:code`：legal slug（about/contact/privacy/protocol）走 `/v1/wap/legal`；否则 `descriptions/by-name`（文件名映射含 `jyxkz` / `rlzy`）再 `site/pages`。页脚备案/人资证仍链 `/pages/jyxkz` `/pages/rlzy`。
 
-`/get/:id` 与页脚走请求语言：公开接口读 [`phpyun-rs/cms-pages/{lang}/`](../../phpyun-rs/cms-pages/)（`meta.json` 给页脚/左栏，`{id}.html` 给正文，对齐 PHP `desc.cache.php`）。中文底稿仍在 `phpyun_description`；后台首次保存生成、改完再覆盖。请求只读、不写盘、不灌进程内存。英文缺文件回退 `zh-CN`。**不要**把单页 HTML 打进 Vue 大 JSON，也不要另开翻译表。
+`/get/:id` 与页脚走请求语言：公开接口读 [`phpyun-rs/cms-pages/{lang}/`](../../phpyun-rs/cms-pages/)（`meta.json` 给页脚/左栏，`{id}.html` 给正文，对齐 PHP `desc.cache.php`）。请求头是 `Accept-Language: zh-CN|en`（cookie 仍是 `zh`/`en`）。中文底稿仍在 `phpyun_description`；后台首次保存生成、改完再覆盖。请求只读、不写盘、不灌进程内存。英文缺文件回退 `zh-CN`。页脚 `FOOTER_NAME_KEY` 同时认中文和英文 CMS 名，再 `$t` 成当前 Vue 语言，避免接口英文、皮中文时列名混排。**不要**把单页 HTML 打进 Vue 大 JSON，也不要另开翻译表。
 
 这些路由不要套 `.site-inner`（会裁掉 `about_left` float）。H5 底栏五项不变。前台不要再给页脚加 `/data-show`。
 

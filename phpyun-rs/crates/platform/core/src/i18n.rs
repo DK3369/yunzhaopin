@@ -18,13 +18,14 @@
 //! Default is `en`. Chinese only when the user picked it (cookie).
 //! Do **not** sniff a browser `Accept-Language` list (`zh-CN,zh;q=0.9`).
 //!
-//! 1. Single-tag `Accept-Language: en|zh` (BFF writes this from cookie).
-//! 2. Cookie `lang` (site) then `admin_lang` (admin).
+//! 1. Single-tag `Accept-Language: zh-CN|en` (BFF maps cookie `zh`→`zh-CN`).
+//!    `zh` is still accepted for curl / old clients.
+//! 2. Cookie `lang` (site) then `admin_lang` (admin). Cookie tags stay `en`|`zh`.
 //! 3. Query `?lang=` for curl without a cookie.
 //! 4. Default `en`.
 //!
 //! ```text
-//! curl -H 'Accept-Language: zh' http://api.example.com/...
+//! curl -H 'Accept-Language: zh-CN' http://api.example.com/...
 //! curl 'http://api.example.com/...?lang=zh'   ← debugging only
 //! ```
 //!
@@ -126,7 +127,7 @@ fn detect_lang(parts: &Parts) -> Lang {
     detect_lang_from(&parts.uri, &parts.headers)
 }
 
-/// BFF / curl send a single tag (`en` / `zh`). Browser lists are ignored.
+/// BFF / curl send a single tag (`zh-CN` / `en`, also `zh`). Browser lists are ignored.
 fn lang_from_accept_language(headers: &axum::http::HeaderMap) -> Option<Lang> {
     let al = headers
         .get(header::ACCEPT_LANGUAGE)?
@@ -286,6 +287,7 @@ mod tests {
 
     #[test]
     fn bff_single_tag_accept_language() {
+        assert_eq!(detect("/v1/wap/home", Some("zh-CN"), None), Lang::ZhCN);
         assert_eq!(detect("/v1/wap/home", Some("zh"), None), Lang::ZhCN);
         assert_eq!(detect("/v1/wap/home", Some("en"), None), Lang::En);
     }

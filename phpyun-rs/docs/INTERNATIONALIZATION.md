@@ -18,21 +18,21 @@
 1. 前台 `lang`，后台 `admin_lang`（用户点了中文才是 `zh`）
 2. 没有 cookie → 默认 `en`
 
-不要嗅探浏览器 `Accept-Language` 列表（`zh-CN,zh;q=0.9`）。BFF 按 cookie 写成一条 `en` 或 `zh` 转给 Rust。
+不要嗅探浏览器 `Accept-Language` 列表（`zh-CN,zh;q=0.9`）。BFF 把 cookie 写成单条 `Accept-Language: zh-CN|en` 转给 Rust（`zh` → `zh-CN`）。`zh` 仍可当 curl 兼容标签。
 
 Rust 判定顺序：
 
-1. 单条 `Accept-Language: en|zh`（BFF / curl）
-2. Cookie `lang`，否则 `admin_lang`
+1. 单条 `Accept-Language: zh-CN|en`（BFF / curl；也认 `zh`）
+2. Cookie `lang`，否则 `admin_lang`（cookie 标签仍是 `en`|`zh`）
 3. `?lang=` 仅 curl（没有 cookie 时）
 4. 默认 `en`
 
-线上对外标签：
+线上标签：
 
-| 语言 | 标签 |
-| --- | --- |
-| 英语（默认） | `en` |
-| 中文 | `zh` |
+| 通道 | 英语（默认） | 中文 |
+| --- | --- | --- |
+| cookie / Vue | `en` | `zh` |
+| Accept-Language → Rust | `en` | `zh-CN` |
 
 ## 三、固定文案
 
