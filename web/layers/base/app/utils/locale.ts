@@ -49,8 +49,6 @@ function readCookie(name: string): string {
 
 export function readStoredLocale(key: string = SITE_LOCALE_KEY, fallback: WebLocale = DEFAULT_WEB_LOCALE): WebLocale {
   if (!import.meta.client) return fallback
-  const mappedLs = mapWebLocale(localStorage.getItem(key))
-  if (mappedLs) return mappedLs
   const mappedCookie = mapWebLocale(readCookie(key))
   if (mappedCookie) return mappedCookie
   return fallback

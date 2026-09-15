@@ -335,7 +335,11 @@ export default {
                         "agentid": that.user.agent_id,
                         "redirect_uri": that.user.redirect_uri,
                         "state": that.user.state,
-                        "lang": (localStorage.getItem("lang") || "en_us") === "zh_cn" ? "zh" : "en",
+                        "lang": (function () {
+                            var m = document.cookie.match(/(?:^|; )admin_lang=([^;]*)/);
+                            var v = m ? decodeURIComponent(m[1]) : '';
+                            return v === 'zh' || v.indexOf('zh') === 0 ? 'zh' : 'en';
+                        })(),
                     });
                 })
             },

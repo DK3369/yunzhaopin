@@ -15,17 +15,17 @@
 //!
 //! ## How clients pass the language
 //!
-//! Priority (highest to lowest):
+//! Default is `en`. Chinese only when the user picked it (cookie).
+//! Do **not** sniff a browser `Accept-Language` list (`zh-CN,zh;q=0.9`).
 //!
-//! 1. URL query: `?lang=en` (highest; for dev / test).
-//! 2. HTTP header: `Accept-Language: zh-TW` (W3C standard; mobile / browser
-//!    sends it automatically).
-//! 3. Cookie: `lang=en` (persistent site preference).
-//! 4. Server default: `en`.
+//! 1. Single-tag `Accept-Language: en|zh` (BFF writes this from cookie).
+//! 2. Cookie `lang` (site) then `admin_lang` (admin).
+//! 3. Query `?lang=` for curl without a cookie.
+//! 4. Default `en`.
 //!
 //! ```text
-//! curl -H 'Accept-Language: en' http://api.example.com/...   ← recommended
-//! curl 'http://api.example.com/...?lang=zh-TW'               ← debugging / static sharing
+//! curl -H 'Accept-Language: zh' http://api.example.com/...
+//! curl 'http://api.example.com/...?lang=zh'   ← debugging only
 //! ```
 //!
 //! ## Response format
@@ -122,55 +122,48 @@ impl<S: Send + Sync> FromRequestParts<S> for Lang {
     }
 }
 
-/// Detect the language: query > header > cookie > default.
 fn detect_lang(parts: &Parts) -> Lang {
-    // 1. URL ?lang=
-    if let Some(q) = parts.uri.query() {
-        for kv in q.split('&') {
-            let (k, v) = kv.split_once('=').unwrap_or((kv, ""));
-            if k == "lang" {
-                if let Some(l) = Lang::parse_tag(v) {
-                    return l;
-                }
-            }
+    detect_lang_from(&parts.uri, &parts.headers)
+}
+
+/// BFF / curl send a single tag (`en` / `zh`). Browser lists are ignored.
+fn lang_from_accept_language(headers: &axum::http::HeaderMap) -> Option<Lang> {
+    let al = headers
+        .get(header::ACCEPT_LANGUAGE)?
+        .to_str()
+        .ok()?
+        .trim();
+    if al.is_empty() || al.contains(',') {
+        return None;
+    }
+    let tag = al.split(';').next().unwrap_or("").trim();
+    Lang::parse_tag(tag)
+}
+
+fn lang_from_cookies(headers: &axum::http::HeaderMap) -> Option<Lang> {
+    let cookies = headers.get(header::COOKIE)?.to_str().ok()?;
+    let mut site = None;
+    let mut admin = None;
+    for c in cookies.split(';') {
+        let kv = c.trim();
+        if let Some(v) = kv.strip_prefix("admin_lang=") {
+            admin = Lang::parse_tag(v.trim());
+        } else if let Some(v) = kv.strip_prefix("lang=") {
+            site = Lang::parse_tag(v.trim());
         }
     }
+    site.or(admin)
+}
 
-    // 2. Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
-    if let Some(al) = parts
-        .headers
-        .get(header::ACCEPT_LANGUAGE)
-        .and_then(|v| v.to_str().ok())
-    {
-        // Simplified parsing: take the first recognizable tag after sorting by q.
-        // q defaults to 1.0; entries without an explicit q have the highest priority.
-        // We cheat here and don't strictly sort per RFC — we just take the first recognizable one in order.
-        for entry in al.split(',') {
-            let tag = entry.split(';').next().unwrap_or("").trim();
-            if let Some(l) = Lang::parse_tag(tag) {
-                return l;
-            }
+fn lang_from_query(uri: &axum::http::Uri) -> Option<Lang> {
+    let q = uri.query()?;
+    for kv in q.split('&') {
+        let (k, v) = kv.split_once('=').unwrap_or((kv, ""));
+        if k == "lang" {
+            return Lang::parse_tag(v);
         }
     }
-
-    // 3. Cookie: lang=zh-TW
-    if let Some(cookies) = parts
-        .headers
-        .get(header::COOKIE)
-        .and_then(|v| v.to_str().ok())
-    {
-        for c in cookies.split(';') {
-            let kv = c.trim();
-            if let Some(v) = kv.strip_prefix("lang=") {
-                if let Some(l) = Lang::parse_tag(v) {
-                    return l;
-                }
-            }
-        }
-    }
-
-    // 4. Default
-    Lang::default()
+    None
 }
 
 // ============== Task-level Lang context ==============
@@ -207,38 +200,15 @@ pub async fn lang_layer(
     CURRENT_LANG.scope(detected, next.run(req)).await
 }
 
-/// Parse lang from uri + headers (used by lang_layer, doesn't depend on axum::http::request::Parts).
 fn detect_lang_from(uri: &axum::http::Uri, headers: &axum::http::HeaderMap) -> Lang {
-    if let Some(q) = uri.query() {
-        for kv in q.split('&') {
-            let (k, v) = kv.split_once('=').unwrap_or((kv, ""));
-            if k == "lang" {
-                if let Some(l) = Lang::parse_tag(v) {
-                    return l;
-                }
-            }
-        }
+    if let Some(l) = lang_from_accept_language(headers) {
+        return l;
     }
-    if let Some(al) = headers
-        .get(header::ACCEPT_LANGUAGE)
-        .and_then(|v| v.to_str().ok())
-    {
-        for entry in al.split(',') {
-            let tag = entry.split(';').next().unwrap_or("").trim();
-            if let Some(l) = Lang::parse_tag(tag) {
-                return l;
-            }
-        }
+    if let Some(l) = lang_from_cookies(headers) {
+        return l;
     }
-    if let Some(cookies) = headers.get(header::COOKIE).and_then(|v| v.to_str().ok()) {
-        for c in cookies.split(';') {
-            let kv = c.trim();
-            if let Some(v) = kv.strip_prefix("lang=") {
-                if let Some(l) = Lang::parse_tag(v) {
-                    return l;
-                }
-            }
-        }
+    if let Some(l) = lang_from_query(uri) {
+        return l;
     }
     Lang::default()
 }
@@ -284,6 +254,61 @@ mod tests {
         let langs: Vec<_> = rust_i18n::available_locales!();
         eprintln!("Available locales: {:?}", langs);
         eprintln!("zh-CN errors.unauth: {:?}", t("errors.unauth", Lang::ZhCN));
+    }
+
+    fn detect(uri: &str, al: Option<&str>, cookie: Option<&str>) -> Lang {
+        let uri: axum::http::Uri = uri.parse().expect("uri");
+        let mut headers = axum::http::HeaderMap::new();
+        if let Some(v) = al {
+            headers.insert(header::ACCEPT_LANGUAGE, v.parse().expect("al"));
+        }
+        if let Some(v) = cookie {
+            headers.insert(header::COOKIE, v.parse().expect("cookie"));
+        }
+        detect_lang_from(&uri, &headers)
+    }
+
+    #[test]
+    fn browser_accept_language_list_is_ignored() {
+        assert_eq!(
+            detect("/v1/wap/home", Some("zh-CN,zh;q=0.9,en;q=0.8"), None),
+            Lang::En
+        );
+    }
+
+    #[test]
+    fn cookie_zh_without_sniffing_browser() {
+        assert_eq!(
+            detect("/v1/wap/home", Some("en-US,en;q=0.9"), Some("lang=zh")),
+            Lang::ZhCN
+        );
+    }
+
+    #[test]
+    fn bff_single_tag_accept_language() {
+        assert_eq!(detect("/v1/wap/home", Some("zh"), None), Lang::ZhCN);
+        assert_eq!(detect("/v1/wap/home", Some("en"), None), Lang::En);
+    }
+
+    #[test]
+    fn admin_bff_zh_wins_over_site_cookie_en() {
+        assert_eq!(
+            detect("/v1/admin/x", Some("zh"), Some("lang=en; admin_lang=zh")),
+            Lang::ZhCN
+        );
+    }
+
+    #[test]
+    fn query_lang_for_curl_without_cookie() {
+        assert_eq!(detect("/v1/wap/home?lang=zh", None, None), Lang::ZhCN);
+    }
+
+    #[test]
+    fn cookie_wins_over_query_lang() {
+        assert_eq!(
+            detect("/v1/wap/home?lang=zh", None, Some("lang=en")),
+            Lang::En
+        );
     }
 
     #[test]

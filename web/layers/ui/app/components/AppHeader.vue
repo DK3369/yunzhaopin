@@ -17,6 +17,7 @@
           >{{ item.label }}</NuxtLink>
         </nav>
         <div class="pc-topbar__actions">
+          <LangSwitch />
           <NuxtLink v-if="showPublishJob" to="/com/jobs/new" class="pc-topbar__text">{{ $t('common.publish_job') }}</NuxtLink>
           <template v-if="me">
             <NuxtLink :to="memberHome" class="pc-topbar__text">{{ me.username }}</NuxtLink>
@@ -36,6 +37,7 @@
       <div class="yunlogobox" style="display: flex; align-items: center; justify-content: space-between; gap: 0.16rem">
         <img v-if="logoH5" :src="logoH5" alt="" class="yunlogo" />
         <span v-else class="header_p_z">{{ siteName }}</span>
+        <LangSwitch />
       </div>
       <div class="index_newedition_search_box">
         <div class="index_newedition_searchbg">

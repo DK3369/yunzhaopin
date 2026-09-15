@@ -9,7 +9,7 @@ import {
   ElTooltip as ElTooltipBase,
 } from 'element-plus'
 import { httpPost } from '~/utils/httpPost'
-import { applyPhpLcFixes, lc, persistLocale, readStoredLocale, translateMenuText, translatePackedText } from '~/utils/phpLc'
+import { applyPhpLcFixes, lc, readStoredLocale, translateMenuText, translatePackedText } from '~/utils/phpLc'
 
 function coerceSwitchValue(val: unknown, active: unknown, inactive: unknown) {
   if (Object.is(val, active) || Object.is(val, inactive)) return val
@@ -418,7 +418,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   nuxtApp.vueApp.component('PhpElCheckbox', checkboxCompat)
 
   const loc = readStoredLocale()
-  persistLocale(loc)
   const i18n = nuxtApp.$i18n as { setLocale?: (c: string) => Promise<void> } | undefined
   try {
     if (i18n?.setLocale) await i18n.setLocale(loc)

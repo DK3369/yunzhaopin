@@ -18,9 +18,14 @@
 1. 前台 `lang`，后台 `admin_lang`（用户点了中文才是 `zh`）
 2. 没有 cookie → 默认 `en`
 
-不要嗅探浏览器 `Accept-Language` 来决定站点语言。BFF 按 cookie 写成一条 `en` 或 `zh` 转给 Rust。
+不要嗅探浏览器 `Accept-Language` 列表（`zh-CN,zh;q=0.9`）。BFF 按 cookie 写成一条 `en` 或 `zh` 转给 Rust。
 
-Rust 自身仍是 `?lang=`（仅 curl 调试）→ `Accept-Language` → Cookie → 默认 `en`。`zh-CN` / `en-US` 归一成 `zh` / `en`。
+Rust 判定顺序：
+
+1. 单条 `Accept-Language: en|zh`（BFF / curl）
+2. Cookie `lang`，否则 `admin_lang`
+3. `?lang=` 仅 curl（没有 cookie 时）
+4. 默认 `en`
 
 线上对外标签：
 

@@ -8,6 +8,7 @@
       </div>
       <div class="user_headerright">
         <NuxtLink to="/" class="user_m_fanh" :title="$t('member_user_00116')">{{ $t('member_user_00119') }}</NuxtLink>
+        <LangSwitch />
         <div class="yun_m_headermsg" @mouseenter="userMsgOpen = true" @mouseleave="userMsgOpen = false">
           <i class="yun_m_headermsg_icon" />{{ $t('member_user_00498') }}
           <span v-if="userMsgTotal" class="yun_m_headermsg_n">{{ userMsgTotal }}</span>
@@ -76,6 +77,7 @@
       </div>
       <div class="user_headerright">
         <NuxtLink to="/" class="user_m_fanh" :title="$t('member_user_00116')">{{ $t('member_user_00119') }}</NuxtLink>
+        <LangSwitch />
         <div class="yun_m_headermsg" @mouseenter="comMsgOpen = true" @mouseleave="comMsgOpen = false">
           <i class="yun_m_headermsg_icon" />{{ $t('member_user_00498') }}
           <span v-if="comMsgTotal" class="yun_m_headermsg_n">{{ comMsgTotal }}</span>

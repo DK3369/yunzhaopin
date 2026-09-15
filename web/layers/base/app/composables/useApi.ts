@@ -12,13 +12,24 @@ function pagingQuery(payload?: Record<string, unknown>): Record<string, unknown>
   return Object.keys(query).length ? query : undefined
 }
 
+function dropLangQuery(payload?: Record<string, unknown>): Record<string, unknown> | undefined {
+  if (!payload) return undefined
+  const query: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(payload)) {
+    if (k === 'lang') continue
+    query[k] = v
+  }
+  return Object.keys(query).length ? query : undefined
+}
+
 export function useApi() {
-  const i18n = useI18n()
+  const scope = useLocaleScope()
+  const localeCookie = useCookie(scope.key)
 
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
     const url = bffUrl(`/api/proxy${path}`)
-    const loc = parseWebLocale(i18n.locale.value)
-    const query = method === 'GET' ? payload : pagingQuery(payload)
+    const loc = parseWebLocale(localeCookie.value)
+    const query = method === 'GET' ? dropLangQuery(payload) : pagingQuery(payload)
     const headers = { 'accept-language': rustLangFor(loc) }
     try {
       const body = await $fetch<ApiEnvelope<T>>(url, {

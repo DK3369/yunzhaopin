@@ -103,7 +103,7 @@ function toggleDiv() {
                 </form>
                 <p v-if="err" style="color: #e34848; text-align: center">{{ err }}</p>
                 <p style="text-align: center; margin-top: 12px; font-size: 13px">
-                  <LangSwitch reload />
+                  <LangSwitch />
                 </p>
                 <div class="weixnLogins">
                   <div @click="toggleDiv">

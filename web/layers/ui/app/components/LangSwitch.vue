@@ -9,13 +9,11 @@
 <script setup lang="ts">
 import { persistWebLocale } from '../../../base/app/utils/locale'
 
-const props = withDefaults(defineProps<{ reload?: boolean }>(), { reload: false })
-const { locale, setLocale } = useI18n()
+const { locale } = useI18n()
 const scope = useLocaleScope()
-async function go(code: 'zh' | 'en') {
+function go(code: 'zh' | 'en') {
   if (locale.value === code) return
   persistWebLocale(code, scope.key)
-  await setLocale(code)
-  if (props.reload && import.meta.client) location.reload()
+  if (import.meta.client) location.reload()
 }
 </script>
