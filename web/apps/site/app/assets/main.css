@@ -1928,6 +1928,10 @@ html.force-pc .site-h5 {
 .site-h5 .job_show_fav.is-fav::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232778f8'%3E%3Cpath d='M12 2.5l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8l-6.5 4.2 1.8-7.2L1.7 10l7.4-.6z'/%3E%3C/svg%3E");
 }
+/* PHP job_show 有 3.2rem 蓝底，卡片用负 margin 叠上去；Vue 只有 AppHeader，负 margin 会把标题送进顶栏 */
+.site-h5 .job_describe {
+  margin-top: 0.16rem;
+}
 
 /* 职位详情 JD：覆盖 style.css / H5 * 重置（p/ul/h2 边距清零、列表无圆点） */
 .job_details_describe {
