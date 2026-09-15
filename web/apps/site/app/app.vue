@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isPathModuleOn } from '~/utils/site'
+import { isComMemberPath, isPathModuleOn, isUserMemberPath } from '~/utils/site'
 
 const route = useRoute()
 const { locale, t } = useI18n()
@@ -40,6 +40,13 @@ const cacheVer = computed(() => {
   const raw = String(settings.value.cachecode || '0').replace(/[^0-9a-zA-Z_-]/g, '')
   return raw || '0'
 })
+/** 会员皮按路径先挂，避免 usertype 晚到时 H5 无皮；/advice 仍看登录身份。 */
+const memberCssKind = computed<'user' | 'com' | ''>(() => {
+  if (isUserMemberPath(route.path)) return 'user'
+  if (isComMemberPath(route.path)) return 'com'
+  if (isMember.value) return memberKind.value
+  return ''
+})
 
 useHead({
   htmlAttrs: {
@@ -69,7 +76,7 @@ useHead({
         media: 'screen and (max-width: 1199px)',
       },
     ]
-    if (isMember.value && memberKind.value === 'user') {
+    if (memberCssKind.value === 'user') {
       links.push(
         {
           rel: 'stylesheet',
@@ -83,7 +90,7 @@ useHead({
         },
       )
     }
-    if (isMember.value && memberKind.value === 'com') {
+    if (memberCssKind.value === 'com') {
       links.push(
         {
           rel: 'stylesheet',
@@ -200,6 +207,6 @@ onMounted(() => {
       </MemberShell>
       <NuxtPage v-else />
     </main>
-    <AppFooter v-if="!isAuth && !isMember" />
+    <AppFooter v-if="!isAuth" />
   </div>
 </template>

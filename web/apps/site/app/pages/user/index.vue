@@ -2,7 +2,7 @@
 import { mediaUrl, isMemberModuleOn } from '~/utils/site'
 
 const api = useApi()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { userItems } = useMemberNav()
 const { data } = await useAuthMe()
 const { data: dash } = await useAsyncData(
@@ -97,6 +97,18 @@ const extraExpects = computed(() => {
 })
 const integrity = computed(() => Number(completion.value?.score || 0))
 const missingBits = computed(() => completion.value?.missing || [])
+const missingHint = computed(() => (missingBits.value[0] ? missingLabel(missingBits.value[0]) : ''))
+const gzhOpen = ref(true)
+const h5ResumeMeta = computed(() => {
+  const age = ageOf(resume.value?.birthday)
+  const en = String(locale.value).toLowerCase().startsWith('en')
+  const bits = [
+    resume.value?.exp_n,
+    resume.value?.education_n,
+    age ? `${age}${en ? ' ' : ''}${t('common_02074')}` : '',
+  ].filter((s) => String(s || '').trim())
+  return bits.join(' · ')
+})
 function missingLabel(k: string) {
   const map: Record<string, string> = {
     basic_info: t('wap_00269'),
@@ -140,7 +152,8 @@ const otherserviceHint = computed(() => {
   if (isMemberModuleOn(settings.value, '/user/parts')) bits.push(t('wap_user_00220'))
   if (isMemberModuleOn(settings.value, '/questions')) bits.push(t('wap_00331'))
   if (!bits.length) return ''
-  return `${bits.join('')}${t('wap_00786')}`
+  const en = String(locale.value).toLowerCase().startsWith('en')
+  return en ? `${bits.join(' · ')} ${t('wap_00786')}` : `${bits.join('')}${t('wap_00786')}`
 })
 const resumeHint = computed(() => (resume.value?.name || defExpect.value ? t('wap_user_00194') : ''))
 const h5Links = computed(() =>
@@ -328,10 +341,6 @@ function labelOf(to: string, key: string) {
       <p v-if="msg" class="muted">{{ msg }}</p>
     </div>
     <div class="site-h5">
-      <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
-        {{ $t('common_00655') }}
-        <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
-      </p>
       <div class="userheader">
         <div class="userheader_nav">
           <div class="userheader_nav_calendar" @click="signSt?.signed_today ? undefined : sign()">
@@ -358,20 +367,16 @@ function labelOf(to: string, key: string) {
                 <span>{{ integrity }}%</span>
               </div>
             </div>
-            <p v-if="missingBits.length" class="muted">
-              <NuxtLink to="/user/resume">{{ missingBits.map(missingLabel).join(' · ') }}</NuxtLink>
-            </p>
             <div class="userheader_datum_job_state">
-              <div v-if="resume?.exp_n || resume?.education_n" class="userheader_datum_job_data">
-                {{ resume?.exp_n }}{{ resume?.education_n }}{{ ageOf(resume?.birthday) ? ageOf(resume?.birthday) + $t('common_02074') : '' }}
-              </div>
-              <div v-else class="userheader_datum_job_data">{{ $t('wap_user_00189') }}</div>
+              <div class="userheader_datum_job_data">{{ h5ResumeMeta || $t('wap_user_00189') }}</div>
             </div>
           </div>
           <NuxtLink to="/user/resume" class="userheader_datum_right">
-            <div class="userheader_datum_right_word">
-              <span>{{ resume?.name ? $t('wap_user_00208') : $t('wap_user_00197') }}</span>
-              <img src="/legacy/h5/images/comtop1.png" alt="" />
+            <div>
+              <div class="userheader_datum_right_word">
+                <span>{{ resume?.name ? $t('wap_user_00208') : $t('wap_user_00197') }}</span>
+                <img src="/legacy/h5/images/comtop1.png" alt="" />
+              </div>
             </div>
           </NuxtLink>
         </div>
@@ -392,25 +397,33 @@ function labelOf(to: string, key: string) {
             <li>
               <NuxtLink to="/user/favorites">
                 <i class="userparticulars_number">{{ dash?.favorite_count ?? 0 }}</i>
-                <i class="userparticulars_word">{{ $t('member_user_00103') }}</i>
+                <i class="userparticulars_word">{{ $t('wap_user_00193') }}</i>
               </NuxtLink>
             </li>
             <li>
               <NuxtLink to="/user/views">
                 <i class="userparticulars_number">{{ dash?.view_count ?? 0 }}</i>
-                <i class="userparticulars_word">{{ $t('wap_user_00276') }}</i>
+                <i class="userparticulars_word">{{ $t('wap_user_00221') }}</i>
               </NuxtLink>
             </li>
           </ul>
         </div>
       </div>
-      <div v-if="missingBits.length" class="heiseVipDao">
+      <div v-if="missingHint" class="heiseVipDao">
         <div class="vip_nav">
           <div class="vip_nav_img">
             <img src="/legacy/h5/images/inform.png" alt="" width="100%" height="100%" />
           </div>
-          <i class="vip_nav_word">{{ missingBits.map(missingLabel).join(' · ') }}</i>
-          <NuxtLink to="/user/resume" class="vip_nav_remind">{{ $t('wap_user_00197') }}</NuxtLink>
+          <i class="vip_nav_word">{{ missingHint }}</i>
+          <NuxtLink to="/user/resume" class="vip_nav_remind">{{ $t('common_01975') }}</NuxtLink>
+        </div>
+      </div>
+      <div v-if="gzhNeed && gzhOpen" class="member-gzh-mask" @click="gzhOpen = false">
+        <div class="gzh_gzbox" @click.stop>
+          <div class="gzh_gzbox_n">{{ $t('wap_user_00191') }}</div>
+          <img v-if="wxQr" :src="wxQr" alt="" />
+          <div class="gzh_gzbox_p">{{ $t('wap_user_00188') }}</div>
+          <div class="gzh_gzbox_p">{{ $t('wap_user_00185') }}</div>
         </div>
       </div>
       <div class="min_body">

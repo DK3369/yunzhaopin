@@ -25,7 +25,7 @@
 
 组里滤空后整组不渲染。职位模块关时招聘顶栏不显示发布职位；左栏「职位管理」仍在。
 
-打包 CSS：[`legacyCss.ts`](../../web/apps/site/server/utils/legacyCss.ts)。前台 `/legacy/pc.css` `/legacy/h5.css` **不要**再打会员皮。求职会员另载 `/legacy/member-user.css` + `member-user-h5.css`（`m_css` / `m_resume` / `memberuserwap`）；招聘会员另载 `/legacy/member-com.css` + `member-com-h5.css`（`m_style` / `two_style` / `combase`）。`app.vue` 按 `memberKind` 加链。**禁止**再把 `m_css` 和 `m_style` 打进同一份，否则求职首页 `yun_m_index_date_*`、设置 `account_settings*` 会被企业规则盖掉。左栏「更多」浮层 `.user_more` 两端同名：`main.css` 里仍用 `.member-shell-user` / `.member-shell-com` 拆开。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。招聘列表 PC 用 `com_table`、H5 用 `com_cardlist`，**不要**借求职 `sysynews_*`。
+打包 CSS：[`legacyCss.ts`](../../web/apps/site/server/utils/legacyCss.ts)。前台 `/legacy/pc.css` `/legacy/h5.css` **不要**再打会员皮。求职会员另载 `/legacy/member-user.css` + `member-user-h5.css`（`m_css` / `m_resume` / `memberuserwap`）；招聘会员另载 `/legacy/member-com.css` + `member-com-h5.css`（`m_style` / `two_style` / `combase`）。`app.vue` **路径优先**（`/user` `/com`），`/advice` 才看 `usertype`。**禁止**再把 `m_css` 和 `m_style` 打进同一份。左栏「更多」浮层 `.user_more` 两端同名：`main.css` 里仍用 `.member-shell-user` / `.member-shell-com` 拆开。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。招聘列表 PC 用 `com_table`、H5 用 `com_cardlist`，**不要**借求职 `sysynews_*`。财务 H5 用 `detail_body_card` / `financial_management_*`（包 `.site-h5`），不要 `MemberSxNewsCard`。
 
 壳只 **render 一次 slot**。右栏宽度对齐 PHP：求职 210 + 980。PC 上 `.yun_m_rightsidebar > .wap_member` 用 `display: contents`，不占一层。
 
@@ -35,7 +35,7 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 ## 顶栏
 
-登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`（现网这两项仍是 PHPYun 默认图）。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。拆包后求职页不再加载 `m_style`，签到 absolute 泄漏只在招聘包里。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
+登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/integral` 与 `/com/pay` `/com/integral` `/com/orders` `/com/record` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
 
 会员页 **不要**顺手打前台导航/页脚/热搜：`useSiteChrome` 只在 `needsPublicSiteChrome`（非 `/user` `/com`、非登录）时拉 `/v1/wap/nav` 和 descriptions。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 一份。左栏角标、顶栏、首页的 dashboard / 简历列表用同一个 `useAsyncData` key（`user-dash`、`user-home-resume`），不要 `member-shell-user-dash-*` 再打一遍。积分余额等下拉才用的接口，悬停再请求。
 
@@ -107,6 +107,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 不要 `overflow:hidden`（会裁掉左栏「更多」飞出层）
 - 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
 - 会员 PC 顶栏继续用 PHP `float:right` / 通知栏 70px（英文折行）
+- 会员 H5 首页把缺项清单或公众号 QR 塞进 `userheader`
+- 会员页藏掉 H5 五项底栏，或 PC 会员再出前台 `hp_foot`
 - 会员顶栏用 PHPYun 默认 `sy_member_logo` / `sy_unit_logo` 盖住公开 `sy_logo`
 - 再把 `m_css` 和 `m_style` 打进同一份 `/legacy/pc.css`
 - 会员 `/user` `/com` 仍打前台 `nav` / `descriptions` / `hot-searches`（页脚和公开顶栏用的，会员壳不渲染）

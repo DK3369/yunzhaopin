@@ -23,12 +23,13 @@ useSeoMeta({ title: t('wap_01142') })
         <a href="javascript:;" class="cblue" @click="toggle(row)">{{ $t('common.delete') }}</a>
       </div>
     </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in data?.list || []"
-        :key="'h5-' + (row.target_uid || row.uid)"
-        :title="String(row.name || row.target_uid || '')"
-      />
+    <div class="site-h5">
+      <div v-for="row in data?.list || []" :key="'h5-' + (row.target_uid || row.uid)" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.name || row.target_uid }}</div>
+        <div class="com_card_cz">
+          <span class="com_card_delete" @click="toggle(row)" />
+        </div>
+      </div>
     </div>
   </MemberPanel>
 </template>

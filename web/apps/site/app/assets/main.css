@@ -2167,6 +2167,34 @@ html.force-pc .site-h5 {
     position: relative;
     list-style: none;
   }
+  .member-page {
+    padding-bottom: 1.8rem;
+  }
+  .member-shell-user .userheader_datum_right_word {
+    height: auto;
+    max-width: 2.4rem;
+  }
+  .member-shell-user .userheader_datum_right_word span,
+  .member-shell-user .vip_nav_word,
+  .member-shell-user .taskbar_nav_word,
+  .member-shell-com .Member_Center_word,
+  .member-shell-com .taskbar_nav_word,
+  .member-shell-com .particulars_word {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .member-shell-user .userparticulars_word {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.15;
+    max-height: 0.9rem;
+    text-align: center;
+    padding: 0 0.04rem;
+  }
 }
 
 .Binding_pop_mask {
@@ -2185,6 +2213,16 @@ html.force-pc .site-h5 {
   width: 430px;
   max-width: 100%;
   box-sizing: border-box;
+}
+.member-gzh-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
 }
 .chatnewcard > ul > li {
   cursor: pointer;

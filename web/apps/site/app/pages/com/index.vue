@@ -61,6 +61,7 @@ const { data: signSt, refresh: refreshSign } = await useAsyncData('com-home-sign
   api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
 )
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
+const gzhOpen = ref(true)
 const { wxQr, settings } = useSiteChrome()
 const webtel = computed(() => String(settings.value.sy_comwebtel || settings.value.sy_freewebtel || ''))
 const msg = ref('')
@@ -244,10 +245,14 @@ function labelOf(to: string, key?: string) {
         <div v-else class="comzhtip_p1">{{ $t('wap_com_00080') }}</div>
         <div v-if="webtel" class="comzhtip_p2">{{ webtel }}</div>
       </div>
-      <p v-if="gzhNeed" class="muted" style="padding: 0.16rem 0.24rem">
-        {{ $t('common_00655') }}
-        <img v-if="wxQr" :src="wxQr" alt="" width="80" height="80" />
-      </p>
+      <div v-if="gzhNeed && gzhOpen" class="member-gzh-mask" @click="gzhOpen = false">
+        <div class="gzh_gzbox" @click.stop>
+          <div class="gzh_gzbox_n">{{ $t('wap_user_00191') }}</div>
+          <img v-if="wxQr" :src="wxQr" alt="" />
+          <div class="gzh_gzbox_p">{{ $t('wap_user_00188') }}</div>
+          <div class="gzh_gzbox_p">{{ $t('wap_user_00185') }}</div>
+        </div>
+      </div>
       <div class="commemberheaderbg">
         <div class="commemberheader commemberTops">
           <div class="compauNamImgs">

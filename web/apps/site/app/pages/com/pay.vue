@@ -200,14 +200,18 @@ useSeoMeta({ title: t('common_01946') })
         <a v-if="canCancel(o)" href="javascript:;" class="cblue" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
       </span>
     </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="o in orders?.list || []"
-        :key="'h5-' + o.order_no"
-        :title="String(o.order_no)"
-        :sub="String(o.amount_yuan)"
-        :time="o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n"
-      />
+    <div class="site-h5 detail_body">
+      <div v-if="(orders?.list || []).length" class="detail_body_card">
+        <ul>
+          <li v-for="o in orders?.list || []" :key="'h5-' + o.order_no">
+            <div class="detail_box">
+              <div class="detail_box_title">{{ o.order_no }}</div>
+              <div class="detail_box_time">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</div>
+            </div>
+            <div class="detail_integral">{{ o.amount_yuan }}</div>
+          </li>
+        </ul>
+      </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

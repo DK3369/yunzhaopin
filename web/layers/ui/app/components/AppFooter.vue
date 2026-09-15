@@ -1,6 +1,6 @@
 <template>
-  <!-- PC 深色页脚，对齐原版 footer.htm -->
-  <div class="site-pc">
+  <!-- PC 深色页脚，对齐原版 footer.htm；会员中心 PC 用会员壳，不要再出前台 hp_foot -->
+  <div v-if="!isMember" class="site-pc">
     <div class="hp_foot fl">
       <div class="w1000">
         <div class="hp_foot_wt fl">
@@ -144,7 +144,7 @@
 import { isMemberPath } from '../utils/site'
 
 const route = useRoute()
-const { siteName, phone, worktime, copyright, record, email, address, me, memberHome, footerNav, wxQr, wapQr, perfor, hrlicense, secord } = useSiteChrome()
+const { siteName, phone, worktime, copyright, record, email, address, me, memberHome, footerNav, wxQr, wapQr, perfor, hrlicense, secord, isMember } = useSiteChrome()
 const api = useApi()
 const isCompany = computed(() => Number(me.value?.usertype) === 2)
 const messageTo = computed(() => (isCompany.value ? '/com/messages' : '/user/messages'))
