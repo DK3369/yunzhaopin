@@ -262,6 +262,14 @@ export function isUnauthErr(err: unknown): boolean {
   return k === 'unauth' || k === 'unauthenticated'
 }
 
+export function isLoginRequiredErr(err: unknown): boolean {
+  return isUnauthErr(err) || errKey(err) === 'session_expired'
+}
+
+export function goLogin(next?: string) {
+  return navigateTo({ path: '/login', query: next ? { next } : {} })
+}
+
 export const DEFAULT_NAV: NavItem[] = [
   { label: '', to: '/' },
   { label: '', to: '/jobs' },

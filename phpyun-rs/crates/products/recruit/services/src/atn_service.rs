@@ -39,6 +39,7 @@ pub async fn toggle(
     target_uid: u64,
 ) -> AppResult<FollowResult> {
     user.require_jobseeker()?;
+    user.require_uid()?;
     validate_target(user.uid, target_kind, target_uid)?;
 
     let pool = state.db.pool();
@@ -81,6 +82,7 @@ pub async fn remove(
     target_uid: u64,
 ) -> AppResult<()> {
     user.require_jobseeker()?;
+    user.require_uid()?;
     validate_target(user.uid, target_kind, target_uid)?;
 
     let n = atn_repo::delete_edge(state.db.pool(), user.uid, target_uid, target_kind).await?;

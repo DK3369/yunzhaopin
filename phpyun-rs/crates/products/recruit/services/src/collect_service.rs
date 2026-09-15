@@ -259,6 +259,7 @@ pub async fn exists(
     target_id: u64,
 ) -> AppResult<bool> {
     require_job_kind(kind)?;
+    user.require_uid()?;
     crate::collect_cache::is_favorited(state, user.uid, target_id).await
 }
 

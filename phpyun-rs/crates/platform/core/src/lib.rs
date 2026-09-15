@@ -26,6 +26,7 @@ pub mod idempotency;
 pub mod json;
 pub mod jwt;
 pub mod jwt_blacklist;
+pub mod member_guard;
 pub mod kv;
 pub mod metrics;
 pub mod middleware;

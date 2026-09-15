@@ -165,12 +165,13 @@
 </template>
 
 <script setup lang="ts">
-import { companyName, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../utils/site'
+import { companyName, goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../utils/site'
 
 const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' | 'firm' }>(), {
   variant: 'home',
 })
 const { t } = useI18n()
+const route = useRoute()
 const api = useApi()
 const { me } = useSiteChrome()
 const hover = ref(false)
@@ -209,8 +210,8 @@ const welfareTags = computed(() => {
 })
 async function toggleFollow() {
   followMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
+  if (!me.value?.uid) {
+    await goLogin(route.fullPath)
     return
   }
   if (me.value.usertype !== 1) {
@@ -228,6 +229,10 @@ async function toggleFollow() {
     }
     following.value = next
   } catch (e: unknown) {
+    if (isLoginRequiredErr(e)) {
+      await goLogin(route.fullPath)
+      return
+    }
     followMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }

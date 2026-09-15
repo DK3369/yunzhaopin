@@ -17,7 +17,7 @@ export class ApiError extends Error {
 }
 
 export function unwrapEnvelope<T>(body: ApiEnvelope<T>): T {
-  if (body.code === 200 && body.key === 'ok') {
+  if (body.code === 200) {
     return (body.data === '' ? (undefined as T) : body.data) as T
   }
   throw new ApiError(body.code, body.key, body.msg)

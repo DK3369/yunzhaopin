@@ -11,7 +11,13 @@ use phpyun_core::AppState;
 pub fn router(state: AppState) -> Router<AppState> {
     Router::new()
         .nest("/wap", wap::router())
-        .nest("/mcenter", mcenter::router())
+        .nest(
+            "/mcenter",
+            mcenter::router().layer(axum::middleware::from_fn_with_state(
+                state.clone(),
+                phpyun_core::member_guard::layer,
+            )),
+        )
         .layer(axum::middleware::from_fn_with_state(
             state,
             wap::site_gate_layer,

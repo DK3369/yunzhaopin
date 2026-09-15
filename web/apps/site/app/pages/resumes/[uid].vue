@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
+import { goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
 import { pushRecentResume } from '~/utils/recentViews'
 
 const route = useRoute()
@@ -323,6 +323,10 @@ async function submitYqms(confirm = false) {
   }
 }
 async function toggleFav() {
+  if (!me.value?.uid) {
+    await goLogin(route.fullPath)
+    return
+  }
   const eid = Number(row.value.def_job || expect0.value.id || 0)
   try {
     if (eid) {
@@ -332,8 +336,8 @@ async function toggleFav() {
       const r = await api.post<{ favorited: boolean }>('/v1/mcenter/favorites', { kind: 3, target_id: uid })
       fav.value = Boolean(r.favorited)
     }
-  } catch {
-    await navigateTo('/login')
+  } catch (e: unknown) {
+    if (isLoginRequiredErr(e)) await goLogin(route.fullPath)
   }
 }
 async function report() {

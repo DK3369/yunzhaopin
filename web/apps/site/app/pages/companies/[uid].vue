@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { goLogin, isLoginRequiredErr, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -219,6 +219,10 @@ watch(
 )
 async function toggleFollow() {
   followMsg.value = ''
+  if (!me.value?.uid) {
+    await goLogin(route.fullPath)
+    return
+  }
   try {
     const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
       target_kind: 2,
@@ -226,8 +230,11 @@ async function toggleFollow() {
     })
     following.value = Boolean(r.following)
   } catch (e: unknown) {
+    if (isLoginRequiredErr(e)) {
+      await goLogin(route.fullPath)
+      return
+    }
     followMsg.value = e instanceof Error ? e.message : t('common.no')
-    await navigateTo('/login')
   }
 }
 useSeoMeta({

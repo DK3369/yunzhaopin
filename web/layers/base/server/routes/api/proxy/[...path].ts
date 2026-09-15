@@ -3,12 +3,21 @@ import { rustLangHeaders } from '../../../utils/lang'
 
 type Envelope = { code: number; key: string; msg: string; data: unknown }
 
+function isMcenterPath(urlPath: string) {
+  return urlPath === '/v1/mcenter' || urlPath.startsWith('/v1/mcenter/')
+}
+
 export default defineEventHandler(async (event) => {
   const rustApi = useRuntimeConfig(event).rustApi
   const path = getRouterParam(event, 'path') || ''
   const urlPath = path.startsWith('v1/') || path.startsWith('v2/') ? `/${path}` : `/${path}`
   const method = event.method === 'GET' ? 'GET' : 'POST'
-  const token = getCookie(event, ACCESS_COOKIE)
+  const token = String(getCookie(event, ACCESS_COOKIE) || '').trim()
+  if (isMcenterPath(urlPath) && !token) {
+    const unauth = { code: 401, key: 'unauth', msg: 'Not logged in', data: '' as const }
+    setResponseStatus(event, 401)
+    return unauth
+  }
   const headers: Record<string, string> = {
     accept: 'application/json',
     ...rustLangHeaders(event),

@@ -4,7 +4,7 @@ use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::CreatedId;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
     ValidatedJson,
 };
 use phpyun_services::feedback_service::{self, FeedbackInput};
@@ -28,23 +28,24 @@ pub struct FeedbackForm {
     pub contact: Option<String>,
 }
 
-/// Submit feedback (anonymous allowed)
+/// Submit feedback (login required)
 #[utoipa::path(
     post,
     path = "/v1/mcenter/feedback",
     tag = "mcenter",
+    security(("bearer" = [])),
     request_body = FeedbackForm,
     responses((status = 200, description = "ok", body = CreatedId))
 )]
 pub async fn submit(
     State(state): State<AppState>,
-    MaybeUser(user): MaybeUser,
+    user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<FeedbackForm>,
 ) -> AppResult<ApiResponse<CreatedId>> {
     let id = feedback_service::submit(
         &state,
-        user.as_ref(),
+        Some(&user),
         FeedbackInput {
             username: "",
             category: &f.category,

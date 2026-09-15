@@ -8,6 +8,8 @@
 - 浏览器打 `/api/auth/me`（BFF 拆信封后是 `/v1/wap/me`）。会员页、中间件、顶栏共用这一份，不要再各打 `/v1/wap/me`。
 - SSR：`useRequestFetch()` + [`ssrCookieHeaders`](../../../web/layers/base/app/utils/ssrFetch.ts) 转发文档请求的 Cookie。`useApi` 同样带 Cookie 和 `Accept-Language: zh-CN|en`。
 - 会员头栏与首页 dash 共用 `user-dash` / `com-dash` 等 key；另一身份必须用 `hdr-skip-*`，避免把共享缓存写成 `null`。
+- `/v1/mcenter/*` 必须登录。凭证是 `Authorization: Bearer` **或** Cookie `token=`：JWT 签名、`exp`、黑名单、`phpyun_user_session`。[`member_guard`](../../../phpyun-rs/crates/platform/core/src/member_guard.rs) 挂在 `/v1/mcenter` nest 上，没有 token **进不了 handler**，HTTP 401 `unauth`。BFF [`/api/proxy`](../../../web/layers/base/server/routes/api/proxy/[...path].ts) 无 `token` cookie 也不转发。公开意见反馈走 `/v1/wap/advice`。
+- 前台未登录点收藏/关注：PC/H5 同一函数 [`goLogin`](../../../web/layers/ui/app/utils/site.ts) → `/login?next=`。游客打开详情打 `exists` 失败只吞掉，不整页赶去登录。`unwrapEnvelope` 以 `code === 200` 为准（`collect_added` 也是成功）。
 
 ## `useAsyncData` key 带 locale
 

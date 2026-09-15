@@ -45,9 +45,18 @@ pub const USERTYPE_EMPLOYER: u8 = 2;
 pub const USERTYPE_ADMIN: u8 = 3;
 
 impl AuthenticatedUser {
+    /// Reject forged / guest JWTs with `sub = 0`.
+    pub fn require_uid(&self) -> Result<(), ApiError> {
+        if self.uid == 0 {
+            return Err(ApiError::unauth());
+        }
+        Ok(())
+    }
+
     /// Require the current user to be a jobseeker (`usertype=1`); otherwise
     /// return `role_mismatch` 403.
     pub fn require_jobseeker(&self) -> Result<(), ApiError> {
+        self.require_uid()?;
         if self.usertype != USERTYPE_JOBSEEKER {
             return Err(ApiError::role_mismatch());
         }
@@ -56,6 +65,7 @@ impl AuthenticatedUser {
 
     /// Require the current user to be an employer (`usertype=2`).
     pub fn require_employer(&self) -> Result<(), ApiError> {
+        self.require_uid()?;
         if self.usertype != USERTYPE_EMPLOYER {
             return Err(ApiError::role_mismatch());
         }
@@ -64,6 +74,7 @@ impl AuthenticatedUser {
 
     /// Require the current user to be an admin (`usertype=3`).
     pub fn require_admin(&self) -> Result<(), ApiError> {
+        self.require_uid()?;
         if self.usertype != USERTYPE_ADMIN {
             return Err(ApiError::role_mismatch());
         }
@@ -78,6 +89,9 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
+        if let Some(user) = parts.extensions.get::<AuthenticatedUser>().cloned() {
+            return Ok(user);
+        }
         // 1. Try `Authorization: Bearer ...`.
         let token = parts
             .headers
@@ -584,5 +598,33 @@ mod ip_tests {
         );
         let ip: ClientIp = ClientIp::from_request_parts(&mut p, &()).await.unwrap();
         assert_eq!(ip.0, "198.51.100.1");
+    }
+}
+
+#[cfg(test)]
+mod auth_user_tests {
+    use super::*;
+
+    fn user(uid: u64, usertype: u8) -> AuthenticatedUser {
+        AuthenticatedUser {
+            uid,
+            usertype,
+            did: 0,
+            jti: String::new(),
+            iat: 0,
+            exp: 0,
+        }
+    }
+
+    #[test]
+    fn uid_zero_is_unauth() {
+        let err = user(0, USERTYPE_JOBSEEKER).require_uid().unwrap_err();
+        assert_eq!(err.key(), "unauth");
+        assert!(user(0, USERTYPE_JOBSEEKER).require_jobseeker().is_err());
+    }
+
+    #[test]
+    fn uid_nonzero_passes_require_uid() {
+        user(12, USERTYPE_JOBSEEKER).require_uid().unwrap();
     }
 }

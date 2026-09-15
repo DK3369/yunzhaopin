@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dictReqLabel, formatSalary, formatUnixDate, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { dictReqLabel, formatSalary, formatUnixDate, goLogin, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 import { seoJoin } from '~/utils/seo'
 import { pushRecentJob, removeRecentJob } from '~/utils/recentViews'
 import { ApiError } from '~/utils/envelope'
@@ -354,11 +354,15 @@ async function shareJob() {
   }
 }
 async function toggleFav() {
+  if (!me.value?.uid) {
+    await goLogin(route.fullPath)
+    return
+  }
   try {
     const r = await api.post<{ favorited: boolean }>('/v1/mcenter/favorites', { kind: 1, target_id: id })
     fav.value = Boolean(r.favorited)
-  } catch {
-    await navigateTo('/login')
+  } catch (e: unknown) {
+    if (isLoginRequiredErr(e)) await goLogin(route.fullPath)
   }
 }
 async function report() {
