@@ -1,0 +1,317 @@
+{
+  "classes": [
+    {
+      "id": 1,
+      "name": "关于我们",
+      "sort": 1
+    },
+    {
+      "id": 2,
+      "name": "收费与推广",
+      "sort": 3
+    },
+    {
+      "id": 3,
+      "name": "网站特色",
+      "sort": 4
+    },
+    {
+      "id": 4,
+      "name": "咨询反馈",
+      "sort": 5
+    },
+    {
+      "id": 5,
+      "name": "产品与服务",
+      "sort": 2
+    }
+  ],
+  "pages": [
+    {
+      "id": 5,
+      "class_id": 1,
+      "name": "注册协议",
+      "title": "注册协议-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/service.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 2,
+      "status": 1
+    },
+    {
+      "id": 9,
+      "class_id": 1,
+      "name": "法律声明",
+      "title": "法律声明-收费标准-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/legal.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 4,
+      "status": 1
+    },
+    {
+      "id": 21,
+      "class_id": 1,
+      "name": "关于我们",
+      "title": "关于我们-收费标准-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/index.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 1,
+      "status": 1
+    },
+    {
+      "id": 22,
+      "class_id": 4,
+      "name": "客服中心",
+      "title": "客服中心-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/kf.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 4,
+      "status": 1
+    },
+    {
+      "id": 23,
+      "class_id": 2,
+      "name": "收费标准",
+      "title": "收费标准-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/charge.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 6,
+      "status": 1
+    },
+    {
+      "id": 24,
+      "class_id": 2,
+      "name": "广告投放",
+      "title": "广告投放-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/gg.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 6,
+      "status": 1
+    },
+    {
+      "id": 27,
+      "class_id": 2,
+      "name": "品牌推广",
+      "title": "推广服务-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/jinjia.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 5,
+      "status": 1
+    },
+    {
+      "id": 28,
+      "class_id": 2,
+      "name": "银行帐户",
+      "title": "银行帐户-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/yh.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 2,
+      "status": 1
+    },
+    {
+      "id": 29,
+      "class_id": 5,
+      "name": "积分兑换",
+      "title": "积分兑换 OV6人才招聘系统",
+      "url": "/redeem/",
+      "is_type": 0,
+      "is_nav": 0,
+      "sort": 23,
+      "status": 1
+    },
+    {
+      "id": 31,
+      "class_id": 3,
+      "name": "订阅服务",
+      "title": "订阅服务",
+      "url": "index.php?m=subscribe",
+      "is_type": 2,
+      "is_nav": 1,
+      "sort": 46,
+      "status": 1
+    },
+    {
+      "id": 32,
+      "class_id": 1,
+      "name": "服务流程",
+      "title": "招聘服务流程-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/process.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 18,
+      "status": 1
+    },
+    {
+      "id": 33,
+      "class_id": 4,
+      "name": "友情链接",
+      "title": "新手指引 OV6人才招聘系统",
+      "url": "/index.php?m=link",
+      "is_type": 2,
+      "is_nav": 1,
+      "sort": 38,
+      "status": 1
+    },
+    {
+      "id": 34,
+      "class_id": 4,
+      "name": "职场指南",
+      "title": "职场指南 OV6人才招聘系统",
+      "url": "about/new.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 38,
+      "status": 1
+    },
+    {
+      "id": 35,
+      "class_id": 3,
+      "name": "地图搜索",
+      "title": "地图搜索 OV6人才招聘系统",
+      "url": "/map/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 36,
+      "status": 1
+    },
+    {
+      "id": 36,
+      "class_id": 1,
+      "name": "经营资源",
+      "title": "经营资源-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/indexzy.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 28,
+      "status": 1
+    },
+    {
+      "id": 37,
+      "class_id": 2,
+      "name": "品牌推广",
+      "title": "品牌推广 OV6人才招聘系统",
+      "url": "about/pinpai.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 5,
+      "status": 1
+    },
+    {
+      "id": 38,
+      "class_id": 4,
+      "name": "常见问题",
+      "title": "常见问题-OV6人才网(http://jobs.ov6.com)",
+      "url": "about/ask.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 14,
+      "status": 1
+    },
+    {
+      "id": 45,
+      "class_id": 3,
+      "name": "排行榜",
+      "title": "排行榜",
+      "url": "/index.php?c=top",
+      "is_type": 2,
+      "is_nav": 1,
+      "sort": 4,
+      "status": 1
+    },
+    {
+      "id": 49,
+      "class_id": 5,
+      "name": "招聘会",
+      "title": "招聘会",
+      "url": "/zph/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 32,
+      "status": 1
+    },
+    {
+      "id": 50,
+      "class_id": 3,
+      "name": "求职测评",
+      "title": "求职测评",
+      "url": "/evaluate/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 10,
+      "status": 1
+    },
+    {
+      "id": 51,
+      "class_id": 5,
+      "name": "普工专区",
+      "title": "普工专区",
+      "url": "/tiny/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 42,
+      "status": 1
+    },
+    {
+      "id": 52,
+      "class_id": 5,
+      "name": "店铺招聘",
+      "title": "店铺招聘",
+      "url": "/once/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 34,
+      "status": 1
+    },
+    {
+      "id": 61,
+      "class_id": 1,
+      "name": "隐私政策",
+      "title": "隐私政策",
+      "url": "about/yinsi.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 41,
+      "status": 1
+    },
+    {
+      "id": 65,
+      "class_id": 1,
+      "name": "联系我们",
+      "title": "联系我们",
+      "url": "about/contact.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 20,
+      "status": 1
+    },
+    {
+      "id": 66,
+      "class_id": 1,
+      "name": "ICP经营许可证",
+      "title": "经营许可证",
+      "url": "about/jyxkz.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 23,
+      "status": 1
+    },
+    {
+      "id": 67,
+      "class_id": 5,
+      "name": "人力资源许可证",
+      "title": "人力资源许可证",
+      "url": "about/rlzy.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 42,
+      "status": 1
+    }
+  ]
+}

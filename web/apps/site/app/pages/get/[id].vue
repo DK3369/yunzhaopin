@@ -2,9 +2,11 @@
 import { descHref, isExternalHref } from '~/utils/site'
 
 const id = Number(useRoute().params.id)
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(`site-desc-${id}`, async () => {
+const { data } = await useAsyncData(
+  () => `site-desc-${id}-${locale.value}`,
+  async () => {
   if (!Number.isFinite(id) || id <= 0) return null
   try {
     return await api.post<{

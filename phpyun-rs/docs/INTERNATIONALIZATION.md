@@ -76,8 +76,9 @@ JSON 会在编译时嵌入程序，运行时直接从内存读取，不产生文
 - 问答分类
 - 后台可新增、删除、排序的字典
 - 运营人员维护的多语言名称
+- CMS 单页（`/get/:id` 标题与 HTML 正文）走文件缓存，不是字典表
 
-数据库表是唯一数据源：
+短分类名用 `phpyun_dict_i18n`。单页 HTML 用 `phpyun-rs/cms-pages/{zh-CN,en}/meta.json` 与 `{id}.html`：后台首次保存生成、改完再覆盖；公开请求只读文件（英文缺回退 `zh-CN`，都没有才回退主表），不要 `OnceLock` 灌全文，不要请求路径写盘。不要写入 Vue 或 Rust `locales/` JSON，也不要另开 CMS 翻译表。
 
 ```text
 phpyun_dict_i18n

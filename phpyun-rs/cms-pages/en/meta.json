@@ -1,0 +1,317 @@
+{
+  "classes": [
+    {
+      "id": 1,
+      "name": "About Us",
+      "sort": 1
+    },
+    {
+      "id": 2,
+      "name": "Paid Services & Promotion",
+      "sort": 3
+    },
+    {
+      "id": 3,
+      "name": "Website Features",
+      "sort": 4
+    },
+    {
+      "id": 4,
+      "name": "Consultation Feedback",
+      "sort": 5
+    },
+    {
+      "id": 5,
+      "name": "Products and Services",
+      "sort": 2
+    }
+  ],
+  "pages": [
+    {
+      "id": 5,
+      "class_id": 1,
+      "name": "Registration Agreement",
+      "title": "Registration Agreement",
+      "url": "about/service.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 2,
+      "status": 1
+    },
+    {
+      "id": 9,
+      "class_id": 1,
+      "name": "Legal Notice",
+      "title": "Legal Notice",
+      "url": "about/legal.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 4,
+      "status": 1
+    },
+    {
+      "id": 21,
+      "class_id": 1,
+      "name": "About Us",
+      "title": "About Us",
+      "url": "about/index.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 1,
+      "status": 1
+    },
+    {
+      "id": 22,
+      "class_id": 4,
+      "name": "Customer Service Center",
+      "title": "Customer Service Center",
+      "url": "about/kf.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 4,
+      "status": 1
+    },
+    {
+      "id": 23,
+      "class_id": 2,
+      "name": "Fee Standards",
+      "title": "Fee Standards",
+      "url": "about/charge.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 6,
+      "status": 1
+    },
+    {
+      "id": 24,
+      "class_id": 2,
+      "name": "Ad Placement",
+      "title": "Ad Placement",
+      "url": "about/gg.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 6,
+      "status": 1
+    },
+    {
+      "id": 27,
+      "class_id": 2,
+      "name": "Brand Promotion",
+      "title": "Brand Promotion",
+      "url": "about/jinjia.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 5,
+      "status": 1
+    },
+    {
+      "id": 28,
+      "class_id": 2,
+      "name": "Bank Account",
+      "title": "Bank Account",
+      "url": "about/yh.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 2,
+      "status": 1
+    },
+    {
+      "id": 29,
+      "class_id": 5,
+      "name": "Points Redemption",
+      "title": "Points Redemption",
+      "url": "/redeem/",
+      "is_type": 0,
+      "is_nav": 0,
+      "sort": 23,
+      "status": 1
+    },
+    {
+      "id": 31,
+      "class_id": 3,
+      "name": "Subscription Service",
+      "title": "Subscription Service",
+      "url": "index.php?m=subscribe",
+      "is_type": 2,
+      "is_nav": 1,
+      "sort": 46,
+      "status": 1
+    },
+    {
+      "id": 32,
+      "class_id": 1,
+      "name": "Service Process",
+      "title": "Service Process",
+      "url": "about/process.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 18,
+      "status": 1
+    },
+    {
+      "id": 33,
+      "class_id": 4,
+      "name": "Friend Links",
+      "title": "Friend Links",
+      "url": "/index.php?m=link",
+      "is_type": 2,
+      "is_nav": 1,
+      "sort": 38,
+      "status": 1
+    },
+    {
+      "id": 34,
+      "class_id": 4,
+      "name": "Career Guide",
+      "title": "Career Guide",
+      "url": "about/new.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 38,
+      "status": 1
+    },
+    {
+      "id": 35,
+      "class_id": 3,
+      "name": "Map Search",
+      "title": "Map Search",
+      "url": "/map/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 36,
+      "status": 1
+    },
+    {
+      "id": 36,
+      "class_id": 1,
+      "name": "Business Resources",
+      "title": "Business Resources",
+      "url": "about/indexzy.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 28,
+      "status": 1
+    },
+    {
+      "id": 37,
+      "class_id": 2,
+      "name": "Brand Promotion",
+      "title": "Brand Promotion",
+      "url": "about/pinpai.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 5,
+      "status": 1
+    },
+    {
+      "id": 38,
+      "class_id": 4,
+      "name": "Common Questions",
+      "title": "Common Questions",
+      "url": "about/ask.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 14,
+      "status": 1
+    },
+    {
+      "id": 45,
+      "class_id": 3,
+      "name": "Rankings",
+      "title": "Rankings",
+      "url": "/index.php?c=top",
+      "is_type": 2,
+      "is_nav": 1,
+      "sort": 4,
+      "status": 1
+    },
+    {
+      "id": 49,
+      "class_id": 5,
+      "name": "Job Fair",
+      "title": "Job Fair",
+      "url": "/zph/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 32,
+      "status": 1
+    },
+    {
+      "id": 50,
+      "class_id": 3,
+      "name": "Job Assessment",
+      "title": "Job Assessment",
+      "url": "/evaluate/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 10,
+      "status": 1
+    },
+    {
+      "id": 51,
+      "class_id": 5,
+      "name": "General Worker Zone",
+      "title": "General Worker Zone",
+      "url": "/tiny/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 42,
+      "status": 1
+    },
+    {
+      "id": 52,
+      "class_id": 5,
+      "name": "Store Recruitment",
+      "title": "Store Recruitment",
+      "url": "/once/",
+      "is_type": 0,
+      "is_nav": 1,
+      "sort": 34,
+      "status": 1
+    },
+    {
+      "id": 61,
+      "class_id": 1,
+      "name": "Privacy Policy",
+      "title": "Privacy Policy",
+      "url": "about/yinsi.html",
+      "is_type": 1,
+      "is_nav": 1,
+      "sort": 41,
+      "status": 1
+    },
+    {
+      "id": 65,
+      "class_id": 1,
+      "name": "Contact Us",
+      "title": "Contact Us",
+      "url": "about/contact.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 20,
+      "status": 1
+    },
+    {
+      "id": 66,
+      "class_id": 1,
+      "name": "ICP License",
+      "title": "ICP License",
+      "url": "about/jyxkz.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 23,
+      "status": 1
+    },
+    {
+      "id": 67,
+      "class_id": 5,
+      "name": "HR License",
+      "title": "HR License",
+      "url": "about/rlzy.html",
+      "is_type": 1,
+      "is_nav": 0,
+      "sort": 42,
+      "status": 1
+    }
+  ]
+}

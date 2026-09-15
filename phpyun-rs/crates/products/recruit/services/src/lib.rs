@@ -90,6 +90,7 @@ pub mod contact_cert_service;
 pub mod country_service;
 pub mod dashboard_service;
 pub mod data_show_service;
+pub mod cms_page_files;
 pub mod description_service;
 pub mod dict_service;
 pub mod entrust_service;

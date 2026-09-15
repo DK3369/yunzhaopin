@@ -5282,6 +5282,11 @@ async fn pages_add(state: &AppState, body: &Value) -> AppResult<Value> {
     } else {
         None
     };
+    let en = if id > 0 {
+        description_service::page_i18n(id, i18n::Lang::En).await
+    } else {
+        None
+    };
     let class = desc_repo::php_list_all_classes(state.db.reader()).await?;
     Ok(json!({
         "info": info.map(|r| json!({
@@ -5301,6 +5306,9 @@ async fn pages_add(state: &AppState, body: &Value) -> AppResult<Value> {
             "top_tpl_dir": r.top_tpl_dir,
             "footer_tpl": r.footer_tpl.to_string(),
             "footer_tpl_dir": r.footer_tpl_dir,
+            "name_en": en.as_ref().map(|t| t.0.clone()).unwrap_or_default(),
+            "title_en": en.as_ref().map(|t| t.1.clone()).unwrap_or_default(),
+            "content_en": en.as_ref().map(|t| t.2.clone()).unwrap_or_default(),
         })).unwrap_or(json!({})),
         "class": class,
     }))
@@ -5321,7 +5329,7 @@ async fn pages_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let content = desc_content(&json_str(body, "content"));
     let top_tpl_dir = json_str(body, "top_tpl_dir");
     let footer_tpl_dir = json_str(body, "footer_tpl_dir");
-    let _ = desc_repo::php_upsert(
+    let saved_id = desc_repo::php_upsert(
         state.db.pool(),
         json_u64(body, "id"),
         &desc_repo::PhpDescSave {
@@ -5343,6 +5351,41 @@ async fn pages_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         clock::now_ts(),
     )
     .await?;
+    let nid = json_u64(body, "nid");
+    let is_nav = json_i32(body, "is_nav");
+    let sort = json_i32(body, "sort");
+    let name_en = json_str(body, "name_en");
+    let title_en = json_str(body, "title_en");
+    let content_en = desc_content(&json_str(body, "content_en"));
+    let en = if name_en.is_empty() && title_en.is_empty() && content_en.is_empty() {
+        None
+    } else {
+        Some(description_service::PageFileWrite {
+            name: &name_en,
+            title: &title_en,
+            content: &content_en,
+            class_id: nid,
+            url: &url,
+            is_type,
+            is_nav,
+            sort,
+        })
+    };
+    description_service::save_php_page(
+        saved_id,
+        description_service::PageFileWrite {
+            name: &name,
+            title: &title,
+            content: &content,
+            class_id: nid,
+            url: &url,
+            is_type,
+            is_nav,
+            sort,
+        },
+        en,
+    )
+    .await?;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5355,6 +5398,7 @@ async fn pages_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if n == 0 {
         return Err(ApiError::business("messages.admin_user_00186"));
     }
+    description_service::remove_pages(&ids).await?;
     Ok(PhpOut::Message("common_06472"))
 }
 
@@ -5363,7 +5407,9 @@ async fn pages_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if id == 0 {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
-    desc_repo::php_set_sort(state.db.pool(), id, json_i32(body, "sort")).await?;
+    let sort = json_i32(body, "sort");
+    desc_repo::php_set_sort(state.db.pool(), id, sort).await?;
+    description_service::set_page_sort(id, sort).await?;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5396,10 +5442,19 @@ async fn desc_class_index(state: &AppState, body: &Value) -> AppResult<Value> {
     let db = state.db.reader();
     let rows = desc_repo::php_list_classes(db, offset, u64::from(per)).await?;
     let total = desc_repo::php_count_classes(db).await?;
-    let list: Vec<Value> = rows
-        .into_iter()
-        .map(|c| json!({ "id": c.id, "name": c.name, "sort": c.sort }))
-        .collect();
+    let list: Vec<Value> = {
+        let mut out = Vec::with_capacity(rows.len());
+        for c in rows {
+            let name_en = description_service::class_i18n_name(c.id, i18n::Lang::En).await;
+            out.push(json!({
+                "id": c.id,
+                "name": c.name,
+                "name_en": name_en,
+                "sort": c.sort,
+            }));
+        }
+        out
+    };
     Ok(json!({
         "list": list,
         "total": total,
@@ -5420,9 +5475,9 @@ async fn desc_class_add(state: &AppState, body: &Value) -> AppResult<Value> {
     }
     let now = clock::now_ts();
     for n in &names {
-        desc_repo::insert_class(state.db.pool(), n, 0, now).await?;
+        let id = desc_repo::insert_class(state.db.pool(), n, 0, now).await?;
+        description_service::save_class_zh(id, Some(n.as_str()), Some(0)).await?;
     }
-    description_service::invalidate_classes_cache().await;
     Ok(json!({ "error": 2 }))
 }
 
@@ -5443,7 +5498,12 @@ async fn desc_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         None
     };
     desc_repo::php_update_class(state.db.pool(), id, name_ref, sort).await?;
-    description_service::invalidate_classes_cache().await;
+    if name_ref.is_some() || sort.is_some() {
+        description_service::save_class_zh(id, name_ref, sort).await?;
+    }
+    if body.get("name_en").is_some() {
+        description_service::save_class_en(id, &json_str(body, "name_en")).await?;
+    }
     Ok(PhpOut::Message("ok"))
 }
 
@@ -5456,7 +5516,9 @@ async fn desc_class_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if n == 0 {
         return Err(ApiError::business("messages.admin_user_00186"));
     }
-    description_service::invalidate_classes_cache().await;
+    for id in ids {
+        description_service::remove_class_files(id).await?;
+    }
     Ok(PhpOut::Message("common_06471"))
 }
 
@@ -16214,6 +16276,7 @@ async fn gen_cache_run(
     _body: &Value,
 ) -> AppResult<PhpOut> {
     admin_dashboard_service::clear_site_caches(state, user).await?;
+    description_service::generate_zh_from_db(state).await?;
     Ok(PhpOut::Message("admin_system_00064"))
 }
 

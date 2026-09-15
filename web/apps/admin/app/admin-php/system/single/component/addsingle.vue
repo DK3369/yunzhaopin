@@ -3,10 +3,22 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
+                    <span>{{ lc('admin_index_00071') }} / {{ lc('admin_system_00425') }}</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-radio-group v-model="editLang">
+                        <el-radio label="zh">{{ lc('admin_index_00071') }}</el-radio>
+                        <el-radio label="en">{{ lc('admin_system_00425') }}</el-radio>
+                    </el-radio-group>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
                     <span>{{ lc('wap_00468') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.name" :placeholder="lc('wap_user_00076')"></el-input>
+                    <el-input v-show="editLang==='zh'" v-model="info.name" :placeholder="lc('wap_user_00076')"></el-input>
+                    <el-input v-show="editLang==='en'" v-model="info.name_en" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
@@ -47,7 +59,8 @@
                     <span>{{ lc('wap_js_00099') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.title" :placeholder="lc('wap_user_00076')"></el-input>
+                    <el-input v-show="editLang==='zh'" v-model="info.title" :placeholder="lc('wap_user_00076')"></el-input>
+                    <el-input v-show="editLang==='en'" v-model="info.title_en" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
@@ -167,9 +180,11 @@ export default {
         return {
             info:{
                 name:'',
+                name_en:'',
                 is_nav:'0',
                 sort:'',
                 content:'',
+                content_en:'',
                 footer_tpl:'1',
                 footer_tpl_dir:'',
                 top_tpl:'1',
@@ -177,10 +192,12 @@ export default {
                 descs:'',
                 keyword:'',
                 title:'',
+                title_en:'',
                 url:'',
                 nid:'',
                 is_type:'1',
             },
+            editLang: 'zh',
             class_arr:[],
             tpl_arr:[
                 {label:window.yunAdminT(lc('member_user_00283')),value:'1'},
@@ -226,8 +243,13 @@ export default {
                 if (res.error == 0) {
                     that.class_arr = res.data.class
                     if(that.sid!=''){
-                        that.info = res.data.info;
+                        that.info = Object.assign({
+                            name_en:'',
+                            title_en:'',
+                            content_en:'',
+                        }, res.data.info);
                     }
+                    that.editLang = 'zh';
                     ue = UE.getEditor('projectBasis', {
                         wordCount: false,           // 关闭字数统计
                         elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
@@ -263,13 +285,23 @@ export default {
                 message.error(window.yunAdminT(lc('wap_user_00075')));
                 return false;
             }
+            try {
+                var html = UE.getEditor('projectBasis').getContent();
+                if (that.editLang === 'en') {
+                    that.info.content_en = html;
+                } else {
+                    that.info.content = html;
+                }
+            } catch (e) {}
 
             var param = {
                 id:that.sid,
                 name:that.info.name,
+                name_en:that.info.name_en || '',
                 is_nav:that.info.is_nav,
                 sort:that.info.sort,
-                content:UE.getEditor('projectBasis').getContent(),
+                content:that.info.content,
+                content_en:that.info.content_en || '',
                 footer_tpl:that.info.footer_tpl,
                 footer_tpl_dir:that.info.footer_tpl_dir,
                 top_tpl:that.info.top_tpl,
@@ -277,6 +309,7 @@ export default {
                 description:that.info.descs,
                 keyword:that.info.keyword,
                 title:that.info.title,
+                title_en:that.info.title_en || '',
                 url:that.info.url,
                 nid:that.info.nid,
                 is_type:that.info.is_type,
@@ -304,6 +337,19 @@ export default {
             this.info = {};
             console.log('val',val)
             this.getInfo();
+        },
+        editLang: function (newLang, oldLang) {
+            if (!oldLang || newLang === oldLang) return;
+            try {
+                var html = UE.getEditor('projectBasis').getContent();
+                if (oldLang === 'en') {
+                    this.info.content_en = html;
+                } else {
+                    this.info.content = html;
+                }
+                var next = newLang === 'en' ? (this.info.content_en || '') : (this.info.content || '');
+                UE.getEditor('projectBasis').setContent(next);
+            } catch (e) {}
         },
     }
 };

@@ -11,10 +11,12 @@ type PageDoc = {
 
 const LEGAL = new Set(['about', 'contact', 'privacy', 'protocol'])
 const code = String(useRoute().params.code || '')
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const api = useApi()
 
-const { data } = await useAsyncData(`site-page-${code}`, async () => {
+const { data } = await useAsyncData(
+  () => `site-page-${code}-${locale.value}`,
+  async () => {
   if (LEGAL.has(code)) {
     try {
       return await api.get<PageDoc>('/v1/wap/legal', { slug: code })

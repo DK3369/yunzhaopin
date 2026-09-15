@@ -23,6 +23,17 @@
                         </div>
 				    </template>
 				</el-table-column>
+				<el-table-column :label="lc('admin_system_00104')"  >
+				    <template #default="scope">
+				        <div class="moduleElTaPax" v-if="editname_en_id==scope.row.id">
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editname_en" :data-preval="scope.row.name_en || ''" data-type="name_en" @blur="editChange" clearable></el-input>
+				        </div>
+                        <div class="moduleElTaPax" v-else>
+                            <span>{{scope.row.name_en}}</span>
+                            <img src="/admin/php-admin/images/bine.png" @click="editcolumn('name_en',scope.row.name_en,scope.row.id)" alt="">
+                        </div>
+				    </template>
+				</el-table-column>
 				<el-table-column :label="lc('admin_vue_00044')" >
 				    <template #default="scope">
                         <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
@@ -97,8 +108,10 @@ export default {
                     prevPage: 0,
                     editname_id:'',
                     editsort_id:'',
+                    editname_en_id:'',
                     editname:'',
                     editsort:'',
+                    editname_en:'',
 
                     addShow:false,
                     classname:'',

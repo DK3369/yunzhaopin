@@ -56,10 +56,8 @@ impl From<phpyun_models::description::entity::DescClass> for ClassItem {
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_classes(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<ClassItem>>> {
-    let l = description_service::list_classes(&state).await?;
-    Ok(ApiResponse::data(
-        l.iter().cloned().map(ClassItem::from).collect(),
-    ))
+    let l = description_service::public_list_classes(&state).await?;
+    Ok(ApiResponse::data(l.into_iter().map(ClassItem::from).collect()))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -124,7 +122,7 @@ pub async fn list(
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<DescItem>>> {
-    let r = description_service::list(&state, q.class_id, true, page).await?;
+    let r = description_service::public_list(&state, q.class_id, true, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))
@@ -205,8 +203,7 @@ pub async fn get_by_name(
 ) -> AppResult<ApiResponse<DescDetail>> {
     let name = b.name;
     phpyun_core::validators::ensure_desc_page_name(&name)?;
-    let row = phpyun_models::description::repo::find_by_name(state.db.reader(), &name).await?;
-    let d = row.ok_or_else(|| phpyun_core::ApiError::param_invalid("description_not_found"))?;
+    let d = description_service::public_get_by_name(&state, &name).await?;
     Ok(ApiResponse::data(d.into()))
 }
 
@@ -235,25 +232,7 @@ pub async fn get_legal_page(
 ) -> AppResult<ApiResponse<DescDetail>> {
     let slug = b.slug;
     phpyun_core::validators::ensure_path_token(&slug)?;
-    let names: &[&str] = match slug.as_str() {
-        "about" => &["关于我们", "About Us", "About"],
-        "contact" => &["联系我们", "Contact Us", "Contact"],
-        "privacy" => &["隐私政策", "Privacy Policy", "Privacy"],
-        "protocol" => &["注册协议", "Registration Agreement", "Terms"],
-        _ => {
-            return Err(phpyun_core::ApiError::param_invalid(format!(
-                "slug: {slug}"
-            )))
-        }
-    };
-    let mut row = None;
-    for name in names {
-        row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
-        if row.is_some() {
-            break;
-        }
-    }
-    let d = row.ok_or_else(|| phpyun_core::ApiError::param_invalid("description_not_found"))?;
+    let d = description_service::public_legal(&state, &slug).await?;
     Ok(ApiResponse::data(d.into()))
 }
 

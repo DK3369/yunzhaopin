@@ -447,3 +447,10 @@ pub async fn php_set_sort(pool: &MySqlPool, id: u64, sort: i32) -> Result<u64, s
 pub async fn php_delete_ids(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {
     soft_delete::mark_ids(pool, "phpyun_description", ids).await
 }
+
+pub async fn php_list_all(pool: &MySqlPool) -> Result<Vec<PhpDescRow>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {PHP_DESC_FIELDS} FROM phpyun_description WHERE {PREDICATE} ORDER BY sort ASC, id DESC"
+    );
+    sqlx::query_as::<_, PhpDescRow>(&sql).fetch_all(pool).await
+}

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData('site-services', () =>
-  api.post<{ title?: string; content?: string; name?: string }>('/v1/wap/descriptions/get', { id: 5 }).catch(() => null),
+const { data } = await useAsyncData(
+  () => `site-services-${locale.value}`,
+  () =>
+    api.post<{ title?: string; content?: string; name?: string }>('/v1/wap/descriptions/get', { id: 5 }).catch(() => null),
 )
 useSeoMeta({ title: () => String(data.value?.title || data.value?.name || t('ui.pages')) })
 useHead({ link: [{ rel: 'canonical', href: '/services' }] })

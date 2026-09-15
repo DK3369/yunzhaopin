@@ -15,7 +15,7 @@ export function useSiteChrome() {
   const api = useApi()
   const route = useRoute()
   const runtime = useRuntimeConfig()
-  const { t, te } = useI18n()
+  const { t, te, locale } = useI18n()
   const { syWebname, syWebtitle, syLogo } = useSubSite()
 
   const { data: settingRows } = useAsyncData(
@@ -152,12 +152,12 @@ export function useSiteChrome() {
   type DescRow = { id: number; class_id: number; name?: string; title: string; is_nav?: number; link_url?: string; is_type?: number }
 
   const { data: descClasses } = useAsyncData(
-    'site-desc-classes',
+    () => `site-desc-classes-${locale.value}`,
     () => api.post<DescClass[]>('/v1/wap/descriptions/classes', {}).catch(() => [] as DescClass[]),
     { default: () => [] as DescClass[] },
   )
   const { data: descRows } = useAsyncData(
-    'site-desc-rows',
+    () => `site-desc-rows-${locale.value}`,
     () =>
       api
         .post<{ list: DescRow[] }>('/v1/wap/descriptions', { page: 1, page_size: 80 })
