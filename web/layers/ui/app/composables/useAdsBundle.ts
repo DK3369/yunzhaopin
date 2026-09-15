@@ -15,7 +15,7 @@ export function useAdsBundle(key: string, needs: AdSlotNeed[]) {
   const api = useApi()
   const empty: Record<string, AdBanner[]> = {}
   for (const n of needs) empty[n.slot] = []
-  return useAsyncData(key, async () => {
+  return useAsyncData(localeAsyncKey(key), async () => {
     try {
       const data = await api.post<Record<string, AdBanner[]>>('/v1/wap/initads', {
         slots: needs.map((n) => ({ slot: n.slot, limit: n.limit ?? 10 })),

@@ -58,9 +58,8 @@ export function emptyPublicDictBundle(): PublicDictBundle {
 /** Shared PC/H5 fetch of `/v1/wap/initjobs`. Same key = one request per locale. */
 export function usePublicDicts() {
   const api = useApi()
-  const { locale } = useI18n()
   return useAsyncData(
-    () => `wap-initjobs-${locale.value}`,
+    localeAsyncKey('wap-initjobs'),
     () => api.get<PublicDictBundle>('/v1/wap/initjobs').catch(() => emptyPublicDictBundle()),
   )
 }

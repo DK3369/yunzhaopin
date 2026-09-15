@@ -114,10 +114,7 @@ const { data: home, error } = await useAsyncData(
   },
   { watch: [homeTpltype, locale] },
 )
-const { data: cats } = await useAsyncData(
-  () => `job-cats-${locale.value}`,
-  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
-)
+const { data: cats } = await useJobCats()
 const { data: hotClass } = await useAsyncData(
   () => `hot-job-class-${locale.value}`,
   () => api.get<CatNode[]>('/v1/wap/categories/recommended', { kind: 'job', limit: 20 }).catch(() => [] as CatNode[]),
@@ -152,10 +149,10 @@ const adsMid = computed(() => ({
   slot10: ads.value?.['10'] || [],
   slot11: ads.value?.['11'] || [],
 }))
-const { data: friendLinks } = await useAsyncData('home-links', () =>
+const { data: friendLinks } = await useAsyncData(localeAsyncKey('home-links'), () =>
   api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
 )
-const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', async () => {
+const { data: resumes, error: resumeError } = await useAsyncData(localeAsyncKey('home-resumes'), async () => {
   const [rec, latest] = await Promise.all([
     api
       .get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8, recg: true })
@@ -421,7 +418,7 @@ useHead({
                     <img :src="mediaUrl(job.com_logo, PLACEHOLDER_LOGO)" alt="" />
                   </div>
                   <div class="yunheader_60jpbane">{{ job.name }}</div>
-                  <div class="yunheader_60jpxz">{{ formatSalary(job, $t('common.negotiable'), $t('common_02056'), '', { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
+                  <div class="yunheader_60jpxz">{{ formatSalary(job, $t('common.negotiable'), Number(settings.resume_salarytype || 1), '', { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
                 </NuxtLink>
                 <div class="yunheader_60jpcom">{{ job.com_name }}</div>
               </div>

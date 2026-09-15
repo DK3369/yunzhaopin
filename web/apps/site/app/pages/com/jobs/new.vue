@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, type CatNode } from '~/utils/site'
+import { catTree } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
 const api = useApi()
@@ -52,10 +52,7 @@ const sdateN = ref('')
 const welIds = ref<number[]>([])
 const langIds = ref<number[]>([])
 const msg = ref('')
-const { data: cats } = await useAsyncData(
-  () => `job-cats-${locale.value}`,
-  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
-)
+const { data: cats } = await useJobCats()
 const jobRoots = computed(() => catTree(cats.value || [], 80))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === form.job1)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === form.job1_son)?.children || [])

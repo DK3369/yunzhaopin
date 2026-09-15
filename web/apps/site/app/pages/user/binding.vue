@@ -8,9 +8,7 @@ const { data: dicts } = await usePublicDicts()
 const { data, error, refresh } = await useAsyncData('oauth-bindings', () =>
   api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
 )
-const { data: me, refresh: refreshMe } = await useAsyncData('user-me-bind', () =>
-  api.post<{ moblie?: string | null; email?: string | null }>('/v1/wap/me', {}).catch(() => null),
-)
+const { data: me, refresh: refreshMe } = await useAuthMe()
 const mobile = ref(String(me.value?.moblie || ''))
 const mobileCode = ref('')
 const email = ref(String(me.value?.email || ''))

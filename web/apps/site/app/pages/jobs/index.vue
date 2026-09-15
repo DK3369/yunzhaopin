@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, formatSalary, listFailMsg, type CatNode, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, listFailMsg, type JobLike } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 import { readRecentJobs } from '~/utils/recentViews'
 
@@ -86,10 +86,7 @@ const { data, error } = await useAsyncData(
 )
 const listRaw = computed(() => data.value?.list || [])
 
-const { data: cats } = await useAsyncData(
-  () => `job-cats-${locale.value}`,
-  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
-)
+const { data: cats } = await useJobCats()
 const jobRoots = computed(() => catTree(cats.value || [], 40))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === job1.value)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === job1Son.value)?.children || [])

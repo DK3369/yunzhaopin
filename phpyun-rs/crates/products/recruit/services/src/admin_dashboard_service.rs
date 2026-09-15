@@ -746,5 +746,6 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     description_service::invalidate_classes_cache().await;
     redeem_service::invalidate_classes_cache().await;
     qna_service::invalidate_categories_cache().await;
+    phpyun_core::cache::invalidate_all_config(&state.cache.config);
     Ok(code)
 }

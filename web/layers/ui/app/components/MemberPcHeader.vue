@@ -152,7 +152,7 @@ const comMsgOpen = ref(false)
 const comInfoOpen = ref(false)
 
 const { data: userDash } = useAsyncData(
-  'member-hdr-user-dash',
+  () => (kind.value === 'user' ? 'user-dash' : 'hdr-skip-user-dash'),
   () =>
     kind.value === 'user'
       ? api
@@ -161,7 +161,7 @@ const { data: userDash } = useAsyncData(
       : Promise.resolve(null),
 )
 const { data: userResume } = useAsyncData(
-  'member-hdr-user-resume',
+  () => (kind.value === 'user' ? 'user-home-resume' : 'hdr-skip-user-resume'),
   () =>
     kind.value === 'user'
       ? api.post<{ name?: string; photo?: string }>('/v1/mcenter/resume/list', {}).catch(() => null)
@@ -172,11 +172,11 @@ const { data: bal } = useAsyncData(
   () => (kind.value === 'user' ? api.post<{ balance?: number }>('/v1/mcenter/integral/balance', {}).catch(() => null) : Promise.resolve(null)),
 )
 const { data: signSt, refresh: refreshSign } = useAsyncData(
-  'member-hdr-sign',
+  () => (kind.value === 'com' ? 'com-home-sign' : 'user-home-sign'),
   () => api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
 )
 const { data: comDash } = useAsyncData(
-  'member-hdr-com-dash',
+  () => (kind.value === 'com' ? 'com-dash' : 'hdr-skip-com-dash'),
   () =>
     kind.value === 'com'
       ? api
@@ -189,7 +189,7 @@ const { data: comDash } = useAsyncData(
       : Promise.resolve(null),
 )
 const { data: comProfile } = useAsyncData(
-  'member-hdr-com-profile',
+  () => (kind.value === 'com' ? 'com-home-profile' : 'hdr-skip-com-profile'),
   () =>
     kind.value === 'com'
       ? api.post<{ name?: string; logo?: string }>('/v1/mcenter/company/list', {}).catch(() => null)

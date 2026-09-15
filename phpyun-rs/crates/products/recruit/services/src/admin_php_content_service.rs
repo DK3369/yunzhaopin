@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 
 use chrono::{Datelike, TimeZone};
 use phpyun_core::i18n;
-use phpyun_core::utils::{fmt_date, fmt_dt, fmt_ts};
+use phpyun_core::utils::{fmt_date, fmt_dt, fmt_ts, media_url_from_cfg as checkpic_url};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
 use phpyun_models::admin_gap::datacall as gap_datacall;
@@ -8574,30 +8574,6 @@ async fn web_config_city(state: &AppState, body: &Value) -> AppResult<Value> {
     Ok(json!({ "city": city_label_pairs(&rows) }))
 }
 
-fn checkpic_url(cfg: &HashMap<String, String>, path: &str) -> String {
-    let p = path.trim();
-    if p.is_empty() {
-        return String::new();
-    }
-    if p.starts_with("http://") || p.starts_with("https://") {
-        return p.to_string();
-    }
-    let base = cfg
-        .get("sy_ossurl")
-        .filter(|s| !s.is_empty())
-        .or_else(|| cfg.get("sy_weburl"))
-        .cloned()
-        .unwrap_or_default();
-    if base.is_empty() {
-        return p.to_string();
-    }
-    format!(
-        "{}/{}",
-        base.trim_end_matches('/'),
-        p.trim_start_matches('/')
-    )
-}
-
 async fn wx_nav_config(state: &AppState) -> AppResult<Value> {
     let cfg = settings_hash(state).await?;
     let web = cfg.get("sy_weburl").cloned().unwrap_or_default();
@@ -12173,6 +12149,7 @@ async fn set_module_save(state: &AppState, user: &AuthenticatedUser, body: &Valu
         }
         let _ = user;
     }
+    phpyun_core::cache::invalidate_all_config(&state.cache.config);
     Ok(PhpOut::Message("admin_01386"))
 }
 
@@ -15927,6 +15904,12 @@ async fn tplset_check_style(state: &AppState, body: &Value) -> AppResult<PhpOut>
         return Err(ApiError::business("admin_system_00055"));
     }
     setting_repo::upsert(state.db.pool(), "style", &dir, "", true, clock::now_ts()).await?;
+    phpyun_core::cache::invalidate(
+        &state.cache.config,
+        &state.redis,
+        &phpyun_core::cache::site_setting_key("style"),
+    )
+    .await;
     home_service::invalidate_all().await;
     Ok(PhpOut::Message("admin_system_00056"))
 }

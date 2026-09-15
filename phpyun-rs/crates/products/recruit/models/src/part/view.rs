@@ -3,6 +3,7 @@
 //! Dict-aware constructor `part_summary_from_dict` lives in
 //! `phpyun_handlers::v1::wap::part`.
 
+use phpyun_core::utils::{fmt_date, fmt_dt};
 use serde::Serialize;
 use utoipa::ToSchema;
 
@@ -125,21 +126,4 @@ impl From<PartJob> for PartSummary {
             is_long_term: j.edate == 0,
         }
     }
-}
-
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
 }

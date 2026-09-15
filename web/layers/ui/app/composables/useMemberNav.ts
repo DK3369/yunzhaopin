@@ -18,7 +18,7 @@ export function useMemberNav() {
   const { t } = useI18n()
   const api = useApi()
   const { data: settingRows } = useAsyncData(
-    'site-settings',
+    localeAsyncKey('site-settings'),
     () => api.post<SettingRow[]>('/v1/wap/site/settings', {}).catch(() => [] as SettingRow[]),
     { default: () => [] as SettingRow[] },
   )

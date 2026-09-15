@@ -21,20 +21,16 @@ type PartRow = {
   number?: number
   sex?: number
 }
-type CatNode = { id: number; name: string; parent_id?: number }
 
 const api = useApi()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-parts', () =>
   api.post('/v1/mcenter/com-parts/list', { page: 1, page_size: 20 }),
 )
 const { data: applies, refresh: refreshApplies } = await useAsyncData('com-part-applies', () =>
   api.post('/v1/mcenter/com-part-applications', { page: 1, page_size: 20 }),
 )
-const { data: partCats } = await useAsyncData(
-  () => `com-part-cats-${locale.value}`,
-  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'part' }).catch(() => [] as CatNode[]),
-)
+const { data: partCats } = await usePartCats()
 const roots = computed(() =>
   (partCats.value || []).filter((c) => !c.parent_id).sort((a, b) => a.id - b.id),
 )

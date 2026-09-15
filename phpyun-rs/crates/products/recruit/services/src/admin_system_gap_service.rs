@@ -461,6 +461,12 @@ pub async fn set_style(state: &AppState, actor: &AuthenticatedUser, dir: &str) -
         return Err(ApiError::param_invalid("dir"));
     }
     setting_repo::upsert(state.db.pool(), "style", dir, "", true, clock::now_ts()).await?;
+    phpyun_core::cache::invalidate(
+        &state.cache.config,
+        &state.redis,
+        &phpyun_core::cache::site_setting_key("style"),
+    )
+    .await;
     audit_write(state, actor, "admin.tpl.style", dir.to_string()).await;
     Ok(())
 }
@@ -518,6 +524,7 @@ pub async fn save_modules(
         setting_repo::upsert(pool, &format!("sy_{key}domain"), domain, "", true, now).await?;
         setting_repo::upsert(pool, &format!("sy_{key}dir"), dir, "", true, now).await?;
     }
+    phpyun_core::cache::invalidate_all_config(&state.cache.config);
     audit_write(state, actor, "admin.modules", format!("n:{}", items.len())).await;
     Ok(())
 }

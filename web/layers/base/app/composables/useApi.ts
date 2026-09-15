@@ -1,6 +1,7 @@
 import { unwrapEnvelope, ApiError, type ApiEnvelope } from '~/utils/envelope'
 import { bffUrl } from '~/utils/bff'
 import { parseWebLocale, rustLangFor } from '../utils/locale'
+import { ssrCookieHeaders } from '../utils/ssrFetch'
 
 type Verb = 'GET' | 'POST'
 
@@ -25,14 +26,15 @@ function dropLangQuery(payload?: Record<string, unknown>): Record<string, unknow
 export function useApi() {
   const scope = useLocaleScope()
   const localeCookie = useCookie(scope.key)
+  const requestFetch = useRequestFetch()
 
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
     const url = bffUrl(`/api/proxy${path}`)
     const loc = parseWebLocale(localeCookie.value)
     const query = method === 'GET' ? dropLangQuery(payload) : pagingQuery(payload)
-    const headers = { 'accept-language': rustLangFor(loc) }
+    const headers = { 'accept-language': rustLangFor(loc), ...ssrCookieHeaders() }
     try {
-      const body = await $fetch<ApiEnvelope<T>>(url, {
+      const body = await requestFetch<ApiEnvelope<T>>(url, {
         method,
         query,
         headers,
@@ -44,8 +46,12 @@ export function useApi() {
       const anyErr = err as { data?: ApiEnvelope<unknown>; statusCode?: number }
       const envelope = anyErr?.data
       if (envelope?.key === 'session_expired') {
-        await $fetch(bffUrl('/api/auth/refresh'), { method: 'POST', credentials: 'include' }).catch(() => undefined)
-        const retry = await $fetch<ApiEnvelope<T>>(url, {
+        await requestFetch(bffUrl('/api/auth/refresh'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: ssrCookieHeaders(),
+        }).catch(() => undefined)
+        const retry = await requestFetch<ApiEnvelope<T>>(url, {
           method,
           query,
           headers,

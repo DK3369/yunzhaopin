@@ -2,7 +2,7 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::clock;
-use phpyun_core::utils::{fmt_date, fmt_dt};
+use phpyun_core::utils::{fmt_date, fmt_dt, media_url_from_cfg as checkpic_url};
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use md5::{Digest, Md5};
 use phpyun_models::admin_gap::entity::*;
@@ -12,30 +12,6 @@ use phpyun_models::admin_gap::repo::{CompanyContentFilter, MsgFilter};
 use phpyun_models::recycle_bin::php_repo as recycle;
 use phpyun_models::site_setting::repo as setting_repo;
 use std::collections::HashMap;
-
-fn checkpic_url(cfg: &HashMap<String, String>, path: &str) -> String {
-    let p = path.trim();
-    if p.is_empty() {
-        return String::new();
-    }
-    if p.starts_with("http://") || p.starts_with("https://") {
-        return p.to_string();
-    }
-    let base = cfg
-        .get("sy_ossurl")
-        .filter(|s| !s.is_empty())
-        .or_else(|| cfg.get("sy_weburl"))
-        .cloned()
-        .unwrap_or_default();
-    if base.is_empty() {
-        return p.to_string();
-    }
-    format!(
-        "{}/{}",
-        base.trim_end_matches('/'),
-        p.trim_start_matches('/')
-    )
-}
 
 async fn site_pic_cfg(state: &AppState) -> AppResult<HashMap<String, String>> {
     Ok(setting_repo::find_many(state.db.reader(), &["sy_ossurl", "sy_weburl"]).await?)

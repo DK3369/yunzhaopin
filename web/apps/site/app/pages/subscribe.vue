@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, type CatNode } from '~/utils/site'
+import { catTree } from '~/utils/site'
 
 type SubscribeMeta = { jionly?: number; cionly?: number; cycles?: number[] }
 
@@ -8,7 +8,7 @@ const api = useApi()
 const { me, siteName } = useSiteChrome()
 
 const { data: meta } = await useAsyncData(
-  'subscribe-meta',
+  localeAsyncKey('subscribe-meta'),
   () =>
     api.get<SubscribeMeta>('/v1/wap/subscribe/meta').catch(() => ({
       jionly: 0,
@@ -16,9 +16,7 @@ const { data: meta } = await useAsyncData(
       cycles: [3, 7, 14, 26],
     })),
 )
-const { data: jobCats } = await useAsyncData('subscribe-job-cats', () =>
-  api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
-)
+const { data: jobCats } = await useJobCats()
 
 const jionly = computed(() => Number(meta.value?.jionly || 0) === 1)
 const cionly = computed(() => Number(meta.value?.cionly || 0) === 1)
@@ -68,11 +66,8 @@ async function loadCaptcha() {
 
 onMounted(async () => {
   await loadCaptcha()
-  if (me.value) {
-    const row = await api.post<{ email?: string | null }>('/v1/wap/me', {}).catch(() => null)
-    const em = String(row?.email || '').trim()
-    if (em) form.email = em
-  }
+  const em = String(me.value?.email || '').trim()
+  if (em) form.email = em
 })
 
 function clearForm() {

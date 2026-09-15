@@ -3,6 +3,7 @@
 //! Public endpoint: read-only access to keys with `is_public=1`. Admin endpoint: full access plus create/update/delete.
 
 use crate::enum_labels;
+use phpyun_core::cache;
 use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::bank::repo as bank_repo;
 use phpyun_models::domain::repo as domain_repo;
@@ -49,6 +50,12 @@ pub async fn admin_upsert(
         now,
     )
     .await?;
+    cache::invalidate(
+        &state.cache.config,
+        &state.redis,
+        &cache::site_setting_key(input.key),
+    )
+    .await;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("admin.site_setting.upsert", audit::Actor::uid(user.uid))
@@ -61,6 +68,7 @@ pub async fn admin_upsert(
 pub async fn admin_delete(state: &AppState, user: &AuthenticatedUser, key: &str) -> AppResult<()> {
     user.require_admin()?;
     setting_repo::delete(state.db.pool(), key).await?;
+    cache::invalidate(&state.cache.config, &state.redis, &cache::site_setting_key(key)).await;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("admin.site_setting.delete", audit::Actor::uid(user.uid))

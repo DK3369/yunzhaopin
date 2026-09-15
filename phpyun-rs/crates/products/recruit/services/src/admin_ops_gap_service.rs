@@ -381,6 +381,7 @@ async fn kv_save(
         }
         setting_repo::upsert(state.db.pool(), k, v, "", true, now).await?;
     }
+    phpyun_core::cache::invalidate_all_config(&state.cache.config);
     audit_write(state, actor, action, format!("n:{}", items.len())).await;
     Ok(())
 }

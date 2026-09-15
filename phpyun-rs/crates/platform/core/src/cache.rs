@@ -123,6 +123,16 @@ where
     let _ = kv.del(key).await;
 }
 
+/// Redis key / L1 key for one `phpyun_admin_config` row.
+pub fn site_setting_key(name: &str) -> String {
+    format!("site_setting:{name}")
+}
+
+/// Drop every L1 config entry. L2 Redis keys expire with the 30s TTL.
+pub fn invalidate_all_config(local: &ConfigCache) {
+    local.invalidate_all();
+}
+
 // ============================================================================
 // SimpleCache — single-tier in-process cache for small lookup data.
 //

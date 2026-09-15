@@ -5,6 +5,7 @@
 //! plain views give other crates a single source of truth for the response
 //! shape without forcing a circular dep.
 
+use phpyun_core::utils::{fmt_date, fmt_dt};
 use serde::Serialize;
 use utoipa::ToSchema;
 
@@ -291,23 +292,4 @@ impl From<Skill> for ResumeSkillItem {
             years: s.years,
         }
     }
-}
-
-// ==================== Helpers ====================
-
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
 }

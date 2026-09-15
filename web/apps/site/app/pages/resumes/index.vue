@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type CatNode } from '~/utils/site'
+import { catTree, listFailMsg, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
 const SALARY_PRESETS: Array<{ min: number; max?: number }> = [
@@ -153,10 +153,7 @@ const { data: topResumes } = await useAsyncData(
           .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
 )
 
-const { data: cats } = await useAsyncData(
-  () => `job-cats-${locale.value}`,
-  () => api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
-)
+const { data: cats } = await useJobCats()
 const jobRoots = computed(() => catTree(cats.value || [], 40))
 const jobLevel2 = computed(() => jobRoots.value.find((c) => c.id === job1.value)?.children || [])
 const jobLevel3 = computed(() => jobLevel2.value.find((c) => c.id === job1Son.value)?.children || [])

@@ -34,6 +34,30 @@ pub fn fmt_ts(ts: i64, pattern: &str) -> String {
         .unwrap_or_default()
 }
 
+/// PHP `checkpic`: keep absolute http(s); otherwise prefix `sy_ossurl` then `sy_weburl`.
+pub fn media_url(base: &str, path: &str) -> String {
+    let p = path.trim();
+    if p.is_empty() {
+        return String::new();
+    }
+    if p.starts_with("http://") || p.starts_with("https://") {
+        return p.to_string();
+    }
+    let base = base.trim().trim_end_matches('/');
+    if base.is_empty() {
+        return p.to_string();
+    }
+    format!("{}/{}", base, p.trim_start_matches('/'))
+}
+
+/// `sy_ossurl` wins over `sy_weburl` (same as PHP `checkpic`).
+pub fn media_url_from_cfg(cfg: &std::collections::HashMap<String, String>, path: &str) -> String {
+    let oss = cfg.get("sy_ossurl").map(|s| s.as_str()).unwrap_or("");
+    let web = cfg.get("sy_weburl").map(|s| s.as_str()).unwrap_or("");
+    let base = if !oss.trim().is_empty() { oss } else { web };
+    media_url(base, path)
+}
+
 // ==================== Mask helpers ====================
 
 /// Phone-number mask: keep first 3 + last 4, redact middle. Strings shorter
@@ -284,8 +308,31 @@ mod tests {
 
     #[test]
     fn fmt_dt_known_timestamp() {
-        // 2024-01-01 00:00:00 UTC = 1704067200
-        assert_eq!(fmt_dt(1704067200), "2024-01-01 00:00");
+        // 2024-01-01 00:00:00 UTC = 1704067200 → site TZ +08
+        assert_eq!(fmt_dt(1704067200), "2024-01-01 08:00");
+        assert_eq!(fmt_date(1704067200), "2024-01-01");
+    }
+
+    #[test]
+    fn media_url_prefixes_relative() {
+        assert_eq!(
+            media_url("https://cdn.example", "/a/b.jpg"),
+            "https://cdn.example/a/b.jpg"
+        );
+        assert_eq!(
+            media_url("https://cdn.example/", "a/b.jpg"),
+            "https://cdn.example/a/b.jpg"
+        );
+        assert_eq!(
+            media_url("", "https://x.test/p.png"),
+            "https://x.test/p.png"
+        );
+        let mut cfg = std::collections::HashMap::new();
+        cfg.insert("sy_ossurl".into(), "https://oss".into());
+        cfg.insert("sy_weburl".into(), "https://web".into());
+        assert_eq!(media_url_from_cfg(&cfg, "x.png"), "https://oss/x.png");
+        cfg.insert("sy_ossurl".into(), "".into());
+        assert_eq!(media_url_from_cfg(&cfg, "x.png"), "https://web/x.png");
     }
 
     #[test]

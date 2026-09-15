@@ -1,17 +1,43 @@
 //! Site-wide gates aligned with PHP `common.php::toLoginPage` and Smarty `is_fun()`.
 
+use phpyun_core::cache;
+use phpyun_core::json::Value;
 use phpyun_core::{
     extractors::AuthenticatedUser, ApiError, AppResult, AppState,
 };
 use phpyun_models::site_setting::repo as setting_repo;
+use std::time::Duration;
+
+const SETTING_TTL: Duration = Duration::from_secs(30);
+
+/// Cached `phpyun_admin_config` value. Empty string when missing.
+pub async fn config_str(state: &AppState, key: &str) -> String {
+    let pool = state.db.reader().clone();
+    let k = key.to_string();
+    let ck = cache::site_setting_key(&k);
+    match cache::get_or_load(
+        &state.cache.config,
+        &state.redis,
+        ck,
+        SETTING_TTL,
+        "site_setting",
+        move || async move {
+            let v = setting_repo::find(&pool, &k)
+                .await?
+                .map(|s| s.value)
+                .unwrap_or_default();
+            Ok(Value::String(v))
+        },
+    )
+    .await
+    {
+        Ok(v) => v.as_str().unwrap_or("").to_string(),
+        Err(_) => String::new(),
+    }
+}
 
 async fn setting(state: &AppState, key: &str) -> String {
-    setting_repo::find(state.db.reader(), key)
-        .await
-        .ok()
-        .flatten()
-        .map(|s| s.value)
-        .unwrap_or_default()
+    config_str(state, key).await
 }
 
 pub async fn setting_i32(state: &AppState, key: &str) -> i32 {

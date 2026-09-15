@@ -9,17 +9,16 @@ import {
 import { useMemberNav } from './useMemberNav'
 
 type SettingRow = { key: string; value: string }
-type Me = { uid: number; username: string; usertype: number }
 
 export function useSiteChrome() {
   const api = useApi()
   const route = useRoute()
   const runtime = useRuntimeConfig()
-  const { t, te, locale } = useI18n()
+  const { t, te } = useI18n()
   const { syWebname, syWebtitle, syLogo } = useSubSite()
 
   const { data: settingRows } = useAsyncData(
-    'site-settings',
+    localeAsyncKey('site-settings'),
     () =>
       api
         .post<SettingRow[]>('/v1/wap/site/settings', {})
@@ -53,7 +52,7 @@ export function useSiteChrome() {
   const logoH5 = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_wap_logo || settings.value.sy_logo))
 
   const { data: navRaw } = useAsyncData(
-    'site-nav-1',
+    localeAsyncKey('site-nav-1'),
     () =>
       api
         .get<
@@ -152,12 +151,12 @@ export function useSiteChrome() {
   type DescRow = { id: number; class_id: number; name?: string; title: string; is_nav?: number; link_url?: string; is_type?: number }
 
   const { data: descClasses } = useAsyncData(
-    () => `site-desc-classes-${locale.value}`,
+    localeAsyncKey('site-desc-classes'),
     () => api.post<DescClass[]>('/v1/wap/descriptions/classes', {}).catch(() => [] as DescClass[]),
     { default: () => [] as DescClass[] },
   )
   const { data: descRows } = useAsyncData(
-    () => `site-desc-rows-${locale.value}`,
+    localeAsyncKey('site-desc-rows'),
     () =>
       api
         .post<{ list: DescRow[] }>('/v1/wap/descriptions', { page: 1, page_size: 80 })
@@ -274,7 +273,7 @@ export function useSiteChrome() {
   })
 
   const { data: hotSearches } = useAsyncData(
-    'site-hot-searches-job',
+    localeAsyncKey('site-hot-searches-job'),
     () =>
       api
         .get<Array<{ keyword: string }>>('/v1/wap/hot-searches', { scope: 'job', limit: 6 })
@@ -288,11 +287,7 @@ export function useSiteChrome() {
   const hrlicense = computed(() => String(settings.value.sy_hrlicense || '').trim())
   const secord = computed(() => String(settings.value.sy_websecord || '').trim())
 
-  const { data: me, refresh: refreshMe } = useAsyncData(
-    'auth-me',
-    () => $fetch<Me>('/api/auth/me').catch(() => null),
-    { default: () => null },
-  )
+  const { data: me, refresh: refreshMe } = useAuthMe()
 
   const isHome = computed(() => route.path === '/')
   const isAuth = computed(() =>

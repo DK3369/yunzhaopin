@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { isUnauthErr, mediaUrl, isMemberModuleOn } from '~/utils/site'
+import { mediaUrl, isMemberModuleOn } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { comItems } = useMemberNav()
-const { data, error } = await useAsyncData('me-com', () => api.post('/v1/wap/me', {}))
+const { data } = await useAuthMe()
 const { data: profile } = await useAsyncData('com-home-profile', () =>
   api
     .post<{ name?: string; logo?: string; uid?: number; r_status?: number }>('/v1/mcenter/company/list', {})
@@ -90,9 +90,9 @@ function labelOf(to: string, key?: string) {
 </script>
 
 <template>
-  <section v-if="error" class="site-inner">
+  <section v-if="!data?.uid" class="site-inner">
     <h1>{{ $t('member_com_00290') }}</h1>
-    <p class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
+    <p class="muted">{{ $t('common_01153') }}</p>
     <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
   <div v-else class="member-page member-page-com">

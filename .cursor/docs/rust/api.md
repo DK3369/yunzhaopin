@@ -10,9 +10,13 @@ BFF（`web/layers/base/server/routes/api/proxy`）把 `code !== 200` 写成 **HT
 
 `msg` 给客户端的是**已翻译文本**，不是 i18n key。见 [i18n.md](./i18n.md)。
 
+## 成功应答（只约束新接口）
+
+有业务 payload → `ApiResponse::data(...)`。无 payload → `ApiResponse::message("ok")`（信封里 `key`/`msg` 为已译的 ok）。**不要**再给新接口加 `{ok:true}` 或第二套成功形状。旧 handler 不扫。
+
 ## 分页
 
-Query：`page`、`page_size`（1..=200）。PHP 后台列表还要 `list` / `total` / `page` / 有时 `limit`、`pageSizes`（`Paged` 或 `AdminPaged`）。
+Query：`page`、`page_size`（1..=200）。侧栏常用 `limit`。PHP 后台列表还要 `list` / `total` / `page` / 有时 `limit`、`pageSizes`、`perPage` 别名（`Paged` 或 `AdminPaged`）。**不要**为统一去改已有参数名。
 
 PHP Vue 筛选项经常是 **字符串** `"0"` / `""`。`Option<i32>` 必须用 `de_loose_i32_opt`（或同类宽松反序列化），否则 `ValidatedJson` → HTTP 400。`StatusFilterBody` 已这样处理。新增 admin 列表 body 照抄，不要用裸 `i32` 去接 PHP。
 

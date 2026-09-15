@@ -20,7 +20,7 @@ const { countryItems, provinceItems, cityItems, districtItems } = await useRegio
 })
 const { data, error } = await useAsyncData(
   () =>
-    `parts-${page.value}-${keyword.value}-${country.value}-${provinceId.value || 0}-${cityId.value || 0}-${threeCityId.value || 0}-${partType.value || 0}-${billingCycle.value || 0}`,
+    `parts-${locale.value}-${page.value}-${keyword.value}-${country.value}-${provinceId.value || 0}-${cityId.value || 0}-${threeCityId.value || 0}-${partType.value || 0}-${billingCycle.value || 0}`,
   () =>
     api.get<{ list: Array<{ id: number; name: string; com_name?: string; city_name?: string }>; total: number }>(
       '/v1/wap/parts',
@@ -37,10 +37,7 @@ const { data, error } = await useAsyncData(
       }),
     ),
 )
-const { data: partTypes } = await useAsyncData(
-  () => `cat-part-${locale.value}`,
-  () => api.get<Array<{ id: number; name: string; parent_id?: number }>>('/v1/wap/categories', { kind: 'part' }).catch(() => []),
-)
+const { data: partTypes } = await usePartCats()
 const partRoots = computed(() =>
   (partTypes.value || []).filter((c) => !c.parent_id).sort((a, b) => a.id - b.id),
 )

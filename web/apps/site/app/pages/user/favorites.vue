@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { formatSalary, isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 const kind = ref(1)
 const { page, pageSize, inferTotal, go } = useMemberListPage()
 watch(kind, () => go(1))
@@ -20,6 +21,17 @@ function titleOf(row: { target_id: number; detail?: Record<string, string> }) {
 }
 function salaryOf(row: { detail?: Record<string, string> }) {
   const d = row.detail || {}
+  const min = Number(d.min_salary || d.minsalary || 0)
+  const max = Number(d.max_salary || d.maxsalary || 0)
+  if (min || max) {
+    return formatSalary(
+      { min_salary: min, max_salary: max },
+      t('common.negotiable'),
+      Number(settings.value.resume_salarytype || 1),
+      '',
+      { yuan: t('common.salary_yuan'), qian: t('common.salary_thousand') },
+    )
+  }
   return d.salary || d.job_salary || ''
 }
 function toOf(row: { target_id: number }) {

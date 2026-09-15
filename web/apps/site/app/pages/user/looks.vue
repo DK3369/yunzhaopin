@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { formatSalary, isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
 const { data, error, refresh } = await useAsyncData(
   () => `look-jobs-mine-${page.value}`,
@@ -19,8 +20,10 @@ async function remove(id: number) {
   }
 }
 function salaryOf(row: { minsalary?: number; maxsalary?: number }) {
-  if (row.minsalary || row.maxsalary) return `${row.minsalary || ''} - ${row.maxsalary || ''}`
-  return ''
+  return formatSalary(row, t('common.negotiable'), Number(settings.value.resume_salarytype || 1), '', {
+    yuan: t('common.salary_yuan'),
+    qian: t('common.salary_thousand'),
+  })
 }
 useSeoMeta({ title: t('wap_user_00275') })
 const total = computed(() => inferTotal(data.value))
