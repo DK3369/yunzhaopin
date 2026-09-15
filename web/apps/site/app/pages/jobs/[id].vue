@@ -630,7 +630,8 @@ useHead({
             </div>
             <div class="job_details_com_otherjob">
               <ul>
-                <li v-for="row in sameCom || []" :key="row.id">
+                <li v-for="row in sameCom || []" :key="row.id" class="site-job-card">
+                  <NuxtLink class="site-job-card__hit" :to="`/jobs/${row.id}`" :title="row.name" tabindex="-1" aria-hidden="true" />
                   <div class="job_details_com_otherjob_l">
                     <div class="job_details_com_otherjob_name">
                       <NuxtLink :to="`/jobs/${row.id}`" :title="row.name">{{ row.name }}</NuxtLink>
@@ -662,13 +663,15 @@ useHead({
             </div>
             <div class="job_details_like">
               <ul>
-                <li v-for="row in similarList" :key="row.id">
+                <li v-for="row in similarList" :key="row.id" class="site-job-card">
+                  <NuxtLink class="site-job-card__hit" :to="`/jobs/${row.id}`" :title="row.name" tabindex="-1" aria-hidden="true" />
                   <div class="job_details_likejobname">
                     <NuxtLink :to="`/jobs/${row.id}`" :title="row.name">{{ row.name }}</NuxtLink>
                   </div>
                   <div class="job_details_likejobxz">{{ formatSalary(row, $t('common.negotiable'), salaryType, $t('common_01943'), { yuan: $t('common.salary_yuan'), qian: $t('common.salary_thousand') }) }}</div>
                   <div class="job_details_likecomname">
-                    <NuxtLink v-if="row.uid" :to="`/companies/${row.uid}`">{{ row.com_name }}</NuxtLink>
+                    <NuxtLink v-if="row.uid" class="site-job-card__nested" :to="`/companies/${row.uid}`">{{ row.com_name }}</NuxtLink>
+                    <span v-else>{{ row.com_name }}</span>
                   </div>
                   <NuxtLink :to="`/jobs/${row.id}`" class="job_details_likesq">{{ $t('wap_00574') }}</NuxtLink>
                 </li>

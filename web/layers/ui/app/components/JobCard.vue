@@ -1,6 +1,7 @@
 <template>
   <!-- 首页楼层卡 -->
-  <li v-if="variant === 'home'" class="site-pc">
+  <li v-if="variant === 'home'" class="site-pc site-job-card">
+    <NuxtLink class="site-job-card__hit" :to="`/jobs/${job.id}`" :title="job.name" tabindex="-1" aria-hidden="true" />
     <div class="index_newjobname">
       <NuxtLink :to="`/jobs/${job.id}`" :title="job.name">{{ job.name }}</NuxtLink>
       <span class="index_newjob_info_xz">{{ salary }}</span>
@@ -17,7 +18,7 @@
     <div class="index_newjob_com nowrap">
       <img :src="logo" class="index_newjob_com_tx" alt="" />
       <div class="index_newjob_comname">
-        <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`">{{ job.com_name }}</NuxtLink>
+        <NuxtLink v-if="job.uid" class="site-job-card__nested" :to="`/companies/${job.uid}`">{{ job.com_name }}</NuxtLink>
         <span v-else>{{ job.com_name }}</span>
         <img
           v-if="Number(job.yyzz_status) === 1"
@@ -63,7 +64,8 @@
   </NuxtLink>
 
   <!-- PC 职位搜索卡，对齐 default/job/search.htm -->
-  <div v-if="variant === 'search'" class="search_job_list site-pc">
+  <div v-if="variant === 'search'" class="search_job_list site-pc site-job-card">
+    <NuxtLink class="site-job-card__hit" :to="`/jobs/${job.id}`" :title="job.name" tabindex="-1" aria-hidden="true" />
     <div v-if="Number(job.fact_status) === 1" class="job_sdhybox">
       <span class="job_sdhy">
         <img src="/legacy/pc/images/ptyz.png" alt="" class="png" width="16" />
@@ -79,7 +81,7 @@
         <img v-if="job.is_rec" src="/legacy/pc/images/jobtj.png" alt="" class="co_zzjp png" />
       </div>
       <div class="yunjoblist_newcomename">
-        <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="search_job_com_name">{{ job.com_name }}</NuxtLink>
+        <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="search_job_com_name site-job-card__nested">{{ job.com_name }}</NuxtLink>
         <span v-else class="search_job_com_name">{{ job.com_name }}</span>
         <img
           v-if="Number(job.yyzz_status) === 1"
@@ -91,7 +93,7 @@
       </div>
       <a
         href="javascript:;"
-        class="yunjoblist_new_icon"
+        class="yunjoblist_new_icon site-job-card__nested"
         :class="{ yunjoblist_new_icon_cur: expanded }"
         @click.prevent="expanded = !expanded"
       />
@@ -146,10 +148,10 @@
           <a
             v-if="wxQr"
             href="javascript:;"
-            class="yunjoblist_newwxbth"
+            class="yunjoblist_newwxbth site-job-card__nested"
             @click.prevent="wxOpen = !wxOpen"
           >{{ $t('common_02398') }}</a>
-          <div v-if="wxOpen && wxQr" class="yunjoblist_wxqr">
+          <div v-if="wxOpen && wxQr" class="yunjoblist_wxqr site-job-card__nested">
             <img :src="wxQr" width="110" height="110" alt="" />
           </div>
         </div>
@@ -162,7 +164,8 @@
   </div>
 
   <!-- PC 企业详情在招，对齐 company/default/index.htm firm_post -->
-  <div v-if="variant === 'firm'" class="firm_post site-pc">
+  <div v-if="variant === 'firm'" class="firm_post site-pc site-job-card">
+    <NuxtLink class="site-job-card__hit" :to="`/jobs/${job.id}`" :title="job.name" tabindex="-1" aria-hidden="true" />
     <div class="com_details_com_otherjob_l">
       <div class="com_details_com_otherjob_name">
         <NuxtLink :to="`/jobs/${job.id}`">{{ job.name }}</NuxtLink>

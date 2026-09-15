@@ -1917,3 +1917,33 @@ html.force-pc .site-h5 {
   line-height: 1.2;
 }
 
+/* 职位卡整卡进详情：空白处也可点；公司名 / 展开 / 微信仍单独点 */
+.site-job-card {
+  position: relative;
+  cursor: pointer;
+}
+.site-job-card__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.site-job-card__nested {
+  position: relative;
+  z-index: 2;
+}
+.site-job-card .job_details_likesq,
+.site-job-card .job_details_com_otherjob_sq,
+.site-job-card .com_details_com_otherjob_sq,
+.site-job-card .search_job_Apply_fast,
+.site-job-card .search_job_Apply_fast_ysq {
+  z-index: 2;
+}
+.site-job-card:hover .index_newjobname a,
+.site-job-card:hover .yunjoblist_newname_a,
+.site-job-card:hover .job_details_likejobname a,
+.site-job-card:hover .job_details_com_otherjob_name a,
+.site-job-card:hover .com_details_com_otherjob_name a {
+  color: #f60;
+  text-decoration: underline;
+}
+
