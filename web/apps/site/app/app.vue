@@ -43,7 +43,7 @@ const cacheVer = computed(() => {
 
 useHead({
   htmlAttrs: {
-    lang: () => (locale.value === 'en' ? 'en' : 'zh-CN'),
+    lang: () => parseWebLocale(locale.value),
     class: () => {
       const bits: string[] = []
       if (String(settings.value.sy_wap_web || '') === '2') bits.push('force-pc')
@@ -89,7 +89,6 @@ const mainClass = computed(() => {
 })
 
 onMounted(() => {
-  persistWebLocale(locale.value === 'en' ? 'en' : 'zh')
   if (String(settings.value.sy_web_site || '') !== '1') return
   if (String(settings.value.sy_gotocity || '') !== '1') return
   if (gotocity.value) return

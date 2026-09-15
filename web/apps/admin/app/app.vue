@@ -15,7 +15,7 @@ await dropLangQuery()
 watch(() => route.query.lang, () => {
   dropLangQuery()
 })
-const epLocale = computed(() => (locale.value === 'en' ? en : zhCn))
+const epLocale = computed(() => (locale.value === 'zh' ? zhCn : en))
 </script>
 
 <template>

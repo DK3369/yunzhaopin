@@ -1,9 +1,8 @@
 import { unwrapEnvelope, ApiError, type ApiEnvelope } from '~/utils/envelope'
 import { bffUrl } from '~/utils/bff'
-import { readStoredLocale, rustLangFor } from '../utils/locale'
+import { parseWebLocale, rustLangFor } from '../utils/locale'
 
 type Verb = 'GET' | 'POST'
-type Loc = 'zh' | 'en'
 
 function pagingQuery(payload?: Record<string, unknown>): Record<string, unknown> | undefined {
   if (!payload) return undefined
@@ -13,32 +12,14 @@ function pagingQuery(payload?: Record<string, unknown>): Record<string, unknown>
   return Object.keys(query).length ? query : undefined
 }
 
-function locFromRaw(raw: unknown): Loc | null {
-  const s = String(raw || '')
-    .trim()
-    .toLowerCase()
-    .replace(/_/g, '-')
-  if (!s) return null
-  if (s.startsWith('en')) return 'en'
-  if (s.startsWith('zh') || s === 'cn') return 'zh'
-  return null
-}
-
 export function useApi() {
   const i18n = useI18n()
-  const scope = useLocaleScope()
-
-  function currentLoc(): Loc {
-    const fromI18n = locFromRaw(i18n.locale.value)
-    if (fromI18n) return fromI18n
-    return readStoredLocale(scope.key, scope.fallback)
-  }
 
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
     const url = bffUrl(`/api/proxy${path}`)
-    const loc = currentLoc()
+    const loc = parseWebLocale(i18n.locale.value)
     const query = method === 'GET' ? payload : pagingQuery(payload)
-    const headers = { 'accept-language': rustLangFor(loc, scope.key) }
+    const headers = { 'accept-language': rustLangFor(loc) }
     try {
       const body = await $fetch<ApiEnvelope<T>>(url, {
         method,

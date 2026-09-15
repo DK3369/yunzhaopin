@@ -37,7 +37,7 @@ export function readStoredLocale(): AdminLocale {
 }
 
 export function rustLangFor(locale: AdminLocale): string {
-  return rustLangForWeb(locale, ADMIN_LOCALE_KEY)
+  return rustLangForWeb(locale)
 }
 
 /**

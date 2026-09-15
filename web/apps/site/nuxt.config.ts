@@ -11,21 +11,14 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
   i18n: {
     locales: [
-      { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },
-      { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+      { code: 'zh', language: 'zh', file: 'zh.json', name: '中文' },
+      { code: 'en', language: 'en', file: 'en.json', name: 'English' },
     ],
-    defaultLocale: 'zh',
+    defaultLocale: 'en',
     lazy: true,
     langDir: 'locales',
     strategy: 'no_prefix',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'lang',
-      cookieCrossOrigin: false,
-      fallbackLocale: 'zh',
-      alwaysRedirect: false,
-      redirectOn: 'root',
-    },
+    detectBrowserLanguage: false,
     compilation: {
       strictMessage: false,
     },

@@ -1,22 +1,17 @@
 /**
- * Web locale contract: `zh` | `en`.
+ * 全站语言合同：只有 `en` | `zh`。默认 `en`。选了中文才是中文。
  *
- * Site and admin are served from the same origin (`:3001`, admin under
- * `/admin`), so they must not share one storage key or switching language in
- * one would switch the other. PHP `global.php` splits them the same way:
- * front uses `lang`, admin uses `admin_lang`.
+ * 前台 cookie `lang`，后台 `admin_lang`，互不污染。不要在页面或
+ * `/api/proxy` 带 `?lang=`，不要嗅探浏览器，不要再写 `zh-CN` / `en-US`。
  */
 
-export type WebLocale = 'zh' | 'en'
+export type WebLocale = 'en' | 'zh'
 
+export const DEFAULT_WEB_LOCALE: WebLocale = 'en'
 export const SITE_LOCALE_KEY = 'lang'
 export const ADMIN_LOCALE_KEY = 'admin_lang'
 
 const MAX_AGE = 31536000
-
-export function parseWebLocale(raw?: string | null, fallback: WebLocale = 'en'): WebLocale {
-  return mapWebLocale(raw) ?? fallback
-}
 
 export function mapWebLocale(raw?: string | null): WebLocale | null {
   const s = String(raw || '')
@@ -29,8 +24,13 @@ export function mapWebLocale(raw?: string | null): WebLocale | null {
   return null
 }
 
-export function rustLangFor(locale: WebLocale, _key: string = SITE_LOCALE_KEY): string {
-  return locale === 'zh' ? 'zh' : 'en'
+export function parseWebLocale(raw?: string | null, fallback: WebLocale = DEFAULT_WEB_LOCALE): WebLocale {
+  return mapWebLocale(raw) ?? fallback
+}
+
+/** Accept-Language / Rust 线上标签：与 cookie 相同，默认 `en`。 */
+export function rustLangFor(locale: WebLocale | string | null | undefined): WebLocale {
+  return parseWebLocale(locale)
 }
 
 function readCookie(name: string): string {
@@ -47,7 +47,7 @@ function readCookie(name: string): string {
   }
 }
 
-export function readStoredLocale(key: string = SITE_LOCALE_KEY, fallback: WebLocale = 'en'): WebLocale {
+export function readStoredLocale(key: string = SITE_LOCALE_KEY, fallback: WebLocale = DEFAULT_WEB_LOCALE): WebLocale {
   if (!import.meta.client) return fallback
   const mappedLs = mapWebLocale(localStorage.getItem(key))
   if (mappedLs) return mappedLs
@@ -58,9 +58,9 @@ export function readStoredLocale(key: string = SITE_LOCALE_KEY, fallback: WebLoc
 
 export function persistWebLocale(locale: WebLocale, key: string = SITE_LOCALE_KEY) {
   if (!import.meta.client) return
-  localStorage.setItem(key, locale)
+  const tag = parseWebLocale(locale)
+  localStorage.setItem(key, tag)
   const secure = location.protocol === 'https:' ? '; Secure' : ''
-  document.cookie = `${key}=${locale}; max-age=${MAX_AGE}; path=/; SameSite=Lax${secure}`
-  // Drop the leftover @nuxtjs/i18n cookie so only `lang` / `admin_lang` is the locale cookie.
+  document.cookie = `${key}=${tag}; max-age=${MAX_AGE}; path=/; SameSite=Lax${secure}`
   document.cookie = `i18n_redirected=; max-age=0; path=/; SameSite=Lax${secure}`
 }
