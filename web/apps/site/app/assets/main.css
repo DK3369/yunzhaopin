@@ -1585,6 +1585,63 @@ html.force-pc .site-h5 {
   }
 }
 
+/* 职位详情收藏：文案始终 Favorites，只换五角星空心/实心蓝，避免 AlreadyFavorite 把申请钮挤下去 */
+.site-pc .job_details_top_operation {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 18px;
+}
+.site-pc .job_details_top_operation_sc,
+.site-pc .job_details_top_operation_sq,
+.site-pc .job_details_top_operation_ysq {
+  flex: none;
+  margin-left: 0;
+  white-space: nowrap;
+}
+.site-pc .job_details_top_operation_sc,
+.site-pc .job_details_top_operation_sc:link,
+.site-pc .job_details_top_operation_sc:visited,
+.site-pc .job_details_top_operation_sc:hover,
+.site-pc .job_details_top_operation_sc:focus {
+  color: #2778f8;
+  text-decoration: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232778f8' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8l-6.5 4.2 1.8-7.2L1.7 10l7.4-.6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 20px center;
+  background-size: 18px 18px;
+}
+.site-pc .job_details_top_operation_sc.is-fav,
+.site-pc .job_details_top_operation_sc.is-fav:hover,
+.site-pc .job_details_top_operation_sc.is-fav:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232778f8'%3E%3Cpath d='M12 2.5l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8l-6.5 4.2 1.8-7.2L1.7 10l7.4-.6z'/%3E%3C/svg%3E");
+}
+.site-pc .job_ceil_jobsc.is-fav {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232778f8'%3E%3Cpath d='M12 2.5l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8l-6.5 4.2 1.8-7.2L1.7 10l7.4-.6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 16px 16px;
+}
+.site-h5 .job_show_fav,
+.site-h5 .job_show_fav:hover {
+  color: #2778f8;
+  text-decoration: none;
+}
+.site-h5 .job_show_fav::before {
+  content: '';
+  display: inline-block;
+  width: 0.32rem;
+  height: 0.32rem;
+  margin-right: 0.08rem;
+  vertical-align: -0.04rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232778f8' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8l-6.5 4.2 1.8-7.2L1.7 10l7.4-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.site-h5 .job_show_fav.is-fav::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232778f8'%3E%3Cpath d='M12 2.5l2.9 6.9 7.4.6-5.6 4.8 1.8 7.2L12 17.8l-6.5 4.2 1.8-7.2L1.7 10l7.4-.6z'/%3E%3C/svg%3E");
+}
+
 /* 职位详情 JD：覆盖 style.css / H5 * 重置（p/ul/h2 边距清零、列表无圆点） */
 .job_details_describe {
   word-break: normal;

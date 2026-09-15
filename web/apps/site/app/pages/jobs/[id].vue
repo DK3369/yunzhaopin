@@ -466,9 +466,13 @@ useHead({
               <div class="job_ceil_cont">
                 <span class="job_ceil_jobname">{{ job.name }}</span>
                 <span class="job_ceil_jobxz">{{ salary }}</span>
-                <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="toggleFav">{{
-                  fav ? $t('wap_00378') : $t('wap_00379')
-                }}</a>
+                <a
+                  href="javascript:;"
+                  class="job_ceil_jobsc"
+                  :class="{ 'is-fav': fav }"
+                  :aria-pressed="fav"
+                  @click.prevent="toggleFav"
+                >{{ $t('wap_00379') }}</a>
                 <template v-if="!jobClosed">
                 <a
                   v-if="applyCta.kind !== 'apply'"
@@ -529,9 +533,13 @@ useHead({
               />
               <template v-else>
               <div class="job_details_top_operation">
-                <a href="javascript:;" class="job_details_top_operation_sc" @click.prevent="toggleFav">{{
-                  fav ? $t('wap_00378') : $t('wap_00379')
-                }}</a>
+                <a
+                  href="javascript:;"
+                  class="job_details_top_operation_sc"
+                  :class="{ 'is-fav': fav }"
+                  :aria-pressed="fav"
+                  @click.prevent="toggleFav"
+                >{{ $t('wap_00379') }}</a>
                 <a
                   v-if="applyCta.kind !== 'apply'"
                   class="job_details_top_operation_ysq"
@@ -775,9 +783,13 @@ useHead({
               <span v-if="formatted.lastupdate_n">{{ $t('wap_00225') }} {{ formatted.lastupdate_n }}</span>
               <span v-if="hits">{{ $t('wap_user_00221') }} {{ hits }}</span>
               <span v-if="showSnum">{{ $t('wap_01587') }} {{ applyStats.snum }}{{ $t('common_02052') }}</span>
-              <a href="javascript:;" @click.prevent="toggleFav">{{
-                fav ? $t('wap_00378') : $t('wap_00379')
-              }}</a>
+              <a
+                href="javascript:;"
+                class="job_show_fav"
+                :class="{ 'is-fav': fav }"
+                :aria-pressed="fav"
+                @click.prevent="toggleFav"
+              >{{ $t('wap_00379') }}</a>
             </div>
           </div>
           <div v-if="welfare.length" class="job_describe_bottom">

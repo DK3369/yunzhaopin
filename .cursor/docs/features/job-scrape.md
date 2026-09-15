@@ -40,7 +40,7 @@
 
 | 页 | 行为 |
 |---|---|
-| `web/apps/site/app/pages/jobs/[id].vue` | 有 `apply_url`：未登录 → `/login?next=/jobs/{id}`（不进 quick-apply）；已登录 → POST apply，成功后 `about:blank` 再赋址新标签。CTA `ui.apply_official`。JD 包在 `.job-jd` 里，覆盖全局 CSS 重置（否则 `p`/`ul`/`h2` 没边距、列表没圆点，英文岗会挤成一条） |
+| `web/apps/site/app/pages/jobs/[id].vue` | 有 `apply_url`：未登录 → `/login?next=/jobs/{id}`（不进 quick-apply）；已登录 → POST apply，成功后 `about:blank` 再赋址新标签。CTA `ui.apply_official`。JD 包在 `.job-jd` 里，覆盖全局 CSS 重置（否则 `p`/`ul`/`h2` 没边距、列表没圆点，英文岗会挤成一条）。收藏钮文案始终 `wap_00379`，`is-fav` 只换五角星空心/实心蓝；不要切 `wap_00378` AlreadyFavorite（英文会把申请钮挤换行） |
 | `user/applications.vue` / `com/applications.vue` | 有 URL 则链出去；不新增会员标签。企业侧无简历时邀请等原按钮可不可用，不强行改 |
 
 文案：site `i18n` `ui.apply_official`（去官网申请 / Apply on company site）。
