@@ -193,6 +193,12 @@ const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } 
 const ceilShow = ref(false)
 const reportOpen = ref(false)
 watch(
+  () => id,
+  () => {
+    ceilShow.value = false
+  },
+)
+watch(
   favFromApi,
   (v) => {
     if (v) fav.value = true
@@ -451,7 +457,7 @@ useHead({
       <div
         class="job_ceil"
         id="float"
-        :style="ceilShow ? { position: 'fixed', top: '0px', display: 'block' } : undefined"
+        :class="{ 'is-on': ceilShow }"
       >
         <div class="job_ceil_box">
           <div class="job_ceil_box_bg" />

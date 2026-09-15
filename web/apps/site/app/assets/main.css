@@ -1523,6 +1523,68 @@ html.force-pc .site-h5 {
   }
 }
 
+/* 职位详情吸顶条：PHP comapply.css 用 padding-top 假装居中，英文 CTA 一换行标题就被基线拉到底 */
+@media (min-width: 1200px) {
+  .site-pc .job_ceil.is-on {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    overflow: hidden;
+    z-index: 1001;
+  }
+  .site-pc .job_ceil_box,
+  .site-pc .job_ceil_box_bg,
+  .site-pc .job_ceil_box_c {
+    height: 70px;
+  }
+  .site-pc .job_ceil_box {
+    width: 100%;
+  }
+  .site-pc .job_ceil_box_c {
+    display: flex;
+    align-items: center;
+  }
+  .site-pc .job_ceil_cont {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 70px;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .site-pc .job_ceil_jobname {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 40px;
+  }
+  .site-pc .job_ceil_jobxz,
+  .site-pc .job_ceil_jobsc {
+    flex: none;
+    line-height: 40px;
+  }
+  .site-pc .job_ceil_jobtd,
+  .site-pc .job_ceil_jobtd_ysq {
+    flex: none;
+    width: auto;
+    min-width: 100px;
+    max-width: 240px;
+    padding: 0 16px;
+    margin-left: 24px;
+    height: 40px;
+    line-height: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 /* 职位详情 JD：覆盖 style.css / H5 * 重置（p/ul/h2 边距清零、列表无圆点） */
 .job_details_describe {
   word-break: normal;
