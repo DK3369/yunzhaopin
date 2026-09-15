@@ -1,49 +1,9 @@
 <script setup lang="ts">
-import { readRecentJobs, readRecentResumes } from '~/utils/recentViews'
-
-const HISTORY = { job: 'job_key_history', resume: 'resume_key_history' }
-
-function readHistory(kind: 'job' | 'resume'): string[] {
-  if (!import.meta.client) return []
-  const raw = document.cookie
-    .split(';')
-    .map((x) => x.trim())
-    .find((x) => x.startsWith(`${HISTORY[kind]}=`))
-  if (!raw) return []
-  return decodeURIComponent(raw.split('=').slice(1).join('='))
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .slice(0, 10)
-}
-
-function pushHistory(kind: 'job' | 'resume', kw: string) {
-  if (!import.meta.client || !kw) return
-  const next = [kw, ...readHistory(kind).filter((x) => x !== kw)].slice(0, 10)
-  document.cookie = `${HISTORY[kind]}=${encodeURIComponent(next.join(','))}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`
-}
-
 const route = useRoute()
 const { t } = useI18n()
 const kw = computed(() => String(route.query.kw || ''))
 const scope = computed(() => String(route.query.scope || 'all'))
 const api = useApi()
-const jobHistory = ref<string[]>([])
-const resumeHistory = ref<string[]>([])
-const recentJobs = ref<ReturnType<typeof readRecentJobs>>([])
-const recentResumes = ref<ReturnType<typeof readRecentResumes>>([])
-onMounted(() => {
-  jobHistory.value = readHistory('job')
-  resumeHistory.value = readHistory('resume')
-  recentJobs.value = readRecentJobs()
-  recentResumes.value = readRecentResumes()
-  if (kw.value) {
-    if (scope.value === 'resume') pushHistory('resume', kw.value)
-    else pushHistory('job', kw.value)
-    jobHistory.value = readHistory('job')
-    resumeHistory.value = readHistory('resume')
-  }
-})
 const { data } = await useAsyncData(
   () => `search-${scope.value}-${kw.value}`,
   () =>
@@ -79,26 +39,6 @@ useSeoMeta({ title: kw.value ? `${kw.value} - ${t('common.search')}` : t('common
       <button type="submit">{{ $t('common.search') }}</button>
     </form>
     <p v-if="!kw" class="muted">{{ $t('default_00348') }}</p>
-    <div v-if="!kw && (jobHistory.length || resumeHistory.length)">
-      <h2>{{ $t('ui.search_history') }}</h2>
-      <p>
-        <NuxtLink v-for="h in jobHistory" :key="'j'+h" :to="`/search?scope=job&kw=${encodeURIComponent(h)}`">{{ h }}</NuxtLink>
-      </p>
-      <p>
-        <NuxtLink v-for="h in resumeHistory" :key="'r'+h" :to="`/search?scope=resume&kw=${encodeURIComponent(h)}`">{{ h }}</NuxtLink>
-      </p>
-    </div>
-    <div v-if="!kw && (recentJobs.length || recentResumes.length)">
-      <h2>{{ $t('member_com_00151') }}</h2>
-      <p v-if="recentJobs.length">
-        {{ $t('wap_01135') }}：
-        <NuxtLink v-for="j in recentJobs" :key="'rj'+j.id" :to="`/jobs/${j.id}`" style="margin-right: 8px">{{ j.name }}</NuxtLink>
-      </p>
-      <p v-if="recentResumes.length">
-        {{ $t('member_com_00006') }}：
-        <NuxtLink v-for="r in recentResumes" :key="'rr'+r.uid" :to="`/resumes/${r.uid}`" style="margin-right: 8px">{{ r.name }}</NuxtLink>
-      </p>
-    </div>
     <template v-else>
       <template v-if="scope === 'all' || scope === 'job'">
         <h2>{{ $t('common.job') }}</h2>
