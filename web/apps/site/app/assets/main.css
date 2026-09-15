@@ -2195,6 +2195,14 @@ html.force-pc .site-h5 {
     text-align: center;
     padding: 0 0.04rem;
   }
+  .site-h5 .job_header_nav .h5-filter {
+    flex: 1;
+    min-width: 0;
+  }
+  .site-h5 .job_header_nav .job_header_nav_right {
+    width: 100%;
+    padding-left: 0.24rem;
+  }
 }
 
 .Binding_pop_mask {

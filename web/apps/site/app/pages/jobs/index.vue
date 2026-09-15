@@ -553,23 +553,6 @@ function goPage(p: number) {
       </form>
     </div>
     <div class="job_header_nav resumeAdeFlex">
-      <div class="job_header_nav_left category">
-        <ul>
-          <li :class="{ active: !urgent }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined }) }">{{
-              $t('common.latest')
-            }}</NuxtLink>
-          </li>
-          <li :class="{ active: urgent }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1' }) }">{{
-              $t('wap_com_00250')
-            }}</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/map">{{ $t('wap_00223') }}</NuxtLink>
-          </li>
-        </ul>
-      </div>
       <H5FilterBar
         :all-label="$t('common.all')"
         :tabs="[
