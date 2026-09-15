@@ -99,14 +99,19 @@ const total = computed(() => inferTotal(data.value))
         </div>
       </div>
       <div class="m_cardbox">
-        <MemberSxNewsCard
+        <div
           v-for="row in data?.list || []"
           :key="'h5-' + row.id"
-          :kicker="$t('wap_user_00361')"
-          :title="String(row.body || row.content || row.title || row.id)"
-          :time="row.datetime_n"
-          :on-delete="() => remove(row.id)"
-        />
+          @click="read(row.id); openId = openId === row.id ? 0 : row.id"
+        >
+          <MemberSxNewsCard
+            :kicker="$t('wap_user_00361')"
+            :title="String(row.body || row.content || row.title || row.id)"
+            :time="row.datetime_n"
+            :on-delete="() => remove(row.id)"
+          />
+          <div v-if="openId === row.id" class="sx_tm">{{ row.body || row.content || row.title }}</div>
+        </div>
       </div>
     </div>
     <p class="user_czbth site-pc">

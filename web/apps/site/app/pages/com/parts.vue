@@ -227,8 +227,21 @@ useSeoMeta({ title: t('member_com_00480') })
         <div class="position_body_card_top">
           <span class="body_card_top_name">{{ row.name || row.id }}</span>
         </div>
-        <div class="position_body_card_bom">
+        <div class="position_body_card_center">
           <span>{{ partState(row) }}</span>
+        </div>
+        <div class="position_body_card_bom">
+          <ul>
+            <li @click="refreshPart(row.id)">
+              <div class="body_card_bom_name">{{ $t('wap_user_00199') }}</div>
+            </li>
+            <li @click="fill(row)">
+              <div class="body_card_bom_name">{{ $t('common.edit') }}</div>
+            </li>
+            <li @click="removePart(row.id)">
+              <div class="body_card_bom_name">{{ $t('common.delete') }}</div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -246,6 +259,10 @@ useSeoMeta({ title: t('member_com_00480') })
       <template #pc-acts="{ row }">
         <a href="javascript:;" class="cblue" @click="setApply(Number(row.key), 2)">{{ $t('wap_user_00258') }}</a>
         <a href="javascript:;" class="cblue" @click="setApply(Number(row.key), 3)">{{ $t('wap_com_00046') }}</a>
+      </template>
+      <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="setApply(Number(row.key), 2)">{{ $t('wap_user_00258') }}</div>
+        <div class="hr_userlist_czicon" @click="setApply(Number(row.key), 3)">{{ $t('wap_com_00046') }}</div>
       </template>
     </MemberHrResumeRows>
     <p v-if="buyHint" class="muted">

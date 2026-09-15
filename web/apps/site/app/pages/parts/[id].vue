@@ -79,7 +79,7 @@ useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ row.name || $t('member_com_00477') }}</h1>
     <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
     <template v-else>
@@ -110,4 +110,63 @@ useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
       <p v-if="msg">{{ msg }}</p>
     </template>
   </article>
+  <div class="site-h5" style="padding-bottom: 1.8rem">
+    <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
+    <template v-else>
+      <div class="jz_top_box">
+        <div class="jz_top_box_tit">
+          <h2>{{ row.name || $t('member_com_00477') }}</h2>
+          <div class="jz_comname">{{ row.com_name }}</div>
+          <span v-if="row.is_rec" class="part_hot">{{ $t('wap_01392') }}</span>
+          <div v-if="row.billing_cycle_n" class="Part_jsfs">{{ row.billing_cycle_n }}</div>
+          <div v-if="salaryLine" class="jz_top_box_xz">{{ salaryLine }}</div>
+        </div>
+        <div class="yun_jzdata">
+          <span v-if="cityLine">{{ cityLine }}</span>
+          <span v-if="Number(row.hits)">{{ $t('wap_user_00221') }}：{{ row.hits }}</span>
+        </div>
+      </div>
+      <div class="yun_newedition_jobshow_content">
+        <div class="yun_newedition_showtit">{{ $t('wap_00456') }}</div>
+        <div class="jz_show_cont">
+          <ul class="user_contnet_ul user_contnet_ul_jz">
+            <li v-if="row.part_type_n"><span class="user_contnet_info_n">{{ $t('member_com_00313') }}：</span>{{ row.part_type_n }}</li>
+            <li v-if="row.number"><span class="user_contnet_info_n">{{ $t('wap_com_00333') }}：</span>{{ row.number }}{{ $t('common_02051') }}</li>
+            <li v-if="row.sex_n"><span class="user_contnet_info_n">{{ $t('wap_com_00332') }}：</span>{{ row.sex_n }}</li>
+            <li v-if="row.edate_n"><span class="user_contnet_info_n">{{ $t('wap_01394') }}</span>{{ row.edate_n }}</li>
+            <li v-if="row.worktime"><span class="user_contnet_info_n">{{ $t('wap_00456') }}：</span>{{ row.worktime }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="yun_newedition_jobshow_content">
+        <div class="yun_newedition_showtit">{{ $t('wap_00462') }}</div>
+        <div class="jz_show_cont">
+          <ul>
+            <li v-if="row.linkman">{{ $t('wap_01431') }}：{{ row.linkman }}</li>
+            <li v-if="Number(row.link_tip) > 0">{{ $t('wap_user_00265') }}：{{ $t('wap_01395') }}</li>
+            <li v-else-if="tel">{{ $t('wap_user_00265') }}：{{ tel }}</li>
+            <li v-if="cityLine">{{ cityLine }}</li>
+            <li v-if="row.address"><span class="user_contnet_info_n">{{ $t('wap_user_00243') }}：</span>{{ row.address }}</li>
+            <li v-if="mapHref"><NuxtLink :to="mapHref">{{ $t('wap_00223') }}</NuxtLink></li>
+          </ul>
+        </div>
+      </div>
+      <div class="yun_newedition_jobshow_content">
+        <div class="yun_newedition_showtit">{{ $t('wap_00374') }}</div>
+        <div v-if="row.content" class="part_show_cont" v-html="String(row.content)" />
+        <p v-else-if="!row.name" class="muted">{{ $t('member_com_00477') }}</p>
+      </div>
+      <section class="makeAcallput">
+        <div class="makeAcalShouc" @click="collect">
+          <span>{{ $t('wap_00379') }}</span>
+        </div>
+        <div class="makeAcalBune">
+          <div class="makeAcalBaom">
+            <a href="javascript:;" :class="{ disabled: acting }" @click.prevent="apply">{{ $t('wap_00375') }}</a>
+          </div>
+        </div>
+      </section>
+      <p v-if="msg" class="muted">{{ msg }}</p>
+    </template>
+  </div>
 </template>

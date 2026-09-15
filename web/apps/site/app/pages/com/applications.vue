@@ -154,6 +154,7 @@ function browseZt(s?: number) {
 }
 const ypOpen = ref(false)
 const moreOpen = ref(false)
+const stateOpen = ref(0)
 function browseLabel(s?: number) {
   const map: Record<number, string> = {
     1: t('wap_user_00260'),
@@ -380,6 +381,11 @@ useSeoMeta({ title: t('member_com_00454') })
             @open="openResume(row)"
           >
             <div class="hr_userlist_czicon" @click="pick(row)">{{ $t('wap_com_00046') }}</div>
+            <div class="hr_userlist_czicon" @click="openRemark(row)">{{ $t('member_user_00242') }}</div>
+            <div class="hr_userlist_czicon" @click="stateOpen = stateOpen === row.id ? 0 : row.id">{{ browseLabel(row.is_browse) || $t('member_user_00181') }}</div>
+            <div v-if="stateOpen === row.id" class="hr_userlist_cz_menu">
+              <a v-for="s in [1, 2, 3, 4, 5, 7]" :key="s" href="javascript:;" @click.prevent="setState(row.id, s); stateOpen = 0">{{ browseLabel(s) }}</a>
+            </div>
             <div class="hr_userlist_czicon" @click="removeRow(row.id)">{{ $t('common.delete') }}</div>
           </MemberHrUserCard>
         </div>

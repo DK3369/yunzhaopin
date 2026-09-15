@@ -41,7 +41,7 @@ useHead({
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ article.title || $t('ui.article_missing') }}</h1>
     <div v-if="article.content || article.body" v-html="String(article.content || article.body)" />
     <p v-else class="muted">{{ $t('common_02409') }}</p>
@@ -54,4 +54,29 @@ useHead({
       <SimpleCard v-for="row in related" :key="row.id" :to="`/articles/${row.id}`" :title="row.title" />
     </div>
   </article>
+  <div class="site-h5 news_cont_box">
+    <div class="news_cont_box_tit">
+      <h1>{{ article.title || $t('ui.article_missing') }}</h1>
+    </div>
+    <div class="news_cont_ms">
+      {{ article.datetime_n || article.starttime_n || '' }}
+      <span v-if="article.source || article.author" class="news_list_box_ly">{{ article.source || article.author }}</span>
+    </div>
+    <div class="wap_news_cont">
+      <div v-if="article.content || article.body" class="wap_txt link_lan" v-html="String(article.content || article.body)" />
+      <p v-else class="muted">{{ $t('common_02409') }}</p>
+    </div>
+    <div v-if="related.length" class="atc_news_tj">
+      <div class="news_in_tit"><span>{{ $t('wap_01474') }}</span></div>
+      <ul>
+        <li v-for="row in related" :key="'h5r-' + row.id">
+          <NuxtLink :to="`/articles/${row.id}`">{{ row.title }}</NuxtLink>
+        </li>
+      </ul>
+    </div>
+    <p class="muted">
+      <NuxtLink v-if="prev?.id" :to="`/articles/${prev.id}`">{{ $t('default_00326') }} {{ prev.title }}</NuxtLink>
+      <NuxtLink v-if="next?.id" :to="`/articles/${next.id}`">{{ $t('default_00327') }} {{ next.title }}</NuxtLink>
+    </p>
+  </div>
 </template>

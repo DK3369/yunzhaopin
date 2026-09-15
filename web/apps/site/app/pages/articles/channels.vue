@@ -72,7 +72,7 @@ useSeoMeta({ title: t('wap_00145') })
 </script>
 
 <template>
-  <section>
+  <section class="site-pc">
     <h1>{{ $t('wap_00145') }}</h1>
     <p>
       <NuxtLink to="/articles">{{ $t('wap_user_00298') }}</NuxtLink>
@@ -94,4 +94,21 @@ useSeoMeta({ title: t('wap_00145') })
       </li>
     </ul>
   </section>
+  <div class="site-h5">
+    <div class="articlemune_tit">
+      {{ $t('wap_01463') }}
+      <NuxtLink to="/articles" class="articlemune_tit_bj">{{ $t('wap_user_00298') }}</NuxtLink>
+    </div>
+    <ul class="articlemune">
+      <li v-for="id in newc" :key="'hn' + id" @click="dropNew(id)">
+        <a>{{ nameOf(id) }}<i class="articlemune_icon" /></a>
+      </li>
+    </ul>
+    <div class="articlemune_tit">{{ $t('wap_01464') }}</div>
+    <ul class="articlemune">
+      <li v-for="id in oldc" :key="'ho' + id" @click="addNew(id)">
+        <a>{{ nameOf(id) }}</a>
+      </li>
+    </ul>
+  </div>
 </template>

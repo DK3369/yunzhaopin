@@ -176,8 +176,9 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 已经齐的不当缺口：首页、职位/企业/简历列表与详情、注册；求职投递状态 tab、足迹删除、财务/积分、`/user/set`、密码/认证/绑定分端皮；招聘应聘管线 `hr_userlist`、多数 `com_cardlist`。登录页是自研 `lgp-*`（不是 PHP `login_cont`），**先别改**。
 
 - **第一期（已做）**：PC 有、H5 卡上点不到的动作。简历分享/删作品技能/缺项/置顶；面试拒信表单进 H5 卡；收藏/关注取消；投递天数第二行 tab；职位 H5 最新/急聘（`urgent=1`）+ 地图 `/map`；企业 H5 已认证 `cert=1` + 福利；`/com/jobs` H5 推广/下架/删除/分享。
-- **第二期**：资讯/兼职/问答等仍用 `NewsListShell` 的 PC `index_news_list_*`，要换 WAP 频道皮。
-- **第三期**：登录是否换成 `login_cont`；`/com/profile` H5 表单；消息 H5 单条已读（WAP 不是 PC 勾选批量）。求职首页 H5 默认不加 PC 那块推荐职位。
+- **第二期前半（已做）**：资讯/兼职/问答公开列表+详情换成 WAP 皮（`news_in_*` / `part_box`+`jz_top_box` / `ask_header_bg`+`ask_ct_list`+`askct_iss`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。问答 `ask.css` 只在问答页 `useHead`，不进全局 H5 包。会员补动作：应聘 H5 状态/备注；企业兼职 H5 刷新/编辑/删除 + 报名 `#h5-acts`；求职兼职卡删除；求职消息点卡已读并展开（不要 PC 勾选批量）。
+- **第二期后半**：招聘会/专题/once/tiny、公告/公招/HR/兑换、搜索/地图页壳。
+- **第三期**：登录是否换成 `login_cont`；`/com/profile` H5 表单。求职首页 H5 默认不加 PC 那块推荐职位。
 
 ## 命名陷阱
 

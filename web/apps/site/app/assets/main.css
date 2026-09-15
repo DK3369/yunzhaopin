@@ -466,6 +466,43 @@ html.force-pc .site-h5 {
   a.mqnewlist.site-h5 {
     display: inline-block;
   }
+  .site-h5 .news-h5-cats {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    height: 1.066667rem;
+    line-height: 1.066667rem;
+    padding-right: 0.16rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .site-h5 .news-h5-cat {
+    flex: none;
+    padding: 0 0.266667rem;
+    font-size: 0.4rem;
+    color: #666;
+    text-decoration: none;
+  }
+  .site-h5 .news-h5-cat.swiper-slidea {
+    font-weight: 700;
+    color: #2778f8;
+  }
+  .site-h5 .hr_userlist_cz_menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.16rem;
+    width: 100%;
+    padding: 0.12rem 0;
+  }
+  .site-h5 .hr_userlist_cz_menu a {
+    font-size: 0.32rem;
+    color: #2778f8;
+  }
+  .site-h5 .sx_tm {
+    padding: 0.16rem 0.32rem 0.32rem;
+    font-size: 0.32rem;
+    color: #666;
+    line-height: 1.5;
+  }
   button.login_bth {
     width: 100%;
     border: 0;

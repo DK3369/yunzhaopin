@@ -92,7 +92,11 @@ useSeoMeta({ title: t('wap_user_00303') })
           :sub="row.com_name"
           :time="row.ctime_n"
           :to="row.job_id ? `/parts/${row.job_id}` : undefined"
-        />
+        >
+          <div class="Posted_state_hrtip">
+            <a href="javascript:;" @click.prevent="tab === 'apply' ? delApply(row.id) : delCollect(row.id)">{{ $t('common.delete') }}</a>
+          </div>
+        </MemberPostedCard>
       </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
