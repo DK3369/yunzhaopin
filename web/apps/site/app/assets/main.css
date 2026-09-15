@@ -1384,6 +1384,54 @@ html.force-pc .site-h5 {
     width: auto;
     min-width: 0;
   }
+  /* H5 简历皮（member-user-h5）会打到 PC DOM；PC 仍走 user_resume_box / verification_form */
+  .member-shell-resume .Edit_your_resume_min_body,
+  .member-shell-resume .resume_min_body_cord {
+    padding: 0;
+    width: auto;
+    background: transparent;
+    border-radius: 0;
+  }
+  .member-shell-resume .yun_createbox {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    width: auto;
+  }
+  .member-shell-resume .yun_createlist {
+    padding-left: 0;
+    padding-right: 0;
+    position: static;
+    border-bottom: 0;
+    font-size: inherit;
+  }
+  .member-shell-resume .yun_create_name {
+    position: static;
+    left: auto;
+    line-height: inherit;
+    font-size: 14px;
+    color: #333;
+    padding: 8px 0 4px;
+  }
+  .member-shell-resume .yun_create_text input,
+  .member-shell-resume .yun_create_text select,
+  .member-shell-resume .yun_create_text textarea {
+    display: block;
+    width: 400px;
+    max-width: 100%;
+    margin: 8px 0;
+    padding: 8px 12px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 36px;
+    font-size: 14px;
+    color: inherit;
+  }
+  .member-shell-resume .yun_create_text textarea {
+    height: auto;
+    min-height: 88px;
+  }
 }
 
 .job_bottomcont {
@@ -2004,6 +2052,7 @@ html.force-pc .site-h5 {
   .yun_m_rightbox,
   .yun_m_rightbox.member-page-body,
   .resume_box_list,
+  .user_resume_list,
   .com_body.member-page-body {
     width: 100% !important;
     float: none !important;
@@ -2079,8 +2128,69 @@ html.force-pc .site-h5 {
     width: 100%;
   }
   /* PHP 首页 userheader 全宽；wap_member 的左右 padding 只给子页 */
-  .member-shell-home .yun_m_rightsidebar > .wap_member {
+  .member-shell-home .yun_m_rightsidebar > .wap_member,
+  .member-shell-resume .yun_m_rightsidebar > .wap_member {
     padding: 0;
+  }
+  .member-shell-resume .user_resume_list {
+    display: contents;
+  }
+  .site-h5 .data_left_name {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: 5.2rem;
+  }
+  .member-shell-resume .resume_bot {
+    bottom: 1.813333rem;
+    z-index: 90;
+  }
+  .member-shell-resume .Edit_your_resume_min_body {
+    padding-bottom: 3.2rem;
+  }
+  .member-shell-resume .Edit_your_resume_min_body,
+  .member-shell-resume .resume_min_body_cord,
+  .member-shell-resume .create_resume {
+    box-sizing: border-box;
+  }
+  .site-h5 .resume_min_body_cord .member-resume-section-form,
+  .member-shell-resume .resume_min_body_cord .member-resume-section-form {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .site-h5 .yun_create_text select,
+  .site-h5 .yun_create_text textarea {
+    width: 100%;
+    min-height: 1.533333rem;
+    border: 0;
+    background: transparent;
+    font-size: 0.4rem;
+    box-sizing: border-box;
+  }
+  .site-h5 button.Create_resume_btn,
+  .site-h5 .yun_createbox .verification_form_btn,
+  .member-shell-resume .yun_createbox .verification_form_btn {
+    margin: 0.533333rem 0.32rem;
+    width: calc(100% - 0.64rem);
+    height: 1.28rem;
+    background-color: #2778f8;
+    border-radius: 0.213333rem;
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.453333rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+  }
+  .site-h5 .create_resume {
+    height: auto;
+    min-height: 3.2rem;
+  }
+  .site-h5 .create_resume_h1 {
+    padding-top: 0.4rem;
   }
   /* PHP 相对 header 绝对定位；Vue 已有 header_h，改回文档流否则宫格飞出视口 */
   .member-page .position_management_body,
@@ -2128,6 +2238,12 @@ html.force-pc .site-h5 {
     margin: 0.16rem 0.24rem 0.32rem;
     padding: 0.24rem;
     border-radius: 0.213333rem;
+  }
+  .site-h5 .resume_min_body_cord .member-resume-section-form,
+  .member-shell-resume .resume_min_body_cord .member-resume-section-form {
+    background: transparent;
+    margin: 0;
+    padding: 0;
   }
   .com_release_box {
     background: #fff;

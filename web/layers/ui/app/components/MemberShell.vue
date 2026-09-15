@@ -4,6 +4,7 @@
     :class="[
       kind === 'com' ? 'member-shell-com' : 'member-shell-user',
       isMemberHome ? 'member-shell-home' : '',
+      isResumeSkin ? 'member-shell-resume' : '',
     ]"
   >
     <template v-if="kind === 'user'">
@@ -117,6 +118,10 @@ const route = useRoute()
 const userMoreOpen = ref(false)
 const comMoreOpen = ref(false)
 const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
+const isResumeSkin = computed(() => {
+  const p = route.path
+  return p === '/user/resume' || p.startsWith('/user/resume/') || p === '/user/expects'
+})
 
 const { data: userDash } = useAsyncData(
   () => (props.kind === 'user' ? 'user-dash' : 'hdr-skip-user-dash'),

@@ -54,7 +54,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | `user_new_tit` | `resume_box_list` | 申请、面试、谁看过、收藏、足迹、速配 |
 | `member_right_index_h1` | **仍要** `resume_box_list`（对照 PHP 实际有包层） | 关注、消息、咨询、兼职、被下载、举报、测评、隐私、绑定、充值、财务、搜索器、外发、注销、意见反馈 |
 | `member_right_index_h1` | **不要** `resume_box_list` | 积分、密码、认证、账户设置入口、邀请注册、简历模板 |
-| `user_new_tit` | `user_resume_list` | `/user/resume`、`/user/expects` |
+| `user_new_tit` | `user_resume_list` | `/user/resume`、`/user/expects`（H5 编辑是一张 `resume_min_body_cord`；空简历用 `create_resume` + `yun_createlist`，不要 PC `MemberField`） |
 | 招聘 `/com/*` | `com_body` + `newmember_tit` | 空态 PC `com_msg_no*`，H5 `none_position_body*`；**不要**求职 `msg_no` / `uesr_submit` |
 
 求职表单：`MemberField` 给 input 打 `verification_text`。招聘发职位/资料：`MemberReleaseRow`（必须放在 `com_release_box > ul` 里的 `<li>`）给 input 打 `com_release_textnew_text`；提交用 `btn_01`，不要 `verification_form_btn`。
@@ -102,6 +102,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - `/com/set` 链到 `/user/account`（串皮）
 - 新开 PHP 企业导航自定义 `customize`
 - 把简历拆成十几条 WAP 子路由（仍在 `/user/resume` 同页编辑，点小节再展开表单）
+- H5 `/user/resume` 把小节漂在 `wap_member` 灰底外（应对齐 PHP `resume.htm`：灰底 `Edit_your_resume_min_body` 里一张 `resume_min_body_cord`）
+- H5 简历表单继续用 PC `verification_formname`（应对 `yun_createlist` / `Create_resume_btn`）
 - `.site-pc` / `.site-h5` 显示时写死 `display: block`（会打扁 flex）
 - H5 用首页 `job-card`；消息/咨询用 `MemberPostedCard` 冒充
 - 不要 `overflow:hidden`（会裁掉左栏「更多」飞出层）
@@ -179,8 +181,8 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 - 导航：`web/layers/ui/app/composables/useMemberNav.ts`（按 `isMemberModuleOn` 过滤）、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype` + 职位模块；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
 - 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
-- 表单：`MemberField.vue`（求职 `verification_form*` + `verification_text`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
-- 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单
+- 表单：`MemberField.vue`（求职 PC `verification_form*` + `verification_text`；H5 简历 `wap` → `yun_createlist`，不要再打 `verification_formname`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
+- 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单。H5 `/user/resume` 是一张 `resume_min_body_cord`（空简历 `create_resume`）；H5 表单 `yun_createlist` / `Create_resume_btn`，不是 PC `MemberField`
 - 分页：`useMemberListPage.ts`
 - 页：`web/apps/site/app/pages/user/*`、`pages/com/*`
 - CSS：`legacyCss.ts`；切皮与壳：`web/apps/site/app/assets/main.css`
