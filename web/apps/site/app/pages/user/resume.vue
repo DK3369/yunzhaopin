@@ -535,6 +535,10 @@ useSeoMeta({ title: t('wap_user_00204') })
             </div>
             <div v-if="form.description" class="cord_work_experience_four">{{ form.description }}</div>
           </div>
+          <div v-if="missingBits.length || integrity" class="resume_hint_word" @click="toggleSec('basic')">
+            <span v-if="integrity" class="resume_hint_word_black">{{ integrity }}%</span>
+            <span v-if="missingBits.length" class="resume_hint_word_color">{{ missingBits.map(missingLabel).join(' · ') }}</span>
+          </div>
         </div>
     <div class="site-pc">
       <div class="user_resume_box">
@@ -755,17 +759,15 @@ useSeoMeta({ title: t('wap_user_00204') })
             <p v-if="!skillRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
-            <div
-              v-for="row in skillRows"
-              :key="'h5-sk-' + row.id"
-              class="cord_intention_bom"
-              @click="fillSkill(row)"
-            >
-              <div class="data_left_skill">
+            <div v-for="row in skillRows" :key="'h5-sk-' + row.id" class="cord_intention_bom">
+              <div class="data_left_skill" @click="fillSkill(row)">
                 <ul>
                   <li class="cord_intention_jnmane">{{ row.name }}</li>
                   <li v-if="row.years">{{ row.years }}</li>
                 </ul>
+              </div>
+              <div class="cord_intention_bom_icon" @click.stop="delChild('skills', row, refreshSkills)">
+                <img src="/legacy/h5/images/resume_del.png" alt="" width="100%" height="100%" />
               </div>
             </div>
           </template>
@@ -939,8 +941,11 @@ useSeoMeta({ title: t('wap_user_00204') })
       <template #h5>
         <div class="resume_min_body_Individual_works_photo">
           <ul>
-            <li v-for="row in shows?.list || []" :key="'h5s-' + row.id">
+            <li v-for="row in shows?.list || []" :key="'h5s-' + row.id" class="member-resume-show-item">
               <img v-if="row.picurl" :src="mediaUrl(row.picurl)" alt="" width="100%" height="100%" />
+              <span class="member-resume-show-del" @click.stop="removeShow(row.id)">
+                <img src="/legacy/h5/images/resume_del.png" alt="" width="100%" height="100%" />
+              </span>
             </li>
           </ul>
         </div>
@@ -952,7 +957,7 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeSection :title="$t('common.share')" icon="yun_resume_h1_iconfj" h5-kind="none" :open="openSec === 'share'" @toggle="toggleSec('share')">
+        <MemberResumeSection :title="$t('common.share')" icon="yun_resume_h1_iconfj" :open="openSec === 'share'" @toggle="openAdd('share')">
       <template #pc>
         <div v-for="row in shareTokens?.list || []" :key="row.token" class="user_resume_box">
           <div class="user_resume_name">
@@ -964,7 +969,12 @@ useSeoMeta({ title: t('wap_user_00204') })
       </template>
       <template #h5>
         <div v-for="row in shareTokens?.list || []" :key="'h5sh-' + row.token" class="work_list">
-          <NuxtLink :to="`/share/resume/${row.token}`">{{ row.token }}</NuxtLink>
+          <div class="cord_work_experience_two">
+            <NuxtLink :to="`/share/resume/${row.token}`" class="cord_work_experience_two_word">{{ row.token }}</NuxtLink>
+            <div v-if="row.active" class="cord_work_experience_two_icon" @click.stop="revokeShare(row.token)">
+              <img src="/legacy/h5/images/resume_del.png" alt="" width="100%" height="100%" />
+            </div>
+          </div>
         </div>
       </template>
       <template #form>
@@ -978,6 +988,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <div class="site-h5 resume_bot">
         <div class="Edit_your_resume_tail">
           <div class="Edit_your_resume_Update_your_resume" @click="refreshResume">{{ $t('wap_user_00199') }}</div>
+          <div class="Edit_your_resume_Update_your_resume" @click="buyTop">{{ $t('wap_user_00207') }}</div>
           <NuxtLink v-if="data?.uid" :to="`/resumes/${data.uid}`" class="Edit_your_resume_Preview_your_resume">{{ $t('wap_user_00217') }}</NuxtLink>
         </div>
       </div>

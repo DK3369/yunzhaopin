@@ -174,16 +174,21 @@ const list = computed(() => data.value?.list || [])
   </div>
   <div class="site-h5">
     <div class="job_header_nav resumeAdeFlex">
-      <div class="job_header_nav_left category" style="width: 30%">
+      <div class="job_header_nav_left category" style="width: 42%">
         <ul>
-          <li :class="{ active: !rec }">
-            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: undefined }) }">{{
+          <li :class="{ active: !rec && !cert }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: undefined, cert: undefined }) }">{{
               $t('common.all')
             }}</NuxtLink>
           </li>
           <li :class="{ active: rec }">
-            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: '1' }) }">{{
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: '1', cert: undefined }) }">{{
               $t('home.famous_companies')
+            }}</NuxtLink>
+          </li>
+          <li :class="{ active: cert }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { cert: '1', rec: undefined }) }">{{
+              $t('wap_00288')
             }}</NuxtLink>
           </li>
         </ul>
@@ -202,8 +207,17 @@ const list = computed(() => data.value?.list || [])
             grandItems: cityItems,
           },
           { key: 'hy', label: $t('admin_user_company_00373'), items: industries || [] },
-          { key: 'pr', label: $t('wap_com_00159'), items: natures || [] },
-          { key: 'mun', label: $t('wap_com_00163'), items: sizes || [] },
+          {
+            key: 'more',
+            label: $t('wap_00238'),
+            kind: 'more',
+            items: [],
+            groups: [
+              { label: $t('wap_com_00159'), param: 'pr', items: natures || [] },
+              { label: $t('wap_com_00163'), param: 'mun', items: sizes || [] },
+              { label: $t('wap_com_00167'), param: 'welfare', items: welfares || [] },
+            ],
+          },
         ]"
       />
     </div>

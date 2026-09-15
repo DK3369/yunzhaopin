@@ -159,6 +159,14 @@ useSeoMeta({ title: t('wap_user_00216') })
             <div class="card_interview_text">{{ row.address }} {{ row.linkman }} {{ row.linktel }}</div>
             <div v-if="row.content" class="card_interview_time">{{ row.content }}</div>
           </p>
+          <form v-if="rejectId === row.id" class="invite_no" @submit.prevent="reject(row.id)" @click.stop>
+            <div class="invite_no_textarea">
+              <textarea v-model="remark" :placeholder="$t('wap_01053')" />
+            </div>
+            <div class="invite_no_bth">
+              <button type="submit">{{ $t('common.confirm') }}</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

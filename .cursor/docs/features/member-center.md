@@ -169,6 +169,16 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 
 PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
+## H5 / PC 对齐分期
+
+一套路由、`.site-pc` / `.site-h5` 切皮，**只加 H5 / 窄屏 CSS，不改 `.site-pc` 内部结构**。
+
+已经齐的不当缺口：首页、职位/企业/简历列表与详情、注册；求职投递状态 tab、足迹删除、财务/积分、`/user/set`、密码/认证/绑定分端皮；招聘应聘管线 `hr_userlist`、多数 `com_cardlist`。登录页是自研 `lgp-*`（不是 PHP `login_cont`），**先别改**。
+
+- **第一期（已做）**：PC 有、H5 卡上点不到的动作。简历分享/删作品技能/缺项/置顶；面试拒信表单进 H5 卡；收藏/关注取消；投递天数第二行 tab；职位 H5 最新/急聘（`urgent=1`）+ 地图 `/map`；企业 H5 已认证 `cert=1` + 福利；`/com/jobs` H5 推广/下架/删除/分享。
+- **第二期**：资讯/兼职/问答等仍用 `NewsListShell` 的 PC `index_news_list_*`，要换 WAP 频道皮。
+- **第三期**：登录是否换成 `login_cont`；`/com/profile` H5 表单；消息 H5 单条已读（WAP 不是 PC 勾选批量）。求职首页 H5 默认不加 PC 那块推荐职位。
+
 ## 命名陷阱
 
 - PHP `member/user/invite.htm` = **面试通知** → Vue `/user/interviews`
@@ -182,7 +192,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - 导航：`web/layers/ui/app/composables/useMemberNav.ts`（按 `isMemberModuleOn` 过滤）、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype` + 职位模块；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
 - 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
 - 表单：`MemberField.vue`（求职 PC `verification_form*` + `verification_text`；H5 简历 `wap` → `yun_createlist`，不要再打 `verification_formname`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
-- 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单。H5 `/user/resume` 是一张 `resume_min_body_cord`（空简历 `create_resume`）；H5 表单 `yun_createlist` / `Create_resume_btn`，不是 PC `MemberField`。意向接口字段是 `job_class_n` / `city_class_n` / `salary_n`，不是 `job_classid_n`。小节头上的 + 是新增（会清空表单），点经历行才是编辑。
+- 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单。H5 `/user/resume` 是一张 `resume_min_body_cord`（空简历 `create_resume`）；H5 表单 `yun_createlist` / `Create_resume_btn`，不是 PC `MemberField`。意向接口字段是 `job_class_n` / `city_class_n` / `salary_n`，不是 `job_classid_n`。小节头上的 + 是新增（会清空表单），点经历行才是编辑。H5 分享与 PC 同一套 token 接口（卡内小节，不要 `h5Kind=none`）；作品格/技能行可删；缺项用一行 `resume_hint_word`，不要搬 PC `user_resume_wzd`；置顶走现有 `/v1/mcenter/resume/top`。
 - 分页：`useMemberListPage.ts`
 - 页：`web/apps/site/app/pages/user/*`、`pages/com/*`
 - CSS：`legacyCss.ts`；切皮与壳：`web/apps/site/app/assets/main.css`

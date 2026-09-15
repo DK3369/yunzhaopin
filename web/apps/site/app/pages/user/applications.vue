@@ -119,6 +119,15 @@ useSeoMeta({ title: t('wap_user_00270') })
         </ul>
       </div>
     </div>
+    <div class="site-h5 m_tab">
+      <div class="m_tabbox category">
+        <ul>
+          <li v-for="tab in dayTabs" :key="'d' + String(tab.v)" :class="{ m_tabactive: days === tab.v }" @click="days = tab.v">
+            {{ tab.label }}
+          </li>
+        </ul>
+      </div>
+    </div>
     <div v-if="list.length" class="user_new_listtit site-pc">
       <div class="user_new_job" style="width: 260px">{{ $t('member_user_00105') }}</div>
       <div class="user_new_time">{{ $t('member_user_00106') }}</div>

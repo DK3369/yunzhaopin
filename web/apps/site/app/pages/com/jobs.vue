@@ -248,6 +248,17 @@ async function reservePicked(status: number) {
 }
 useSeoMeta({ title: t('wap_com_00106') })
 const jobTotal = computed(() => inferTotal(data.value, list.value))
+const h5Menu = ref(0)
+const h5MenuKind = ref<'promote' | 'more' | ''>('')
+function toggleH5Menu(id: number, kind: 'promote' | 'more') {
+  if (h5Menu.value === id && h5MenuKind.value === kind) {
+    h5Menu.value = 0
+    h5MenuKind.value = ''
+    return
+  }
+  h5Menu.value = id
+  h5MenuKind.value = kind
+}
 const jobTabs = computed(() => [
   { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.online, select: () => { w.value = 1; go(1) } },
   { value: 0, label: t('wap_user_00006'), on: w.value === 0, select: () => { w.value = 0; go(1) } },
@@ -364,9 +375,14 @@ const jobTabs = computed(() => [
         </div>
         <div class="position_body_card_bom">
           <ul>
-            <li>
+            <li @click="toggleH5Menu(job.id, 'promote')">
               <div class="body_card_bom_icon"><img src="/legacy/h5/images/job_promotion.png" alt="" /></div>
               <div class="body_card_bom_name">{{ $t('wap_com_00236') }}</div>
+              <div v-if="h5Menu === job.id && h5MenuKind === 'promote'" class="job_czmore" @click.stop>
+                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.istop }" @click="promote(job.id, 'top')">{{ $t('wap_user_00335') }}</span>
+                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.is_rec }" @click="promote(job.id, 'rec')">{{ $t('wap_01465') }}</span>
+                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.is_urgent }" @click="promote(job.id, 'urgent')">{{ $t('wap_00222') }}</span>
+              </div>
             </li>
             <li @click="refreshJob(job.id)">
               <div class="body_card_bom_icon"><img src="/legacy/h5/images/jobhunter_refresh.png" alt="" /></div>
@@ -377,6 +393,16 @@ const jobTabs = computed(() => [
                 <div class="body_card_bom_icon"><img src="/legacy/h5/images/jobhunter_preview.png" alt="" /></div>
                 <div class="body_card_bom_name">{{ $t('common.edit') }}</div>
               </NuxtLink>
+            </li>
+            <li @click="toggleH5Menu(job.id, 'more')">
+              <div class="body_card_bom_icon"><img src="/legacy/h5/images/addition.png" alt="" /></div>
+              <div class="body_card_bom_name">{{ $t('wap_js_00089') }}</div>
+              <div v-if="h5Menu === job.id && h5MenuKind === 'more'" class="job_czmore" @click.stop>
+                <span v-if="Number(job.status) === 1" class="job_czmore_a job_czmore_gb" @click="setStatus(job.id, 0)">{{ $t('wap_com_00244') }}</span>
+                <span v-else class="job_czmore_a job_czmore_gb" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</span>
+                <span class="job_czmore_a job_czmore_sc" @click="picked = [job.id]; batch('delete')">{{ $t('wap_js_00077') }}</span>
+                <span class="job_czmore_a" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00246') }}</span>
+              </div>
             </li>
           </ul>
         </div>

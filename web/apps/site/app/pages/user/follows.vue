@@ -86,7 +86,11 @@ useSeoMeta({ title: t('wap_01142') })
           :sub="kind === 2 ? `${row.com_pr || ''} ${row.com_mun || ''}`.trim() : ''"
           :time="row.ctime_n || row.time_n"
           :to="kind === 2 ? `/companies/${row.target_uid || row.uid}` : undefined"
-        />
+        >
+          <div class="Posted_state_hrtip">
+            <a href="javascript:;" @click.prevent="toggle(row)">{{ $t('wap_js_00140') }}</a>
+          </div>
+        </MemberPostedCard>
       </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />

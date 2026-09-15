@@ -2173,9 +2173,40 @@ html.force-pc .site-h5 {
     height: 100%;
     cursor: pointer;
   }
+  .member-shell-resume .resume_hint_word {
+    padding: 0.24rem 0.32rem 0.4rem;
+    gap: 0.16rem;
+    flex-wrap: wrap;
+  }
+  .member-shell-resume .member-resume-show-item {
+    position: relative;
+  }
+  .member-shell-resume .member-resume-show-del {
+    position: absolute;
+    right: 0.08rem;
+    top: 0.08rem;
+    width: 0.48rem;
+    height: 0.48rem;
+  }
+  .member-shell-resume .Edit_your_resume_tail {
+    gap: 0.16rem;
+  }
+  .member-shell-resume .Edit_your_resume_Update_your_resume {
+    width: auto;
+    flex: 1;
+    margin-right: 0;
+    min-width: 0;
+    padding: 0 0.08rem;
+    font-size: 0.346667rem;
+  }
   .member-shell-resume .Edit_your_resume_Preview_your_resume {
     text-decoration: none;
     box-sizing: border-box;
+    width: auto;
+    flex: 1.15;
+    min-width: 0;
+    padding: 0 0.08rem;
+    font-size: 0.346667rem;
   }
   .member-shell-resume .create_resume {
     overflow: hidden;
@@ -2354,6 +2385,9 @@ html.force-pc .site-h5 {
     text-align: center;
     padding: 0 0.04rem;
   }
+  .site-h5 .job_header_nav .job_header_nav_left {
+    flex-shrink: 0;
+  }
   .site-h5 .job_header_nav .h5-filter {
     flex: 1;
     min-width: 0;
@@ -2361,6 +2395,19 @@ html.force-pc .site-h5 {
   .site-h5 .job_header_nav .job_header_nav_right {
     width: 100%;
     padding-left: 0.24rem;
+  }
+  .site-h5 .position_body_card_bom li {
+    position: relative;
+  }
+  .site-h5 .invite_no_bth button {
+    width: 100%;
+    height: 1.28rem;
+    background-color: #2778f8;
+    color: #fff;
+    font-size: 0.426666rem;
+    font-weight: 700;
+    border: 0;
+    border-radius: 0.213333rem;
   }
 }
 

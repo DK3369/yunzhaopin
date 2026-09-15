@@ -109,7 +109,11 @@ const total = computed(() => inferTotal(data.value))
           :sub="row.detail?.com_name || row.datetime_n"
           :time="row.datetime_n"
           :to="toOf(row) || undefined"
-        />
+        >
+          <div class="Posted_state_hrtip">
+            <a href="javascript:;" @click.prevent="remove(row.target_id)">{{ $t('common.delete') }}</a>
+          </div>
+        </MemberPostedCard>
       </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
