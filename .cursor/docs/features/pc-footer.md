@@ -5,7 +5,7 @@ PC 深色页脚五列来自后台「单页」分类 + `is_nav=1` 的描述：[`A
 跳转走 [`descHref`](../../web/layers/ui/app/utils/site.ts)：
 
 - `about/*.html`（`is_type=1` CMS）→ `/get/:id`，皮是 [`AboutShell.vue`](../../web/layers/ui/app/components/AboutShell.vue)（PC `make.htm` 左栏+正文；H5 只出正文）
-- `index.php?c=top` → `/top`：一次 `GET /v1/wap/rankings`（七块：推荐职位 / 最新企业 / 最新职位 / 最新人才 / 热词 / 资讯 hits / 紧急职位）。热词 `check=1` 跨 type，链用返回的 `to` + `type_name` + `num`
+- `index.php?c=top` → `/top`：一次 `GET /v1/wap/rankings`（七块：推荐职位 / 最新企业 / 最新职位 / 最新人才 / 热词 / 资讯 hits / 紧急职位）。热词 `check=1` 跨 type，链用返回的 `to` + `type_name` + `num`。PHP 只有 PC 页；现网 PC/H5 共用 [`top.vue`](../../web/apps/site/app/pages/top.vue)（皮写在页面里，H5 不依赖 `/legacy/pc.css` 里的 `top.css`）。H5 底栏五项不含排行榜，入口仍是页脚。空块照样出卡片。
 - `index.php?m=subscribe` → `/subscribe`：游客或登录投稿写 `phpyun_subscribe` 离散列（`POST /v1/wap/subscribe`，meta 走 `GET /v1/wap/subscribe/meta`）。**不是**会员搜索器 `phpyun_finder`（那是 `/user/searches`）
 - `m=link` → `/links`：`sy_linksq=1` 才出申请块；申请可加 `link_type` / `pic`。`/zph/` `/once/` `/tiny/` `/evaluate/` `/map/` 走已有模块路由
 
