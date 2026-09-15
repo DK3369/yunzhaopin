@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { listFailMsg, errKey } from '~/utils/site'
+import { listFailMsg, errKey, ensureLogin } from '~/utils/site'
 
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
@@ -50,10 +50,7 @@ const askContent = ref('')
 const askMsg = ref('')
 async function ask() {
   askMsg.value = ''
-  if (!me.value) {
-    navigateTo({ path: '/login', query: { next: '/questions' } })
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/questions', { title: askTitle.value, content: askContent.value, category_id: categoryId.value || 0 })
     askTitle.value = ''

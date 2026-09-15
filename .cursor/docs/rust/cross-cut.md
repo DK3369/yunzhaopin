@@ -9,7 +9,7 @@
 - SSR：`useRequestFetch()` + [`ssrCookieHeaders`](../../../web/layers/base/app/utils/ssrFetch.ts) 转发文档请求的 Cookie。`useApi` 同样带 Cookie 和 `Accept-Language: zh-CN|en`。
 - 会员头栏与首页 dash 共用 `user-dash` / `com-dash` 等 key；另一身份必须用 `hdr-skip-*`，避免把共享缓存写成 `null`。
 - `/v1/mcenter/*` 必须登录。凭证是 `Authorization: Bearer` **或** Cookie `token=`：JWT 签名、`exp`、黑名单、`phpyun_user_session`。[`member_guard`](../../../phpyun-rs/crates/platform/core/src/member_guard.rs) 挂在 `/v1/mcenter` nest 上，没有 token **进不了 handler**，HTTP 401 `unauth`。BFF [`/api/proxy`](../../../web/layers/base/server/routes/api/proxy/[...path].ts) 无 `token` cookie 也不转发。公开意见反馈走 `/v1/wap/advice`。
-- 收藏/关注：PC/H5 跟顶栏同一份 `me`（`useAuthMe`）。**没登录先 `goLogin(next)`**，不要打 `/v1/mcenter/favorites` / `follows`。已登录才 POST；后端 [`member_guard`](../../../phpyun-rs/crates/platform/core/src/member_guard.rs) 再验 Cookie `token=` / Bearer（JWT、`exp`、黑名单、`phpyun_user_session`、`uid != 0`），假 cookie 仍 401。会话过期 **401** 再 `goLogin(next)`。已登录误进 `/login` 时回 `next` 或 `history.back()`，不要 `afterLogin` 甩到首页。`unwrapEnvelope` 以 `code === 200` 为准。游客不打 `exists`。
+- 公开页要登录的动作（收藏/关注/举报/提问/报名/兑换/留言/看电话等）：跟顶栏同一份 `me`，**没登录先 `ensureLogin(me, 当前页)`**，不要裸 `navigateTo('/login')`（求职者登录后会甩首页）。已登录才 POST；后端再验 Cookie。会话过期 **401** 再 `goLogin(next)`。游客不打 `exists` / `unread-summary`。已登录误进 `/login` 时回 `next` 或 `history.back()`。`unwrapEnvelope` 以 `code === 200` 为准。
 
 ## `useAsyncData` key 带 locale
 

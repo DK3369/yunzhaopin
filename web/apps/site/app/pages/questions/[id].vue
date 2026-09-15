@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { seoJoin } from '~/utils/seo'
+import { ensureLogin } from '~/utils/site'
 
-const id = Number(useRoute().params.id)
+const route = useRoute()
+const id = Number(route.params.id)
 const { t } = useI18n()
 const api = useApi()
 const { me } = useSiteChrome()
@@ -59,10 +61,7 @@ watch(
 )
 async function toggleFollow() {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     const r = await api.post<{ on?: boolean }>('/v1/mcenter/questions/attention', { id })
     following.value = Boolean(r.on)
@@ -72,10 +71,7 @@ async function toggleFollow() {
 }
 async function postComment(aid: number) {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/answers/comments', { aid, content: commentDraft[aid] || '' })
     commentDraft[aid] = ''
@@ -87,10 +83,7 @@ async function postComment(aid: number) {
 }
 async function postAnswer() {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/questions/answers', { id, content: answerText.value })
     answerText.value = ''
@@ -102,10 +95,7 @@ async function postAnswer() {
   }
 }
 async function supportAnswer(aid: number) {
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/answers/support', { id: aid })
     await refreshAnswers()
@@ -115,10 +105,7 @@ async function supportAnswer(aid: number) {
 }
 async function deleteQuestion() {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/questions/delete', { id })
     await navigateTo('/questions')
@@ -136,10 +123,7 @@ async function loadCaptcha() {
 }
 async function reportQuestion() {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   if (!captcha.value) await loadCaptcha()
   try {
     await api.post('/v1/mcenter/reports', {

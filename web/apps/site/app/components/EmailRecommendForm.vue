@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { ensureLogin, isLoggedIn } from '~/utils/site'
+
 const props = defineProps<{ kind: 'job' | 'resume'; id: number }>()
+const route = useRoute()
 const api = useApi()
 const { t } = useI18n()
 const { me } = useSiteChrome()
@@ -10,7 +13,7 @@ const quota = ref('')
 
 async function loadQuota() {
   quota.value = ''
-  if (!me.value) return
+  if (!isLoggedIn(me.value)) return
   try {
     const r = await api.post<{
       status?: number
@@ -26,10 +29,7 @@ async function loadQuota() {
 
 async function send() {
   hint.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   if (!props.id) {
     hint.value = t('ui.failed')
     return

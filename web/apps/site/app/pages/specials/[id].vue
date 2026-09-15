@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { seoJoin } from '~/utils/seo'
-import type { CompanyLike, JobLike } from '~/utils/site'
+import { ensureLogin, type CompanyLike, type JobLike } from '~/utils/site'
 
 type SpecialCompany = CompanyLike & { com_name?: string }
 
@@ -43,10 +43,7 @@ const { data: jobs } = await useAsyncData(`special-job-${id}`, () =>
 const applyMsg = ref('')
 async function apply() {
   applyMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/wap/specials/apply', { id })
     applyMsg.value = t('common.success')

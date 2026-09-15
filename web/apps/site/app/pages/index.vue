@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, formatSalary, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, goLogin, isLoggedIn, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
 
 type Banner = { image_n?: string; image?: string; link?: string; title?: string; pic_content?: string }
 type ArticleLike = {
@@ -50,7 +50,7 @@ const homeTpltype = computed(() => Number(route.query.tpltype || 0) || 0)
 const pcBannerFlag = useCookie('pc_bannerFlag', { path: '/', maxAge: 3600 })
 const wapBannerFlag = useCookie('wap_bannerFlag', { path: '/', maxAge: 3600 })
 const resumeGate = computed(() => {
-  const needLogin = String(settings.value.com_search || '') === '1' && !me.value
+  const needLogin = String(settings.value.com_search || '') === '1' && !isLoggedIn(me.value)
   if (needLogin) return 'login'
   return ''
 })
@@ -61,9 +61,10 @@ function talentBlockedMsg() {
 }
 function onTalentClick(e: Event, uid: unknown) {
   talentTip.value = ''
-  if (String(settings.value.com_search || '') === '1' && !me.value) {
+  if (String(settings.value.com_search || '') === '1' && !isLoggedIn(me.value)) {
     e.preventDefault()
-    navigateTo('/login')
+    const next = Number(uid) > 0 ? `/resumes/${uid}` : '/resumes'
+    goLogin(next)
     return
   }
   if (Number(me.value?.usertype) === 1) {

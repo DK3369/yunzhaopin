@@ -176,11 +176,8 @@ onMounted(async () => {
   }
 })
 async function download(confirm = false) {
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
-  if (me.value.usertype !== 2) {
+  if (!(await ensureLogin(me.value, route.fullPath))) return
+  if (me.value?.usertype !== 2) {
     actionMsg.value = t('resume_00038')
     return
   }
@@ -211,18 +208,15 @@ async function download(confirm = false) {
       return
     }
     actionMsg.value = e instanceof Error ? e.message : t('common_00888')
-    if (!me.value) await navigateTo('/login')
+    if (isLoginRequiredErr(e)) await goLogin(route.fullPath)
   }
 }
 async function lookAll() {
   const mode = Number(row.value.resume_open_check || 2)
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   if (mode === 3) {
     actionMsg.value = t('wap_00322')
-    if (me.value.usertype === 2) await navigateTo('/com/jobs')
+    if (me.value?.usertype === 2) await navigateTo('/com/jobs')
     return
   }
   if (mode === 4) {
@@ -232,11 +226,8 @@ async function lookAll() {
   actionMsg.value = t('wap_00485')
 }
 async function invite() {
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
-  if (me.value.usertype !== 2) {
+  if (!(await ensureLogin(me.value, route.fullPath))) return
+  if (me.value?.usertype !== 2) {
     actionMsg.value = t('resume_00038')
     return
   }

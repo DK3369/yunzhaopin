@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ensureLogin } from '~/utils/site'
+
 const route = useRoute()
 const { t } = useI18n()
 const id = computed(() => Number(route.params.id))
@@ -78,10 +80,7 @@ async function submit() {
 }
 async function postMessage() {
   leaveMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/eval-papers/messages/post', { id: id.value, message: leave.value })
     leave.value = ''

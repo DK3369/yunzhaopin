@@ -28,10 +28,13 @@
 </template>
 
 <script setup lang="ts">
+import { ensureLogin } from '../utils/site'
+
 type Reason = { id?: number; code: string; name: string }
 
 const props = defineProps<{ targetKind: number; targetId: number }>()
 const emit = defineEmits<{ close: []; done: [] }>()
+const route = useRoute()
 const { t } = useI18n()
 const api = useApi()
 const reasons = ref<Reason[]>([])
@@ -44,8 +47,12 @@ const { me } = useSiteChrome()
 const needUsertype = computed(() => (props.targetKind === 3 ? 2 : 1))
 
 onMounted(async () => {
-  if (!me.value || Number(me.value.usertype) !== needUsertype.value) {
-    await navigateTo('/login')
+  if (!(await ensureLogin(me.value, route.fullPath))) {
+    emit('close')
+    return
+  }
+  if (Number(me.value?.usertype) !== needUsertype.value) {
+    emit('close')
     return
   }
   try {

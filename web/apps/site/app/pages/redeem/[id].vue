@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const id = Number(useRoute().params.id)
+import { ensureLogin } from '~/utils/site'
+
+const route = useRoute()
+const id = Number(route.params.id)
 const { t } = useI18n()
 const { me } = useSiteChrome()
 const api = useApi()
@@ -19,10 +22,7 @@ const form = reactive({
 const msg = ref('')
 async function submit() {
   msg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
+  if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
     await api.post('/v1/mcenter/redeem/rewards/redeem', { id, ...form })
     msg.value = t('model_00051')

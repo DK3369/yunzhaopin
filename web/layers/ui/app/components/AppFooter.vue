@@ -128,7 +128,7 @@
             </div>
             <div class="wap_footer_name">{{ $t('common.message') }}</div>
           </NuxtLink>
-          <NuxtLink class="wap_footernav" :to="me ? memberHome : '/login'">
+          <NuxtLink class="wap_footernav" :to="me ? memberHome : { path: '/login', query: { next: '/user' } }">
             <div class="wap_footericon">
               <img :src="tabIcon('me')" alt="" style="width: 100%" />
             </div>

@@ -87,8 +87,7 @@ const linkMsg = computed(() => {
 })
 async function showTel() {
   if (linkCode.value === 6) {
-    await navigateTo('/login')
-    return
+    if (!(await ensureLogin(me.value, route.fullPath))) return
   }
   if (linkCode.value === 7) {
     await navigateTo('/user/resume')
@@ -123,8 +122,9 @@ async function showTel() {
     if (r.revealed && (r.linktel || r.linkphone)) {
       revealed.value = { linktel: r.linktel, linkphone: r.linkphone, linkman: r.linkman }
     }
-  } catch {
-    await navigateTo('/login')
+  } catch (e: unknown) {
+    if (isLoginRequiredErr(e)) await goLogin(route.fullPath)
+    else followMsg.value = e instanceof Error ? e.message : t('common.no')
   }
 }
 async function goCompanyJobs() {
@@ -176,11 +176,8 @@ async function loadAskCaptcha() {
 }
 async function postAsk() {
   askMsg.value = ''
-  if (!me.value) {
-    await navigateTo('/login')
-    return
-  }
-  if (me.value.usertype !== 1) {
+  if (!(await ensureLogin(me.value, route.fullPath))) return
+  if (me.value?.usertype !== 1) {
     askMsg.value = t('wap_00256')
     return
   }
