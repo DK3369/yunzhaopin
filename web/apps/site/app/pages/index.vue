@@ -790,7 +790,6 @@ useHead({
           <button type="button" :class="{ on: h5Tab === 'latest' }" @click="h5Tab = 'latest'">{{ $t('common.latest') }}</button>
           <button type="button" :class="{ on: h5Tab === 'urgent' }" @click="h5Tab = 'urgent'">{{ $t('wap_00222') }}</button>
           <button type="button" :class="{ on: h5Tab === 'rec' }" @click="h5Tab = 'rec'">{{ $t('wap_com_00251') }}</button>
-          <NuxtLink to="/map">{{ $t('wap_00223') }}</NuxtLink>
         </div>
         <JobCard v-for="job in h5JobList" :key="h5Tab + job.id" :job="job" />
         <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('default_00033') }}</p>
