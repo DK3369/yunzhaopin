@@ -4,10 +4,10 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { transform } from 'esbuild'
 
-type Kind = 'pc' | 'h5'
+export type CssPack = 'pc' | 'h5' | 'pc-user' | 'pc-com' | 'h5-user' | 'h5-com'
 type CssFile = { disk: string; href: string; note: string }
 
-const PC_FILES: CssFile[] = [
+const PC_PUBLIC: CssFile[] = [
   { disk: 'uploads/app/template/default/style/index.css', href: '/legacy/pc/style/index.css', note: 'index.css 首页' },
   { disk: 'uploads/app/template/default/style/style.css', href: '/legacy/pc/style/style.css', note: 'style.css 全局' },
   { disk: 'uploads/app/template/default/style/css.css', href: '/legacy/pc/style/css.css', note: 'css.css 公共' },
@@ -23,23 +23,46 @@ const PC_FILES: CssFile[] = [
   { disk: 'uploads/app/template/default/style/evaluate.css', href: '/legacy/pc/style/evaluate.css', note: 'evaluate.css 评价' },
   { disk: 'uploads/app/template/default/style/integral.css', href: '/legacy/pc/style/integral.css', note: 'integral.css 积分' },
   { disk: 'uploads/app/template/default/style/top.css', href: '/legacy/pc/style/top.css', note: 'top.css 排行榜' },
+]
+
+const PC_USER: CssFile[] = [
   { disk: 'uploads/app/template/member/user/images/m_css.css', href: '/legacy/member/user/m_css.css', note: 'm_css.css 个人会员' },
   { disk: 'uploads/app/template/member/user/images/m_resume.css', href: '/legacy/member/user/m_resume.css', note: 'm_resume.css 简历编辑' },
+]
+
+const PC_COM: CssFile[] = [
   { disk: 'uploads/app/template/member/com/images/m_style.css', href: '/legacy/member/com/m_style.css', note: 'm_style.css 企业会员' },
   { disk: 'uploads/app/template/member/com/images/two_style.css', href: '/legacy/member/com/two_style.css', note: 'two_style.css 企业中心首页' },
 ]
 
-const H5_FILES: CssFile[] = [
+const H5_PUBLIC: CssFile[] = [
   { disk: 'uploads/app/template/wap/css/base.css', href: '/legacy/h5/css/base.css', note: 'base.css 基础' },
   { disk: 'uploads/app/template/wap/css/yunwap.css', href: '/legacy/h5/css/yunwap.css', note: 'yunwap.css 全局' },
   { disk: 'uploads/app/template/wap/css/css.css', href: '/legacy/h5/css/css.css', note: 'css.css 公共' },
   { disk: 'uploads/app/template/wap/css/job.css', href: '/legacy/h5/css/job.css', note: 'job.css 职位' },
+]
+
+const H5_USER: CssFile[] = [
   { disk: 'uploads/app/template/wap/css/member/memberwap.css', href: '/legacy/h5/css/member/memberwap.css', note: 'memberwap.css 会员' },
   { disk: 'uploads/app/template/wap/css/member/memberuserwap.css', href: '/legacy/h5/css/member/memberuserwap.css', note: 'memberuserwap.css 求职会员' },
+  { disk: 'uploads/app/template/wap/css/yun_wap_member.css', href: '/legacy/h5/css/yun_wap_member.css', note: 'yun_wap_member.css 会员图标' },
+]
+
+const H5_COM: CssFile[] = [
+  { disk: 'uploads/app/template/wap/css/member/memberwap.css', href: '/legacy/h5/css/member/memberwap.css', note: 'memberwap.css 会员' },
   { disk: 'uploads/app/template/wap/css/combase.css', href: '/legacy/h5/css/combase.css', note: 'combase.css 企业会员' },
   { disk: 'uploads/app/template/wap/css/yun_wap_member.css', href: '/legacy/h5/css/yun_wap_member.css', note: 'yun_wap_member.css 会员图标' },
   { disk: 'uploads/app/template/wap/css/member_style.css', href: '/legacy/h5/css/member_style.css', note: 'member_style.css 会员补充' },
 ]
+
+const PACKS: Record<CssPack, CssFile[]> = {
+  pc: PC_PUBLIC,
+  h5: H5_PUBLIC,
+  'pc-user': PC_USER,
+  'pc-com': PC_COM,
+  'h5-user': H5_USER,
+  'h5-com': H5_COM,
+}
 
 const mem = new Map<string, string>()
 
@@ -77,9 +100,9 @@ async function minifyCss(css: string): Promise<string> {
   }
 }
 
-async function build(kind: Kind): Promise<string> {
+async function build(kind: CssPack): Promise<string> {
   const root = repoRoot()
-  const files = kind === 'pc' ? PC_FILES : H5_FILES
+  const files = PACKS[kind]
   const parts: string[] = [
     `/* ${kind} CSS modules — section comments keep original file boundaries; class prefixes unchanged */`,
   ]
@@ -97,13 +120,13 @@ async function build(kind: Kind): Promise<string> {
   return parts.join('\n\n')
 }
 
-export async function bundledLegacyCss(kind: Kind, ver: string): Promise<string> {
+export async function bundledLegacyCss(kind: CssPack, ver: string): Promise<string> {
   const key = `${kind}:${ver || '0'}`
   const hit = mem.get(key)
   if (hit) return hit
   const body = await build(kind)
   mem.set(key, body)
-  if (mem.size > 8) {
+  if (mem.size > 16) {
     const first = mem.keys().next().value
     if (first) mem.delete(first)
   }

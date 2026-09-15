@@ -90,30 +90,33 @@ useSeoMeta({ title: t('wap_com_00404') })
       <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">{{ row.name }}</div>
-      <div class="sysynews_span sysynews_time">{{ row.address }} · {{ row.linkman }}</div>
-      <div class="sysynews_span sysynews_cz">
-        <a href="javascript:;" class="cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
-        <a href="javascript:;" class="List_dete cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+    <table v-if="list.length" class="com_table mt20 site-pc">
+      <tr>
+        <th>{{ $t('wap_com_00413') }}</th>
+        <th>{{ $t('ui.interview_place') }}</th>
+        <th>{{ $t('member_user_00048') }}</th>
+      </tr>
+      <tr v-for="row in list" :key="row.id">
+        <td>{{ row.name }}</td>
+        <td>{{ row.address }} · {{ row.linkman }}</td>
+        <td>
+          <a href="javascript:;" class="com_bth cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
+          <a href="javascript:;" class="com_bth cblue" @click="remove(row)">{{ $t('common.delete') }}</a>
+        </td>
+      </tr>
+    </table>
+    <div class="site-h5">
+      <div v-for="row in list" :key="'h5-' + row.id" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.name }}</div>
+        <div class="com_cardlist_p">
+          <span class="com_cardlist_p_name">{{ $t('ui.interview_place') }}</span>
+          {{ row.address }} · {{ row.linkman }}
+        </div>
+        <div class="com_card_cz">
+          <a href="javascript:;" class="com_bth cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
+          <span class="com_card_delete" @click="remove(row)" />
+        </div>
       </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in list"
-        :key="'h5-' + row.id"
-        :title="row.name"
-        :time="`${row.address} · ${row.linkman}`"
-      />
     </div>
   </MemberPanel>
 </template>
-
-<style scoped>
-.row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-</style>

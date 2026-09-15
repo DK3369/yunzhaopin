@@ -25,14 +25,18 @@ useSeoMeta({ title: t('member_com_00148') })
 <template>
   <MemberPanel :title="$t('member_com_00148')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
-      <div class="sysynews_span sysynews_name">{{ $t('member_com_00148') }}</div>
-    </div>
-    <div v-for="row in list" :key="row.id" class="sysynews_list site-pc" @click="mark(row.id)">
-      <div class="sysynews_span sysynews_name">{{ row.reason }}</div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard v-for="row in list" :key="'h5-' + row.id" :title="row.reason" />
+    <table v-if="list.length" class="com_table mt20 site-pc">
+      <tr>
+        <th>{{ $t('member_com_00148') }}</th>
+      </tr>
+      <tr v-for="row in list" :key="row.id" @click="mark(row.id)">
+        <td>{{ row.reason }}</td>
+      </tr>
+    </table>
+    <div class="site-h5">
+      <div v-for="row in list" :key="'h5-' + row.id" class="com_cardlist" @click="mark(row.id)">
+        <div class="com_cardlist_tit">{{ row.reason }}</div>
+      </div>
     </div>
   </MemberPanel>
 </template>

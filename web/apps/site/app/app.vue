@@ -54,22 +54,54 @@ useHead({
   bodyAttrs: {
     class: () => (/^\/jobs\/\d+/.test(route.path) ? 'comapply_bg' : 'body_bg'),
   },
-  link: () => [
-    { rel: 'canonical', href: `${siteUrl}${route.path}` },
-    {
-      rel: 'stylesheet',
-      href: `/legacy/pc.css?v=${cacheVer.value}`,
-      media: 'screen and (min-width: 1200px)',
-    },
-    {
-      rel: 'stylesheet',
-      href: `/legacy/h5.css?v=${cacheVer.value}`,
-      media: 'screen and (max-width: 1199px)',
-    },
-    ...(siteStyle.value
-      ? [{ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css?v=${cacheVer.value}` }]
-      : []),
-  ],
+  link: () => {
+    const v = cacheVer.value
+    const links: Array<{ rel: string; href: string; media?: string }> = [
+      { rel: 'canonical', href: `${siteUrl}${route.path}` },
+      {
+        rel: 'stylesheet',
+        href: `/legacy/pc.css?v=${v}`,
+        media: 'screen and (min-width: 1200px)',
+      },
+      {
+        rel: 'stylesheet',
+        href: `/legacy/h5.css?v=${v}`,
+        media: 'screen and (max-width: 1199px)',
+      },
+    ]
+    if (isMember.value && memberKind.value === 'user') {
+      links.push(
+        {
+          rel: 'stylesheet',
+          href: `/legacy/member-user.css?v=${v}`,
+          media: 'screen and (min-width: 1200px)',
+        },
+        {
+          rel: 'stylesheet',
+          href: `/legacy/member-user-h5.css?v=${v}`,
+          media: 'screen and (max-width: 1199px)',
+        },
+      )
+    }
+    if (isMember.value && memberKind.value === 'com') {
+      links.push(
+        {
+          rel: 'stylesheet',
+          href: `/legacy/member-com.css?v=${v}`,
+          media: 'screen and (min-width: 1200px)',
+        },
+        {
+          rel: 'stylesheet',
+          href: `/legacy/member-com-h5.css?v=${v}`,
+          media: 'screen and (max-width: 1199px)',
+        },
+      )
+    }
+    if (siteStyle.value) {
+      links.push({ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css?v=${v}` })
+    }
+    return links
+  },
 })
 
 const mainClass = computed(() => {

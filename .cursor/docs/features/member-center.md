@@ -25,7 +25,7 @@
 
 组里滤空后整组不渲染。职位模块关时招聘顶栏不显示发布职位；左栏「职位管理」仍在。
 
-打包 CSS：`web/apps/site/server/utils/legacyCss.ts`。PC：**同一份**里先后打 `m_css.css`（求职）和 `m_style.css`（招聘），同名 class 以后者为准。左栏「更多」浮层 `.user_more` 两端都用这个名字：企业是蓝底 80px 浮动格，会盖掉求职白底，英文会叠字穿层。必须在 `main.css` 里用 `.member-shell-user` / `.member-shell-com` 拆开，flex 换行，**不要**再靠 PHP 那套 80px 格。H5：`memberwap.css` / `memberuserwap.css` / `combase.css` / `yun_wap_member.css`。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。
+打包 CSS：[`legacyCss.ts`](../../web/apps/site/server/utils/legacyCss.ts)。前台 `/legacy/pc.css` `/legacy/h5.css` **不要**再打会员皮。求职会员另载 `/legacy/member-user.css` + `member-user-h5.css`（`m_css` / `m_resume` / `memberuserwap`）；招聘会员另载 `/legacy/member-com.css` + `member-com-h5.css`（`m_style` / `two_style` / `combase`）。`app.vue` 按 `memberKind` 加链。**禁止**再把 `m_css` 和 `m_style` 打进同一份，否则求职首页 `yun_m_index_date_*`、设置 `account_settings*` 会被企业规则盖掉。左栏「更多」浮层 `.user_more` 两端同名：`main.css` 里仍用 `.member-shell-user` / `.member-shell-com` 拆开。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。招聘列表 PC 用 `com_table`、H5 用 `com_cardlist`，**不要**借求职 `sysynews_*`。
 
 壳只 **render 一次 slot**。右栏宽度对齐 PHP：求职 210 + 980。PC 上 `.yun_m_rightsidebar > .wap_member` 用 `display: contents`，不占一层。
 
@@ -35,7 +35,7 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 ## 顶栏
 
-登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行（电话 | 签到绿钮 | 头像 | 通知 | 语言 | 回首页）。企业 `m_style` 会把 `.yun_m_indexinfo_user_qd` 改成 `position:absolute`，必须在会员顶栏里盖掉，否则签到叠到头像上。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
+登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`（现网这两项仍是 PHPYun 默认图）。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。拆包后求职页不再加载 `m_style`，签到 absolute 泄漏只在招聘包里。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
 
 会员页 **不要**顺手打前台导航/页脚/热搜：`useSiteChrome` 只在 `needsPublicSiteChrome`（非 `/user` `/com`、非登录）时拉 `/v1/wap/nav` 和 descriptions。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 一份。左栏角标、顶栏、首页的 dashboard / 简历列表用同一个 `useAsyncData` key（`user-dash`、`user-home-resume`），不要 `member-shell-user-dash-*` 再打一遍。积分余额等下拉才用的接口，悬停再请求。
 
@@ -106,7 +106,9 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - H5 用首页 `job-card`；消息/咨询用 `MemberPostedCard` 冒充
 - 不要 `overflow:hidden`（会裁掉左栏「更多」飞出层）
 - 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
-- 会员 PC 顶栏继续用 PHP `float:right` / 通知栏 70px（英文折行；企业 CSS 还会把签到做成 absolute 叠到头像上）
+- 会员 PC 顶栏继续用 PHP `float:right` / 通知栏 70px（英文折行）
+- 会员顶栏用 PHPYun 默认 `sy_member_logo` / `sy_unit_logo` 盖住公开 `sy_logo`
+- 再把 `m_css` 和 `m_style` 打进同一份 `/legacy/pc.css`
 - 会员 `/user` `/com` 仍打前台 `nav` / `descriptions` / `hot-searches`（页脚和公开顶栏用的，会员壳不渲染）
 - 左栏「更多」继续用未拆开的 `.user_more`（PC 打包里企业 `m_style` 会盖掉求职白底；80px 浮动格叠英文会穿层）
 - `.yun_m_left_cur a` 打到 `.user_more a`（当前页在「更多」里时浮层每条都变选中态）
@@ -115,7 +117,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`
 - 会员左栏/宫格写死兼职、招聘会、专题、测评，不看首页 `sy_*_web`
 - H5 求职首页宫格最后一项做成退出登录（PHP 最后是意见反馈；退出在 `/user/set`）
-- 测评 / 被下载 / 举报 / 邀请 / 外发 / 财务流水 / 订单 / 会话 / 招聘会 / 专题 / HR / 投诉 / 地址用 `sysynews_*` 或 `MemberSxNewsCard` 冒充消息列表
+- 测评 / 被下载 / 举报 / 邀请 / 外发 / 财务流水 / 订单 / 会话 / 招聘会 / 专题 / HR / 投诉 / 地址 / 招聘消息用 `sysynews_*` 或 `MemberSxNewsCard` 冒充消息列表
 - 招聘 `/com/fans` 调 `/v1/mcenter/followers`（应对 `/v1/mcenter/fans`，PHP `attention_me`）
 - 招聘改密 H5 抄求职 `verification_form` / `MemberField`（应对 WAP `password.htm` 的 `security` / `security_text_t`）
 - H5 会员首页再给 `wap_member` 垫左右 padding（会挤窄 `userheader`）

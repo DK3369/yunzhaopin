@@ -104,6 +104,14 @@ const ivRows = computed(() =>
   })),
 )
 const ivTotal = computed(() => inferTotal(data.value))
+const tplRows = computed(() => {
+  const raw = tpls.value as unknown
+  if (Array.isArray(raw)) return raw as Array<{ id: number; name?: string; address?: string; linkman?: string }>
+  if (raw && typeof raw === 'object' && 'list' in raw) {
+    return ((raw as { list?: Array<{ id: number; name?: string; address?: string; linkman?: string }> }).list || [])
+  }
+  return []
+})
 </script>
 
 <template>
@@ -118,21 +126,33 @@ const ivTotal = computed(() => inferTotal(data.value))
     </MemberHrResumeRows>
     <MemberPager :page="page" :page-size="pageSize" :total="ivTotal" @update:page="go" />
     <MemberResumeH1 :title="$t('member_com_00512')" />
-    <div v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">{{ row.name }}</div>
-      <div class="sysynews_span sysynews_time">{{ row.address }} · {{ row.linkman }}</div>
-      <div class="sysynews_span sysynews_cz">
-        <a href="javascript:;" class="cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
-        <a href="javascript:;" class="List_dete cblue" @click="removeTpl(row.id)">{{ $t('common.delete') }}</a>
+    <table v-if="tplRows.length" class="com_table mt20 site-pc">
+      <tr>
+        <th>{{ $t('wap_com_00413') }}</th>
+        <th>{{ $t('wap_00040') }}</th>
+        <th>{{ $t('member_user_00048') }}</th>
+      </tr>
+      <tr v-for="row in tplRows" :key="row.id">
+        <td>{{ row.name }}</td>
+        <td>{{ row.address }} · {{ row.linkman }}</td>
+        <td>
+          <a href="javascript:;" class="com_bth cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
+          <a href="javascript:;" class="com_bth cblue" @click="removeTpl(row.id)">{{ $t('common.delete') }}</a>
+        </td>
+      </tr>
+    </table>
+    <div class="site-h5">
+      <div v-for="row in tplRows" :key="'h5-tpl-' + row.id" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.name }}</div>
+        <div class="com_cardlist_p">
+          <span class="com_cardlist_p_name">{{ $t('wap_00040') }}</span>
+          {{ row.address }} · {{ row.linkman }}
+        </div>
+        <div class="com_card_cz">
+          <a href="javascript:;" class="com_bth cblue" @click="fill(row)">{{ $t('common.edit') }}</a>
+          <span class="com_card_delete" @click="removeTpl(row.id)" />
+        </div>
       </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in (Array.isArray(tpls) ? tpls : tpls?.list || [])"
-        :key="'h5-tpl-' + row.id"
-        :title="row.name"
-        :time="`${row.address} · ${row.linkman}`"
-      />
     </div>
     <form class="com_release_box" @submit.prevent="saveTpl">
       <ul>

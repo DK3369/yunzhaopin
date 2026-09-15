@@ -44,30 +44,36 @@ const total = computed(() => inferTotal(data.value))
         </li>
       </ul>
     </div>
-    <p class="user_czbth">
-      <a href="javascript:;" class="user_new_yqh_a" @click="readAll">{{ $t('common.confirm') }}</a>
+    <p class="site-pc">
+      <a href="javascript:;" class="com_bth cblue" @click="readAll">{{ $t('common.confirm') }}</a>
     </p>
-    <div v-if="(data?.list || []).length" class="sysynews_tit site-pc">
-      <div class="sysynews_span sysynews_name">{{ $t('common.message') }}</div>
-      <div class="sysynews_span sysynews_time">{{ $t('member_user_00104') }}</div>
-      <div class="sysynews_span sysynews_cz">{{ $t('member_user_00048') }}</div>
-    </div>
-    <div v-for="row in data?.list || []" :key="row.id" class="sysynews_list site-pc">
-      <div class="sysynews_span sysynews_name">{{ row.body || row.content || row.title || row.id }}</div>
-      <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
-      <div class="sysynews_span sysynews_cz">
-        <a href="javascript:;" class="cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
-        <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+    <table v-if="(data?.list || []).length" class="com_table mt20 site-pc">
+      <tr>
+        <th>{{ $t('common.message') }}</th>
+        <th>{{ $t('member_user_00104') }}</th>
+        <th>{{ $t('member_user_00048') }}</th>
+      </tr>
+      <tr v-for="row in data?.list || []" :key="row.id">
+        <td>{{ row.body || row.content || row.title || row.id }}</td>
+        <td>{{ row.datetime_n }}</td>
+        <td>
+          <a href="javascript:;" class="com_bth cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
+          <a href="javascript:;" class="com_bth cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+        </td>
+      </tr>
+    </table>
+    <div class="site-h5">
+      <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.body || row.content || row.title || row.id }}</div>
+        <div class="com_cardlist_p">
+          <span class="com_cardlist_p_name">{{ $t('member_user_00104') }}</span>
+          {{ row.datetime_n }}
+        </div>
+        <div class="com_card_cz">
+          <a href="javascript:;" class="com_bth cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
+          <span class="com_card_delete" @click="remove(row.id)" />
+        </div>
       </div>
-    </div>
-    <div class="site-h5 m_cardbox">
-      <MemberSxNewsCard
-        v-for="row in data?.list || []"
-        :key="'h5-' + row.id"
-        :title="String(row.body || row.content || row.title || row.id)"
-        :time="row.datetime_n"
-        :on-delete="() => remove(row.id)"
-      />
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>

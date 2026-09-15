@@ -216,8 +216,8 @@ const { data: comProfile } = useAsyncData(
   reuseAsyncCache(),
 )
 
-const userLogo = computed(() => mediaUrl(settings.value.sy_member_logo) || logoPc.value)
-const comLogo = computed(() => mediaUrl(settings.value.sy_unit_logo) || logoPc.value)
+const userLogo = computed(() => logoPc.value || mediaUrl(settings.value.sy_member_logo))
+const comLogo = computed(() => logoPc.value || mediaUrl(settings.value.sy_unit_logo))
 const userPhoto = computed(() => mediaUrl(userResume.value?.photo))
 const userName = computed(() => userResume.value?.name || me.value?.username || '')
 const comPhoto = computed(() => mediaUrl(comProfile.value?.logo))
