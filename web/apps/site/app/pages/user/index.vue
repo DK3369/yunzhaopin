@@ -5,37 +5,43 @@ const api = useApi()
 const { t } = useI18n()
 const { userItems } = useMemberNav()
 const { data } = await useAuthMe()
-const { data: dash } = await useAsyncData('user-dash', () =>
-  api
-    .post<{
-      interview_count: number
-      apply_count: number
-      favorite_count: number
-      view_count: number
-      unread_messages: number
-      wkyqnum: number
-      commsgnum: number
-      sxnum: number
-      sysnum: number
-    }>('/v1/mcenter/dashboard', {})
-    .catch(() => null),
+const { data: dash } = await useAsyncData(
+  'user-dash',
+  () =>
+    api
+      .post<{
+        interview_count: number
+        apply_count: number
+        favorite_count: number
+        view_count: number
+        unread_messages: number
+        wkyqnum: number
+        commsgnum: number
+        sxnum: number
+        sysnum: number
+      }>('/v1/mcenter/dashboard', {})
+      .catch(() => null),
+  reuseAsyncCache(),
 )
 const { data: follows } = await useAsyncData('user-follow-n', () =>
   api.post<{ total: number }>('/v1/mcenter/follows/list', { kind: 2, page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
 )
-const { data: resume, refresh: refreshResume } = await useAsyncData('user-home-resume', () =>
-  api
-    .post<{
-      name?: string
-      photo?: string
-      birthday?: string
-      education_n?: string
-      exp_n?: string
-      def_job?: number
-      lastupdate_n?: string
-      uid?: number
-    }>('/v1/mcenter/resume/list', {})
-    .catch(() => null),
+const { data: resume, refresh: refreshResume } = await useAsyncData(
+  'user-home-resume',
+  () =>
+    api
+      .post<{
+        name?: string
+        photo?: string
+        birthday?: string
+        education_n?: string
+        exp_n?: string
+        def_job?: number
+        lastupdate_n?: string
+        uid?: number
+      }>('/v1/mcenter/resume/list', {})
+      .catch(() => null),
+  reuseAsyncCache(),
 )
 const { data: expects } = await useAsyncData('user-home-expects', () =>
   api.post('/v1/mcenter/resume/expects/list', {}).catch(() => []),
@@ -43,8 +49,10 @@ const { data: expects } = await useAsyncData('user-home-expects', () =>
 const { data: completion } = await useAsyncData('user-home-score', () =>
   api.post<{ score?: number; missing?: string[] }>('/v1/mcenter/resume/completion', {}).catch(() => null),
 )
-const { data: signSt, refresh: refreshSign } = await useAsyncData('user-home-sign', () =>
-  api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
+const { data: signSt, refresh: refreshSign } = await useAsyncData(
+  'user-home-sign',
+  () => api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
+  reuseAsyncCache(),
 )
 const { data: gzh } = await useAsyncData('user-gzh', () =>
   api.post<{ subscribe?: number }>('/v1/mcenter/wechat/subscribe', {}).catch(() => ({ subscribe: 1 })),

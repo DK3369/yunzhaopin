@@ -1,4 +1,5 @@
 import { isMemberModuleOn } from '../utils/site'
+import { useSiteSettings } from './useSiteSettings'
 
 export type MemberNavLink = {
   to: string
@@ -12,21 +13,9 @@ export type MemberMoreGroup = {
   items: Array<{ to: string; label: string }>
 }
 
-type SettingRow = { key: string; value: string }
-
 export function useMemberNav() {
   const { t } = useI18n()
-  const api = useApi()
-  const { data: settingRows } = useAsyncData(
-    localeAsyncKey('site-settings'),
-    () => api.post<SettingRow[]>('/v1/wap/site/settings', {}).catch(() => [] as SettingRow[]),
-    { default: () => [] as SettingRow[] },
-  )
-  const settings = computed(() => {
-    const m: Record<string, string> = {}
-    for (const row of settingRows.value || []) m[row.key] = row.value
-    return m
-  })
+  const { settings } = useSiteSettings()
   const on = (to: string) => isMemberModuleOn(settings.value, to)
 
   const userMain = computed<MemberNavLink[]>(() => [

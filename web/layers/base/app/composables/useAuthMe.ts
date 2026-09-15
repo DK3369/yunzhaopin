@@ -26,6 +26,6 @@ export function useAuthMe() {
         return null
       }
     },
-    { default: () => null },
+    { default: () => null, ...reuseAsyncCache() },
   )
 }

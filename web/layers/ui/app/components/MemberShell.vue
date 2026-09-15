@@ -119,18 +119,20 @@ const comMoreOpen = ref(false)
 const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
 
 const { data: userDash } = useAsyncData(
-  () => `member-shell-user-dash-${props.kind}`,
+  () => (props.kind === 'user' ? 'user-dash' : 'hdr-skip-user-dash'),
   () =>
     props.kind === 'user'
       ? api.post<{ wkyqnum?: number }>('/v1/mcenter/dashboard', {}).catch(() => null)
       : Promise.resolve(null),
+  reuseAsyncCache(),
 )
 const { data: comDash } = useAsyncData(
-  () => `member-shell-com-dash-${props.kind}`,
+  () => (props.kind === 'com' ? 'com-dash' : 'hdr-skip-com-dash'),
   () =>
     props.kind === 'com'
       ? api.post<{ applies_unread?: number }>('/v1/mcenter/com-dashboard', {}).catch(() => null)
       : Promise.resolve(null),
+  reuseAsyncCache(),
 )
 
 const interviewBadge = computed(() => Number(userDash.value?.wkyqnum || 0))

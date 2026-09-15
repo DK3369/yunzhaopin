@@ -37,6 +37,8 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行（电话 | 签到绿钮 | 头像 | 通知 | 语言 | 回首页）。企业 `m_style` 会把 `.yun_m_indexinfo_user_qd` 改成 `position:absolute`，必须在会员顶栏里盖掉，否则签到叠到头像上。H5 会员首页 `/user` `/com` **不要**再叠一层蓝条返回（`userheader` / `commemberheader` 自己有顶栏）；子页才用 `header_bg` 返回。
 
+会员页 **不要**顺手打前台导航/页脚/热搜：`useSiteChrome` 只在 `needsPublicSiteChrome`（非 `/user` `/com`、非登录）时拉 `/v1/wap/nav` 和 descriptions。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 一份。左栏角标、顶栏、首页的 dashboard / 简历列表用同一个 `useAsyncData` key（`user-dash`、`user-home-resume`），不要 `member-shell-user-dash-*` 再打一遍。积分余额等下拉才用的接口，悬停再请求。
+
 前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`（`sy_job_web` 关则藏）。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。判断必须用 `/com` 与 `/com/`（[`isComMemberPath`](../../web/layers/ui/app/utils/site.ts)），**不要** `startsWith('/com')`，否则公开「找企业」`/companies`（PHP `company/`）会被当成企业中心，求职账号会进 `/user`。PC 顶栏 Companies 应对齐 PHP `navmap` 的找企业，进企业列表。登录后访问 `/advice` 也走会员壳（求职/招聘按 `usertype`），未登录仍是前台反馈页。
 
 H5 求职首页 `userheader` 必须全宽：`MemberShell` 在 `/user` `/com` 加 `member-shell-home`，去掉 `wap_member` 左右 padding。其他服务 H5 宫格把 PHP 的 `position_management_body{position:absolute}` 改回文档流（Vue 已有 `header_h`）。
@@ -105,6 +107,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 不要 `overflow:hidden`（会裁掉左栏「更多」飞出层）
 - 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
 - 会员 PC 顶栏继续用 PHP `float:right` / 通知栏 70px（英文折行；企业 CSS 还会把签到做成 absolute 叠到头像上）
+- 会员 `/user` `/com` 仍打前台 `nav` / `descriptions` / `hot-searches`（页脚和公开顶栏用的，会员壳不渲染）
 - 左栏「更多」继续用未拆开的 `.user_more`（PC 打包里企业 `m_style` 会盖掉求职白底；80px 浮动格叠英文会穿层）
 - `.yun_m_left_cur a` 打到 `.user_more a`（当前页在「更多」里时浮层每条都变选中态）
 - 财务 H5 `financial_management_*` 不包 `.site-h5`（PC 会露出一块没皮的头图）

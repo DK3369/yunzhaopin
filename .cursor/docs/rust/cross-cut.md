@@ -17,7 +17,9 @@
 
 切语言会整页 reload，但 SSR payload 仍按 key 复用。随语言变的接口用 [`localeAsyncKey('site-nav')`](../../../web/layers/base/app/composables/useLocaleAsyncKey.ts)，禁止再抄 `'site-nav-1'`。
 
-已带 locale：顶栏 settings/nav/hot、广告 `useAdsBundle`、`usePublicDicts`、职位/兼职分类 `useJobCats` / `usePartCats`、首页/职位/简历/企业/兼职列表。
+已带 locale：顶栏 settings/nav、广告 `useAdsBundle`、`usePublicDicts`、职位/兼职分类 `useJobCats` / `usePartCats`、首页/职位/简历/企业/兼职列表。`localeAsyncKey` 在 setup 里算出**字符串**（切语言会整页 reload）。不要用会 watch locale 的 getter，否则 i18n 就绪时会把导航/配置再打一遍。
+
+会员 `/user` `/com` 与登录页 **不要**打前台 `nav` / `descriptions` / `hot-searches`。settings 全站一份（[`useSiteSettings`](../../../web/layers/ui/app/composables/useSiteSettings.ts)）。头栏 / 左栏 / 首页 dash 共用 `user-dash` / `com-dash`，另一身份用 `hdr-skip-*`。
 
 ## 媒体 URL
 

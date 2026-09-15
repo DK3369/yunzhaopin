@@ -211,6 +211,17 @@ export function isMemberPath(path: string): boolean {
   return isUserMemberPath(path) || isComMemberPath(path)
 }
 
+const AUTH_PATHS = new Set(['/login', '/register', '/forgetpw', '/loginlock', '/oauth-bind', '/app-login'])
+
+export function isAuthPath(path: string): boolean {
+  return AUTH_PATHS.has(path)
+}
+
+/** 前台顶栏导航 / 页脚单页。会员中心和登录页不要打这些接口。 */
+export function needsPublicSiteChrome(path: string): boolean {
+  return !isMemberPath(path) && !isAuthPath(path)
+}
+
 /** 会员路径对不上前台 URL（`/user/parts` ≠ `/parts`），单独映射到 `sy_{m}_web`。 */
 const MEMBER_PATH_TO_MODULE: Record<string, string> = {
   '/user/parts': 'part',

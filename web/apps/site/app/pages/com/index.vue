@@ -4,22 +4,28 @@ const api = useApi()
 const { t } = useI18n()
 const { comItems } = useMemberNav()
 const { data } = await useAuthMe()
-const { data: profile } = await useAsyncData('com-home-profile', () =>
-  api
-    .post<{ name?: string; logo?: string; uid?: number; r_status?: number }>('/v1/mcenter/company/list', {})
-    .catch(() => null),
+const { data: profile } = await useAsyncData(
+  'com-home-profile',
+  () =>
+    api
+      .post<{ name?: string; logo?: string; uid?: number; r_status?: number }>('/v1/mcenter/company/list', {})
+      .catch(() => null),
+  reuseAsyncCache(),
 )
-const { data: dash } = await useAsyncData('com-dash', () =>
-  api
-    .post<{
-      applies_received: number
-      applies_unread: number
-      interviews_sent?: number
-      resume_downloads?: number
-      job_msg_unanswered?: number
-      unread_messages?: number
-    }>('/v1/mcenter/com-dashboard', {})
-    .catch(() => null),
+const { data: dash } = await useAsyncData(
+  'com-dash',
+  () =>
+    api
+      .post<{
+        applies_received: number
+        applies_unread: number
+        interviews_sent?: number
+        resume_downloads?: number
+        job_msg_unanswered?: number
+        unread_messages?: number
+      }>('/v1/mcenter/com-dashboard', {})
+      .catch(() => null),
+  reuseAsyncCache(),
 )
 const { data: counts } = await useAsyncData('com-home-job-counts', () =>
   api

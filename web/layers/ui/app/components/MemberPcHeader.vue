@@ -16,7 +16,7 @@
             @click.prevent="sign"
           >{{ signSt?.signed_today ? $t('wap_01022') : $t('wap_01023') }}</a>
         </div>
-        <div class="yun_m_headertx" @mouseenter="userInfoOpen = true" @mouseleave="userInfoOpen = false">
+          <div class="yun_m_headertx" @mouseenter="userInfoOpen = true; ensureBal()" @mouseleave="userInfoOpen = false">
           <NuxtLink to="/user/resume" class="yun_m_headertxa">
             <img v-if="userPhoto" :src="userPhoto" width="30" height="30" alt="" />
           </NuxtLink>
@@ -164,6 +164,7 @@ const { data: userDash } = useAsyncData(
           .post<{ wkyqnum?: number; sysnum?: number; commsgnum?: number }>('/v1/mcenter/dashboard', {})
           .catch(() => null)
       : Promise.resolve(null),
+  reuseAsyncCache(),
 )
 const { data: userResume } = useAsyncData(
   () => (kind.value === 'user' ? 'user-home-resume' : 'hdr-skip-user-resume'),
@@ -171,14 +172,26 @@ const { data: userResume } = useAsyncData(
     kind.value === 'user'
       ? api.post<{ name?: string; photo?: string }>('/v1/mcenter/resume/list', {}).catch(() => null)
       : Promise.resolve(null),
+  reuseAsyncCache(),
 )
-const { data: bal } = useAsyncData(
-  'member-hdr-user-bal',
-  () => (kind.value === 'user' ? api.post<{ balance?: number }>('/v1/mcenter/integral/balance', {}).catch(() => null) : Promise.resolve(null)),
-)
+const bal = ref<{ balance?: number } | null>(null)
+let balLoading = false
+async function ensureBal() {
+  if (kind.value !== 'user' || bal.value != null || balLoading) return
+  balLoading = true
+  try {
+    bal.value = await api.post<{ balance?: number }>('/v1/mcenter/integral/balance', {}).catch(() => null)
+  } finally {
+    balLoading = false
+  }
+}
 const { data: signSt, refresh: refreshSign } = useAsyncData(
-  () => (kind.value === 'com' ? 'com-home-sign' : 'user-home-sign'),
-  () => api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
+  () => (kind.value === 'user' ? 'user-home-sign' : 'hdr-skip-sign'),
+  () =>
+    kind.value === 'user'
+      ? api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null)
+      : Promise.resolve(null),
+  reuseAsyncCache(),
 )
 const { data: comDash } = useAsyncData(
   () => (kind.value === 'com' ? 'com-dash' : 'hdr-skip-com-dash'),
@@ -192,6 +205,7 @@ const { data: comDash } = useAsyncData(
           }>('/v1/mcenter/com-dashboard', {})
           .catch(() => null)
       : Promise.resolve(null),
+  reuseAsyncCache(),
 )
 const { data: comProfile } = useAsyncData(
   () => (kind.value === 'com' ? 'com-home-profile' : 'hdr-skip-com-profile'),
@@ -199,6 +213,7 @@ const { data: comProfile } = useAsyncData(
     kind.value === 'com'
       ? api.post<{ name?: string; logo?: string }>('/v1/mcenter/company/list', {}).catch(() => null)
       : Promise.resolve(null),
+  reuseAsyncCache(),
 )
 
 const userLogo = computed(() => mediaUrl(settings.value.sy_member_logo) || logoPc.value)
