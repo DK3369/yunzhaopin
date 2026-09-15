@@ -17,6 +17,10 @@ type ChildRow = {
   years?: number
   level?: number
   education_n?: string
+  salary?: number
+  salary_n?: string
+  job_class_n?: string
+  city_class_n?: string
 }
 
 const api = useApi()
@@ -123,7 +127,7 @@ watch(
   { immediate: true },
 )
 const expectForm = reactive({ id: 0, name: '', salary: 8000, type: 57 })
-const workForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', department: '', title: '' })
+const workForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', department: '', title: '', content: '' })
 const eduForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', specialty: '', education: 65 })
 const projectForm = reactive({ id: 0, name: '', sdate_n: '', edate_n: '', role: '', content: '' })
 const skillForm = reactive({ id: 0, name: '', level: 0, years: 0 })
@@ -149,6 +153,7 @@ async function saveResume() {
     msg.value = t('common.success')
     await refresh()
     await refreshCompletion()
+    if (openSec.value === 'basic') openSec.value = ''
   } catch (e: unknown) {
     msg.value = fail(e)
   }
@@ -235,8 +240,10 @@ async function refreshResume() {
 async function saveExpect() {
   msg.value = ''
   try {
-    await api.post('/v1/mcenter/resume/expects', { ...expectForm })
+    if (expectForm.id) await api.post('/v1/mcenter/resume/expects/update', { ...expectForm })
+    else await api.post('/v1/mcenter/resume/expects', { ...expectForm })
     msg.value = t('common.success')
+    openSec.value = ''
     await refreshExpects()
   } catch (e: unknown) {
     msg.value = fail(e)
@@ -253,6 +260,8 @@ async function saveChild(
     if (id) await api.post(`/v1/mcenter/resume/${kind}/update`, body)
     else await api.post(`/v1/mcenter/resume/${kind}`, body)
     msg.value = t('common.success')
+    openSec.value = ''
+    resetSec(kind)
     await reload()
   } catch (e: unknown) {
     msg.value = fail(e)
@@ -275,6 +284,34 @@ async function delChild(kind: string, row: ChildRow, reload: () => Promise<unkno
 const openSec = ref('')
 function toggleSec(name: string) {
   openSec.value = openSec.value === name ? '' : name
+}
+function resetSec(name: string) {
+  if (name === 'expect' || name === 'expects') Object.assign(expectForm, { id: 0, name: '', salary: 8000, type: 57 })
+  if (name === 'work' || name === 'works') Object.assign(workForm, { id: 0, name: '', sdate_n: '', edate_n: '', department: '', title: '', content: '' })
+  if (name === 'edu' || name === 'edus') Object.assign(eduForm, { id: 0, name: '', sdate_n: '', edate_n: '', specialty: '', education: 65 })
+  if (name === 'project' || name === 'projects') Object.assign(projectForm, { id: 0, name: '', sdate_n: '', edate_n: '', role: '', content: '' })
+  if (name === 'skill' || name === 'skills') Object.assign(skillForm, { id: 0, name: '', level: 0, years: 0 })
+  if (name === 'training' || name === 'trainings') Object.assign(trainingForm, { id: 0, name: '', sdate_n: '', edate_n: '', title: '', content: '' })
+  if (name === 'cert' || name === 'certs') Object.assign(certForm, { id: 0, name: '', sdate_n: '', edate_n: '', title: '', content: '' })
+  if (name === 'other' || name === 'others') Object.assign(otherForm, { id: 0, name: '', content: '' })
+  if (name === 'language' || name === 'languages') Object.assign(languageForm, { id: 0, name: '', level: 0 })
+}
+function openAdd(name: string) {
+  if (openSec.value === name) {
+    openSec.value = ''
+    return
+  }
+  resetSec(name)
+  openSec.value = name
+}
+function openExpect() {
+  const row = expectRows.value[0]
+  if (row) {
+    expectForm.id = row.id
+    expectForm.name = String(row.name || '')
+    expectForm.salary = Number(row.salary || 8000)
+  } else resetSec('expect')
+  openSec.value = openSec.value === 'expect' ? '' : 'expect'
 }
 function childList(v: unknown): ChildRow[] {
   if (!v) return []
@@ -308,6 +345,7 @@ function fillWork(row: ChildRow) {
   workForm.name = String(row.name || '')
   workForm.title = String(row.title || '')
   workForm.department = String(row.department || '')
+  workForm.content = String(row.content || '')
   workForm.sdate_n = String(row.sdate_n || '')
   workForm.edate_n = String(row.edate_n || '')
   openSec.value = 'work'
@@ -427,7 +465,7 @@ useSeoMeta({ title: t('wap_user_00204') })
               <div :class="{ yun_create_genderselect: form.sex === 2 }" @click="form.sex = 2">{{ $t('common_02069') }}</div>
             </div>
           </div>
-          <MemberField wap :label="$t('ui.intention_job')"><input v-model="expectForm.name" /></MemberField>
+          <MemberField wap :label="$t('wap_00460')"><input v-model="expectForm.name" /></MemberField>
           <MemberField wap :label="$t('wap_user_00242')"><input v-model="form.living" /></MemberField>
           <MemberField wap :label="$t('common.phone')"><input v-model="form.telphone" /></MemberField>
           <MemberField wap :label="$t('ui.birthday')"><input v-model="form.birthday" /></MemberField>
@@ -460,14 +498,13 @@ useSeoMeta({ title: t('wap_user_00204') })
               </div>
               <div class="data_left_condition">
                 <ul>
-                  <li v-if="integrity">{{ integrity }}%</li>
                   <li v-if="form.exp">{{ expDict.find((d) => d.id === form.exp)?.name }}</li>
                   <li v-if="form.education">{{ eduDict.find((d) => d.id === form.education)?.name }}</li>
                 </ul>
               </div>
             </div>
             <div class="resume_min_body_cord_data_logo" @click.stop>
-              <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" width="100%" height="100%" />
+              <img :src="form.photo ? mediaUrl(form.photo) : '/legacy/h5/images/photograph.png'" alt="" width="100%" height="100%" />
               <input type="file" accept="image/jpeg,image/png,image/webp" @change="onAvatar" />
             </div>
           </div>
@@ -475,17 +512,28 @@ useSeoMeta({ title: t('wap_user_00204') })
             <div class="cord_intention_top">
               <div class="cord_intention_top_word">{{ $t('wap_00460') }}</div>
             </div>
-            <div class="cord_intention_bom" @click="toggleSec('expect')">
+            <div class="cord_intention_bom" @click="openExpect">
               <div class="data_left_condition">
                 <ul>
                   <li>{{ expectRows[0]?.name || $t('ui.no_expect') }}</li>
-                  <li v-if="expectRows[0]?.salary">{{ expectRows[0].salary }}</li>
+                  <li v-if="expectRows[0]?.salary_n">· {{ expectRows[0].salary_n }}</li>
+                  <li v-else-if="expectRows[0]?.salary">· {{ expectRows[0].salary }}</li>
+                  <li v-if="expectRows[0]?.city_class_n">· {{ expectRows[0].city_class_n }}</li>
                 </ul>
               </div>
               <div class="cord_intention_bom_icon">
                 <img src="/legacy/h5/images/icon_more.png" alt="" width="100%" height="100%" />
               </div>
             </div>
+          </div>
+          <div class="resume_min_body_cord_work_experience" @click="toggleSec('basic')">
+            <div class="cord_work_experience_one">
+              <div class="cord_intention_top_word">{{ $t('wap_user_00326') }}</div>
+              <div class="cord_intention_top_icon">
+                <img src="/legacy/h5/images/icon_question.png" alt="" width="100%" height="100%" />
+              </div>
+            </div>
+            <div v-if="form.description" class="cord_work_experience_four">{{ form.description }}</div>
           </div>
         </div>
     <div class="site-pc">
@@ -572,7 +620,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <MemberField wap :label="$t('wap_user_00102')" area><textarea v-model="form.description" rows="4" /></MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('ui.save_resume') }}</button>
     </form>
-    <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" h5-kind="none" :open="openSec === 'expect'" @toggle="toggleSec('expect')">
+    <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" h5-kind="none" :open="openSec === 'expect'" @toggle="openAdd('expect')">
       <template #pc>
         <ul v-if="expectRows.length" class="yun_resume_job_intention_list">
           <li v-for="row in expectRows" :key="row.id">{{ row.name || row.id }}</li>
@@ -581,13 +629,13 @@ useSeoMeta({ title: t('wap_user_00204') })
       </template>
       <template #form>
         <form @submit.prevent="saveExpect">
-          <MemberField wap :label="$t('ui.intention_job')"><input v-model="expectForm.name" /></MemberField>
+          <MemberField wap :label="$t('wap_00460')"><input v-model="expectForm.name" /></MemberField>
           <MemberField wap :label="$t('ui.expect_salary')"><input v-model.number="expectForm.salary" type="number" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ $t('ui.add_expect') }}</button>
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeSection :title="$t('wap_00457')" icon="yun_resume_h1_iconjl" :open="openSec === 'work'" @toggle="toggleSec('work')">
+        <MemberResumeSection :title="$t('wap_00457')" icon="yun_resume_h1_iconjl" :open="openSec === 'work'" @toggle="openAdd('work')">
           <template #pc>
             <p v-if="!workRows.length" class="muted">{{ $t('ui.no_work') }}</p>
           </template>
@@ -599,6 +647,7 @@ useSeoMeta({ title: t('wap_user_00204') })
               :title="String(row.name || '')"
               :sub="row.title"
               :time="timeOf(row)"
+              :body="row.content"
               @edit="fillWork(row)"
               @remove="delChild('works', row, refreshWorks)"
             />
@@ -607,9 +656,10 @@ useSeoMeta({ title: t('wap_user_00204') })
         <form @submit.prevent="saveChild('works', { ...workForm }, refreshWorks)">
           <MemberField wap :label="$t('common.company')"><input v-model="workForm.name" /></MemberField>
           <MemberField wap :label="$t('wap_com_00288')"><input v-model="workForm.title" /></MemberField>
-          <MemberField wap label="department"><input v-model="workForm.department" /></MemberField>
+          <MemberField wap :label="$t('default_00244')"><input v-model="workForm.department" /></MemberField>
           <MemberField wap :label="$t('member_user_00106')"><input v-model="workForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
           <MemberField wap :label="$t('wap_00040')"><input v-model="workForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField wap :label="$t('ui.detail')" area><textarea v-model="workForm.content" rows="3" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ workForm.id ? $t('common.save') : $t('ui.add_work') }}</button>
         </form>
       </template>
@@ -621,10 +671,11 @@ useSeoMeta({ title: t('wap_user_00204') })
           :title="String(row.name || '')"
           :sub="row.title"
           :time="timeOf(row)"
+          :body="row.content"
           @edit="fillWork(row)"
           @remove="delChild('works', row, refreshWorks)"
         />
-        <MemberResumeSection :title="$t('wap_00459')" icon="yun_resume_h1_iconjy" h5-kind="edu" :open="openSec === 'edu'" @toggle="toggleSec('edu')">
+        <MemberResumeSection :title="$t('wap_00459')" icon="yun_resume_h1_iconjy" h5-kind="edu" :open="openSec === 'edu'" @toggle="openAdd('edu')">
           <template #pc>
             <p v-if="!eduRows.length" class="muted">{{ $t('ui.no_edu') }}</p>
           </template>
@@ -643,7 +694,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           <template #form>
         <form @submit.prevent="saveChild('edus', { ...eduForm }, refreshEdus)">
           <MemberField wap :label="$t('ui.edu')"><input v-model="eduForm.name" /></MemberField>
-          <MemberField wap label="specialty"><input v-model="eduForm.specialty" /></MemberField>
+          <MemberField wap :label="$t('admin_user_00224')"><input v-model="eduForm.specialty" /></MemberField>
           <MemberField wap :label="$t('member_user_00106')"><input v-model="eduForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
           <MemberField wap :label="$t('wap_00040')"><input v-model="eduForm.edate_n" placeholder="YYYY-MM" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ eduForm.id ? $t('common.save') : $t('ui.add_edu') }}</button>
@@ -660,7 +711,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillEdu(row)"
           @remove="delChild('edus', row, refreshEdus)"
         />
-        <MemberResumeSection :title="$t('wap_00465')" icon="yun_resume_h1_iconxm" :open="openSec === 'project'" @toggle="toggleSec('project')">
+        <MemberResumeSection :title="$t('wap_00465')" icon="yun_resume_h1_iconxm" :open="openSec === 'project'" @toggle="openAdd('project')">
           <template #pc>
             <p v-if="!projectRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
@@ -679,7 +730,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('projects', { ...projectForm }, refreshProjects)">
-          <MemberField wap :label="$t('wap_com_00288')"><input v-model="projectForm.name" /></MemberField>
+          <MemberField wap :label="$t('wap_user_00099')"><input v-model="projectForm.name" /></MemberField>
           <MemberField wap :label="$t('wap_com_00288')"><input v-model="projectForm.role" /></MemberField>
           <MemberField wap :label="$t('member_user_00106')"><input v-model="projectForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
           <MemberField wap :label="$t('wap_00040')"><input v-model="projectForm.edate_n" placeholder="YYYY-MM" /></MemberField>
@@ -699,20 +750,24 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillProject(row)"
           @remove="delChild('projects', row, refreshProjects)"
         />
-        <MemberResumeSection :title="$t('wap_00461')" icon="yun_resume_h1_iconjn" :open="openSec === 'skill'" @toggle="toggleSec('skill')">
+        <MemberResumeSection :title="$t('wap_00461')" icon="yun_resume_h1_iconjn" h5-kind="skill" :open="openSec === 'skill'" @toggle="openAdd('skill')">
           <template #pc>
             <p v-if="!skillRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
-            <MemberResumeExpItem
+            <div
               v-for="row in skillRows"
               :key="'h5-sk-' + row.id"
-              surface="h5"
-              :title="String(row.name || '')"
-              :sub="row.years ? String(row.years) : ''"
-              @edit="fillSkill(row)"
-              @remove="delChild('skills', row, refreshSkills)"
-            />
+              class="cord_intention_bom"
+              @click="fillSkill(row)"
+            >
+              <div class="data_left_skill">
+                <ul>
+                  <li class="cord_intention_jnmane">{{ row.name }}</li>
+                  <li v-if="row.years">{{ row.years }}</li>
+                </ul>
+              </div>
+            </div>
           </template>
           <template #form>
         <form @submit.prevent="saveChild('skills', { ...skillForm }, refreshSkills)">
@@ -731,7 +786,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillSkill(row)"
           @remove="delChild('skills', row, refreshSkills)"
         />
-        <MemberResumeSection :title="$t('wap_00455')" icon="yun_resume_h1_iconpx" :open="openSec === 'training'" @toggle="toggleSec('training')">
+        <MemberResumeSection :title="$t('wap_00455')" icon="yun_resume_h1_iconpx" :open="openSec === 'training'" @toggle="openAdd('training')">
           <template #pc>
             <p v-if="!trainingRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
@@ -770,7 +825,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillTraining(row)"
           @remove="delChild('trainings', row, refreshTrainings)"
         />
-        <MemberResumeSection :title="$t('wap_user_00090')" icon="yun_resume_h1_iconry" :open="openSec === 'cert'" @toggle="toggleSec('cert')">
+        <MemberResumeSection :title="$t('wap_user_00090')" icon="yun_resume_h1_iconry" :open="openSec === 'cert'" @toggle="openAdd('cert')">
           <template #pc>
             <p v-if="!certRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
@@ -809,7 +864,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillCert(row)"
           @remove="delChild('certs', row, refreshCerts)"
         />
-        <MemberResumeSection :title="$t('wap_00493')" icon="yun_resume_h1_iconqt" :open="openSec === 'other'" @toggle="toggleSec('other')">
+        <MemberResumeSection :title="$t('wap_00493')" icon="yun_resume_h1_iconqt" :open="openSec === 'other'" @toggle="openAdd('other')">
           <template #pc>
             <p v-if="!otherRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
@@ -841,7 +896,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillOther(row)"
           @remove="delChild('others', row, refreshOthers)"
         />
-        <MemberResumeSection :title="$t('wap_com_00292')" icon="yun_resume_h1_iconpj" :open="openSec === 'language'" @toggle="toggleSec('language')">
+        <MemberResumeSection :title="$t('wap_com_00292')" icon="yun_resume_h1_iconpj" :open="openSec === 'language'" @toggle="openAdd('language')">
           <template #pc>
             <p v-if="!languageRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
@@ -873,7 +928,7 @@ useSeoMeta({ title: t('wap_user_00204') })
           @edit="fillLanguage(row)"
           @remove="delChild('languages', row, refreshLanguages)"
         />
-        <MemberResumeSection :title="$t('wap_user_00157')" icon="yun_resume_h1_iconzp" :open="openSec === 'show'" @toggle="toggleSec('show')">
+        <MemberResumeSection :title="$t('wap_00973')" icon="yun_resume_h1_iconzp" h5-kind="show" :open="openSec === 'show'" @toggle="openAdd('show')">
       <template #pc>
         <div v-for="row in shows?.list || []" :key="row.id" class="user_resume_box">
           <div class="user_resume_name">{{ row.title || row.id }}</div>
@@ -882,8 +937,12 @@ useSeoMeta({ title: t('wap_user_00204') })
         </div>
       </template>
       <template #h5>
-        <div v-for="row in shows?.list || []" :key="'h5s-' + row.id" class="work_list">
-          <div class="cord_work_experience_two_word">{{ row.title || row.id }}</div>
+        <div class="resume_min_body_Individual_works_photo">
+          <ul>
+            <li v-for="row in shows?.list || []" :key="'h5s-' + row.id">
+              <img v-if="row.picurl" :src="mediaUrl(row.picurl)" alt="" width="100%" height="100%" />
+            </li>
+          </ul>
         </div>
       </template>
       <template #form>
@@ -893,7 +952,7 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeSection :title="$t('common.share')" icon="yun_resume_h1_iconfj" :open="openSec === 'share'" @toggle="toggleSec('share')">
+        <MemberResumeSection :title="$t('common.share')" icon="yun_resume_h1_iconfj" h5-kind="none" :open="openSec === 'share'" @toggle="toggleSec('share')">
       <template #pc>
         <div v-for="row in shareTokens?.list || []" :key="row.token" class="user_resume_box">
           <div class="user_resume_name">
@@ -919,7 +978,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <div class="site-h5 resume_bot">
         <div class="Edit_your_resume_tail">
           <div class="Edit_your_resume_Update_your_resume" @click="refreshResume">{{ $t('wap_user_00199') }}</div>
-          <NuxtLink :to="`/resumes/${data?.uid}`" class="Edit_your_resume_Preview_your_resume">{{ $t('wap_user_00217') }}</NuxtLink>
+          <NuxtLink v-if="data?.uid" :to="`/resumes/${data.uid}`" class="Edit_your_resume_Preview_your_resume">{{ $t('wap_user_00217') }}</NuxtLink>
         </div>
       </div>
     </div>

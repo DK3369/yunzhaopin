@@ -182,7 +182,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - 导航：`web/layers/ui/app/composables/useMemberNav.ts`（按 `isMemberModuleOn` 过滤）、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype` + 职位模块；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
 - 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
 - 表单：`MemberField.vue`（求职 PC `verification_form*` + `verification_text`；H5 简历 `wap` → `yun_createlist`，不要再打 `verification_formname`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
-- 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单。H5 `/user/resume` 是一张 `resume_min_body_cord`（空简历 `create_resume`）；H5 表单 `yun_createlist` / `Create_resume_btn`，不是 PC `MemberField`
+- 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单。H5 `/user/resume` 是一张 `resume_min_body_cord`（空简历 `create_resume`）；H5 表单 `yun_createlist` / `Create_resume_btn`，不是 PC `MemberField`。意向接口字段是 `job_class_n` / `city_class_n` / `salary_n`，不是 `job_classid_n`。小节头上的 + 是新增（会清空表单），点经历行才是编辑。
 - 分页：`useMemberListPage.ts`
 - 页：`web/apps/site/app/pages/user/*`、`pages/com/*`
 - CSS：`legacyCss.ts`；切皮与壳：`web/apps/site/app/assets/main.css`

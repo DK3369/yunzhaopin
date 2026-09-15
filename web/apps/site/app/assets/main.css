@@ -2147,6 +2147,45 @@ html.force-pc .site-h5 {
   .member-shell-resume .Edit_your_resume_min_body {
     padding-bottom: 3.2rem;
   }
+  .member-shell-resume .resume_min_body_cord .yun_createbox {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+  .member-shell-resume .resume_min_body_cord_intention {
+    height: auto;
+    min-height: 1.466667rem;
+  }
+  .member-shell-resume .cord_intention_bom + .cord_intention_bom {
+    margin-top: 0.32rem;
+  }
+  .member-shell-resume .data_left_condition > ul {
+    flex-wrap: wrap;
+  }
+  .member-shell-resume .resume_min_body_cord_data_logo {
+    position: relative;
+  }
+  .member-shell-resume .resume_min_body_cord_data_logo input[type='file'] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  .member-shell-resume .Edit_your_resume_Preview_your_resume {
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+  .member-shell-resume .create_resume {
+    overflow: hidden;
+  }
+  .member-shell-resume .member-expect-del {
+    margin: 0 0.32rem 0.4rem;
+    text-align: center;
+    color: #999;
+    font-size: 0.346667rem;
+  }
   .member-shell-resume .Edit_your_resume_min_body,
   .member-shell-resume .resume_min_body_cord,
   .member-shell-resume .create_resume {
