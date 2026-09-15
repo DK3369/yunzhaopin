@@ -141,6 +141,8 @@
 </template>
 
 <script setup lang="ts">
+import { isMemberPath } from '../utils/site'
+
 const route = useRoute()
 const { siteName, phone, worktime, copyright, record, email, address, me, memberHome, footerNav, wxQr, wapQr, perfor, hrlicense, secord } = useSiteChrome()
 const api = useApi()
@@ -168,7 +170,7 @@ function tabIcon(kind: 'home' | 'job' | 'resume' | 'news' | 'me') {
           : kind === 'news'
             ? route.path.endsWith('/messages')
             : kind === 'me'
-              ? route.path.startsWith('/user') || route.path.startsWith('/com') || route.path === '/login'
+              ? isMemberPath(route.path) || route.path === '/login'
               : false
   const map = {
     home: on ? 'tab_icon_home_s.png' : 'tab_icon_home_n.png',

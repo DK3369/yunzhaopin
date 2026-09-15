@@ -1,6 +1,8 @@
 import {
   DEFAULT_H5_NAV,
   descHref,
+  isComMemberPath,
+  isMemberPath,
   isNavModuleOn,
   mapNavUrl,
   mediaUrl,
@@ -295,7 +297,7 @@ export function useSiteChrome() {
   )
   const isMember = computed(() => {
     const p = route.path
-    if (p.startsWith('/user') || p.startsWith('/com')) return true
+    if (isMemberPath(p)) return true
     if (p === '/advice' && Number(me.value?.uid || 0) > 0) return true
     return false
   })
@@ -339,7 +341,7 @@ export function useSiteChrome() {
       .sort((a, b) => b.to.length - a.to.length)[0]
     if (memberHit) return memberHit.label
     const hit = Object.keys(titles)
-      .filter((k) => k !== '/' && route.path.startsWith(k))
+      .filter((k) => k !== '/' && (route.path === k || route.path.startsWith(`${k}/`)))
       .sort((a, b) => b.length - a.length)[0]
     return hit ? titles[hit] : siteName.value
   })
@@ -354,7 +356,7 @@ export function useSiteChrome() {
     const ut = Number(me.value?.usertype || 0)
     if (ut === 2) return 'com'
     if (ut === 1) return 'user'
-    return route.path.startsWith('/com') ? 'com' : 'user'
+    return isComMemberPath(route.path) ? 'com' : 'user'
   })
 
   async function logout() {

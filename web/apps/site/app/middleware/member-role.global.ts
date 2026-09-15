@@ -1,8 +1,11 @@
+import { isComMemberPath, isMemberPath, isUserMemberPath } from '~/utils/site'
+
 /**
  * 会员路径按 /api/auth/me 的 usertype 互斥：求职进不了 /com，招聘进不了 /user。
+ * 必须用 `/com` 与 `/com/`，不能 `startsWith('/com')`，否则公开 `/companies` 会被当成企业中心。
  */
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (!to.path.startsWith('/user') && !to.path.startsWith('/com')) return
+  if (!isMemberPath(to.path)) return
 
   const { data: me } = await useAuthMe()
 
@@ -11,6 +14,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   const ut = Number(me.value.usertype)
-  if (to.path.startsWith('/user') && ut === 2) return navigateTo('/com')
-  if (to.path.startsWith('/com') && ut === 1) return navigateTo('/user')
+  if (isUserMemberPath(to.path) && ut === 2) return navigateTo('/com')
+  if (isComMemberPath(to.path) && ut === 1) return navigateTo('/user')
 })

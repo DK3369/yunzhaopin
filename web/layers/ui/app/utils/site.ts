@@ -198,6 +198,19 @@ export function isPathModuleOn(settings: Record<string, string>, path: string): 
   return isNavModuleOn(settings, to)
 }
 
+/** 招聘会员中心 `/com`，不要用 `startsWith('/com')`（会误伤公开企业库 `/companies`）。 */
+export function isComMemberPath(path: string): boolean {
+  return path === '/com' || path.startsWith('/com/')
+}
+
+export function isUserMemberPath(path: string): boolean {
+  return path === '/user' || path.startsWith('/user/')
+}
+
+export function isMemberPath(path: string): boolean {
+  return isUserMemberPath(path) || isComMemberPath(path)
+}
+
 /** 会员路径对不上前台 URL（`/user/parts` ≠ `/parts`），单独映射到 `sy_{m}_web`。 */
 const MEMBER_PATH_TO_MODULE: Record<string, string> = {
   '/user/parts': 'part',
