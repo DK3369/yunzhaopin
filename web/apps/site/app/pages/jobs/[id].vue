@@ -5,7 +5,7 @@ import { pushRecentJob, removeRecentJob } from '~/utils/recentViews'
 import { ApiError } from '~/utils/envelope'
 
 const route = useRoute()
-const { t, te, locale } = useI18n()
+const { t, locale } = useI18n()
 const { siteName, settings, me } = useSiteChrome()
 const id = Number(route.params.id)
 const api = useApi()
@@ -147,7 +147,6 @@ watch(
   },
   { immediate: true },
 )
-const telQr = ref('')
 const sexSwitch = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
 const yqItems = computed(() => {
   const out: Array<{ label: string; value: string }> = []
@@ -192,7 +191,6 @@ const fav = ref(false)
 const applyMsg = ref('')
 const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
 const ceilShow = ref(false)
-const h5LinkOpen = ref(false)
 const reportOpen = ref(false)
 watch(
   favFromApi,
@@ -201,13 +199,6 @@ watch(
   },
   { immediate: true },
 )
-const telDisplay = computed(
-  () =>
-    revealed.value?.linktel
-    || revealed.value?.linkphone
-    || String(contactInfo.value.linktel_n || contactInfo.value.linkphone_n || ''),
-)
-const linkCode = computed(() => Number(contactInfo.value.link_code || 0))
 const applyStats = computed(() => ({
   snum: Number(formatted.value.snum || job.value.snum || 0),
   pre: Number(formatted.value.pre || 0),
@@ -218,15 +209,6 @@ const mapHref = computed(() => {
   const y = String(contactInfo.value.y || company.value.y || job.value.y || '')
   if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}&job_id=${id}`
   return ''
-})
-const linkMsg = computed(() => {
-  const raw = String(contactInfo.value.link_msg || '')
-  if (!raw) return ''
-  if (/^[a-z][a-z0-9_]*_\d+$/i.test(raw) || /^[a-z][a-z0-9_.]+$/i.test(raw)) {
-    const key = raw as never
-    return te(key) ? t(key) : raw
-  }
-  return raw
 })
 onMounted(async () => {
   const onScroll = () => {
@@ -249,12 +231,6 @@ onMounted(async () => {
     if (Number(r.hits) > 0) hits.value = Number(r.hits)
   } catch {
     /* keep payload hits */
-  }
-  try {
-    const qr = await api.post<{ show_url?: string }>('/v1/wap/wechat/qr', { kind: 'jobtel', id })
-    telQr.value = String(qr.show_url || '')
-  } catch {
-    telQr.value = ''
   }
   try {
     const r = await api.post<{ exists?: boolean; favorited?: boolean }>('/v1/mcenter/favorites/exists', {
@@ -377,44 +353,6 @@ async function toggleFav() {
     fav.value = Boolean(r.favorited)
   } catch {
     await navigateTo('/login')
-  }
-}
-async function showTel() {
-  h5LinkOpen.value = true
-  try {
-    const r = await api.get<{
-      linktel?: string
-      linkphone?: string
-      linkman?: string
-      link_code?: number
-      link_msg?: string
-      revealed?: boolean
-      prvlinktel?: string
-      prvtime?: string
-    }>('/v1/wap/jobs/contact', { id, isgetprv: linkCode.value === 10 ? 1 : 0 })
-    await api.post('/v1/wap/jobs/tel-click', { id }).catch(() => undefined)
-    const code = Number(r.link_code || 0)
-    if (code === 10 && r.prvlinktel) {
-      revealed.value = { linktel: r.prvlinktel, linkphone: r.prvlinktel, linkman: r.linkman }
-      applyMsg.value = r.prvtime || ''
-      return
-    }
-    if (code === 11) {
-      applyMsg.value = r.link_msg && te(r.link_msg as never) ? t(r.link_msg as never) : t('common_00332')
-      return
-    }
-    if (r.revealed && (r.linktel || r.linkphone)) {
-      revealed.value = { linktel: r.linktel, linkphone: r.linkphone, linkman: r.linkman }
-      return
-    }
-    if (code === 6) {
-      await navigateTo('/login')
-      return
-    }
-    const raw = String(r.link_msg || '')
-    applyMsg.value = raw && (te(raw as never) ? t(raw as never) : raw)
-  } catch (e: unknown) {
-    applyMsg.value = e instanceof Error ? e.message : t('common.phone')
   }
 }
 async function report() {
@@ -654,69 +592,6 @@ useHead({
                   </div>
                 </div>
               </div>
-              <template v-if="!jobClosed">
-              <div v-if="linkCode === 10 || linkCode === 11" class="job_details_touch_tel">
-                <em class="job_details_touch_tel_tip">{{
-                  revealed?.linktel || linkMsg || (linkCode === 11 ? $t('common_00332') : $t('common_01934'))
-                }}</em>
-                <a
-                  v-if="linkCode === 10"
-                  href="javascript:;"
-                  class="job_details_touch_tel_bth"
-                  @click.prevent="showTel"
-                >{{ $t('default_00233') }}</a>
-              </div>
-              <div v-else-if="linkCode === 9" class="job_details_touch_tel">
-                <em class="job_details_touch_tel_tip">{{ linkMsg || $t('common_02372') }}</em>
-              </div>
-              <div v-else-if="linkCode > 1 && linkCode < 6" class="job_details_touch_tel">
-                <em class="job_details_touch_tel_tip">{{ linkMsg }}</em>
-                <a
-                  v-if="applyCta.kind === 'apply'"
-                  href="javascript:;"
-                  class="job_details_touch_tel_bth"
-                  @click.prevent="apply"
-                >{{ applyCta.label }}</a>
-                <em v-else class="job_details_touch_tel_tip">{{ applyCta.label }}</em>
-              </div>
-              <div v-else class="job_details_touch_tel">
-                {{ $t('common.phone') }}：
-                <span class="job_details_touch_tel_n">{{ telDisplay || '****' }}</span>
-                <template v-if="linkCode === 6">
-                  <em class="job_details_touch_tel_tip">{{ linkMsg }}{{ $t('wap_00264') }}</em>
-                  <NuxtLink to="/login" class="job_details_touch_tel_bth">{{ $t('default_00234') }}</NuxtLink>
-                </template>
-                <template v-else-if="linkCode === 7">
-                  <em class="job_details_touch_tel_tip">{{ linkMsg || $t('default_00203') }}</em>
-                  <NuxtLink to="/user/resume" class="job_details_touch_tel_bth">{{ $t('wap_user_00197') }}</NuxtLink>
-                </template>
-                <template v-else-if="linkCode === 8">
-                  <em class="job_details_touch_tel_tip">{{ $t('default_00204') }}</em>
-                  <a
-                    v-if="applyCta.kind === 'apply'"
-                    href="javascript:;"
-                    class="job_details_touch_tel_bth"
-                    @click.prevent="apply"
-                  >{{ applyCta.label }}</a>
-                  <em v-else class="job_details_touch_tel_tip">{{ applyCta.label }}</em>
-                </template>
-                <template v-else>
-                  <a href="javascript:;" class="job_details_touch_tel_bth" @click.prevent="showTel">{{
-                    $t('default_00233')
-                  }}</a>
-                  <span class="job_details_touch_tel_say">{{ $t('member_com_00024') }}{{ siteName }}{{ $t('wap_00240') }}</span>
-                </template>
-              </div>
-              <img
-                v-if="telQr"
-                :src="telQr"
-                alt=""
-                class="job_details_touch_qr"
-                width="80"
-                height="80"
-                style="display: block; margin-top: 8px"
-              />
-              </template>
               <span v-if="comAddress" class="job_details_touch_add">
                 {{ $t('wap_js_00082') }}：{{ comAddress }}
                 <NuxtLink v-if="mapHref" :to="mapHref" class="job_details_touch_tel_bth">{{ $t('wap_00223') }}</NuxtLink>
@@ -1056,31 +931,8 @@ useHead({
             >
               <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{ applyCta.label }}</div>
             </a>
-            <a href="javascript:;" class="yun_czfoot_s" @click.prevent="showTel">
-              <div class="yun_czfoot_s_p">{{ $t('common.phone') }}</div>
-            </a>
           </div>
         </div>
-      </div>
-      <div v-if="h5LinkOpen" class="new_jobshow_telbox" style="position: fixed; left: 0.4rem; right: 0.4rem; bottom: 1.4rem; z-index: 80; background: #fff; border-radius: 0.16rem; padding: 0.32rem; box-shadow: 0 4px 16px rgba(0,0,0,.12)">
-        <div class="new_jobshow_leftname">{{ $t('member_com_00024') }}</div>
-        <div v-if="revealed?.linktel || revealed?.linkphone">
-          <div>{{ revealed?.linkman || contactInfo.linkman }}</div>
-          <a v-if="revealed?.linktel" :href="`tel:${revealed.linktel}`">{{ revealed.linktel }}</a>
-          <a v-else-if="revealed?.linkphone" :href="`tel:${revealed.linkphone}`">{{ revealed.linkphone }}</a>
-        </div>
-        <div v-else-if="linkCode === 10 || linkCode === 11" class="new_jobshow_tel">
-          {{ revealed?.linktel || linkMsg || (linkCode === 11 ? $t('common_00332') : $t('common_01934')) }}
-          <a v-if="linkCode === 10 && !revealed?.linktel" href="javascript:;" @click.prevent="showTel">{{
-            $t('default_00233')
-          }}</a>
-        </div>
-        <div v-else-if="linkCode === 9" class="new_jobshow_tel">
-          {{ linkMsg || $t('common_02372') }}
-        </div>
-        <div v-else class="new_jobshow_tel">{{ applyMsg || linkMsg || telDisplay }}</div>
-        <img v-if="telQr" :src="telQr" alt="" width="80" height="80" style="display: block; margin: 8px 0" />
-        <a href="javascript:;" class="new_jobshow_telbth" @click.prevent="h5LinkOpen = false">{{ $t('common.close') }}</a>
       </div>
     </div>
     <ReportSheet
