@@ -2,16 +2,17 @@
 import { isPathModuleOn } from '~/utils/site'
 
 const route = useRoute()
-const { locale, setLocale, t } = useI18n()
-async function applyQueryLang() {
-  const mapped = mapPhpLang(String(route.query.lang || ''))
-  if (mapped && mapped !== locale.value) {
-    persistWebLocale(mapped)
-    await setLocale(mapped)
-  }
+const { locale, t } = useI18n()
+async function dropLangQuery() {
+  if (route.query.lang == null) return
+  const query = { ...route.query }
+  delete query.lang
+  await navigateTo({ path: route.path, query, hash: route.hash }, { replace: true })
 }
-await applyQueryLang()
-watch(() => route.query.lang, () => applyQueryLang())
+await dropLangQuery()
+watch(() => route.query.lang, () => {
+  dropLangQuery()
+})
 const siteUrl = String(useRuntimeConfig().public.siteUrl || 'http://127.0.0.1:3001').replace(/\/$/, '')
 const { isHome, isAuth, isMember, settings, memberKind } = useSiteChrome()
 const { saveSite, gotocity } = useSubSite()
@@ -88,6 +89,7 @@ const mainClass = computed(() => {
 })
 
 onMounted(() => {
+  persistWebLocale(locale.value === 'en' ? 'en' : 'zh')
   if (String(settings.value.sy_web_site || '') !== '1') return
   if (String(settings.value.sy_gotocity || '') !== '1') return
   if (gotocity.value) return

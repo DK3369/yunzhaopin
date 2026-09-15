@@ -3,17 +3,18 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import en from 'element-plus/es/locale/lang/en'
 
 const route = useRoute()
-const { locale, setLocale } = useI18n()
+const { locale } = useI18n()
 
-async function applyQueryLang() {
-  const mapped = mapPhpLang(String(route.query.lang || ''))
-  if (mapped && mapped !== locale.value) {
-    persistLocale(mapped)
-    await setLocale(mapped)
-  }
+async function dropLangQuery() {
+  if (route.query.lang == null) return
+  const query = { ...route.query }
+  delete query.lang
+  await navigateTo({ path: route.path, query, hash: route.hash }, { replace: true })
 }
-await applyQueryLang()
-watch(() => route.query.lang, () => applyQueryLang())
+await dropLangQuery()
+watch(() => route.query.lang, () => {
+  dropLangQuery()
+})
 const epLocale = computed(() => (locale.value === 'en' ? en : zhCn))
 </script>
 

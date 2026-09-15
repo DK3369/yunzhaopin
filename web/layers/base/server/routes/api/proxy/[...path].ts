@@ -32,7 +32,12 @@ export default defineEventHandler(async (event) => {
     body = await readBody(event).catch(() => ({}))
   }
 
-  const query = getQuery(event)
+  const rawQuery = getQuery(event)
+  const query: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(rawQuery)) {
+    if (k === 'lang') continue
+    query[k] = v
+  }
 
   const res = await $fetch<Envelope>(`${rustApi}${urlPath}`, {
     method,

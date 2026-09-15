@@ -247,10 +247,7 @@ function saveLanguage() {
   const lang = languageForm.lang === 'en' ? 'en' : 'zh'
   persistLocale(lang)
   dialogLanguage.value = false
-  if (!import.meta.client) return
-  const url = new URL(window.location.href)
-  url.searchParams.set('lang', lang)
-  window.location.href = url.toString()
+  if (import.meta.client) location.reload()
 }
 function openShortcutMenu() {
   const ids = (me.value?.customize_ids || []).map(Number).filter((n) => n > 0)

@@ -18,10 +18,10 @@ export function toRustLang(raw?: string | null): string {
 /**
  * Resolve the upstream language for whichever app owns this Nitro instance.
  *
- * `localeCookieKey` is `lang` for the site and `admin_lang` for admin, so the
- * console never inherits what a job seeker picked on PC/H5. Admin also skips
- * the browser `Accept-Language` sniff, matching PHP `global.php`: `?lang=`,
- * then the admin cookie, then English.
+ * Unique sources: this app's locale cookie (`lang` / `admin_lang`), then
+ * `Accept-Language` (site only). Do not read `?lang=` — pages and `/api/proxy`
+ * must not carry language in the URL. Admin skips the browser sniff, matching
+ * PHP `global.php` cookie then English.
  */
 export function rustLangHeaders(event: Parameters<typeof getCookie>[0]): Record<string, string> {
   const pub = useRuntimeConfig(event).public as { localeCookieKey?: string; localeFallback?: string }
@@ -29,10 +29,9 @@ export function rustLangHeaders(event: Parameters<typeof getCookie>[0]): Record<
   const isAdmin = key !== 'lang'
   const fallback = pub.localeFallback === 'en' ? 'en' : 'zh-CN'
 
-  const q = getQuery(event).lang
   const cookie = getCookie(event, key)
   const header = isAdmin ? '' : getHeader(event, 'accept-language')
-  const tag = toRustLang(String(q || cookie || header || fallback))
+  const tag = toRustLang(String(cookie || header || fallback))
   return {
     'accept-language': tag,
   }

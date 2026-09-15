@@ -26,12 +26,9 @@ function locFromRaw(raw: unknown): Loc | null {
 
 export function useApi() {
   const i18n = useI18n()
-  const route = useRoute()
   const scope = useLocaleScope()
 
   function currentLoc(): Loc {
-    const fromQuery = locFromRaw(route.query.lang)
-    if (fromQuery) return fromQuery
     const fromI18n = locFromRaw(i18n.locale.value)
     if (fromI18n) return fromI18n
     return readStoredLocale(scope.key, scope.fallback)
@@ -40,10 +37,7 @@ export function useApi() {
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
     const url = bffUrl(`/api/proxy${path}`)
     const loc = currentLoc()
-    const query = {
-      ...(method === 'GET' ? payload : pagingQuery(payload)),
-      lang: loc,
-    }
+    const query = method === 'GET' ? payload : pagingQuery(payload)
     const headers = { 'accept-language': rustLangFor(loc, scope.key) }
     try {
       const body = await $fetch<ApiEnvelope<T>>(url, {

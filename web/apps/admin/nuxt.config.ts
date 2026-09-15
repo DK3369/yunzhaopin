@@ -250,10 +250,9 @@ export default defineNuxtConfig({
     lazy: true,
     langDir: 'locales',
     strategy: 'no_prefix',
-    // PHP `global.php` never sniffs the browser for admin: it reads `?lang=`,
-    // then the `admin_lang` cookie, then falls back to English. Browser
-    // detection is off so `php-compat.client.ts` owns that resolution, and the
-    // shared front-end `lang` cookie can never leak in here.
+    // PHP `global.php` never sniffs the browser for admin: cookie `admin_lang`,
+    // then English. Browser detection is off so `php-compat.client.ts` owns
+    // that resolution, and the front-end `lang` cookie can never leak in here.
     detectBrowserLanguage: false,
     compilation: {
       strictMessage: false,

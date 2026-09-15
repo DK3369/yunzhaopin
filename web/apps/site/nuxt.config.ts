@@ -24,7 +24,7 @@ export default defineNuxtConfig({
       cookieCrossOrigin: false,
       fallbackLocale: 'zh',
       alwaysRedirect: false,
-      redirectOn: 'no prefix',
+      redirectOn: 'root',
     },
     compilation: {
       strictMessage: false,

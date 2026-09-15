@@ -83,7 +83,7 @@ async function postAdmin(
   return await $fetch<ApiEnvelope<unknown>>(bffUrl(`/api/proxy${path}`), {
     method: 'POST',
     credentials: 'include',
-    query: { ...query, lang: loc },
+    query: Object.keys(query).length ? query : undefined,
     headers: { 'accept-language': rustLangFor(loc) },
     body,
     timeout: timeoutMs && timeoutMs > 0 ? timeoutMs : undefined,

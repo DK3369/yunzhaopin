@@ -13,12 +13,15 @@
 
 ## 二、语言来源和优先级
 
-语言按以下顺序确定：
+生产客户端（Nuxt `/api/proxy`）不带 `?lang=`。语言只走：
 
-1. URL 参数：`?lang=en-US`
-2. `Accept-Language` 请求头
-3. Cookie：`lang=en-US`
-4. 服务默认语言
+1. Cookie：前台 `lang`，后台 `admin_lang`（用户显式选择）
+2. 没有 cookie 时用浏览器 `Accept-Language`
+3. 再没有则默认语言
+
+BFF 把上面结果写成**一条** `Accept-Language: zh-CN|en` 转给 Rust，并丢掉 URL 上的 `lang`。页面不要带 `?lang=`，也不要再写 `i18n_redirected` cookie。
+
+Rust 自身仍是 `?lang=`（仅 curl 调试）→ `Accept-Language` → Cookie → 默认。`en-US` 归一成 `en`。
 
 当前支持的标准代码：
 

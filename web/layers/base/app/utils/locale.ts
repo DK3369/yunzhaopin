@@ -75,4 +75,6 @@ export function persistWebLocale(locale: WebLocale, key: string = SITE_LOCALE_KE
   localStorage.setItem(key, locale)
   const secure = location.protocol === 'https:' ? '; Secure' : ''
   document.cookie = `${key}=${locale}; max-age=${MAX_AGE}; path=/; SameSite=Lax${secure}`
+  // Drop the leftover @nuxtjs/i18n cookie so only `lang` / `admin_lang` is the locale cookie.
+  document.cookie = `i18n_redirected=; max-age=0; path=/; SameSite=Lax${secure}`
 }
