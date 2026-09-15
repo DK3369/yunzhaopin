@@ -210,11 +210,7 @@ const welfareTags = computed(() => {
 })
 async function toggleFollow() {
   followMsg.value = ''
-  if (!me.value?.uid) {
-    await goLogin(route.fullPath)
-    return
-  }
-  if (me.value.usertype !== 1) {
+  if (me.value && me.value.usertype !== 1) {
     followMsg.value = t('wap_00030')
     return
   }

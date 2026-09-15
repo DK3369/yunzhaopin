@@ -219,10 +219,6 @@ watch(
 )
 async function toggleFollow() {
   followMsg.value = ''
-  if (!me.value?.uid) {
-    await goLogin(route.fullPath)
-    return
-  }
   try {
     const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
       target_kind: 2,

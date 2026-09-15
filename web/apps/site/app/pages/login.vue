@@ -38,7 +38,8 @@ let appPoll: ReturnType<typeof setInterval> | null = null
 let appWatchReady = false
 
 function loginNext(): string {
-  const q = String(useRoute().query.next || nextFrom.value || '')
+  const raw = useRoute().query.next
+  const q = Array.isArray(raw) ? String(raw[0] || '') : String(raw || nextFrom.value || '')
   if (q.startsWith('/') && !q.startsWith('//')) return q
   return ''
 }
@@ -148,7 +149,12 @@ onMounted(async () => {
     await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined)
     await refreshMe()
   } else if (me.value && Number(me.value.usertype) !== 0 && !(code && state)) {
-    await afterLogin(me.value)
+    const next = loginNext()
+    if (next) {
+      await navigateTo(next)
+      return
+    }
+    goBack()
     return
   }
   if (!smsLoginOn.value) panel.value = 'pass'

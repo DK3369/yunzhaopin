@@ -323,10 +323,6 @@ async function submitYqms(confirm = false) {
   }
 }
 async function toggleFav() {
-  if (!me.value?.uid) {
-    await goLogin(route.fullPath)
-    return
-  }
   const eid = Number(row.value.def_job || expect0.value.id || 0)
   try {
     if (eid) {

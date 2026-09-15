@@ -354,10 +354,6 @@ async function shareJob() {
   }
 }
 async function toggleFav() {
-  if (!me.value?.uid) {
-    await goLogin(route.fullPath)
-    return
-  }
   try {
     const r = await api.post<{ favorited: boolean }>('/v1/mcenter/favorites', { kind: 1, target_id: id })
     fav.value = Boolean(r.favorited)
