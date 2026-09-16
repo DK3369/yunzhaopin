@@ -40,6 +40,44 @@ const FIELDS: &str = "\
     welfare, \
     COALESCE(did, 0) AS did";
 
+/// Public list omits `content` (longtext); detail still uses [`FIELDS`].
+const LIST_FIELDS: &str = "\
+    uid, name, shortname, \
+    COALESCE(hy, 0) AS hy, \
+    COALESCE(pr, 0) AS pr, \
+    COALESCE(mun, 0) AS mun, \
+    sdate, \
+    COALESCE(money, 0) AS money, \
+    COALESCE(moneytype, 0) AS moneytype, \
+    COALESCE(provinceid, 0) AS provinceid, \
+    COALESCE(cityid, 0) AS cityid, \
+    COALESCE(three_cityid, 0) AS three_cityid, \
+    address, zip, x, y, \
+    linkman, linkjob, linkqq, linkphone, linktel, linkmail, website, \
+    logo, COALESCE(logo_status, 0) AS logo_status, firmpic, comqcode, \
+    CAST(NULL AS CHAR) AS content, \
+    COALESCE(r_status, 0) AS r_status, \
+    COALESCE(rec, 0) AS rec, \
+    COALESCE(hits, 0) AS hits, \
+    COALESCE(expoure, 0) AS expoure, \
+    COALESCE(moblie_status, 0) AS moblie_status, \
+    COALESCE(email_status, 0) AS email_status, \
+    COALESCE(yyzz_status, 0) AS yyzz_status, \
+    COALESCE(infostatus, 1) AS infostatus, \
+    COALESCE(rating, 0) AS rating, \
+    rating_name, \
+    COALESCE(vipstime, 0) AS vipstime, \
+    COALESCE(vipetime, 0) AS vipetime, \
+    COALESCE(payd, 0) AS payd, \
+    COALESCE(integral, 0) AS integral, \
+    lastupdate, \
+    COALESCE(addtime, 0) AS addtime, \
+    COALESCE(login_date, 0) AS login_date, \
+    COALESCE(fact_status, 0) AS fact_status, \
+    COALESCE(ant_num, 0) AS ant_num, \
+    welfare, \
+    COALESCE(did, 0) AS did";
+
 // ==================== Public search ====================
 
 /// Public-company list filter. Field set tracks PHPYun's `comlist` Smarty
@@ -88,7 +126,7 @@ pub async fn list_public(
     now: i64,
 ) -> Result<Vec<Company>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(FIELDS);
+    qb.push(LIST_FIELDS);
     qb.push(" FROM phpyun_company WHERE r_status = 1 AND (");
     qb.push_bind(f.did);
     qb.push(" = 0 OR COALESCE(did, 0) = ");

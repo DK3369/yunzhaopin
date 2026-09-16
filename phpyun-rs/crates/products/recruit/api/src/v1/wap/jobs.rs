@@ -270,6 +270,7 @@ pub fn job_summary_from_dict_fav(
         newtime,
 
         jobhits: j.jobhits,
+        jobexpoure: j.jobexpoure,
         jobnum: 0,
         statusbody: j.statusbody,
         is_favorited,
@@ -406,7 +407,7 @@ pub async fn list_jobs(
         uid: q.uid,
         did: q.did,
     };
-    let r = job_service::list_public(&state, &search, page).await?;
+    let r = std::sync::Arc::unwrap_or_clone(job_service::list_public(&state, &search, page).await?);
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = r.list.iter().map(|j| j.id).collect();
@@ -565,7 +566,7 @@ pub async fn jobs_sidebar(
     let rec = map_job_summaries(
         &state,
         user.as_ref(),
-        rec.map(|p| p.list).unwrap_or_default(),
+        rec.map(|p| std::sync::Arc::unwrap_or_clone(p).list).unwrap_or_default(),
     )
     .await;
     Ok(ApiResponse::data(JobsSidebarData {

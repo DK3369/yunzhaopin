@@ -10,8 +10,9 @@
 - 会员头栏与首页 dash 共用 `user-dash` / `com-dash` 等 key；另一身份必须用 `hdr-skip-*`，避免把共享缓存写成 `null`。
 - `/v1/mcenter/*` 必须登录。凭证是 `Authorization: Bearer` **或** Cookie `token=`：JWT 签名、`exp`、黑名单、`phpyun_user_session`。[`member_guard`](../../../phpyun-rs/crates/platform/core/src/member_guard.rs) 挂在 `/v1/mcenter` nest 上，没有 token **进不了 handler**，HTTP 401 `unauth`。BFF [`/api/proxy`](../../../web/layers/base/server/routes/api/proxy/[...path].ts) 无 `token` cookie 也不转发。公开意见反馈走 `/v1/wap/advice`。
 - **互不信任**：前台 `ensureLogin(me)` / 中间件跳登录 **不是授权**。谁能看数据、以谁的身份写库，只认 Rust [`AuthenticatedUser`](../../../phpyun-rs/crates/platform/core/src/extractors.rs)。BFF 有 cookie 只负责转发，垃圾 token 仍由后端 401。
-- 职位 / 企业 **列表**给游客。简历列表跟 PHP：`com_search=1` 游客 401；`sy_user_visit_resume=0` 求职账号 403。首页和 `/resumes` **不能看时不要打** `/v1/wap/resumes`。职位 / 简历 / 企业 **详情**必须登录。公开列表 `page_size` 上限 20，Redis `rl:ip:{ip}:wap-list` 60 次/分钟，详情 `rl:uid:{uid}:wap-detail` 30 次/分钟。Governor 按 `X-Forwarded-For`（`SmartIpKeyExtractor`），`APP_ENV=test` 才关掉。
+- 职位 / 企业 **列表**给游客。简历列表跟 PHP：`com_search=1` 游客 401；`sy_user_visit_resume=0` 求职账号 403。首页和 `/resumes` **不能看时不要打** `/v1/wap/resumes`。职位 / 简历 / 企业 **详情**必须登录。公开列表 `page_size` 上限 20，Redis `rl:ip:{ip}:wap-list` 60 次/分钟，详情 `rl:uid:{uid}:wap-detail` 30 次/分钟。
 - 公开页要登录的动作（收藏/关注/举报/提问/报名/兑换/留言/看电话等）：跟顶栏同一份 `me`，**没登录先 `ensureLogin(me, 当前页)`**，不要裸 `navigateTo('/login')`（求职者登录后会甩首页）。已登录才 POST；后端再验 Cookie。会话过期 **401** 再 `goLogin(next)`。游客不打 `exists` / `unread-summary`。已登录误进 `/login` 时回 `next` 或 `history.back()`。`unwrapEnvelope` 以 `code === 200` 为准。
+- Governor 与 `ClientIp` 同一信任模型：peer 可信才读 `X-Forwarded-For` 首跳。`APP_ENV=test` 才关掉限流。
 
 ## `useAsyncData` key 带 locale
 
@@ -29,7 +30,7 @@ Rust 拼图只走 [`media_url` / `media_url_from_cfg`](../../../phpyun-rs/crates
 
 ## 站点配置缓存
 
-`site_gate_service::config_str` 读 `phpyun_admin_config` 走 `cache::get_or_load`（L1 moka + L2 Redis，key `site_setting:{name}`，TTL 30s）。后台 `admin_upsert` / `admin_delete` 按 key `invalidate`。PHP 批量改配置清 L1（`invalidate_all_config`）；L2 最多 30s 过期。
+`site_gate_service::config_str` 读 `phpyun_admin_config` 走 `TieredCache` 整表 `site_settings:all`（TTL 30s）。单 key `site_setting:{name}` 仍在写路径 `invalidate`。后台 `admin_upsert` / `admin_delete` / 一键清缓存会丢整表。
 
 ## 薪资 / 日期 / 分类
 

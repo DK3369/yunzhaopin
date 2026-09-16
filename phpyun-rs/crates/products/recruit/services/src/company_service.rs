@@ -1,4 +1,4 @@
-//! Company service (usertype=2).
+//! Company service (usertype=2). PHP `info.class` + `company.model::setCompany`.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::TieredCache;
@@ -6,9 +6,12 @@ use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_models::company::{entity::Company, repo as company_repo};
+use phpyun_models::company_statis::repo as statis_repo;
+use phpyun_models::job::repo as job_repo;
+use phpyun_models::site_setting::repo as setting_repo;
+use phpyun_models::user::repo as user_repo;
 use serde::{Deserialize, Serialize};
-use std::hash::{Hash, Hasher};
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,22 +20,25 @@ pub struct CompanyPage {
     pub total: u64,
 }
 
-const SIDEBAR_TTL: Duration = Duration::from_secs(60);
+const LIST_TTL: Duration = Duration::from_secs(60);
 
-static SIDEBAR_CACHE: OnceLock<TieredCache<CompanyPage>> = OnceLock::new();
+static LIST_CACHE: OnceLock<TieredCache<CompanyPage>> = OnceLock::new();
+static DETAIL_CACHE: OnceLock<TieredCache<Company>> = OnceLock::new();
 
-fn sidebar_cache() -> &'static TieredCache<CompanyPage> {
-    SIDEBAR_CACHE.get_or_init(|| TieredCache::new(32, SIDEBAR_TTL))
+fn list_cache() -> &'static TieredCache<CompanyPage> {
+    LIST_CACHE.get_or_init(|| TieredCache::new(256, LIST_TTL))
 }
 
-fn filter_hash(filter: &CompanyFilter<'_>) -> u64 {
-    let mut h = std::collections::hash_map::DefaultHasher::new();
-    format!("{filter:?}").hash(&mut h);
-    h.finish()
+fn detail_cache() -> &'static TieredCache<Company> {
+    DETAIL_CACHE.get_or_init(|| TieredCache::new(512, LIST_TTL))
 }
 
-fn is_sidebar_query(filter: &CompanyFilter<'_>, page: &Pagination) -> bool {
-    if page.page != 1 || !filter.rec {
+fn i32z(v: Option<i32>) -> i32 {
+    v.unwrap_or(0)
+}
+
+fn is_default_list(filter: &CompanyFilter<'_>, page: &Pagination) -> bool {
+    if page.page != 1 {
         return false;
     }
     filter
@@ -40,23 +46,40 @@ fn is_sidebar_query(filter: &CompanyFilter<'_>, page: &Pagination) -> bool {
         .map(str::trim)
         .filter(|s| !s.is_empty())
         .is_none()
-        && filter.province_id.is_none()
-        && filter.city_id.is_none()
-        && filter.three_city_id.is_none()
-        && filter.city_ids.map(|ids| ids.is_empty()).unwrap_or(true)
-        && filter.hy.is_none()
-        && filter.pr.is_none()
-        && filter.mun.is_none()
-        && filter.welfare.is_none()
-        && filter
-            .welfare_name
-            .map(str::trim)
-            .filter(|s| !s.is_empty())
-            .is_none()
+}
+
+fn list_cache_key(filter: &CompanyFilter<'_>, page: &Pagination) -> String {
+    let city_ids = filter
+        .city_ids
+        .unwrap_or(&[])
+        .iter()
+        .map(|i| i.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(
+        "companies:list:p{}:n{}:d{}:pv{}:ct{}:th{}:ids{}:hy{}:pr{}:mu{}:wf{}:wn{}:cf{}:rc{}:up{}:od{}",
+        page.page,
+        page.page_size,
+        filter.did,
+        i32z(filter.province_id),
+        i32z(filter.city_id),
+        i32z(filter.three_city_id),
+        city_ids,
+        i32z(filter.hy),
+        i32z(filter.pr),
+        i32z(filter.mun),
+        i32z(filter.welfare),
+        filter.welfare_name.unwrap_or(""),
+        filter.cert as u8,
+        filter.rec as u8,
+        i32z(filter.uptime),
+        filter.order.unwrap_or(""),
+    )
 }
 
 pub async fn invalidate_sidebar(state: &AppState) {
-    sidebar_cache().invalidate_prefix_local();
+    list_cache().invalidate_prefix_local();
+    detail_cache().invalidate_prefix_local();
     let _ = state;
 }
 
@@ -65,13 +88,9 @@ pub async fn list_public(
     state: &AppState,
     filter: &CompanyFilter<'_>,
     page: Pagination,
-) -> AppResult<CompanyPage> {
-    if is_sidebar_query(filter, &page) {
-        let key = format!(
-            "companies:sidebar:{:x}:{}",
-            filter_hash(filter),
-            page.page
-        );
+) -> AppResult<Arc<CompanyPage>> {
+    if is_default_list(filter, &page) {
+        let key = list_cache_key(filter, &page);
         let now = clock::now_ts();
         let did = filter.did;
         let rec = filter.rec;
@@ -80,30 +99,34 @@ pub async fn list_public(
         let pr = filter.pr;
         let mun = filter.mun;
         let welfare = filter.welfare;
+        let welfare_name = filter.welfare_name.map(|s| s.to_string());
         let province_id = filter.province_id;
         let city_id = filter.city_id;
         let three_city_id = filter.three_city_id;
+        let city_ids = filter.city_ids.map(|s| s.to_vec());
         let uptime = filter.uptime;
         let order = filter.order.map(|s| s.to_string());
         let st = state.clone();
-        let arc = sidebar_cache()
+        return list_cache()
             .get_or_load(
                 &state.redis,
                 key,
-                SIDEBAR_TTL,
-                "companies.sidebar",
+                LIST_TTL,
+                "companies.list",
                 move || async move {
+                    let city_owned = city_ids;
+                    let wn = welfare_name;
                     let f = CompanyFilter {
                         keyword: None,
                         province_id,
                         city_id,
                         three_city_id,
-                        city_ids: None,
+                        city_ids: city_owned.as_deref(),
                         hy,
                         pr,
                         mun,
                         welfare,
-                        welfare_name: None,
+                        welfare_name: wn.as_deref(),
                         cert,
                         rec,
                         did,
@@ -126,18 +149,17 @@ pub async fn list_public(
                     })
                 },
             )
-            .await?;
-        return Ok((*arc).clone());
+            .await;
     }
     let now = clock::now_ts();
     let (total, list) = tokio::join!(
         company_repo::count_public(state.db.reader(), filter, now),
         company_repo::list_public(state.db.reader(), filter, page.offset, page.limit, now),
     );
-    Ok(CompanyPage {
+    Ok(Arc::new(CompanyPage {
         total: total?,
         list: list?,
-    })
+    }))
 }
 
 pub struct CompanyUpdateInput<'a> {
@@ -177,26 +199,63 @@ pub async fn get_public(
     uid: u64,
     viewer: Option<&AuthenticatedUser>,
 ) -> AppResult<Company> {
+    if viewer.is_some_and(|u| u.uid == uid) {
+        return load_company_for_viewer(state, uid, viewer).await;
+    }
+    let st = state.clone();
+    let loaded = detail_cache()
+        .get_or_load(
+            &state.redis,
+            format!("companies:detail:{uid}"),
+            LIST_TTL,
+            "companies.detail",
+            move || async move { load_public_company(&st, uid).await },
+        )
+        .await;
+    match loaded {
+        Ok(arc) => {
+            bump_company_hits(state, uid);
+            Ok(Arc::unwrap_or_clone(arc))
+        }
+        Err(e) => Err(e),
+    }
+}
+
+fn bump_company_hits(state: &AppState, uid: u64) {
+    let pool = state.db.pool().clone();
+    phpyun_core::background::spawn_best_effort("company.hits", async move {
+        let _ = company_repo::incr_hits(&pool, uid).await;
+    });
+}
+
+async fn load_public_company(state: &AppState, uid: u64) -> AppResult<Company> {
+    let c = company_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or(ApiError::business("company_not_found"))?;
+    match c.r_status {
+        1 => Ok(c),
+        2 => Err(ApiError::business("company_locked")),
+        _ => Err(ApiError::business("company_not_verified")),
+    }
+}
+
+async fn load_company_for_viewer(
+    state: &AppState,
+    uid: u64,
+    viewer: Option<&AuthenticatedUser>,
+) -> AppResult<Company> {
     let c = company_repo::find_by_uid(state.db.reader(), uid)
         .await?
         .ok_or(ApiError::business("company_not_found"))?;
     if viewer.is_some_and(|u| u.uid == c.uid) {
         if c.r_status == 1 {
-            let pool = state.db.pool().clone();
-            let uid = c.uid;
-            phpyun_core::background::spawn_best_effort("company.hits", async move {
-                let _ = company_repo::incr_hits(&pool, uid).await;
-            });
+            bump_company_hits(state, c.uid);
         }
         return Ok(c);
     }
     match c.r_status {
         1 => {
-            let pool = state.db.pool().clone();
-            let uid = c.uid;
-            phpyun_core::background::spawn_best_effort("company.hits", async move {
-                let _ = company_repo::incr_hits(&pool, uid).await;
-            });
+            bump_company_hits(state, c.uid);
             Ok(c)
         }
         2 => Err(ApiError::business("company_locked")),

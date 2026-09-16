@@ -15,6 +15,7 @@
 | 后端 i18n | [i18n.md](./i18n.md) | [phpyun-rs/docs/INTERNATIONALIZATION.md](../../../phpyun-rs/docs/INTERNATIONALIZATION.md) |
 | 横切（me / locale key / 媒体 URL / settings 缓存） | [cross-cut.md](./cross-cut.md) | 前台 `useAuthMe`、`localeAsyncKey`；Rust `media_url`、`site_gate` 配置缓存 |
 | 公开只读两级缓存（L1 moka + Redis） | [cache.md](./cache.md) | `TieredCache`；会员/后台计数不缓存 |
+| 鉴权信任链 | [security.md](./security.md) | 管理员 `usertype=9`；admin 回查库；不信 body 里的 uid |
 | 依赖怎么数、别乱砍 | [deps.md](./deps.md) | [doc/RUST_DEPENDENCIES.md](../../../doc/RUST_DEPENDENCIES.md) |
 | 本机怎么起 | [run.md](./run.md) | [`ops/restart.sh`](../../../ops/restart.sh)、[phpyun-rs/README.md](../../../phpyun-rs/README.md) |
 | 采集英文岗 / 官网申请 | [features/job-scrape.md](../features/job-scrape.md) | `job_scrape_service.rs`、`apply_service.rs`、site `jobs/[id].vue` |

@@ -3,19 +3,21 @@
 //! Seven public sections, each read from a replica and isolated so one empty
 //! table cannot take down the page. Cached ~60s keyed by `did`.
 
-use phpyun_core::cache::SimpleCache;
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{AppResult, AppState};
 use phpyun_models::article::{entity::Article, repo as article_repo, repo::ArticleFilter};
 use phpyun_models::company::{entity::Company, repo as company_repo, repo::CompanyFilter};
 use phpyun_models::hot_search::{entity::HotSearch, repo as hot_search_repo};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 use phpyun_models::resume::{entity::Resume, repo as resume_repo, repo::ResumeFilter};
-use std::sync::Arc;
+use serde::{Deserialize, Serialize};
+use std::sync::{Arc, OnceLock};
+use std::time::Duration;
 
 const LIMIT: u64 = 10;
-const TTL_SECS: u64 = 60;
+const TTL: Duration = Duration::from_secs(60);
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct RankingPayload {
     pub rec_jobs: Vec<Job>,
     pub companies: Vec<Company>,
@@ -26,24 +28,35 @@ pub struct RankingPayload {
     pub urgent_jobs: Vec<Job>,
 }
 
-static CACHE: std::sync::OnceLock<SimpleCache<u32, RankingPayload>> = std::sync::OnceLock::new();
+static CACHE: OnceLock<TieredCache<RankingPayload>> = OnceLock::new();
 
-fn cache() -> &'static SimpleCache<u32, RankingPayload> {
-    CACHE.get_or_init(|| SimpleCache::new(32, std::time::Duration::from_secs(TTL_SECS)))
+fn cache() -> &'static TieredCache<RankingPayload> {
+    CACHE.get_or_init(|| TieredCache::new(32, TTL))
 }
 
 pub async fn invalidate(did: u32) {
-    cache().invalidate(&did).await;
+    cache().invalidate_prefix_local();
+    let _ = did;
 }
 
 pub async fn invalidate_all() {
-    cache().invalidate_all();
+    cache().invalidate_prefix_local();
 }
 
 pub async fn rankings(state: &AppState, did: u32) -> AppResult<Arc<RankingPayload>> {
     let st = state.clone();
     cache()
-        .get_or_load(did, move || async move {
+        .get_or_load(
+            &state.redis,
+            format!("ranking:{did}"),
+            TTL,
+            "ranking",
+            move || async move { load_rankings(&st, did).await },
+        )
+        .await
+}
+
+async fn load_rankings(st: &AppState, did: u32) -> AppResult<RankingPayload> {
             let db = st.db.reader();
             let now = phpyun_core::clock::now_ts();
             let rec_filter = JobFilter {
@@ -97,6 +110,4 @@ pub async fn rankings(state: &AppState, did: u32) -> AppResult<Arc<RankingPayloa
                 articles: art_r.unwrap_or_default(),
                 urgent_jobs: urgent_r.unwrap_or_default(),
             })
-        })
-        .await
 }

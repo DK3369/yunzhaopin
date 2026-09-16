@@ -1,37 +1,54 @@
 //! Site-wide gates aligned with PHP `common.php::toLoginPage` and Smarty `is_fun()`.
 
-use phpyun_core::cache;
-use phpyun_core::json::Value;
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{
     extractors::AuthenticatedUser, rate_limit, ApiError, AppResult, AppState,
 };
 use phpyun_models::site_setting::repo as setting_repo;
+use std::collections::HashMap;
+use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
 const SETTING_TTL: Duration = Duration::from_secs(30);
 
+static ALL_CACHE: OnceLock<TieredCache<HashMap<String, String>>> = OnceLock::new();
+
+fn all_cache() -> &'static TieredCache<HashMap<String, String>> {
+    ALL_CACHE.get_or_init(|| TieredCache::new(4, SETTING_TTL))
+}
+
+/// Full `phpyun_admin_config` map (one MySQL read per TTL).
+pub async fn config_map(state: &AppState) -> Result<Arc<HashMap<String, String>>, ApiError> {
+    let pool = state.db.reader().clone();
+    all_cache()
+        .get_or_load(
+            &state.redis,
+            phpyun_core::cache::SITE_SETTINGS_ALL_KEY.to_string(),
+            SETTING_TTL,
+            "site_settings.all",
+            move || async move {
+                let rows = setting_repo::list_all(&pool).await?;
+                Ok(rows
+                    .into_iter()
+                    .map(|s| (s.key_name, s.value))
+                    .collect::<HashMap<String, String>>())
+            },
+        )
+        .await
+}
+
+/// Drop `site_settings:all` (L1 + Redis). Per-name `site_setting:{name}` keys
+/// still expire on their own TTL / explicit `invalidate`.
+pub async fn invalidate_settings_bundle(state: &AppState) {
+    all_cache()
+        .invalidate(&state.redis, phpyun_core::cache::SITE_SETTINGS_ALL_KEY)
+        .await;
+}
+
 /// Cached `phpyun_admin_config` value. Empty string when missing.
 pub async fn config_str(state: &AppState, key: &str) -> String {
-    let pool = state.db.reader().clone();
-    let k = key.to_string();
-    let ck = cache::site_setting_key(&k);
-    match cache::get_or_load(
-        &state.cache.config,
-        &state.redis,
-        ck,
-        SETTING_TTL,
-        "site_setting",
-        move || async move {
-            let v = setting_repo::find(&pool, &k)
-                .await?
-                .map(|s| s.value)
-                .unwrap_or_default();
-            Ok(Value::String(v))
-        },
-    )
-    .await
-    {
-        Ok(v) => v.as_str().unwrap_or("").to_string(),
+    match config_map(state).await {
+        Ok(map) => map.get(key).cloned().unwrap_or_default(),
         Err(_) => String::new(),
     }
 }

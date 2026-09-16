@@ -11,17 +11,19 @@
 //! The whole payload is wrapped in a 60-second TTL cache keyed by `did` to keep the
 //! home page cheap under load — fresh content still appears within a minute.
 
-use phpyun_core::cache::SimpleCache;
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{AppResult, AppState};
 use phpyun_models::announcement::{entity::Announcement, repo as ann_repo};
 use phpyun_models::article::{entity::Article, repo as article_repo, repo::ArticleFilter};
 use phpyun_models::company::{entity::Company, repo as company_repo};
 use phpyun_models::hot_search::{entity::HotSearch, repo as hot_search_repo};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
+use std::time::Duration;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct HomePayload {
     pub announcements: Vec<Announcement>,
     pub hot_jobs: Vec<Job>,
@@ -37,12 +39,12 @@ pub struct HomePayload {
     pub hot_keywords: Vec<HotSearch>,
 }
 
-const HOME_TTL_SECS: u64 = 60;
+const HOME_TTL: Duration = Duration::from_secs(60);
 
-static HOME_CACHE: std::sync::OnceLock<SimpleCache<u32, HomePayload>> = std::sync::OnceLock::new();
+static HOME_CACHE: OnceLock<TieredCache<HomePayload>> = OnceLock::new();
 
-fn home_cache() -> &'static SimpleCache<u32, HomePayload> {
-    HOME_CACHE.get_or_init(|| SimpleCache::new(32, std::time::Duration::from_secs(HOME_TTL_SECS)))
+fn home_cache() -> &'static TieredCache<HomePayload> {
+    HOME_CACHE.get_or_init(|| TieredCache::new(32, HOME_TTL))
 }
 
 /// Manual invalidation hook — call after a writer publishes an announcement / article
@@ -50,18 +52,28 @@ fn home_cache() -> &'static SimpleCache<u32, HomePayload> {
 ///
 /// `did=0` is a real sub-site id (same as `/v1/wap/jobs`), not an alias for `1`.
 pub async fn invalidate(did: u32) {
-    home_cache().invalidate(&did).await;
+    home_cache().invalidate_prefix_local();
+    let _ = did;
 }
 
 pub async fn invalidate_all() {
-    home_cache().invalidate_all();
+    home_cache().invalidate_prefix_local();
 }
 
 pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
-    let cache = home_cache();
     let st = state.clone();
-    cache
-        .get_or_load(did, move || async move {
+    home_cache()
+        .get_or_load(
+            &state.redis,
+            format!("home:{did}"),
+            HOME_TTL,
+            "home",
+            move || async move { load_home(&st, did).await },
+        )
+        .await
+}
+
+async fn load_home(st: &AppState, did: u32) -> AppResult<HomePayload> {
             let db = st.db.reader();
             let now = phpyun_core::clock::now_ts();
             let job_filter = JobFilter {
@@ -166,6 +178,4 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
                 hot_articles: hot_art_r.unwrap_or_default(),
                 hot_keywords: hot_r.unwrap_or_default(),
             })
-        })
-        .await
 }

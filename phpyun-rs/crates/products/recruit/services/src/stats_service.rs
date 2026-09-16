@@ -35,7 +35,7 @@ pub async fn invalidate(state: &AppState) {
     cache().invalidate(&state.redis, OVERVIEW_KEY).await;
 }
 
-pub async fn overview(state: &AppState) -> AppResult<Overview> {
+pub async fn overview(state: &AppState) -> AppResult<std::sync::Arc<Overview>> {
     let st = state.clone();
     let arc = cache()
         .get_or_load(
@@ -63,5 +63,5 @@ pub async fn overview(state: &AppState) -> AppResult<Overview> {
             },
         )
         .await?;
-    Ok((*arc).clone())
+    Ok(arc)
 }

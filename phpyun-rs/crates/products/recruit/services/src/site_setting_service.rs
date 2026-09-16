@@ -28,6 +28,7 @@ pub async fn invalidate_public_list(state: &AppState) {
     public_cache()
         .invalidate(&state.redis, PUBLIC_LIST_KEY)
         .await;
+    crate::site_gate_service::invalidate_settings_bundle(state).await;
     crate::initjobs_service::invalidate(state).await;
 }
 

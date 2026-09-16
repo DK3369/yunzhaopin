@@ -309,11 +309,32 @@ pub async fn home_data(
     let row = phpyun_models::admin_rbac::repo::find_by_uid(state.db.reader(), admin.uid)
         .await?
         .ok_or_else(phpyun_core::ApiError::unauth)?;
-    let info = sys_static();
+    let disk_path = disk_root(state);
+    let (os, rustc, nuxt, user, host, kongjian) = tokio::task::spawn_blocking(move || {
+        let info = sys_static();
+        (
+            info.os.clone(),
+            info.rustc.clone(),
+            info.nuxt.clone(),
+            info.user.clone(),
+            info.host.clone(),
+            disk_free_mb(&disk_path),
+        )
+    })
+    .await
+    .unwrap_or_else(|_| {
+        (
+            String::from("unknown"),
+            String::from("unknown"),
+            String::from("unknown"),
+            String::new(),
+            String::new(),
+            String::from("0"),
+        )
+    });
     let mysql = stats_repo::mysql_version(state.db.reader()).await;
-    let kongjian = disk_free_mb(&disk_root(state));
     let server = host_from_url(state.config.web_base_url.as_deref().unwrap_or(""))
-        .unwrap_or_else(|| info.host.clone());
+        .unwrap_or_else(|| host.clone());
     Ok(serde_json::json!({
         "index_lookstatistc": row.index_lookstatistc,
         "base": "",
@@ -327,11 +348,11 @@ pub async fn home_data(
         },
         "sysinfo": {
             "version": format!("phpyun-rs {}", env!("CARGO_PKG_VERSION")),
-            "soft": info.os,
+            "soft": os,
             "kongjian": kongjian,
-            "phpbanben": format!("Nuxt {} / Rust {}", info.nuxt, info.rustc),
+            "phpbanben": format!("Nuxt {} / Rust {}", nuxt, rustc),
             "banben": mysql,
-            "yonghu": info.user,
+            "yonghu": user,
             "server": server
         }
     }))
@@ -767,6 +788,7 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     site_page_service::invalidate_all(state).await;
     job_service::invalidate_sidebar(state).await;
     company_service::invalidate_sidebar(state).await;
+    crate::resume_service::invalidate_list(state).await;
     phpyun_core::cache::invalidate_all_config(&state.cache.config);
     Ok(code)
 }

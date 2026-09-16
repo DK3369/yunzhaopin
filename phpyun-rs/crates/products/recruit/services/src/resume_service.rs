@@ -3,20 +3,202 @@
 //! Covers the core paths of PHPYun `wap/resume` + `mcenter/resume`: viewing, updating the master table, and toggling display status.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::cache::TieredCache;
 use phpyun_core::extractors::{USERTYPE_ADMIN, USERTYPE_CAMPUS, USERTYPE_EMPLOYER};
 use phpyun_core::ApiError;
 use phpyun_core::{background, clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_models::resume::{entity::Resume, repo as resume_repo};
+use serde::{Deserialize, Serialize};
+use std::sync::{Arc, OnceLock};
+use std::time::Duration;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResumePage {
     pub list: Vec<Resume>,
     pub total: u64,
 }
 
+const LIST_TTL: Duration = Duration::from_secs(60);
+static LIST_CACHE: OnceLock<TieredCache<ResumePage>> = OnceLock::new();
+
+fn list_cache() -> &'static TieredCache<ResumePage> {
+    LIST_CACHE.get_or_init(|| TieredCache::new(128, LIST_TTL))
+}
+
+fn i32z(v: Option<i32>) -> i32 {
+    v.unwrap_or(0)
+}
+
+fn csv_i32(ids: Option<&[i32]>) -> String {
+    ids.unwrap_or(&[])
+        .iter()
+        .map(|i| i.to_string())
+        .collect::<Vec<_>>()
+        .join(",")
+}
+
+fn is_default_list(filter: &ResumeFilter<'_>, page: &Pagination) -> bool {
+    if page.page != 1 {
+        return false;
+    }
+    filter
+        .keyword
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .is_none()
+}
+
+fn list_cache_key(filter: &ResumeFilter<'_>, page: &Pagination) -> String {
+    format!(
+        "resumes:list:p{}:n{}:d{}:ed{}:xp{}:j1{}:j2{}:jp{}:pv{}:ct{}:th{}:ids{}:sx{}:mg{}:hy{}:rp{}:ty{}:tg{}:tn{}:mn{}:mx{}:na{}:xa{}:up{}:ig{}:od{}:ph{}:id{}:wk{}:rg{}:tp{}:eids{}:xids{}:ex{}",
+        page.page,
+        page.page_size,
+        filter.did,
+        i32z(filter.education),
+        i32z(filter.exp),
+        i32z(filter.job1),
+        i32z(filter.job1_son),
+        i32z(filter.job_post),
+        i32z(filter.province_id),
+        i32z(filter.city_id),
+        i32z(filter.three_city_id),
+        csv_i32(filter.city_ids),
+        i32z(filter.sex),
+        i32z(filter.marriage),
+        i32z(filter.hy),
+        i32z(filter.report),
+        i32z(filter.r#type),
+        i32z(filter.tag),
+        filter.tag_name.unwrap_or(""),
+        i32z(filter.min_salary),
+        i32z(filter.max_salary),
+        i32z(filter.min_age),
+        i32z(filter.max_age),
+        i32z(filter.uptime),
+        i32z(filter.integrity),
+        filter.order.unwrap_or(""),
+        filter.photo as u8,
+        filter.idcard as u8,
+        filter.work as u8,
+        filter.recg as u8,
+        filter.top as u8,
+        csv_i32(filter.education_ids),
+        csv_i32(filter.exp_ids),
+        filter
+            .exclude_uids
+            .unwrap_or(&[])
+            .iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<_>>()
+            .join(","),
+    )
+}
+
+pub async fn invalidate_list(state: &AppState) {
+    list_cache().invalidate_prefix_local();
+    let _ = state;
+}
+
 /// Public resume search (aligned with PHP `wap/resume`: guests may list;
 /// contact fields are masked in the handler for non-employers).
 pub async fn list_public(
+    state: &AppState,
+    filter: &ResumeFilter<'_>,
+    page: Pagination,
+) -> AppResult<Arc<ResumePage>> {
+    if is_default_list(filter, &page) {
+        let key = list_cache_key(filter, &page);
+        let st = state.clone();
+        let education = filter.education;
+        let exp = filter.exp;
+        let job1 = filter.job1;
+        let job1_son = filter.job1_son;
+        let job_post = filter.job_post;
+        let province_id = filter.province_id;
+        let city_id = filter.city_id;
+        let three_city_id = filter.three_city_id;
+        let city_ids = filter.city_ids.map(|s| s.to_vec());
+        let sex = filter.sex;
+        let marriage = filter.marriage;
+        let hy = filter.hy;
+        let report = filter.report;
+        let r#type = filter.r#type;
+        let tag = filter.tag;
+        let tag_name = filter.tag_name.map(|s| s.to_string());
+        let min_salary = filter.min_salary;
+        let max_salary = filter.max_salary;
+        let min_age = filter.min_age;
+        let max_age = filter.max_age;
+        let uptime = filter.uptime;
+        let integrity = filter.integrity;
+        let order = filter.order.map(|s| s.to_string());
+        let photo = filter.photo;
+        let idcard = filter.idcard;
+        let work = filter.work;
+        let did = filter.did;
+        let recg = filter.recg;
+        let top = filter.top;
+        let education_ids = filter.education_ids.map(|s| s.to_vec());
+        let exp_ids = filter.exp_ids.map(|s| s.to_vec());
+        let exclude_uids = filter.exclude_uids.map(|s| s.to_vec());
+        return list_cache()
+            .get_or_load(
+                &state.redis,
+                key,
+                LIST_TTL,
+                "resumes.list",
+                move || async move {
+                    let city_owned = city_ids;
+                    let edu_owned = education_ids;
+                    let exp_owned = exp_ids;
+                    let excl_owned = exclude_uids;
+                    let tn = tag_name;
+                    let od = order;
+                    let f = ResumeFilter {
+                        keyword: None,
+                        education,
+                        exp,
+                        job1,
+                        job1_son,
+                        job_post,
+                        province_id,
+                        city_id,
+                        three_city_id,
+                        city_ids: city_owned.as_deref(),
+                        sex,
+                        marriage,
+                        hy,
+                        report,
+                        r#type,
+                        tag,
+                        tag_name: tn.as_deref(),
+                        min_salary,
+                        max_salary,
+                        min_age,
+                        max_age,
+                        uptime,
+                        integrity,
+                        order: od.as_deref(),
+                        photo,
+                        idcard,
+                        work,
+                        did,
+                        recg,
+                        top,
+                        education_ids: edu_owned.as_deref(),
+                        exp_ids: exp_owned.as_deref(),
+                        exclude_uids: excl_owned.as_deref(),
+                    };
+                    load_list_public(&st, &f, page).await
+                },
+            )
+            .await;
+    }
+    Ok(Arc::new(load_list_public(state, filter, page).await?))
+}
+
+async fn load_list_public(
     state: &AppState,
     filter: &ResumeFilter<'_>,
     page: Pagination,

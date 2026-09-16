@@ -11,8 +11,7 @@ use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use serde::{Deserialize, Serialize};
-use std::hash::{Hash, Hasher};
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
 /// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
@@ -66,35 +65,72 @@ pub struct JobPage {
     pub total: u64,
 }
 
-const SIDEBAR_TTL: Duration = Duration::from_secs(60);
+const LIST_TTL: Duration = Duration::from_secs(60);
 
-static SIDEBAR_CACHE: OnceLock<TieredCache<JobPage>> = OnceLock::new();
+static LIST_CACHE: OnceLock<TieredCache<JobPage>> = OnceLock::new();
+static DETAIL_CACHE: OnceLock<TieredCache<JobDetailData>> = OnceLock::new();
 
-fn sidebar_cache() -> &'static TieredCache<JobPage> {
-    SIDEBAR_CACHE.get_or_init(|| TieredCache::new(64, SIDEBAR_TTL))
+fn list_cache() -> &'static TieredCache<JobPage> {
+    LIST_CACHE.get_or_init(|| TieredCache::new(256, LIST_TTL))
 }
 
-fn search_hash(search: &JobSearch) -> u64 {
-    let mut h = std::collections::hash_map::DefaultHasher::new();
-    format!("{search:?}").hash(&mut h);
-    h.finish()
+fn detail_cache() -> &'static TieredCache<JobDetailData> {
+    DETAIL_CACHE.get_or_init(|| TieredCache::new(512, LIST_TTL))
 }
 
-fn is_sidebar_query(search: &JobSearch, page: &Pagination) -> bool {
+fn i32z(v: Option<i32>) -> i32 {
+    v.unwrap_or(0)
+}
+
+fn is_default_list(search: &JobSearch, page: &Pagination) -> bool {
     if page.page != 1 {
         return false;
     }
-    let has_kw = search
+    search
         .keyword
         .as_deref()
         .map(str::trim)
         .filter(|s| !s.is_empty())
-        .is_some();
-    !has_kw && (search.rec || search.bid)
+        .is_none()
+}
+
+fn list_cache_key(search: &JobSearch, page: &Pagination) -> String {
+    format!(
+        "jobs:list:p{}:n{}:d{}:c{}:pv{}:ct{}:th{}:j1{}:j2{}:jp{}:mn{}:mx{}:xp{}:ed{}:ty{}:hy{}:sx{}:rp{}:pr{}:mu{}:wf{}:up{}:ug{}:rc{}:cf{}:bd{}:od{}:u{}",
+        page.page,
+        page.page_size,
+        search.did,
+        search.country.as_deref().unwrap_or(""),
+        i32z(search.province_id),
+        i32z(search.city_id),
+        i32z(search.three_city_id),
+        i32z(search.job1),
+        i32z(search.job1_son),
+        i32z(search.job_post),
+        i32z(search.min_salary),
+        i32z(search.max_salary),
+        i32z(search.exp),
+        i32z(search.edu),
+        i32z(search.job_type),
+        i32z(search.hy),
+        i32z(search.sex),
+        i32z(search.report),
+        i32z(search.pr),
+        i32z(search.mun),
+        i32z(search.welfare),
+        i32z(search.uptime),
+        search.urgent as u8,
+        search.rec as u8,
+        search.cert as u8,
+        search.bid as u8,
+        search.order.as_deref().unwrap_or(""),
+        search.uid.unwrap_or(0),
+    )
 }
 
 pub async fn invalidate_sidebar(state: &AppState) {
-    sidebar_cache().invalidate_prefix_local();
+    list_cache().invalidate_prefix_local();
+    detail_cache().invalidate_prefix_local();
     let _ = state;
 }
 
@@ -102,27 +138,22 @@ pub async fn list_public(
     state: &AppState,
     search: &JobSearch,
     page: Pagination,
-) -> AppResult<JobPage> {
-    let page_data = if is_sidebar_query(search, &page) {
-        let key = format!(
-            "jobs:sidebar:{:x}:{}",
-            search_hash(search),
-            page.page
-        );
+) -> AppResult<Arc<JobPage>> {
+    let page_data = if is_default_list(search, &page) {
+        let key = list_cache_key(search, &page);
         let st = state.clone();
         let search = search.clone();
-        let arc = sidebar_cache()
+        list_cache()
             .get_or_load(
                 &state.redis,
                 key,
-                SIDEBAR_TTL,
-                "jobs.sidebar",
+                LIST_TTL,
+                "jobs.list",
                 move || async move { load_list_public(&st, &search, page).await },
             )
-            .await?;
-        (*arc).clone()
+            .await?
     } else {
-        load_list_public(state, search, page).await?
+        Arc::new(load_list_public(state, search, page).await?)
     };
     let ids: Vec<u64> = page_data.list.iter().map(|j| j.id).collect();
     if !ids.is_empty() {
@@ -278,6 +309,8 @@ pub async fn get_public(
 }
 
 /// Job detail + company info + most recent HR login — full payload from PHPYun `comapply_action`.
+/// Contact phone/email stay empty here; handlers overlay unlock + 已投递/收藏.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JobDetailData {
     pub job: Job,
     pub com_logo: String,
@@ -315,23 +348,46 @@ pub async fn get_detail(
     id: u64,
     viewer: Option<&AuthenticatedUser>,
 ) -> AppResult<JobDetailData> {
-    let job = get_public(state, id, viewer).await?;
-    let now = clock::now_ts();
-    let offline = job.status != 0;
-    let expired = job.edate > 0 && job.edate <= now;
-    let db = state.db.reader();
-
-    // Look up the company (JOIN-style call; user uid == company uid)
-    let company = phpyun_models::company::repo::find_by_uid(db, job.uid).await?;
-
-    // HR's last login time (read from phpyun_member)
-    let login_date = phpyun_models::user::repo::login_date(db, job.uid).await?;
-
-    // Increment view counter (background task)
+    let st = state.clone();
+    let loaded = detail_cache()
+        .get_or_load(
+            &state.redis,
+            format!("jobs:detail:{id}"),
+            LIST_TTL,
+            "jobs.detail",
+            move || async move { load_public_detail(&st, id).await },
+        )
+        .await;
+    let data = match loaded {
+        Ok(arc) => Arc::unwrap_or_clone(arc),
+        Err(e) => {
+            if viewer.is_none() {
+                return Err(e);
+            }
+            let job = get_public(state, id, viewer).await?;
+            assemble_detail(state, job).await?
+        }
+    };
     let pool = state.db.pool().clone();
     phpyun_core::background::spawn_best_effort("job.hits", async move {
         let _ = phpyun_models::job::repo::incr_jobhits(&pool, id).await;
     });
+    Ok(data)
+}
+
+async fn load_public_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
+    let job = get_public(state, id, None).await?;
+    assemble_detail(state, job).await
+}
+
+async fn assemble_detail(state: &AppState, job: Job) -> AppResult<JobDetailData> {
+    let now = clock::now_ts();
+    let offline = job.status != 0;
+    let expired = job.edate > 0 && job.edate <= now;
+    let db = state.db.reader();
+    let id = job.id;
+    let company = phpyun_models::company::repo::find_by_uid(db, job.uid).await?;
+    let login_date = phpyun_models::user::repo::login_date(db, job.uid).await?;
 
     let (
         com_logo,

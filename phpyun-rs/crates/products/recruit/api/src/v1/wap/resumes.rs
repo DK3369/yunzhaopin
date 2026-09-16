@@ -545,7 +545,7 @@ pub async fn list_resumes(
             Some(blocked.as_slice())
         },
     };
-    let r = resume_service::list_public(&state, &filter, page).await?;
+    let r = std::sync::Arc::unwrap_or_clone(resume_service::list_public(&state, &filter, page).await?);
     let show_cfg = load_resume_show_cfg(&state).await;
     let mut list: Vec<ResumeSummary> = r
         .list

@@ -299,7 +299,7 @@ pub async fn list_companies(
         },
         order: q.order.as_deref(),
     };
-    let r = company_service::list_public(&state, &filter, page).await?;
+    let r = std::sync::Arc::unwrap_or_clone(company_service::list_public(&state, &filter, page).await?);
     let dicts = dicts_early;
     let mut list: Vec<CompanySummary> = r
         .list
@@ -809,7 +809,7 @@ pub async fn companies_sidebar(
         did: q.did,
         ..Default::default()
     };
-    let r = company_service::list_public(&state, &filter, page).await?;
+    let r = std::sync::Arc::unwrap_or_clone(company_service::list_public(&state, &filter, page).await?);
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let mut list: Vec<CompanySummary> = r
         .list

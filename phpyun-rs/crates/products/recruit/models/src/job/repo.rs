@@ -114,6 +114,38 @@ const FIELDS: &str = "id, uid, name, com_name, \
     COALESCE(minage_req, 0) AS minage_req, \
     COALESCE(maxage_req, 0) AS maxage_req";
 
+/// Public list omits `description` (longtext); detail still uses [`FIELDS`].
+const LIST_FIELDS: &str = "id, uid, name, com_name, \
+    COALESCE(job1, 0) AS job1, COALESCE(job1_son, 0) AS job1_son, \
+    COALESCE(job_post, 0) AS job_post, \
+    COALESCE(provinceid, 0) AS provinceid, COALESCE(cityid, 0) AS cityid, \
+    COALESCE(three_cityid, 0) AS three_cityid, \
+    COALESCE(minsalary, 0) AS minsalary, COALESCE(maxsalary, 0) AS maxsalary, \
+    `type`, number, exp, edu, \
+    COALESCE(state, 0) AS state, status, \
+    COALESCE(r_status, 0) AS r_status, COALESCE(rec, 0) AS rec, \
+    COALESCE(urgent, 0) AS urgent, COALESCE(rec_time, 0) AS rec_time, \
+    sdate, edate, lastupdate, \
+    COALESCE(did, 0) AS did, CAST(NULL AS CHAR) AS description, welfare, \
+    COALESCE(hy, 0) AS hy, COALESCE(sex, 0) AS sex, \
+    COALESCE(marriage, 0) AS marriage, COALESCE(age, 0) AS age, lang, \
+    COALESCE(zp_num, 0) AS zp_num, COALESCE(zp_minage, 0) AS zp_minage, \
+    COALESCE(zp_maxage, 0) AS zp_maxage, \
+    COALESCE(urgent_time, 0) AS urgent_time, x, y, \
+    COALESCE(pr, 0) AS pr, COALESCE(com_provinceid, 0) AS com_provinceid, \
+    com_logo, COALESCE(jobhits, 0) AS jobhits, COALESCE(snum, 0) AS snum, \
+    COALESCE(xsdate, 0) AS xsdate, COALESCE(jobexpoure, 0) AS jobexpoure, \
+    COALESCE(statusbody, '') AS statusbody, COALESCE(rating, 0) AS rating, \
+    COALESCE(source, 0) AS source, \
+    COALESCE(report, 0) AS report, COALESCE(is_graduate, 0) AS is_graduate, \
+    COALESCE(operatime, 0) AS operatime, \
+    COALESCE(is_link, 1) AS is_link, COALESCE(link_id, 0) AS link_id, \
+    COALESCE(is_message, 1) AS is_message, COALESCE(is_email, 1) AS is_email, \
+    COALESCE(exp_req, '') AS exp_req, COALESCE(edu_req, '') AS edu_req, \
+    COALESCE(CAST(NULLIF(TRIM(sex_req), '') AS SIGNED), 0) AS sex_req, \
+    COALESCE(minage_req, 0) AS minage_req, \
+    COALESCE(maxage_req, 0) AS maxage_req";
+
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_company_job WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, Job>(&sql)
@@ -163,7 +195,7 @@ pub async fn list_public(
     now: i64,
 ) -> Result<Vec<Job>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(FIELDS);
+    qb.push(LIST_FIELDS);
     qb.push(" FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 AND (");
     qb.push_bind(f.did);
     qb.push(" = 0 OR COALESCE(did, 0) = ");
@@ -1602,7 +1634,7 @@ pub async fn list_by_company_public(
     limit: u64,
 ) -> Result<Vec<Job>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(FIELDS);
+    qb.push(LIST_FIELDS);
     qb.push(" FROM phpyun_company_job WHERE uid = ");
     qb.push_bind(com_uid);
     // edate semantics in PHPYun: 0 = no expiration set (treated as active),

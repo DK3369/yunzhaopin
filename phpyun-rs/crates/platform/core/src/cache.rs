@@ -128,6 +128,9 @@ pub fn site_setting_key(name: &str) -> String {
     format!("site_setting:{name}")
 }
 
+/// Redis / L1 key for the full `phpyun_admin_config` map (TTL 30s).
+pub const SITE_SETTINGS_ALL_KEY: &str = "site_settings:all";
+
 /// Drop every L1 config entry. L2 Redis keys expire with the 30s TTL.
 pub fn invalidate_all_config(local: &ConfigCache) {
     local.invalidate_all();
