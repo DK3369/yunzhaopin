@@ -21,6 +21,7 @@ use validator::Validate;
 
 pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/ads", "/v1/wap/initads"];
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/ads", get(list).post(list))
@@ -117,7 +118,15 @@ fn to_view(state: &AppState, site_base: Option<&str>, a: Ad) -> AdView {
 }
 
 /// List active ads for a slot
-#[utoipa::path(post, path = "/v1/wap/ads", tag = "wap", params(AdQuery), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/wap/initads")]
+#[utoipa::path(
+    post,
+    path = "/v1/wap/ads",
+    tag = "wap",
+    params(AdQuery),
+    description = "即将失效：请改用 GET/POST /v1/wap/initads（`slots=3:5`）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<AdQuery>,

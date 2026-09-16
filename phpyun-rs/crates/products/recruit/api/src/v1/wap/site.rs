@@ -15,6 +15,7 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/site/map-config",
 ];
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/site/pages", get(get_page).post(get_page))
@@ -290,16 +291,7 @@ pub struct MapConfigView {
     pub map_control_scale: Option<String>,
 }
 
-/// Front-end map widget configuration. Counterpart of PHP
-/// `ajax::mapconfig_action` — bundles every `map_*` site setting into one
-/// JSON payload so the client doesn't have to issue 8 setting requests.
-#[utoipa::path(
-    post,
-    path = "/v1/wap/site/map-config",
-    tag = "wap",
-    responses((status = 200, description = "ok", body = MapConfigView))
-)]
-pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<MapConfigView>> {
+pub(crate) async fn build_map_config(state: &AppState) -> AppResult<MapConfigView> {
     async fn read(state: &AppState, key: &str) -> Option<String> {
         phpyun_services::site_setting_service::get(state, key)
             .await
@@ -307,16 +299,31 @@ pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<
             .flatten()
             .map(|s| s.value)
     }
-    Ok(ApiResponse::data(MapConfigView {
-        map_x: read(&state, "map_x").await,
-        map_y: read(&state, "map_y").await,
-        map_rating: read(&state, "map_rating").await,
-        map_control: read(&state, "map_control").await,
-        map_control_anchor: read(&state, "map_control_anchor").await,
-        map_control_type: read(&state, "map_control_type").await,
-        map_control_xb: read(&state, "map_control_xb").await,
-        map_control_scale: read(&state, "map_control_scale").await,
-    }))
+    Ok(MapConfigView {
+        map_x: read(state, "map_x").await,
+        map_y: read(state, "map_y").await,
+        map_rating: read(state, "map_rating").await,
+        map_control: read(state, "map_control").await,
+        map_control_anchor: read(state, "map_control_anchor").await,
+        map_control_type: read(state, "map_control_type").await,
+        map_control_xb: read(state, "map_control_xb").await,
+        map_control_scale: read(state, "map_control_scale").await,
+    })
+}
+
+/// Front-end map widget configuration. Counterpart of PHP
+/// `ajax::mapconfig_action` — bundles every `map_*` site setting into one
+/// JSON payload so the client doesn't have to issue 8 setting requests.
+#[deprecated(note = "use /v1/wap/initjobs?with=map")]
+#[utoipa::path(
+    post,
+    path = "/v1/wap/site/map-config",
+    tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=map（data.map）",
+    responses((status = 200, description = "ok", body = MapConfigView))
+)]
+pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<MapConfigView>> {
+    Ok(ApiResponse::data(build_map_config(&state).await?))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]

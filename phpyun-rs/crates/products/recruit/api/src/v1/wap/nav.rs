@@ -65,6 +65,15 @@ impl From<phpyun_models::nav_menu::entity::NavMenu> for NavItem {
     }
 }
 
+pub(crate) async fn load_position(state: &AppState, position: &str) -> AppResult<Vec<NavItem>> {
+    phpyun_core::validators::ensure_path_token(position)?;
+    let list = nav_menu_service::list(state, position).await?;
+    Ok(list
+        .into_iter()
+        .map(|n| NavItem::from_with_ctx(n, state))
+        .collect())
+}
+
 /// Get navigation for the specified position (header/footer/sidebar/mobile)
 #[utoipa::path(post,
     path = "/v1/wap/nav",
@@ -76,13 +85,8 @@ pub async fn list(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ListBody>,
 ) -> AppResult<ApiResponse<Vec<NavItem>>> {
-    let position = b.position;
-    phpyun_core::validators::ensure_path_token(&position)?;
-    let list = nav_menu_service::list(&state, &position).await?;
     Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|n| NavItem::from_with_ctx(n, &state))
-            .collect(),
+        load_position(&state, &b.position).await?,
     ))
 }
 

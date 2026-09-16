@@ -55,6 +55,15 @@ impl From<phpyun_models::hot_search::entity::HotSearch> for HotItem {
     }
 }
 
+pub(crate) async fn load_scope(
+    state: &AppState,
+    scope: &str,
+    limit: u64,
+) -> AppResult<Vec<HotItem>> {
+    let list = hot_search_service::top(state, scope, limit).await?;
+    Ok(list.iter().cloned().map(HotItem::from).collect())
+}
+
 /// Top N hot search keywords
 #[utoipa::path(
     post,
@@ -67,8 +76,7 @@ pub async fn list(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HotQuery>,
 ) -> AppResult<ApiResponse<Vec<HotItem>>> {
-    let list = hot_search_service::top(&state, &q.scope, q.limit).await?;
     Ok(ApiResponse::data(
-        list.iter().cloned().map(HotItem::from).collect(),
+        load_scope(&state, &q.scope, q.limit).await?,
     ))
 }

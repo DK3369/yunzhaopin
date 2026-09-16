@@ -757,6 +757,7 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     qna_service::invalidate_categories_cache().await;
     nav_menu_service::invalidate_all(state).await;
     stats_service::invalidate(state).await;
+    site_setting_service::invalidate_public_list(state).await;
     announcement_service::invalidate_all(state).await;
     special_service::invalidate_all(state).await;
     zph_service::invalidate_all(state).await;

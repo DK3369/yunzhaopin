@@ -4,6 +4,7 @@
 
 use crate::enum_labels;
 use phpyun_core::cache;
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::bank::repo as bank_repo;
 use phpyun_models::domain::repo as domain_repo;
@@ -11,9 +12,36 @@ use phpyun_models::poster_template::repo as whb_repo;
 use phpyun_models::seo;
 use phpyun_models::site_setting::{entity::SiteSetting, repo as setting_repo};
 use serde_json::{json, Map, Value};
+use std::sync::OnceLock;
+use std::time::Duration;
+
+const PUBLIC_LIST_TTL: Duration = Duration::from_secs(30);
+const PUBLIC_LIST_KEY: &str = "site_settings:public";
+
+static PUBLIC_CACHE: OnceLock<TieredCache<Vec<SiteSetting>>> = OnceLock::new();
+
+fn public_cache() -> &'static TieredCache<Vec<SiteSetting>> {
+    PUBLIC_CACHE.get_or_init(|| TieredCache::new(4, PUBLIC_LIST_TTL))
+}
+
+pub async fn invalidate_public_list(state: &AppState) {
+    public_cache()
+        .invalidate(&state.redis, PUBLIC_LIST_KEY)
+        .await;
+}
 
 pub async fn list_public(state: &AppState) -> AppResult<Vec<SiteSetting>> {
-    Ok(setting_repo::list_public(state.db.reader()).await?)
+    let st = state.clone();
+    let arc = public_cache()
+        .get_or_load(
+            &state.redis,
+            PUBLIC_LIST_KEY.to_string(),
+            PUBLIC_LIST_TTL,
+            "site_settings",
+            move || async move { Ok(setting_repo::list_public(st.db.reader()).await?) },
+        )
+        .await?;
+    Ok((*arc).clone())
 }
 
 pub async fn get(state: &AppState, key: &str) -> AppResult<Option<SiteSetting>> {
@@ -56,6 +84,7 @@ pub async fn admin_upsert(
         &cache::site_setting_key(input.key),
     )
     .await;
+    invalidate_public_list(state).await;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("admin.site_setting.upsert", audit::Actor::uid(user.uid))
@@ -69,6 +98,7 @@ pub async fn admin_delete(state: &AppState, user: &AuthenticatedUser, key: &str)
     user.require_admin()?;
     setting_repo::delete(state.db.pool(), key).await?;
     cache::invalidate(&state.cache.config, &state.redis, &cache::site_setting_key(key)).await;
+    invalidate_public_list(state).await;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("admin.site_setting.delete", audit::Actor::uid(user.uid))

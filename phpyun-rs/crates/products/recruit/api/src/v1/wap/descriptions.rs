@@ -17,6 +17,7 @@ use validator::Validate;
 
 pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/legal"];
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/descriptions/classes", post(list_classes))
@@ -48,16 +49,59 @@ impl From<phpyun_models::description::entity::DescClass> for ClassItem {
     }
 }
 
+/// Footer link row (homepage descriptions page=1 size=80, without content excerpt).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct FooterPageItem {
+    pub id: u64,
+    pub class_id: u64,
+    pub name: String,
+    pub title: String,
+    pub is_nav: i32,
+    pub is_type: i32,
+    pub link_url: String,
+}
+
+impl From<phpyun_models::description::entity::Description> for FooterPageItem {
+    fn from(d: phpyun_models::description::entity::Description) -> Self {
+        Self {
+            id: d.id,
+            class_id: d.class_id,
+            name: d.name,
+            title: d.title,
+            is_nav: d.is_nav,
+            is_type: d.is_type,
+            link_url: d.link_url,
+        }
+    }
+}
+
+pub(crate) async fn footer_classes(state: &AppState) -> AppResult<Vec<ClassItem>> {
+    let l = description_service::public_list_classes(state).await?;
+    Ok(l.into_iter().map(ClassItem::from).collect())
+}
+
+pub(crate) async fn footer_pages(state: &AppState) -> AppResult<Vec<FooterPageItem>> {
+    let page = Pagination {
+        page: 1,
+        page_size: 80,
+        offset: 0,
+        limit: 80,
+    };
+    let r = description_service::public_list(state, None, true, page).await?;
+    Ok(r.list.into_iter().map(FooterPageItem::from).collect())
+}
+
 /// Class list
+#[deprecated(note = "use /v1/wap/initjobs?with=footer")]
 #[utoipa::path(
     post,
     path = "/v1/wap/descriptions/classes",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=footer（data.footer_classes）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_classes(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<ClassItem>>> {
-    let l = description_service::public_list_classes(&state).await?;
-    Ok(ApiResponse::data(l.into_iter().map(ClassItem::from).collect()))
+    Ok(ApiResponse::data(footer_classes(&state).await?))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]

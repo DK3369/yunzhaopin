@@ -6,6 +6,7 @@ use phpyun_services::stats_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new().route("/stats/overview", post(overview))
 }
@@ -19,20 +20,26 @@ pub struct SiteOverviewView {
     pub today_new_resumes: u64,
 }
 
-/// Site overview statistics
-#[utoipa::path(
-    post,
-    path = "/v1/wap/stats/overview",
-    tag = "wap",
-    responses((status = 200, description = "ok", body = SiteOverviewView))
-)]
-pub async fn overview(State(state): State<AppState>) -> AppResult<ApiResponse<SiteOverviewView>> {
-    let o = stats_service::overview(&state).await?;
-    Ok(ApiResponse::data(SiteOverviewView {
+pub(crate) async fn build_overview(state: &AppState) -> AppResult<SiteOverviewView> {
+    let o = stats_service::overview(state).await?;
+    Ok(SiteOverviewView {
         total_jobs: o.total_jobs,
         total_companies: o.total_companies,
         total_resumes: o.total_resumes,
         today_new_jobs: o.today_new_jobs,
         today_new_resumes: o.today_new_resumes,
-    }))
+    })
+}
+
+/// Site overview statistics
+#[deprecated(note = "use /v1/wap/initjobs?with=stats")]
+#[utoipa::path(
+    post,
+    path = "/v1/wap/stats/overview",
+    tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=stats（data.stats）",
+    responses((status = 200, description = "ok", body = SiteOverviewView))
+)]
+pub async fn overview(State(state): State<AppState>) -> AppResult<ApiResponse<SiteOverviewView>> {
+    Ok(ApiResponse::data(build_overview(&state).await?))
 }

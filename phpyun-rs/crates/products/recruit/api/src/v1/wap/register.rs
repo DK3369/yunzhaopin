@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
@@ -279,21 +280,14 @@ pub struct RegisterConfig {
     pub reg_email: bool,
 }
 
-/// Registration rules config: clients can use this for instant validation and display copy.
-#[utoipa::path(
-    post,
-    path = "/v1/wap/register/config",
-    tag = "auth",
-    responses((status = 200, description = "ok", body = RegisterConfig))
-)]
-pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<RegisterConfig>> {
-    let open = phpyun_services::site_gate_service::ensure_registration_open(&state)
+pub(crate) async fn build_config(state: &AppState) -> AppResult<RegisterConfig> {
+    let open = phpyun_services::site_gate_service::ensure_registration_open(state)
         .await
         .is_ok();
-    let reg_user = phpyun_services::site_gate_service::setting_i32(&state, "reg_user").await == 1;
-    let reg_moblie = phpyun_services::site_gate_service::setting_i32(&state, "reg_moblie").await == 1;
-    let reg_email = phpyun_services::site_gate_service::setting_i32(&state, "reg_email").await == 1;
-    Ok(ApiResponse::data(RegisterConfig {
+    let reg_user = phpyun_services::site_gate_service::setting_i32(state, "reg_user").await == 1;
+    let reg_moblie = phpyun_services::site_gate_service::setting_i32(state, "reg_moblie").await == 1;
+    let reg_email = phpyun_services::site_gate_service::setting_i32(state, "reg_email").await == 1;
+    Ok(RegisterConfig {
         username_min_len: 3,
         username_max_len: 20,
         password_min_len: 6,
@@ -308,7 +302,20 @@ pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<Regi
         reg_user,
         reg_moblie,
         reg_email,
-    }))
+    })
+}
+
+/// Registration rules config: clients can use this for instant validation and display copy.
+#[deprecated(note = "use /v1/wap/initjobs?with=register")]
+#[utoipa::path(
+    post,
+    path = "/v1/wap/register/config",
+    tag = "auth",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=register（data.register）",
+    responses((status = 200, description = "ok", body = RegisterConfig))
+)]
+pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<RegisterConfig>> {
+    Ok(ApiResponse::data(build_config(&state).await?))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

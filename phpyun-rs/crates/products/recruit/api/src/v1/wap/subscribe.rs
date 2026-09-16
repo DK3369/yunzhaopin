@@ -12,6 +12,7 @@ use validator::Validate;
 
 pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/subscribe/meta"];
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/subscribe/meta", get(meta).post(meta))
@@ -29,22 +30,28 @@ pub struct SubscribeMetaView {
     pub cycles: Vec<i32>,
 }
 
+pub(crate) async fn build_meta(state: &AppState) -> AppResult<SubscribeMetaView> {
+    let m = job_alert_service::meta(state).await?;
+    Ok(SubscribeMetaView {
+        jionly: m.jionly,
+        cionly: m.cionly,
+        cycles: m.cycles,
+    })
+}
+
+#[deprecated(note = "use /v1/wap/initjobs?with=subscribe")]
 #[utoipa::path(
     post,
     path = "/v1/wap/subscribe/meta",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=subscribe（data.subscribe）",
     responses((status = 200, description = "ok", body = SubscribeMetaView))
 )]
 pub async fn meta(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(_q): ValidatedJsonOrQuery<MetaQuery>,
 ) -> AppResult<ApiResponse<SubscribeMetaView>> {
-    let m = job_alert_service::meta(&state).await?;
-    Ok(ApiResponse::data(SubscribeMetaView {
-        jionly: m.jionly,
-        cionly: m.cionly,
-        cycles: m.cycles,
-    }))
+    Ok(ApiResponse::data(build_meta(&state).await?))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

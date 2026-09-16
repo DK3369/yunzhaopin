@@ -15,7 +15,7 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 | `POST /v1/mcenter/com-dashboard/full` | 招聘首页：`ComDashboardView` 字段 + `today` + `year_report` + `job_counts` | `com-stats/today`、`dashboard/year-report`；`jobs/counts` **不**标 |
 | `POST /v1/mcenter/jobs/overview` | `{ jobs: Paged, counts }`，body 同 `MyJobsQuery` | `com/jobs` 双打 list+counts |
 | `POST /v1/mcenter/applications/overview` | `{ applications: Paged, counts }`，body 同 `ApplicationsQuery` | `com/applications` 双打 list+state-counts |
-| `GET/POST /v1/wap/initjobs` | 字典包（含 `marriages`/`langs`/`tags`/`job_categories`） | 几乎全部 `/v1/wap/dict/*` |
+| `GET/POST /v1/wap/initjobs` | 字典包（含 `marriages`/`langs`/`tags`/`job_categories`）。可选 `with=site,nav,footer,cats,register,map,subscribe,stats,hot` 附加配置分段（字段均为 Option，不传时形状与原来完全一致） | 几乎全部 `/v1/wap/dict/*`；`with=` 覆盖 `site/settings`、默认位 `nav`、页脚 `descriptions/classes`+首页 `descriptions`、`categories?kind=job\|part`、`register/config`、`map-config`、`subscribe/meta`、`stats/overview`、默认档 `hot-searches` |
 | `GET/POST /v1/wap/home/full` | `home`（原 `/home`）+ `job_cats` + `hot_job_class` + `ads`（默认首页 13 个 slot）+ `friend_links` | 首页扇出；`/home/aggregate` 即将失效 |
 | `GET/POST /v1/wap/jobs/detail/full` | 原 detail + `similar`(8) + `same_company`(6) + ads 509/512 | 职位详情页扇出 |
 | `GET/POST /v1/wap/companies/detail/full` | 原 detail + `jobs`(p1 s5) + `news` + `products` + `messages`(p1) | 企业详情页扇出 |
@@ -28,7 +28,7 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 
 ## 即将失效（仍注册，新集成勿用）
 
-OpenAPI 约 38 个操作。Vue 新代码不要再打这些路径（site 已切完）。旧路由仍挂。勿再扩展旧模块。
+OpenAPI 约 45 个操作。Vue 新代码不要再打这些路径（site 已切完）。旧路由仍挂。勿再扩展旧模块。
 
 | 旧路径（仍挂） | 改用 |
 |---|---|
@@ -43,6 +43,13 @@ OpenAPI 约 38 个操作。Vue 新代码不要再打这些路径（site 已切�
 | `POST /v1/mcenter/broadcasts/unread-count`、`/warnings/unread-count` | `POST /v1/mcenter/messages/unread-summary` |
 | `POST /v1/mcenter/follows`、`/follows/list`、`/follows/exists` | `favorites*`。映射：`target_kind=2(企业)→kind=2`，`target_kind=1(用户)→kind=3`，`target_uid→target_id`。**`followers`、`fans` 不动** |
 | `GET/POST /v1/wap/dict/{educations,experiences,salaries,industries,welfares,reports,job-types,company-natures,company-sizes,marriages,langs,tags,job-categories}` | `/v1/wap/initjobs` 对应字段；`source=user` 用 `*_user` |
+| `POST /v1/wap/site/settings`（无 key 全量 / `key=report_reasons`） | `/v1/wap/initjobs?with=site`（`data.settings` / `data.report_reasons`） |
+| `POST /v1/wap/descriptions/classes` | `/v1/wap/initjobs?with=footer`（`data.footer_classes`） |
+| `POST /v1/wap/register/config` | `/v1/wap/initjobs?with=register`（`data.register`） |
+| `GET/POST /v1/wap/site/map-config` | `/v1/wap/initjobs?with=map`（`data.map`） |
+| `GET/POST /v1/wap/subscribe/meta` | `/v1/wap/initjobs?with=subscribe`（`data.subscribe`） |
+| `POST /v1/wap/stats/overview` | `/v1/wap/initjobs?with=stats`（`data.stats`） |
+| `GET/POST /v1/wap/ads`（单槽位） | `/v1/wap/initads`（`slots=3:5`） |
 
 公开读 `GET/POST /v1/wap/company/...` 产品/新闻列表不是这套，不要当废弃。
 
@@ -67,6 +74,9 @@ OpenAPI 约 38 个操作。Vue 新代码不要再打这些路径（site 已切�
 | `sign/status`、`resume/completion`、`jobs/counts`、`applications/state-counts` | 各自页面仍单用，不打即将失效。 |
 | `look-jobs` / `look-resumes` / `my-views` / `profile-views` | **三套表**（`phpyun_look_job` / `phpyun_look_resume` / `phpyun_rs_views`），不要合成一个「浏览记录」接口。 |
 | `company-banners` vs `company-tpls` | 表不同；Admin 另有 `/v1/admin/company-banners`。结构未核前不并。 |
+| `nav`、`categories*`、`descriptions`、`hot-searches` | 带 position / kind / class_id / scope 参数，App 可能用非默认档；**不**标即将失效。默认档已进 `initjobs?with=`。 |
+| `regions*`、`site/sub-sites`、`friend-links`、`legal` / `site/pages` / `descriptions/get` | 带参或单页；`friend-links` 已在 `home/full`。不要塞进 `initjobs`。 |
+| 模块自己的分类（`articles/groups`、`hr-docs/classes`、`redeem/classes`、`qna/categories`、`once-jobs/gears`、`posters/templates`、`specials/industries`） | 只在对应模块页用，不进首屏包。 |
 
 ## 下一批（未做）
 
