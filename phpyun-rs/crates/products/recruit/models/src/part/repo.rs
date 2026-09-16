@@ -381,6 +381,17 @@ pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::E
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `addJobInfo` / `vipOver` 上架额度：`partjob.status = 0`.
+pub async fn count_listed_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_partjob WHERE uid = ? AND status = 0",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// Delete part-time jobs (a company can only delete its own; admin
 /// bypasses the uid filter via the outer caller).
 pub async fn delete_by_ids(

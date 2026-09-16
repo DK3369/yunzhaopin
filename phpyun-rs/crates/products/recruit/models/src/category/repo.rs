@@ -888,6 +888,20 @@ pub async fn city_meta_by_ids(
     qb.build_query_as().fetch_all(pool).await
 }
 
+/// PHP `category::getJobClass(id)` — parent `keyid` of a `phpyun_job_class` row.
+pub async fn find_job_class_parent(pool: &MySqlPool, id: i32) -> Result<Option<i32>, sqlx::Error> {
+    if id <= 0 {
+        return Ok(None);
+    }
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(keyid, 0) AS SIGNED) FROM phpyun_job_class WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
 /// PHP `userclass.sort` for apply-time exp/edu gates (`job.model.php::applyJob`).
 pub async fn userclass_sort(pool: &MySqlPool, id: i32) -> Result<Option<i32>, sqlx::Error> {
     if id <= 0 {

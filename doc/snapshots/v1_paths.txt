@@ -129,6 +129,7 @@
 /v1/mcenter/jobs/batch/close
 /v1/mcenter/jobs/batch/delete
 /v1/mcenter/jobs/batch/refresh
+/v1/mcenter/jobs/check
 /v1/mcenter/jobs/counts
 /v1/mcenter/jobs/detail
 /v1/mcenter/jobs/list

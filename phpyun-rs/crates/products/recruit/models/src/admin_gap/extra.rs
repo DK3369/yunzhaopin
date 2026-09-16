@@ -2569,6 +2569,33 @@ pub async fn delete_company_statis_details(
     .await
 }
 
+/// PHP `statis::addStatisDetail`. Failure must not block job publish.
+pub async fn insert_company_statis_detail(
+    pool: &MySqlPool,
+    uid: u64,
+    kind: i32,
+    num: i32,
+    detail: &str,
+    uri: &str,
+    ip: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_statis_detail (uid, `type`, num, detail, `time`, uri, ip) \
+         VALUES (?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(uid)
+    .bind(kind)
+    .bind(num)
+    .bind(detail)
+    .bind(now)
+    .bind(uri)
+    .bind(ip)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 /// PHP `company::mcomtpl_action` — enabled skins that are either global
 /// (`service_uid = 0`) or explicitly granted to this company.
 pub async fn list_company_tpls_for(

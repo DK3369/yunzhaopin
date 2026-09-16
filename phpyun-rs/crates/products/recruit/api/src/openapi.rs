@@ -208,6 +208,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::company::update_mine,
         // mcenter: jobs (employer CRUD)
         v1::mcenter::jobs::list_mine,
+        v1::mcenter::jobs::publish_check,
         v1::mcenter::jobs::create,
         v1::mcenter::jobs::detail,
         v1::mcenter::jobs::update,
@@ -800,6 +801,10 @@ impl Modify for UniqueOperationId {
             v1::mcenter::jobs::CreateJobForm,
             v1::mcenter::jobs::UpdateJobForm,
             v1::mcenter::jobs::SetStatusForm,
+            v1::mcenter::jobs::PublishJobView,
+            v1::mcenter::jobs::PublishGapView,
+            v1::mcenter::jobs::PublishCheckView,
+            v1::mcenter::jobs::JobCountsView,
             v1::mcenter::jobs::MyJobSummary,
             v1::mcenter::jobs::BatchIdsForm,
             v1::mcenter::jobs::PromoteQuoteForm,

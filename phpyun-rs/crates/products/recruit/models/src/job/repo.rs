@@ -500,6 +500,87 @@ pub async fn count_own(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP member `job::index` `w`: 1 招聘中 / 0 待审 / 3 未过 / 4 下架 / 5 全部.
+fn push_member_w(qb: &mut QueryBuilder<'_, sqlx::MySql>, w: Option<i32>) {
+    match w {
+        Some(1) => {
+            qb.push(" AND status = 0 AND state = 1");
+        }
+        Some(4) => {
+            qb.push(" AND status = 1");
+        }
+        Some(5) | None => {}
+        Some(s) => {
+            qb.push(" AND state = ");
+            qb.push_bind(s);
+        }
+    }
+}
+
+pub async fn list_own_w(
+    pool: &MySqlPool,
+    uid: u64,
+    w: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Job>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(FIELDS);
+    qb.push(" FROM phpyun_company_job WHERE uid = ");
+    qb.push_bind(uid);
+    push_member_w(&mut qb, w);
+    qb.push(" ORDER BY lastupdate DESC, id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<Job>().fetch_all(pool).await
+}
+
+pub async fn count_own_w(pool: &MySqlPool, uid: u64, w: Option<i32>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company_job WHERE uid = ");
+    qb.push_bind(uid);
+    push_member_w(&mut qb, w);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct MemberJobTabs {
+    pub w0: i64,
+    pub w1: i64,
+    pub w3: i64,
+    pub w4: i64,
+    pub w5: i64,
+}
+
+/// PHP `job.class.php` tab counters (a row can land in more than one bucket).
+pub async fn count_member_tabs(pool: &MySqlPool, uid: u64) -> Result<MemberJobTabs, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT \
+            CAST(COALESCE(SUM(CASE WHEN state = 0 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w0, \
+            CAST(COALESCE(SUM(CASE WHEN status = 0 AND state = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w1, \
+            CAST(COALESCE(SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w3, \
+            CAST(COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w4, \
+            CAST(COUNT(*) AS SIGNED) AS w5 \
+         FROM phpyun_company_job WHERE uid = ?",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await
+}
+
+/// PHP `addJobInfo` 上架额度：`company_job.status = 0`.
+pub async fn count_listed_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_job WHERE uid = ? AND status = 0",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 /// PHP `openResumeCheck` mode 3: `company_job` rows with `r_status=1 AND state=1`
 /// (上架 `status` is intentionally not required).
 pub async fn count_posted_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
@@ -566,10 +647,18 @@ pub struct JobCreate<'a> {
     pub minage_req: i32,
     pub maxage_req: i32,
     pub zp_num: i32,
+    pub state: i32,
+    pub status: i32,
+    pub r_status: i32,
+    pub com_logo: &'a str,
+    pub com_provinceid: i32,
+    pub pr: i32,
+    pub mun: i32,
+    pub yyzz_status: i32,
+    pub rating: i32,
 }
 
-/// Create a new job. **Defaults to under-review** (state=0); waits for
-/// backend review or automatic approval.
+/// Create a new job. Review `state` / listing `status` come from PHP `addJobInfo`.
 pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"INSERT INTO phpyun_company_job
@@ -581,9 +670,10 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
             is_link, link_id, is_message, is_email, exp_req, edu_req,
             sex_req, minage_req, maxage_req,
             state, status, r_status, rec, urgent,
-            rec_time, sdate, edate, lastupdate, did)
+            rec_time, sdate, edate, lastupdate, did,
+            com_logo, com_provinceid, pr, mun, yyzz_status, rating)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                   0, 0, 1, 0, 0, 0, ?, ?, ?, ?)"#,
+                   ?, ?, ?, 0, 0, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"#,
     )
     .bind(c.uid)
     .bind(c.com_name.unwrap_or(""))
@@ -623,10 +713,19 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     .bind(c.sex_req)
     .bind(c.minage_req)
     .bind(c.maxage_req)
+    .bind(c.state)
+    .bind(c.status)
+    .bind(c.r_status)
     .bind(c.sdate)
     .bind(c.edate)
     .bind(now)
     .bind(c.did)
+    .bind(c.com_logo)
+    .bind(c.com_provinceid)
+    .bind(c.pr)
+    .bind(c.mun)
+    .bind(c.yyzz_status)
+    .bind(c.rating)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
@@ -909,16 +1008,24 @@ pub struct JobUpdate<'a> {
     pub zp_num: Option<i32>,
     pub x: Option<&'a str>,
     pub y: Option<&'a str>,
+    pub state: Option<i32>,
+    pub r_status: Option<i32>,
+    pub com_name: Option<&'a str>,
+    pub com_logo: Option<&'a str>,
+    pub com_provinceid: Option<i32>,
+    pub pr: Option<i32>,
+    pub mun: Option<i32>,
+    pub yyzz_status: Option<i32>,
+    pub rating: Option<i32>,
 }
 
-/// Update a job -- dynamic update via COALESCE; resets state to
-/// "under review" (state=0) so an admin will re-review.
+/// PHP `addJobInfo` member edit: rewrite fields and review `state`, do **not** bump `lastupdate`.
 pub async fn update(
     pool: &MySqlPool,
     id: u64,
     uid: u64,
     u: JobUpdate<'_>,
-    now: i64,
+    _now: i64,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"UPDATE phpyun_company_job SET
@@ -960,8 +1067,15 @@ pub async fn update(
             maxage_req  = COALESCE(?, maxage_req),
             x           = COALESCE(?, x),
             y           = COALESCE(?, y),
-            state       = 0,
-            lastupdate  = ?
+            state       = COALESCE(?, state),
+            r_status    = COALESCE(?, r_status),
+            com_name    = COALESCE(?, com_name),
+            com_logo    = COALESCE(?, com_logo),
+            com_provinceid = COALESCE(?, com_provinceid),
+            pr          = COALESCE(?, pr),
+            mun         = COALESCE(?, mun),
+            yyzz_status = COALESCE(?, yyzz_status),
+            rating      = COALESCE(?, rating)
            WHERE id = ? AND uid = ?"#,
     )
     .bind(u.name)
@@ -1002,7 +1116,15 @@ pub async fn update(
     .bind(u.maxage_req)
     .bind(u.x)
     .bind(u.y)
-    .bind(now)
+    .bind(u.state)
+    .bind(u.r_status)
+    .bind(u.com_name)
+    .bind(u.com_logo)
+    .bind(u.com_provinceid)
+    .bind(u.pr)
+    .bind(u.mun)
+    .bind(u.yyzz_status)
+    .bind(u.rating)
     .bind(id)
     .bind(uid)
     .execute(pool)
@@ -1048,12 +1170,18 @@ pub async fn set_status(
     uid: u64,
     status: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("UPDATE phpyun_company_job SET status = ? WHERE id = ? AND uid = ?")
-        .bind(status)
-        .bind(id)
-        .bind(uid)
-        .execute(pool)
-        .await?;
+    let res = sqlx::query(
+        "UPDATE phpyun_company_job SET status = ?, \
+         upstatus_time = IF(? = 0, ?, upstatus_time) \
+         WHERE id = ? AND uid = ?",
+    )
+    .bind(status)
+    .bind(status)
+    .bind(phpyun_core::clock::now_ts())
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
     Ok(res.rows_affected())
 }
 
@@ -1072,18 +1200,87 @@ pub async fn refresh(pool: &MySqlPool, id: u64, uid: u64, now: i64) -> Result<u6
     Ok(res.rows_affected())
 }
 
-/// Soft delete: set the job's `state` to 2 (delisted / deleted),
-/// **no physical DELETE**.
-/// Ownership is enforced by `WHERE uid=?`; only the owner can delete.
-///
-/// state values: 0 = recruiting, 1 = pending review, 2 = delisted/deleted.
+/// PHP `delJob` member path: physical delete, then mark related apply rows.
 pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("UPDATE phpyun_company_job SET state = 2 WHERE id = ? AND uid = ?")
+    let res = sqlx::query("DELETE FROM phpyun_company_job WHERE id = ? AND uid = ?")
         .bind(id)
         .bind(uid)
         .execute(pool)
         .await?;
+    let n = res.rows_affected();
+    if n == 0 {
+        return Ok(0);
+    }
+    let _ = sqlx::query("UPDATE phpyun_userid_job SET isdel = 2 WHERE job_id = ?")
+        .bind(id)
+        .execute(pool)
+        .await;
+    let _ = sqlx::query("UPDATE phpyun_userid_msg SET isdel = 2 WHERE jobid = ?")
+        .bind(id)
+        .execute(pool)
+        .await;
+    let _ = sqlx::query("DELETE FROM phpyun_fav_job WHERE job_id = ?")
+        .bind(id)
+        .execute(pool)
+        .await;
+    let _ = sqlx::query("DELETE FROM phpyun_look_job WHERE jobid = ?")
+        .bind(id)
+        .execute(pool)
+        .await;
+    let _ = sqlx::query("DELETE FROM phpyun_job_refresh_log WHERE jobid = ?")
+        .bind(id)
+        .execute(pool)
+        .await;
+    let _ = sqlx::query("DELETE FROM phpyun_reserve_refresh WHERE job_id = ?")
+        .bind(id)
+        .execute(pool)
+        .await;
+    Ok(n)
+}
+
+pub async fn update_fav_job_name(
+    pool: &MySqlPool,
+    job_id: u64,
+    name: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_fav_job SET job_name = ? WHERE job_id = ?")
+        .bind(name)
+        .bind(job_id)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
+}
+
+pub async fn touch_hotjob(pool: &MySqlPool, uid: u64, now: i64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_hotjob SET lastupdate = ? WHERE uid = ?")
+        .bind(now)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn insert_refresh_log(
+    pool: &MySqlPool,
+    uid: u64,
+    job_id: u64,
+    now: i64,
+    free: i32,
+    free_num: i32,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "INSERT INTO phpyun_job_refresh_log \
+         (uid, usertype, jobid, type, ip, r_time, port, remark, free, free_num) \
+         VALUES (?, 2, ?, 1, '', ?, 1, '', ?, ?)",
+    )
+    .bind(uid)
+    .bind(job_id)
+    .bind(now)
+    .bind(free)
+    .bind(free_num)
+    .execute(pool)
+    .await?;
+    Ok(())
 }
 
 // ==================== Admin backend ====================

@@ -24,16 +24,25 @@ const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
-const w = ref<number | null>(null)
+const route = useRoute()
+const wRaw = Number(route.query.w)
+const w = ref(Number.isFinite(wRaw) ? wRaw : 1)
 const { data, error, refresh } = await useAsyncData(
-  () => `com-jobs-${page.value}-${w.value ?? 'all'}`,
-  () => api.post('/v1/mcenter/jobs/list', { page: page.value, page_size: pageSize, ...(w.value === null ? {} : { w: w.value }) }),
+  () => `com-jobs-${page.value}-${w.value}`,
+  () => api.post('/v1/mcenter/jobs/list', { page: page.value, page_size: pageSize, w: w.value }),
 )
 const { data: counts, refresh: refreshCounts } = await useAsyncData('com-job-counts', () =>
   api
     .post<{
+      w0?: number
+      w1?: number
+      w3?: number
+      w4?: number
+      w5?: number
       total: number
       online: number
+      pending?: number
+      closed?: number
       breakjob_num?: number
       top_num?: number
       rec_num?: number
@@ -80,6 +89,10 @@ function isQuotaErr(e: unknown) {
   if (!(e instanceof ApiError)) return false
   return (
     e.key === 'job_refresh_quota' ||
+    e.key === 'model_00056' ||
+    e.key === 'member_com_00696' ||
+    e.key === 'wap_01287' ||
+    e.key === 'api_wxapp_00002' ||
     e.key === 'common_00207' ||
     e.key === 'common_00206' ||
     e.key === 'common_00180'
@@ -107,12 +120,14 @@ async function refreshJob(id: number) {
 }
 async function setStatus(id: number, status: number) {
   msg.value = ''
+  buyHint.value = ''
   try {
     await api.post('/v1/mcenter/jobs/status', { id, status })
     msg.value = t('common.success')
     await refresh()
+    await refreshCounts()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    msg.value = failAct(e)
   }
 }
 async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
@@ -260,11 +275,11 @@ function toggleH5Menu(id: number, kind: 'promote' | 'more') {
   h5MenuKind.value = kind
 }
 const jobTabs = computed(() => [
-  { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.online, select: () => { w.value = 1; go(1) } },
-  { value: 0, label: t('wap_user_00006'), on: w.value === 0, select: () => { w.value = 0; go(1) } },
-  { value: 3, label: t('wap_user_00167'), on: w.value === 3, select: () => { w.value = 3; go(1) } },
-  { value: 4, label: t('wap_com_00245'), on: w.value === 4, select: () => { w.value = 4; go(1) } },
-  { value: null, label: t('common.all'), on: w.value === null, count: counts.value?.total, select: () => { w.value = null; go(1) } },
+  { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.w1 ?? counts.value?.online, select: () => { w.value = 1; go(1) } },
+  { value: 0, label: t('wap_user_00006'), on: w.value === 0, count: counts.value?.w0 ?? counts.value?.pending, select: () => { w.value = 0; go(1) } },
+  { value: 3, label: t('wap_user_00167'), on: w.value === 3, count: counts.value?.w3, select: () => { w.value = 3; go(1) } },
+  { value: 4, label: t('wap_com_00245'), on: w.value === 4, count: counts.value?.w4 ?? counts.value?.closed, select: () => { w.value = 4; go(1) } },
+  { value: 5, label: t('common.all'), on: w.value === 5, count: counts.value?.w5 ?? counts.value?.total, select: () => { w.value = 5; go(1) } },
 ])
 </script>
 
@@ -412,6 +427,8 @@ const jobTabs = computed(() => [
     <p v-if="quoteHint" class="muted">{{ quoteHint }}</p>
     <p v-if="buyHint" class="muted">
       {{ buyHint }}
+      <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
+      ·
       <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
       ·
       <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>

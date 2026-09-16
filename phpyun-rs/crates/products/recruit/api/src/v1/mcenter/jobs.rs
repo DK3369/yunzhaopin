@@ -1,7 +1,7 @@
 //! Member center - Job management (usertype=2 employer).
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::{BatchResult, CreatedId, IdBody};
+use phpyun_core::dto::{BatchResult, IdBody};
 use phpyun_core::json;
 use phpyun_core::ApiError;
 use phpyun_core::{
@@ -15,6 +15,7 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/jobs", post(create))
+        .route("/jobs/check", post(publish_check))
         .route("/jobs/list", post(list_mine))
         .route("/jobs/counts", post(counts_by_state))
         .route("/jobs/detail", post(detail))
@@ -37,6 +38,7 @@ pub fn routes() -> Router<AppState> {
 pub struct CreateJobForm {
     #[validate(length(min = 2, max = 50))]
     pub name: String,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub job1: i32,
     #[serde(default)]
@@ -45,31 +47,52 @@ pub struct CreateJobForm {
     #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub job_post: i32,
+    /// WAP `jobclassid` leaf; server expands to job1 / job1_son / job_post.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
+    pub jobclassid: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub provinceid: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub cityid: i32,
     #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub three_cityid: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 999))]
     pub salary: i32,
     /// Salary in CNY (yuan); cap to 1M to avoid overflow.
+    #[serde(default)]
     #[validate(range(min = 0, max = 1_000_000))]
     pub minsalary: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 1_000_000))]
     pub maxsalary: i32,
     /// 57 = full-time / 58 = part-time / 59 = internship / 60 = temporary
+    #[serde(default)]
     #[validate(range(min = 0, max = 99))]
     pub r#type: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 999))]
     pub number: i32,
+    /// PHP `zp_num` headcount; falls back to `number` when omitted.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 999))]
+    pub zp_num: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99))]
     pub exp: i32,
+    #[serde(default)]
     #[validate(range(min = 0, max = 99))]
     pub edu: i32,
+    #[serde(default)]
     #[validate(length(max = 10000))]
     pub content: Option<String>,
+    #[serde(default)]
+    #[validate(length(max = 10000))]
+    pub description: Option<String>,
     #[validate(length(max = 500))]
     pub wel: Option<String>,
     /// Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"` strings.
@@ -156,10 +179,114 @@ pub struct CreateJobForm {
     #[serde(default)]
     #[validate(range(min = 0, max = 1))]
     pub is_tblink: i32,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub x: String,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub y: String,
 }
 
 fn default_is_link() -> i32 {
     1
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PublishJobView {
+    pub id: u64,
+    pub state: i32,
+    pub status: i32,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PublishGapView {
+    pub key: String,
+    pub href: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PublishCheckView {
+    pub addjobnum: i32,
+    pub job_num: i32,
+    pub integral: i64,
+    pub job_state: i32,
+    pub gaps: Vec<PublishGapView>,
+}
+
+/// PHP `jobCheck` + `getAddJobNeedInfo` + `company_satic`.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/check",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = PublishCheckView))
+)]
+pub async fn publish_check(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<PublishCheckView>> {
+    let c = job_mgmt_service::publish_check(&state, &user).await?;
+    Ok(ApiResponse::data(PublishCheckView {
+        addjobnum: c.addjobnum,
+        job_num: c.job_num,
+        integral: c.integral,
+        job_state: c.job_state,
+        gaps: c
+            .gaps
+            .into_iter()
+            .map(|g| PublishGapView {
+                key: g.key,
+                href: g.href,
+            })
+            .collect(),
+    }))
+}
+
+fn create_input(f: &CreateJobForm) -> CreateJobInput<'_> {
+    let content = f.content.as_deref().or(f.description.as_deref());
+    CreateJobInput {
+        name: &f.name,
+        job1: f.job1,
+        job1_son: f.job1_son,
+        job_post: f.job_post,
+        provinceid: f.provinceid,
+        cityid: f.cityid,
+        three_cityid: f.three_cityid,
+        minsalary: f.minsalary,
+        maxsalary: f.maxsalary,
+        job_type: f.r#type,
+        number: f.number,
+        exp: f.exp,
+        edu: f.edu,
+        content,
+        wel: f.wel.as_deref(),
+        sdate: f.sdate,
+        edate: f.edate,
+        hy: f.hy,
+        report: f.report,
+        age: f.age,
+        sex: f.sex,
+        marriage: f.marriage,
+        lang: f.lang.as_str(),
+        is_graduate: f.is_graduate,
+        zp_minage: f.zp_minage,
+        zp_maxage: f.zp_maxage,
+        link_id: f.link_id,
+        is_link: f.is_link,
+        is_message: f.is_message,
+        is_email: f.is_email,
+        exp_req: f.exp_req.as_str(),
+        edu_req: f.edu_req.as_str(),
+        sex_req: f.sex_req,
+        minage_req: f.minage_req,
+        maxage_req: f.maxage_req,
+        salary_type: f.salary_type,
+        is_tblink: f.is_tblink,
+        zp_num: f.zp_num,
+        jobclassid: f.jobclassid,
+        x: f.x.as_str(),
+        y: f.y.as_str(),
+    }
 }
 
 /// Publish job
@@ -169,62 +296,20 @@ fn default_is_link() -> i32 {
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = CreateJobForm,
-    responses((status = 200, description = "Published (pending review)", body = CreatedId))
+    responses((status = 200, description = "Published", body = PublishJobView))
 )]
 pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateJobForm>,
-) -> AppResult<ApiResponse<CreatedId>> {
-    // Company name comes from the company table; leave None here for now (employer side syncs `com_name` on update).
-    let id = job_mgmt_service::create(
-        &state,
-        &user,
-        CreateJobInput {
-            name: &f.name,
-            job1: f.job1,
-            job1_son: f.job1_son,
-            job_post: f.job_post,
-            provinceid: f.provinceid,
-            cityid: f.cityid,
-            three_cityid: f.three_cityid,
-            minsalary: f.minsalary,
-            maxsalary: f.maxsalary,
-            job_type: f.r#type,
-            number: f.number,
-            exp: f.exp,
-            edu: f.edu,
-            content: f.content.as_deref(),
-            wel: f.wel.as_deref(),
-            sdate: f.sdate,
-            edate: f.edate,
-            hy: f.hy,
-            report: f.report,
-            age: f.age,
-            sex: f.sex,
-            marriage: f.marriage,
-            lang: f.lang.as_str(),
-            is_graduate: f.is_graduate,
-            zp_minage: f.zp_minage,
-            zp_maxage: f.zp_maxage,
-            link_id: f.link_id,
-            is_link: f.is_link,
-            is_message: f.is_message,
-            is_email: f.is_email,
-            exp_req: f.exp_req.as_str(),
-            edu_req: f.edu_req.as_str(),
-            sex_req: f.sex_req,
-            minage_req: f.minage_req,
-            maxage_req: f.maxage_req,
-            salary_type: f.salary_type,
-            is_tblink: f.is_tblink,
-        },
-        None,
-        &ip,
-    )
-    .await?;
-    Ok(ApiResponse::data(CreatedId { id }))
+) -> AppResult<ApiResponse<PublishJobView>> {
+    let r = job_mgmt_service::create(&state, &user, create_input(&f), None, &ip).await?;
+    Ok(ApiResponse::data(PublishJobView {
+        id: r.id,
+        state: r.state,
+        status: r.status,
+    }))
 }
 
 // ==================== Update ====================
@@ -261,6 +346,7 @@ pub struct UpdateJobForm {
     pub exp: Option<i32>,
     #[validate(range(min = 0, max = 99))]
     pub edu: Option<i32>,
+    #[serde(default, alias = "description")]
     #[validate(length(max = 10000))]
     pub content: Option<String>,
     #[validate(length(max = 500))]
@@ -321,6 +407,14 @@ pub struct UpdateJobForm {
     pub maxage_req: Option<i32>,
     #[validate(range(min = 0, max = 1))]
     pub is_tblink: Option<i32>,
+    #[validate(range(min = 0, max = 999))]
+    pub zp_num: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
+    pub jobclassid: Option<i32>,
+    #[validate(length(max = 64))]
+    pub x: Option<String>,
+    #[validate(length(max = 64))]
+    pub y: Option<String>,
 }
 
 /// Update job (re-enters review after editing)
@@ -337,8 +431,8 @@ pub async fn update(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateJobForm>,
-) -> AppResult<ApiResponse<json::Value>> {
-    job_mgmt_service::update(
+) -> AppResult<ApiResponse<PublishJobView>> {
+    let r = job_mgmt_service::update(
         &state,
         &user,
         f.id,
@@ -380,22 +474,35 @@ pub async fn update(
             maxage_req: f.maxage_req,
             salary_type: f.salary_type,
             is_tblink: f.is_tblink,
+            zp_num: f.zp_num,
+            jobclassid: f.jobclassid,
+            x: f.x.as_deref(),
+            y: f.y.as_deref(),
         },
         &ip,
     )
     .await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(PublishJobView {
+        id: r.id,
+        state: r.state,
+        status: r.status,
+    }))
 }
 
 // ==================== Status group counts ====================
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct JobCountsView {
-    /// Recruiting (state=0)
+    pub w0: u64,
+    pub w1: u64,
+    pub w3: u64,
+    pub w4: u64,
+    pub w5: u64,
+    /// Alias of w1 (招聘中)
     pub online: u64,
-    /// Pending review (state=1)
+    /// Alias of w0 (待审)
     pub pending: u64,
-    /// Closed (state=2)
+    /// Alias of w4 (下架)
     pub closed: u64,
     pub total: u64,
     pub breakjob_num: i32,
@@ -418,10 +525,15 @@ pub async fn counts_by_state(
 ) -> AppResult<ApiResponse<JobCountsView>> {
     let c = job_mgmt_service::counts_by_state(&state, &user).await?;
     Ok(ApiResponse::data(JobCountsView {
+        w0: c.w0,
+        w1: c.w1,
+        w3: c.w3,
+        w4: c.w4,
+        w5: c.w5,
         online: c.online,
         pending: c.pending,
         closed: c.closed,
-        total: c.online + c.pending + c.closed,
+        total: c.w5,
         breakjob_num: c.breakjob_num,
         top_num: c.top_num,
         rec_num: c.rec_num,
@@ -480,15 +592,18 @@ pub async fn refresh(
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
-// Delete job — **merged into update**:
-// The client sends `POST /v1/mcenter/jobs/{id}/status` with body `{"status": 2}` to trigger a soft delete.
-// The repo-layer `delete()` has been changed to `UPDATE ... SET state=2`; no physical DELETE is performed.
+// Member delete is `POST /v1/mcenter/jobs/batch/delete` → physical `DELETE` (PHP `delJob`).
 
 // ==================== List + Detail ====================
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct MyJobsQuery {
-    /// Optional review-state filter: 0 pending / 1 approved / 2 closed / 3 rejected
+    /// PHP member `w`: 1 招聘中 / 0 待审 / 3 未过 / 4 下架 / 5 全部.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    #[validate(range(min = 0, max = 99))]
+    pub w: Option<i32>,
+    /// Legacy alias of `w` when the client still sends `state`.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 99))]
     pub state: Option<i32>,
 }
@@ -514,7 +629,8 @@ pub async fn list_mine(
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MyJobsQuery>,
 ) -> AppResult<ApiResponse<Paged<MyJobSummary>>> {
-    let r = job_mgmt_service::list_mine(&state, &user, q.state, page).await?;
+    let w = q.w.or(q.state).unwrap_or(1);
+    let r = job_mgmt_service::list_mine(&state, &user, Some(w), page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     Ok(ApiResponse::data(Paged::new(

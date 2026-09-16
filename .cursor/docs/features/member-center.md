@@ -199,3 +199,24 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - 页：`web/apps/site/app/pages/user/*`、`pages/com/*`
 - CSS：`legacyCss.ts`；切皮与壳：`web/apps/site/app/assets/main.css`
 - H5 底栏 / PC 页脚：[`AppFooter.vue`](../../web/layers/ui/app/components/AppFooter.vue)（对照 `wap/footer.htm` / `default/footer.htm`）。五列落地页见 [pc-footer.md](./pc-footer.md)
+
+## 招聘发职位 / 职位管理
+
+对齐 PHP `jobadd` / `addJobInfo` / `job`。不改 `uploads/`。接口：`POST /v1/mcenter/jobs/check|list|counts`、`POST /v1/mcenter/jobs`、`/jobs/update`、`/jobs/status`、`/jobs/refresh`、批量删除。
+
+| 字段 | 口径 |
+|---|---|
+| `company_job.state` | 0 待审 / 1 已通过 / 3 未过。**不要**用 `state=2` 表示会员删除 |
+| `company_job.status` | 0 上架 / 1 下架。公开列表要 `state=1 AND status=0 AND r_status=1` |
+| 人数 | 写 `zp_num`（不是字典 `number`） |
+| 列表 `w` | 默认 1。`1`=`status=0 AND state=1`；`0`/`3`=`state`；`4`=`status=1`；`5`=全部。角标 `w0/w1/w3/w4/w5` |
+| `addjobnum` | 0 VIP 过期拒发；1 可上架；2 可发但强制 `status=1`。**不扣** `job_num` |
+| 免审 `state` | 企业 `r_status!=1` → 0；`com_free_status=1` 且执照 `company_cert type=3 status=1` → 1；`rating` 在 `job_ms_rating` → 1；否则 `com_job_status`。职位 `r_status` 抄企业 |
+| 编辑 | 不改 `lastupdate`；同套 `state` 公式 |
+| 会员删除 | 物理删 `company_job`，关联投递 `userid_job.isdel=2` |
+| 上架 | 职位须 `state=1`，已上架数（全职+兼职 `status=0`）+ 本次 > `job_num` → `model_00056` |
+| 刷新 | `rating_type==2` 期内免费；否则 `breakjob_num` + 日免费 `freerefresh_num` |
+| PC 城市 | 来自 `link_id`（`-1` 企业默认 / 地址簿），不要独立城市行覆盖 |
+| H5 | 可带 `provinceid/cityid/x/y` 与 `jobclassid`（末级反查三级） |
+
+入口：[`job_mgmt_service.rs`](../../../phpyun-rs/crates/products/recruit/services/src/job_mgmt_service.rs)、[`web/apps/site/app/pages/com/jobs/new.vue`](../../../web/apps/site/app/pages/com/jobs/new.vue)、[`jobs.vue`](../../../web/apps/site/app/pages/com/jobs.vue)。本轮不做应聘管线、套餐支付、兼职 `partadd`、企业导航 `customize`。

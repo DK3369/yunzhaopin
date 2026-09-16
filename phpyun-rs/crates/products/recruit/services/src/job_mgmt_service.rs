@@ -5,11 +5,14 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_models::admin_gap::extra as gap_extra;
+use phpyun_models::category::repo as category_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::company_address::repo as company_address_repo;
 use phpyun_models::company_cert::repo as company_cert_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::{entity::Job, repo as job_repo};
+use phpyun_models::part::repo as part_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 
 fn store_is_email(v: i32) -> i32 {
@@ -83,14 +86,6 @@ fn overlay_hide(mut link: ResolvedLink, is_link: i32) -> ResolvedLink {
     link
 }
 
-fn apply_salary(salary_type: i32, min: i32, max: i32) -> (i32, i32) {
-    if salary_type == 1 {
-        (0, 0)
-    } else {
-        (min, max)
-    }
-}
-
 async fn maybe_tblink(
     state: &AppState,
     uid: u64,
@@ -156,6 +151,10 @@ pub struct CreateJobInput<'a> {
     pub maxage_req: i32,
     pub salary_type: i32,
     pub is_tblink: i32,
+    pub zp_num: i32,
+    pub jobclassid: i32,
+    pub x: &'a str,
+    pub y: &'a str,
 }
 
 async fn setting_on(state: &AppState, key: &str) -> bool {
@@ -165,11 +164,193 @@ async fn setting_on(state: &AppState, key: &str) -> bool {
     }
 }
 
-/// PHP `member/com/model/jobadd.class.php::index_action` publish gates.
-async fn ensure_can_publish(state: &AppState, user: &AuthenticatedUser) -> AppResult<()> {
+async fn setting_raw(state: &AppState, key: &str) -> String {
+    match setting_repo::find(state.db.reader(), key).await {
+        Ok(Some(row)) => row.value.trim().to_string(),
+        _ => String::new(),
+    }
+}
+
+async fn setting_i32(state: &AppState, key: &str, default: i32) -> i32 {
+    setting_raw(state, key)
+        .await
+        .parse::<i32>()
+        .unwrap_or(default)
+}
+
+fn strip_tags(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut in_tag = false;
+    for c in s.chars() {
+        match c {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => out.push(c),
+            _ => {}
+        }
+    }
+    out
+}
+
+fn is_vip(vip_etime: i64, now: i64) -> bool {
+    vip_etime == 0 || vip_etime >= now
+}
+
+struct VipPack {
+    addjobnum: i32,
+    job_num: i32,
+    rating: i32,
+    integral: i64,
+}
+
+async fn listed_job_count(state: &AppState, uid: u64) -> AppResult<u64> {
+    let (jobs, parts) = tokio::join!(
+        job_repo::count_listed_by_uid(state.db.reader(), uid),
+        part_repo::count_listed_by_uid(state.db.reader(), uid),
+    );
+    Ok(jobs? + parts?)
+}
+
+async fn vip_pack(state: &AppState, uid: u64) -> AppResult<VipPack> {
+    let now = clock::now_ts();
+    let st = statis_repo::find_admin(state.db.reader(), uid).await?;
+    let Some(s) = st else {
+        return Ok(VipPack {
+            addjobnum: 0,
+            job_num: 0,
+            rating: 0,
+            integral: 0,
+        });
+    };
+    let integral = s.integral.parse::<i64>().unwrap_or(0);
+    let vip = is_vip(s.vip_etime, now);
+    let listed = listed_job_count(state, uid).await?;
+    let addjobnum = if !vip || s.rating_type == 0 {
+        0
+    } else if listed >= s.job_num.max(0) as u64 {
+        2
+    } else {
+        1
+    };
+    Ok(VipPack {
+        addjobnum,
+        job_num: s.job_num,
+        rating: s.rating,
+        integral,
+    })
+}
+
+async fn resolve_job_class(
+    state: &AppState,
+    job1: i32,
+    job1_son: i32,
+    job_post: i32,
+    jobclassid: i32,
+) -> AppResult<(i32, i32, i32)> {
+    let leaf = if jobclassid > 0 {
+        jobclassid
+    } else if job_post > 0 {
+        job_post
+    } else if job1_son > 0 {
+        job1_son
+    } else {
+        job1
+    };
+    if leaf <= 0 {
+        return Err(ApiError::business("member_com_00586"));
+    }
+    let parent = category_repo::find_job_class_parent(state.db.reader(), leaf)
+        .await?
+        .unwrap_or(0);
+    if parent == 0 {
+        return Ok((leaf, 0, 0));
+    }
+    let grand = category_repo::find_job_class_parent(state.db.reader(), parent)
+        .await?
+        .unwrap_or(0);
+    if grand == 0 {
+        Ok((parent, leaf, 0))
+    } else {
+        Ok((grand, parent, leaf))
+    }
+}
+
+fn validate_salary(myswitch: bool, salary_type: i32, min: i32, max: i32) -> AppResult<(i32, i32)> {
+    if salary_type == 1 {
+        if !myswitch {
+            return Err(ApiError::business("member_com_00238"));
+        }
+        return Ok((0, 0));
+    }
+    if min <= 0 {
+        return Err(ApiError::business("member_com_00238"));
+    }
+    if max > 0 && max < min {
+        return Err(ApiError::business("wap_com_00264"));
+    }
+    if max > 0 && max == min {
+        return Err(ApiError::business("wap_com_00255"));
+    }
+    Ok((min, max))
+}
+
+fn validate_age(v: i32) -> AppResult<()> {
+    if v != 0 && v < 16 {
+        return Err(ApiError::business("wap_com_00257"));
+    }
+    if v > 99 {
+        return Err(ApiError::business("wap_com_00269"));
+    }
+    Ok(())
+}
+
+async fn compute_job_state(state: &AppState, uid: u64, r_status: i32, rating: i32) -> AppResult<i32> {
+    if r_status != 1 {
+        return Ok(0);
+    }
+    let cert = company_cert_repo::find(state.db.reader(), uid).await?;
+    let cert_ok = cert.as_ref().map(|c| c.status == 1).unwrap_or(false);
+    if setting_on(state, "com_free_status").await && cert_ok {
+        return Ok(1);
+    }
+    let ms = setting_raw(state, "job_ms_rating").await;
+    if !ms.is_empty() {
+        let hit = ms.split(',').any(|s| s.trim().parse::<i32>().ok() == Some(rating));
+        if hit {
+            return Ok(1);
+        }
+    }
+    Ok(setting_i32(state, "com_job_status", 0).await)
+}
+
+pub struct PublishJobResult {
+    pub id: u64,
+    pub state: i32,
+    pub status: i32,
+}
+
+pub struct PublishGap {
+    pub key: String,
+    pub href: String,
+}
+
+pub struct PublishCheck {
+    pub addjobnum: i32,
+    pub job_num: i32,
+    pub integral: i64,
+    pub job_state: i32,
+    pub gaps: Vec<PublishGap>,
+}
+
+pub async fn publish_check(
+    state: &AppState,
+    user: &AuthenticatedUser,
+) -> AppResult<PublishCheck> {
+    user.require_employer()?;
     let company = company_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
         .ok_or_else(|| ApiError::business("member_com_00692"))?;
+    let mut gaps = Vec::new();
     let name_ok = company
         .name
         .as_deref()
@@ -186,16 +367,24 @@ async fn ensure_can_publish(state: &AppState, user: &AuthenticatedUser) -> AppRe
             .map(|s| !s.trim().is_empty())
             .unwrap_or(false);
     if !name_ok || company.provinceid == 0 || !tel_ok {
-        return Err(ApiError::business("member_com_00692"));
+        gaps.push(PublishGap {
+            key: "member_com_00692".into(),
+            href: "/com/profile".into(),
+        });
     }
     if setting_on(state, "com_enforce_emailcert").await && company.email_status != 1 {
-        return Err(ApiError::business("wap_com_00186"));
+        gaps.push(PublishGap {
+            key: "wap_com_00186".into(),
+            href: "/com/binding".into(),
+        });
     }
     if setting_on(state, "com_enforce_mobilecert").await && company.moblie_status != 1 {
-        return Err(ApiError::business("member_com_00071"));
+        gaps.push(PublishGap {
+            key: "member_com_00071".into(),
+            href: "/com/binding".into(),
+        });
     }
     if setting_on(state, "com_enforce_licensecert").await && company.yyzz_status != 1 {
-        // PHP jobadd: empty cert or status=2 (rejected) blocks publish.
         let cert = company_cert_repo::find(state.db.reader(), user.uid).await?;
         let deny = match cert {
             None => true,
@@ -203,15 +392,51 @@ async fn ensure_can_publish(state: &AppState, user: &AuthenticatedUser) -> AppRe
             _ => false,
         };
         if deny {
-            return Err(ApiError::business("member_com_00187"));
+            gaps.push(PublishGap {
+                key: "member_com_00187".into(),
+                href: "/com/cert".into(),
+            });
         }
     }
     if setting_on(state, "com_enforce_setposition").await {
         let x = company.x.as_deref().unwrap_or("").trim();
         let y = company.y.as_deref().unwrap_or("").trim();
         if x.is_empty() || y.is_empty() {
-            return Err(ApiError::business("member_com_00694"));
+            gaps.push(PublishGap {
+                key: "member_com_00694".into(),
+                href: "/com/profile".into(),
+            });
         }
+    }
+    if setting_on(state, "com_gzgzh").await {
+        gaps.push(PublishGap {
+            key: "member_com_00695".into(),
+            href: "/com".into(),
+        });
+    }
+    let pack = vip_pack(state, user.uid).await?;
+    let job_state = compute_job_state(state, user.uid, company.r_status, company.rating).await?;
+    Ok(PublishCheck {
+        addjobnum: pack.addjobnum,
+        job_num: pack.job_num,
+        integral: pack.integral,
+        job_state,
+        gaps,
+    })
+}
+
+async fn ensure_can_publish(state: &AppState, user: &AuthenticatedUser) -> AppResult<()> {
+    if setting_raw(state, "sy_job_web").await == "2" {
+        return Err(ApiError::business("member_com_00696"));
+    }
+    let check = publish_check(state, user).await?;
+    if let Some(g) = check.gaps.first() {
+        if g.key != "member_com_00695" {
+            return Err(ApiError::business(g.key.clone()));
+        }
+    }
+    if check.addjobnum == 0 {
+        return Err(ApiError::business("member_com_00696"));
     }
     Ok(())
 }
@@ -220,117 +445,302 @@ pub async fn create(
     state: &AppState,
     user: &AuthenticatedUser,
     input: CreateJobInput<'_>,
-    com_name: Option<&str>,
+    _com_name: Option<&str>,
     client_ip: &str,
-) -> AppResult<u64> {
+) -> AppResult<PublishJobResult> {
+    save_job(state, user, None, input, client_ip).await
+}
+
+async fn save_job(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    edit_id: Option<u64>,
+    input: CreateJobInput<'_>,
+    client_ip: &str,
+) -> AppResult<PublishJobResult> {
     user.require_employer()?;
-    ensure_can_publish(state, user).await?;
-    let now = clock::now_ts();
-    let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
-    if let Some(s) = st.as_ref() {
-        if s.vip_etime > 0 && s.vip_etime < now {
-            return Err(ApiError::business("member_com_00696"));
+    if edit_id.is_none() {
+        ensure_can_publish(state, user).await?;
+    }
+    let name = input.name.trim();
+    if name.len() < 2 {
+        return Err(ApiError::business("member_com_00585"));
+    }
+    let desc = input.content.unwrap_or("");
+    if strip_tags(desc).trim().is_empty() {
+        return Err(ApiError::business("member_com_00587"));
+    }
+    let zp_num = if input.zp_num > 0 {
+        input.zp_num
+    } else {
+        input.number
+    };
+    if zp_num <= 0 {
+        return Err(ApiError::business("wap_00888"));
+    }
+    validate_age(input.zp_minage)?;
+    validate_age(input.zp_maxage)?;
+    validate_age(input.minage_req)?;
+    validate_age(input.maxage_req)?;
+    let myswitch = setting_on(state, "com_job_myswitch").await;
+    let (minsalary, maxsalary) =
+        validate_salary(myswitch, input.salary_type, input.minsalary, input.maxsalary)?;
+    let (job1, job1_son, job_post) = resolve_job_class(
+        state,
+        input.job1,
+        input.job1_son,
+        input.job_post,
+        input.jobclassid,
+    )
+    .await?;
+
+    let company = company_repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("common_06272"))?;
+    let com_name = company.name.clone().unwrap_or_default();
+    if com_name.trim().is_empty() {
+        return Err(ApiError::business("common_06272"));
+    }
+    let com_logo = company.logo.clone().unwrap_or_default();
+    let com_x = company.x.clone().unwrap_or_default();
+    let com_y = company.y.clone().unwrap_or_default();
+    let pack = vip_pack(state, user.uid).await?;
+    if edit_id.is_none() {
+        if pack.job_num == 0 {
+            return Err(ApiError::business("api_wxapp_00002"));
         }
-        if s.job_num == 0 {
-            return Err(ApiError::business("model_00056"));
+        if pack.addjobnum == 0 {
+            return Err(ApiError::business("wap_01287"));
         }
     }
-    let company_row = company_repo::find_by_uid(state.db.reader(), user.uid).await?;
-    let looked_up = company_row
-        .as_ref()
-        .and_then(|c| c.name.clone())
-        .unwrap_or_default();
-    let x = company_row
-        .as_ref()
-        .and_then(|c| c.x.clone())
-        .unwrap_or_default();
-    let y = company_row
-        .as_ref()
-        .and_then(|c| c.y.clone())
-        .unwrap_or_default();
-    let resolved_name = match com_name {
-        Some(s) if !s.is_empty() => s,
-        _ => looked_up.as_str(),
-    };
-    let hy = if input.hy != 0 {
-        input.hy
+    if let Some(dup) = job_repo::find_id_by_uid_name_listed(state.db.reader(), user.uid, name).await?
+    {
+        if edit_id != Some(dup) {
+            return Err(ApiError::business("common_00293"));
+        }
+    }
+
+    let use_form_geo = input.provinceid > 0 && input.link_id <= 0;
+    let default_x = if use_form_geo && !input.x.is_empty() {
+        input.x
     } else {
-        company_row.as_ref().map(|c| c.hy).unwrap_or(0)
+        com_x.as_str()
     };
-    let link = overlay_hide(
+    let default_y = if use_form_geo && !input.y.is_empty() {
+        input.y
+    } else {
+        com_y.as_str()
+    };
+    let geo_province = if use_form_geo {
+        input.provinceid
+    } else {
+        company.provinceid
+    };
+    let geo_city = if use_form_geo {
+        input.cityid
+    } else {
+        company.cityid
+    };
+    let geo_three = if use_form_geo {
+        input.three_cityid
+    } else {
+        company.three_cityid
+    };
+    let mut link = overlay_hide(
         resolve_job_link(
             state,
             user.uid,
             input.link_id,
-            input.provinceid,
-            input.cityid,
-            input.three_cityid,
-            x.as_str(),
-            y.as_str(),
+            geo_province,
+            geo_city,
+            geo_three,
+            default_x,
+            default_y,
         )
         .await?,
         input.is_link,
     );
-    let (minsalary, maxsalary) = apply_salary(input.salary_type, input.minsalary, input.maxsalary);
-    let id = job_repo::create(
-        state.db.pool(),
-        job_repo::JobCreate {
-            uid: user.uid,
-            com_name: Some(resolved_name),
-            name: input.name,
-            job1: input.job1,
-            job1_son: input.job1_son,
-            job_post: input.job_post,
-            provinceid: link.provinceid,
-            cityid: link.cityid,
-            three_cityid: link.three_cityid,
-            minsalary,
-            maxsalary,
-            job_type: input.job_type,
-            number: input.number,
-            exp: input.exp,
-            edu: input.edu,
-            description: input.content,
-            welfare: input.wel,
-            sdate: input.sdate,
-            edate: input.edate,
-            did: user.did,
-            x: link.x.as_str(),
-            y: link.y.as_str(),
-            hy,
-            report: input.report,
-            age: input.age,
-            sex: input.sex,
-            marriage: input.marriage,
-            lang: input.lang,
-            is_graduate: input.is_graduate,
-            zp_minage: input.zp_minage,
-            zp_maxage: input.zp_maxage,
-            is_link: link.is_link,
-            link_id: link.link_id,
-            is_message: store_is_message(input.is_message),
-            is_email: store_is_email(input.is_email),
-            exp_req: input.exp_req,
-            edu_req: input.edu_req,
-            sex_req: input.sex_req,
-            minage_req: input.minage_req,
-            maxage_req: input.maxage_req,
-            zp_num: input.number,
-        },
-        now,
-    )
-    .await?;
-    maybe_tblink(state, user.uid, input.is_tblink, &link).await?;
+    if input.is_link > 1 && input.link_id == 0 {
+        return Err(ApiError::business("common_01306"));
+    }
+    if input.link_id > 0 && link.is_link == 1 {
+        link.is_link = 2;
+    }
 
+    let hy = if input.hy != 0 { input.hy } else { company.hy };
+    let job_state = compute_job_state(state, user.uid, company.r_status, company.rating).await?;
+    let listed = listed_job_count(state, user.uid).await?;
+    let mut status = 0;
+    if edit_id.is_none() && listed >= pack.job_num.max(0) as u64 {
+        status = 1;
+    }
+    let now = clock::now_ts();
+    let lock_name = setting_on(state, "joblock").await && edit_id.is_some();
+    let stored_name = if lock_name { None } else { Some(name) };
+
+    let id = if let Some(jid) = edit_id {
+        let existing = job_repo::find_by_id(state.db.reader(), jid)
+            .await?
+            .filter(|j| j.uid == user.uid)
+            .ok_or_else(|| ApiError::business("job_not_found"))?;
+        let name_for_update = if lock_name { None } else { stored_name };
+        let affected = job_repo::update(
+            state.db.pool(),
+            jid,
+            user.uid,
+            job_repo::JobUpdate {
+                name: name_for_update,
+                job1: Some(job1),
+                job1_son: Some(job1_son),
+                job_post: Some(job_post),
+                provinceid: Some(link.provinceid),
+                cityid: Some(link.cityid),
+                three_cityid: Some(link.three_cityid),
+                minsalary: Some(minsalary),
+                maxsalary: Some(maxsalary),
+                job_type: Some(input.job_type),
+                number: Some(input.number),
+                exp: Some(input.exp),
+                edu: Some(input.edu),
+                description: Some(desc),
+                welfare: input.wel,
+                sdate: None,
+                edate: if input.edate > 0 { Some(input.edate) } else { None },
+                hy: Some(hy),
+                report: Some(input.report),
+                age: Some(input.age),
+                sex: Some(input.sex),
+                marriage: Some(input.marriage),
+                lang: Some(input.lang),
+                is_graduate: Some(input.is_graduate),
+                zp_minage: Some(input.zp_minage),
+                zp_maxage: Some(input.zp_maxage),
+                is_link: Some(link.is_link),
+                link_id: Some(link.link_id),
+                is_message: Some(store_is_message(input.is_message)),
+                is_email: Some(store_is_email(input.is_email)),
+                exp_req: Some(input.exp_req),
+                edu_req: Some(input.edu_req),
+                sex_req: Some(input.sex_req),
+                minage_req: Some(input.minage_req),
+                maxage_req: Some(input.maxage_req),
+                zp_num: Some(zp_num),
+                x: Some(link.x.as_str()),
+                y: Some(link.y.as_str()),
+                state: Some(job_state),
+                r_status: Some(company.r_status),
+                com_name: Some(com_name.as_str()),
+                com_logo: Some(com_logo.as_str()),
+                com_provinceid: Some(company.provinceid),
+                pr: Some(company.pr),
+                mun: Some(company.mun),
+                yyzz_status: Some(company.yyzz_status),
+                rating: Some(pack.rating),
+            },
+            now,
+        )
+        .await?;
+        if affected == 0 {
+            return Err(ApiError::business("job_not_found"));
+        }
+        let fav_name = name_for_update.unwrap_or(existing.name.as_str());
+        let _ = job_repo::update_fav_job_name(state.db.pool(), jid, fav_name).await;
+        let _ = job_repo::touch_hotjob(state.db.pool(), user.uid, now).await;
+        jid
+    } else {
+        job_repo::create(
+            state.db.pool(),
+            job_repo::JobCreate {
+                uid: user.uid,
+                com_name: Some(com_name.as_str()),
+                name,
+                job1,
+                job1_son,
+                job_post,
+                provinceid: link.provinceid,
+                cityid: link.cityid,
+                three_cityid: link.three_cityid,
+                minsalary,
+                maxsalary,
+                job_type: input.job_type,
+                number: input.number,
+                exp: input.exp,
+                edu: input.edu,
+                description: Some(desc),
+                welfare: input.wel,
+                sdate: now,
+                edate: input.edate,
+                did: user.did,
+                x: link.x.as_str(),
+                y: link.y.as_str(),
+                hy,
+                report: input.report,
+                age: input.age,
+                sex: input.sex,
+                marriage: input.marriage,
+                lang: input.lang,
+                is_graduate: input.is_graduate,
+                zp_minage: input.zp_minage,
+                zp_maxage: input.zp_maxage,
+                is_link: link.is_link,
+                link_id: link.link_id,
+                is_message: store_is_message(input.is_message),
+                is_email: store_is_email(input.is_email),
+                exp_req: input.exp_req,
+                edu_req: input.edu_req,
+                sex_req: input.sex_req,
+                minage_req: input.minage_req,
+                maxage_req: input.maxage_req,
+                zp_num,
+                state: job_state,
+                status,
+                r_status: company.r_status,
+                com_logo: com_logo.as_str(),
+                com_provinceid: company.provinceid,
+                pr: company.pr,
+                mun: company.mun,
+                yyzz_status: company.yyzz_status,
+                rating: pack.rating,
+            },
+            now,
+        )
+        .await?
+    };
+    if edit_id.is_none() && status == 0 {
+        let _ = gap_extra::insert_company_statis_detail(
+            state.db.pool(),
+            user.uid,
+            1,
+            1,
+            "common_00567",
+            "/v1/mcenter/jobs",
+            client_ip,
+            now,
+        )
+        .await;
+    }
+    maybe_tblink(state, user.uid, input.is_tblink, &link).await?;
+    let _ = company_repo::touch_jobtime(state.db.pool(), user.uid, now).await;
+    let ev = if edit_id.is_some() {
+        "job.update"
+    } else {
+        "job.create"
+    };
     let _ = audit::emit(
         state,
-        AuditEvent::new("job.create", Actor::uid(user.uid).with_ip(client_ip))
+        AuditEvent::new(ev, Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("job:{id}"))
-            .meta(&serde_json::json!({ "name": input.name })),
+            .meta(&serde_json::json!({ "name": name, "state": job_state, "status": status })),
     )
     .await;
-
-    Ok(id)
+    let stored = job_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    Ok(PublishJobResult {
+        id,
+        state: stored.state,
+        status: stored.status,
+    })
 }
 
 // ==================== Update ====================
@@ -374,6 +784,10 @@ pub struct UpdateJobInput<'a> {
     pub maxage_req: Option<i32>,
     pub salary_type: Option<i32>,
     pub is_tblink: Option<i32>,
+    pub zp_num: Option<i32>,
+    pub jobclassid: Option<i32>,
+    pub x: Option<&'a str>,
+    pub y: Option<&'a str>,
 }
 
 pub async fn update(
@@ -382,145 +796,84 @@ pub async fn update(
     id: u64,
     input: UpdateJobInput<'_>,
     client_ip: &str,
-) -> AppResult<()> {
-    user.require_employer()?;
-    let company_row = company_repo::find_by_uid(state.db.reader(), user.uid).await?;
-    let default_x = company_row
-        .as_ref()
-        .and_then(|c| c.x.clone())
-        .unwrap_or_default();
-    let default_y = company_row
-        .as_ref()
-        .and_then(|c| c.y.clone())
-        .unwrap_or_default();
-    let mut provinceid = input.provinceid;
-    let mut cityid = input.cityid;
-    let mut three_cityid = input.three_cityid;
-    let mut is_link = input.is_link;
-    let mut link_id = input.link_id;
-    let mut coords: Option<(String, String)> = None;
-    if let Some(lid) = input.link_id {
-        let link = overlay_hide(
-            resolve_job_link(
-                state,
-                user.uid,
-                lid,
-                input.provinceid.unwrap_or(0),
-                input.cityid.unwrap_or(0),
-                input.three_cityid.unwrap_or(0),
-                default_x.as_str(),
-                default_y.as_str(),
-            )
-            .await?,
-            input.is_link.unwrap_or(0),
-        );
-        provinceid = Some(link.provinceid);
-        cityid = Some(link.cityid);
-        three_cityid = Some(link.three_cityid);
-        is_link = Some(link.is_link);
-        link_id = Some(link.link_id);
-        coords = Some((link.x, link.y));
-    } else if input.is_link == Some(3) {
-        is_link = Some(3);
-    }
-    let (x, y) = match &coords {
-        Some((xs, ys)) => (Some(xs.as_str()), Some(ys.as_str())),
-        None => (None, None),
+) -> AppResult<PublishJobResult> {
+    let existing = job_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
+    let name = input.name.unwrap_or(existing.name.as_str());
+    let lang_owned = input
+        .lang
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| existing.lang.clone().unwrap_or_default());
+    let desc_owned = input
+        .content
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| existing.description.clone().unwrap_or_default());
+    let wel_owned = input.wel.map(|s| s.to_string()).or(existing.welfare.clone());
+    let exp_req = input
+        .exp_req
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| existing.exp_req.clone());
+    let edu_req = input
+        .edu_req
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| existing.edu_req.clone());
+    let x_owned = input
+        .x
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| existing.x.clone().unwrap_or_default());
+    let y_owned = input
+        .y
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| existing.y.clone().unwrap_or_default());
+    let create = CreateJobInput {
+        name,
+        job1: input.job1.unwrap_or(existing.job1),
+        job1_son: input.job1_son.unwrap_or(existing.job1_son),
+        job_post: input.job_post.unwrap_or(existing.job_post),
+        provinceid: input.provinceid.unwrap_or(existing.provinceid),
+        cityid: input.cityid.unwrap_or(existing.cityid),
+        three_cityid: input.three_cityid.unwrap_or(existing.three_cityid),
+        minsalary: input.minsalary.unwrap_or(existing.minsalary),
+        maxsalary: input.maxsalary.unwrap_or(existing.maxsalary),
+        job_type: input.job_type.unwrap_or(existing.r#type),
+        number: input.number.unwrap_or(existing.number),
+        exp: input.exp.unwrap_or(existing.exp),
+        edu: input.edu.unwrap_or(existing.edu),
+        content: Some(desc_owned.as_str()),
+        wel: wel_owned.as_deref(),
+        sdate: input.sdate.unwrap_or(existing.sdate),
+        edate: input.edate.unwrap_or(existing.edate),
+        hy: input.hy.unwrap_or(existing.hy),
+        report: input.report.unwrap_or(existing.report),
+        age: input.age.unwrap_or(existing.age),
+        sex: input.sex.unwrap_or(existing.sex),
+        marriage: input.marriage.unwrap_or(existing.marriage),
+        lang: lang_owned.as_str(),
+        is_graduate: input.is_graduate.unwrap_or(existing.is_graduate),
+        zp_minage: input.zp_minage.unwrap_or(existing.zp_minage),
+        zp_maxage: input.zp_maxage.unwrap_or(existing.zp_maxage),
+        link_id: input.link_id.unwrap_or(existing.link_id),
+        is_link: input.is_link.unwrap_or(existing.is_link),
+        is_message: input.is_message.unwrap_or(existing.is_message),
+        is_email: input.is_email.unwrap_or(existing.is_email),
+        exp_req: exp_req.as_str(),
+        edu_req: edu_req.as_str(),
+        sex_req: input.sex_req.unwrap_or(existing.sex_req),
+        minage_req: input.minage_req.unwrap_or(existing.minage_req),
+        maxage_req: input.maxage_req.unwrap_or(existing.maxage_req),
+        salary_type: input.salary_type.unwrap_or(0),
+        is_tblink: input.is_tblink.unwrap_or(0),
+        zp_num: input.zp_num.unwrap_or(existing.zp_num),
+        jobclassid: input.jobclassid.unwrap_or(0),
+        x: x_owned.as_str(),
+        y: y_owned.as_str(),
     };
-    let (minsalary, maxsalary) = if input.salary_type == Some(1) {
-        (Some(0), Some(0))
-    } else {
-        (input.minsalary, input.maxsalary)
-    };
-    let name = if setting_on(state, "joblock").await {
-        None
-    } else {
-        input.name
-    };
-    let zp_num = input.number;
-    let affected = job_repo::update(
-        state.db.pool(),
-        id,
-        user.uid,
-        job_repo::JobUpdate {
-            name,
-            job1: input.job1,
-            job1_son: input.job1_son,
-            job_post: input.job_post,
-            provinceid,
-            cityid,
-            three_cityid,
-
-            minsalary,
-            maxsalary,
-            job_type: input.job_type,
-            number: input.number,
-            exp: input.exp,
-            edu: input.edu,
-            description: input.content,
-            welfare: input.wel,
-            sdate: input.sdate,
-            edate: input.edate,
-            hy: input.hy,
-            report: input.report,
-            age: input.age,
-            sex: input.sex,
-            marriage: input.marriage,
-            lang: input.lang,
-            is_graduate: input.is_graduate,
-            zp_minage: input.zp_minage,
-            zp_maxage: input.zp_maxage,
-            is_link,
-            link_id,
-            is_message: input.is_message.map(store_is_message),
-            is_email: input.is_email.map(store_is_email),
-            exp_req: input.exp_req,
-            edu_req: input.edu_req,
-            sex_req: input.sex_req,
-            minage_req: input.minage_req,
-            maxage_req: input.maxage_req,
-            zp_num,
-            x,
-            y,
-        },
-        clock::now_ts(),
-    )
-    .await?;
-    if affected == 0 {
-        return Err(ApiError::business("job_not_found"));
-    }
-    if input.is_tblink == Some(1) {
-        if let Some(job) = job_repo::find_by_id(state.db.reader(), id).await? {
-            if job.uid == user.uid {
-                let _ = job_repo::sync_contact_by_uid(
-                    state.db.pool(),
-                    user.uid,
-                    job.link_id,
-                    job.is_link,
-                    job.provinceid,
-                    job.cityid,
-                    job.three_cityid,
-                    job.x.as_deref().unwrap_or(""),
-                    job.y.as_deref().unwrap_or(""),
-                )
-                .await?;
-            }
-        }
-    }
-    let _ = audit::emit(
-        state,
-        AuditEvent::new("job.update", Actor::uid(user.uid).with_ip(client_ip))
-            .target(format!("job:{id}")),
-    )
-    .await;
-    Ok(())
+    save_job(state, user, Some(id), create, client_ip).await
 }
 
 // ==================== List/unlist ====================
-
-fn is_vip(vip_etime: i64, now: i64) -> bool {
-    vip_etime == 0 || vip_etime >= now
-}
 
 pub async fn set_status(
     state: &AppState,
@@ -544,14 +897,14 @@ pub async fn set_status(
         if job.state != 1 {
             return Err(ApiError::business("job_pending"));
         }
-        let now = clock::now_ts();
-        let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
-        let vip_ok = st
-            .as_ref()
-            .map(|s| is_vip(s.vip_etime, now))
-            .unwrap_or(false);
-        if !vip_ok {
-            return Err(ApiError::business("zph_need_vip"));
+        let pack = vip_pack(state, user.uid).await?;
+        if pack.addjobnum == 0 {
+            return Err(ApiError::business("model_00056"));
+        }
+        let listed = listed_job_count(state, user.uid).await?;
+        let extra = if job.status == 0 { 0 } else { 1 };
+        if listed + extra > pack.job_num.max(0) as u64 {
+            return Err(ApiError::business("model_00056"));
         }
     }
     let affected = job_repo::set_status(state.db.pool(), id, user.uid, status).await?;
@@ -569,7 +922,7 @@ pub async fn set_status(
     Ok(())
 }
 
-async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppResult<()> {
+async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32, job_ids: &[u64]) -> AppResult<()> {
     let now = clock::now_ts();
     let st = statis_repo::find_admin(state.db.reader(), uid)
         .await?
@@ -580,13 +933,39 @@ async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppResult<
     if st.rating_type == 2 {
         return Ok(());
     }
-    if st.rating_type == 1 {
-        if !statis_repo::try_consume_breakjob(state.db.pool(), uid, n).await? {
-            return Err(ApiError::business("job_refresh_quota"));
-        }
-        return Ok(());
+    if st.rating_type != 1 {
+        return Err(ApiError::business("job_refresh_quota"));
     }
-    Err(ApiError::business("job_refresh_quota"))
+    let budget = phpyun_models::admin_gap::extra::reserve_refresh_budget(state.db.reader(), uid)
+        .await?;
+    if budget < i64::from(n.max(0)) {
+        return Err(ApiError::business("job_refresh_quota"));
+    }
+    let free_left = (budget - i64::from(st.breakjob_num.max(0))).max(0);
+    let mut remain_free = free_left;
+    let mut paid = 0i32;
+    for _ in 0..n.max(0) {
+        if remain_free > 0 {
+            remain_free -= 1;
+        } else {
+            paid += 1;
+        }
+    }
+    if paid > 0 && !statis_repo::try_consume_breakjob(state.db.pool(), uid, paid).await? {
+        return Err(ApiError::business("job_refresh_quota"));
+    }
+    let mut remain_free = free_left;
+    for id in job_ids.iter().take(n.max(0) as usize) {
+        let free = if remain_free > 0 {
+            remain_free -= 1;
+            1
+        } else {
+            2
+        };
+        let _ = job_repo::insert_refresh_log(state.db.pool(), uid, *id, now, free, i32::from(free == 1))
+            .await;
+    }
+    Ok(())
 }
 
 // ==================== Refresh ====================
@@ -602,7 +981,7 @@ pub async fn refresh(
         .await?
         .filter(|j| j.uid == user.uid)
         .ok_or_else(|| ApiError::business("job_not_found"))?;
-    consume_refresh_quota(state, user.uid, 1).await?;
+    consume_refresh_quota(state, user.uid, 1, &[id]).await?;
     let affected = job_repo::refresh(state.db.pool(), id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::business("job_not_found"));
@@ -659,7 +1038,7 @@ pub async fn batch_refresh(
             affected: 0,
         });
     }
-    consume_refresh_quota(state, user.uid, i32::try_from(ids.len()).unwrap_or(i32::MAX)).await?;
+    consume_refresh_quota(state, user.uid, i32::try_from(ids.len()).unwrap_or(i32::MAX), ids).await?;
     let now = clock::now_ts();
     let mut total: u64 = 0;
     for id in ids {
@@ -747,16 +1126,16 @@ pub struct MyJobsPage {
 pub async fn list_mine(
     state: &AppState,
     user: &AuthenticatedUser,
-    state_filter: Option<i32>,
+    w: Option<i32>,
     page: Pagination,
 ) -> AppResult<MyJobsPage> {
     user.require_employer()?;
     let (total_res, list_res) = tokio::join!(
-        job_repo::count_own(state.db.reader(), user.uid, state_filter),
-        job_repo::list_own(
+        job_repo::count_own_w(state.db.reader(), user.uid, w),
+        job_repo::list_own_w(
             state.db.reader(),
             user.uid,
-            state_filter,
+            w,
             page.offset,
             page.limit
         ),
@@ -767,9 +1146,13 @@ pub async fn list_mine(
     })
 }
 
-/// My jobs grouped count by state (used by the badge tabs at the top of job management).
-/// `state` values match `phpyun_company_job.state`: 0 = recruiting / 1 = pending review / 2 = unlisted.
+/// PHP `job.class.php` tab counters: w0 待审 / w1 招聘中 / w3 未过 / w4 下架 / w5 全部.
 pub struct JobStateCounts {
+    pub w0: u64,
+    pub w1: u64,
+    pub w3: u64,
+    pub w4: u64,
+    pub w5: u64,
     pub online: u64,
     pub pending: u64,
     pub closed: u64,
@@ -785,17 +1168,26 @@ pub async fn counts_by_state(
 ) -> AppResult<JobStateCounts> {
     user.require_employer()?;
     let db = state.db.reader();
-    let (a, b, c, st) = tokio::join!(
-        job_repo::count_own(db, user.uid, Some(0)),
-        job_repo::count_own(db, user.uid, Some(1)),
-        job_repo::count_own(db, user.uid, Some(2)),
+    let (tabs, st) = tokio::join!(
+        job_repo::count_member_tabs(db, user.uid),
         statis_repo::find_admin(db, user.uid),
     );
+    let tabs = tabs?;
     let st = st?;
+    let w0 = tabs.w0.max(0) as u64;
+    let w1 = tabs.w1.max(0) as u64;
+    let w3 = tabs.w3.max(0) as u64;
+    let w4 = tabs.w4.max(0) as u64;
+    let w5 = tabs.w5.max(0) as u64;
     Ok(JobStateCounts {
-        online: a?,
-        pending: b?,
-        closed: c?,
+        w0,
+        w1,
+        w3,
+        w4,
+        w5,
+        online: w1,
+        pending: w0,
+        closed: w4,
         breakjob_num: st.as_ref().map(|s| s.breakjob_num).unwrap_or(0),
         top_num: st.as_ref().map(|s| s.top_num).unwrap_or(0),
         rec_num: st.as_ref().map(|s| s.rec_num).unwrap_or(0),
@@ -1114,4 +1506,43 @@ fn reserve_window_invalid(s_time: &str, e_time: &str) -> bool {
         h * 60 + m
     };
     parse(s_time) >= parse(e_time)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{strip_tags, validate_age, validate_salary};
+
+    #[test]
+    fn salary_requires_min_when_not_negotiable() {
+        let err = validate_salary(false, 0, 0, 0).unwrap_err();
+        assert_eq!(err.key(), "member_com_00238");
+    }
+
+    #[test]
+    fn salary_negotiable_needs_switch() {
+        assert!(validate_salary(false, 1, 0, 0).is_err());
+        assert_eq!(validate_salary(true, 1, 8, 9).unwrap(), (0, 0));
+    }
+
+    #[test]
+    fn salary_max_must_exceed_min() {
+        assert!(validate_salary(true, 0, 3000, 3000).is_err());
+        assert!(validate_salary(true, 0, 3000, 2000).is_err());
+        assert_eq!(validate_salary(true, 0, 3000, 5000).unwrap(), (3000, 5000));
+        assert_eq!(validate_salary(true, 0, 3000, 0).unwrap(), (3000, 0));
+    }
+
+    #[test]
+    fn age_floor_is_sixteen() {
+        assert!(validate_age(0).is_ok());
+        assert!(validate_age(16).is_ok());
+        assert!(validate_age(15).is_err());
+        assert!(validate_age(100).is_err());
+    }
+
+    #[test]
+    fn strip_tags_drops_html() {
+        assert_eq!(strip_tags("<p>hello <b>x</b></p>").trim(), "hello x");
+        assert!(strip_tags("<p></p>").trim().is_empty());
+    }
 }
