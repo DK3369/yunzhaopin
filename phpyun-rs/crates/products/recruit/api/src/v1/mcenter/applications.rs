@@ -18,6 +18,7 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/applications", post(list_received))
+        .route("/applications/overview", post(overview))
         .route("/applications/state-counts", post(state_counts))
         .route("/applications/browse", post(mark_browsed))
         .route("/applications/batch-read", post(batch_read))
@@ -27,7 +28,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 /// Filters of the PHP employer screen `member/com/model/hr.class.php`.
-#[derive(Debug, Deserialize, Validate, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema, Default)]
 pub struct ApplicationsQuery {
     /// Show only unread (unbrowsed)
     #[serde(default)]
@@ -186,9 +187,19 @@ pub async fn state_counts(
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<ApplicationsQuery>,
 ) -> AppResult<ApiResponse<StateCounts>> {
-    let counts = apply_service::state_counts_for_company(&state, &user, q.to_filter()).await?;
+    Ok(ApiResponse::data(
+        load_state_counts(&state, &user, q.to_filter()).await?,
+    ))
+}
+
+async fn load_state_counts(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    filter: ApplyFilter,
+) -> AppResult<StateCounts> {
+    let counts = apply_service::state_counts_for_company(state, user, filter).await?;
     let at = |k: i32| counts.get(&k).copied().unwrap_or(0);
-    Ok(ApiResponse::data(StateCounts {
+    Ok(StateCounts {
         total: counts.values().sum(),
         pending: at(1),
         viewed: at(2),
@@ -196,6 +207,40 @@ pub async fn state_counts(
         unsuitable: at(4),
         unreachable: at(5),
         hired: at(7),
+    })
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ApplicationsOverview {
+    #[schema(value_type = Object)]
+    pub applications: Paged<ApplicantSummary>,
+    pub counts: StateCounts,
+}
+
+/// Employer application list plus tab counts in one round-trip.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/applications/overview",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ApplicationsQuery,
+    responses((status = 200, description = "ok", body = ApplicationsOverview))
+)]
+pub async fn overview(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<ApplicationsQuery>,
+) -> AppResult<ApiResponse<ApplicationsOverview>> {
+    let filter = q.to_filter();
+    let (list, counts) = tokio::join!(
+        apply_service::list_for_company(&state, &user, filter.clone(), page),
+        load_state_counts(&state, &user, filter),
+    );
+    let r = list?;
+    Ok(ApiResponse::data(ApplicationsOverview {
+        applications: Paged::from_listing(r.list, r.total, page),
+        counts: counts?,
     }))
 }
 

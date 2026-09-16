@@ -17,6 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs", post(create))
         .route("/jobs/check", post(publish_check))
         .route("/jobs/list", post(list_mine))
+        .route("/jobs/overview", post(overview))
         .route("/jobs/counts", post(counts_by_state))
         .route("/jobs/detail", post(detail))
         .route("/jobs/update", post(update))
@@ -511,20 +512,8 @@ pub struct JobCountsView {
     pub urgent_num: i32,
 }
 
-/// My jobs grouped by state (used for job management tab badges)
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/jobs/counts",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    responses((status = 200, description = "ok", body = JobCountsView))
-)]
-pub async fn counts_by_state(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<JobCountsView>> {
-    let c = job_mgmt_service::counts_by_state(&state, &user).await?;
-    Ok(ApiResponse::data(JobCountsView {
+pub fn job_counts_view(c: job_mgmt_service::JobStateCounts) -> JobCountsView {
+    JobCountsView {
         w0: c.w0,
         w1: c.w1,
         w3: c.w3,
@@ -538,7 +527,23 @@ pub async fn counts_by_state(
         top_num: c.top_num,
         rec_num: c.rec_num,
         urgent_num: c.urgent_num,
-    }))
+    }
+}
+
+/// My jobs grouped by state (used for job management tab badges)
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/counts",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = JobCountsView))
+)]
+pub async fn counts_by_state(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<JobCountsView>> {
+    let c = job_mgmt_service::counts_by_state(&state, &user).await?;
+    Ok(ApiResponse::data(job_counts_view(c)))
 }
 
 // ==================== Status / Refresh / Delete ====================
@@ -596,7 +601,7 @@ pub async fn refresh(
 
 // ==================== List + Detail ====================
 
-#[derive(Debug, Deserialize, Validate, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema, Default)]
 pub struct MyJobsQuery {
     /// PHP member `w`: 1 招聘中 / 0 待审 / 3 未过 / 4 下架 / 5 全部.
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
@@ -642,6 +647,50 @@ pub async fn list_mine(
         page.page,
         page.page_size,
     )))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct JobsOverview {
+    #[schema(value_type = Object)]
+    pub jobs: Paged<MyJobSummary>,
+    pub counts: JobCountsView,
+}
+
+/// Employer job list plus tab counts in one round-trip.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/jobs/overview",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = MyJobsQuery,
+    responses((status = 200, description = "ok", body = JobsOverview))
+)]
+pub async fn overview(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<MyJobsQuery>,
+) -> AppResult<ApiResponse<JobsOverview>> {
+    let w = q.w.or(q.state).unwrap_or(1);
+    let (r, counts) = tokio::join!(
+        job_mgmt_service::list_mine(&state, &user, Some(w), page),
+        job_mgmt_service::counts_by_state(&state, &user),
+    );
+    let r = r?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let now = phpyun_core::clock::now_ts();
+    Ok(ApiResponse::data(JobsOverview {
+        jobs: Paged::new(
+            r.list
+                .into_iter()
+                .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+                .collect(),
+            r.total,
+            page.page,
+            page.page_size,
+        ),
+        counts: job_counts_view(counts?),
+    }))
 }
 
 /// Employer views the details of one of their own jobs

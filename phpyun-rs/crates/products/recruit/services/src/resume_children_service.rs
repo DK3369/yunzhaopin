@@ -1028,3 +1028,43 @@ pub async fn get_full_bundle(
     );
     Ok((e?, ed?, w?, p?, s?, tr?, c?, o?))
 }
+
+/// Nine child tables for the member-center editor (includes language, which
+/// `get_full_bundle` skips because the public resume detail never showed it).
+pub struct ChildrenBundle {
+    pub expects: Vec<expect::Expect>,
+    pub edus: Vec<edu::Edu>,
+    pub works: Vec<work::Work>,
+    pub projects: Vec<project::Project>,
+    pub skills: Vec<skill::Skill>,
+    pub languages: Vec<language::Language>,
+    pub trainings: Vec<training::Training>,
+    pub certs: Vec<cert::Cert>,
+    pub others: Vec<other::Other>,
+}
+
+pub async fn get_children_bundle(state: &AppState, uid: u64) -> AppResult<ChildrenBundle> {
+    let db = state.db.reader();
+    let (e, ed, w, p, s, lang, tr, c, o) = tokio::join!(
+        expect::list_by_uid(db, uid),
+        edu::list_by_uid(db, uid),
+        work::list_by_uid(db, uid),
+        project::list_by_uid(db, uid),
+        skill::list_by_uid(db, uid),
+        language::list_by_uid(db, uid),
+        training::list_by_uid(db, uid),
+        cert::list_by_uid(db, uid),
+        other::list_by_uid(db, uid),
+    );
+    Ok(ChildrenBundle {
+        expects: e?,
+        edus: ed?,
+        works: w?,
+        projects: p?,
+        skills: s?,
+        languages: lang?,
+        trainings: tr?,
+        certs: c?,
+        others: o?,
+    })
+}

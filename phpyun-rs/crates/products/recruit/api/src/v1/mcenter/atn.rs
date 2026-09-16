@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/follows", post(toggle))
@@ -40,12 +41,14 @@ pub struct ToggleResp {
 }
 
 /// Toggle follow — followed ↔ unfollowed.
+#[deprecated(note = "use /v1/mcenter/favorites")]
 #[utoipa::path(
     post,
     path = "/v1/mcenter/follows",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = FollowToggleForm,
+    description = "即将失效：请改用 POST /v1/mcenter/favorites。映射：target_kind=2(企业)→kind=2，target_kind=1(用户)→kind=3，target_uid→target_id",
     responses(
         (status = 200, description = "ok", body = ToggleResp),
         (status = 400, description = "Invalid kind / cannot follow yourself"),
@@ -105,12 +108,14 @@ pub struct ListQuery {
 }
 
 /// Targets I am following (filtered by kind).
+#[deprecated(note = "use /v1/mcenter/favorites/list")]
 #[utoipa::path(
     post,
     path = "/v1/mcenter/follows/list",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = ListQuery,
+    description = "即将失效：请改用 POST /v1/mcenter/favorites/list。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3",
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_following(
@@ -152,12 +157,14 @@ pub async fn list_followers(
 }
 
 /// Cheap probe used by frontend to render the follow-button state.
+#[deprecated(note = "use /v1/mcenter/favorites/exists")]
 #[utoipa::path(
     post,
     path = "/v1/mcenter/follows/exists",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = KindTargetUidBody,
+    description = "即将失效：请改用 POST /v1/mcenter/favorites/exists。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3，target_uid→target_id",
     responses((status = 200, description = "ok"))
 )]
 pub async fn exists(

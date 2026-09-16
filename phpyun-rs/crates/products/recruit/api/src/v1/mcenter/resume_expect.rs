@@ -10,6 +10,7 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/expects", post(create))
@@ -133,11 +134,13 @@ fn de_loose_i32_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<i32
 }
 
 /// List job expectations
+#[deprecated(note = "use /v1/mcenter/resume/bundle")]
 #[utoipa::path(
     post,
     path = "/v1/mcenter/resume/expects/list",
     tag = "mcenter",
     security(("bearer" = [])),
+    description = "即将失效：请改用 POST /v1/mcenter/resume/bundle",
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(

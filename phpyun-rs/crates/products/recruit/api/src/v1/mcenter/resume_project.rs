@@ -10,6 +10,7 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/projects", post(create))
@@ -53,11 +54,13 @@ pub struct ProjectForm {
     pub status: Option<i32>,
 }
 
+#[deprecated(note = "use /v1/mcenter/resume/bundle")]
 #[utoipa::path(
     post,
     path = "/v1/mcenter/resume/projects/list",
     tag = "mcenter",
     security(("bearer" = [])),
+    description = "即将失效：请改用 POST /v1/mcenter/resume/bundle",
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(

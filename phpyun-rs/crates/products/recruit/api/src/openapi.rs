@@ -137,6 +137,52 @@ impl Modify for UniqueOperationId {
     }
 }
 
+/// Append a generated "即将失效" index to `info.description` from operations
+/// marked `deprecated: true`.
+pub struct DeprecatedIndex;
+
+impl Modify for DeprecatedIndex {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        use utoipa::openapi::Deprecated;
+        let mut paths: Vec<String> = openapi.paths.paths.keys().cloned().collect();
+        paths.sort();
+        let mut lines = Vec::new();
+        for path in paths {
+            let Some(item) = openapi.paths.paths.get(&path) else {
+                continue;
+            };
+            let mut push = |method: &str, op: Option<&utoipa::openapi::path::Operation>| {
+                if let Some(op) = op {
+                    if op.deprecated == Some(Deprecated::True) {
+                        let desc = op.description.as_deref().unwrap_or("").trim();
+                        if desc.is_empty() {
+                            lines.push(format!("- `{method} {path}`"));
+                        } else {
+                            lines.push(format!("- `{method} {path}` — {desc}"));
+                        }
+                    }
+                }
+            };
+            push("GET", item.get.as_ref());
+            push("POST", item.post.as_ref());
+            push("PUT", item.put.as_ref());
+            push("DELETE", item.delete.as_ref());
+            push("PATCH", item.patch.as_ref());
+        }
+        if lines.is_empty() {
+            return;
+        }
+        let extra = format!(
+            "\n\n## 即将失效（仍注册，新集成勿用）\n\n{}\n",
+            lines.join("\n")
+        );
+        match openapi.info.description.as_mut() {
+            Some(desc) => desc.push_str(&extra),
+            None => openapi.info.description = Some(extra),
+        }
+    }
+}
+
 // ==================== V1 ====================
 
 #[derive(OpenApi)]
@@ -144,7 +190,7 @@ impl Modify for UniqueOperationId {
     info(
         title = "PHPYun API v1",
         version = "1.0.0",
-        description = "PHPYun WAP API v1 (stable)\n\n即将失效（仍注册，新集成勿用）：\n- POST /v1/mcenter/company/products*、/company/news* → POST /v1/mcenter/company-contents/*（body.kind=product|news）\n- GET/POST /v1/wap/dict/cities* → /v1/wap/regions*"
+        description = "PHPYun WAP API v1 (stable)"
     ),
     servers(
         (url = "/yapi", description = "Nginx proxy (dev.test/yapi → 127.0.0.1:3000)"),
@@ -208,6 +254,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::company::update_mine,
         // mcenter: jobs (employer CRUD)
         v1::mcenter::jobs::list_mine,
+        v1::mcenter::jobs::overview,
         v1::mcenter::jobs::publish_check,
         v1::mcenter::jobs::create,
         v1::mcenter::jobs::detail,
@@ -239,6 +286,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::apply::delete_mine,
         // mcenter: applications (employer view)
         v1::mcenter::applications::list_received,
+        v1::mcenter::applications::overview,
         v1::mcenter::applications::state_counts,
         v1::mcenter::applications::mark_browsed,
         v1::mcenter::applications::batch_read,
@@ -257,6 +305,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::resume_expect::create,
         v1::mcenter::resume_expect::update,
         // v1::mcenter::resume_expect::remove, // removed
+        v1::mcenter::resume_bundle::bundle,
         v1::mcenter::resume_edu::list,
         v1::mcenter::resume_edu::create,
         v1::mcenter::resume_edu::update,
@@ -411,6 +460,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::sign::sign,
         v1::mcenter::sign::status,
         v1::mcenter::dashboard::counts,
+        v1::mcenter::dashboard::dashboard_full,
         // wap: company sub (products + news)
         v1::wap::company_sub::list_products,
         v1::wap::company_sub::product_detail,
@@ -664,6 +714,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::company_skin::tpl_apply,
         v1::mcenter::company_skin::tpl_list,
         v1::mcenter::dashboard::com_counts,
+        v1::mcenter::dashboard::com_dashboard_full,
         v1::mcenter::integral::consumes,
         v1::mcenter::jobs::counts_by_state,
         v1::mcenter::part::com_applies,
@@ -792,6 +843,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::password::ChangePasswordForm,
             v1::mcenter::oauth_bindings::BindingsData,
             v1::mcenter::resume::ResumeData,
+            v1::mcenter::resume_bundle::ResumeBundle,
             v1::mcenter::resume::UpdateResumeForm,
             v1::mcenter::resume::UpdateStatusForm,
             v1::mcenter::company::CompanyData,
@@ -805,6 +857,8 @@ impl Modify for UniqueOperationId {
             v1::mcenter::jobs::PublishGapView,
             v1::mcenter::jobs::PublishCheckView,
             v1::mcenter::jobs::JobCountsView,
+            v1::mcenter::jobs::MyJobsQuery,
+            v1::mcenter::jobs::JobsOverview,
             v1::mcenter::jobs::MyJobSummary,
             v1::mcenter::jobs::BatchIdsForm,
             v1::mcenter::jobs::PromoteQuoteForm,
@@ -832,6 +886,8 @@ impl Modify for UniqueOperationId {
             v1::mcenter::apply::ApplyCreated,
             v1::mcenter::apply::MyApplySummary,
             v1::mcenter::applications::ApplicantSummary,
+            v1::mcenter::applications::ApplicationsQuery,
+            v1::mcenter::applications::ApplicationsOverview,
             v1::mcenter::applications::StateCounts,
             v1::mcenter::favorites::AddFavoriteForm,
             v1::mcenter::favorites::FavoriteListForm,
@@ -963,6 +1019,8 @@ impl Modify for UniqueOperationId {
             v1::mcenter::sign::SignResp,
             v1::mcenter::sign::StatusResp,
             v1::mcenter::dashboard::DashboardView,
+            v1::mcenter::dashboard::DashboardFull,
+            v1::mcenter::dashboard::ComDashboardFull,
             v1::wap::company_sub::ProductSummary,
             v1::wap::company_sub::ProductDetail,
             v1::wap::company_sub::NewsSummary,
@@ -1113,7 +1171,7 @@ impl Modify for UniqueOperationId {
             phpyun_core::dto::Toggled,
         ),
     ),
-    modifiers(&SecurityAddon, &UniqueOperationId, &TagCounts),
+    modifiers(&SecurityAddon, &UniqueOperationId, &TagCounts, &DeprecatedIndex),
     tags(
         (name = "auth", description = "Login / Register / Refresh / Logout / Captcha / OAuth"),
         (name = "upload", description = "File upload"),

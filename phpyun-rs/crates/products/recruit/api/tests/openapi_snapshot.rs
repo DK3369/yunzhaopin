@@ -83,3 +83,32 @@ fn v1_operation_ids_are_unique() {
     sorted.dedup();
     assert_eq!(sorted.len(), ids.len(), "duplicate operationId in v1 spec");
 }
+
+#[test]
+fn v1_deprecated_ops_name_replacement() {
+    use utoipa::openapi::Deprecated;
+    let api = v1_openapi();
+    let mut missing = Vec::new();
+    for (path, item) in &api.paths.paths {
+        for (method, op) in [
+            ("GET", item.get.as_ref()),
+            ("POST", item.post.as_ref()),
+            ("PUT", item.put.as_ref()),
+            ("DELETE", item.delete.as_ref()),
+            ("PATCH", item.patch.as_ref()),
+        ] {
+            let Some(op) = op else { continue };
+            if op.deprecated != Some(Deprecated::True) {
+                continue;
+            }
+            let desc = op.description.as_deref().unwrap_or("");
+            if !desc.contains("改用") {
+                missing.push(format!("{method} {path}"));
+            }
+        }
+    }
+    assert!(
+        missing.is_empty(),
+        "deprecated operations missing replacement text 「改用」: {missing:?}"
+    );
+}

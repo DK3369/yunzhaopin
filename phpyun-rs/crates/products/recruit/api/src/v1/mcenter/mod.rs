@@ -47,6 +47,7 @@ pub mod referrals;
 pub mod remarks;
 pub mod reports;
 pub mod resume;
+pub mod resume_bundle;
 pub mod resume_cert;
 pub mod resume_downloads;
 pub mod resume_edu;
@@ -87,6 +88,7 @@ pub fn router() -> Router<AppState> {
         .merge(password::routes())
         .merge(oauth_bindings::routes())
         .merge(resume::routes())
+        .merge(resume_bundle::routes())
         .merge(resume_expect::routes())
         .merge(resume_edu::routes())
         .merge(resume_work::routes())

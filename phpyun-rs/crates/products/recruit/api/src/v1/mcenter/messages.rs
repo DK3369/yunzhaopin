@@ -200,20 +200,27 @@ pub async fn unread_summary(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiResponse<UnreadSummary>> {
+    Ok(ApiResponse::data(load_unread_summary(&state, &user).await))
+}
+
+pub(crate) async fn load_unread_summary(
+    state: &AppState,
+    user: &AuthenticatedUser,
+) -> UnreadSummary {
     let (messages, broadcasts, warnings) = tokio::join!(
-        message_service::unread_count(&state, &user),
-        broadcast_service::unread_count(&state, &user),
-        warning_service::unread_count(&state, &user),
+        message_service::unread_count(state, user),
+        broadcast_service::unread_count(state, user),
+        warning_service::unread_count(state, user),
     );
     let messages = messages.unwrap_or(0);
     let chat = 0;
     let broadcasts = broadcasts.unwrap_or(0);
     let warnings = warnings.unwrap_or(0);
-    Ok(ApiResponse::data(UnreadSummary {
+    UnreadSummary {
         messages,
         chat,
         broadcasts,
         warnings,
         total: messages + chat + broadcasts + warnings,
-    }))
+    }
 }

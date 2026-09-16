@@ -42,6 +42,7 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/dict/company-sizes",
 ];
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     // Two cities routes are explicitly deprecated; we still register them so
     // existing clients stay green while they migrate to /v1/wap/regions.
@@ -147,6 +148,8 @@ pub struct InitJobs {
     pub job_types_user: Vec<DictItem>,
     pub company_natures: Vec<DictItem>,
     pub company_sizes: Vec<DictItem>,
+    pub marriages: Vec<DictItem>,
+    pub langs: Vec<DictItem>,
     /// `'1'` = show Google on PC/H5 login. Empty / `'0'` = hide.
     pub sy_googlelogin: String,
     /// `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide.
@@ -161,9 +164,14 @@ pub struct InitJobs {
 )]
 pub async fn initjobs(State(state): State<AppState>) -> AppResult<ApiResponse<InitJobs>> {
     let lang = current_lang();
-    let lists = dict_service::public_lists(&state).await?;
-    let countries = country_service::list_all(&state)
-        .await?
+    let (lists, dicts, countries) = tokio::join!(
+        dict_service::public_lists(&state),
+        dict_service::get(&state),
+        country_service::list_all(&state),
+    );
+    let lists = lists?;
+    let dicts = dicts?;
+    let countries = countries?
         .iter()
         .map(|c| country_to_view(c, lang))
         .collect();
@@ -187,6 +195,8 @@ pub async fn initjobs(State(state): State<AppState>) -> AppResult<ApiResponse<In
         },
         company_natures: named_cloned(&lists.company_natures),
         company_sizes: named_cloned(&lists.company_sizes),
+        marriages: named_items(dicts.comclass_by_variable("job_marriage")),
+        langs: named_items(dicts.comclass_by_variable("job_lang")),
         sy_googlelogin: lists.sy_googlelogin.clone(),
         sy_facebooklogin: lists.sy_facebooklogin.clone(),
     }))
@@ -390,10 +400,12 @@ pub async fn reports(
 }
 
 /// Marital requirement — PHP `$comdata.job_marriage`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/marriages",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.marriages）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn marriages(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -404,10 +416,12 @@ pub async fn marriages(State(state): State<AppState>) -> AppResult<ApiResponse<V
 }
 
 /// Language requirement — PHP `$comdata.job_lang`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/langs",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.langs）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn langs(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {

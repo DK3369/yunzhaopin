@@ -12,6 +12,7 @@
 /v1/mcenter/applications/browse
 /v1/mcenter/applications/delete
 /v1/mcenter/applications/invite
+/v1/mcenter/applications/overview
 /v1/mcenter/applications/state
 /v1/mcenter/applications/state-counts
 /v1/mcenter/apply
@@ -26,6 +27,7 @@
 /v1/mcenter/cert/mobile/send
 /v1/mcenter/cert/mobile/verify
 /v1/mcenter/com-dashboard
+/v1/mcenter/com-dashboard/full
 /v1/mcenter/com-part-applications
 /v1/mcenter/com-part-applications/status
 /v1/mcenter/com-parts
@@ -78,6 +80,7 @@
 /v1/mcenter/crm-reports/delete
 /v1/mcenter/crm-reports/list
 /v1/mcenter/dashboard
+/v1/mcenter/dashboard/full
 /v1/mcenter/dashboard/year-report
 /v1/mcenter/entrust
 /v1/mcenter/entrust-records/delete
@@ -133,6 +136,7 @@
 /v1/mcenter/jobs/counts
 /v1/mcenter/jobs/detail
 /v1/mcenter/jobs/list
+/v1/mcenter/jobs/overview
 /v1/mcenter/jobs/promote
 /v1/mcenter/jobs/promote/close
 /v1/mcenter/jobs/promote/quote
@@ -213,6 +217,7 @@
 /v1/mcenter/resume-tpls
 /v1/mcenter/resume-tpls/apply
 /v1/mcenter/resume-tpls/buy
+/v1/mcenter/resume/bundle
 /v1/mcenter/resume/certs
 /v1/mcenter/resume/certs/list
 /v1/mcenter/resume/certs/update
@@ -436,9 +441,9 @@
 /v1/wap/questions
 /v1/wap/questions/answers
 /v1/wap/questions/detail
+/v1/wap/rankings
 /v1/wap/ratings/list
 /v1/wap/ratings/summary
-/v1/wap/rankings
 /v1/wap/redeem/classes
 /v1/wap/redeem/rewards
 /v1/wap/redeem/rewards/detail
