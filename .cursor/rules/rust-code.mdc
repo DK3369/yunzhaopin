@@ -18,4 +18,4 @@ handlers / api-admin **禁止** `sqlx`、`redis`、`reqwest`、业务规则。SQ
 
 ## 编译 / 重启
 
-`ops/restart.sh rust --build`。手工：`TMPDIR=/var/tmp/cargo-tmp CARGO_TARGET_DIR=phpyun-rs/target cargo build -p phpyun-rs --offline -j 1`，然后 `sudo systemctl restart test-jobs-phpyun-rs-3003`。不要起 `:3000`。reqwest 保持 rustls + ring。
+`ops/restart.sh rust --build`。手工：`TMPDIR=/var/tmp/cargo-tmp CARGO_TARGET_DIR=phpyun-rs/target cargo build -p phpyun-rs --offline -j 1`，然后 `sudo systemctl restart test-jobs-phpyun-rs-3003`。只保留 `phpyun-rs/target`，不要再建 `target-link`。磁盘紧时删 `target-link`、`target/debug/incremental`、`target/release`，不要 `cargo clean`。不要起 `:3000`。reqwest 保持 rustls + ring。

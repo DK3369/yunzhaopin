@@ -1,0 +1,4 @@
+# 只保留这一份产物。systemd ExecStart 是 target/debug/phpyun-rs。
+# 不要再设 CARGO_TARGET_DIR=target-link（那是 2026-08 旧目录，二进制曾叫 app）。
+[build]
+target-dir = "target"

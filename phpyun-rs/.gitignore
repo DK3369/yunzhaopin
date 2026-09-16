@@ -1,5 +1,6 @@
 # Rust build artifacts
 /target/
+# 旧编译目录（二进制曾叫 app），不要再建；现网只用 /target/
 /target-link/
 # Environment configuration is intentionally versioned for this deployment.
 /dist/

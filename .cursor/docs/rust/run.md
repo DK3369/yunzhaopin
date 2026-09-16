@@ -41,6 +41,23 @@ unit 的 `ExecStart` 是 **debug** binary：`phpyun-rs/target/debug/phpyun-rs`�
 
 公网：nginx `/yapi/` `/callback/` `/v1/` → `:3003`。nginx `/` 与 `/admin/` → site `:3001`。`RUST_API_URL` 必须是 `http://127.0.0.1:3003`。
 
+## 编译产物（`target` vs `target-link`）
+
+| 目录 | 用途 |
+|---|---|
+| `phpyun-rs/target` | **现网唯一产物目录**。`CARGO_TARGET_DIR`、`.cargo/config.toml`、systemd `ExecStart` 都指这里的 `target/debug/phpyun-rs`。 |
+| `phpyun-rs/target-link` | **旧目录，不要再建**。2026-08 留下的第二份 debug，二进制还叫 `app`，现网不用。 |
+
+这台机约 8G RAM，链接容易 OOM，所以 **`-j 1`**、`profile.dev` 只用 `debug = "line-tables-only"`。debug 增量缓存会自己涨到几十 G；磁盘紧时只删下面这些，**不要** `cargo clean`（会逼全量重编，systemd 还指着 `target/debug/phpyun-rs`）：
+
+```bash
+rm -rf /www/wwwroot/zzzz.com/phpyun-rs/target-link
+rm -rf /www/wwwroot/zzzz.com/phpyun-rs/target/debug/incremental
+rm -rf /www/wwwroot/zzzz.com/phpyun-rs/target/release
+```
+
+下次 `ops/restart.sh rust --build` 会慢一截（重做增量），不必从零编依赖。
+
 ## 验证改接口
 
 - `php` 不涉及；Rust：`php -l` 无对应项，用 `cargo build -p phpyun-rs --offline -j 1`。
