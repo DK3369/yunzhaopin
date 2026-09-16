@@ -151,7 +151,6 @@ pub mod region_service;
 pub mod registration_service;
 pub mod remark_service;
 pub mod report_service;
-pub mod rating_info_service;
 pub mod resume_children_service;
 pub mod resume_download_service;
 pub mod resume_out_service;
