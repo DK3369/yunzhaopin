@@ -503,6 +503,141 @@ html.force-pc .site-h5 {
     color: #666;
     line-height: 1.5;
   }
+  .site-h5 .newzphshow_tit ul li {
+    width: auto;
+    flex: 1;
+    margin-right: 0.08rem;
+    font-size: 0.32rem;
+    padding: 0.1rem 0.08rem;
+  }
+  .site-h5 a.wap_search_headerqx {
+    display: block;
+  }
+  .site-h5 .wap_search_text input {
+    width: 100%;
+    height: 0.88rem;
+    border: 0;
+    background: transparent;
+    font-size: 0.373333rem;
+  }
+  .site-h5 .wap_search_hbth input {
+    color: #fff;
+    width: 1.6rem;
+    height: 0.7rem;
+    border: 0;
+    background: none;
+  }
+  .site-h5 .search-h5-scopes {
+    padding: 0 0.32rem 0.16rem;
+    background: #fff;
+  }
+  .site-h5 .search-h5-scopes .search_history_tag.on {
+    background: #2778f8;
+    color: #fff;
+  }
+  .site-h5 .com_new_contnet_box .form input,
+  .site-h5 .com_new_contnet_box .form select,
+  .site-h5 .com_new_contnet_box .form textarea,
+  .site-h5 .newzphshow_p .form input,
+  .site-h5 .newzphshow_p .form select {
+    font-size: 0.37rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.24rem;
+    margin: 0.12rem 0;
+    border: 1px solid #eee;
+    border-radius: 0.08rem;
+  }
+  .site-h5 .com_new_contnet_box .form button {
+    font-size: 0.37rem;
+    box-sizing: border-box;
+    padding: 0.24rem 0.4rem;
+    margin: 0.12rem 0.08rem 0.12rem 0;
+    border: 0;
+    border-radius: 0.08rem;
+    background: #2778f8;
+    color: #fff;
+    width: auto;
+  }
+  .site-h5 .tiny_cz_sx,
+  .site-h5 .tiny_cz {
+    display: inline-block;
+    margin: 0.12rem 0.16rem 0.12rem 0;
+  }
+  .site-h5.com-h5-filters,
+  .site-h5 .com-h5-filters {
+    display: flex;
+    gap: 0.16rem;
+    padding: 0.24rem 0.32rem;
+    background: #fff;
+    align-items: center;
+  }
+  .site-h5 .com-h5-filters__kw {
+    flex: 1;
+    min-width: 0;
+    height: 0.72rem;
+    border: 1px solid #eee;
+    border-radius: 0.08rem;
+    padding: 0 0.16rem;
+    font-size: 0.32rem;
+  }
+  .site-h5 .com-h5-filters__job {
+    max-width: 2.8rem;
+    height: 0.72rem;
+    border: 1px solid #eee;
+    border-radius: 0.08rem;
+    font-size: 0.32rem;
+  }
+  .site-h5 .com-h5-filters__more {
+    flex: none;
+    font-size: 0.32rem;
+    color: #2778f8;
+    white-space: nowrap;
+  }
+  .site-h5.com-h5-more,
+  .site-h5 .com-h5-more {
+    background: #fff;
+    padding: 0.24rem 0.32rem 0.4rem;
+  }
+  .site-h5 .com-h5-more__name {
+    font-size: 0.32rem;
+    color: #666;
+    margin: 0.16rem 0 0.08rem;
+  }
+  .site-h5 .com-h5-more__row a {
+    display: inline-block;
+    padding: 0.08rem 0.2rem;
+    margin: 0.08rem 0.08rem 0 0;
+    background: #f5f6fa;
+    border-radius: 0.2rem;
+    font-size: 0.32rem;
+    color: #333;
+  }
+  .site-h5 .com-h5-more__row a.on {
+    background: #2778f8;
+    color: #fff;
+  }
+  .site-h5 .yun_create_text select,
+  .site-h5 .yun_create_text textarea {
+    width: 100%;
+    min-height: 1.2rem;
+    font-size: 0.4rem;
+    border: 0;
+    background: transparent;
+  }
+  .site-h5 button.issue_post_body_btn {
+    border: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    margin-top: 0.32rem;
+  }
+  .site-h5 .sx_new_edit {
+    display: inline-block;
+    margin-left: 0.16rem;
+    color: #2778f8;
+    font-size: 0.32rem;
+  }
   button.login_bth {
     width: 100%;
     border: 0;

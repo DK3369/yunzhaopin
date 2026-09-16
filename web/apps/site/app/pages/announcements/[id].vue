@@ -17,7 +17,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ row.title || $t('ui.announcements') }}</h1>
     <div v-if="row.content || row.body" v-html="String(row.content || row.body)" />
     <p v-else class="muted">{{ $t('wap_00129') }}</p>
@@ -26,4 +26,15 @@ useSeoMeta({
       <NuxtLink v-if="next?.id" :to="`/announcements/${next.id}`">{{ $t('default_00327') }} {{ next.title }}</NuxtLink>
     </p>
   </article>
+  <div class="site-h5 news_cont_box">
+    <div class="news_cont_box_tit"><h1>{{ row.title || $t('ui.announcements') }}</h1></div>
+    <div class="wap_news_cont">
+      <div v-if="row.content || row.body" class="wap_txt" v-html="String(row.content || row.body)" />
+      <p v-else class="muted">{{ $t('wap_00129') }}</p>
+    </div>
+    <p class="muted">
+      <NuxtLink v-if="prev?.id" :to="`/announcements/${prev.id}`">{{ $t('default_00326') }} {{ prev.title }}</NuxtLink>
+      <NuxtLink v-if="next?.id" :to="`/announcements/${next.id}`">{{ $t('default_00327') }} {{ next.title }}</NuxtLink>
+    </p>
+  </div>
 </template>

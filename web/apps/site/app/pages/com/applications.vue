@@ -154,6 +154,7 @@ function browseZt(s?: number) {
 }
 const ypOpen = ref(false)
 const moreOpen = ref(false)
+const h5MoreOpen = ref(false)
 const stateOpen = ref(0)
 function browseLabel(s?: number) {
   const map: Record<number, string> = {
@@ -295,6 +296,45 @@ useSeoMeta({ title: t('member_com_00454') })
       </div>
       <a href="javascript:;" class="joblist_search_more" @click.prevent="moreOpen = !moreOpen">{{ $t('common.more') }}</a>
     </MemberComScreen>
+    <div class="site-h5 com-h5-filters">
+      <input
+        v-model="filters.keyword"
+        type="search"
+        class="com-h5-filters__kw"
+        :placeholder="$t('admin_00149')"
+        @keydown.enter.prevent="applyFilters"
+      />
+      <select v-model="filters.job_id" class="com-h5-filters__job" @change="applyFilters">
+        <option value="">{{ $t('wap_user_00154') }}</option>
+        <option v-for="j in myJobs?.list || []" :key="'h5job-' + j.id" :value="String(j.id)">{{ j.name }}</option>
+      </select>
+      <a href="javascript:;" class="com-h5-filters__more" @click.prevent="h5MoreOpen = !h5MoreOpen">{{ $t('common.more') }}</a>
+    </div>
+    <div v-if="h5MoreOpen" class="site-h5 com-h5-more">
+      <div class="com-h5-more__name">{{ $t('wap_00459') }}</div>
+      <div class="com-h5-more__row">
+        <a href="javascript:;" :class="{ on: !filters.edu }" @click="filters.edu = ''">{{ $t('common.all') }}</a>
+        <a
+          v-for="d in eduDict"
+          :key="'h5edu-' + d.id"
+          href="javascript:;"
+          :class="{ on: String(filters.edu) === String(d.id) }"
+          @click="filters.edu = String(d.id)"
+        >{{ d.name }}</a>
+      </div>
+      <div class="com-h5-more__name">{{ $t('wap_00457') }}</div>
+      <div class="com-h5-more__row">
+        <a href="javascript:;" :class="{ on: !filters.exp }" @click="filters.exp = ''">{{ $t('common.all') }}</a>
+        <a
+          v-for="d in expDict"
+          :key="'h5exp-' + d.id"
+          href="javascript:;"
+          :class="{ on: String(filters.exp) === String(d.id) }"
+          @click="filters.exp = String(d.id)"
+        >{{ d.name }}</a>
+      </div>
+      <a href="javascript:;" class="issue_post_body_btn" @click.prevent="h5MoreOpen = false; applyFilters()">{{ $t('common.search') }}</a>
+    </div>
     <div v-if="moreOpen" class="jlsx_bg site-pc" @click.self="moreOpen = false">
       <div class="jlsx_box">
         <div class="jlsx_boxname">{{ $t('wap_00459') }}</div>

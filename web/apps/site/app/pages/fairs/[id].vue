@@ -88,7 +88,7 @@ useHead({ link: [{ rel: 'canonical', href: `/fairs/${id}` }] })
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ data?.title || $t('zph_00001') }}</h1>
     <p v-if="data?.address" class="muted">{{ data.address }} · {{ data.start_at_n }}</p>
     <p>
@@ -139,4 +139,65 @@ useHead({ link: [{ rel: 'canonical', href: `/fairs/${id}` }] })
       </div>
     </template>
   </article>
+  <div class="site-h5">
+    <div class="newzph_pd">
+      <div class="newzph_show">
+        <div class="newzph_name">{{ data?.title || $t('zph_00001') }}</div>
+        <p class="muted">{{ data?.address }} {{ data?.start_at_n }}</p>
+      </div>
+      <div class="newzphshow_tit">
+        <ul>
+          <li :class="{ newzphshow_titcur: tab === 'intro' }">
+            <NuxtLink :to="{ query: { tab: 'intro' } }">{{ $t('wap_00566') }}</NuxtLink>
+          </li>
+          <li :class="{ newzphshow_titcur: tab === 'companies' }">
+            <NuxtLink :to="{ query: { tab: 'companies' } }">{{ $t('wap_00559') }}</NuxtLink>
+          </li>
+          <li :class="{ newzphshow_titcur: tab === 'jobs' }">
+            <NuxtLink :to="{ query: { tab: 'jobs' } }">{{ $t('wap_01536') }}</NuxtLink>
+          </li>
+          <li :class="{ newzphshow_titcur: tab === 'reserve' }">
+            <a href="javascript:;" @click.prevent="goReserve">{{ $t('wap_01344') }}</a>
+          </li>
+        </ul>
+      </div>
+      <div v-if="tab === 'companies'" class="newzph_showcom">
+        <p v-if="!(companies?.list || []).length" class="muted">{{ $t('wap_00590') }}</p>
+        <CompanyCard v-for="c in companies?.list || []" :key="'h5c-' + c.uid" :company="c" />
+      </div>
+      <div v-else-if="tab === 'jobs'">
+        <p v-if="!(jobs || []).length" class="muted">{{ $t('default_00033') }}</p>
+        <JobCard v-for="j in jobs || []" :key="'h5j-' + j.id" :job="j" />
+      </div>
+      <div v-else-if="tab === 'reserve'" class="newzphshow_p">
+        <p v-if="comStatus?.state === 'applied'" class="muted">{{ $t('common.success') }} · {{ comStatus.status }}</p>
+        <p v-else-if="comStatus?.state === 'no_jobs'" class="muted">{{ $t('default_00033') }}</p>
+        <form v-else class="form" @submit.prevent="submitReserve">
+          <select v-model.number="reserveForm.bid" required>
+            <option :value="0">{{ $t('wap_01344') }}</option>
+            <option v-for="s in spaces || []" :key="'h5s-' + s.id" :value="s.id" :disabled="s.taken">
+              {{ s.name }} · {{ s.price }}{{ $t('common_02056') }}{{ s.taken ? ` · ${$t('wap_01347')}` : '' }}
+            </option>
+          </select>
+          <label v-for="j in comStatus?.jobs || []" :key="'h5rj-' + j.id">
+            <input v-model="reserveForm.job_ids" type="checkbox" :value="j.id" />
+            {{ j.name }}
+          </label>
+          <input v-model="reserveForm.name" :placeholder="$t('wap_01431')" required />
+          <input v-model="reserveForm.moblie" :placeholder="$t('wap_01619')" required />
+          <button type="submit">{{ $t('wap_01344') }}</button>
+        </form>
+        <p v-if="reserveMsg">{{ reserveMsg }}</p>
+      </div>
+      <div v-else class="newzphshow_p zph_show_content">
+        <div v-if="data?.body" v-html="data.body" />
+        <p v-else-if="!data?.title" class="muted">{{ $t('wap_00603') }}</p>
+        <div v-if="(data?.pics || []).length" class="stack">
+          <figure v-for="p in data?.pics || []" :key="'h5p-' + p.id">
+            <img v-if="p.pic_n || p.pic" :src="mediaUrl(p.pic_n || p.pic)" :alt="p.title || ''" />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

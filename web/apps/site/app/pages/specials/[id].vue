@@ -59,7 +59,7 @@ useHead({ link: [{ rel: 'canonical', href: `/specials/${id}` }] })
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ data?.title || $t('common_02409') }}</h1>
     <p v-if="data?.intro" class="muted">{{ data.intro }}</p>
     <div v-if="data?.body" v-html="data.body" />
@@ -84,4 +84,34 @@ useHead({ link: [{ rel: 'canonical', href: `/specials/${id}` }] })
     <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('default_00033') }}</p>
     <JobCard v-for="j in jobs?.list || []" :key="j.id" :job="j" />
   </article>
+  <div class="site-h5">
+    <div class="special_banner">
+      <h1>{{ data?.title || $t('common_02409') }}</h1>
+      <p v-if="data?.intro" class="muted">{{ data.intro }}</p>
+    </div>
+    <div class="special_rules_box">
+      <div v-if="data?.body" v-html="data.body" />
+      <p v-if="Number(data?.com_bm) === 1">
+        <button type="button" class="s_bth" @click="apply">{{ $t('common.submit') }}</button>
+      </p>
+      <p v-if="applyMsg">{{ applyMsg }}</p>
+    </div>
+    <div class="zt_qy_box">
+      <template v-if="isGl">
+        <h2>{{ $t('common.hot') }}</h2>
+        <p v-if="!(hotcom?.list || []).length" class="muted">{{ $t('wap_00590') }}</p>
+        <CompanyCard v-for="c in hotcom?.list || []" :key="'h5hot-' + c.uid" :company="{ ...c, name: c.com_name || c.name }" />
+        <p>
+          <NuxtLink :to="{ query: { hy: undefined } }">{{ $t('common.all') }}</NuxtLink>
+          <NuxtLink v-for="row in industries || []" :key="'h5hy-' + row.hy" :to="{ query: { hy: row.hy } }">{{ row.hy_n }}</NuxtLink>
+        </p>
+      </template>
+      <h2>{{ $t('default_00114') }}</h2>
+      <p v-if="!(companies?.list || []).length" class="muted">{{ $t('wap_00590') }}</p>
+      <CompanyCard v-for="c in companies?.list || []" :key="'h5-' + c.uid" :company="{ ...c, name: c.com_name || c.name }" />
+      <h2>{{ $t('default_00246') }}</h2>
+      <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('default_00033') }}</p>
+      <JobCard v-for="j in jobs?.list || []" :key="'h5j-' + j.id" :job="j" />
+    </div>
+  </div>
 </template>

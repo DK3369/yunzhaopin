@@ -61,7 +61,7 @@ useSeoMeta({ title: t('default_00331') })
 </script>
 
 <template>
-  <section class="site-inner">
+  <section class="site-pc site-inner">
     <h1>{{ $t('default_00331') }}</h1>
     <form class="form" @submit.prevent="submit">
       <input v-model="form.username" :placeholder="$t('admin_user_00140')" required />
@@ -87,4 +87,33 @@ useSeoMeta({ title: t('default_00331') })
       <p v-if="msg">{{ msg }}</p>
     </form>
   </section>
+  <div class="site-h5">
+    <div class="tiny_bg" />
+    <div class="com_new_contnet_box">
+      <div class="wap_title"><span>{{ $t('default_00331') }}</span></div>
+      <form class="form" @submit.prevent="submit">
+        <input v-model="form.username" :placeholder="$t('admin_user_00140')" required />
+        <select v-model.number="form.sex">
+          <option :value="1">{{ $t('common_02092') }}</option>
+          <option :value="2">{{ $t('common_02069') }}</option>
+        </select>
+        <input v-model="form.job" :placeholder="$t('common.job')" required />
+        <LocationFields
+          v-model:province-id="form.province_id"
+          v-model:city-id="form.city_id"
+          v-model:district-id="form.three_city_id"
+          required
+        />
+        <input v-model="form.mobile" :placeholder="$t('wap_01619')" required />
+        <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />
+        <input v-model="authcode" :placeholder="$t('ui.image_captcha')" />
+        <button type="button" @click="sendSms">{{ $t('admin_user_00166') }}</button>
+        <input v-model="smsCode" :placeholder="$t('wap_01371')" />
+        <input v-model="form.password" type="password" :placeholder="$t('wap_user_00371')" required />
+        <textarea v-model="form.production" rows="5" required />
+        <button type="submit">{{ $t('common.submit') }}</button>
+        <p v-if="msg">{{ msg }}</p>
+      </form>
+    </div>
+  </div>
 </template>

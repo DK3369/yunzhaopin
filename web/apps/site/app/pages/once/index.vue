@@ -10,7 +10,7 @@ const cityId = computed(() => Number(route.query.city_id || 0) || undefined)
 const threeCityId = computed(() => Number(route.query.three_city_id || 0) || undefined)
 const { t } = useI18n()
 const api = useApi()
-const { countryItems, provinceItems, cityItems, districtItems } = await useRegionCascade({
+const { countryItems, countryDictItems, provinceItems, cityItems, districtItems } = await useRegionCascade({
   country,
   provinceId: computed(() => provinceId.value || 0),
   cityId: computed(() => cityId.value || 0),
@@ -18,7 +18,18 @@ const { countryItems, provinceItems, cityItems, districtItems } = await useRegio
 const { data, error } = await useAsyncData(
   () => `once-${page.value}-${keyword.value}-${country.value}-${provinceId.value || 0}-${cityId.value || 0}-${threeCityId.value || 0}`,
   () =>
-    api.get<{ list: Array<{ id: number; title?: string; companyname: string; mans?: string; number?: string }>; total: number }>('/v1/wap/once-jobs/list', {
+    api.get<{
+      list: Array<{
+        id: number
+        title?: string
+        companyname: string
+        mans?: string
+        number?: string | number
+        salary_text?: string
+        address?: string
+      }>
+      total: number
+    }>('/v1/wap/once-jobs/list', {
       page: page.value,
       page_size: 20,
       keyword: keyword.value || undefined,
@@ -52,68 +63,115 @@ async function cancelPay(id: number) {
 
 <template>
   <section>
-    <form class="form" method="get" action="/once">
-      <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
-      <input v-if="country" type="hidden" name="country" :value="country" />
-      <input v-if="provinceId" type="hidden" name="province_id" :value="provinceId" />
-      <input v-if="cityId" type="hidden" name="city_id" :value="cityId" />
-      <input v-if="threeCityId" type="hidden" name="three_city_id" :value="threeCityId" />
-      <button type="submit">{{ $t('common.search') }}</button>
-    </form>
-    <CountryFilterRow
-      :label="$t('common.country')"
-      :items="countryItems"
-      :current="country"
-      path="/once"
-      :all-label="$t('common.all')"
-    />
-    <FilterRow
-      v-if="country"
-      :label="$t('member_com_00378')"
-      param="province_id"
-      :items="provinceItems"
-      :current="provinceId"
-      path="/once"
-      :all-label="$t('common.all')"
-      :extra-clear="{ city_id: undefined, three_city_id: undefined }"
-    />
-    <FilterRow
-      v-if="provinceId && cityItems.length"
-      :label="$t('common_02110')"
-      param="city_id"
-      :items="cityItems"
-      :current="cityId"
-      path="/once"
-      :all-label="$t('common.all')"
-      :extra-clear="{ three_city_id: undefined }"
-    />
-    <FilterRow
-      v-if="cityId && districtItems.length"
-      :label="$t('member_com_00378')"
-      param="three_city_id"
-      :items="districtItems"
-      :current="threeCityId"
-      path="/once"
-      :all-label="$t('common.all')"
-    />
-    <p><NuxtLink to="/once/add">{{ $t('common.publish') }}</NuxtLink></p>
-    <div v-if="(paylog?.list || []).length" class="stack">
-      <h2>{{ $t('default_00031') }}</h2>
-      <article v-for="row in paylog?.list || []" :key="row.id" class="job-card">
-        <h3>{{ row.order_id }} · {{ row.order_price }}</h3>
-        <button type="button" @click="cancelPay(row.id)">{{ $t('common.cancel') }}</button>
-      </article>
+    <div class="site-pc">
+      <form class="form" method="get" action="/once">
+        <input name="keyword" :value="keyword" :placeholder="$t('common.search')" />
+        <input v-if="country" type="hidden" name="country" :value="country" />
+        <input v-if="provinceId" type="hidden" name="province_id" :value="provinceId" />
+        <input v-if="cityId" type="hidden" name="city_id" :value="cityId" />
+        <input v-if="threeCityId" type="hidden" name="three_city_id" :value="threeCityId" />
+        <button type="submit">{{ $t('common.search') }}</button>
+      </form>
+      <CountryFilterRow
+        :label="$t('common.country')"
+        :items="countryItems"
+        :current="country"
+        path="/once"
+        :all-label="$t('common.all')"
+      />
+      <FilterRow
+        v-if="country"
+        :label="$t('member_com_00378')"
+        param="province_id"
+        :items="provinceItems"
+        :current="provinceId"
+        path="/once"
+        :all-label="$t('common.all')"
+        :extra-clear="{ city_id: undefined, three_city_id: undefined }"
+      />
+      <FilterRow
+        v-if="provinceId && cityItems.length"
+        :label="$t('common_02110')"
+        param="city_id"
+        :items="cityItems"
+        :current="cityId"
+        path="/once"
+        :all-label="$t('common.all')"
+        :extra-clear="{ three_city_id: undefined }"
+      />
+      <FilterRow
+        v-if="cityId && districtItems.length"
+        :label="$t('member_com_00378')"
+        param="three_city_id"
+        :items="districtItems"
+        :current="threeCityId"
+        path="/once"
+        :all-label="$t('common.all')"
+      />
+      <p><NuxtLink to="/once/add">{{ $t('common.publish') }}</NuxtLink></p>
+      <div v-if="(paylog?.list || []).length" class="stack">
+        <h2>{{ $t('default_00031') }}</h2>
+        <article v-for="row in paylog?.list || []" :key="row.id" class="job-card">
+          <h3>{{ row.order_id }} · {{ row.order_price }}</h3>
+          <button type="button" @click="cancelPay(row.id)">{{ $t('common.cancel') }}</button>
+        </article>
+      </div>
+      <NewsListShell :title="$t('wap_js_00130')" :error="error" :error-text="failMsg" :count="list.length">
+        <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.title || row.companyname" :meta="row.mans || String(row.number || '')" />
+        <template #pager>
+          <Pager
+            :page="page"
+            :page-size="20"
+            :total="data?.total || 0"
+            @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
+          />
+        </template>
+      </NewsListShell>
     </div>
-    <NewsListShell :title="$t('wap_js_00130')" :error="error" :error-text="failMsg" :count="list.length">
-      <SimpleCard v-for="row in list" :key="row.id" :to="`/once/${row.id}`" :title="row.title || row.companyname" :meta="row.mans || row.number" />
-      <template #pager>
-        <Pager
-          :page="page"
-          :page-size="20"
-          :total="data?.total || 0"
-          @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
+    <div class="site-h5">
+      <div class="job_header_nav resumeAdeFlex">
+        <H5FilterBar
+          :all-label="$t('common.all')"
+          :tabs="[
+            {
+              key: 'country',
+              label: $t('common.country'),
+              items: countryDictItems,
+              extraClear: { three_city_id: undefined },
+              childKey: 'province_id',
+              childItems: provinceItems,
+              grandKey: 'city_id',
+              grandItems: cityItems,
+            },
+          ]"
         />
-      </template>
-    </NewsListShell>
+      </div>
+      <form action="/once" method="get" style="padding: 0.2rem 0.32rem">
+        <input class="searchnew" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
+      </form>
+      <p style="padding: 0 0.32rem"><NuxtLink to="/once/add">{{ $t('common.publish') }}</NuxtLink></p>
+      <div v-if="(paylog?.list || []).length" class="once_box" style="padding: 0.32rem">
+        <div v-for="row in paylog?.list || []" :key="'pay-' + row.id" class="list_once_box">
+          <div class="list_once_name">{{ row.order_id }} · {{ row.order_price }}</div>
+          <button type="button" @click="cancelPay(row.id)">{{ $t('common.cancel') }}</button>
+        </div>
+      </div>
+      <p v-if="error" class="muted" style="padding: 0.4rem">{{ failMsg }}</p>
+      <div v-else-if="!list.length" class="wap_member_no">{{ $t('wap_js_00113') }}</div>
+      <div v-else class="once_box">
+        <NuxtLink v-for="row in list" :key="'h5-' + row.id" :to="`/once/${row.id}`" class="list_once_box">
+          <div class="list_once_name">{{ row.title || row.companyname }}</div>
+          <span v-if="row.salary_text" class="list_once_xz">{{ row.salary_text }}</span>
+          <div v-if="row.mans" class="list_once_name_P">{{ row.mans }}</div>
+          <div v-if="row.address" class="list_once_name_P">{{ row.address }}</div>
+        </NuxtLink>
+      </div>
+      <Pager
+        :page="page"
+        :page-size="20"
+        :total="data?.total || 0"
+        @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
+      />
+    </div>
   </section>
 </template>

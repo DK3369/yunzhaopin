@@ -16,7 +16,7 @@ useHead({ link: [{ rel: 'canonical', href: `/gongzhao/${id}` }] })
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ row.title || $t('common_02409') }}</h1>
     <p v-if="row.start_at_n" class="muted">{{ row.start_at_n }} — {{ row.end_at_n }}</p>
     <div v-if="row.body" v-html="String(row.body)" />
@@ -26,4 +26,16 @@ useHead({ link: [{ rel: 'canonical', href: `/gongzhao/${id}` }] })
       <NuxtLink v-if="next?.id" :to="`/gongzhao/${next.id}`">{{ $t('default_00327') }} {{ next.title }}</NuxtLink>
     </p>
   </article>
+  <div class="site-h5 news_cont_box">
+    <div class="news_cont_box_tit"><h1>{{ row.title || $t('common_02409') }}</h1></div>
+    <div class="news_cont_ms">{{ row.start_at_n }} — {{ row.end_at_n }}</div>
+    <div class="wap_news_cont">
+      <div v-if="row.body" class="wap_txt" v-html="String(row.body)" />
+      <p v-else-if="!row.title" class="muted">{{ $t('common_02409') }}</p>
+    </div>
+    <p class="muted">
+      <NuxtLink v-if="prev?.id" :to="`/gongzhao/${prev.id}`">{{ $t('default_00326') }} {{ prev.title }}</NuxtLink>
+      <NuxtLink v-if="next?.id" :to="`/gongzhao/${next.id}`">{{ $t('default_00327') }} {{ next.title }}</NuxtLink>
+    </p>
+  </div>
 </template>

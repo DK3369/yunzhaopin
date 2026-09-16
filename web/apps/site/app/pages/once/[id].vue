@@ -109,7 +109,7 @@ useHead({ link: [{ rel: 'canonical', href: `/once/${id}` }] })
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ data?.title || data?.companyname || $t('wap_00630') }}</h1>
     <p v-if="data?.companyname" class="muted">{{ data.companyname }}</p>
     <p v-if="cityLine" class="muted">{{ cityLine }}</p>
@@ -154,4 +154,91 @@ useHead({ link: [{ rel: 'canonical', href: `/once/${id}` }] })
     </template>
     <p v-if="msg">{{ msg }}</p>
   </article>
+  <div class="site-h5">
+    <div class="tiny_bg" />
+    <div class="tiny_bg_t">
+      <div class="com_new_contnet_box">
+        <div class="com_show_t1">
+          <h2>{{ data?.title || data?.companyname || $t('wap_00630') }}</h2>
+        </div>
+        <div class="com_show_t2">
+          {{ data?.companyname }}
+          <span v-if="Number(data?.hits)">{{ $t('member_com_00268') }}：{{ data?.hits }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="mt10">
+      <div class="com_new_contnet_box">
+        <div class="wap_title"><span>{{ $t('wap_00456') }}</span></div>
+        <ul class="user_contnet_ul">
+          <li v-if="data?.linkman_masked" class="com_show_li">
+            <span class="user_contnet_info_n">{{ $t('wap_01431') }}：</span>{{ data.linkman_masked }} · {{ data.linktel_masked }}
+          </li>
+          <li v-if="data?.salary_text" class="com_show_li">
+            <span class="user_contnet_info_n">{{ $t('default_00265') }}：</span>{{ data.salary_text }}
+          </li>
+          <li v-if="data?.address" class="com_show_li">
+            <span class="user_contnet_info_n">{{ $t('wap_js_00082') }}：</span>{{ data.address }}
+          </li>
+          <li v-if="cityLine" class="com_show_li">
+            <span class="user_contnet_info_n">{{ $t('wap_00349') }}：</span>{{ cityLine }}
+          </li>
+          <li v-if="data?.edate_n" class="com_show_li">
+            <span class="user_contnet_info_n">{{ $t('wap_com_00234') }}：</span>{{ data.edate_n }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div v-if="pic" class="mt10">
+      <div class="com_new_contnet_box">
+        <div class="wap_title"><span>{{ $t('wap_00362') }}</span></div>
+        <img :src="pic" alt="" width="100%" />
+      </div>
+    </div>
+    <div class="mt10">
+      <div class="com_new_contnet_box">
+        <div class="wap_title"><span>{{ $t('wap_com_00289') }}</span></div>
+        <p v-if="data?.require">{{ data.require }}</p>
+        <p v-else-if="!data && error" class="muted">{{ $t('wap_00630') }}</p>
+      </div>
+    </div>
+    <div class="mt10">
+      <div class="com_new_contnet_box">
+        <div class="wap_title"><span>{{ $t('wap_00363') }}</span></div>
+        <div class="tiny_tag">{{ $t('wap_01351') }}</div>
+        <form class="form" @submit.prevent="verify">
+          <input v-model="password" type="password" :placeholder="$t('wap_01353')" required />
+          <button type="submit">{{ $t('common.confirm') }}</button>
+        </form>
+        <template v-if="owned">
+          <p v-if="Number(owned.pay) === 1" class="muted">{{ $t('wap_01381') }}</p>
+          <p>{{ $t('wap_01431') }}：{{ owned.linkman }} · {{ owned.linktel }}</p>
+          <form v-if="Number(owned.pay) === 1" class="form" @submit.prevent="pay">
+            <select v-model.number="gearId">
+              <option v-for="g in gears" :key="'h5g-' + g.id" :value="g.id">{{ g.days }}{{ $t('wap_01375') }} · {{ g.price }}</option>
+            </select>
+            <select v-model="paytype">
+              <option value="alipay">alipay</option>
+              <option value="wxpay">wxpay</option>
+            </select>
+            <button type="submit">{{ $t('common.submit') }}</button>
+          </form>
+          <form v-else class="form" @submit.prevent="save">
+            <input v-model="edit.title" required />
+            <input v-model="edit.companyname" required />
+            <input v-model="edit.linkman" required />
+            <input v-model="edit.linktel" required />
+            <input v-model="edit.address" required />
+            <input v-model="edit.salary" />
+            <input v-model="edit.mans" />
+            <textarea v-model="edit.require" rows="4" required />
+            <a href="javascript:;" class="tiny_cz_sx" @click.prevent="refresh">{{ $t('wap_user_00334') }}</a>
+            <button type="submit" class="tiny_cz_sx">{{ $t('wap_js_00073') }}</button>
+            <a href="javascript:;" class="tiny_cz" @click.prevent="remove">{{ $t('common.delete') }}</a>
+          </form>
+        </template>
+        <p v-if="msg">{{ msg }}</p>
+      </div>
+    </div>
+  </div>
 </template>

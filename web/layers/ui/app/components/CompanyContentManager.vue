@@ -107,7 +107,7 @@ async function remove(row: Row) {
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="com_release_box" @submit.prevent="save">
+      <form class="com_release_box site-pc" @submit.prevent="save">
         <ul>
           <MemberReleaseRow :label="$t('wap_user_00103')" required><input v-model="form.title" required class="com_release_textnew_text" /></MemberReleaseRow>
           <MemberReleaseRow :label="$t('ui.image')"><input v-model="form.file" class="com_release_textnew_text" /></MemberReleaseRow>
@@ -116,6 +116,21 @@ async function remove(row: Row) {
         <button type="submit" class="btn_01">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
         <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
       </form>
+      <div class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="save">
+          <MemberField wap :label="$t('wap_user_00103')">
+            <input v-model="form.title" required />
+          </MemberField>
+          <MemberField wap :label="$t('ui.image')">
+            <input v-model="form.file" />
+          </MemberField>
+          <MemberField wap area :label="$t('ui.body')">
+            <textarea v-model="form.body" required rows="6" />
+          </MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
+          <button v-if="editing" type="button" class="issue_post_body_btn" @click="reset">{{ $t('common.cancel') }}</button>
+        </form>
+      </div>
       <p v-if="msg">{{ msg }}</p>
       <div v-for="row in list" :key="row.id" class="sysynews_list site-pc">
         <div class="sysynews_span sysynews_name">{{ row.title }}</div>
@@ -131,7 +146,10 @@ async function remove(row: Row) {
           :key="'h5-' + row.id"
           :title="row.title"
           :time="`${row.status_n} · ${row.ctime_n}`"
-        />
+          :on-delete="() => remove(row)"
+        >
+          <a href="javascript:;" class="sx_new_edit" @click.prevent="edit(row)">{{ $t('common.edit') }}</a>
+        </MemberSxNewsCard>
       </div>
       <MemberPager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
     </template>

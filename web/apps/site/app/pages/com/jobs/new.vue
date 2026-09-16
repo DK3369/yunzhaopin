@@ -175,7 +175,7 @@ useSeoMeta({ title: t('wap_00322') })
 
 <template>
   <MemberPanel :title="$t('wap_00322')">
-    <form class="com_release_box" @submit.prevent="submit">
+    <form class="com_release_box site-pc" @submit.prevent="submit">
       <ul>
       <MemberReleaseRow :label="$t('wap_com_00288')" required><input v-model="form.name" required :disabled="nameLocked" class="com_release_textnew_text" /></MemberReleaseRow>
       <MemberReleaseRow :label="$t('common.job')">
@@ -326,5 +326,158 @@ useSeoMeta({ title: t('wap_00322') })
       <button type="submit" class="btn_01">{{ $t('ui.submit_audit') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
+    <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="submit">
+        <MemberField wap :label="$t('wap_com_00288')">
+          <input v-model="form.name" required :disabled="nameLocked" />
+        </MemberField>
+        <MemberField wap :label="$t('common.job')">
+          <select v-model.number="form.job1" required>
+            <option :value="0">{{ $t('common.job') }}</option>
+            <option v-for="c in jobRoots" :key="'h5j1-' + c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+          <select v-if="jobLevel2.length" v-model.number="form.job1_son">
+            <option :value="0">{{ $t('common.all') }}</option>
+            <option v-for="c in jobLevel2" :key="'h5j2-' + c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+          <select v-if="jobLevel3.length" v-model.number="form.job_post">
+            <option :value="0">{{ $t('common.all') }}</option>
+            <option v-for="c in jobLevel3" :key="'h5j3-' + c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_user_00243')">
+          <LocationFields
+            v-model:province-id="form.provinceid"
+            v-model:city-id="form.cityid"
+            v-model:district-id="form.three_cityid"
+          />
+        </MemberField>
+        <MemberField v-if="showNegotiable" wap :label="$t('wap_com_00291')">
+          <label>
+            <input v-model="form.salary_type" type="checkbox" :true-value="1" :false-value="0" />
+            {{ $t('wap_com_00291') }}
+          </label>
+        </MemberField>
+        <template v-if="form.salary_type !== 1">
+          <MemberField wap :label="$t('ui.min_salary')"><input v-model.number="form.minsalary" type="number" /></MemberField>
+          <MemberField wap :label="$t('ui.max_salary')"><input v-model.number="form.maxsalary" type="number" /></MemberField>
+        </template>
+        <MemberField wap :label="$t('wap_com_00288')">
+          <select v-model.number="form.type">
+            <option v-for="tp in jobTypes || []" :key="'h5tp-' + tp.id" :value="tp.id">{{ tp.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('ui.headcount')"><input v-model.number="form.number" type="number" min="1" /></MemberField>
+        <MemberField wap :label="$t('wap_user_00240')">
+          <select v-model.number="form.exp">
+            <option :value="0">{{ $t('common.not_limited') }}</option>
+            <option v-for="x in exps || []" :key="'h5exp-' + x.id" :value="x.id">{{ x.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_com_00301')">
+          <select v-model.number="form.edu">
+            <option :value="0">{{ $t('common.not_limited') }}</option>
+            <option v-for="e in edus || []" :key="'h5edu-' + e.id" :value="e.id">{{ e.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_user_00100')">
+          <select v-model.number="form.hy">
+            <option :value="0">{{ $t('wap_user_00100') }}</option>
+            <option v-for="h in industries || []" :key="'h5hy-' + h.id" :value="h.id">{{ h.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_com_00279')">
+          <select v-model.number="form.report">
+            <option :value="0">{{ $t('wap_com_00279') }}</option>
+            <option v-for="r in reports || []" :key="'h5rp-' + r.id" :value="r.id">{{ r.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_com_00303')">
+          <select v-model.number="form.sex">
+            <option :value="0">{{ $t('wap_com_00303') }}</option>
+            <option :value="1">{{ $t('common_02092') }}</option>
+            <option :value="2">{{ $t('common_02069') }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('default_00241')">
+          <select v-model.number="form.marriage">
+            <option :value="0">{{ $t('default_00241') }}</option>
+            <option v-for="m in marriages || []" :key="'h5mg-' + m.id" :value="m.id">{{ m.name }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_com_00285')"><input v-model.number="form.zp_minage" type="number" min="0" max="99" /></MemberField>
+        <MemberField wap :label="$t('wap_com_00308')"><input v-model.number="form.zp_maxage" type="number" min="0" max="99" /></MemberField>
+        <MemberField wap :label="$t('member_com_00241')">
+          <label>
+            <input v-model="form.is_graduate" type="checkbox" :true-value="1" :false-value="0" />
+            {{ $t('member_com_00241') }}
+          </label>
+        </MemberField>
+        <MemberField v-if="(langs || []).length" wap :label="$t('wap_com_00292')">
+          <label v-for="lg in langs || []" :key="'h5lg-' + lg.id">
+            <input v-model="langIds" type="checkbox" :value="lg.id" /> {{ lg.name }}
+          </label>
+        </MemberField>
+        <MemberField wap :label="$t('member_user_00106')"><input v-model="sdateN" type="date" /></MemberField>
+        <MemberField wap :label="$t('wap_com_00288')">
+          <label v-for="w in welfares || []" :key="'h5wel-' + w.id">
+            <input v-model="welIds" type="checkbox" :value="w.id" /> {{ w.name }}
+          </label>
+        </MemberField>
+        <MemberField wap area :label="$t('ui.job_desc')"><textarea v-model="form.content" rows="8" /></MemberField>
+        <p class="muted">{{ $t('member_com_00242') }}</p>
+        <MemberField wap :label="$t('wap_com_00305')"><input v-model="form.exp_req" /></MemberField>
+        <MemberField wap :label="$t('wap_com_00301')"><input v-model="form.edu_req" /></MemberField>
+        <MemberField wap :label="$t('wap_com_00303')">
+          <select v-model.number="form.sex_req">
+            <option :value="0">{{ $t('common_01936') }}</option>
+            <option :value="1">{{ $t('common_02092') }}</option>
+            <option :value="2">{{ $t('common_02069') }}</option>
+          </select>
+        </MemberField>
+        <MemberField wap :label="$t('wap_com_00285')"><input v-model.number="form.minage_req" type="number" min="0" max="99" /></MemberField>
+        <MemberField wap :label="$t('wap_com_00308')"><input v-model.number="form.maxage_req" type="number" min="0" max="99" /></MemberField>
+        <p class="muted">{{ $t('member_user_00198') }}</p>
+        <MemberField wap :label="$t('member_com_00528')">
+          <label>
+            <input v-model.number="form.link_id" type="radio" :value="0" />
+            {{ $t('member_com_00528') }}
+          </label>
+          <label v-for="a in addrList" :key="'h5addr-' + a.id">
+            <input v-model.number="form.link_id" type="radio" :value="a.id" />
+            {{ a.link_man }} {{ a.link_moblie }} {{ a.link_address || '' }}
+          </label>
+        </MemberField>
+        <p>
+          <NuxtLink to="/com/addresses">{{ $t('wap_com_00304') }}</NuxtLink>
+        </p>
+        <MemberField wap :label="$t('wap_com_00276')">
+          <label>
+            <input v-model="form.is_link" type="checkbox" :true-value="3" :false-value="1" />
+            {{ $t('wap_com_00276') }}
+          </label>
+        </MemberField>
+        <MemberField wap :label="$t('wap_00892')">
+          <label>
+            <input v-model="form.is_tblink" type="checkbox" :true-value="1" :false-value="0" />
+            {{ $t('wap_00892') }}
+          </label>
+        </MemberField>
+        <MemberField wap :label="$t('wap_00893')">
+          <label>
+            <input v-model="form.is_message" type="checkbox" :true-value="1" :false-value="2" />
+            {{ $t('wap_00893') }} · {{ $t('wap_com_00261') }}
+          </label>
+        </MemberField>
+        <MemberField wap :label="$t('wap_com_00293')">
+          <label>
+            <input v-model="form.is_email" type="checkbox" :true-value="1" :false-value="3" />
+            {{ $t('wap_com_00293') }} · {{ $t('wap_com_00262') }}
+          </label>
+        </MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ $t('ui.submit_audit') }}</button>
+        <p v-if="msg">{{ msg }}</p>
+      </form>
+    </div>
   </MemberPanel>
 </template>
