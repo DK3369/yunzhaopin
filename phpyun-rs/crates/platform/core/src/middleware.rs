@@ -15,18 +15,17 @@
 use crate::config::Config;
 use crate::route_rules::RouteRules;
 use axum::{
-    extract::{MatchedPath, Request, State},
+    extract::{ConnectInfo, MatchedPath, Request, State},
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::Next,
     response::{IntoResponse, Response},
     Json, Router,
 };
 use serde_json::json;
-use std::{sync::Arc, time::Duration};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 use tower::limit::ConcurrencyLimitLayer;
 use tower_governor::{
-    governor::GovernorConfigBuilder, key_extractor::SmartIpKeyExtractor, GovernorError,
-    GovernorLayer,
+    governor::GovernorConfigBuilder, key_extractor::KeyExtractor, GovernorError, GovernorLayer,
 };
 use tower_http::{
     compression::CompressionLayer,
@@ -87,7 +86,9 @@ where
             Duration::from_secs(cfg.request_timeout_secs),
         ));
     // Skip only APP_ENV=test (contract tests). Dev/prod sit behind nginx/BFF;
-    // SmartIpKeyExtractor keys on X-Forwarded-For so 127.0.0.1 peer is not one bucket.
+    // TrustedPeerIpKeyExtractor matches ClientIp: XFF only when the TCP peer
+    // is a trusted proxy. Direct hits on :3003 key on the real peer, so a
+    // forged XFF cannot share (or dodge) someone else's bucket.
     let router = if cfg.env == crate::config::AppEnvironment::Test {
         router
     } else {
@@ -100,7 +101,7 @@ where
         governor_builder.burst_size(cfg.rate_limit_burst.max(1));
         let governor_conf = Arc::new(
             governor_builder
-                .key_extractor(SmartIpKeyExtractor)
+                .key_extractor(TrustedPeerIpKeyExtractor)
                 .finish()
                 .expect("invalid governor config"),
         );
@@ -408,8 +409,29 @@ pub fn build_cors(cfg: &Config) -> CorsLayer {
     CorsLayer::new()
         .allow_origin(origin)
         .allow_methods([Method::GET, Method::POST])
-        .allow_headers(tower_http::cors::Any)
+        .allow_headers([
+            header::AUTHORIZATION,
+            header::CONTENT_TYPE,
+            header::ACCEPT_LANGUAGE,
+            HeaderName::from_static("x-request-id"),
+        ])
         .max_age(Duration::from_secs(600))
+}
+
+/// Governor key: same trust model as [`crate::extractors::ClientIp`].
+#[derive(Debug, Clone, Copy)]
+struct TrustedPeerIpKeyExtractor;
+
+impl KeyExtractor for TrustedPeerIpKeyExtractor {
+    type Key = String;
+
+    fn extract<T>(&self, req: &axum::http::Request<T>) -> Result<Self::Key, GovernorError> {
+        let peer = req
+            .extensions()
+            .get::<ConnectInfo<SocketAddr>>()
+            .map(|c| c.0.ip());
+        Ok(crate::extractors::resolve_client_ip(peer, req.headers()))
+    }
 }
 
 #[cfg(test)]

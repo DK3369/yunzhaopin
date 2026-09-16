@@ -136,10 +136,10 @@ pub async fn peek(kv: &Kv, kind: VerifyKind, target: &str) -> Result<Option<Stri
         .map(|s| s.code))
 }
 
-/// Generate an n-digit numeric code (for SMS). Uses the low bits of UUID v7 as
-/// the entropy source.
+/// Generate an n-digit numeric code (for SMS). UUID v4 is 128 bits of
+/// getrandom entropy (UUID v7's high bits are a timestamp).
 pub fn gen_digit_code(n: usize) -> String {
-    let u = uuid::Uuid::now_v7().as_u128();
+    let u = uuid::Uuid::new_v4().as_u128();
     let mut buf = String::with_capacity(n);
     for i in 0..n {
         let digit = ((u >> (i * 4)) & 0xF) % 10;
@@ -153,7 +153,7 @@ pub fn gen_digit_code(n: usize) -> String {
 /// characters (0/O, 1/I, l).
 pub fn gen_alnum_code(n: usize) -> String {
     const CHARS: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let mut u = uuid::Uuid::now_v7().as_u128();
+    let mut u = uuid::Uuid::new_v4().as_u128();
     let mut buf = String::with_capacity(n);
     for _ in 0..n {
         let alphabet_len = u128::try_from(CHARS.len()).unwrap_or(1);

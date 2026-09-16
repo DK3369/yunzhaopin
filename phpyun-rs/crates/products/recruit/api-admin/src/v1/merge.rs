@@ -1,6 +1,6 @@
 //! Admin: merge a personal account into an enterprise account (matching PHPYun `transfer.model::mergeData`).
 //!
-//! Only `usertype=3` may use this.
+//! Only `usertype=9` may use this.
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};

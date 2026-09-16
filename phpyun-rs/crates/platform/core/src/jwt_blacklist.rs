@@ -6,8 +6,8 @@
 //! Also provides a **password epoch** mechanism: on password change / reset / account
 //! split, write `user:pw_epoch:{uid} = now`. The auth pipeline calls `is_token_stale()`
 //! to check whether `token.iat` is older than the epoch — this revokes every existing
-//! access/refresh token for that uid in one shot, without enumerating jti. TTL is set
-//! to > refresh_ttl (8 days), enough to cover the longest token lifetime.
+//! access/refresh token for that uid in one shot, without enumerating jti. TTL is
+//! `max(access, refresh) + 1 day` so it covers the longest still-valid token.
 
 use crate::clock;
 use crate::kv::Kv;
@@ -15,9 +15,6 @@ use crate::ApiError;
 
 const KEY_PREFIX: &str = "jwt:blk:";
 const PW_EPOCH_PREFIX: &str = "user:pw_epoch:";
-/// pw_epoch retention duration (seconds): slightly longer than refresh_ttl (7d),
-/// guaranteeing coverage of every still-valid token.
-const PW_EPOCH_TTL_SECS: u64 = 8 * 24 * 3600;
 
 /// Revoke a jti. `exp_ts` is the token's expiration Unix-seconds timestamp; this
 /// function converts it to a remaining TTL and uses it as the Redis key's expiration
@@ -31,14 +28,20 @@ pub async fn is_revoked(kv: &Kv, jti: &str) -> bool {
     kv.exists(&format!("{KEY_PREFIX}{jti}")).await
 }
 
+/// Same as [`is_revoked`], but Redis errors surface as `Err` (admin fail-closed).
+pub async fn is_revoked_strict(kv: &Kv, jti: &str) -> Result<bool, ApiError> {
+    kv.exists_checked(&format!("{KEY_PREFIX}{jti}")).await
+}
+
 /// Record this user's "password change moment". Any access/refresh token issued
-/// before this point is treated as invalid.
-pub async fn bump_pw_epoch(kv: &Kv, uid: u64) -> Result<(), ApiError> {
+/// before this point is treated as invalid. `ttl_secs` must cover the longest
+/// still-valid token (`max(access, refresh) + 1d`, see `Config::pw_epoch_ttl_secs`).
+pub async fn bump_pw_epoch(kv: &Kv, uid: u64, ttl_secs: u64) -> Result<(), ApiError> {
     let now = clock::now_ts();
     kv.set_ex(
         &format!("{PW_EPOCH_PREFIX}{uid}"),
         &now.to_string(),
-        PW_EPOCH_TTL_SECS,
+        ttl_secs.max(1),
     )
     .await
 }
@@ -51,5 +54,13 @@ pub async fn is_token_stale(kv: &Kv, uid: u64, token_iat: i64) -> bool {
     match kv.get_str(&format!("{PW_EPOCH_PREFIX}{uid}")).await {
         Ok(Some(v)) => v.parse::<i64>().map(|ep| token_iat < ep).unwrap_or(false),
         _ => false,
+    }
+}
+
+/// Same as [`is_token_stale`], but Redis errors surface as `Err`.
+pub async fn is_token_stale_strict(kv: &Kv, uid: u64, token_iat: i64) -> Result<bool, ApiError> {
+    match kv.get_str(&format!("{PW_EPOCH_PREFIX}{uid}")).await? {
+        Some(v) => Ok(v.parse::<i64>().map(|ep| token_iat < ep).unwrap_or(false)),
+        None => Ok(false),
     }
 }

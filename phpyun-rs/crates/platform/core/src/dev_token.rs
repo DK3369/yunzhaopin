@@ -5,7 +5,7 @@
 //! Three tokens are pre-minted, all bound to `uid = 1`:
 //!   - **jobseeker** (usertype = 1) — `/v1/wap/me`, `/v1/mcenter/resume/*`
 //!   - **employer**  (usertype = 2) — `/v1/mcenter/applications`, etc.
-//!   - **admin**     (usertype = 3) — `/v1/admin/*`
+//!   - **admin**     (usertype = 9) — `/v1/admin/*`
 //!
 //! Each token has a fixed jti so restarts don't change the string and any
 //! Authorize header pasted into Swagger keeps working.
@@ -43,7 +43,7 @@ pub struct DevTokens {
 }
 
 impl DevTokens {
-    /// Pick a token by usertype: 1=jobseeker, 2=employer, 3=admin. Defaults
+    /// Pick a token by usertype: 1=jobseeker, 2=employer, 9=admin. Defaults
     /// to admin for any other value (so callers omitting the param get the
     /// most-permissive token, which works for `/v1/admin/*` + every other
     /// endpoint that doesn't enforce a specific role).
@@ -91,7 +91,7 @@ pub async fn init(cfg: &Config, db: &sqlx::MySqlPool, kv: &Kv) {
         employer: String::new(),
         admin: String::new(),
     };
-    for usertype in [1u8, 2, 3] {
+    for usertype in [1u8, 2, crate::extractors::USERTYPE_ADMIN] {
         // Clear leftover blacklist entries (smoke tests can blacklist these
         // jtis via `/sessions/revoke-others`).
         let _ = kv.del(&format!("jwt:blk:{}", jti_access(usertype))).await;
@@ -156,8 +156,13 @@ async fn build_one(
         exp,
         jti: jti_a,
         typ: "access".into(),
+        iss: crate::jwt::JWT_ISSUER.into(),
     };
     let key = EncodingKey::from_secret(cfg.jwt_secret.as_bytes());
-    encode(&Header::default(), &claims, &key)
-        .map_err(|e| sqlx::Error::Protocol(format!("jwt encode: {e}")))
+    encode(
+        &Header::new(jsonwebtoken::Algorithm::HS256),
+        &claims,
+        &key,
+    )
+    .map_err(|e| sqlx::Error::Protocol(format!("jwt encode: {e}")))
 }

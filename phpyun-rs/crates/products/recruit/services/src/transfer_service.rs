@@ -206,7 +206,12 @@ pub async fn split_account(
 
     // Splitting changes the password and possibly the role: every existing token tied to
     // the old uid must be invalidated.
-    let _ = jwt_blacklist::bump_pw_epoch(&state.redis, old_uid).await;
+    let _ = jwt_blacklist::bump_pw_epoch(
+        &state.redis,
+        old_uid,
+        state.config.pw_epoch_ttl_secs(),
+    )
+    .await;
 
     let _ = audit::emit(
         state,

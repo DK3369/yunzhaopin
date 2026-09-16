@@ -11,10 +11,12 @@
 //!     → `401 unauthenticated`
 //!   - JWT signature / `exp` / blacklist / pw-epoch fail
 //!     → `401 session_expired`
-//!   - JWT valid but `usertype != 3 (admin)`
+//!   - JWT valid but `usertype != 9 (admin)`
 //!     → `403 role_mismatch`
+//!   - Redis / DB errors on this path fail closed (401), unlike member
+//!     extractors which stay available when Redis blips.
 //!
-//! All three cases short-circuit before the handler runs, and before the
+//! All cases short-circuit before the handler runs, and before the
 //! request body is parsed — so even unauthenticated POSTs can't side-effect
 //! the request stream.
 
@@ -37,6 +39,9 @@ pub async fn layer(State(state): State<AppState>, req: Request, next: Next) -> R
         Err(e) => e.into_response(),
         Ok(user) if user.usertype != USERTYPE_ADMIN => ApiError::role_mismatch().into_response(),
         Ok(user) => {
+            if let Err(e) = admin_fail_closed(&state, &user).await {
+                return e.into_response();
+            }
             // Re-attach the typed user to the request extensions so handlers
             // that take `AuthenticatedUser` resolve it without a second JWT
             // verify (the extractor's body re-runs verification, which is
@@ -46,6 +51,21 @@ pub async fn layer(State(state): State<AppState>, req: Request, next: Next) -> R
             next.run(req).await
         }
     }
+}
+
+/// Member extractors treat Redis/DB blips as "still valid". Admin paths
+/// must not: a flaky Redis must not let a revoked admin token through.
+async fn admin_fail_closed(state: &AppState, user: &AuthenticatedUser) -> Result<(), ApiError> {
+    if crate::jwt_blacklist::is_revoked_strict(&state.redis, &user.jti).await? {
+        return Err(ApiError::session_expired());
+    }
+    if crate::jwt_blacklist::is_token_stale_strict(&state.redis, user.uid, user.iat).await? {
+        return Err(ApiError::session_expired());
+    }
+    if !crate::session_presence::is_active_strict(state.db.reader(), &user.jti).await? {
+        return Err(ApiError::session_expired());
+    }
+    Ok(())
 }
 
 /// `Parts`-only variant for tests.

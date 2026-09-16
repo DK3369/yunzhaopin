@@ -75,7 +75,7 @@ rust-i18n = "3"
 
 # ---- Tools ----
 chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1", features = ["v7"] }
+uuid = { version = "1", features = ["v4", "v7"] }
 dotenvy = "0.15"
 cron = "0.16"          # cron expression parsing for the scheduler
 async-trait = "0.1"    # used by the storage trait

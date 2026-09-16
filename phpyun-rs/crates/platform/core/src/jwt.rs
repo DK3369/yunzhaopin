@@ -11,9 +11,14 @@
 
 use crate::clock;
 use crate::{ApiError, AppResult};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+/// Fixed issuer written into every access/refresh token. Verify rejects
+/// tokens without this `iss` so a JWT minted for another service cannot
+/// be replayed here.
+pub const JWT_ISSUER: &str = "phpyun-rs";
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
@@ -25,6 +30,7 @@ pub struct Claims {
     pub jti: String,
     /// "access" | "refresh"
     pub typ: String,
+    pub iss: String,
 }
 
 pub struct JwtIssued {
@@ -65,6 +71,7 @@ pub fn issue_pair(
             exp: access_exp,
             jti: jti_a.clone(),
             typ: "access".into(),
+            iss: JWT_ISSUER.into(),
         },
     )?;
     let refresh = encode_claim(
@@ -77,6 +84,7 @@ pub fn issue_pair(
             exp: refresh_exp,
             jti: jti_r.clone(),
             typ: "refresh".into(),
+            iss: JWT_ISSUER.into(),
         },
     )?;
 
@@ -91,14 +99,23 @@ pub fn issue_pair(
 }
 
 fn encode_claim(key: &EncodingKey, claims: Claims) -> AppResult<String> {
-    encode(&Header::default(), &claims, key).map_err(ApiError::internal)
+    encode(&Header::new(Algorithm::HS256), &claims, key).map_err(ApiError::internal)
+}
+
+fn access_validation() -> Validation {
+    let mut v = Validation::new(Algorithm::HS256);
+    // We do not put `aud` on member/admin tokens.
+    v.validate_aud = false;
+    v.set_issuer(&[JWT_ISSUER]);
+    v.set_required_spec_claims(&["exp", "iss"]);
+    v
 }
 
 pub fn verify(secret: &str, token: &str) -> AppResult<Claims> {
     decode::<Claims>(
         token,
         &DecodingKey::from_secret(secret.as_bytes()),
-        &Validation::default(),
+        &access_validation(),
     )
     .map(|d| d.claims)
     .map_err(|e| match e.kind() {

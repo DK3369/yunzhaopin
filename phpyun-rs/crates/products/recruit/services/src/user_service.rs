@@ -21,6 +21,7 @@ use phpyun_core::{
     metrics::{auth_event, cache_hit, cache_miss},
     rate_limit, ApiError, AppResult, AppState,
 };
+use phpyun_core::extractors::USERTYPE_ADMIN;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
@@ -52,13 +53,18 @@ const DEV_EMAIL_LOGIN_CODE: &str = "111111";
 
 // ==================== Login ====================
 
-/// PHP `jycheck(..., wap_js_00062)`：仅当 `code_web` 勾了「前台登录」才校验图形码。
-pub async fn password_login_needs_captcha(state: &AppState) -> AppResult<bool> {
+/// PHP `jycheck(..., wap_js_00062)`：`code_web` 勾了「前台登录」必须验码；
+/// 账号连续失败 ≥3 次也强制图形码（不依赖后台开关）。
+pub async fn password_login_needs_captcha(state: &AppState, account: &str) -> AppResult<bool> {
     let v = setting_repo::find(state.db.reader(), "code_web")
         .await?
         .map(|s| s.value)
         .unwrap_or_default();
-    Ok(v.contains("前台登录") || v.contains("wap_js_00062"))
+    if v.contains("前台登录") || v.contains("wap_js_00062") {
+        return Ok(true);
+    }
+    let fails = rate_limit::login_fail_count(&state.redis, account).await?;
+    Ok(rate_limit::login_fail_requires_captcha(fails))
 }
 
 pub struct LoginResult {
@@ -79,6 +85,7 @@ pub async fn login(
     // 1. Pre-check the login-failure counter (distributed via Redis).
     //    Peek only — increment happens after a real failed attempt.
     rate_limit::check_login_fail(&state.redis, account).await?;
+    rate_limit::check_login_fail_ip(&state.redis, ctx.ip).await?;
 
     // 2. Look up the user (use the reader pool to offload the writer)
     let user: Member = match user_repo::find_for_login(state.db.reader(), account).await? {
@@ -86,6 +93,7 @@ pub async fn login(
         None => {
             auth_event("login_fail", Some("not_found"));
             rate_limit::record_login_fail(&state.redis, account).await;
+            rate_limit::record_login_fail_ip(&state.redis, ctx.ip).await;
             return Err(ApiError::bad_credentials());
         }
     };
@@ -105,11 +113,13 @@ pub async fn login(
     if !valid {
         auth_event("login_fail", Some("bad_password"));
         rate_limit::record_login_fail(&state.redis, account).await;
+        rate_limit::record_login_fail_ip(&state.redis, ctx.ip).await;
         return Err(ApiError::bad_credentials());
     }
 
     // 4. Login succeeded: clear the failure counter
     rate_limit::clear_login_fail(&state.redis, account).await;
+    rate_limit::clear_login_fail_ip(&state.redis, ctx.ip).await;
 
     // 5. Asynchronously upgrade legacy md5 hashes (writes the DB; the user does not wait)
     if !user.password.starts_with("$argon2") {
@@ -232,7 +242,7 @@ pub async fn impersonate(
     let user: Member = user_repo::find_by_uid(state.db.reader(), target_uid)
         .await?
         .ok_or_else(|| ApiError::param_invalid("user_not_found"))?;
-    if user.usertype == 3 {
+    if user.usertype == i32::from(USERTYPE_ADMIN) {
         return Err(ApiError::forbidden());
     }
     if user.status == 2 {
@@ -296,11 +306,13 @@ pub async fn login_with_sms_code(
     // 1. Rate limit (shares the same account key with password login to defend against
     //    credential-stuffing). Peek only; increment after a real failed attempt.
     rate_limit::check_login_fail(&state.redis, mobile).await?;
+    rate_limit::check_login_fail_ip(&state.redis, ctx.ip).await?;
 
     // 2. Verify the SMS code
     if !verify::verify(&state.redis, VerifyKind::SmsLogin, mobile, sms_code).await? {
         auth_event("login_fail", Some("bad_sms_code"));
         rate_limit::record_login_fail(&state.redis, mobile).await;
+        rate_limit::record_login_fail_ip(&state.redis, ctx.ip).await;
         return Err(ApiError::bad_credentials());
     }
 
@@ -319,6 +331,7 @@ pub async fn login_with_sms_code(
 
     // 4. Clear the failure counter
     rate_limit::clear_login_fail(&state.redis, mobile).await;
+    rate_limit::clear_login_fail_ip(&state.redis, ctx.ip).await;
 
     // 5. Validate persisted identity fields before issuing credentials.
     let (usertype, did) = auth_identity(&user)?;

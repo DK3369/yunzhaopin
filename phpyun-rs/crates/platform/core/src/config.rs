@@ -453,6 +453,14 @@ impl Config {
         Self::from_env()
     }
 
+    /// Redis TTL for `user:pw_epoch:{uid}`: longer than the longest JWT so a
+    /// password change / reset still invalidates every outstanding token.
+    pub fn pw_epoch_ttl_secs(&self) -> u64 {
+        let access = u64::try_from(self.jwt_access_ttl_secs.max(0)).unwrap_or(0);
+        let refresh = u64::try_from(self.jwt_refresh_ttl_secs.max(0)).unwrap_or(0);
+        access.max(refresh).saturating_add(86_400)
+    }
+
     pub fn from_env() -> anyhow::Result<Self> {
         Self {
             bind: env::var("BIND").unwrap_or_else(|_| "0.0.0.0:3000".into()),

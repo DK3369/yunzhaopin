@@ -13,7 +13,7 @@ use crate::state::AppState;
 use crate::ApiError;
 use axum::{
     extract::{FromRequest, FromRequestParts, Query, Request},
-    http::{header, request::Parts},
+    http::{header, request::Parts, HeaderMap},
     Json,
 };
 use serde::{de::DeserializeOwned, Deserialize};
@@ -39,10 +39,12 @@ pub struct AuthenticatedUser {
     pub exp: i64,
 }
 
-/// PHPYun usertype: 1 = jobseeker, 2 = employer, 3 = admin.
+/// PHPYun member `usertype`: 1 = jobseeker, 2 = employer, 3 = campus.
+/// Admin JWT uses **9** so a campus register cannot pass `/v1/admin`.
 pub const USERTYPE_JOBSEEKER: u8 = 1;
 pub const USERTYPE_EMPLOYER: u8 = 2;
-pub const USERTYPE_ADMIN: u8 = 3;
+pub const USERTYPE_CAMPUS: u8 = 3;
+pub const USERTYPE_ADMIN: u8 = 9;
 
 impl AuthenticatedUser {
     /// Reject forged / guest JWTs with `sub = 0`.
@@ -72,7 +74,7 @@ impl AuthenticatedUser {
         Ok(())
     }
 
-    /// Require the current user to be an admin (`usertype=3`).
+    /// Require the current user to be an admin (`usertype=9`).
     pub fn require_admin(&self) -> Result<(), ApiError> {
         self.require_uid()?;
         if self.usertype != USERTYPE_ADMIN {
@@ -184,7 +186,7 @@ pub struct ClientIp(pub String);
 
 /// Whether `peer_addr` belongs to a trusted upstream (loopback / private). Only
 /// when this returns `true` do we trust `XFF` / `XRI`.
-fn is_trusted_peer(addr: &std::net::IpAddr) -> bool {
+pub fn is_trusted_peer(addr: &std::net::IpAddr) -> bool {
     match addr {
         std::net::IpAddr::V4(v4) => v4.is_loopback() || v4.is_private() || v4.is_link_local(),
         std::net::IpAddr::V6(v6) => {
@@ -201,6 +203,32 @@ fn is_trusted_peer(addr: &std::net::IpAddr) -> bool {
     }
 }
 
+/// Shared trust model for `ClientIp` and Governor: only read forwarded
+/// headers when the TCP peer is a loopback/private proxy.
+pub fn resolve_client_ip(
+    peer: Option<std::net::IpAddr>,
+    headers: &HeaderMap,
+) -> String {
+    let trust_forwarded = peer.as_ref().is_some_and(is_trusted_peer);
+    if trust_forwarded {
+        if let Some(xff) = headers.get("x-forwarded-for").and_then(|v| v.to_str().ok()) {
+            if let Some(first) = xff.split(',').next() {
+                let ip = first.trim();
+                if !ip.is_empty() {
+                    return ip.to_string();
+                }
+            }
+        }
+        if let Some(xri) = headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
+            let ip = xri.trim();
+            if !ip.is_empty() {
+                return ip.to_string();
+            }
+        }
+    }
+    peer.map(|p| p.to_string()).unwrap_or_else(|| "0.0.0.0".into())
+}
+
 impl<S: Send + Sync> FromRequestParts<S> for ClientIp {
     type Rejection = std::convert::Infallible;
 
@@ -209,44 +237,7 @@ impl<S: Send + Sync> FromRequestParts<S> for ClientIp {
             .extensions
             .get::<axum::extract::ConnectInfo<std::net::SocketAddr>>()
             .map(|c| c.0.ip());
-
-        // Only consult XFF/XRI when peer_addr is a trusted upstream (loopback / private).
-        let trust_forwarded = peer.as_ref().map(is_trusted_peer).unwrap_or(false);
-
-        if trust_forwarded {
-            // 1. X-Forwarded-For: take the first segment.
-            if let Some(xff) = parts
-                .headers
-                .get("x-forwarded-for")
-                .and_then(|v| v.to_str().ok())
-            {
-                if let Some(first) = xff.split(',').next() {
-                    let ip = first.trim();
-                    if !ip.is_empty() {
-                        return Ok(ClientIp(ip.to_string()));
-                    }
-                }
-            }
-
-            // 2. X-Real-IP
-            if let Some(xri) = parts.headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
-                let ip = xri.trim();
-                if !ip.is_empty() {
-                    return Ok(ClientIp(ip.to_string()));
-                }
-            }
-        }
-
-        // 3. peer_addr (requires the server to have `ConnectInfo` enabled).
-        if let Some(connect_info) = parts
-            .extensions
-            .get::<axum::extract::ConnectInfo<std::net::SocketAddr>>()
-        {
-            return Ok(ClientIp(connect_info.0.ip().to_string()));
-        }
-
-        // 4. Fallback.
-        Ok(ClientIp("0.0.0.0".into()))
+        Ok(ClientIp(resolve_client_ip(peer, &parts.headers)))
     }
 }
 

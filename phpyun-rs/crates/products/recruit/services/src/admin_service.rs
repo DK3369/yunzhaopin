@@ -1,4 +1,4 @@
-//! Admin backend service — handles only cross-aggregate operations for admin usertype=3.
+//! Admin backend service — handles only cross-aggregate operations for admin usertype=9.
 //!
 //! Permission checks are performed at the handler layer via `AuthenticatedUser::require_admin()`;
 //! this service assumes the caller is already an admin. All write operations go through

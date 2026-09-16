@@ -1,9 +1,13 @@
 //! PHP `adminCommon::admin_get_user_login` + `getPower` + `getAdminNavList`.
 
 use std::collections::HashSet;
+use std::sync::OnceLock;
+use std::time::Duration;
 
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::cache::SimpleCache;
+use phpyun_core::extractors::USERTYPE_ADMIN;
 use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::{clock, numeric, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::admin_rbac::repo::{self as rbac_repo, AdminNavRow};
@@ -66,6 +70,7 @@ pub async fn login(
     let lock_fails = !state.config.env.is_dev_or_test();
     if lock_fails {
         rate_limit::check_login_fail(&state.redis, &rl_account).await?;
+        rate_limit::check_login_fail_ip(&state.redis, ctx.ip).await?;
     }
 
     let user = match rbac_repo::find_login_user(state.db.reader(), &account).await? {
@@ -73,6 +78,7 @@ pub async fn login(
         None => {
             if lock_fails {
                 rate_limit::record_login_fail(&state.redis, &rl_account).await;
+                rate_limit::record_login_fail_ip(&state.redis, ctx.ip).await;
             }
             return Err(ApiError::bad_credentials());
         }
@@ -85,11 +91,13 @@ pub async fn login(
     if !hashed.eq_ignore_ascii_case(&user.password) {
         if lock_fails {
             rate_limit::record_login_fail(&state.redis, &rl_account).await;
+            rate_limit::record_login_fail_ip(&state.redis, ctx.ip).await;
         }
         return Err(ApiError::bad_credentials());
     }
     if lock_fails {
         rate_limit::clear_login_fail(&state.redis, &rl_account).await;
+        rate_limit::clear_login_fail_ip(&state.redis, ctx.ip).await;
     }
 
     let did = numeric::checked_db(user.did, "phpyun_admin_user.did")?;
@@ -100,13 +108,13 @@ pub async fn login(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(&state.config, user.uid, 3, did)?;
+    } = issue_pair(&state.config, user.uid, USERTYPE_ADMIN, did)?;
 
     let _ = user_session_service::record_login(
         state,
         LoginRecord {
             uid: user.uid,
-            usertype: 3,
+            usertype: USERTYPE_ADMIN,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -142,7 +150,7 @@ pub async fn login(
 
     Ok(AdminLoginResult {
         uid: user.uid,
-        usertype: 3,
+        usertype: USERTYPE_ADMIN,
         username: user.username,
         name: user.name,
         group_name,
@@ -151,17 +159,48 @@ pub async fn login(
     })
 }
 
-/// JWT `usertype=3` plus a live `phpyun_admin_user.status=1` row.
-/// Use on destructive admin writes (delete / purge / update-as-delete).
-pub async fn require_active_admin(state: &AppState, actor: &AuthenticatedUser) -> AppResult<()> {
-    actor.require_admin()?;
-    let row = rbac_repo::find_by_uid(state.db.reader(), actor.uid)
+const ADMIN_LIVE_TTL_SECS: u64 = 60;
+const ADMIN_LIVE_CAPACITY: u64 = 4_096;
+
+static ADMIN_LIVE: OnceLock<SimpleCache<u64, ()>> = OnceLock::new();
+
+fn admin_live_cache() -> &'static SimpleCache<u64, ()> {
+    ADMIN_LIVE.get_or_init(|| {
+        SimpleCache::new(ADMIN_LIVE_CAPACITY, Duration::from_secs(ADMIN_LIVE_TTL_SECS))
+    })
+}
+
+async fn load_active_admin(state: &AppState, uid: u64) -> AppResult<()> {
+    let row = rbac_repo::find_by_uid(state.db.reader(), uid)
         .await?
         .ok_or_else(ApiError::unauth)?;
     if row.status != 1 {
         return Err(ApiError::locked());
     }
     Ok(())
+}
+
+/// JWT `usertype=9` plus a live `phpyun_admin_user.status=1` row.
+/// Positive hits are cached 60s (L1). Disable/delete paths must call
+/// [`invalidate_admin_live`].
+pub async fn require_active_admin(state: &AppState, actor: &AuthenticatedUser) -> AppResult<()> {
+    actor.require_admin()?;
+    if admin_live_cache().get(&actor.uid).await.is_some() {
+        return Ok(());
+    }
+    load_active_admin(state, actor.uid).await?;
+    admin_live_cache().insert(actor.uid, ()).await;
+    Ok(())
+}
+
+/// Same as [`require_active_admin`] but always hits MySQL (delete/purge).
+pub async fn require_active_admin_fresh(state: &AppState, actor: &AuthenticatedUser) -> AppResult<()> {
+    actor.require_admin()?;
+    load_active_admin(state, actor.uid).await
+}
+
+pub async fn invalidate_admin_live(uid: u64) {
+    admin_live_cache().invalidate(&uid).await;
 }
 
 pub async fn me(state: &AppState, user: &AuthenticatedUser) -> AppResult<AdminMe> {
@@ -189,7 +228,7 @@ pub async fn me(state: &AppState, user: &AuthenticatedUser) -> AppResult<AdminMe
     };
     Ok(AdminMe {
         uid: row.uid,
-        usertype: 3,
+        usertype: USERTYPE_ADMIN,
         username: row.username,
         name: row.name,
         group_name,

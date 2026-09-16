@@ -11,6 +11,7 @@
 //! The admin JWT role check is applied inside [`router`] — callers cannot
 //! obtain an unguarded admin tree.
 
+pub mod admin_live_guard;
 pub mod delete_guard;
 pub mod dto;
 pub mod openapi;
@@ -31,6 +32,10 @@ pub fn router(state: AppState) -> Router<AppState> {
                     .layer(axum::middleware::from_fn_with_state(
                         state.clone(),
                         crate::delete_guard::layer,
+                    ))
+                    .layer(axum::middleware::from_fn_with_state(
+                        state.clone(),
+                        crate::admin_live_guard::layer,
                     ))
                     .layer(axum::middleware::from_fn_with_state(
                         state,

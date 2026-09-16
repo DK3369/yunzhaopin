@@ -48,9 +48,15 @@ fn prefix(key: &str) -> &'static str {
 
 const LOGIN_FAIL_MAX: u64 = 5;
 const LOGIN_FAIL_WINDOW: Duration = Duration::from_secs(900);
+const LOGIN_IP_MAX: u64 = 20;
+const LOGIN_FAIL_CAPTCHA_AFTER: u64 = 3;
 
 fn login_fail_key(account: &str) -> String {
     format!("rl:login:fail:{account}")
+}
+
+fn login_ip_key(ip: &str) -> String {
+    format!("rl:login:ip:{ip}")
 }
 
 /// Peek the failure counter. Does **not** increment — callers increment only
@@ -67,6 +73,32 @@ pub async fn check_login_fail(kv: &Kv, account: &str) -> Result<(), ApiError> {
     Ok(())
 }
 
+/// Per-IP login failure budget (20 / 15 min). Independent of the account bucket.
+pub async fn check_login_fail_ip(kv: &Kv, ip: &str) -> Result<(), ApiError> {
+    let current = match kv.get_str(&login_ip_key(ip)).await? {
+        Some(s) => s.parse::<u64>().unwrap_or(u64::MAX),
+        None => 0,
+    };
+    if current >= LOGIN_IP_MAX {
+        rate_limit_blocked("rl:login");
+        return Err(ApiError::rate_limit());
+    }
+    Ok(())
+}
+
+/// Current account-failure count (0 if the key is missing). Used to force a
+/// captcha after [`LOGIN_FAIL_CAPTCHA_AFTER`] failures.
+pub async fn login_fail_count(kv: &Kv, account: &str) -> Result<u64, ApiError> {
+    Ok(match kv.get_str(&login_fail_key(account)).await? {
+        Some(s) => s.parse::<u64>().unwrap_or(0),
+        None => 0,
+    })
+}
+
+pub fn login_fail_requires_captcha(count: u64) -> bool {
+    count >= LOGIN_FAIL_CAPTCHA_AFTER
+}
+
 /// Count one failed login. Redis errors are ignored so a blip cannot turn a
 /// 401 into a 500 on the failure path.
 pub async fn record_login_fail(kv: &Kv, account: &str) {
@@ -75,6 +107,18 @@ pub async fn record_login_fail(kv: &Kv, account: &str) {
         &login_fail_key(account),
         LimitRule {
             max: LOGIN_FAIL_MAX,
+            window: LOGIN_FAIL_WINDOW,
+        },
+    )
+    .await;
+}
+
+pub async fn record_login_fail_ip(kv: &Kv, ip: &str) {
+    let _ = check_and_incr(
+        kv,
+        &login_ip_key(ip),
+        LimitRule {
+            max: LOGIN_IP_MAX,
             window: LOGIN_FAIL_WINDOW,
         },
     )
@@ -107,6 +151,10 @@ pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
 /// disturb the main flow).
 pub async fn clear_login_fail(kv: &Kv, account: &str) {
     let _ = kv.del(&login_fail_key(account)).await;
+}
+
+pub async fn clear_login_fail_ip(kv: &Kv, ip: &str) {
+    let _ = kv.del(&login_ip_key(ip)).await;
 }
 
 /// Public list dump: 60 requests / minute / IP.

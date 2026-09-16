@@ -259,6 +259,7 @@ pub async fn set_rbac_user_status(
     if n == 0 {
         return Err(ApiError::param_invalid("admin_user_not_found"));
     }
+    crate::admin_auth_service::invalidate_admin_live(uid).await;
     audit_write(state, actor, "admin.rbac.status", format!("uid:{uid}")).await;
     Ok(())
 }

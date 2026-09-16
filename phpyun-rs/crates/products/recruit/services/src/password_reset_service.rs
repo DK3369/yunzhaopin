@@ -88,7 +88,12 @@ pub async fn reset_with_sms(
     user_repo::update_password_with_salt(state.db.pool(), user.uid, &password_hash, &salt).await?;
 
     // After password recovery, every existing access/refresh token for this uid must be invalidated immediately
-    let _ = jwt_blacklist::bump_pw_epoch(&state.redis, user.uid).await;
+    let _ = jwt_blacklist::bump_pw_epoch(
+        &state.redis,
+        user.uid,
+        state.config.pw_epoch_ttl_secs(),
+    )
+    .await;
 
     auth_event("reset_pw_success", None);
     let _ = audit::emit(
@@ -202,7 +207,12 @@ pub async fn reset_with_email(
 
     user_repo::update_password_with_salt(state.db.pool(), user.uid, &password_hash, &salt).await?;
 
-    let _ = jwt_blacklist::bump_pw_epoch(&state.redis, user.uid).await;
+    let _ = jwt_blacklist::bump_pw_epoch(
+        &state.redis,
+        user.uid,
+        state.config.pw_epoch_ttl_secs(),
+    )
+    .await;
 
     auth_event("reset_pw_success", None);
     let _ = audit::emit(

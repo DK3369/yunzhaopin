@@ -3,7 +3,7 @@
 //! Covers the core paths of PHPYun `wap/resume` + `mcenter/resume`: viewing, updating the master table, and toggling display status.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::extractors::USERTYPE_EMPLOYER;
+use phpyun_core::extractors::{USERTYPE_ADMIN, USERTYPE_CAMPUS, USERTYPE_EMPLOYER};
 use phpyun_core::ApiError;
 use phpyun_core::{background, clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume::repo::ResumeFilter;
@@ -95,7 +95,10 @@ pub fn browse_resume_async(
     if viewer.uid == resume_uid {
         return;
     }
-    if viewer.usertype != 2 && viewer.usertype != 3 {
+    if viewer.usertype != USERTYPE_EMPLOYER
+        && viewer.usertype != USERTYPE_CAMPUS
+        && viewer.usertype != USERTYPE_ADMIN
+    {
         return;
     }
     let pool = state.db.pool().clone();
@@ -318,8 +321,13 @@ pub async fn open_resume_check(
 
     let full = match mode {
         1 => true,
-        // PHP: `($uid && usertype==2) || usertype==3`
-        2 => user.is_some_and(|u| u.usertype == 2 || u.usertype == 3),
+        // PHP: `($uid && usertype==2) || usertype==3` (admin). Campus (3) and
+        // admin JWT (9) both keep the PHP "privileged viewer" behaviour.
+        2 => user.is_some_and(|u| {
+            u.usertype == USERTYPE_EMPLOYER
+                || u.usertype == USERTYPE_CAMPUS
+                || u.usertype == USERTYPE_ADMIN
+        }),
         3 => match user {
             Some(u) if u.usertype == 2 => {
                 phpyun_models::job::repo::count_posted_by_uid(state.db.reader(), u.uid)

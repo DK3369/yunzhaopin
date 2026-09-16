@@ -229,6 +229,13 @@ impl Kv {
         matches!(timeout(self.op_timeout, fut).await, Ok(Ok(true)))
     }
 
+    /// Same as [`Self::exists`], but Redis / timeout errors surface as `Err`.
+    pub async fn exists_checked(&self, key: &str) -> Result<bool, ApiError> {
+        let mut c = self.inner.clone();
+        self.run("exists", async move { c.exists::<_, bool>(key).await })
+            .await
+    }
+
     pub async fn expire(&self, key: &str, ttl_secs: i64) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         self.run(

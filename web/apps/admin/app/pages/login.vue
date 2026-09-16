@@ -22,7 +22,7 @@ async function login() {
     return
   }
   const me = body.data
-  if (me.usertype !== 3) {
+  if (me.usertype !== 9) {
     err.value = lc('ui.need_admin', null, '需要管理员账号')
     await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' })
     return

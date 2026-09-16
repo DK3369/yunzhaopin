@@ -130,7 +130,7 @@ pub async fn change_password(
     user_repo::update_password_with_salt(state.db.pool(), uid, &new_hash, &salt).await?;
 
     // Revoke all existing access/refresh tokens for this uid (force re-login on every device)
-    let _ = jwt_blacklist::bump_pw_epoch(&state.redis, uid).await;
+    let _ = jwt_blacklist::bump_pw_epoch(&state.redis, uid, state.config.pw_epoch_ttl_secs()).await;
 
     // Invalidate cache + emit audit log
     user_service::invalidate_profile(state, uid).await;

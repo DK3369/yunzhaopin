@@ -69,12 +69,20 @@ pub async fn mlogin(
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginForm>,
 ) -> AppResult<ApiResponse<LoginData>> {
-    if let (Some(cid), Some(code)) = (form.captcha_cid.as_deref(), form.authcode.as_deref()) {
-        if !cid.is_empty() && !code.is_empty() {
-            let code_up = code.to_uppercase();
-            if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
-                return Err(ApiError::captcha());
-            }
+    if user_service::password_login_needs_captcha(&state, &form.username).await? {
+        let cid = form
+            .captcha_cid
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .ok_or_else(ApiError::captcha)?;
+        let code = form
+            .authcode
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .ok_or_else(ApiError::captcha)?;
+        let code_up = code.to_uppercase();
+        if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
+            return Err(ApiError::captcha());
         }
     }
     let ua = headers

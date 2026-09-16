@@ -593,6 +593,9 @@ pub async fn delete_domain_admins(
     uids: &[u64],
 ) -> AppResult<()> {
     gap2::delete_domain_admins(state.db.pool(), uids).await?;
+    for uid in uids {
+        crate::admin_auth_service::invalidate_admin_live(*uid).await;
+    }
     audit_write(state, actor, "admin.domain.admin.delete", format!("{uids:?}")).await;
     Ok(())
 }

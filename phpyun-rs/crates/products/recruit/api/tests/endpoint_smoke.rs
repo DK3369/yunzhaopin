@@ -75,7 +75,7 @@ async fn smoke_every_v1_post_endpoint() {
         .expect("AppState::build (DB / Redis reachable?)");
     let router = build_router_with_state(&config, state.clone()).with_state(state.clone());
 
-    let admin_token = issue_token_with_session(&state, &config, 3).await;
+    let admin_token = issue_token_with_session(&state, &config, 9).await;
     let user_token = issue_token_with_session(&state, &config, 1).await;
 
     // Enumerate POST paths from the OpenAPI spec.

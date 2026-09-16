@@ -75,7 +75,7 @@ pub async fn mlogin(
     ValidatedJson(form): ValidatedJson<LoginForm>,
 ) -> AppResult<ApiResponse<AuthTokenData>> {
     // 与 PHP `notice::jycheck` + `code_web`「前台登录」一致：未勾选则不验图形码。
-    if user_service::password_login_needs_captcha(&state).await? {
+    if user_service::password_login_needs_captcha(&state, &form.username).await? {
         let cid = form
             .captcha_cid
             .as_deref()

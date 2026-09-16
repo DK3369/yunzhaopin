@@ -67,6 +67,33 @@ pub async fn is_active(db: &MySqlPool, jti_access: &str) -> bool {
     }
 }
 
+/// Admin-path variant: a DB error is a deny (401), not a pass.
+pub async fn is_active_strict(db: &MySqlPool, jti_access: &str) -> Result<bool, crate::ApiError> {
+    let key = jti_access.to_string();
+    if cache().get(&key).await.is_some() {
+        return Ok(true);
+    }
+    let result: Result<Option<(i64,)>, sqlx::Error> = sqlx::query_as(
+        "SELECT 1 FROM phpyun_user_session \
+          WHERE jti_access = ? AND revoked_at = 0 LIMIT 1",
+    )
+    .bind(jti_access)
+    .fetch_optional(db)
+    .await;
+
+    match result {
+        Ok(Some(_)) => {
+            cache().insert(key, ()).await;
+            Ok(true)
+        }
+        Ok(None) => Ok(false),
+        Err(e) => {
+            tracing::warn!(error = %e, "session_presence DB check errored; fail-closed");
+            Err(crate::ApiError::session_expired())
+        }
+    }
+}
+
 /// Eagerly cache `jti_access` as active. Call from login / register / refresh
 /// paths so the first authed request on the new token skips the DB lookup.
 pub async fn mark_active(jti_access: &str) {
