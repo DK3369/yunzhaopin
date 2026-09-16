@@ -21,6 +21,8 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 | `GET/POST /v1/wap/companies/detail/full` | 原 detail + `jobs`(p1 s5) + `news` + `products` + `messages`(p1) | 企业详情页扇出 |
 | `GET/POST /v1/wap/jobs/sidebar` | `rec` 30 + ads 507/504/7 | 职位列表侧栏 |
 | `GET/POST /v1/wap/companies/sidebar` | `rec` 10 | 企业列表侧栏 |
+| `POST /v1/admin/dashboard/full` | `home` + `ajax_statis` + `month_statis` + `ajax_right` + `chart`(getweb)；可选 `msg_num` | 后台首页扇出 |
+| `POST /v1/admin/company-contents/{list,status,statist,status-body,delete}` | body `kind=news\|product`；`list` 附带 `statist` | 10 条 `company-news/*`、`company-products/*` |
 
 既有聚合（未改语义）：`/v1/wap/rankings`、`/v1/mcenter/messages/unread-summary`、`/v1/mcenter/company-contents`、`/v1/wap/regions`。
 
@@ -34,6 +36,8 @@ OpenAPI 约 38 个操作。site 可能仍打其中若干条。勿再扩展旧模
 | `POST /v1/mcenter/company/news`、`/list`、`/update` | 同上，`kind=news` |
 | `GET/POST /v1/wap/dict/cities`、`/dict/cities/by-province` | `/v1/wap/regions`、`/v1/wap/regions/children` |
 | `GET/POST /v1/wap/home/aggregate` | `/v1/wap/home/full` |
+| `POST /v1/admin/dashboard/overview`、`/recent-signups` | `POST /v1/admin/dashboard/full` |
+| 10 条 `POST /v1/admin/company-news/*`、`/company-products/*` | `POST /v1/admin/company-contents/{list,status,statist,status-body,delete}`，body `kind=news\|product` |
 | 9 条 `POST /v1/mcenter/resume/{expects,edus,works,projects,skills,languages,trainings,certs,others}/list` | `POST /v1/mcenter/resume/bundle`（单条 create/update 仍走分子资源） |
 | `POST /v1/mcenter/com-stats/today`、`/v1/mcenter/dashboard/year-report` | `POST /v1/mcenter/com-dashboard/full` |
 | `POST /v1/mcenter/broadcasts/unread-count`、`/warnings/unread-count` | `POST /v1/mcenter/messages/unread-summary` |
@@ -66,8 +70,7 @@ OpenAPI 约 38 个操作。site 可能仍打其中若干条。勿再扩展旧模
 
 ## 下一批（未做）
 
-- site 公开页 / 会员页切已有聚合（首页 `home/full`、详情 `*/detail/full`、侧栏 `*/sidebar`，会员 `dashboard/full` / `resume/bundle` / `jobs/overview` 等）。
-- Admin：`dashboard/full`；`company-news`/`company-products` 仿 `company-contents`（`kind`）。
+- site 公开页 / 会员页切已有聚合（首页 `home/full`、详情 `*/detail/full`、侧栏 `*/sidebar`，会员 `dashboard/full` / `resume/bundle` / `jobs/overview` 等）；admin 首页切 `dashboard/full`。
 - archive 其余 12 组 list+statist、`user-logs`/`company-logs` 按 kind 收口、company-certs 双轨。
 - 不要并 look/views/banners，不要删旧路由。
 

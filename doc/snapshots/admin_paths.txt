@@ -43,6 +43,11 @@
 /v1/admin/company-certs/review
 /v1/admin/company-certs/statist
 /v1/admin/company-certs/status-body
+/v1/admin/company-contents/delete
+/v1/admin/company-contents/list
+/v1/admin/company-contents/statist
+/v1/admin/company-contents/status
+/v1/admin/company-contents/status-body
 /v1/admin/company-expire
 /v1/admin/company-interviews
 /v1/admin/company-logs
@@ -96,6 +101,7 @@
 /v1/admin/dashboard/ajax-right
 /v1/admin/dashboard/ajax-statis
 /v1/admin/dashboard/chart
+/v1/admin/dashboard/full
 /v1/admin/dashboard/home-data
 /v1/admin/dashboard/month-statis
 /v1/admin/dashboard/msg-num

@@ -8,8 +8,10 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
+        .route("/dashboard/full", post(dashboard_full))
         .route("/dashboard/overview", post(overview))
         .route("/dashboard/recent-signups", post(recent_signups))
         .route("/dashboard/msg-num", post(msg_num))
@@ -38,11 +40,13 @@ pub struct OverviewView {
 }
 
 /// Review queue + activity snapshot
+#[deprecated(note = "use /v1/admin/dashboard/full")]
 #[utoipa::path(
     post,
     path = "/v1/admin/dashboard/overview",
     tag = "admin",
     security(("bearer" = [])),
+    description = "即将失效：请改用 POST /v1/admin/dashboard/full",
     responses((status = 200, description = "ok", body = OverviewView))
 )]
 pub async fn overview(
@@ -112,12 +116,14 @@ pub struct RecentUser {
 }
 
 /// Recent signups
+#[deprecated(note = "use /v1/admin/dashboard/full")]
 #[utoipa::path(
     post,
     path = "/v1/admin/dashboard/recent-signups",
     tag = "admin",
     security(("bearer" = [])),
     params(RecentQuery),
+    description = "即将失效：请改用 POST /v1/admin/dashboard/full",
     responses((status = 200, description = "ok"))
 )]
 pub async fn recent_signups(
@@ -257,6 +263,78 @@ pub async fn chart(
         )
         .await?,
     ))
+}
+
+#[derive(Debug, Deserialize, Default, Validate, ToSchema)]
+#[serde(default)]
+pub struct DashboardFullBody {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    pub with_msg_num: Option<i32>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct DashboardFullView {
+    #[schema(value_type = Object)]
+    pub home: serde_json::Value,
+    #[schema(value_type = Object)]
+    pub ajax_statis: serde_json::Value,
+    #[schema(value_type = Object)]
+    pub month_statis: serde_json::Value,
+    #[schema(value_type = Object)]
+    pub ajax_right: serde_json::Value,
+    #[schema(value_type = Object)]
+    pub chart: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = Object)]
+    pub msg_num: Option<phpyun_models::admin_msg::repo::AdminMsgNum>,
+}
+
+/// Homepage bundle: home-data + ajax-statis + month-statis + ajax-right + chart(getweb).
+#[utoipa::path(
+    post,
+    path = "/v1/admin/dashboard/full",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = DashboardFullBody,
+    responses((status = 200, description = "ok", body = DashboardFullView))
+)]
+pub async fn dashboard_full(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<DashboardFullBody>,
+) -> AppResult<ApiResponse<DashboardFullView>> {
+    user.require_admin()?;
+    let month_q = || admin_dashboard_service::MonthStatisQuery {
+        sdate: None,
+        edate: None,
+    };
+    let (home, ajax_statis, month_statis, ajax_right, chart) = tokio::join!(
+        admin_dashboard_service::home_data(&state, &user),
+        admin_dashboard_service::ajax_statis(
+            &state,
+            &user,
+            admin_dashboard_service::AjaxStatisQuery {
+                r#type: None,
+                area: None,
+            },
+        ),
+        admin_dashboard_service::month_statis(&state, &user, month_q()),
+        admin_dashboard_service::ajax_right(&state, &user),
+        admin_dashboard_service::chart(&state, &user, "getweb", month_q()),
+    );
+    let msg_num = if b.with_msg_num.unwrap_or(0) != 0 {
+        Some(admin_dashboard_service::msg_num(&state, &user).await?)
+    } else {
+        None
+    };
+    Ok(ApiResponse::data(DashboardFullView {
+        home: home?,
+        ajax_statis: ajax_statis?,
+        month_statis: month_statis?,
+        ajax_right: ajax_right?,
+        chart: chart?,
+        msg_num,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/cache/clear", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]

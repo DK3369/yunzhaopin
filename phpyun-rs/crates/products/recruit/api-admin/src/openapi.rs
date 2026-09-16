@@ -5,6 +5,7 @@ use utoipa::OpenApi;
 
 use crate::v1;
 
+#[allow(deprecated)]
 #[derive(OpenApi)]
 #[openapi(
     info(
@@ -34,6 +35,7 @@ use crate::v1;
         v1::nav::list,
         v1::nav::create,
         v1::nav::update,
+        v1::dashboard::dashboard_full,
         v1::dashboard::overview,
         v1::dashboard::recent_signups,
         v1::dashboard::msg_num,
@@ -266,6 +268,11 @@ use crate::v1;
         v1::archive::news_statist,
         v1::archive::news_status_body,
         v1::archive::delete_news,
+        v1::archive::company_contents_list,
+        v1::archive::company_contents_status,
+        v1::archive::company_contents_statist,
+        v1::archive::company_contents_status_body,
+        v1::archive::company_contents_delete,
         v1::archive::list_interviews,
         v1::archive::list_company_logs,
         v1::archive::list_userid_job_logs,
@@ -407,6 +414,14 @@ use crate::v1;
             v1::reports::AdminReportItem,
             v1::reports::SetReportStatusForm,
             v1::feedback::AdminFeedbackItem,
+            v1::dashboard::DashboardFullView,
+            v1::dashboard::DashboardFullBody,
+            v1::archive::ContentKindQuery,
+            v1::archive::ContentKindBody,
+            v1::archive::ContentStatusForm,
+            v1::archive::ContentStatusBodyForm,
+            v1::archive::ContentDeleteForm,
+            v1::archive::CompanyContentListData,
             v1::feedback::SetFeedbackStatusForm,
             phpyun_models::job::view::JobSummary,
             v1::jobs::SetJobStateForm,

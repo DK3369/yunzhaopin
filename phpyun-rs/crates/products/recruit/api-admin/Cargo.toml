@@ -6,6 +6,7 @@ description = "Admin HTTP handlers for PHPYun (`/v1/admin/*`)"
 
 [dependencies]
 axum.workspace = true
+tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 validator.workspace = true

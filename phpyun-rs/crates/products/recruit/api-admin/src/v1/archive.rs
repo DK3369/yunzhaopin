@@ -7,18 +7,20 @@ use axum::{
 };
 use phpyun_core::dto::{CreatedId, IdBody, IdsBody};
 use phpyun_core::{
-    ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
+    ApiError, ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination,
+    ValidatedJson,
 };
 use phpyun_models::admin_gap::entity::*;
 use phpyun_models::admin_gap::extra::RatingDetailIn;
 use phpyun_services::admin_archive_service;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use utoipa::ToSchema;
 use validator::Validate;
 
 use crate::dto::AdminPaged;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/user-photos", post(list_user_photos))
@@ -83,6 +85,14 @@ pub fn routes() -> Router<AppState> {
         .route("/company-news/statist", post(news_statist))
         .route("/company-news/status-body", post(news_status_body))
         .route("/company-news/delete", post(delete_news))
+        .route("/company-contents/list", post(company_contents_list))
+        .route("/company-contents/status", post(company_contents_status))
+        .route("/company-contents/statist", post(company_contents_statist))
+        .route(
+            "/company-contents/status-body",
+            post(company_contents_status_body),
+        )
+        .route("/company-contents/delete", post(company_contents_delete))
         .route("/company-interviews", post(list_interviews))
         .route("/company-logs", post(list_company_logs))
         .route("/company-logs/userid-job", post(list_userid_job_logs))
@@ -480,7 +490,8 @@ pub async fn set_resume_shows(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-products", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/list")]
+#[utoipa::path(post, path = "/v1/admin/company-products", tag = "admin", security(("bearer" = [])), description = "即将失效：请改用 POST /v1/admin/company-contents/list（body.kind=product）", responses((status = 200, description = "ok")))]
 pub async fn list_products(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -502,7 +513,8 @@ pub async fn list_products(
     )))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-products/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/status")]
+#[utoipa::path(post, path = "/v1/admin/company-products/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, description = "即将失效：请改用 POST /v1/admin/company-contents/status（body.kind=product）", responses((status = 200, description = "ok")))]
 pub async fn set_products(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -514,7 +526,8 @@ pub async fn set_products(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-news", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/list")]
+#[utoipa::path(post, path = "/v1/admin/company-news", tag = "admin", security(("bearer" = [])), description = "即将失效：请改用 POST /v1/admin/company-contents/list（body.kind=news）", responses((status = 200, description = "ok")))]
 pub async fn list_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -536,7 +549,8 @@ pub async fn list_news(
     )))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-news/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/status")]
+#[utoipa::path(post, path = "/v1/admin/company-news/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, description = "即将失效：请改用 POST /v1/admin/company-contents/status（body.kind=news）", responses((status = 200, description = "ok")))]
 pub async fn set_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1030,7 +1044,8 @@ pub async fn banner_status_body(
     ))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-news/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/statist")]
+#[utoipa::path(post, path = "/v1/admin/company-news/statist", tag = "admin", security(("bearer" = [])), description = "即将失效：请改用 POST /v1/admin/company-contents/statist（body.kind=news）", responses((status = 200, description = "ok")))]
 pub async fn news_statist(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1041,7 +1056,8 @@ pub async fn news_statist(
     ))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-news/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/status-body")]
+#[utoipa::path(post, path = "/v1/admin/company-news/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, description = "即将失效：请改用 POST /v1/admin/company-contents/status-body（body.kind=news）", responses((status = 200, description = "ok")))]
 pub async fn news_status_body(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1053,7 +1069,8 @@ pub async fn news_status_body(
     ))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-news/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/delete")]
+#[utoipa::path(post, path = "/v1/admin/company-news/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, description = "即将失效：请改用 POST /v1/admin/company-contents/delete（body.kind=news）", responses((status = 200, description = "ok")))]
 pub async fn delete_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1065,7 +1082,8 @@ pub async fn delete_news(
     Ok(ApiMessage::new("admin_user_00187", msg))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-products/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/statist")]
+#[utoipa::path(post, path = "/v1/admin/company-products/statist", tag = "admin", security(("bearer" = [])), description = "即将失效：请改用 POST /v1/admin/company-contents/statist（body.kind=product）", responses((status = 200, description = "ok")))]
 pub async fn product_statist(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1076,7 +1094,8 @@ pub async fn product_statist(
     ))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-products/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/status-body")]
+#[utoipa::path(post, path = "/v1/admin/company-products/status-body", tag = "admin", security(("bearer" = [])), request_body = UidOrIdForm, description = "即将失效：请改用 POST /v1/admin/company-contents/status-body（body.kind=product）", responses((status = 200, description = "ok")))]
 pub async fn product_status_body(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1088,7 +1107,8 @@ pub async fn product_status_body(
     ))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-products/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/admin/company-contents/delete")]
+#[utoipa::path(post, path = "/v1/admin/company-products/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, description = "即将失效：请改用 POST /v1/admin/company-contents/delete（body.kind=product）", responses((status = 200, description = "ok")))]
 pub async fn delete_products(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1097,6 +1117,198 @@ pub async fn delete_products(
 ) -> AppResult<ApiMessage> {
     user.require_admin()?;
     let msg = admin_archive_service::delete_products(&state, &user, &f.ids, uri.path()).await?;
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
+
+fn parse_content_kind(kind: &str) -> AppResult<&'static str> {
+    match kind {
+        "news" => Ok("news"),
+        "product" => Ok("product"),
+        _ => Err(ApiError::param_invalid("kind")),
+    }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentKindQuery {
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+    #[serde(flatten)]
+    #[validate(nested)]
+    pub q: KwQuery,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentKindBody {
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentStatusForm {
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+    #[serde(flatten)]
+    #[validate(nested)]
+    pub inner: IdsStatusForm,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentStatusBodyForm {
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+    #[serde(flatten)]
+    pub inner: UidOrIdForm,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentDeleteForm {
+    #[validate(length(min = 1, max = 16))]
+    pub kind: String,
+    #[serde(flatten)]
+    #[validate(nested)]
+    pub inner: IdsBody,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CompanyContentListData {
+    #[serde(flatten)]
+    #[schema(value_type = Object)]
+    pub page: AdminPaged<CompanyContentAdminRow>,
+    #[schema(value_type = Object)]
+    pub statist: PhotoStat,
+}
+
+/// Company news / products list plus tab counts (`kind=news|product`).
+#[utoipa::path(
+    post,
+    path = "/v1/admin/company-contents/list",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ContentKindQuery,
+    responses((status = 200, description = "ok", body = CompanyContentListData))
+)]
+pub async fn company_contents_list(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<ContentKindQuery>,
+) -> AppResult<ApiResponse<CompanyContentListData>> {
+    user.require_admin()?;
+    let kind = parse_content_kind(&q.kind)?;
+    let (list, statist) = tokio::join!(
+        admin_archive_service::list_content(
+            &state,
+            kind,
+            q.q.status,
+            q.q.keyword.as_deref(),
+            q.q.r#type,
+            q.q.time,
+            page,
+        ),
+        admin_archive_service::company_content_stat(&state, kind),
+    );
+    Ok(ApiResponse::data(CompanyContentListData {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/company-contents/status",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ContentStatusForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn company_contents_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ContentStatusForm>,
+) -> AppResult<ApiResponse> {
+    user.require_admin()?;
+    let kind = parse_content_kind(&f.kind)?;
+    admin_archive_service::set_content_status(
+        &state,
+        &user,
+        kind,
+        &f.inner.ids,
+        f.inner.status,
+        &f.inner.statusbody,
+    )
+    .await?;
+    Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/company-contents/statist",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ContentKindBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn company_contents_statist(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<ContentKindBody>,
+) -> AppResult<ApiResponse<PhotoStat>> {
+    user.require_admin()?;
+    let kind = parse_content_kind(&b.kind)?;
+    Ok(ApiResponse::data(
+        admin_archive_service::company_content_stat(&state, kind).await?,
+    ))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/company-contents/status-body",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ContentStatusBodyForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn company_contents_status_body(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ContentStatusBodyForm>,
+) -> AppResult<ApiResponse<String>> {
+    user.require_admin()?;
+    let kind = parse_content_kind(&f.kind)?;
+    Ok(ApiResponse::data(
+        admin_archive_service::content_statusbody(
+            &state,
+            kind,
+            pick_uid(f.inner.uid, f.inner.id),
+        )
+        .await?,
+    ))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/company-contents/delete",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ContentDeleteForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn company_contents_delete(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
+    ValidatedJson(f): ValidatedJson<ContentDeleteForm>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    let kind = parse_content_kind(&f.kind)?;
+    let msg = match kind {
+        "news" => {
+            admin_archive_service::delete_news(&state, &user, &f.inner.ids, uri.path()).await?
+        }
+        _ => {
+            admin_archive_service::delete_products(&state, &user, &f.inner.ids, uri.path()).await?
+        }
+    };
     Ok(ApiMessage::new("admin_user_00187", msg))
 }
 
