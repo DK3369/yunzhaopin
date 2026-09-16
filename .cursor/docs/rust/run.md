@@ -21,6 +21,8 @@ TMPDIR=/var/tmp/cargo-tmp CARGO_TARGET_DIR=/www/wwwroot/zzzz.com/phpyun-rs/targe
 sudo systemctl restart test-jobs-phpyun-rs-3003
 ```
 
+首次编 `utoipa-swagger-ui` 会下 Swagger UI zip。无网时先有 zip，再 `SWAGGER_UI_DOWNLOAD_URL=file:///var/tmp/swagger-ui-v5.17.14.zip`。`APP_ENV=prod` 不挂 `/docs` 和 `/api-docs`。
+
 unit 的 `ExecStart` 是 **debug** binary：`phpyun-rs/target/debug/phpyun-rs`。  
 `PHPYUN_ENV_FILE=/www/wwwroot/zzzz.com/phpyun-rs/.env`，`BIND=127.0.0.1:3003`。
 
@@ -33,6 +35,7 @@ unit 的 `ExecStart` 是 **debug** binary：`phpyun-rs/target/debug/phpyun-rs`�
 | `http://127.0.0.1:3003/health` | 进程活着 |
 | `http://127.0.0.1:3003/ready` | 依赖就绪 |
 | `http://127.0.0.1:3003/dev/token` | 仅 debug：求职者 / 企业 / 后台 JWT |
+| `http://127.0.0.1:3003/docs/` | Swagger UI（仅 dev/test；公网 `/yapi/docs/`） |
 | `http://127.0.0.1:3003/api-docs/v1/openapi.json` | App 契约（dev/test） |
 | `http://127.0.0.1:3003/api-docs/admin/openapi.json` | Admin 契约 |
 

@@ -34,7 +34,7 @@ PHP 页继续 `httpPost('m=&c=&a=')` → `web/apps/admin/app/utils/phpMap.ts` �
 | Admin 具名 | `doc/snapshots/admin_paths.txt`、`admin.openapi.json` |
 | php-content | **不进** admin 快照 |
 
-现网 JSON：`:3003/api-docs/v1|admin/openapi.json`（dev/test）。`/docs` Swagger UI 已去掉。
+现网（仅 `APP_ENV=dev|test`）：Swagger UI `:3003/docs/`（公网 `/yapi/docs/`），JSON `:3003/api-docs/v1|v2|admin/openapi.json`。`APP_ENV=prod` 不挂这两类路由。
 
 [API_V1_SUMMARY.md](../../../phpyun-rs/docs/API_V1_SUMMARY.md) 里的「305 条」是旧口径；以快照和 `utoipa` 为准。
 

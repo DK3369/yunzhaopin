@@ -152,6 +152,7 @@ fn skip_site_gate(path: &str) -> bool {
         || path.contains("/health")
         || path.contains("/ready")
         || path.contains("/api-docs")
+        || path.contains("/docs")
 }
 
 pub async fn site_gate_layer(
