@@ -4,7 +4,23 @@
 
 v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改快照。
 
-公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 公开页 / 会员页与 admin 首页已切聚合（`home/full`、详情 `*/detail/full`、侧栏、`dashboard/full` / `resume/bundle` / `jobs/overview` 等）。site 即将失效调用（`follows`、`resume/*/list`、瘦 `dashboard`/`com-dashboard`、phpMap 兜底 `company-news|products`）也已切完。map / 分享页仍用未标即将失效的薄 `jobs/detail`、`companies/detail`。
+公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()` / `useSiteBoot()`）。site 公开页 / 会员页与 admin 首页已切聚合（`home/full`、详情 `*/detail/full`、侧栏、`dashboard/full` / `resume/bundle` / `jobs/overview` 等）。site 即将失效调用（`follows`、`resume/*/list`、瘦 `dashboard`/`com-dashboard`、phpMap 兜底 `company-news|products`）也已切完。map / 分享页仍用未标即将失效的薄 `jobs/detail`、`companies/detail`。
+
+## PC/H5 / 后台 Vue 调用（2026-09-16 再扫）
+
+`web/apps/site`、`web/layers/ui`、`web/apps/admin` 对 OpenAPI「即将失效」清单 **无运行时调用**（仅生成的 `types/openapi.d.ts` 仍有类型）。不要手改 openapi 类型，不要摘 Rust 旧路由。
+
+现状入口：
+
+- 未读角标：`AppFooter` → `POST /v1/mcenter/messages/unread-summary`
+- 招聘首页 / 顶栏 / 消息 / 统计：`com-dashboard/full`（含 `today`、`year_report`、`job_counts`）
+- 企业新闻 / 产品：`CompanyContentManager` → `/v1/mcenter/company-contents/*` + `kind=news|product`
+- 关注 / 收藏：`favorites*`（`kind` / `target_id`）；页面路径 `/user/follows` 不是旧 API
+- 简历子列表：`POST /v1/mcenter/resume/bundle`
+- 字典：`GET /v1/wap/initjobs`；地区：`/v1/wap/regions`、`/regions/children`
+- 公开首页：`GET /v1/wap/home/full`；前台导航：`initjobs.nav`，不要 `/v1/wap/nav`
+- 后台新闻 / 产品审核：`httpPost m=user&c=company_news|company_product` 经 `phpMap.ts` → `/v1/admin/company-contents/*`
+- 后台首页：`httpPost m=index&c=dashboardFull` → `/v1/admin/dashboard/full`。`ajax_statis` 是并存兜底，不是即将失效，未改。
 
 ## 聚合接口（新集成优先）
 
@@ -28,7 +44,7 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 
 ## 即将失效（仍注册，新集成勿用）
 
-OpenAPI 约 45 个操作。Vue 新代码不要再打这些路径（site 已切完）。旧路由仍挂。勿再扩展旧模块。
+OpenAPI 约 45 个操作。Vue 新代码不要再打这些路径（PC/H5 与后台已切完，见上节）。旧路由仍挂。勿再扩展旧模块。
 
 | 旧路径（仍挂） | 改用 |
 |---|---|
