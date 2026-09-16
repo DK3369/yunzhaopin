@@ -4,6 +4,7 @@
 
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::apply::repo as apply_repo;
+use phpyun_models::chat::repo as chat_repo;
 use phpyun_models::collect::repo as collect_repo;
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::interview::repo as interview_repo;
@@ -57,17 +58,19 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
 
     // PHPYun only stores job favorites (`phpyun_fav_job`); company / resume
     // favorites have no backing table, so the dashboard total is just job-fav count.
-    let (messages, applies, interviews, fav_job, looks, bal, sign, wkyq, commsg) = tokio::join!(
-        message_repo::count(db, uid, None, true),
-        apply_repo::count_by_uid(db, uid, None, None),
-        phpyun_models::userid_msg::repo::count_by_uid(db, uid),
-        collect_repo::count_by_user(db, uid),
-        phpyun_models::look_resume::count_by_resume_uid(db, uid),
-        integral_repo::get_balance(db, uid),
-        sign_repo::get_user_sign(db, uid),
-        phpyun_models::userid_msg::repo::count_unread_by_uid(db, uid),
-        phpyun_models::job_msg::repo::count_unread_replies_by_uid(db, uid),
-    );
+    let (messages, applies, interviews, fav_job, looks, bal, sign, wkyq, commsg, chats) =
+        tokio::join!(
+            message_repo::count(db, uid, None, true),
+            apply_repo::count_by_uid(db, uid, None, None),
+            phpyun_models::userid_msg::repo::count_by_uid(db, uid),
+            collect_repo::count_by_user(db, uid),
+            phpyun_models::look_resume::count_by_resume_uid(db, uid),
+            integral_repo::get_balance(db, uid),
+            sign_repo::get_user_sign(db, uid),
+            phpyun_models::userid_msg::repo::count_unread_by_uid(db, uid),
+            phpyun_models::job_msg::repo::count_unread_replies_by_uid(db, uid),
+            chat_repo::count_unread(db, uid),
+        );
 
     let fav_total = fav_job.unwrap_or(0);
     let unread_messages = messages.unwrap_or(0);
@@ -76,7 +79,7 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
 
     Ok(DashboardCounts {
         unread_messages,
-        unread_chats: 0,
+        unread_chats: chats.unwrap_or(0),
         apply_count: applies.unwrap_or(0),
         interview_count: interviews.unwrap_or(0),
         favorite_count: fav_total,
@@ -112,22 +115,25 @@ pub async fn com_counts(
     let job_msg_f = phpyun_models::job_msg::repo::count_for_employer(db, uid, true);
     let bal_f = integral_repo::get_balance(db, uid);
 
-    let (applies_total, applies_unread, interviews, downloads, messages, job_msg, bal) = tokio::join!(
-        applies_total_f,
-        applies_unread_f,
-        interviews_f,
-        downloads_f,
-        messages_f,
-        job_msg_f,
-        bal_f,
-    );
+    let chats_f = chat_repo::count_unread(db, uid);
+    let (applies_total, applies_unread, interviews, downloads, messages, job_msg, bal, chats) =
+        tokio::join!(
+            applies_total_f,
+            applies_unread_f,
+            interviews_f,
+            downloads_f,
+            messages_f,
+            job_msg_f,
+            bal_f,
+            chats_f,
+        );
 
     Ok(ComDashboardCounts {
         applies_received: applies_total.unwrap_or(0),
         applies_unread: applies_unread.unwrap_or(0),
         interviews_sent: interviews.unwrap_or(0),
         resume_downloads: downloads.unwrap_or(0),
-        unread_chats: 0,
+        unread_chats: chats.unwrap_or(0),
         unread_messages: messages.unwrap_or(0),
         job_msg_unanswered: job_msg.unwrap_or(0),
         integral_balance: bal.map(|b| b.balance).unwrap_or(0),

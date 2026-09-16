@@ -7,6 +7,7 @@ pub mod apply;
 pub mod atn;
 pub mod blacklist;
 pub mod broadcasts;
+pub mod chat;
 pub mod company;
 pub mod company_cert;
 pub mod company_content;
@@ -136,6 +137,7 @@ pub fn router() -> Router<AppState> {
         .merge(remarks::routes())
         .merge(warnings::routes())
         .merge(broadcasts::routes())
+        .merge(chat::routes())
         .merge(entrust::routes())
         .merge(entrust_records::routes())
         .merge(entrust_search::routes())

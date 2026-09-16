@@ -26,6 +26,11 @@
 /v1/mcenter/cert/email/send
 /v1/mcenter/cert/mobile/send
 /v1/mcenter/cert/mobile/verify
+/v1/mcenter/chat/conversations
+/v1/mcenter/chat/send
+/v1/mcenter/chat/unread-count
+/v1/mcenter/chat/with
+/v1/mcenter/chat/with/read
 /v1/mcenter/com-dashboard
 /v1/mcenter/com-dashboard/full
 /v1/mcenter/com-part-applications

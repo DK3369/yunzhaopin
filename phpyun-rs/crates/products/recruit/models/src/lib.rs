@@ -15,6 +15,7 @@ pub mod blacklist;
 pub mod broadcast;
 pub mod bulk_migration;
 pub mod category;
+pub mod chat;
 pub mod collect;
 pub mod company;
 pub mod company_address;

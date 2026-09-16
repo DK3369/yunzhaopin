@@ -15,6 +15,7 @@
 | 横切（登录态 / locale 缓存 key / 媒体 URL / settings 缓存） | [rust/cross-cut.md](./rust/cross-cut.md) |
 | 公开只读两级缓存（L1 moka + Redis） | [rust/cache.md](./rust/cache.md) |
 | 鉴权信任链（usertype=9 / admin 回查） | [rust/security.md](./rust/security.md) |
+| 会员私信（HTTP `/v1/mcenter/chat/*`，表 `phpyun_rs_chat`） | [rust/chat.md](./rust/chat.md) |
 | 采集英文岗、补 JD、官网申请记原投递表 | [features/job-scrape.md](./features/job-scrape.md) |
 | PC/H5 会员中心套肤（求职 `/user` · 招聘 `/com`） | [features/member-center.md](./features/member-center.md) |
 | PC 页脚五列与关于我们/排行榜/订阅落地页 | [features/pc-footer.md](./features/pc-footer.md) |

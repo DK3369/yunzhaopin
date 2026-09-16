@@ -7,7 +7,7 @@ use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::{broadcast_service, message_service, warning_service};
+use phpyun_services::{broadcast_service, chat_service, message_service, warning_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -177,7 +177,7 @@ pub async fn remove(
 pub struct UnreadSummary {
     /// `phpyun_sysmsg` (system messages, the legacy table the message centre reads).
     pub messages: u64,
-    /// `phpyun_chat` private messages between users.
+    /// `phpyun_rs_chat` private messages between users.
     pub chat: u64,
     /// `phpyun_broadcast` system-wide broadcasts.
     pub broadcasts: u64,
@@ -207,13 +207,14 @@ pub(crate) async fn load_unread_summary(
     state: &AppState,
     user: &AuthenticatedUser,
 ) -> UnreadSummary {
-    let (messages, broadcasts, warnings) = tokio::join!(
+    let (messages, chat, broadcasts, warnings) = tokio::join!(
         message_service::unread_count(state, user),
+        chat_service::unread_count(state, user),
         broadcast_service::unread_count(state, user),
         warning_service::unread_count(state, user),
     );
     let messages = messages.unwrap_or(0);
-    let chat = 0;
+    let chat = chat.unwrap_or(0);
     let broadcasts = broadcasts.unwrap_or(0);
     let warnings = warnings.unwrap_or(0);
     UnreadSummary {

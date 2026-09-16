@@ -79,6 +79,7 @@ pub mod blacklist_service;
 pub mod broadcast_service;
 pub mod captcha_service;
 pub mod category_service;
+pub mod chat_service;
 pub mod claim_service;
 pub mod collect_cache;
 pub mod collect_service;
