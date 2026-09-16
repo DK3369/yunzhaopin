@@ -3,16 +3,23 @@
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::fmt_date;
 use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
-use phpyun_services::{ad_service, home_service};
+use phpyun_services::{ad_service, friend_link_service, home_service};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/home", "/v1/wap/home/aggregate"];
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/home",
+    "/v1/wap/home/aggregate",
+    "/v1/wap/home/full",
+];
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/home", get(home).post(home))
+        .route("/home/full", get(home_full).post(home_full))
         .route("/home/aggregate", get(aggregate).post(aggregate))
 }
 
@@ -93,8 +100,12 @@ pub async fn home(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HomeQuery>,
 ) -> AppResult<ApiResponse<HomeData>> {
-    let p = home_service::home(&state, q.did).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
+    Ok(ApiResponse::data(assemble_home(&state, &q).await?))
+}
+
+async fn assemble_home(state: &AppState, q: &HomeQuery) -> AppResult<HomeData> {
+    let p = home_service::home(state, q.did).await?;
+    let dicts = phpyun_services::dict_service::get(state).await?;
     let now = phpyun_core::clock::now_ts();
     // Take ownership for `into_iter`; HomePayload is small (5 short vecs of entities)
     // so this clone is cheaper than refactoring all the From conversions to borrow.
@@ -165,24 +176,24 @@ pub async fn home(
                     row.hot_pic = Some(pic.clone());
                 }
             }
-            super::companies::fill_job_nums(&state, &mut list).await;
-            super::companies::fill_open_jobs(&state, &mut list, 3).await;
+            super::companies::fill_job_nums(state, &mut list).await;
+            super::companies::fill_open_jobs(state, &mut list, 3).await;
             list
         },
         new_articles: p
             .new_articles
             .into_iter()
-            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, &state))
+            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, state))
             .collect(),
         featured_articles: p
             .featured_articles
             .into_iter()
-            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, &state))
+            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, state))
             .collect(),
         hot_articles: p
             .hot_articles
             .into_iter()
-            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, &state))
+            .map(|a| super::articles::ArticleSummary::from_with_ctx(a, state))
             .collect(),
         hot_keywords: p
             .hot_keywords
@@ -199,7 +210,94 @@ pub async fn home(
             se: r.se,
         }),
     };
-    Ok(ApiResponse::data(data))
+    Ok(data)
+}
+
+const DEFAULT_HOME_SLOTS: &[(&str, u64)] = &[
+    ("3", 5),
+    ("50", 5),
+    ("13", 3),
+    ("14", 3),
+    ("15", 3),
+    ("72", 1),
+    ("73", 1),
+    ("92", 5),
+    ("503", 3),
+    ("506", 1),
+    ("502", 1),
+    ("10", 1),
+    ("11", 1),
+];
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct HomeFullQuery {
+    #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
+    pub did: u32,
+    #[serde(default)]
+    pub tpltype: u64,
+    /// Ad slots; omit to use the 13 homepage slots from `index.vue`.
+    #[serde(default)]
+    #[validate(length(max = 32), nested)]
+    pub slots: Vec<super::ads::AdQuery>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct HomeFullData {
+    pub home: HomeData,
+    pub job_cats: Vec<super::categories::CatNode>,
+    pub hot_job_class: Vec<super::categories::CatNode>,
+    pub ads: BTreeMap<String, Vec<super::ads::AdView>>,
+    pub friend_links: Vec<super::links::LinkItem>,
+}
+
+/// Homepage bundle: `home` + job categories + hot class + ads + friend links.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/home/full",
+    tag = "wap",
+    params(HomeFullQuery),
+    responses((status = 200, description = "ok", body = HomeFullData))
+)]
+pub async fn home_full(
+    State(state): State<AppState>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HomeFullQuery>,
+) -> AppResult<ApiResponse<HomeFullData>> {
+    let home_q = HomeQuery {
+        did: q.did,
+        tpltype: q.tpltype,
+    };
+    let home_fut = assemble_home(&state, &home_q);
+    let cats_fut = super::categories::load_kind(&state, "job");
+    let hot_fut = super::categories::load_recommended(&state, "job", 20);
+    let ads_fut = async {
+        if q.slots.is_empty() {
+            super::ads::load_map(&state, DEFAULT_HOME_SLOTS).await
+        } else {
+            let needs: Vec<ad_service::SlotNeed> = q
+                .slots
+                .iter()
+                .map(|s| ad_service::SlotNeed {
+                    slot: s.slot.clone(),
+                    limit: s.limit,
+                })
+                .collect();
+            super::ads::load_map_needs(&state, &needs).await
+        }
+    };
+    let links_fut = friend_link_service::list(&state, None);
+    let (home, job_cats, hot_job_class, ads, links) =
+        tokio::join!(home_fut, cats_fut, hot_fut, ads_fut, links_fut);
+    Ok(ApiResponse::data(HomeFullData {
+        home: home?,
+        job_cats: job_cats.unwrap_or_else(|_| Vec::new()),
+        hot_job_class: hot_job_class.unwrap_or_else(|_| Vec::new()),
+        ads: ads.unwrap_or_else(|_| BTreeMap::new()),
+        friend_links: links
+            .ok()
+            .map(|v| v.iter().cloned().map(super::links::LinkItem::from).collect())
+            .unwrap_or_default(),
+    }))
 }
 
 // ==================== /home/aggregate ====================
@@ -286,11 +384,13 @@ pub struct AggregateData {
     pub friend_links: Vec<FriendLinkItem>,
 }
 
+#[deprecated(note = "use /v1/wap/home/full")]
 #[utoipa::path(
     post,
     path = "/v1/wap/home/aggregate",
     tag = "wap",
     params(AggregateQuery),
+    description = "即将失效：请改用 GET/POST /v1/wap/home/full",
     responses((status = 200, description = "ok", body = AggregateData))
 )]
 pub async fn aggregate(

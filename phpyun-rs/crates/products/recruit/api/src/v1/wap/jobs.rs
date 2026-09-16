@@ -46,8 +46,10 @@ pub struct TelClickBodyFull {
 pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/jobs",
     "/v1/wap/jobs/detail",
+    "/v1/wap/jobs/detail/full",
     "/v1/wap/jobs/similar",
     "/v1/wap/jobs/same-company",
+    "/v1/wap/jobs/sidebar",
     "/v1/wap/companies/jobs",
     "/v1/wap/jobs/share-text",
     "/v1/wap/jobs/contact",
@@ -57,6 +59,10 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/jobs", get(list_jobs).post(list_jobs))
         .route("/jobs/detail", get(job_detail).post(job_detail))
+        .route(
+            "/jobs/detail/full",
+            get(job_detail_full).post(job_detail_full),
+        )
         .route("/jobs/similar", get(similar_jobs).post(similar_jobs))
         .route(
             "/jobs/same-company",
@@ -68,6 +74,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/hits", post(bump_jobhits))
         .route("/jobs/contact", get(job_contact).post(job_contact))
         .route("/jobs/temporary-apply", post(temporary_apply))
+        .route("/jobs/sidebar", get(jobs_sidebar).post(jobs_sidebar))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -462,6 +469,131 @@ pub async fn job_detail(
         )
         .await?,
     ))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct JobDetailFull {
+    #[schema(value_type = Object)]
+    pub detail: json::Value,
+    pub similar: Vec<JobSummary>,
+    pub same_company: Vec<JobSummary>,
+    pub ads: std::collections::BTreeMap<String, Vec<super::ads::AdView>>,
+}
+
+/// Job detail plus similar / same-company lists and detail-page ads.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/jobs/detail/full",
+    tag = "wap",
+    request_body = IdBody,
+    responses(
+        (status = 200, description = "ok", body = JobDetailFull),
+        (status = 401, description = "Login required"),
+        (status = 404, description = "Not found"),
+        (status = 410, description = "Off-shelf / expired"),
+    )
+)]
+pub async fn job_detail_full(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    headers: HeaderMap,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
+) -> AppResult<ApiResponse<JobDetailFull>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
+    let id = b.id;
+    let ip = crate::v1::wap::client_ip(&headers);
+    let detail_fut = build_job_detail_value(&state, Some(&user), id, &ip);
+    let similar_fut = job_service::list_similar(&state, id, 8);
+    let same_fut = job_service::list_same_company(&state, id, 6);
+    let ads_fut = super::ads::load_map(&state, &[("509", 1), ("512", 1)]);
+    let (detail, similar, same, ads) = tokio::join!(detail_fut, similar_fut, same_fut, ads_fut);
+    let similar = map_job_summaries(&state, Some(&user), similar.unwrap_or_else(|_| Vec::new())).await;
+    let same_company =
+        map_job_summaries(&state, Some(&user), same.unwrap_or_else(|_| Vec::new())).await;
+    Ok(ApiResponse::data(JobDetailFull {
+        detail: detail?,
+        similar,
+        same_company,
+        ads: ads.unwrap_or_else(|_| Default::default()),
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct JobsSidebarQuery {
+    #[serde(default)]
+    #[validate(range(max = 999))]
+    pub did: u32,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct JobsSidebarData {
+    pub rec: Vec<JobSummary>,
+    pub ads: std::collections::BTreeMap<String, Vec<super::ads::AdView>>,
+}
+
+/// Jobs list sidebar: recommended 30 + ads 507/504/7.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/jobs/sidebar",
+    tag = "wap",
+    params(JobsSidebarQuery),
+    responses((status = 200, description = "ok", body = JobsSidebarData))
+)]
+pub async fn jobs_sidebar(
+    State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<JobsSidebarQuery>,
+) -> AppResult<ApiResponse<JobsSidebarData>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
+    let search = JobSearch {
+        rec: true,
+        did: q.did,
+        ..Default::default()
+    };
+    let page = Pagination {
+        page: 1,
+        page_size: 30,
+        offset: 0,
+        limit: 30,
+    };
+    let rec_fut = job_service::list_public(&state, &search, page);
+    let ads_fut = super::ads::load_map(&state, &[("507", 1), ("504", 1), ("7", 5)]);
+    let (rec, ads) = tokio::join!(rec_fut, ads_fut);
+    let rec = map_job_summaries(
+        &state,
+        user.as_ref(),
+        rec.map(|p| p.list).unwrap_or_default(),
+    )
+    .await;
+    Ok(ApiResponse::data(JobsSidebarData {
+        rec,
+        ads: ads.unwrap_or_else(|_| Default::default()),
+    }))
+}
+
+async fn map_job_summaries(
+    state: &AppState,
+    user: Option<&AuthenticatedUser>,
+    list: Vec<phpyun_models::job::entity::Job>,
+) -> Vec<JobSummary> {
+    let Ok(dicts) = phpyun_services::dict_service::get(state).await else {
+        return Vec::new();
+    };
+    let now = phpyun_core::clock::now_ts();
+    let job_ids: Vec<u64> = list.iter().map(|j| j.id).collect();
+    let fav_set =
+        phpyun_services::collect_service::favorited_set(state, user.map(|u| u.uid), &job_ids).await;
+    let mut out: Vec<JobSummary> = list
+        .into_iter()
+        .map(|j| {
+            let fav = fav_set.contains(&j.id);
+            job_summary_from_dict_fav(j, &dicts, now, fav)
+        })
+        .collect();
+    attach_company_card_fields(state, &dicts, &mut out).await;
+    stamp_applied(state, user, &mut out).await;
+    out
 }
 
 /// Detail-page body builder, callable from both `/v1/wap/jobs/detail` and

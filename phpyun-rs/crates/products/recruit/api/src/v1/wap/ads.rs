@@ -69,6 +69,39 @@ pub struct AdView {
     pub pic_content: String,
 }
 
+pub(crate) async fn load_map(
+    state: &AppState,
+    slots: &[(&str, u64)],
+) -> AppResult<BTreeMap<String, Vec<AdView>>> {
+    let needs: Vec<ad_service::SlotNeed> = slots
+        .iter()
+        .map(|(slot, limit)| ad_service::SlotNeed {
+            slot: (*slot).to_string(),
+            limit: *limit,
+        })
+        .collect();
+    load_map_needs(state, &needs).await
+}
+
+pub(crate) async fn load_map_needs(
+    state: &AppState,
+    needs: &[ad_service::SlotNeed],
+) -> AppResult<BTreeMap<String, Vec<AdView>>> {
+    let map = ad_service::list_active_many(state, needs).await?;
+    let site_base = state.config.web_base_url.as_deref();
+    Ok(map
+        .into_iter()
+        .map(|(k, list)| {
+            (
+                k,
+                list.into_iter()
+                    .map(|a| to_view(state, site_base, a))
+                    .collect(),
+            )
+        })
+        .collect())
+}
+
 fn to_view(state: &AppState, site_base: Option<&str>, a: Ad) -> AdView {
     AdView {
         image_n: state.storage.normalize_legacy_url(&a.image, site_base),

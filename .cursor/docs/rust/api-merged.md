@@ -4,7 +4,7 @@
 
 v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改快照。
 
-公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 会员首页 / 简历编辑 / 职位列表仍有扇出，**切聚合另批**。
+公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 公开页 / 会员页切聚合见本文上表（本批已加 `home/full`、详情 `*/detail/full`、侧栏）。
 
 ## 聚合接口（新集成优先）
 
@@ -16,18 +16,24 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 | `POST /v1/mcenter/jobs/overview` | `{ jobs: Paged, counts }`，body 同 `MyJobsQuery` | `com/jobs` 双打 list+counts |
 | `POST /v1/mcenter/applications/overview` | `{ applications: Paged, counts }`，body 同 `ApplicationsQuery` | `com/applications` 双打 list+state-counts |
 | `GET/POST /v1/wap/initjobs` | 字典包（含 `marriages`/`langs`/`tags`/`job_categories`） | 几乎全部 `/v1/wap/dict/*` |
+| `GET/POST /v1/wap/home/full` | `home`（原 `/home`）+ `job_cats` + `hot_job_class` + `ads`（默认首页 13 个 slot）+ `friend_links` | 首页扇出；`/home/aggregate` 即将失效 |
+| `GET/POST /v1/wap/jobs/detail/full` | 原 detail + `similar`(8) + `same_company`(6) + ads 509/512 | 职位详情页扇出 |
+| `GET/POST /v1/wap/companies/detail/full` | 原 detail + `jobs`(p1 s5) + `news` + `products` + `messages`(p1) | 企业详情页扇出 |
+| `GET/POST /v1/wap/jobs/sidebar` | `rec` 30 + ads 507/504/7 | 职位列表侧栏 |
+| `GET/POST /v1/wap/companies/sidebar` | `rec` 10 | 企业列表侧栏 |
 
-既有聚合（未改语义）：`/v1/wap/rankings`、`/v1/wap/home/aggregate`、`/v1/mcenter/messages/unread-summary`、`/v1/mcenter/company-contents`、`/v1/wap/regions`。
+既有聚合（未改语义）：`/v1/wap/rankings`、`/v1/mcenter/messages/unread-summary`、`/v1/mcenter/company-contents`、`/v1/wap/regions`。
 
 ## 即将失效（仍注册，新集成勿用）
 
-OpenAPI 约 37 个操作。site 可能仍打其中若干条。勿再扩展旧模块。
+OpenAPI 约 38 个操作。site 可能仍打其中若干条。勿再扩展旧模块。
 
 | 旧路径（仍挂） | 改用 |
 |---|---|
 | `POST /v1/mcenter/company/products`、`/list`、`/update` | `POST /v1/mcenter/company-contents/{list,create,detail,update,delete}`，body `kind=product` |
 | `POST /v1/mcenter/company/news`、`/list`、`/update` | 同上，`kind=news` |
 | `GET/POST /v1/wap/dict/cities`、`/dict/cities/by-province` | `/v1/wap/regions`、`/v1/wap/regions/children` |
+| `GET/POST /v1/wap/home/aggregate` | `/v1/wap/home/full` |
 | 9 条 `POST /v1/mcenter/resume/{expects,edus,works,projects,skills,languages,trainings,certs,others}/list` | `POST /v1/mcenter/resume/bundle`（单条 create/update 仍走分子资源） |
 | `POST /v1/mcenter/com-stats/today`、`/v1/mcenter/dashboard/year-report` | `POST /v1/mcenter/com-dashboard/full` |
 | `POST /v1/mcenter/broadcasts/unread-count`、`/warnings/unread-count` | `POST /v1/mcenter/messages/unread-summary` |
@@ -60,8 +66,9 @@ OpenAPI 约 37 个操作。site 可能仍打其中若干条。勿再扩展旧模
 
 ## 下一批（未做）
 
-- site 会员页切已有聚合：`user/resume`→`resume/bundle`，`com/jobs`→`jobs/overview`，`com/applications`→`applications/overview`，`user/index`→`dashboard/full`，`com/index`+`com/stats`→`com-dashboard/full`，`follows*`→`favorites*`。
-- Admin：`company-news`/`company-products` 仿 `company-contents`（`kind`），或 list+statist 的 `/overview`。Admin OpenAPI 目前 0 条 deprecated。
+- site 公开页 / 会员页切已有聚合（首页 `home/full`、详情 `*/detail/full`、侧栏 `*/sidebar`，会员 `dashboard/full` / `resume/bundle` / `jobs/overview` 等）。
+- Admin：`dashboard/full`；`company-news`/`company-products` 仿 `company-contents`（`kind`）。
+- archive 其余 12 组 list+statist、`user-logs`/`company-logs` 按 kind 收口、company-certs 双轨。
 - 不要并 look/views/banners，不要删旧路由。
 
 ## 不算合并

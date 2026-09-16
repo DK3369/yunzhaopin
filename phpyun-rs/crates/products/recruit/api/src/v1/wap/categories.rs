@@ -102,6 +102,37 @@ fn localized_name(
     }
 }
 
+pub(crate) async fn load_kind(state: &AppState, kind: &str) -> AppResult<Vec<CatNode>> {
+    phpyun_core::validators::ensure_path_token(kind)?;
+    let list = category_service::list(state, kind).await?;
+    let dicts = dict_service::get(state).await?;
+    list.iter()
+        .cloned()
+        .map(|c| -> AppResult<CatNode> {
+            let name = localized_name(&dicts, kind, c.id, &c.name)?;
+            Ok(CatNode::from_category(c, name))
+        })
+        .collect()
+}
+
+pub(crate) async fn load_recommended(
+    state: &AppState,
+    kind: &str,
+    limit: u64,
+) -> AppResult<Vec<CatNode>> {
+    phpyun_core::validators::ensure_path_token(kind)?;
+    let limit = limit.clamp(1, 100);
+    let list =
+        phpyun_models::category::repo::list_recommended(state.db.reader(), kind, limit).await?;
+    let dicts = dict_service::get(state).await?;
+    list.into_iter()
+        .map(|c| -> AppResult<CatNode> {
+            let name = localized_name(&dicts, kind, c.id, &c.name)?;
+            Ok(CatNode::from_category(c, name))
+        })
+        .collect()
+}
+
 /// Get all categories under a kind (flat list with parent_id; client builds the tree)
 #[utoipa::path(
     post,
@@ -114,18 +145,7 @@ pub async fn list(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<KindBody>,
 ) -> AppResult<ApiResponse<Vec<CatNode>>> {
-    phpyun_core::validators::ensure_path_token(&b.kind)?;
-    let list = category_service::list(&state, &b.kind).await?;
-    let dicts = dict_service::get(&state).await?;
-    Ok(ApiResponse::data(
-        list.iter()
-            .cloned()
-            .map(|c| -> AppResult<CatNode> {
-                let name = localized_name(&dicts, &b.kind, c.id, &c.name)?;
-                Ok(CatNode::from_category(c, name))
-            })
-            .collect::<AppResult<Vec<_>>>()?,
-    ))
+    Ok(ApiResponse::data(load_kind(&state, &b.kind).await?))
 }
 
 /// Get the direct children of a given parent node
@@ -171,17 +191,7 @@ pub async fn recommended(
     State(state): State<AppState>,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<RecommendedBody>,
 ) -> AppResult<ApiResponse<Vec<CatNode>>> {
-    phpyun_core::validators::ensure_path_token(&b.kind)?;
-    let limit = b.limit.clamp(1, 100);
-    let list =
-        phpyun_models::category::repo::list_recommended(state.db.reader(), &b.kind, limit).await?;
-    let dicts = dict_service::get(&state).await?;
     Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|c| -> AppResult<CatNode> {
-                let name = localized_name(&dicts, &b.kind, c.id, &c.name)?;
-                Ok(CatNode::from_category(c, name))
-            })
-            .collect::<AppResult<Vec<_>>>()?,
+        load_recommended(&state, &b.kind, b.limit).await?,
     ))
 }

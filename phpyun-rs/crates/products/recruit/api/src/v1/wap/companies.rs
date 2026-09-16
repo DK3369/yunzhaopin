@@ -28,7 +28,9 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/companies/hot",
     "/v1/wap/companies/autocomplete",
     "/v1/wap/companies/detail",
+    "/v1/wap/companies/detail/full",
     "/v1/wap/companies/contact",
+    "/v1/wap/companies/sidebar",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -42,6 +44,14 @@ pub fn routes() -> Router<AppState> {
         .route(
             "/companies/detail",
             get(company_detail).post(company_detail),
+        )
+        .route(
+            "/companies/detail/full",
+            get(company_detail_full).post(company_detail_full),
+        )
+        .route(
+            "/companies/sidebar",
+            get(companies_sidebar).post(companies_sidebar),
         )
         .route(
             "/companies/contact",
@@ -469,8 +479,17 @@ pub async fn company_detail(
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<CompanyDetail>> {
     phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
-    let uid = b.uid;
-    let c = company_service::get_public(&state, uid, Some(&user)).await?;
+    Ok(ApiResponse::data(
+        build_company_detail(&state, &user, b.uid).await?,
+    ))
+}
+
+async fn build_company_detail(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+) -> AppResult<CompanyDetail> {
+    let c = company_service::get_public(state, uid, Some(user)).await?;
     view_service::record_async(&state, user.uid, KIND_COMPANY, uid);
     // Number of currently open positions (PHP equivalent: `jobM->getJobNum(['uid'=>uid,'state'=>1,'status'=>0,'r_status'=>1])`)
     let zp_num = phpyun_models::company::repo::count_open_jobs(state.db.reader(), uid)
@@ -554,7 +573,7 @@ pub async fn company_detail(
         skin
     };
 
-    Ok(ApiResponse::data(CompanyDetail {
+    Ok(CompanyDetail {
         uid: c.uid,
         name: c.name,
         shortname: c.shortname,
@@ -630,7 +649,7 @@ pub async fn company_detail(
         pre,
         claimable,
         contact: {
-            let ctc = job_service::resolve_company_contact(&state, uid, Some(&user), false).await?;
+            let ctc = job_service::resolve_company_contact(state, uid, Some(user), false).await?;
             CompanyPublicContact {
                 linkman: ctc.linkman,
                 linktel_n: ctc.linktel_n,
@@ -646,7 +665,161 @@ pub async fn company_detail(
 
         show: show_items,
         skin,
+    })
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CompanyDetailFull {
+    pub detail: CompanyDetail,
+    #[schema(value_type = Object)]
+    pub jobs: Paged<super::jobs::JobSummary>,
+    #[schema(value_type = Object)]
+    pub news: Paged<super::company_sub::NewsSummary>,
+    #[schema(value_type = Object)]
+    pub products: Paged<super::company_sub::ProductSummary>,
+    #[schema(value_type = Object)]
+    pub messages: Paged<super::job_messages::JobMsgView>,
+}
+
+/// Company detail plus first-page jobs / news / products / messages.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/companies/detail/full",
+    tag = "wap",
+    request_body = UidBody,
+    responses(
+        (status = 200, description = "ok", body = CompanyDetailFull),
+        (status = 401, description = "Login required"),
+        (status = 403, description = "Company not approved / account locked"),
+        (status = 404, description = "Not found"),
+    )
+)]
+pub async fn company_detail_full(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
+) -> AppResult<ApiResponse<CompanyDetailFull>> {
+    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
+    let uid = b.uid;
+    let jobs_page = Pagination {
+        page: 1,
+        page_size: 5,
+        offset: 0,
+        limit: 5,
+    };
+    let sub_page = Pagination {
+        page: 1,
+        page_size: 8,
+        offset: 0,
+        limit: 8,
+    };
+    let msg_page = Pagination {
+        page: 1,
+        page_size: 20,
+        offset: 0,
+        limit: 20,
+    };
+    let detail_fut = build_company_detail(&state, &user, uid);
+    let jobs_fut = job_service::list_by_company(&state, uid, jobs_page);
+    let news_fut = phpyun_services::company_sub_service::list_news(&state, uid, sub_page);
+    let products_fut = phpyun_services::company_sub_service::list_products(&state, uid, sub_page);
+    let messages_fut = job_msg_service::list_public_for_company(&state, uid, msg_page);
+    let (detail, jobs, news, products, messages) =
+        tokio::join!(detail_fut, jobs_fut, news_fut, products_fut, messages_fut);
+    let jobs = match jobs {
+        Ok(r) => {
+            let dicts = phpyun_services::dict_service::get(&state).await.ok();
+            let now = phpyun_core::clock::now_ts();
+            let list = if let Some(dicts) = dicts.as_ref() {
+                r.list
+                    .into_iter()
+                    .map(|j| super::jobs::job_summary_from_dict(j, dicts, now))
+                    .collect()
+            } else {
+                Vec::new()
+            };
+            Paged::new(list, r.total, jobs_page.page, jobs_page.page_size)
+        }
+        Err(_) => Paged::new(Vec::new(), 0, 1, 5),
+    };
+    let news = match news {
+        Ok(r) => Paged::from_listing(r.list, r.total, sub_page),
+        Err(_) => Paged::new(Vec::new(), 0, 1, 8),
+    };
+    let products = match products {
+        Ok(r) => Paged::new(
+            r.list
+                .into_iter()
+                .map(|p| super::company_sub::ProductSummary::from_with_ctx(p, &state))
+                .collect(),
+            r.total,
+            sub_page.page,
+            sub_page.page_size,
+        ),
+        Err(_) => Paged::new(Vec::new(), 0, 1, 8),
+    };
+    let messages = match messages {
+        Ok(r) => Paged::from_listing(r.list, r.total, msg_page),
+        Err(_) => Paged::new(Vec::new(), 0, 1, 20),
+    };
+    Ok(ApiResponse::data(CompanyDetailFull {
+        detail: detail?,
+        jobs,
+        news,
+        products,
+        messages,
     }))
+}
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct CompaniesSidebarQuery {
+    #[serde(default)]
+    #[validate(range(max = 999))]
+    pub did: u32,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CompaniesSidebarData {
+    pub rec: Vec<CompanySummary>,
+}
+
+/// Company list sidebar: recommended 10.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/companies/sidebar",
+    tag = "wap",
+    params(CompaniesSidebarQuery),
+    responses((status = 200, description = "ok", body = CompaniesSidebarData))
+)]
+pub async fn companies_sidebar(
+    State(state): State<AppState>,
+    MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CompaniesSidebarQuery>,
+) -> AppResult<ApiResponse<CompaniesSidebarData>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
+    let page = Pagination {
+        page: 1,
+        page_size: 10,
+        offset: 0,
+        limit: 10,
+    };
+    let filter = CompanyFilter {
+        rec: true,
+        did: q.did,
+        ..Default::default()
+    };
+    let r = company_service::list_public(&state, &filter, page).await?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let mut list: Vec<CompanySummary> = r
+        .list
+        .into_iter()
+        .map(|c| company_summary_from_dict(c, &dicts))
+        .collect();
+    fill_job_nums(&state, &mut list).await;
+    fill_open_jobs(&state, &mut list, 3).await;
+    fill_isatn(&state, user.as_ref(), &mut list).await;
+    Ok(ApiResponse::data(CompaniesSidebarData { rec: list }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
