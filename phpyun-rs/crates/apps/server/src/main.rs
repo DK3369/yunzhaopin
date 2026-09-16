@@ -55,6 +55,8 @@ async fn serve(config: Config) -> anyhow::Result<()> {
 
     phpyun_core::dev_token::init(&config, state.db.pool(), &state.redis).await;
     phpyun_services::job_scrape_service::clear_run_lock(&state).await;
+    phpyun_services::dict_service::init_and_spawn_refresher(&state).await;
+    phpyun_services::region_service::init_and_spawn_refresher(&state).await;
 
     if config.run_migrations_on_boot {
         run_migrations(&state.db)

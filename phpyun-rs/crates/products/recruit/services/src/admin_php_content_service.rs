@@ -68,6 +68,7 @@ use crate::admin_cms_service;
 use crate::admin_dashboard_service;
 use crate::admin_longtail_service;
 use crate::admin_report_service;
+use crate::article_service;
 use crate::enum_labels;
 use crate::description_service;
 use crate::dict_service;
@@ -76,8 +77,11 @@ use crate::home_service;
 use crate::mail_service;
 use crate::redeem_service;
 use crate::job_scrape_service;
+use crate::site_page_service;
 use crate::site_setting_service;
+use crate::special_service;
 use crate::wechat_api_service;
+use crate::zph_service;
 use phpyun_models::entrust_record;
 use phpyun_models::report::repo as report_repo;
 use uuid::Uuid;
@@ -1086,6 +1090,7 @@ async fn fairs_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             },
         )
         .await?;
+        zph_service::invalidate_all(state).await;
         return Ok(PhpOut::Message(if id > 0 {
             "admin_model_00025"
         } else {
@@ -1132,6 +1137,7 @@ async fn fairs_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::business("wap_com_00228"));
     }
     zph_repo::delete_zph_ids(state.db.pool(), &ids).await?;
+    zph_service::invalidate_all(state).await;
     Ok(PhpOut::Message("admin_model_00031"))
 }
 
@@ -1800,6 +1806,7 @@ async fn news_addgroup(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     for name in names {
         article_repo::insert_group(state.db.pool(), name, fid, rec).await?;
     }
+    article_service::invalidate_groups(state).await;
     Ok(PhpOut::Message("admin_01335"))
 }
 
@@ -1809,6 +1816,7 @@ async fn news_delgroup(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::business("wap_com_00228"));
     }
     article_repo::delete_groups(state.db.pool(), &ids).await?;
+    article_service::invalidate_groups(state).await;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -1825,6 +1833,7 @@ async fn news_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         article_repo::patch_group(state.db.pool(), id, None, Some(json_i32(body, "sort")), None, None)
             .await?;
     }
+    article_service::invalidate_groups(state).await;
     Ok(PhpOut::Message("admin_model_00179"))
 }
 
@@ -1837,6 +1846,7 @@ async fn news_recommend(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     } else {
         article_repo::patch_group(state.db.pool(), id, None, None, Some(rec), None).await?;
     }
+    article_service::invalidate_groups(state).await;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -2502,6 +2512,7 @@ async fn special_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         },
     )
     .await?;
+    special_service::invalidate_all(state).await;
     Ok(PhpOut::Message("ok"))
 }
 
@@ -2511,6 +2522,7 @@ async fn special_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::business("model_00034"));
     }
     special_repo::delete_specials(state.db.pool(), &ids).await?;
+    special_service::invalidate_all(state).await;
     Ok(PhpOut::Message("admin_model_00056"))
 }
 
@@ -2523,6 +2535,7 @@ async fn special_set_order(state: &AppState, body: &Value) -> AppResult<PhpOut> 
     if n == 0 {
         return Err(ApiError::business("admin_01443"));
     }
+    special_service::invalidate_all(state).await;
     Ok(PhpOut::Message("admin_model_00058"))
 }
 
@@ -2531,6 +2544,7 @@ async fn special_recommend(state: &AppState, body: &Value) -> AppResult<PhpOut> 
         return Ok(PhpOut::Message("ok"));
     }
     special_repo::set_display(state.db.pool(), json_u64(body, "id"), json_i32(body, "rec")).await?;
+    special_service::invalidate_all(state).await;
     Ok(PhpOut::Message("admin_model_00063"))
 }
 
@@ -6255,6 +6269,7 @@ async fn email_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut> 
         &content,
     )
     .await?;
+    site_page_service::invalidate(state, &name).await;
     Ok(PhpOut::Message("admin_01462"))
 }
 
@@ -13755,6 +13770,7 @@ async fn message_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut
         }
     };
     site_page_repo::upsert_content(state.db.pool(), &name, &title, &content).await?;
+    site_page_service::invalidate(state, &name).await;
     Ok(PhpOut::Message("admin_01471"))
 }
 

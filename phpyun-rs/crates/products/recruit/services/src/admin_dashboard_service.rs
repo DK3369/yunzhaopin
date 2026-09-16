@@ -1,8 +1,11 @@
 //! Admin dashboard aggregation: pending counts for each review queue plus the last 24h of registrations/applications/postings overview.
 
 use crate::ad_service;
+use crate::announcement_service;
+use crate::article_service;
 use crate::enum_labels;
 use crate::category_service;
+use crate::company_service;
 use crate::country_service;
 use crate::data_show_service;
 use crate::description_service;
@@ -10,11 +13,17 @@ use crate::dict_service;
 use crate::friend_link_service;
 use crate::home_service;
 use crate::hot_search_service;
+use crate::job_service;
+use crate::nav_menu_service;
 use crate::qna_service;
 use crate::ranking_service;
 use crate::redeem_service;
 use crate::region_service;
+use crate::site_page_service;
 use crate::site_setting_service;
+use crate::special_service;
+use crate::stats_service;
+use crate::zph_service;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::admin_msg::repo::AdminMsgNum;
@@ -746,6 +755,15 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     description_service::invalidate_classes_cache().await;
     redeem_service::invalidate_classes_cache().await;
     qna_service::invalidate_categories_cache().await;
+    nav_menu_service::invalidate_all(state).await;
+    stats_service::invalidate(state).await;
+    announcement_service::invalidate_all(state).await;
+    special_service::invalidate_all(state).await;
+    zph_service::invalidate_all(state).await;
+    article_service::invalidate_groups(state).await;
+    site_page_service::invalidate_all(state).await;
+    job_service::invalidate_sidebar(state).await;
+    company_service::invalidate_sidebar(state).await;
     phpyun_core::cache::invalidate_all_config(&state.cache.config);
     Ok(code)
 }

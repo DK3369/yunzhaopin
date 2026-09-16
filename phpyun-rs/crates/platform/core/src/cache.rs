@@ -133,6 +133,53 @@ pub fn invalidate_all_config(local: &ConfigCache) {
     local.invalidate_all();
 }
 
+/// Two-tier cache wrapper. Services hold a static `TieredCache<V>` and never
+/// touch moka / `get_or_load` directly.
+pub struct TieredCache<V>
+where
+    V: Serialize + DeserializeOwned + Send + Sync + 'static,
+{
+    inner: Cache<String, Arc<V>>,
+}
+
+impl<V> TieredCache<V>
+where
+    V: Serialize + DeserializeOwned + Send + Sync + 'static,
+{
+    pub fn new(max_capacity: u64, ttl: Duration) -> Self {
+        Self {
+            inner: Cache::builder()
+                .max_capacity(max_capacity)
+                .time_to_live(ttl)
+                .build(),
+        }
+    }
+
+    pub async fn get_or_load<F, Fut>(
+        &self,
+        kv: &Kv,
+        key: String,
+        ttl: Duration,
+        scope: &'static str,
+        loader: F,
+    ) -> Result<Arc<V>, ApiError>
+    where
+        F: FnOnce() -> Fut + Send,
+        Fut: Future<Output = Result<V, ApiError>> + Send,
+    {
+        get_or_load(&self.inner, kv, key, ttl, scope, loader).await
+    }
+
+    pub async fn invalidate(&self, kv: &Kv, key: &str) {
+        invalidate(&self.inner, kv, key).await;
+    }
+
+    /// Drop every L1 entry. Redis keys expire with their own TTL (no prefix SCAN).
+    pub fn invalidate_prefix_local(&self) {
+        self.inner.invalidate_all();
+    }
+}
+
 // ============================================================================
 // SimpleCache — single-tier in-process cache for small lookup data.
 //

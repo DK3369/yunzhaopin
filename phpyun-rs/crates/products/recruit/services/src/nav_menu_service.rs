@@ -1,10 +1,49 @@
 //! Navigation menu (aligned with PHPYun `navigation.model.php`).
 
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::nav_menu::{entity::NavMenu, repo as nav_repo};
+use std::sync::OnceLock;
+use std::time::Duration;
+
+const LIST_TTL: Duration = Duration::from_secs(60);
+
+static CACHE: OnceLock<TieredCache<Vec<NavMenu>>> = OnceLock::new();
+
+fn cache() -> &'static TieredCache<Vec<NavMenu>> {
+    CACHE.get_or_init(|| TieredCache::new(32, LIST_TTL))
+}
+
+fn cache_key(position: &str) -> String {
+    format!("nav:{position}")
+}
+
+pub async fn invalidate_all(state: &AppState) {
+    cache().invalidate_prefix_local();
+    for p in ["0", "1", "2", "top", "bottom"] {
+        cache().invalidate(&state.redis, &cache_key(p)).await;
+    }
+}
+
+async fn invalidate_position(state: &AppState, position: &str) {
+    cache().invalidate_prefix_local();
+    cache().invalidate(&state.redis, &cache_key(position)).await;
+}
 
 pub async fn list(state: &AppState, position: &str) -> AppResult<Vec<NavMenu>> {
-    Ok(nav_repo::list_public(state.db.reader(), position).await?)
+    let key = cache_key(position);
+    let pos = position.to_string();
+    let st = state.clone();
+    let arc = cache()
+        .get_or_load(
+            &state.redis,
+            key,
+            LIST_TTL,
+            "nav",
+            move || async move { Ok(nav_repo::list_public(st.db.reader(), &pos).await?) },
+        )
+        .await?;
+    Ok((*arc).clone())
 }
 
 // ---------- admin ----------
@@ -46,6 +85,7 @@ pub async fn admin_create(
         clock::now_ts(),
     )
     .await?;
+    invalidate_position(state, input.position).await;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("admin.nav_menu.create", audit::Actor::uid(admin.uid))
@@ -88,11 +128,13 @@ pub async fn admin_update(
     if affected == 0 {
         return Err(ApiError::param_invalid("nav_not_found"));
     }
+    invalidate_all(state).await;
     Ok(())
 }
 
 pub async fn admin_delete(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     crate::admin_auth_service::require_active_admin(state, admin).await?;
     nav_repo::delete(state.db.pool(), id).await?;
+    invalidate_all(state).await;
     Ok(())
 }

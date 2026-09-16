@@ -27,6 +27,7 @@ use phpyun_models::zph::entity::Zph;
 use phpyun_models::zph::repo as zph_repo;
 
 use crate::friend_link_service;
+use crate::announcement_service;
 
 async fn audit_write(
     state: &AppState,
@@ -166,6 +167,7 @@ pub async fn upsert_announcement(
         },
     )
     .await?;
+    announcement_service::invalidate_all(state).await;
     audit_write(
         state,
         actor,
@@ -185,6 +187,7 @@ pub async fn delete_announcement(
     if n == 0 {
         return Err(ApiError::param_invalid("announcement_not_found"));
     }
+    announcement_service::invalidate_all(state).await;
     audit_write(
         state,
         actor,

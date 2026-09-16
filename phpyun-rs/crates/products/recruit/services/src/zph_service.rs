@@ -1,5 +1,6 @@
 //! Job fair service.
 
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::{
     job::repo as job_repo,
@@ -9,18 +10,58 @@ use phpyun_models::{
     },
 };
 use std::collections::HashSet;
+use std::sync::OnceLock;
+use std::time::Duration;
 
 pub use phpyun_models::job::repo::OwnJobBrief;
+
+const LIST_TTL: Duration = Duration::from_secs(60);
+
+static CACHE: OnceLock<TieredCache<Paged<Zph>>> = OnceLock::new();
+
+fn cache() -> &'static TieredCache<Paged<Zph>> {
+    CACHE.get_or_init(|| TieredCache::new(64, LIST_TTL))
+}
+
+fn cache_key(did: u32, page: &Pagination) -> String {
+    format!("zph:{did}:{}:{}", page.page, page.page_size)
+}
+
+pub async fn invalidate_all(state: &AppState) {
+    cache().invalidate_prefix_local();
+    let _ = state;
+}
 
 pub async fn list(
     state: &AppState,
     page: Pagination,
     keyword: Option<&str>,
 ) -> AppResult<Paged<Zph>> {
-    let db = state.db.reader();
-    let list = zph_repo::list(db, page.offset, page.limit, keyword).await?;
-    let total = zph_repo::count(db, keyword).await?;
-    Ok(Paged::new(list, total, page.page, page.page_size))
+    let kw = keyword.map(str::trim).filter(|s| !s.is_empty());
+    if kw.is_some() {
+        let db = state.db.reader();
+        let list = zph_repo::list(db, page.offset, page.limit, keyword).await?;
+        let total = zph_repo::count(db, keyword).await?;
+        return Ok(Paged::new(list, total, page.page, page.page_size));
+    }
+    let did = 0u32;
+    let key = cache_key(did, &page);
+    let st = state.clone();
+    let arc = cache()
+        .get_or_load(
+            &state.redis,
+            key,
+            LIST_TTL,
+            "zph",
+            move || async move {
+                let db = st.db.reader();
+                let list = zph_repo::list(db, page.offset, page.limit, None).await?;
+                let total = zph_repo::count(db, None).await?;
+                Ok(Paged::new(list, total, page.page, page.page_size))
+            },
+        )
+        .await?;
+    Ok((*arc).clone())
 }
 
 pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Zph> {

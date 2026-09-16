@@ -4,11 +4,16 @@
 //! `wap/job::comapply_action`. Application submission lives in `apply_service`.
 
 use chrono::Timelike;
+use phpyun_core::cache::TieredCache;
 use phpyun_core::utils::mask_contact;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
+use serde::{Deserialize, Serialize};
+use std::hash::{Hash, Hasher};
+use std::sync::OnceLock;
+use std::time::Duration;
 
 /// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
 /// + the `joblist` Smarty plugin (`smarty_internal_compile_joblist.php`).
@@ -55,12 +60,81 @@ pub struct JobSearch {
     pub did: u32,
 }
 
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct JobPage {
     pub list: Vec<Job>,
     pub total: u64,
 }
 
+const SIDEBAR_TTL: Duration = Duration::from_secs(60);
+
+static SIDEBAR_CACHE: OnceLock<TieredCache<JobPage>> = OnceLock::new();
+
+fn sidebar_cache() -> &'static TieredCache<JobPage> {
+    SIDEBAR_CACHE.get_or_init(|| TieredCache::new(64, SIDEBAR_TTL))
+}
+
+fn search_hash(search: &JobSearch) -> u64 {
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    format!("{search:?}").hash(&mut h);
+    h.finish()
+}
+
+fn is_sidebar_query(search: &JobSearch, page: &Pagination) -> bool {
+    if page.page != 1 {
+        return false;
+    }
+    let has_kw = search
+        .keyword
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .is_some();
+    !has_kw && (search.rec || search.bid)
+}
+
+pub async fn invalidate_sidebar(state: &AppState) {
+    sidebar_cache().invalidate_prefix_local();
+    let _ = state;
+}
+
 pub async fn list_public(
+    state: &AppState,
+    search: &JobSearch,
+    page: Pagination,
+) -> AppResult<JobPage> {
+    let page_data = if is_sidebar_query(search, &page) {
+        let key = format!(
+            "jobs:sidebar:{:x}:{}",
+            search_hash(search),
+            page.page
+        );
+        let st = state.clone();
+        let search = search.clone();
+        let arc = sidebar_cache()
+            .get_or_load(
+                &state.redis,
+                key,
+                SIDEBAR_TTL,
+                "jobs.sidebar",
+                move || async move { load_list_public(&st, &search, page).await },
+            )
+            .await?;
+        (*arc).clone()
+    } else {
+        load_list_public(state, search, page).await?
+    };
+    let ids: Vec<u64> = page_data.list.iter().map(|j| j.id).collect();
+    if !ids.is_empty() {
+        let pool = state.db.pool().clone();
+        phpyun_core::background::spawn_best_effort("job.expoure", async move {
+            let _ = job_repo::incr_jobexpoure(&pool, &ids).await;
+        });
+    }
+    Ok(page_data)
+}
+
+async fn load_list_public(
     state: &AppState,
     search: &JobSearch,
     page: Pagination,
@@ -178,17 +252,9 @@ pub async fn list_public(
         job_repo::count_public(state.db.reader(), &f, now),
         job_repo::list_public(state.db.reader(), &f, page.offset, page.limit, now),
     );
-    let list = list_res?;
-    let ids: Vec<u64> = list.iter().map(|j| j.id).collect();
-    if !ids.is_empty() {
-        let pool = state.db.pool().clone();
-        phpyun_core::background::spawn_best_effort("job.expoure", async move {
-            let _ = job_repo::incr_jobexpoure(&pool, &ids).await;
-        });
-    }
     Ok(JobPage {
         total: total_res?,
-        list,
+        list: list_res?,
     })
 }
 

@@ -7,6 +7,7 @@
 //!    | concern   | use this                                  | DO NOT use         |
 //!    |-----------|-------------------------------------------|--------------------|
 //!    | caching   | `phpyun_core::cache::SimpleCache`         | `moka::*`          |
+//!    |           | `phpyun_core::cache::TieredCache` (L1+L2) |                    |
 //!    |           | `phpyun_core::cache::get_or_load` (L1+L2) |                    |
 //!    | redis     | `phpyun_core::kv::Kv` / `events`          | `redis::*`         |
 //!    | http out  | `phpyun_core::http_client`                | `reqwest::*`       |
@@ -30,7 +31,9 @@
 //! search_service         ──> hot_search_service       (record hot keywords)
 //! admin_dashboard_service ──> site_setting / dict / region / country / category /
 //!                            ads / home / friend_link / hot_search / data_show /
-//!                            description / redeem / qna  (clear_site_caches)
+//!                            description / redeem / qna / nav / stats / announcement /
+//!                            special / zph / article / site_page / jobs / companies
+//!                            (clear_site_caches)
 //! admin_php_content_service ──> admin_dashboard_service  (gen_cache bust)
 //! payment_notify_service ──> vip_service, once_service (gateway settle)
 //! ```

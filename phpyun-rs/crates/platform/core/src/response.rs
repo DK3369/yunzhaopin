@@ -33,7 +33,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use serde::{Serialize, Serializer};
+use serde::{Deserialize, Serialize, Serializer};
 
 /// Success code. Every successful endpoint uses this.
 pub const CODE_OK: u16 = 200;
@@ -185,8 +185,8 @@ fn resolve_msg_key(key: &'static str, lang: crate::i18n::Lang) -> String {
 /// OpenAPI documentation of paged endpoints, leave `body` off the
 /// `responses(...)` macro — the response shape (`{list, total, page,
 /// page_size}`) is implicit from the project's response contract.
-#[derive(Debug, Serialize)]
-pub struct Paged<T: Serialize> {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Paged<T> {
     pub list: Vec<T>,
     pub total: u64,
     pub page: u32,

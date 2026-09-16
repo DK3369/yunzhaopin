@@ -1,5 +1,6 @@
 //! Special recruiting events (aligned with PHPYun `wap/special`).
 
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{
     background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
 };
@@ -7,14 +8,47 @@ use phpyun_models::special::{
     entity::{Special, SpecialCompany},
     repo as special_repo,
 };
+use std::sync::OnceLock;
+use std::time::Duration;
+
+const LIST_TTL: Duration = Duration::from_secs(60);
+
+static CACHE: OnceLock<TieredCache<Paged<Special>>> = OnceLock::new();
+
+fn cache() -> &'static TieredCache<Paged<Special>> {
+    CACHE.get_or_init(|| TieredCache::new(64, LIST_TTL))
+}
+
+fn cache_key(did: u32, page: &Pagination) -> String {
+    format!("special:{did}:{}:{}", page.page, page.page_size)
+}
+
+pub async fn invalidate_all(state: &AppState) {
+    cache().invalidate_prefix_local();
+    let _ = state;
+}
 
 pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Special>> {
-    let db = state.db.reader();
-    let (list, total) = tokio::join!(
-        special_repo::list(db, page.offset, page.limit),
-        special_repo::count(db),
-    );
-    Ok(Paged::new(list?, total?, page.page, page.page_size))
+    let did = 0u32;
+    let key = cache_key(did, &page);
+    let st = state.clone();
+    let arc = cache()
+        .get_or_load(
+            &state.redis,
+            key,
+            LIST_TTL,
+            "special",
+            move || async move {
+                let db = st.db.reader();
+                let (list, total) = tokio::join!(
+                    special_repo::list(db, page.offset, page.limit),
+                    special_repo::count(db),
+                );
+                Ok(Paged::new(list?, total?, page.page, page.page_size))
+            },
+        )
+        .await?;
+    Ok((*arc).clone())
 }
 
 pub async fn get(state: &AppState, id: u64) -> AppResult<Special> {
