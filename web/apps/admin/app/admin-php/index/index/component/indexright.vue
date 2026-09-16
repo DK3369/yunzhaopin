@@ -52,6 +52,9 @@ const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(f
 const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
 
 export default {
+    inject: {
+        dashFullPack: { from: 'dashFullPack', default: null },
+    },
 
     data: function() {
         return {
@@ -63,7 +66,12 @@ export default {
 
     mounted() {
         this.getMsgnum();
-        this.getData();
+        const pack = this.dashFullPack;
+        if (pack && pack.ajax_right) {
+            this.numdata = pack.ajax_right;
+        } else {
+            this.getData();
+        }
 		
 		
 		window.addEventListener("message",(e)=>{

@@ -23,31 +23,25 @@ const { data: dash } = await useAsyncData(
         resume_downloads?: number
         job_msg_unanswered?: number
         unread_messages?: number
-      }>('/v1/mcenter/com-dashboard', {})
+        today?: {
+          look_job?: { num?: number }
+          apply?: { num?: number }
+          invite?: { num?: number }
+        }
+        job_counts?: {
+          total: number
+          online: number
+          breakjob_num?: number
+          top_num?: number
+          rec_num?: number
+          urgent_num?: number
+        }
+      }>('/v1/mcenter/com-dashboard/full', {})
       .catch(() => null),
   reuseAsyncCache(),
 )
-const { data: counts } = await useAsyncData('com-home-job-counts', () =>
-  api
-    .post<{
-      total: number
-      online: number
-      breakjob_num?: number
-      top_num?: number
-      rec_num?: number
-      urgent_num?: number
-    }>('/v1/mcenter/jobs/counts', {})
-    .catch(() => null),
-)
-const { data: today } = await useAsyncData('com-home-today', () =>
-  api
-    .post<{
-      look_job?: { num?: number }
-      apply?: { num?: number }
-      invite?: { num?: number }
-    }>('/v1/mcenter/com-stats/today', {})
-    .catch(() => null),
-)
+const counts = computed(() => dash.value?.job_counts || null)
+const today = computed(() => dash.value?.today || null)
 const { data: fans } = await useAsyncData('com-fans-n', () =>
   api.post<{ total: number }>('/v1/mcenter/fans', { page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
 )

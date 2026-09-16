@@ -10,9 +10,14 @@ const { siteName, settings, me } = useSiteChrome()
 const id = Number(route.params.id)
 const api = useApi()
 const salaryType = computed(() => Number(settings.value.resume_salarytype || 1))
-const { data, error } = await useAsyncData(
-  () => `job-${locale.value}-${id}`,
-  () => api.get('/v1/wap/jobs/detail', { id }),
+const { data: jobFull, error } = await useAsyncData(
+  () => `job-full-${locale.value}-${id}`,
+  () => api.get('/v1/wap/jobs/detail/full', { id }),
+)
+const data = computed(
+  () =>
+    ((jobFull.value as { detail?: Record<string, unknown> } | null)?.detail ||
+      null) as Record<string, unknown> | null,
 )
 function apiErrKey(e: unknown): string {
   if (!e || typeof e !== 'object') return ''
@@ -170,19 +175,19 @@ const contactInfo = computed(
       unknown
     >,
 )
-const { data: ads } = await useAdsBundle('job-detail-ads', [
-  { slot: '509', limit: 1 },
-  { slot: '512', limit: 1 },
-])
+const ads = computed(
+  () =>
+    ((jobFull.value as { ads?: Record<string, Array<Record<string, unknown>>> } | null)?.ads ||
+      {}) as Record<string, Array<Record<string, unknown>>>,
+)
 const adsBanner = computed(() => ads.value?.['509'] || [])
 const adsH5 = computed(() => ads.value?.['512'] || [])
-const { data: similar } = await useAsyncData(
-  () => `job-similar-${locale.value}-${id}`,
-  () => api.get<JobLike[]>('/v1/wap/jobs/similar', { id, limit: 8 }).catch(() => [] as JobLike[]),
+const similar = computed(
+  () => ((jobFull.value as { similar?: JobLike[] } | null)?.similar || []) as JobLike[],
 )
-const { data: sameCom } = await useAsyncData(
-  () => `job-same-${locale.value}-${id}`,
-  () => api.get<JobLike[]>('/v1/wap/jobs/same-company', { id, limit: 6 }).catch(() => [] as JobLike[]),
+const sameCom = computed(
+  () =>
+    ((jobFull.value as { same_company?: JobLike[] } | null)?.same_company || []) as JobLike[],
 )
 const fav = ref(false)
 const applyMsg = ref('')

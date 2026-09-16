@@ -5,7 +5,7 @@ const api = useApi()
 const { t, locale } = useI18n()
 const { userItems } = useMemberNav()
 const { data } = await useAuthMe()
-const { data: dash } = await useAsyncData(
+const { data: dash, refresh: refreshDash } = await useAsyncData(
   'user-dash',
   () =>
     api
@@ -19,12 +19,16 @@ const { data: dash } = await useAsyncData(
         commsgnum: number
         sxnum: number
         sysnum: number
-      }>('/v1/mcenter/dashboard', {})
+        sign?: { signed_today?: boolean }
+        completion?: { score?: number; missing?: string[] }
+      }>('/v1/mcenter/dashboard/full', {})
       .catch(() => null),
   reuseAsyncCache(),
 )
 const { data: follows } = await useAsyncData('user-follow-n', () =>
-  api.post<{ total: number }>('/v1/mcenter/follows/list', { kind: 2, page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
+  api
+    .post<{ total: number }>('/v1/mcenter/favorites/list', { kind: 2, page: 1, page_size: 1 })
+    .catch(() => ({ total: 0 })),
 )
 const { data: resume, refresh: refreshResume } = await useAsyncData(
   'user-home-resume',
@@ -43,17 +47,12 @@ const { data: resume, refresh: refreshResume } = await useAsyncData(
       .catch(() => null),
   reuseAsyncCache(),
 )
-const { data: expects } = await useAsyncData('user-home-expects', () =>
-  api.post('/v1/mcenter/resume/expects/list', {}).catch(() => []),
+const { data: bundle } = await useAsyncData('user-home-bundle', () =>
+  api.post<{ expects?: unknown[] }>('/v1/mcenter/resume/bundle', {}).catch(() => null),
 )
-const { data: completion } = await useAsyncData('user-home-score', () =>
-  api.post<{ score?: number; missing?: string[] }>('/v1/mcenter/resume/completion', {}).catch(() => null),
-)
-const { data: signSt, refresh: refreshSign } = await useAsyncData(
-  'user-home-sign',
-  () => api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
-  reuseAsyncCache(),
-)
+const expects = computed(() => bundle.value?.expects || [])
+const completion = computed(() => dash.value?.completion || null)
+const signSt = computed(() => dash.value?.sign || null)
 const { data: gzh } = await useAsyncData('user-gzh', () =>
   api.post<{ subscribe?: number }>('/v1/mcenter/wechat/subscribe', {}).catch(() => ({ subscribe: 1 })),
 )
@@ -141,7 +140,7 @@ async function sign() {
   try {
     await api.post('/v1/mcenter/sign', {})
     msg.value = t('common.success')
-    await refreshSign()
+    await refreshDash()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }

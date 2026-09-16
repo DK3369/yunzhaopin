@@ -87,6 +87,9 @@ const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(f
 const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
 
 export default {
+    inject: {
+        dashFullPack: { from: 'dashFullPack', default: null },
+    },
     data: function() {
         return {
             activeName: '1',
@@ -123,8 +126,19 @@ export default {
 
     mounted() {
         this.date = formatMonth(new Date());
-        this.monthTj();
-        this.tjChangeSrc();
+        const pack = this.dashFullPack;
+        if (pack && pack.month_statis) {
+            this.applyMonth(pack.month_statis);
+        } else {
+            this.monthTj();
+        }
+        if (pack && pack.chart && this.tjTbName === 'getweb') {
+            this.$nextTick(() => {
+                this.applyChart(pack.chart);
+            });
+        } else {
+            this.tjChangeSrc();
+        }
     },
     methods: {
         disableFutureMonth: function(time) {
@@ -135,6 +149,22 @@ export default {
             this.tjChangeSrc();
         },
 
+        applyMonth: function(data) {
+            if (!data) return;
+            this.resumeNumMon = data.resumeNumMon;
+            this.jobNumMon = data.jobNumMon;
+            this.companyNumMon = data.companyNumMon;
+            this.userNumMon = data.userNumMon;
+            this.ggNumMon = data.ggNumMon;
+            this.userjobNumMon = data.userjobNumMon;
+            this.yqmsNumMon = data.yqmsNumMon;
+            this.downreusmeNumMon = data.downreusmeNumMon;
+            this.wxbdNumMon = data.wxbdNumMon;
+            this.wxbduserNumMon = data.wxbduserNumMon;
+            this.wxbdcomNumMon = data.wxbdcomNumMon;
+            this.userwx_percent = data.userwx_percent;
+            this.comwx_percent = data.comwx_percent;
+        },
         monthTj: function() {
             var that = this;
             var param = {};
@@ -149,27 +179,69 @@ export default {
             httpPost('m=index&c=monthStatis', param, { hideloading: true }).then(function(response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    that.resumeNumMon = res.data.resumeNumMon;
-                    that.jobNumMon = res.data.jobNumMon;
-                    that.companyNumMon = res.data.companyNumMon;
-                    that.userNumMon = res.data.userNumMon;
-                    that.ggNumMon = res.data.ggNumMon;
-                    
-                    that.userjobNumMon = res.data.userjobNumMon;
-                    that.yqmsNumMon = res.data.yqmsNumMon;
-                    that.downreusmeNumMon = res.data.downreusmeNumMon;
-                    that.wxbdNumMon = res.data.wxbdNumMon;
-					that.wxbduserNumMon = res.data.wxbduserNumMon;
-					that.wxbdcomNumMon = res.data.wxbdcomNumMon;
-					that.userwx_percent = res.data.userwx_percent;
-					that.comwx_percent = res.data.comwx_percent;
-                    
+                    that.applyMonth(res.data);
                 }
             })
         },
         clicktb: function(name) {
             this.tjTbName = name;
             this.tjChangeSrc();
+        },
+        applyChart: function(payload) {
+            if (!payload || !payload.list) return;
+            var that = this;
+            var tjlist = payload.list;
+            var legendData = payload.name;
+
+            var xAxisData = [],
+                seriesList = [],
+                seriesObj = {},
+                seriesData = [],
+                seriesColor = ['#2778F8', '#F6B44C', '#20EBDA', '#F86138'];
+
+            tjlist.forEach(function(item, key) {
+                seriesData = [];
+                for (let sdkey in item.list) {
+                    if (key == 0) {
+                        xAxisData.push(item.list[sdkey].td);
+                    }
+                    seriesData.push(item.list[sdkey].cnt);
+                }
+
+                seriesObj = {
+                    name: legendData[key],
+                    type: 'line',
+                    symbol: 'emptyCircle',
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                width: 2,
+                                color: seriesColor[key]
+                            }
+                        }
+                    },
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: seriesColor[key]
+                                },
+                                {
+                                    offset: 0.9,
+                                    color: '#fff'
+                                }
+                            ], false),
+                        }
+                    },
+                    data: seriesData
+                };
+                seriesList.push(seriesObj);
+            })
+
+            that.xAxisData = xAxisData;
+            that.seriesList = seriesList;
+            that.legendData = legendData;
+            that.initCharts();
         },
         tjChangeSrc: function() {
             var that = this;
@@ -186,62 +258,7 @@ export default {
             httpPost(`m=index&c=${c}`, param, { hideloading: true }).then(function(response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    
-					var tjlist = res.data.list;
-					var legendData = res.data.name;
-
-					var xAxisData = [],
-						seriesList = [],
-						seriesObj = {},
-						seriesData = [],
-						seriesColor = ['#2778F8', '#F6B44C', '#20EBDA', '#F86138'];
-
-					tjlist.forEach(function(item, key) {
-						seriesData = [];
-						for (let sdkey in item.list) {
-							if (key == 0) {
-								xAxisData.push(item.list[sdkey].td);
-							}
-							seriesData.push(item.list[sdkey].cnt);
-						}
-
-						seriesObj = {
-							name: legendData[key],
-							type: 'line',
-							symbol: 'emptyCircle',
-							itemStyle: {
-								normal: {
-									areaStyle: {
-										width: 2,
-										color: seriesColor[key]
-									}
-								}
-							},
-							areaStyle: {
-								normal: {
-									color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-											offset: 0,
-											color: seriesColor[key]
-										},
-										{
-											offset: 0.9,
-											color: '#fff'
-										}
-									], false),
-								}
-							},
-							data: seriesData
-						};
-						seriesList.push(seriesObj);
-					})
-
-					that.xAxisData = xAxisData;
-					that.seriesList = seriesList;
-					that.legendData = legendData;
-					
-					that.initCharts();
-					
-
+                    that.applyChart(res.data);
                 }
             })
         },

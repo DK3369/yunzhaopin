@@ -44,11 +44,11 @@ const { data, error } = await useAsyncData(
   () => api.get<{ list: CompanyLike[]; total: number }>('/v1/wap/companies', listQuery.value),
 )
 const { data: recSide } = await useAsyncData(
-  () => `companies-rec-side-${locale.value}`,
+  () => `companies-sidebar-${locale.value}`,
   () =>
-    api.get<{ list: CompanyLike[] }>('/v1/wap/companies', applyToQuery({ rec: true, page: 1, page_size: 10 })).catch(
-      () => ({ list: [] as CompanyLike[] }),
-    ),
+    api
+      .get<{ rec?: CompanyLike[] }>('/v1/wap/companies/sidebar', applyToQuery({}))
+      .catch(() => ({ rec: [] as CompanyLike[] })),
 )
 const industries = computed(() => dicts.value?.industries ?? [])
 const natures = computed(() => dicts.value?.company_natures ?? [])
@@ -58,7 +58,7 @@ useSeoMeta({ title: t('default_00113') })
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 useListLoginGate(error)
 const list = computed(() => data.value?.list || [])
-const recCompanies = computed(() => recSide.value?.list || [])
+const recCompanies = computed(() => recSide.value?.rec || [])
 </script>
 
 <template>

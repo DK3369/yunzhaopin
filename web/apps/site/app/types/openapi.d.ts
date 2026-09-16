@@ -244,6 +244,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/applications/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Employer application list plus tab counts in one round-trip. */
+        post: operations["post_v1_mcenter_applications_overview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/applications/state": {
         parameters: {
             query?: never;
@@ -409,7 +426,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Unread broadcast count */
+        /**
+         * Unread broadcast count
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/messages/unread-summary
+         */
         post: operations["post_v1_mcenter_broadcasts_unread_count"];
         delete?: never;
         options?: never;
@@ -479,6 +500,23 @@ export interface paths {
         put?: never;
         /** Company center — first-screen aggregate counts (matching PHPYun `member/com/tongji`). */
         post: operations["post_v1_mcenter_com_dashboard"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-dashboard/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Employer first-screen bundle: dashboard + today + year report + job tab counts. */
+        post: operations["post_v1_mcenter_com_dashboard_full"];
         delete?: never;
         options?: never;
         head?: never;
@@ -622,7 +660,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** PHP `zhaopin::getTodayData` — 今日五项及较昨日。 */
+        /**
+         * PHP `zhaopin::getTodayData` — 今日五项及较昨日。
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/com-dashboard/full
+         */
         post: operations["post_v1_mcenter_com_stats_today"];
         delete?: never;
         options?: never;
@@ -1134,7 +1176,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create news */
+        /**
+         * Create news
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/create（body.kind=news）
+         */
         post: operations["post_v1_mcenter_company_news"];
         delete?: never;
         options?: never;
@@ -1151,7 +1197,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** My news list */
+        /**
+         * My news list
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/list（body.kind=news）
+         */
         post: operations["post_v1_mcenter_company_news_list"];
         delete?: never;
         options?: never;
@@ -1168,7 +1218,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Update or soft-delete a news entry (body with `"status":2` triggers deletion) */
+        /**
+         * Update or soft-delete a news entry (body with `"status":2` triggers deletion)
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/update 或 /delete（body.kind=news）
+         */
         post: operations["post_v1_mcenter_company_news_update"];
         delete?: never;
         options?: never;
@@ -1185,7 +1239,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create product */
+        /**
+         * Create product
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/create（body.kind=product）
+         */
         post: operations["post_v1_mcenter_company_products"];
         delete?: never;
         options?: never;
@@ -1202,7 +1260,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** My product list */
+        /**
+         * My product list
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/list（body.kind=product）
+         */
         post: operations["post_v1_mcenter_company_products_list"];
         delete?: never;
         options?: never;
@@ -1219,7 +1281,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Update or soft-delete a product (body with `"status":2` triggers deletion) */
+        /**
+         * Update or soft-delete a product (body with `"status":2` triggers deletion)
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/update 或 /delete（body.kind=product）
+         */
         post: operations["post_v1_mcenter_company_products_update"];
         delete?: never;
         options?: never;
@@ -1341,6 +1407,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/dashboard/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Jobseeker first-screen bundle: dashboard counts + sign + resume completion + unread. */
+        post: operations["post_v1_mcenter_dashboard_full"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/dashboard/year-report": {
         parameters: {
             query?: never;
@@ -1355,6 +1438,8 @@ export interface paths {
          *     PHP returns a rendered PNG poster; the Rust port returns just the
          *     underlying numbers and lets the frontend assemble the artwork. Restricted
          *     to employers (`usertype=2`).
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/com-dashboard/full
          */
         post: operations["post_v1_mcenter_dashboard_year_report"];
         delete?: never;
@@ -1632,7 +1717,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Submit feedback (anonymous allowed) */
+        /** Submit feedback (login required) */
         post: operations["post_v1_mcenter_feedback"];
         delete?: never;
         options?: never;
@@ -1734,7 +1819,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Toggle follow — followed ↔ unfollowed. */
+        /**
+         * Toggle follow — followed ↔ unfollowed.
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/favorites。映射：target_kind=2(企业)→kind=2，target_kind=1(用户)→kind=3，target_uid→target_id
+         */
         post: operations["post_v1_mcenter_follows"];
         delete?: never;
         options?: never;
@@ -1751,7 +1840,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Cheap probe used by frontend to render the follow-button state. */
+        /**
+         * Cheap probe used by frontend to render the follow-button state.
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/favorites/exists。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3，target_uid→target_id
+         */
         post: operations["post_v1_mcenter_follows_exists"];
         delete?: never;
         options?: never;
@@ -1768,7 +1861,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Targets I am following (filtered by kind). */
+        /**
+         * Targets I am following (filtered by kind).
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/favorites/list。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3
+         */
         post: operations["post_v1_mcenter_follows_list"];
         delete?: never;
         options?: never;
@@ -1902,6 +1999,23 @@ export interface paths {
         put?: never;
         /** Exchange history */
         post: operations["post_v1_mcenter_integral_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/integral/mission": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Daily task completion (PHP `integralMission`). `true` = already done. */
+        post: operations["post_v1_mcenter_integral_mission"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2197,6 +2311,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/jobs/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `jobCheck` + `getAddJobNeedInfo` + `company_satic`. */
+        post: operations["post_v1_mcenter_jobs_check"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/jobs/counts": {
         parameters: {
             query?: never;
@@ -2242,6 +2373,23 @@ export interface paths {
         put?: never;
         /** Employer views their own list of published jobs */
         post: operations["post_v1_mcenter_jobs_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/jobs/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Employer job list plus tab counts in one round-trip. */
+        post: operations["post_v1_mcenter_jobs_overview"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2308,8 +2456,41 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Refresh job (bumps `lastupdate` so it sorts to the top of the public list) */
         post: operations["post_v1_mcenter_jobs_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/jobs/reserve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP member `job::reserveUpJob` — schedule or cancel auto-refresh for one job. */
+        post: operations["post_v1_mcenter_jobs_reserve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/jobs/reserve/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP member `job::reserveInfo` — current auto-refresh schedule for one job. */
+        post: operations["post_v1_mcenter_jobs_reserve_get"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3284,7 +3465,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Get a specific remark */
         post: operations["post_v1_mcenter_remarks_get_one"];
         delete?: never;
         options?: never;
@@ -3575,6 +3755,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/resume/bundle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** All resume child blocks in one response (same item shapes as the per-kind list endpoints). */
+        post: operations["post_v1_mcenter_resume_bundle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/resume/certs": {
         parameters: {
             query?: never;
@@ -3600,6 +3797,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_certs_list"];
         delete?: never;
         options?: never;
@@ -3666,7 +3867,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Education history list */
+        /**
+         * Education history list
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_edus_list"];
         delete?: never;
         options?: never;
@@ -3717,7 +3922,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** List job expectations */
+        /**
+         * List job expectations
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_expects_list"];
         delete?: never;
         options?: never;
@@ -3767,6 +3976,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_languages_list"];
         delete?: never;
         options?: never;
@@ -3832,6 +4045,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_others_list"];
         delete?: never;
         options?: never;
@@ -3880,6 +4097,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_projects_list"];
         delete?: never;
         options?: never;
@@ -3948,6 +4169,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_skills_list"];
         delete?: never;
         options?: never;
@@ -4046,6 +4271,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_trainings_list"];
         delete?: never;
         options?: never;
@@ -4094,6 +4323,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
+         */
         post: operations["post_v1_mcenter_resume_works_list"];
         delete?: never;
         options?: never;
@@ -4420,6 +4653,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/vip/bank-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Site bank-transfer accounts (PHP `getBankList`). */
+        post: operations["post_v1_mcenter_vip_bank_accounts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/vip/current": {
         parameters: {
             query?: never;
@@ -4499,9 +4749,27 @@ export interface paths {
         put?: never;
         /**
          * **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
+         *     **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
          *     Only compiled in debug builds — this function does not exist in the release binary.
          */
         post: operations["mock_paid"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/vip/orders/paybank": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `payment::paybank` — submit bank transfer voucher. */
+        post: operations["post_v1_mcenter_vip_orders_paybank"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4584,8 +4852,29 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Unread warning count */
+        /**
+         * Unread warning count
+         * @deprecated
+         * @description 即将失效：请改用 POST /v1/mcenter/messages/unread-summary
+         */
         post: operations["post_v1_mcenter_warnings_unread_count"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/wechat/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `wap/member/index::isgzh_action` (same logic on company home). */
+        post: operations["post_v1_mcenter_wechat_subscribe"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5087,6 +5376,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/companies/detail/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Company detail plus first-page jobs / news / products / messages. */
+        post: operations["post_v1_wap_companies_detail_full"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/companies/hot": {
         parameters: {
             query?: never;
@@ -5222,6 +5528,23 @@ export interface paths {
         put?: never;
         /** Company product detail */
         post: operations["post_v1_wap_companies_products_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/companies/sidebar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Company list sidebar: recommended 10. */
+        post: operations["post_v1_wap_companies_sidebar"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5541,7 +5864,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Province dictionary — PHP `$city_index` / `$city_name` from city.cache.php */
+        /**
+         * Province dictionary — PHP `$city_index` / `$city_name` from city.cache.php
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/regions
+         */
         post: operations["post_v1_wap_dict_cities"];
         delete?: never;
         options?: never;
@@ -5558,6 +5885,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/regions/children
+         */
         post: operations["post_v1_wap_dict_cities_by_province"];
         delete?: never;
         options?: never;
@@ -5574,7 +5905,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Company nature — PHP `$comclass_name` `job_pr` (国企/民营/…). */
+        /**
+         * Company nature — PHP `$comclass_name` `job_pr` (国企/民营/…).
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.company_natures）
+         */
         post: operations["post_v1_wap_dict_company_natures"];
         delete?: never;
         options?: never;
@@ -5591,7 +5926,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Company size — PHP `job_mun`. */
+        /**
+         * Company size — PHP `job_mun`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.company_sizes）
+         */
         post: operations["post_v1_wap_dict_company_sizes"];
         delete?: never;
         options?: never;
@@ -5608,7 +5947,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Education levels — `source=user` uses resume userclass; default is job comclass `job_edu`. */
+        /**
+         * Education levels — `source=user` uses resume userclass; default is job comclass `job_edu`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.educations；source=user → data.educations_user）
+         */
         post: operations["post_v1_wap_dict_educations"];
         delete?: never;
         options?: never;
@@ -5625,7 +5968,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Work experience — `source=user` uses resume `user_word`; default job `job_exp`. */
+        /**
+         * Work experience — `source=user` uses resume `user_word`; default job `job_exp`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.experiences；source=user → data.experiences_user）
+         */
         post: operations["post_v1_wap_dict_experiences"];
         delete?: never;
         options?: never;
@@ -5642,7 +5989,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Industry categories from `phpyun_industry` (PHP `$industry_name`) */
+        /**
+         * Industry categories from `phpyun_industry` (PHP `$industry_name`)
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.industries）
+         */
         post: operations["post_v1_wap_dict_industries"];
         delete?: never;
         options?: never;
@@ -5659,7 +6010,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Top-level job categories */
+        /**
+         * Top-level job categories
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.job_categories）
+         */
         post: operations["post_v1_wap_dict_job_categories"];
         delete?: never;
         options?: never;
@@ -5679,8 +6034,73 @@ export interface paths {
         /**
          * Job types (full-time / part-time / internship / temporary / remote).
          *     `source=user` uses resume `user_type`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.job_types；source=user → data.job_types_user）
          */
         post: operations["post_v1_wap_dict_job_types"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/dict/langs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Language requirement — PHP `$comdata.job_lang`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.langs）
+         */
+        post: operations["post_v1_wap_dict_langs"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/dict/marriages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Marital requirement — PHP `$comdata.job_marriage`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.marriages）
+         */
+        post: operations["post_v1_wap_dict_marriages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/dict/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Salary cycle / report-time. `source=user` uses resume `user_report`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.reports；source=user → data.reports_user）
+         */
+        post: operations["post_v1_wap_dict_reports"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5696,7 +6116,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Salary ranges */
+        /**
+         * Salary ranges
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.salaries）
+         */
         post: operations["post_v1_wap_dict_salaries"];
         delete?: never;
         options?: never;
@@ -5713,8 +6137,32 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Resume person tags — PHP `$userdata.user_tag`. */
+        /**
+         * Resume person tags — PHP `$userdata.user_tag`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.tags）
+         */
         post: operations["post_v1_wap_dict_tags"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/dict/welfares": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.welfares）
+         */
+        post: operations["post_v1_wap_dict_welfares"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5906,6 +6354,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/friend-links/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply for a friend link (pending review). */
+        post: operations["post_v1_wap_friend_links_apply"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/gongzhao": {
         parameters: {
             query?: never;
@@ -5966,7 +6431,28 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/home/full
+         */
         post: operations["post_v1_wap_home_aggregate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/home/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Homepage bundle: `home` + job categories + hot class + ads + friend links. */
+        post: operations["post_v1_wap_home_full"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6056,6 +6542,39 @@ export interface paths {
          *     redirect (PHP echoes `checkpic($row['url'])` directly; we wrap in JSON).
          */
         post: operations["post_v1_wap_hr_docs_download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/initads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Batch active ads. Keys are slot ids; empty slots return `[]`. */
+        post: operations["post_v1_wap_initads"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/initjobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_initjobs"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6162,6 +6681,23 @@ export interface paths {
          *     - `formatted`: display-ready formatted strings (timestamps, average salary)
          */
         post: operations["post_v1_wap_jobs_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/jobs/detail/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Job detail plus similar / same-company lists and detail-page ads. */
+        post: operations["post_v1_wap_jobs_detail_full"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6281,6 +6817,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/jobs/sidebar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Jobs list sidebar: recommended 30 + ads 507/504/7. */
+        post: operations["post_v1_wap_jobs_sidebar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/jobs/similar": {
         parameters: {
             query?: never;
@@ -6372,6 +6925,57 @@ export interface paths {
         put?: never;
         /** Username/password login */
         post: operations["post_v1_wap_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/login/app-confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** APP (already logged in) confirms a PC ticket. Role must match the ticket. */
+        post: operations["post_v1_wap_login_app_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/login/app-qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a native APP scan-to-login ticket (jobseeker APP vs employer APP). */
+        post: operations["post_v1_wap_login_app_qr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/login/app-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Poll native APP scan-to-login. Issues a web session when the matching APP confirms. */
+        post: operations["post_v1_wap_login_app_status"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6585,6 +7189,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/oauth/facebook/authorize-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_oauth_facebook_authorize_url"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/oauth/facebook/code-login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_oauth_facebook_code_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/oauth/fast-reg": {
         parameters: {
             query?: never;
@@ -6596,6 +7232,38 @@ export interface paths {
         put?: never;
         /** Fast-register + bind pending OAuth identity (PHP `fastReg`). */
         post: operations["post_v1_wap_oauth_fast_reg"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/oauth/google/authorize-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_oauth_google_authorize_url"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/oauth/google/code-login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_oauth_google_code_login"];
         delete?: never;
         options?: never;
         head?: never;
@@ -7164,6 +7832,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/rankings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `{yun:}key{/yun}` ranking board. */
+        post: operations["post_v1_wap_rankings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/ratings/list": {
         parameters: {
             query?: never;
@@ -7401,6 +8086,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/register/check-com-name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pre-check whether a company name is already registered (PHP `checkComName_action`). */
+        post: operations["post_v1_wap_register_check_com_name"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/register/config": {
         parameters: {
             query?: never;
@@ -7412,6 +8114,26 @@ export interface paths {
         put?: never;
         /** Registration rules config: clients can use this for instant validation and display copy. */
         post: operations["post_v1_wap_register_config"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/register/written-off": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * PHP `wap/register::writtenoff_action` — unbind a taken mobile/email so a new
+         *     registration can use it. Requires the occupying account's password.
+         */
+        post: operations["post_v1_wap_register_written_off"];
         delete?: never;
         options?: never;
         head?: never;
@@ -7486,10 +8208,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Public resume detail — guests may read the body; contact fields follow
-         *     PHP `m_status` (self or downloaded), not merely “logged-in employer”.
-         */
+        /** Public resume detail — login required; contact fields still follow PHP `m_status`. */
         post: operations["post_v1_wap_resumes_detail"];
         delete?: never;
         options?: never;
@@ -7838,6 +8557,54 @@ export interface paths {
         put?: never;
         /** Site overview statistics */
         post: operations["post_v1_wap_stats_overview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_subscribe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/subscribe/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_subscribe_meta"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/subscribe/send-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_wap_subscribe_send_email"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8245,6 +9012,17 @@ export interface components {
             /** Format: int32 */
             weight: number;
         };
+        AdQuery: {
+            /** Format: int64 */
+            limit?: number;
+            /**
+             * @description Slot key — alphanumeric / underscore / hyphen, 1..=64 chars. The
+             *     string flows into `phpyun_ad.slot = ?`, so a stricter charset guard
+             *     (vs. plain length) removes any chance of control characters / spaces
+             *     reaching the DB and keeps slot keys URL-safe.
+             */
+            slot: string;
+        };
         AdView: {
             /** Format: int64 */
             id: number;
@@ -8453,6 +9231,30 @@ export interface components {
             /** @description `support` → ORDER BY support DESC; default add_time ASC. */
             orderby?: string | null;
         };
+        AppLoginIdForm: {
+            login_id: string;
+        };
+        AppQrData: {
+            /** Format: int64 */
+            expire_seconds: number;
+            login_id: string;
+            payload: string;
+            scan_url: string;
+            /** Format: int32 */
+            usertype: number;
+        };
+        AppQrForm: {
+            /** Format: int32 */
+            usertype: number;
+        };
+        AppStatusData: {
+            access_token?: string | null;
+            status: string;
+            /** Format: int64 */
+            uid?: number | null;
+            /** Format: int32 */
+            usertype?: number | null;
+        };
         AppealForm: {
             /** @description Account identifier — username / registered email / registered mobile. */
             account: string;
@@ -8470,6 +9272,7 @@ export interface components {
         };
         /** @description Application record item — full 11 columns of phpyun_userid_job + formatted timestamps + derived unread/invited booleans. */
         ApplicantSummary: {
+            apply_url?: string;
             /**
              * Format: int64
              * @description Employer uid
@@ -8522,7 +9325,56 @@ export interface components {
             /** @description Derived: is_browse == 1 */
             unread: boolean;
         };
+        ApplicationsOverview: {
+            applications: Record<string, never>;
+            counts: components["schemas"]["StateCounts"];
+        };
+        /** @description Filters of the PHP employer screen `member/com/model/hr.class.php`. */
+        ApplicationsQuery: {
+            /**
+             * Format: int32
+             * @description PHP `edu`: education level of the submitted resume
+             */
+            edu?: number | null;
+            /**
+             * Format: int32
+             * @description PHP `exp`: years of experience of the submitted resume
+             */
+            exp?: number | null;
+            /** @description Show only invited */
+            invited_only?: boolean | null;
+            /**
+             * Format: int64
+             * @description PHP `jobid`: restrict to one of my postings
+             */
+            job_id?: number | null;
+            /** @description PHP `keyword`: applicant name */
+            keyword?: string | null;
+            /**
+             * Format: int32
+             * @description PHP `rstate`: `resume_state` of the application
+             */
+            resume_state?: number | null;
+            /**
+             * Format: int32
+             * @description PHP `sex`: gender of the submitted resume
+             */
+            sex?: number | null;
+            /**
+             * Format: int32
+             * @description PHP `is_browse` 1/2/3/4/5/7
+             */
+            state?: number | null;
+            /** @description Show only unread (unbrowsed) */
+            unread_only?: boolean | null;
+            /**
+             * Format: int32
+             * @description PHP `uptime`: resume updated within N days (1 = since midnight today)
+             */
+            uptime?: number | null;
+        };
         ApplyCreated: {
+            apply_url?: string;
             /** Format: int64 */
             id: number;
             /** Format: int64 */
@@ -8730,6 +9582,14 @@ export interface components {
             /** Format: int64 */
             updated_at: number;
         };
+        BankAccountView: {
+            bank_address: string;
+            bank_name: string;
+            bank_number: string;
+            /** Format: int64 */
+            id: number;
+            name: string;
+        };
         BannerAddForm: {
             link?: string | null;
             /**
@@ -8928,6 +9788,14 @@ export interface components {
             new_password: string;
             old_password: string;
         };
+        CheckComNameData: {
+            /** @description PHP `errcode == 1` when the name already exists. */
+            taken: boolean;
+        };
+        CheckComNameForm: {
+            /** @description PHP field `c_name` */
+            c_name: string;
+        };
         CheckResult: {
             available: boolean;
             field: string;
@@ -9030,6 +9898,27 @@ export interface components {
             /** Format: int64 */
             id: number;
         };
+        ComDashboardFull: {
+            /** Format: int64 */
+            applies_received: number;
+            /** Format: int64 */
+            applies_unread: number;
+            /** Format: int64 */
+            integral_balance: number;
+            /** Format: int64 */
+            interviews_sent: number;
+            job_counts: components["schemas"]["JobCountsView"];
+            /** Format: int64 */
+            job_msg_unanswered: number;
+            /** Format: int64 */
+            resume_downloads: number;
+            today: components["schemas"]["ComTodayView"];
+            /** Format: int64 */
+            unread_chats: number;
+            /** Format: int64 */
+            unread_messages: number;
+            year_report: components["schemas"]["YearReportView"];
+        };
         ComDashboardView: {
             /** Format: int64 */
             applies_received: number;
@@ -9039,6 +9928,8 @@ export interface components {
             integral_balance: number;
             /** Format: int64 */
             interviews_sent: number;
+            /** Format: int64 */
+            job_msg_unanswered: number;
             /** Format: int64 */
             resume_downloads: number;
             /** Format: int64 */
@@ -9137,6 +10028,9 @@ export interface components {
              */
             usertype: number;
         };
+        CompaniesSidebarData: {
+            rec: components["schemas"]["CompanySummary"][];
+        };
         CompanyAutoItem: {
             /**
              * @description CDN-resolved logo (empty string when the row has no logo). Optional —
@@ -9178,36 +10072,56 @@ export interface components {
             uid: number;
         };
         CompanyData: {
+            address?: string | null;
+            busstops?: string | null;
             /** Format: int32 */
             cityid: number;
             content?: string | null;
             /** Format: int32 */
+            email_status: number;
+            /** Format: int32 */
             hits: number;
             /** Format: int32 */
             hy: number;
+            /** Format: int32 */
+            infostatus: number;
             linkjob?: string | null;
             linkmail?: string | null;
             linkman?: string | null;
             linkphone?: string | null;
+            linkqq?: string | null;
+            linktel?: string | null;
             logo?: string | null;
             /** Format: int32 */
             logo_status: number;
             /** Format: int32 */
+            moblie_status: number;
+            /** Format: int32 */
+            money: number;
+            /** Format: int32 */
+            moneytype: number;
+            /** Format: int32 */
             mun: number;
             name?: string | null;
+            not_disturb?: string | null;
             /** Format: int32 */
             pr: number;
             /** Format: int32 */
             provinceid: number;
             /** Format: int32 */
             r_status: number;
+            sdate?: string | null;
             shortname?: string | null;
             /** Format: int32 */
             three_cityid: number;
             /** Format: int64 */
             uid: number;
+            website?: string | null;
+            welfare?: string | null;
             x?: string | null;
             y?: string | null;
+            /** Format: int32 */
+            yyzz_status: number;
         };
         /** @description Company detail -- strictly mirrors the field set of PHPYun `wap/company::show_action`. */
         CompanyDetail: {
@@ -9342,6 +10256,13 @@ export interface components {
              */
             zp_num: number;
         };
+        CompanyDetailFull: {
+            detail: components["schemas"]["CompanyDetail"];
+            jobs: Record<string, never>;
+            messages: Record<string, never>;
+            news: Record<string, never>;
+            products: Record<string, never>;
+        };
         CompanyMessageForm: {
             authcode: string;
             captcha_cid: string;
@@ -9417,6 +10338,10 @@ export interface components {
              * @description Open jobs (`state=1 AND status=0 AND r_status=1`). Additive; 0 when unknown.
              */
             job_num: number;
+            /** @description PHP `phpyun_company.lastupdate` (varchar: `YYYY-MM-DD` or unix). Additive. */
+            lastupdate?: string | null;
+            /** @description Formatted `Y-m-d` for list cards (PHP `comlist` `|date_format:"%Y-%m-%d"`). */
+            lastupdate_n?: string;
             logo?: string | null;
             /** Format: int32 */
             mun: number;
@@ -9544,47 +10469,124 @@ export interface components {
         };
         CreateJobForm: {
             /** Format: int32 */
-            cityid: number;
+            age?: number;
+            /** Format: int32 */
+            cityid?: number;
             content?: string | null;
+            custom_link_man?: string;
+            custom_link_moblie?: string;
+            description?: string | null;
             /** Format: int64 */
             edate?: number;
             /** Format: int32 */
-            edu: number;
+            edu?: number;
+            edu_req?: string;
             /** Format: int32 */
-            exp: number;
+            exp?: number;
+            exp_req?: string;
             /** Format: int32 */
-            job1: number;
+            hy?: number;
+            /**
+             * Format: int32
+             * @description 1 = email notify / 2 or 3 = off (stored as 3).
+             */
+            is_email?: number;
+            /** Format: int32 */
+            is_graduate?: number;
+            /**
+             * Format: int32
+             * @description 1 = company default / 2 = address book / 3 = hide public contact (WAP `is_hide`).
+             */
+            is_link?: number;
+            /**
+             * Format: int32
+             * @description 1 = accept consult / 2 = off.
+             */
+            is_message?: number;
+            /**
+             * Format: int32
+             * @description 1 = copy this job's contact/geo onto every job of the company.
+             */
+            is_tblink?: number;
+            /** Format: int32 */
+            job1?: number;
             /** Format: int32 */
             job1_son?: number;
             /** Format: int32 */
             job_post?: number;
+            /**
+             * Format: int32
+             * @description WAP `jobclassid` leaf; server expands to job1 / job1_son / job_post.
+             */
+            jobclassid?: number;
+            /** @description Comma-separated `job_lang` ids (PHP `pylode`). */
+            lang?: string;
+            /**
+             * Format: int32
+             * @description 0 = company default contact; >0 = `company_job_link.id` (PHP WAP `-1` = 0).
+             */
+            link_id?: number;
             /** Format: int32 */
-            maxsalary: number;
+            marriage?: number;
+            /** Format: int32 */
+            maxage_req?: number;
+            /** Format: int32 */
+            maxsalary?: number;
+            /** Format: int32 */
+            minage_req?: number;
             /**
              * Format: int32
              * @description Salary in CNY (yuan); cap to 1M to avoid overflow.
              */
-            minsalary: number;
+            minsalary?: number;
             name: string;
             /** Format: int32 */
-            number: number;
+            number?: number;
             /** Format: int32 */
-            provinceid: number;
+            provinceid?: number;
             /** Format: int32 */
-            salary: number;
+            report?: number;
+            /** Format: int32 */
+            salary?: number;
+            /**
+             * Format: int32
+             * @description 1 = 面议 → store minsalary/maxsalary = 0.
+             */
+            salary_type?: number;
             /**
              * Format: int64
              * @description Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"` strings.
              */
             sdate?: number;
+            /**
+             * Format: int32
+             * @description 0 any / 1 male / 2 female (PHP `com_sex`).
+             */
+            sex?: number;
+            /**
+             * Format: int32
+             * @description 0/3 any / 1 male / 2 female.
+             */
+            sex_req?: number;
             /** Format: int32 */
             three_cityid?: number;
             /**
              * Format: int32
              * @description 57 = full-time / 58 = part-time / 59 = internship / 60 = temporary
              */
-            type: number;
+            type?: number;
             wel?: string | null;
+            x?: string;
+            y?: string;
+            /** Format: int32 */
+            zp_maxage?: number;
+            /** Format: int32 */
+            zp_minage?: number;
+            /**
+             * Format: int32
+             * @description PHP `zp_num` headcount; falls back to `number` when omitted.
+             */
+            zp_num?: number;
         };
         CreateMessageForm: {
             /** @description Image-captcha input (case-insensitive). */
@@ -9635,15 +10637,61 @@ export interface components {
         };
         CurrentVip: {
             active: boolean;
+            /** Format: int32 */
+            breakjob_num: number;
+            /** Format: int32 */
+            down_resume: number;
             /** Format: int64 */
             expires_at?: number | null;
+            /** Format: int64 */
+            integral: number;
+            /** Format: int32 */
+            invite_resume: number;
+            /** Format: int32 */
+            job_num: number;
             package_code?: string | null;
+            /** Format: int32 */
+            rating: number;
+            rating_name: string;
+            /** Format: int32 */
+            rating_type: number;
             /** Format: int64 */
             started_at?: number | null;
+        };
+        DashboardFull: {
+            /** Format: int64 */
+            apply_count: number;
+            /** Format: int64 */
+            commsgnum: number;
+            completion: components["schemas"]["Completion"];
+            /** Format: int64 */
+            favorite_count: number;
+            /** Format: int64 */
+            integral_balance: number;
+            /** Format: int64 */
+            interview_count: number;
+            sign: components["schemas"]["StatusResp"];
+            /** Format: int32 */
+            signday: number;
+            /** Format: int64 */
+            sxnum: number;
+            /** Format: int64 */
+            sysnum: number;
+            unread: components["schemas"]["UnreadSummary"];
+            /** Format: int64 */
+            unread_chats: number;
+            /** Format: int64 */
+            unread_messages: number;
+            /** Format: int64 */
+            view_count: number;
+            /** Format: int64 */
+            wkyqnum: number;
         };
         DashboardView: {
             /** Format: int64 */
             apply_count: number;
+            /** Format: int64 */
+            commsgnum: number;
             /** Format: int64 */
             favorite_count: number;
             /** Format: int64 */
@@ -9653,11 +10701,17 @@ export interface components {
             /** Format: int32 */
             signday: number;
             /** Format: int64 */
+            sxnum: number;
+            /** Format: int64 */
+            sysnum: number;
+            /** Format: int64 */
             unread_chats: number;
             /** Format: int64 */
             unread_messages: number;
             /** Format: int64 */
             view_count: number;
+            /** Format: int64 */
+            wkyqnum: number;
         };
         DayMetricView: {
             /** Format: int64 */
@@ -10128,6 +11182,15 @@ export interface components {
         GetPageBody: {
             code: string;
         };
+        /** @description Get a specific remark */
+        GetRemarkForm: {
+            /** Format: int64 */
+            eid?: number | null;
+            /** Format: int32 */
+            kind: number;
+            /** Format: int64 */
+            target_uid: number;
+        };
         /** @description Joint recruitment detail -- all Summary fields + body. */
         GzDetail: {
             body: string;
@@ -10219,6 +11282,15 @@ export interface components {
             rec_companies: components["schemas"]["CompanySummary"][];
             rec_jobs: components["schemas"]["JobSummary"][];
             urgent_jobs: components["schemas"]["JobSummary"][];
+        };
+        HomeFullData: {
+            ads: {
+                [key: string]: components["schemas"]["AdView"][];
+            };
+            friend_links: components["schemas"]["LinkItem"][];
+            home: components["schemas"]["HomeData"];
+            hot_job_class: components["schemas"]["CatNode"][];
+            job_cats: components["schemas"]["CatNode"][];
         };
         HotCompanyView: {
             hot_pic?: string | null;
@@ -10349,6 +11421,39 @@ export interface components {
             /** Format: int32 */
             se: number;
         };
+        /** @description GET compact: `slots=3:5,50:5`. POST JSON: `{ "slots": [{ "slot": "3", "limit": 5 }] }`. */
+        InitAdsInput: {
+            slots?: components["schemas"]["AdQuery"][];
+        };
+        /**
+         * @description Combined public dictionaries (the lists PC/H5 used to fetch one-by-one).
+         *     Individual `/v1/wap/dict/*` stay registered (most are deprecated).
+         *     `/v1/wap/countries` is not deprecated: it still supports `continent` filter.
+         */
+        InitJobs: {
+            company_natures: components["schemas"]["DictItem"][];
+            company_sizes: components["schemas"]["DictItem"][];
+            countries: components["schemas"]["CountryView"][];
+            educations: components["schemas"]["DictItem"][];
+            educations_user: components["schemas"]["DictItem"][];
+            experiences: components["schemas"]["DictItem"][];
+            experiences_user: components["schemas"]["DictItem"][];
+            industries: components["schemas"]["DictItem"][];
+            job_categories: components["schemas"]["DictItem"][];
+            job_types: components["schemas"]["DictItem"][];
+            job_types_user: components["schemas"]["DictItem"][];
+            langs: components["schemas"]["DictItem"][];
+            marriages: components["schemas"]["DictItem"][];
+            reports: components["schemas"]["DictItem"][];
+            reports_user: components["schemas"]["DictItem"][];
+            salaries: components["schemas"]["DictItem"][];
+            /** @description `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide. */
+            sy_facebooklogin: string;
+            /** @description `'1'` = show Google on PC/H5 login. Empty / `'0'` = hide. */
+            sy_googlelogin: string;
+            tags: components["schemas"]["DictItem"][];
+            welfares: components["schemas"]["DictItem"][];
+        };
         IntegralItemView: {
             /** Format: int32 */
             cost: number;
@@ -10433,17 +11538,17 @@ export interface components {
             breakjob_num: number;
             /**
              * Format: int64
-             * @description Closed (state=2)
+             * @description Alias of w4 (下架)
              */
             closed: number;
             /**
              * Format: int64
-             * @description Recruiting (state=0)
+             * @description Alias of w1 (招聘中)
              */
             online: number;
             /**
              * Format: int64
-             * @description Pending review (state=1)
+             * @description Alias of w0 (待审)
              */
             pending: number;
             /** Format: int32 */
@@ -10454,6 +11559,24 @@ export interface components {
             total: number;
             /** Format: int32 */
             urgent_num: number;
+            /** Format: int64 */
+            w0: number;
+            /** Format: int64 */
+            w1: number;
+            /** Format: int64 */
+            w3: number;
+            /** Format: int64 */
+            w4: number;
+            /** Format: int64 */
+            w5: number;
+        };
+        JobDetailFull: {
+            ads: {
+                [key: string]: components["schemas"]["AdView"][];
+            };
+            detail: Record<string, never>;
+            same_company: components["schemas"]["JobSummary"][];
+            similar: components["schemas"]["JobSummary"][];
         };
         /** @description Public-facing message item (no internal flags exposed). */
         JobMsgView: {
@@ -10622,6 +11745,16 @@ export interface components {
              */
             yyzz_status: number;
         };
+        JobsOverview: {
+            counts: components["schemas"]["JobCountsView"];
+            jobs: Record<string, never>;
+        };
+        JobsSidebarData: {
+            ads: {
+                [key: string]: components["schemas"]["AdView"][];
+            };
+            rec: components["schemas"]["JobSummary"][];
+        };
         JoinForm: {
             code: string;
         };
@@ -10673,6 +11806,16 @@ export interface components {
         LatestBody: {
             platform: string;
         };
+        LinkApplyForm: {
+            captcha_cid: string;
+            captcha_input: string;
+            /** @description PHP `type`: `1` text / `2` image. Additive, default text. */
+            link_type?: string;
+            name: string;
+            /** @description Image URL when `link_type=2`. Additive. */
+            pic?: string;
+            url: string;
+        };
         LinkItem: {
             category: string;
             /** Format: int64 */
@@ -10703,6 +11846,7 @@ export interface components {
         /** @description Assessment history item — all 6 columns of phpyun_eval_log + formatted timestamp. */
         LogItem: {
             answers: unknown;
+            comment?: string | null;
             /** Format: int64 */
             created_at: number;
             created_at_n: string;
@@ -10710,6 +11854,7 @@ export interface components {
             id: number;
             /** Format: int64 */
             paper_id: number;
+            paper_name?: string;
             /** Format: int32 */
             score: number;
             /** Format: int64 */
@@ -10866,6 +12011,23 @@ export interface components {
             status: number;
             title: string;
         };
+        MissionView: {
+            answer: boolean;
+            answerpl: boolean;
+            banner: boolean;
+            base_info: boolean;
+            email_checked: boolean;
+            identification: boolean;
+            logo: boolean;
+            map: boolean;
+            phone_checked: boolean;
+            photo: boolean;
+            question: boolean;
+            resume: boolean;
+            signin: boolean;
+            weixin_bind: boolean;
+            yyzz: boolean;
+        };
         MobileSendForm: {
             /** @description New mobile number (PHPYun field name `moblie`) */
             moblie: string;
@@ -10893,6 +12055,7 @@ export interface components {
         };
         /** @description My application item — full 11 columns of phpyun_userid_job + formatted timestamps + derived employer_viewed/invited booleans. */
         MyApplySummary: {
+            apply_url?: string;
             /** Format: int64 */
             com_id: number;
             com_name: string;
@@ -10932,6 +12095,18 @@ export interface components {
             /** Format: int64 */
             joined_at: number;
             role: string;
+        };
+        MyJobsQuery: {
+            /**
+             * Format: int32
+             * @description Legacy alias of `w` when the client still sends `state`.
+             */
+            state?: number | null;
+            /**
+             * Format: int32
+             * @description PHP member `w`: 1 招聘中 / 0 待审 / 3 未过 / 4 下架 / 5 全部.
+             */
+            w?: number | null;
         };
         MyQuestion: {
             /** Format: int32 */
@@ -11176,11 +12351,13 @@ export interface components {
             address: string;
             /** Format: int32 */
             city_id: number;
+            city_name: string;
             companyname: string;
             /** Format: int64 */
             ctime: number;
             /** Format: int64 */
             edate: number;
+            edate_n: string;
             /** Format: int32 */
             edu: number;
             /** Format: int32 */
@@ -11198,14 +12375,17 @@ export interface components {
             /** Format: int32 */
             number: number;
             pic?: string | null;
+            pic_n: string;
             /** Format: int32 */
             province_id: number;
+            province_name: string;
             require?: string | null;
             /** Format: int32 */
             salary: number;
             salary_text: string;
             /** Format: int32 */
             three_city_id: number;
+            three_city_name: string;
             title: string;
             yyzz?: string | null;
         };
@@ -11290,6 +12470,9 @@ export interface components {
             name: string;
             /** Format: int64 */
             uid: number;
+        };
+        OutboxQuery: {
+            keyword?: string | null;
         };
         OwnJobBrief: {
             /** Format: int64 */
@@ -11483,6 +12666,7 @@ export interface components {
             deadline: number;
             /** Format: int64 */
             edate: number;
+            edate_n: string;
             /**
              * Format: int32
              * @description 0 long-term / 1 expired / 2 expires within 3 days / 3 expires within 7 days / 4 normal
@@ -11492,6 +12676,8 @@ export interface components {
             hits: number;
             /** Format: int64 */
             id: number;
+            /** @description PHP list `is_rec`: `rec_time > now`. */
+            is_rec: boolean;
             /** Format: int64 */
             lastupdate: number;
             /**
@@ -11638,6 +12824,16 @@ export interface components {
             worktime?: string | null;
             x?: string | null;
             y?: string | null;
+        };
+        PayBankForm: {
+            bank_name: string;
+            bank_number: string;
+            bank_price: string;
+            /** Format: int64 */
+            bank_time?: number;
+            order_no: string;
+            order_pic?: string | null;
+            order_remark?: string;
         };
         PayCreated: {
             /** Format: int32 */
@@ -11840,6 +13036,29 @@ export interface components {
             /** Format: int32 */
             province_id: number;
         };
+        PublishCheckView: {
+            /** Format: int32 */
+            addjobnum: number;
+            gaps: components["schemas"]["PublishGapView"][];
+            /** Format: int64 */
+            integral: number;
+            /** Format: int32 */
+            job_num: number;
+            /** Format: int32 */
+            job_state: number;
+        };
+        PublishGapView: {
+            href: string;
+            key: string;
+        };
+        PublishJobView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            state: number;
+            /** Format: int32 */
+            status: number;
+        };
         QrView: {
             /** Format: int64 */
             expire_seconds: number;
@@ -12007,6 +13226,30 @@ export interface components {
             /** @description `pack` or `vip` — selects which price table to read. */
             kind: string;
         };
+        RankKeyword: {
+            /** Format: int32 */
+            hits: number;
+            keyword: string;
+            /**
+             * Format: int32
+             * @description Same as `hits` (PHP `num`).
+             */
+            num: number;
+            /** @description Module path (`/jobs`, `/once`, …); client adds `?keyword=`. */
+            to: string;
+            /** @description PHP `phpyun_hot_key.type` as string. */
+            type: string;
+            type_name: string;
+        };
+        RankingsData: {
+            articles: components["schemas"]["ArticleSummary"][];
+            companies: components["schemas"]["CompanySummary"][];
+            keywords: components["schemas"]["RankKeyword"][];
+            latest_jobs: components["schemas"]["JobSummary"][];
+            rec_jobs: components["schemas"]["JobSummary"][];
+            resumes: components["schemas"]["ResumeSummary"][];
+            urgent_jobs: components["schemas"]["JobSummary"][];
+        };
         RateForm: {
             comment?: string;
             /** Format: int32 */
@@ -12149,6 +13392,12 @@ export interface components {
             /** Format: int32 */
             status: number;
         };
+        /** @description Refresh job (bumps `lastupdate` so it sorts to the top of the public list) */
+        RefreshJobForm: {
+            confirm?: boolean;
+            /** Format: int64 */
+            id: number;
+        };
         RegionView: {
             code: string;
             /** @description `AF/AN/AS/EU/NA/OC/SA` — only populated for `level == 0`. */
@@ -12178,6 +13427,10 @@ export interface components {
             password_max_len: number;
             /** Format: int32 */
             password_min_len: number;
+            reg_email: boolean;
+            reg_moblie: boolean;
+            /** @description PHP `reg_user` / `reg_moblie` / `reg_email` — `"1"` means that channel is on. */
+            reg_user: boolean;
             registration_open: boolean;
             /** Format: int32 */
             sms_code_length: number;
@@ -12327,6 +13580,23 @@ export interface components {
             moblie: string;
             name: string;
         };
+        ReserveGetForm: {
+            /** Format: int64 */
+            job_id: number;
+        };
+        ReserveInfoView: {
+            e_time: string;
+            /** Format: int64 */
+            end_time: number;
+            /** Format: int32 */
+            interval: number;
+            s_time: string;
+            /** Format: int32 */
+            status: number;
+        };
+        ReserveOk: {
+            ok: boolean;
+        };
         ResetByEmailForm: {
             email: string;
             /** @description 6-digit code emailed by `send-email`. */
@@ -12354,6 +13624,17 @@ export interface components {
             training_num: number;
             /** Format: int64 */
             work_num: number;
+        };
+        ResumeBundle: {
+            certs: components["schemas"]["CertItem"][];
+            edus: components["schemas"]["ResumeEduItem"][];
+            expects: components["schemas"]["ResumeExpectItem"][];
+            languages: components["schemas"]["LanguageItem"][];
+            others: components["schemas"]["OtherItem"][];
+            projects: components["schemas"]["ResumeProjectItem"][];
+            skills: components["schemas"]["ResumeSkillItem"][];
+            trainings: components["schemas"]["TrainingItem"][];
+            works: components["schemas"]["ResumeWorkItem"][];
         };
         ResumeCertItem: {
             content?: string | null;
@@ -13140,6 +14421,11 @@ export interface components {
         StateCounts: {
             /**
              * Format: int64
+             * @description Remaining `company_statis.down_resume` (PHP `freenum`).
+             */
+            freenum: number;
+            /**
+             * Format: int64
              * @description is_browse = 7
              */
             hired: number;
@@ -13248,6 +14534,48 @@ export interface components {
             /** Format: int32 */
             score: number;
         };
+        SubscribeForm: {
+            captcha_cid: string;
+            captcha_input: string;
+            /** Format: int32 */
+            cityid?: number;
+            email?: string;
+            /** Format: int32 */
+            job1?: number;
+            /** Format: int32 */
+            job1_son?: number;
+            /** Format: int32 */
+            job_post?: number;
+            /** Format: int32 */
+            maxsalary?: number;
+            /** Format: int32 */
+            minsalary?: number;
+            /** Format: int32 */
+            provinceid?: number;
+            /** Format: int32 */
+            three_cityid?: number;
+            /** Format: int32 */
+            time?: number;
+            /**
+             * Format: int32
+             * @description 1 = job alert (default), 2 = resume alert.
+             */
+            type?: number;
+        };
+        SubscribeMetaView: {
+            /** Format: int32 */
+            cionly: number;
+            cycles: number[];
+            /** Format: int32 */
+            jionly: number;
+        };
+        SubscribeView: {
+            /**
+             * Format: int32
+             * @description 0 = not following / unbound, 1 = following, 2 = bound to another WeChat.
+             */
+            subscribe: number;
+        };
         SummaryView: {
             /** Format: int64 */
             count: number;
@@ -13292,8 +14620,10 @@ export interface components {
         TinyDetail: {
             /** Format: int32 */
             city_id: number;
+            city_name: string;
             /** Format: int32 */
             exp: number;
+            exp_n: string;
             /** Format: int64 */
             hits: number;
             /** Format: int64 */
@@ -13306,12 +14636,15 @@ export interface components {
             production?: string | null;
             /** Format: int32 */
             province_id: number;
+            province_name: string;
             /** Format: int32 */
             sex: number;
+            sex_n: string;
             /** Format: int32 */
             status: number;
             /** Format: int32 */
             three_city_id: number;
+            three_city_name: string;
             /** Format: int64 */
             time: number;
             username: string;
@@ -13499,41 +14832,73 @@ export interface components {
             warnings: number;
         };
         UpdateCompanyForm: {
+            address?: string | null;
+            busstops?: string | null;
             /** Format: int32 */
             cityid?: number | null;
             content?: string | null;
             /** Format: int32 */
             hy?: number | null;
+            /** Format: int32 */
+            infostatus?: number | null;
             linkjob?: string | null;
             linkmail?: string | null;
             linkman?: string | null;
             linkphone?: string | null;
+            linkqq?: string | null;
+            linktel?: string | null;
             logo?: string | null;
+            /** Format: int32 */
+            money?: number | null;
+            /** Format: int32 */
+            moneytype?: number | null;
             /** Format: int32 */
             mun?: number | null;
             name?: string | null;
+            not_disturb?: string | null;
             /** Format: int32 */
             pr?: number | null;
             /** Format: int32 */
             provinceid?: number | null;
+            sdate?: string | null;
             shortname?: string | null;
             /** Format: int32 */
             three_cityid?: number | null;
+            website?: string | null;
+            welfare?: string | null;
             x?: string | null;
             y?: string | null;
         };
         UpdateJobForm: {
             /** Format: int32 */
+            age?: number | null;
+            /** Format: int32 */
             cityid?: number | null;
             content?: string | null;
+            custom_link_man?: string | null;
+            custom_link_moblie?: string | null;
             /** Format: int64 */
             edate?: number | null;
             /** Format: int32 */
             edu?: number | null;
+            edu_req?: string | null;
             /** Format: int32 */
             exp?: number | null;
+            exp_req?: string | null;
+            /** Format: int32 */
+            hy?: number | null;
             /** Format: int64 */
             id: number;
+            /** Format: int32 */
+            is_email?: number | null;
+            /** Format: int32 */
+            is_graduate?: number | null;
+            /** Format: int32 */
+            is_link?: number | null;
+            /** Format: int32 */
+            is_message?: number | null;
+            /** Format: int32 */
+            is_tblink?: number | null;
             /** Format: int32 */
             job1?: number | null;
             /** Format: int32 */
@@ -13541,7 +14906,18 @@ export interface components {
             /** Format: int32 */
             job_post?: number | null;
             /** Format: int32 */
+            jobclassid?: number | null;
+            lang?: string | null;
+            /** Format: int32 */
+            link_id?: number | null;
+            /** Format: int32 */
+            marriage?: number | null;
+            /** Format: int32 */
+            maxage_req?: number | null;
+            /** Format: int32 */
             maxsalary?: number | null;
+            /** Format: int32 */
+            minage_req?: number | null;
             /** Format: int32 */
             minsalary?: number | null;
             name?: string | null;
@@ -13550,7 +14926,11 @@ export interface components {
             /** Format: int32 */
             provinceid?: number | null;
             /** Format: int32 */
+            report?: number | null;
+            /** Format: int32 */
             salary?: number | null;
+            /** Format: int32 */
+            salary_type?: number | null;
             /**
              * Format: int64
              * @description Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"`. `None`
@@ -13558,10 +14938,22 @@ export interface components {
              */
             sdate?: number | null;
             /** Format: int32 */
+            sex?: number | null;
+            /** Format: int32 */
+            sex_req?: number | null;
+            /** Format: int32 */
             three_cityid?: number | null;
             /** Format: int32 */
             type?: number | null;
             wel?: string | null;
+            x?: string | null;
+            y?: string | null;
+            /** Format: int32 */
+            zp_maxage?: number | null;
+            /** Format: int32 */
+            zp_minage?: number | null;
+            /** Format: int32 */
+            zp_num?: number | null;
         };
         UpdateProfileForm: {
             email: string;
@@ -13657,7 +15049,11 @@ export interface components {
             username: string;
         };
         UpsertForm: {
+            /** Format: int64 */
+            eid?: number | null;
             note: string;
+            /** Format: int32 */
+            status?: number | null;
             /**
              * Format: int32
              * @description 1=resume 2=company 3=apply
@@ -13741,6 +15137,20 @@ export interface components {
              */
             status?: number | null;
             title?: string | null;
+        };
+        WrittenOffForm: {
+            email?: string;
+            mobile?: string;
+            /** @description Occupying account password (PHP `pw`). */
+            pw: string;
+            /**
+             * Format: int64
+             * @description Occupying member uid (PHP `zyuid`). 0 = resolve from mobile/email.
+             */
+            zyuid?: number;
+        };
+        WrittenOffOk: {
+            ok: boolean;
         };
         WxQrData: {
             /** Format: int64 */
@@ -13910,6 +15320,8 @@ export interface components {
             phone: string;
             pic: string;
             pic_n: string;
+            /** @description PHP `zph.com` past-event album (`phpyun_zhaopinhui_pic`). */
+            pics?: components["schemas"]["ZphPicView"][];
             /** Format: int32 */
             province_id: number;
             province_name: string;
@@ -13929,6 +15341,16 @@ export interface components {
             weburl: string;
             zwpic: string;
             zwpic_n: string;
+        };
+        /** @description Job-fair gallery item. */
+        ZphPicView: {
+            /** Format: int64 */
+            id: number;
+            pic: string;
+            pic_n: string;
+            /** Format: int32 */
+            sort: number;
+            title: string;
         };
         ZphSpaceItem: {
             /** Format: int64 */
@@ -14379,6 +15801,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_applications_overview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplicationsQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationsOverview"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_applications_state: {
         parameters: {
             query?: never;
@@ -14732,6 +16178,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ComDashboardView"];
+                };
+            };
+            /** @description Not a company account */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_dashboard_full: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComDashboardFull"];
                 };
             };
             /** @description Not a company account */
@@ -15859,6 +17332,26 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_dashboard_full: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardFull"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_dashboard_year_report: {
         parameters: {
             query?: never;
@@ -16599,6 +18092,26 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_integral_mission: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionView"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_integral_transfer: {
         parameters: {
             query?: never;
@@ -16915,13 +18428,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Published (pending review) */
+            /** @description Published */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CreatedId"];
+                    "application/json": components["schemas"]["PublishJobView"];
                 };
             };
         };
@@ -16998,6 +18511,26 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_jobs_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublishCheckView"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_jobs_counts: {
         parameters: {
             query?: never;
@@ -17045,7 +18578,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Optional review-state filter: 0 pending / 1 approved / 2 closed / 3 rejected */
+                /** @description PHP member `w`: 1 招聘中 / 0 待审 / 3 未过 / 4 下架 / 5 全部. */
+                w: number | null;
+                /** @description Legacy alias of `w` when the client still sends `state`. */
                 state: number | null;
             };
             cookie?: never;
@@ -17058,6 +18593,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_jobs_overview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MyJobsQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobsOverview"];
+                };
             };
         };
     };
@@ -17142,7 +18701,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IdBody"];
+                "application/json": components["schemas"]["RefreshJobForm"];
             };
         };
         responses: {
@@ -17152,6 +18711,54 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_jobs_reserve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReserveForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReserveOk"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_jobs_reserve_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReserveGetForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReserveInfoView"];
+                };
             };
         };
     };
@@ -18430,7 +20037,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["KindTargetUidBody"];
+                "application/json": components["schemas"]["GetRemarkForm"];
             };
         };
         responses: {
@@ -18595,7 +20202,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OutboxQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -18808,6 +20419,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BuyView"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_resume_bundle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeBundle"];
                 };
             };
         };
@@ -19863,7 +21494,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                keyword: string | null;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -19889,6 +21522,24 @@ export interface operations {
                 "application/json": components["schemas"]["RemarkBody"];
             };
         };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_vip_bank_accounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description ok */
             200: {
@@ -20000,6 +21651,28 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["MockPaidBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_vip_orders_paybank: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayBankForm"];
             };
         };
         responses: {
@@ -20124,6 +21797,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UnreadCount"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_wechat_subscribe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscribeView"];
                 };
             };
         };
@@ -20790,6 +22483,13 @@ export interface operations {
                     "application/json": components["schemas"]["CompanyContactView"];
                 };
             };
+            /** @description Login required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     post_v1_wap_companies_detail: {
@@ -20807,6 +22507,58 @@ export interface operations {
         responses: {
             /** @description ok */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Login required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Company not approved / account locked */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_companies_detail_full: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UidBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanyDetailFull"];
+                };
+            };
+            /** @description Login required */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -21043,6 +22795,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_wap_companies_sidebar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                did: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompaniesSidebarData"];
+                };
             };
         };
     };
@@ -21592,6 +23366,60 @@ export interface operations {
             };
         };
     };
+    post_v1_wap_dict_langs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_dict_marriages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_dict_reports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_wap_dict_salaries: {
         parameters: {
             query?: never;
@@ -21611,6 +23439,24 @@ export interface operations {
         };
     };
     post_v1_wap_dict_tags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_dict_welfares: {
         parameters: {
             query?: never;
             header?: never;
@@ -21895,6 +23741,28 @@ export interface operations {
             };
         };
     };
+    post_v1_wap_friend_links_apply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkApplyForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_wap_gongzhao: {
         parameters: {
             query?: never;
@@ -21991,6 +23859,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AggregateData"];
+                };
+            };
+        };
+    };
+    post_v1_wap_home_full: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                did: number;
+                tpltype: number;
+                /** @description Ad slots; omit to use the 13 homepage slots from `index.vue`. */
+                slots: components["schemas"]["AdQuery"][];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeFullData"];
                 };
             };
         };
@@ -22110,6 +24003,48 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_wap_initads: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitAdsInput"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_initjobs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitJobs"];
+                };
             };
         };
     };
@@ -22252,6 +24187,13 @@ export interface operations {
                     "application/json": components["schemas"]["JobContactView"];
                 };
             };
+            /** @description Login required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Job not found */
             404: {
                 headers: {
@@ -22276,6 +24218,58 @@ export interface operations {
         responses: {
             /** @description ok */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Login required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Off-shelf / expired */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_jobs_detail_full: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDetailFull"];
+                };
+            };
+            /** @description Login required */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -22468,12 +24462,41 @@ export interface operations {
                     "application/json": components["schemas"]["JobShareText"];
                 };
             };
+            /** @description Login required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Job not found */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_wap_jobs_sidebar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                did: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobsSidebarData"];
+                };
             };
         };
     };
@@ -22623,6 +24646,76 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_wap_login_app_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppLoginIdForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_login_app_qr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppQrForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppQrData"];
+                };
+            };
+        };
+    };
+    post_v1_wap_login_app_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppLoginIdForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppStatusData"];
+                };
             };
         };
     };
@@ -22813,6 +24906,8 @@ export interface operations {
                 limit: number;
                 page: number;
                 did: number;
+                /** @description PHP `wap/map::joblist` `depower`. Empty → `is_depower=2`; `all` → no filter; otherwise the integer value. */
+                depower: string | null;
             };
             cookie?: never;
         };
@@ -22838,6 +24933,8 @@ export interface operations {
                 limit: number;
                 page: number;
                 did: number;
+                /** @description PHP `wap/map::joblist` `depower`. Empty → `is_depower=2`; `all` → no filter; otherwise the integer value. */
+                depower: string | null;
             };
             cookie?: never;
         };
@@ -22963,6 +25060,71 @@ export interface operations {
             };
         };
     };
+    post_v1_wap_oauth_facebook_authorize_url: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OAuthAuthorizeData"];
+                };
+            };
+            /** @description facebook login closed or not configured */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_oauth_facebook_code_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CodeLoginForm"];
+            };
+        };
+        responses: {
+            /** @description Login successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OAuthLoginData"];
+                };
+            };
+            /** @description facebook not configured / invalid code / invalid state */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description id not bound to member */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_wap_oauth_fast_reg: {
         parameters: {
             query?: never;
@@ -22984,6 +25146,71 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["OAuthLoginData"];
                 };
+            };
+        };
+    };
+    post_v1_wap_oauth_google_authorize_url: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OAuthAuthorizeData"];
+                };
+            };
+            /** @description google login closed or not configured */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_oauth_google_code_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CodeLoginForm"];
+            };
+        };
+        responses: {
+            /** @description Login successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OAuthLoginData"];
+                };
+            };
+            /** @description google not configured / invalid code / invalid state */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description sub not bound to member */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -23912,6 +26139,28 @@ export interface operations {
             };
         };
     };
+    post_v1_wap_rankings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                did: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RankingsData"];
+                };
+            };
+        };
+    };
     post_v1_wap_ratings_list: {
         parameters: {
             query?: never;
@@ -24261,6 +26510,30 @@ export interface operations {
             };
         };
     };
+    post_v1_wap_register_check_com_name: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckComNameForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckComNameData"];
+                };
+            };
+        };
+    };
     post_v1_wap_register_config: {
         parameters: {
             query?: never;
@@ -24278,6 +26551,44 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RegisterConfig"];
                 };
+            };
+        };
+    };
+    post_v1_wap_register_written_off: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WrittenOffForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WrittenOffOk"];
+                };
+            };
+            /** @description Missing field / password mismatch / not occupying */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Occupying account locked */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -24401,6 +26712,13 @@ export interface operations {
         responses: {
             /** @description ok */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Login required */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -24884,6 +27202,72 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SiteOverviewView"];
                 };
+            };
+        };
+    };
+    post_v1_wap_subscribe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscribeForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedId"];
+                };
+            };
+        };
+    };
+    post_v1_wap_subscribe_meta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscribeMetaView"];
+                };
+            };
+        };
+    };
+    post_v1_wap_subscribe_send_email: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendEmailForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

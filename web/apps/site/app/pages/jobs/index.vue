@@ -99,11 +99,17 @@ const reports = computed(() => dicts.value?.reports ?? [])
 const jobTypes = computed(() => dicts.value?.job_types ?? [])
 const natures = computed(() => dicts.value?.company_natures ?? [])
 const sizes = computed(() => dicts.value?.company_sizes ?? [])
-const { data: ads } = await useAdsBundle('jobs-list-ads', [
-  { slot: '507', limit: 1 },
-  { slot: '504', limit: 1 },
-  { slot: '7', limit: 5 },
-])
+const { data: jobsSide } = await useAsyncData(
+  () => `jobs-sidebar-${locale.value}`,
+  () =>
+    api
+      .get<{ rec?: JobLike[]; ads?: Record<string, Array<Record<string, unknown>>> }>(
+        '/v1/wap/jobs/sidebar',
+        applyToQuery({}),
+      )
+      .catch(() => ({ rec: [] as JobLike[], ads: {} as Record<string, Array<Record<string, unknown>>> })),
+)
+const ads = computed(() => jobsSide.value?.ads || {})
 const adsTop = computed(() => ads.value?.['507'] || [])
 const adsH5 = computed(() => ads.value?.['504'] || [])
 const adsSide = computed(() => ads.value?.['7'] || [])
@@ -137,10 +143,7 @@ const sexItems = computed<DictItem[]>(() => [
   { id: 1, name: t('common_02092') },
   { id: 2, name: t('common_02069') },
 ])
-const { data: recSide } = await useAsyncData(
-  () => `jobs-rec-side-${locale.value}`,
-  () => api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 30 }).catch(() => ({ list: [] as JobLike[] })),
-)
+const recSide = computed(() => ({ list: jobsSide.value?.rec || [] }))
 const recBatch = ref(0)
 const recVisible = computed(() => {
   const all = recSide.value?.list || []

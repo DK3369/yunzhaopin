@@ -28,33 +28,49 @@ const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('my-resume', () =>
   api.post('/v1/mcenter/resume/list', {}),
 )
-const { data: expects, refresh: refreshExpects } = await useAsyncData('my-expects', () =>
-  api.post('/v1/mcenter/resume/expects/list', {}).catch(() => []),
+const { data: bundle, refresh: refreshBundle } = await useAsyncData('my-resume-bundle', () =>
+  api
+    .post<{
+      expects?: ChildRow[]
+      works?: ChildRow[]
+      edus?: ChildRow[]
+      projects?: ChildRow[]
+      skills?: ChildRow[]
+      trainings?: ChildRow[]
+      certs?: ChildRow[]
+      others?: ChildRow[]
+      languages?: ChildRow[]
+    }>('/v1/mcenter/resume/bundle', {})
+    .catch(() => ({
+      expects: [] as ChildRow[],
+      works: [] as ChildRow[],
+      edus: [] as ChildRow[],
+      projects: [] as ChildRow[],
+      skills: [] as ChildRow[],
+      trainings: [] as ChildRow[],
+      certs: [] as ChildRow[],
+      others: [] as ChildRow[],
+      languages: [] as ChildRow[],
+    })),
 )
-const { data: works, refresh: refreshWorks } = await useAsyncData('my-works', () =>
-  api.post('/v1/mcenter/resume/works/list', {}).catch(() => []),
-)
-const { data: edus, refresh: refreshEdus } = await useAsyncData('my-edus', () =>
-  api.post('/v1/mcenter/resume/edus/list', {}).catch(() => []),
-)
-const { data: projects, refresh: refreshProjects } = await useAsyncData('my-projects', () =>
-  api.post('/v1/mcenter/resume/projects/list', {}).catch(() => []),
-)
-const { data: skills, refresh: refreshSkills } = await useAsyncData('my-skills', () =>
-  api.post('/v1/mcenter/resume/skills/list', {}).catch(() => []),
-)
-const { data: trainings, refresh: refreshTrainings } = await useAsyncData('my-trainings', () =>
-  api.post('/v1/mcenter/resume/trainings/list', {}).catch(() => []),
-)
-const { data: certs, refresh: refreshCerts } = await useAsyncData('my-certs', () =>
-  api.post('/v1/mcenter/resume/certs/list', {}).catch(() => []),
-)
-const { data: others, refresh: refreshOthers } = await useAsyncData('my-others', () =>
-  api.post('/v1/mcenter/resume/others/list', {}).catch(() => []),
-)
-const { data: languages, refresh: refreshLanguages } = await useAsyncData('my-languages', () =>
-  api.post('/v1/mcenter/resume/languages/list', {}).catch(() => []),
-)
+const expects = computed(() => bundle.value?.expects || [])
+const works = computed(() => bundle.value?.works || [])
+const edus = computed(() => bundle.value?.edus || [])
+const projects = computed(() => bundle.value?.projects || [])
+const skills = computed(() => bundle.value?.skills || [])
+const trainings = computed(() => bundle.value?.trainings || [])
+const certs = computed(() => bundle.value?.certs || [])
+const others = computed(() => bundle.value?.others || [])
+const languages = computed(() => bundle.value?.languages || [])
+const refreshExpects = refreshBundle
+const refreshWorks = refreshBundle
+const refreshEdus = refreshBundle
+const refreshProjects = refreshBundle
+const refreshSkills = refreshBundle
+const refreshTrainings = refreshBundle
+const refreshCerts = refreshBundle
+const refreshOthers = refreshBundle
+const refreshLanguages = refreshBundle
 const { data: shows, refresh: refreshShows } = await useAsyncData('my-resume-gallery', () =>
   api.post('/v1/mcenter/galleries/list', { kind: 'resume', page: 1, page_size: 20 }).catch(() => ({ list: [] })),
 )

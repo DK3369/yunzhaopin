@@ -27,29 +27,30 @@ const { page, pageSize, inferTotal, go } = useMemberListPage()
 const route = useRoute()
 const wRaw = Number(route.query.w)
 const w = ref(Number.isFinite(wRaw) ? wRaw : 1)
-const { data, error, refresh } = await useAsyncData(
+const { data: pack, error, refresh } = await useAsyncData(
   () => `com-jobs-${page.value}-${w.value}`,
-  () => api.post('/v1/mcenter/jobs/list', { page: page.value, page_size: pageSize, w: w.value }),
+  () =>
+    api.post<{
+      jobs?: { list?: JobRow[]; total?: number }
+      counts?: {
+        w0?: number
+        w1?: number
+        w3?: number
+        w4?: number
+        w5?: number
+        total: number
+        online: number
+        pending?: number
+        closed?: number
+        breakjob_num?: number
+        top_num?: number
+        rec_num?: number
+        urgent_num?: number
+      }
+    }>('/v1/mcenter/jobs/overview', { page: page.value, page_size: pageSize, w: w.value }),
 )
-const { data: counts, refresh: refreshCounts } = await useAsyncData('com-job-counts', () =>
-  api
-    .post<{
-      w0?: number
-      w1?: number
-      w3?: number
-      w4?: number
-      w5?: number
-      total: number
-      online: number
-      pending?: number
-      closed?: number
-      breakjob_num?: number
-      top_num?: number
-      rec_num?: number
-      urgent_num?: number
-    }>('/v1/mcenter/jobs/counts', {})
-    .catch(() => null),
-)
+const data = computed(() => pack.value?.jobs)
+const counts = computed(() => pack.value?.counts || null)
 const list = computed(() => (data.value?.list || []) as JobRow[])
 const msg = ref('')
 const days = ref(1)
@@ -126,7 +127,6 @@ async function refreshJob(id: number, confirm = false) {
     }
     msg.value = t('common.success')
     await refresh()
-    await refreshCounts()
   } catch (e: unknown) {
     msg.value = failAct(e)
   }
@@ -138,7 +138,6 @@ async function setStatus(id: number, status: number) {
     await api.post('/v1/mcenter/jobs/status', { id, status })
     msg.value = t('common.success')
     await refresh()
-    await refreshCounts()
   } catch (e: unknown) {
     msg.value = failAct(e)
   }
@@ -166,7 +165,6 @@ async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
     await api.post('/v1/mcenter/jobs/promote', { job_id: jobId, kind, days: n })
     msg.value = t('common.success')
     await refresh()
-    await refreshCounts()
   } catch (e: unknown) {
     msg.value = failAct(e)
   }
@@ -177,7 +175,6 @@ async function closePromote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
     await api.post('/v1/mcenter/jobs/promote/close', { job_id: jobId, kind })
     msg.value = t('common.success')
     await refresh()
-    await refreshCounts()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
@@ -194,7 +191,6 @@ async function batch(kind: 'refresh' | 'close' | 'delete') {
     msg.value = t('common.success')
     picked.value = []
     await refresh()
-    await refreshCounts()
   } catch (e: unknown) {
     msg.value = failAct(e)
   }

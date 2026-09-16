@@ -46,9 +46,21 @@ export default {
             return {
                 sysinfo: {},
                 topinfo: {},
+                dashFullPack: {
+                    home: null,
+                    ajax_statis: null,
+                    month_statis: null,
+                    ajax_right: null,
+                    chart: null,
+                },
 
                 index_lookstatistc: '',
                 islook: false,
+            }
+        },
+        provide() {
+            return {
+                dashFullPack: this.dashFullPack,
             }
         },
         components: {
@@ -67,12 +79,19 @@ export default {
             getData() {
                 var that = this;
 
-                httpPost('m=index&c=homeData').then(function(response) {
+                httpPost('m=index&c=dashboardFull').then(function(response) {
                     let res = response.data;
                     if (res.error == 0) {
-                        that.sysinfo = res.data.sysinfo;
-                        that.topinfo = res.data.topinfo;
-                        that.index_lookstatistc = res.data.index_lookstatistc;
+                        const pack = res.data || {};
+                        const home = pack.home || {};
+                        that.sysinfo = home.sysinfo;
+                        that.topinfo = home.topinfo;
+                        that.index_lookstatistc = home.index_lookstatistc;
+                        that.dashFullPack.home = pack.home;
+                        that.dashFullPack.ajax_statis = pack.ajax_statis;
+                        that.dashFullPack.month_statis = pack.month_statis;
+                        that.dashFullPack.ajax_right = pack.ajax_right;
+                        that.dashFullPack.chart = pack.chart;
                     }
                     that.islook = true;
                 })

@@ -4,7 +4,7 @@
 
 v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改快照。
 
-公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 公开页 / 会员页切聚合见本文上表（本批已加 `home/full`、详情 `*/detail/full`、侧栏）。
+公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 公开页 / 会员页与 admin 首页已切聚合（`home/full`、详情 `*/detail/full`、侧栏、`dashboard/full` / `resume/bundle` / `jobs/overview` 等）。
 
 ## 聚合接口（新集成优先）
 
@@ -70,9 +70,9 @@ OpenAPI 约 38 个操作。site 可能仍打其中若干条。勿再扩展旧模
 
 ## 下一批（未做）
 
-- site 公开页 / 会员页切已有聚合（首页 `home/full`、详情 `*/detail/full`、侧栏 `*/sidebar`，会员 `dashboard/full` / `resume/bundle` / `jobs/overview` 等）；admin 首页切 `dashboard/full`。
 - archive 其余 12 组 list+statist、`user-logs`/`company-logs` 按 kind 收口、company-certs 双轨。
 - 不要并 look/views/banners，不要删旧路由。
+- HTTP `Cache-Control`（BFF 需 `Vary` 语言与登录态）。
 
 ## 不算合并
 

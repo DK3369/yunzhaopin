@@ -79,12 +79,8 @@ watch(h5NavPages, (pages) => {
   if (h5NavPage.value >= pages.length) h5NavPage.value = 0
 })
 
-const { data: home, error } = await useAsyncData(
-  () => `home-${locale.value}-${homeTpltype.value}`,
-  async () => {
-  const q = applyToQuery({}) as Record<string, unknown>
-  if (homeTpltype.value > 0) q.tpltype = homeTpltype.value
-  const h = (await api.get('/v1/wap/home', q)) as {
+type HomePack = {
+  home?: {
     hot_jobs?: JobLike[]
     rec_jobs?: JobLike[]
     latest_jobs?: JobLike[]
@@ -97,40 +93,40 @@ const { data: home, error } = await useAsyncData(
     featured_articles?: ArticleLike[]
     hot_articles?: ArticleLike[]
     index_tpl?: IndexTpl | null
+    h5_latest_jobs?: JobLike[]
   }
-  const bidList = h.bid_jobs || []
-  const bidIds = new Set(bidList.map((j) => j.id))
-  const latest = h.latest_jobs || []
-  return {
-    ...h,
-    rec_jobs: h.rec_jobs || [],
-    latest_jobs: latest,
-    h5_latest_jobs: [...bidList, ...latest.filter((j) => !bidIds.has(j.id))],
-    urgent_jobs: h.urgent_jobs || [],
-  }
+  job_cats?: CatNode[]
+  hot_job_class?: CatNode[]
+  ads?: Record<string, Banner[]>
+  friend_links?: FriendLink[]
+}
+const { data: homePack, error } = await useAsyncData(
+  () => `home-full-${locale.value}-${homeTpltype.value}`,
+  async () => {
+    const q = applyToQuery({}) as Record<string, unknown>
+    if (homeTpltype.value > 0) q.tpltype = homeTpltype.value
+    const pack = (await api.get('/v1/wap/home/full', q)) as HomePack
+    const h = pack.home || {}
+    const bidList = h.bid_jobs || []
+    const bidIds = new Set(bidList.map((j) => j.id))
+    const latest = h.latest_jobs || []
+    return {
+      ...pack,
+      home: {
+        ...h,
+        rec_jobs: h.rec_jobs || [],
+        latest_jobs: latest,
+        h5_latest_jobs: [...bidList, ...latest.filter((j) => !bidIds.has(j.id))],
+        urgent_jobs: h.urgent_jobs || [],
+      },
+    } as HomePack
   },
   { watch: [homeTpltype, locale] },
 )
-const { data: cats } = await useJobCats()
-const { data: hotClass } = await useAsyncData(
-  () => `hot-job-class-${locale.value}`,
-  () => api.get<CatNode[]>('/v1/wap/categories/recommended', { kind: 'job', limit: 20 }).catch(() => [] as CatNode[]),
-)
-const { data: ads } = await useAdsBundle('home-ads', [
-  { slot: '3', limit: 5 },
-  { slot: '50', limit: 5 },
-  { slot: '13', limit: 3 },
-  { slot: '14', limit: 3 },
-  { slot: '15', limit: 3 },
-  { slot: '72', limit: 1 },
-  { slot: '73', limit: 1 },
-  { slot: '92', limit: 5 },
-  { slot: '503', limit: 3 },
-  { slot: '506', limit: 1 },
-  { slot: '502', limit: 1 },
-  { slot: '10', limit: 1 },
-  { slot: '11', limit: 1 },
-])
+const home = computed(() => homePack.value?.home)
+const cats = computed(() => homePack.value?.job_cats || [])
+const hotClass = computed(() => homePack.value?.hot_job_class || [])
+const ads = computed(() => homePack.value?.ads || {})
 const adsPc = computed(() => ads.value?.['3'] || [])
 const adsH5 = computed(() => ads.value?.['50'] || [])
 const adsMid = computed(() => ({
@@ -146,9 +142,7 @@ const adsMid = computed(() => ({
   slot10: ads.value?.['10'] || [],
   slot11: ads.value?.['11'] || [],
 }))
-const { data: friendLinks } = await useAsyncData(localeAsyncKey('home-links'), () =>
-  api.get<FriendLink[]>('/v1/wap/friend-links').catch(() => [] as FriendLink[]),
-)
+const friendLinks = computed(() => homePack.value?.friend_links || [])
 const { data: resumes, error: resumeError } = await useAsyncData(
   () =>
     `home-resumes-${locale.value}-${Number(me.value?.usertype || 0)}-${settings.value.com_search || ''}-${settings.value.sy_user_visit_resume || ''}`,

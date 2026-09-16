@@ -8,9 +8,14 @@ const uid = Number(route.params.uid)
 const tab = computed(() => String(route.query.tab || 'jobs'))
 const api = useApi()
 const comMessageOn = computed(() => String(settings.value.com_message || '') === '1')
-const { data, error } = await useAsyncData(
-  () => `company-${locale.value}-${uid}`,
-  () => api.get('/v1/wap/companies/detail', { uid }),
+const { data: companyFull, error } = await useAsyncData(
+  () => `company-full-${locale.value}-${uid}`,
+  () => api.get('/v1/wap/companies/detail/full', { uid }),
+)
+const data = computed(
+  () =>
+    ((companyFull.value as { detail?: Record<string, unknown> } | null)?.detail ||
+      {}) as Record<string, unknown>,
 )
 const company = computed(() => (data.value || {}) as Record<string, unknown>)
 const shows = computed(
@@ -22,16 +27,12 @@ const welfare = computed(() => {
   if (typeof w === 'string') return w.split(/[,，]/).map((s) => s.trim()).filter(Boolean)
   return [] as string[]
 })
-const { data: jobs } = await useAsyncData(
-  () => `company-jobs-${locale.value}-${uid}`,
+const jobs = computed(
   () =>
-    api
-      .get<{ list: JobLike[]; total?: number }>('/v1/wap/companies/jobs', {
-        uid,
-        page: 1,
-        page_size: 5,
-      })
-      .catch(() => ({ list: [] as JobLike[], total: 0 })),
+    ((companyFull.value as { jobs?: { list: JobLike[]; total?: number } } | null)?.jobs || {
+      list: [] as JobLike[],
+      total: 0,
+    }) as { list: JobLike[]; total?: number },
 )
 const extraJobs = ref<JobLike[]>([])
 const jobPage = ref(1)
@@ -135,32 +136,27 @@ async function goCompanyJobs() {
     document.getElementById('company_job_list')?.scrollIntoView({ behavior: 'smooth' })
   }
 }
-const { data: news } = await useAsyncData(
-  () => `company-news-${locale.value}-${uid}`,
+const news = computed(
   () =>
-    api
-      .post<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies/news', { uid, page: 1, page_size: 8 })
-      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+    ((companyFull.value as { news?: { list?: Array<Record<string, unknown>> } } | null)?.news || {
+      list: [] as Array<Record<string, unknown>>,
+    }) as { list?: Array<Record<string, unknown>> },
 )
-const { data: products } = await useAsyncData(
-  () => `company-products-${locale.value}-${uid}`,
+const products = computed(
   () =>
-    api
-      .post<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies/products', {
-        uid,
-        page: 1,
-        page_size: 8,
-      })
-      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+    ((companyFull.value as { products?: { list?: Array<Record<string, unknown>> } } | null)
+      ?.products || { list: [] as Array<Record<string, unknown>> }) as {
+      list?: Array<Record<string, unknown>>
+    },
 )
 const newsList = computed(() => news.value?.list || [])
 const productList = computed(() => products.value?.list || [])
-const { data: msgs } = await useAsyncData(
-  () => `company-msgs-${locale.value}-${uid}`,
+const msgs = computed(
   () =>
-    api
-      .post<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies/messages', { uid })
-      .catch(() => ({ list: [] as Array<Record<string, unknown>> })),
+    ((companyFull.value as { messages?: { list?: Array<Record<string, unknown>> } } | null)
+      ?.messages || { list: [] as Array<Record<string, unknown>> }) as {
+      list?: Array<Record<string, unknown>>
+    },
 )
 const msgList = computed(() => msgs.value?.list || [])
 const askContent = ref('')

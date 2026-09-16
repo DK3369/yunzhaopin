@@ -299,6 +299,7 @@ function sysmsgQuery(body: Record<string, unknown>): Record<string, unknown> {
 
 export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'index/homeData': { path: '/v1/admin/dashboard/home-data' },
+  'index/dashboardFull': { path: '/v1/admin/dashboard/full' },
   'index/ajax_statis': { path: '/v1/admin/dashboard/ajax-statis' },
   'index/monthStatis': { path: '/v1/admin/dashboard/month-statis' },
   'index/ajax_right': { path: '/v1/admin/dashboard/ajax-right' },

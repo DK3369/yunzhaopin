@@ -61,20 +61,21 @@ function activeFilters() {
 const listKey = computed(() =>
   JSON.stringify({ p: page.value, s: state.value, ...activeFilters() }),
 )
-const { data, error, refresh } = await useAsyncData(
+const { data: pack, error, refresh } = await useAsyncData(
   () => `com-apps-${listKey.value}`,
   () =>
-    api.post<{ list: Row[]; total: number }>('/v1/mcenter/applications', {
-      page: page.value,
-      page_size: PAGE_SIZE,
-      ...activeFilters(),
-      ...(state.value === null ? {} : { state: state.value }),
-    }),
+    api.post<{ applications?: { list: Row[]; total: number }; counts?: Counts }>(
+      '/v1/mcenter/applications/overview',
+      {
+        page: page.value,
+        page_size: PAGE_SIZE,
+        ...activeFilters(),
+        ...(state.value === null ? {} : { state: state.value }),
+      },
+    ),
 )
-const { data: counts, refresh: refreshCounts } = await useAsyncData(
-  () => `com-apps-counts-${JSON.stringify(activeFilters())}`,
-  () => api.post<Counts>('/v1/mcenter/applications/state-counts', activeFilters()),
-)
+const data = computed(() => pack.value?.applications)
+const counts = computed(() => pack.value?.counts)
 
 const { data: myJobs } = await useAsyncData('com-apps-jobs', () =>
   api
@@ -93,7 +94,7 @@ const total = computed(() => data.value?.total || 0)
 const msg = ref('')
 
 async function reload() {
-  await Promise.all([refresh(), refreshCounts()])
+  await refresh()
 }
 function applyFilters() {
   page.value = 1

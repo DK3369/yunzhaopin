@@ -181,6 +181,9 @@ const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(f
 const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
 
 export default {
+    inject: {
+        dashFullPack: { from: 'dashFullPack', default: null },
+    },
     props: {
         topinfo: {
             type: Object,
@@ -231,7 +234,12 @@ export default {
         this.todayrange = [today, today];
 		this.monthrange = [month01, today];
 		
-        this.getData();
+        const pack = this.dashFullPack;
+        if (pack && pack.ajax_statis) {
+            this.numdata = pack.ajax_statis;
+        } else {
+            this.getData();
+        }
     },
     methods: {
         

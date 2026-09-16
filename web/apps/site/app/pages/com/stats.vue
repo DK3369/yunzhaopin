@@ -5,19 +5,24 @@ type Metric = { num?: number; jzr?: number }
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error } = await useAsyncData('com-dashboard', () => api.post('/v1/mcenter/com-dashboard', {}))
-const { data: today } = await useAsyncData('com-stats-today', () =>
-  api
-    .post<{
-      look_resume?: Metric
-      look_job?: Metric
-      down_resume?: Metric
-      apply?: Metric
-      invite?: Metric
-    }>('/v1/mcenter/com-stats/today', {})
-    .catch(() => null),
+const { data, error } = await useAsyncData('com-dashboard-full', () =>
+  api.post('/v1/mcenter/com-dashboard/full', {}),
 )
-const { data: year } = await useAsyncData('com-year', () => api.post('/v1/mcenter/dashboard/year-report', {}))
+const today = computed(
+  () =>
+    (data.value as {
+      today?: {
+        look_resume?: Metric
+        look_job?: Metric
+        down_resume?: Metric
+        apply?: Metric
+        invite?: Metric
+      }
+    } | null)?.today || null,
+)
+const year = computed(
+  () => (data.value as { year_report?: Record<string, unknown> } | null)?.year_report || null,
+)
 
 function jzrText(n?: number) {
   const v = Number(n || 0)
