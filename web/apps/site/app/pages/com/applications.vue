@@ -430,19 +430,26 @@ useSeoMeta({ title: t('member_com_00454') })
           </MemberHrUserCard>
         </div>
       </div>
-      <form v-if="remarkFor" class="com_release_box" @submit.prevent="saveRemark">
+      <form v-if="remarkFor" class="com_release_box site-pc" @submit.prevent="saveRemark">
         <ul>
           <MemberReleaseRow :label="$t('member_user_00242')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
         </ul>
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
         <button type="button" class="btn_01" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
       </form>
+      <div v-if="remarkFor" class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="saveRemark">
+          <MemberField wap area :label="$t('member_user_00242')"><textarea v-model="remarkText" rows="3" /></MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+          <button type="button" class="issue_post_body_btn" @click="remarkFor = null">{{ $t('common.cancel') }}</button>
+        </form>
+      </div>
       <MemberPager :page="page" :page-size="PAGE_SIZE" :total="total" @update:page="(p) => (page = p)" />
     </template>
 
     <template v-if="invite.seeker_uid">
       <h2>{{ $t('wap_com_00046') }}</h2>
-      <form class="com_release_box" @submit.prevent="sendInvite()">
+      <form class="com_release_box site-pc" @submit.prevent="sendInvite()">
         <ul>
           <MemberReleaseRow :label="$t('common.resume')">
             <span>{{ invite.seeker_uid }} · {{ invite.job_id }}</span>
@@ -459,6 +466,23 @@ useSeoMeta({ title: t('member_com_00454') })
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
         <button type="button" class="btn_01" @click="invite.seeker_uid = 0">{{ $t('common.cancel') }}</button>
       </form>
+      <div class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="sendInvite()">
+          <MemberField wap :label="$t('common.resume')">
+            <span>{{ invite.seeker_uid }} · {{ invite.job_id }}</span>
+          </MemberField>
+          <MemberField wap :label="$t('wap_00040')"><input v-model="invite.intertime" type="datetime-local" required /></MemberField>
+          <MemberField wap :label="$t('wap_user_00243')"><input v-model="invite.address" required /></MemberField>
+          <MemberField wap :label="$t('common_02051')"><input v-model="invite.linkman" /></MemberField>
+          <MemberField wap :label="$t('common.phone')"><input v-model="invite.linktel" required /></MemberField>
+          <MemberField wap area :label="$t('wap_user_00102')"><textarea v-model="invite.content" rows="3" /></MemberField>
+          <MemberField wap :label="$t('member_com_00512')">
+            <input v-model="invite.save_yqmb" type="checkbox" />
+          </MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+          <button type="button" class="issue_post_body_btn" @click="invite.seeker_uid = 0">{{ $t('common.cancel') }}</button>
+        </form>
+      </div>
     </template>
   </MemberPanel>
 </template>

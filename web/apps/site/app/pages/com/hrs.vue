@@ -68,12 +68,18 @@ useSeoMeta({ title: t('ui.hr') })
   <MemberPanel :title="$t('ui.hr')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
-      <form class="com_release_box" @submit.prevent="createCode">
+      <form class="com_release_box site-pc" @submit.prevent="createCode">
         <ul>
           <MemberReleaseRow :label="$t('ui.desc')"><input v-model="note" class="com_release_textnew_text" /></MemberReleaseRow>
         </ul>
         <button type="submit" class="btn_01">{{ $t('ui.add') }}</button>
       </form>
+      <div class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="createCode">
+          <MemberField wap :label="$t('ui.desc')"><input v-model="note" /></MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ $t('ui.add') }}</button>
+        </form>
+      </div>
       <table class="com_table site-pc">
         <tr>
           <th>{{ $t('ui.hr') }}</th>
@@ -86,6 +92,18 @@ useSeoMeta({ title: t('ui.hr') })
           <td><a href="javascript:;" class="List_dete cblue" @click="revoke(c.id)">{{ $t('common.delete') }}</a></td>
         </tr>
       </table>
+      <div class="site-h5">
+        <div v-for="c in codes || []" :key="'h5c-' + c.id" class="com_cardlist">
+          <div class="com_cardlist_tit">{{ c.code }} · {{ c.note || '' }}</div>
+          <div class="com_cardlist_p">
+            <span class="com_cardlist_p_name">{{ $t('member_user_00106') }}</span>
+            {{ c.expires_at_n }}
+          </div>
+          <div class="com_card_cz">
+            <span class="com_card_delete" @click="revoke(c.id)" />
+          </div>
+        </div>
+      </div>
       <MemberResumeH1 :title="$t('ui.hr')" />
       <table v-if="(hrs || []).length" class="com_table site-pc">
         <tr>
@@ -111,12 +129,18 @@ useSeoMeta({ title: t('ui.hr') })
           </div>
         </div>
       </div>
-      <form class="com_release_box" @submit.prevent="join">
+      <form class="com_release_box site-pc" @submit.prevent="join">
         <ul>
           <MemberReleaseRow :label="$t('ui.hr')" required><input v-model="joinCode" required class="com_release_textnew_text" /></MemberReleaseRow>
         </ul>
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
       </form>
+      <div class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="join">
+          <MemberField wap :label="$t('ui.hr')"><input v-model="joinCode" required /></MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+        </form>
+      </div>
       <table v-if="(companies || []).length" class="com_table site-pc">
         <tr>
           <th>{{ $t('common.company') }}</th>

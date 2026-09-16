@@ -150,7 +150,7 @@ useSeoMeta({ title: t('common_01946') })
 <template>
   <MemberPanel :title="$t('common_01946')">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <div class="payment_list">
+    <div class="payment_list site-pc">
       <div class="payment_list_s mt10">{{ $t('member_com_00317') }}：</div>
       <div class="payment_list_r">
         <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
@@ -158,10 +158,10 @@ useSeoMeta({ title: t('common_01946') })
         <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
       </div>
     </div>
-    <div v-if="channel === 'bank' && bankList.length" class="wxts_box">
+    <div v-if="channel === 'bank' && bankList.length" class="wxts_box site-pc">
       <div v-for="b in bankList" :key="b.id" class="wxts">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
     </div>
-    <div class="payment_list">
+    <div class="payment_list site-pc">
       <div class="payment_list_s mt10">{{ $t('member_com_00316') }}：</div>
       <div class="payment_list_r">
         <span v-for="p in packages" :key="p.code" class="payment_list_text">
@@ -173,7 +173,29 @@ useSeoMeta({ title: t('common_01946') })
         </span>
       </div>
     </div>
-    <form v-if="bankOrderNo" class="com_release_box" @submit.prevent="submitBank">
+    <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent>
+        <MemberField wap :label="$t('member_com_00317')">
+          <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
+          <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
+          <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+        </MemberField>
+      </form>
+      <div v-if="channel === 'bank' && bankList.length" class="issue_post_body_card">
+        <div v-for="b in bankList" :key="'h5b-' + b.id">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
+      </div>
+      <div v-for="p in packages" :key="'h5p-' + p.code" class="issue_post_body_card">
+        <div class="Posted_card_top">
+          <div class="Posted_card_name">{{ p.name }}</div>
+          <div class="Posted_card_pay">{{ p.price_yuan }} {{ $t('wap_00925') }}</div>
+        </div>
+        <p v-for="(row, i) in quotaLines(p)" :key="i" class="muted">
+          {{ $t(row[1]) }} {{ row[0] }}<template v-if="row[2]">{{ $t(row[2]) }}</template>
+        </p>
+        <button type="button" class="issue_post_body_btn" @click="buy(p.code)">{{ $t('common.submit') }}</button>
+      </div>
+    </div>
+    <form v-if="bankOrderNo" class="com_release_box site-pc" @submit.prevent="submitBank">
       <ul>
         <MemberReleaseRow :label="$t('ui.order_no')"><span>{{ bankOrderNo }}</span></MemberReleaseRow>
         <MemberReleaseRow :label="$t('model_00022')" required><input v-model="bankForm.bank_name" required class="com_release_textnew_text" /></MemberReleaseRow>
@@ -185,6 +207,18 @@ useSeoMeta({ title: t('common_01946') })
       </ul>
       <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
     </form>
+    <div v-if="bankOrderNo" class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="submitBank">
+        <MemberField wap :label="$t('ui.order_no')"><span>{{ bankOrderNo }}</span></MemberField>
+        <MemberField wap :label="$t('model_00022')"><input v-model="bankForm.bank_name" required /></MemberField>
+        <MemberField wap :label="$t('model_00023')"><input v-model="bankForm.bank_number" required /></MemberField>
+        <MemberField wap :label="$t('model_00024')"><input v-model="bankForm.bank_price" required /></MemberField>
+        <MemberField wap :label="$t('member_user_00106')"><input v-model="bankForm.bank_time" type="date" required /></MemberField>
+        <MemberField wap :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" /></MemberField>
+        <MemberField wap :label="$t('ui.image')"><input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+      </form>
+    </div>
     <MemberResumeH1 :title="$t('common_02029')" />
     <div v-if="(orders?.list || []).length" class="site-pc paylist_tit">
       <span class="paylist_span paylist_dh">{{ $t('ui.order_no') }}</span>
@@ -209,6 +243,10 @@ useSeoMeta({ title: t('common_01946') })
               <div class="detail_box_time">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</div>
             </div>
             <div class="detail_integral">{{ o.amount_yuan }}</div>
+            <div class="detail_box_cz">
+              <a v-if="canFillBank(o)" href="javascript:;" @click="fillBank(o)">{{ $t('wap_01805') }}</a>
+              <a v-if="canCancel(o)" href="javascript:;" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
+            </div>
           </li>
         </ul>
       </div>

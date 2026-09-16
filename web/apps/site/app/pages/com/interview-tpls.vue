@@ -78,7 +78,7 @@ useSeoMeta({ title: t('wap_com_00404') })
 <template>
   <MemberPanel :title="$t('wap_com_00404')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <form class="com_release_box" @submit.prevent="save">
+    <form class="com_release_box site-pc" @submit.prevent="save">
       <ul>
         <MemberReleaseRow :label="$t('wap_00529')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>
         <MemberReleaseRow :label="$t('wap_user_00102')" area required><textarea v-model="form.content" rows="4" required /></MemberReleaseRow>
@@ -89,6 +89,17 @@ useSeoMeta({ title: t('wap_com_00404') })
       <button type="submit" class="btn_01">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
       <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
     </form>
+    <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="save">
+        <MemberField wap :label="$t('wap_00529')"><input v-model="form.name" required /></MemberField>
+        <MemberField wap area :label="$t('wap_user_00102')"><textarea v-model="form.content" rows="4" required /></MemberField>
+        <MemberField wap :label="$t('ui.interview_place')"><input v-model="form.address" required /></MemberField>
+        <MemberField wap :label="$t('wap_01431')"><input v-model="form.linkman" required /></MemberField>
+        <MemberField wap :label="$t('ui.linkphone')"><input v-model="form.linktel" required /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
+        <button v-if="editing" type="button" class="issue_post_body_btn" @click="reset">{{ $t('common.cancel') }}</button>
+      </form>
+    </div>
     <p v-if="msg">{{ msg }}</p>
     <table v-if="list.length" class="com_table mt20 site-pc">
       <tr>

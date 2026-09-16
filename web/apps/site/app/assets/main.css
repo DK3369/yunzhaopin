@@ -632,6 +632,50 @@ html.force-pc .site-h5 {
     width: 100%;
     margin-top: 0.32rem;
   }
+  .site-h5 .issue_post_body {
+    padding-bottom: 0.48rem;
+  }
+  .site-h5 .company_photo_box ul {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .site-h5 .company_photo_box li {
+    position: relative;
+    overflow: hidden;
+  }
+  .site-h5 .company_photo_box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .site-h5 .company_photo_box .com_card_delete {
+    position: absolute;
+    right: 0.08rem;
+    bottom: 0.08rem;
+    z-index: 1;
+  }
+  .site-h5 .com_cardlist_tit img {
+    max-width: 100%;
+    display: block;
+  }
+  .site-h5 .yun_create_text input[type='radio'],
+  .site-h5 .yun_create_text input[type='checkbox'] {
+    width: auto;
+    height: auto;
+  }
+  .site-h5 .yun_create_text label {
+    display: inline-block;
+    margin-right: 0.32rem;
+  }
+  .site-h5 .detail_box_cz {
+    clear: both;
+    padding: 0.08rem 0 0.16rem;
+  }
+  .site-h5 .detail_box_cz a {
+    margin-right: 0.24rem;
+    color: #2778f8;
+    font-size: 0.32rem;
+  }
   .site-h5 .sx_new_edit {
     display: inline-block;
     margin-left: 0.16rem;
@@ -2530,7 +2574,7 @@ html.force-pc .site-h5 {
     list-style: none;
   }
   .member-page {
-    padding-bottom: 1.8rem;
+    padding-bottom: 2.4rem;
   }
   .member-shell-user .userheader_datum_right_word {
     height: auto;

@@ -68,11 +68,22 @@ useSeoMeta({ title: t('wap_com_00097') })
         </p>
       </div>
       <MemberResumeH1 :title="$t('member_com_00610')" />
-      <div class="payment_list">
+      <div class="payment_list site-pc">
         <div v-for="p in packList" :key="p.id" class="payment_list_text">
           <div class="payment_list_text_n">
             {{ p.name }}
             <em class="payment_list_text_dw">¥{{ p.price_yuan }} / {{ p.duration_days }}d</em>
+          </div>
+          <ul v-if="descLines(p.desc).length">
+            <li v-for="(line, i) in descLines(p.desc)" :key="i">{{ line }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-h5 issue_post_body">
+        <div v-for="p in packList" :key="'h5-' + p.id" class="issue_post_body_card">
+          <div class="Posted_card_top">
+            <div class="Posted_card_name">{{ p.name }}</div>
+            <div class="Posted_card_pay">¥{{ p.price_yuan }} / {{ p.duration_days }}d</div>
           </div>
           <ul v-if="descLines(p.desc).length">
             <li v-for="(line, i) in descLines(p.desc)" :key="i">{{ line }}</li>

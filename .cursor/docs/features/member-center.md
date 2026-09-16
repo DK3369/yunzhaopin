@@ -178,6 +178,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - **第一期（已做）**：PC 有、H5 卡上点不到的动作。简历分享/删作品技能/缺项/置顶；面试拒信表单进 H5 卡；收藏/关注取消；投递天数第二行 tab；职位 H5 最新/急聘（`urgent=1`）+ 地图 `/map`；企业 H5 已认证 `cert=1` + 福利；`/com/jobs` H5 推广/下架/删除/分享。
 - **第二期前半（已做）**：资讯/兼职/问答公开列表+详情换成 WAP 皮（`news_in_*` / `part_box`+`jz_top_box` / `ask_header_bg`+`ask_ct_list`+`askct_iss`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。问答 `ask.css` 只在问答页 `useHead`，不进全局 H5 包。会员补动作：应聘 H5 状态/备注；企业兼职 H5 刷新/编辑/删除 + 报名 `#h5-acts`；求职兼职卡删除；求职消息点卡已读并展开（不要 PC 勾选批量）。
 - **第二期后半（已做）**：招聘会/专题/once/tiny、公告/公招、问答话题、搜索换成 WAP 皮（`newzph_*` / `special_*` / `tiny_bg`+`com_new_contnet_box` / `news_in_*` / `asktopic_*` / `wap_search_header`+`search_history_*`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。招聘资料/发职位 H5 用 `issue_post_body`+`yun_createbox`+`MemberField wap`（同一套 `v-model` / `save` / `submit`），**不要**给 `MemberReleaseRow` 加媒体查询。应聘 H5 在 `m_taball` 下加关键词/职位/学历经验筛，不改 PC `jlsx_*`。企业新闻/产品 H5 卡有编辑删除；表单同样双皮。
+- **招聘会员剩余子页（已做）**：地址/环境/横幅、兼职发布、面试模板、投诉、HR 建码/加入、搜索器、套餐/增值/充值、统计、应聘备注邀请、人才库备注、积分转账均 `.site-pc` 外包 + H5 `yun_createbox` / `com_cardlist` / `issue_post_body_card` / `company_photo_box` 并列，复用同页函数。**不要**给 `payment_list` 加媒体查询当切皮。登录/兑换/地图仍第三期。
 - **第三期**：登录是否换成 `login_cont`；兑换、HR 工具箱、地图页壳。求职首页 H5 默认不加 PC 那块推荐职位。
 
 ## 命名陷阱

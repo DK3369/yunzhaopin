@@ -208,7 +208,7 @@ useSeoMeta({ title: t('wap_user_00008') })
         <span class="paylist_span paylist_time">{{ row.created_at_n || row.created_at }}</span>
       </div>
       <MemberPager :page="exchangePage" :page-size="PAGE_SIZE" :total="Number(exchanges?.total || 0)" @update:page="(p) => (exchangePage = p)" />
-      <form class="com_release_box" @submit.prevent="transfer">
+      <form class="com_release_box site-pc" @submit.prevent="transfer">
         <ul>
           <MemberReleaseRow label="uid"><input v-model.number="toUid" type="number" min="1" /></MemberReleaseRow>
           <MemberReleaseRow :label="$t('wap_user_00008')"><input v-model.number="points" type="number" min="1" /></MemberReleaseRow>
@@ -216,6 +216,14 @@ useSeoMeta({ title: t('wap_user_00008') })
         </ul>
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
       </form>
+      <div class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="transfer">
+          <MemberField wap label="uid"><input v-model.number="toUid" type="number" min="1" /></MemberField>
+          <MemberField wap :label="$t('wap_user_00008')"><input v-model.number="points" type="number" min="1" /></MemberField>
+          <MemberField wap :label="$t('ui.desc')"><input v-model="note" /></MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+        </form>
+      </div>
       <div v-for="row in transfers?.list || []" :key="row.id" class="site-pc paylist_list">
         <span class="paylist_span paylist_dh">{{ row.from_uid }} → {{ row.to_uid }}</span>
         <span class="paylist_span paylist_money">{{ row.points }}</span>

@@ -133,13 +133,20 @@ useSeoMeta({ title: t('member_com_00597') })
         <div class="hr_userlist_czicon" @click="remove(list.find((x) => x.id === Number(row.key))!)">{{ $t('common.delete') }}</div>
       </template>
     </MemberHrResumeRows>
-    <form v-if="remarkFor" class="com_release_box" @submit.prevent="saveRemark">
+    <form v-if="remarkFor" class="com_release_box site-pc" @submit.prevent="saveRemark">
       <ul>
         <MemberReleaseRow :label="$t('wap_00807')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
       </ul>
       <button type="submit" class="btn_01">{{ $t('common.save') }}</button>
       <button type="button" class="btn_01" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
     </form>
+    <div v-if="remarkFor" class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="saveRemark">
+        <MemberField wap area :label="$t('wap_00807')"><textarea v-model="remarkText" rows="3" /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ $t('common.save') }}</button>
+        <button type="button" class="issue_post_body_btn" @click="remarkFor = 0">{{ $t('common.cancel') }}</button>
+      </form>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

@@ -48,12 +48,18 @@ useSeoMeta({ title: t('member_com_00148') })
 <template>
   <MemberPanel :title="$t('member_com_00148')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
-    <form class="com_release_box" @submit.prevent="submit">
+    <form class="com_release_box site-pc" @submit.prevent="submit">
       <ul>
         <MemberReleaseRow :label="$t('member_com_00331')" area><textarea v-model="reason" rows="3" maxlength="200" /></MemberReleaseRow>
       </ul>
       <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
     </form>
+    <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="submit">
+        <MemberField wap area :label="$t('member_com_00331')"><textarea v-model="reason" rows="3" maxlength="200" /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+      </form>
+    </div>
     <table v-if="list.length" class="com_table site-pc">
       <tr>
         <th>{{ $t('member_com_00148') }}</th>

@@ -102,7 +102,7 @@ useSeoMeta({ title: t('ui.map_addr') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <form class="com_release_box" @submit.prevent="save">
+      <form class="com_release_box site-pc" @submit.prevent="save">
         <ul>
           <MemberReleaseRow :label="$t('wap_01431')" required><input v-model="form.link_man" required class="com_release_textnew_text" /></MemberReleaseRow>
           <MemberReleaseRow :label="$t('common.phone')" required><input v-model="form.link_moblie" required class="com_release_textnew_text" /></MemberReleaseRow>
@@ -123,6 +123,27 @@ useSeoMeta({ title: t('ui.map_addr') })
         <button type="submit" class="btn_01">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
         <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
       </form>
+      <div class="site-h5 issue_post_body">
+        <form class="yun_createbox" @submit.prevent="save">
+          <MemberField wap :label="$t('wap_01431')"><input v-model="form.link_man" required /></MemberField>
+          <MemberField wap :label="$t('common.phone')"><input v-model="form.link_moblie" required /></MemberField>
+          <MemberField wap :label="$t('wap_com_00014')"><input v-model="form.link_phone" /></MemberField>
+          <MemberField wap :label="$t('member_user_00282')"><input v-model="form.email" /></MemberField>
+          <MemberField wap :label="$t('ui.map_addr')"><input v-model="form.link_address" /></MemberField>
+          <MemberField wap :label="$t('wap_user_00243')">
+            <LocationFields
+              v-model:province-id="form.province_id"
+              v-model:city-id="form.city_id"
+              v-model:district-id="form.three_city_id"
+            />
+          </MemberField>
+          <MemberField wap :label="$t('wap_user_00243')">
+            <MapPick v-model:x="form.x" v-model:y="form.y" />
+          </MemberField>
+          <button type="submit" class="issue_post_body_btn">{{ editing ? $t('common.save') : $t('ui.add') }}</button>
+          <button v-if="editing" type="button" class="issue_post_body_btn" @click="reset">{{ $t('common.cancel') }}</button>
+        </form>
+      </div>
       <p v-if="msg">{{ msg }}</p>
       <table v-if="list.length" class="com_table site-pc">
         <tr>

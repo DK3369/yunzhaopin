@@ -154,7 +154,7 @@ const tplRows = computed(() => {
         </div>
       </div>
     </div>
-    <form class="com_release_box" @submit.prevent="saveTpl">
+    <form class="com_release_box site-pc" @submit.prevent="saveTpl">
       <ul>
         <MemberReleaseRow :label="$t('wap_com_00288')" required><input v-model="form.name" required class="com_release_textnew_text" /></MemberReleaseRow>
         <MemberReleaseRow :label="$t('wap_user_00102')" area required><textarea v-model="form.content" rows="3" required /></MemberReleaseRow>
@@ -164,6 +164,16 @@ const tplRows = computed(() => {
       </ul>
       <button type="submit" class="btn_01">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
     </form>
+    <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="saveTpl">
+        <MemberField wap :label="$t('wap_com_00288')"><input v-model="form.name" required /></MemberField>
+        <MemberField wap area :label="$t('wap_user_00102')"><textarea v-model="form.content" rows="3" required /></MemberField>
+        <MemberField wap :label="$t('wap_00040')"><input v-model="form.address" required /></MemberField>
+        <MemberField wap :label="$t('common_02051')"><input v-model="form.linkman" required /></MemberField>
+        <MemberField wap :label="$t('common.phone')"><input v-model="form.linktel" required /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ form.id ? $t('common.save') : $t('common.submit') }}</button>
+      </form>
+    </div>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>
