@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
   const urlPath = path.startsWith('v1/') || path.startsWith('v2/') ? `/${path}` : `/${path}`
   const method = event.method === 'GET' ? 'GET' : 'POST'
   const token = String(getCookie(event, ACCESS_COOKIE) || '').trim()
-  if (isMcenterPath(urlPath) && !token) {
+  const incomingAuth = String(getHeader(event, 'authorization') || '').trim()
+  if (isMcenterPath(urlPath) && !token && !incomingAuth) {
     const unauth = { code: 401, key: 'unauth', msg: 'Not logged in', data: '' as const }
     setResponseStatus(event, 401)
     return unauth
@@ -23,6 +24,7 @@ export default defineEventHandler(async (event) => {
     ...rustLangHeaders(event),
   }
   if (token) headers.authorization = `Bearer ${token}`
+  else if (incomingAuth) headers.authorization = incomingAuth
   const ua = getHeader(event, 'user-agent')
   if (ua) headers['user-agent'] = ua
   const xff = getHeader(event, 'x-forwarded-for')

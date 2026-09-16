@@ -10,7 +10,7 @@
 |---|---|---|
 | 进程、端口、URL、信封 | [run.md](./run.md) | [doc/ARCHITECTURE.md](../../../doc/ARCHITECTURE.md) |
 | crate 分层、新接口放哪 | [crates.md](./crates.md) | [phpyun-rs/docs/CRATE_LAYERING.md](../../../phpyun-rs/docs/CRATE_LAYERING.md) |
-| 契约、快照、PHP 字符串 400 | [api.md](./api.md) | `doc/snapshots/`；dev/test：Swagger `/docs/`、JSON `:3003/api-docs/` |
+| 契约、快照、PHP 字符串 400 | [api.md](./api.md) | `doc/snapshots/`；Swagger `https://job1.ov6.com/docs/`（经 `:3001`） |
 | 已合并 / 即将失效 | [api-merged.md](./api-merged.md) | App OpenAPI `deprecated`；路径仍以 `v1_paths.txt` 为准 |
 | 后端 i18n | [i18n.md](./i18n.md) | [phpyun-rs/docs/INTERNATIONALIZATION.md](../../../phpyun-rs/docs/INTERNATIONALIZATION.md) |
 | 横切（me / locale key / 媒体 URL / settings 缓存） | [cross-cut.md](./cross-cut.md) | 前台 `useAuthMe`、`localeAsyncKey`；Rust `media_url`、`site_gate` 配置缓存 |

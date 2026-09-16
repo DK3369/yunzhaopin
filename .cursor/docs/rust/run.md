@@ -35,11 +35,12 @@ unit 的 `ExecStart` 是 **debug** binary：`phpyun-rs/target/debug/phpyun-rs`�
 | `http://127.0.0.1:3003/health` | 进程活着 |
 | `http://127.0.0.1:3003/ready` | 依赖就绪 |
 | `http://127.0.0.1:3003/dev/token` | 仅 debug：求职者 / 企业 / 后台 JWT |
-| `http://127.0.0.1:3003/docs/` | Swagger UI（仅 dev/test；公网 `/yapi/docs/`） |
+| `http://127.0.0.1:3003/docs/` | Swagger UI（仅 dev/test） |
+| `https://job1.ov6.com/docs/` | 同上，经 `:3001` 转到 `:3003`（PC/H5 同域） |
 | `http://127.0.0.1:3003/api-docs/v1/openapi.json` | App 契约（dev/test） |
 | `http://127.0.0.1:3003/api-docs/admin/openapi.json` | Admin 契约 |
 
-公网：nginx `/yapi/` `/callback/` `/v1/` → `:3003`。nginx `/` 与 `/admin/` → site `:3001`。`RUST_API_URL` 必须是 `http://127.0.0.1:3003`。
+PC/H5 与后台浏览器接口走 `https://job1.ov6.com/api/proxy/v1/...`（`:3001` BFF → `:3003`）。不要用 `job1` 的 `/yapi/`（隧道直连 `:3001`，没有这条）。`RUST_API_URL` 必须是 `http://127.0.0.1:3003`。
 
 ## 编译产物（`target` vs `target-link`）
 

@@ -14,7 +14,8 @@ use crate::v1;
         description = "Admin endpoints (`/v1/admin/*`). App/Web clients must use `/api-docs/v1/openapi.json` instead."
     ),
     servers(
-        (url = "/", description = "Direct (local app port 3000)"),
+        (url = "/api/proxy", description = "PC/H5 BFF（job1.ov6.com）"),
+        (url = "/", description = "本机 :3003"),
     ),
     paths(
         v1::ads::list,

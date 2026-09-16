@@ -195,8 +195,8 @@ impl Modify for DeprecatedIndex {
         description = "PHPYun WAP API v1 (stable)"
     ),
     servers(
-        (url = "/yapi", description = "Nginx proxy (dev.test/yapi → 127.0.0.1:3000)"),
-        (url = "/", description = "Direct (local app port 3000)"),
+        (url = "/api/proxy", description = "PC/H5 BFF（job1.ov6.com）"),
+        (url = "/", description = "本机 :3003"),
     ),
     paths(
         // auth
@@ -1223,8 +1223,8 @@ pub fn v1_openapi() -> utoipa::openapi::OpenApi {
         description = "OV6 WAP API v2: login response time uses RFC3339; other endpoints match v1"
     ),
     servers(
-        (url = "/yapi", description = "Nginx proxy (dev.test/yapi → 127.0.0.1:3000)"),
-        (url = "/", description = "Direct (local app port 3000)"),
+        (url = "/api/proxy", description = "PC/H5 BFF（job1.ov6.com）"),
+        (url = "/", description = "本机 :3003"),
     ),
     paths(
         // /v2/wap/{logout,refresh,me} routes actually serve the v1 handler (nested router
