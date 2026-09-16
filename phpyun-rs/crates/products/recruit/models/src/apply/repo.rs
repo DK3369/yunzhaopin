@@ -1,9 +1,8 @@
 //! Job application repo.
 //!
-//! The `phpyun_userid_job` table has no unique index in PHP, but we check
-//! "same uid+job_id already applied" at the business layer to prevent
-//! duplicate applications. For strict consistency, a migration adding
-//! UNIQUE(uid, job_id) could be considered later.
+//! Unique index `uk_userid_job_uid_job` is in
+//! `migrations/sqlx/20260916000001_apply_unique.sql` (not auto-run). The
+//! service layer still pre-checks and maps 1062 to `apply_duplicate`.
 
 use super::entity::Apply;
 use sqlx::{MySqlPool, QueryBuilder};
@@ -427,7 +426,7 @@ fn push_com_source(qb: &mut QueryBuilder<'_, sqlx::MySql>, com_id: u64, f: &Appl
     }
     if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|k| !k.is_empty()) {
         qb.push(" AND r.name LIKE ");
-        crate::sql::push_contains(&mut qb, kw);
+        crate::sql::push_contains(qb, kw);
     }
 }
 

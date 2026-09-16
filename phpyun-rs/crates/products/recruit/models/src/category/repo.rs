@@ -117,7 +117,7 @@ pub async fn list_all(pool: &MySqlPool, kind: &str) -> Result<Vec<Category>, sql
     } else {
         format!("ORDER BY {pc} ASC, sort DESC, id ASC")
     };
-    let sql = format!("{} {order}", select_sql(table, pc, kind));
+    let sql = format!("{} {order} LIMIT 8000", select_sql(table, pc, kind));
     sqlx::query_as::<_, Category>(&sql).fetch_all(pool).await
 }
 

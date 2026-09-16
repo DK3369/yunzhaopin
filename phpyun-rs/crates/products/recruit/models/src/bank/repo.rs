@@ -12,7 +12,7 @@ const FIELDS: &str = "\
     COALESCE(bank_address, '') AS bank_address";
 
 pub async fn list_all(pool: &MySqlPool) -> Result<Vec<BankAccount>, sqlx::Error> {
-    let sql = format!("SELECT {FIELDS} FROM phpyun_bank ORDER BY id ASC");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_bank ORDER BY id ASC LIMIT 200");
     sqlx::query_as::<_, BankAccount>(&sql).fetch_all(pool).await
 }
 

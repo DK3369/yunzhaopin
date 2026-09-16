@@ -227,7 +227,14 @@ pub async fn list_resume(
          FROM phpyun_resume_expect e INNER JOIN phpyun_resume r ON r.uid = e.uid AND r.def_job = e.id \
          WHERE e.defaults = 1 ORDER BY e.`{col}` {dir} LIMIT ?"
     );
-    sqlx::query_as(&sql).bind(lim(num)).fetch_all(pool).await
+    let mut rows: Vec<ResumeCallRow> = sqlx::query_as(&sql).bind(lim(num)).fetch_all(pool).await?;
+    for r in &mut rows {
+        r.email = phpyun_core::utils::mask_email(&r.email);
+        r.telhome = phpyun_core::utils::mask_tel(&r.telhome);
+        r.telphone = phpyun_core::utils::mask_tel(&r.telphone);
+        r.idcard = phpyun_core::utils::mask_idcard(&r.idcard);
+    }
+    Ok(rows)
 }
 
 pub async fn list_company(

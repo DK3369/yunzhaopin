@@ -59,6 +59,7 @@ pub async fn bump(
 /// Top N trending search keywords (ordered by num DESC).
 pub async fn top(pool: &MySqlPool, scope: &str, limit: u64) -> Result<Vec<HotSearch>, sqlx::Error> {
     let scope_int: i32 = scope.parse().unwrap_or(0);
+    let limit = limit.clamp(1, 100);
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_hot_key \
          WHERE `type` = ? AND {PREDICATE} ORDER BY num DESC LIMIT ?"
@@ -72,6 +73,7 @@ pub async fn top(pool: &MySqlPool, scope: &str, limit: u64) -> Result<Vec<HotSea
 
 /// PHP `{yun:}key order=num{/yun}`: approved keywords across types, `num` DESC.
 pub async fn top_checked(pool: &MySqlPool, limit: u64) -> Result<Vec<HotSearch>, sqlx::Error> {
+    let limit = limit.clamp(1, 100);
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_hot_key \
          WHERE COALESCE(`check`, 0) = 1 AND {PREDICATE} ORDER BY num DESC LIMIT ?"

@@ -99,6 +99,60 @@ pub fn mask_contact(s: &str) -> String {
     mask_tel(trimmed)
 }
 
+/// `a***@example.com`. Missing `@` falls back to [`mask_tel`].
+pub fn mask_email(s: &str) -> String {
+    let trimmed = s.trim();
+    if trimmed.is_empty() {
+        return String::new();
+    }
+    let Some((user, domain)) = trimmed.split_once('@') else {
+        return mask_tel(trimmed);
+    };
+    if user.is_empty() || domain.is_empty() {
+        return trimmed.to_string();
+    }
+    let first = user.chars().next().unwrap_or('*');
+    format!("{first}***@{domain}")
+}
+
+/// Keep first 3 and last 4 of an ID number; shorter strings pass through.
+pub fn mask_idcard(s: &str) -> String {
+    let chars: Vec<char> = s.trim().chars().collect();
+    if chars.len() < 8 {
+        return s.to_string();
+    }
+    let prefix: String = chars.iter().take(3).collect();
+    let suffix: String = chars
+        .iter()
+        .rev()
+        .take(4)
+        .collect::<String>()
+        .chars()
+        .rev()
+        .collect();
+    format!("{prefix}***********{suffix}")
+}
+
+/// JPEG / PNG / GIF / WebP magic. Used by upload handlers so the declared
+/// `Content-Type` is not trusted for the stored extension.
+pub fn sniff_image(bytes: &[u8]) -> Option<(&'static str, &'static str)> {
+    if bytes.len() >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF {
+        return Some(("image/jpeg", "jpg"));
+    }
+    if bytes.len() >= 8
+        && bytes[..8] == [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]
+    {
+        return Some(("image/png", "png"));
+    }
+    if bytes.len() >= 6 && (bytes.starts_with(b"GIF87a") || bytes.starts_with(b"GIF89a")) {
+        return Some(("image/gif", "gif"));
+    }
+    if bytes.len() >= 12 && bytes.starts_with(b"RIFF") && &bytes[8..12] == b"WEBP" {
+        return Some(("image/webp", "webp"));
+    }
+    None
+}
+
 /// Display-name mask: first char + `**`. Used for resume detail when the
 /// jobseeker hasn't agreed to publish their full name.
 pub fn mask_name_short(s: &str) -> String {

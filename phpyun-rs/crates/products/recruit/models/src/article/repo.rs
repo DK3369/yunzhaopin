@@ -139,7 +139,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND n.title LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
     if f.rec_only {
@@ -165,7 +165,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a
     if let Some(kw) = f.author_kw {
         if !kw.is_empty() {
             qb.push(" AND n.author LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
 }
@@ -766,9 +766,9 @@ pub async fn related(
         }
         first = false;
         qb.push("keyword LIKE ");
-        qb.push_bind(format!("%{p}%"));
+        crate::sql::push_contains(&mut qb, p);
         qb.push(" OR title LIKE ");
-        qb.push_bind(format!("%{p}%"));
+        crate::sql::push_contains(&mut qb, p);
     }
     qb.push(") ORDER BY datetime DESC LIMIT ");
     qb.push_bind(limit);

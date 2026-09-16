@@ -127,9 +127,9 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
         if !kw.is_empty() {
             // PHP `comlist`: `(name LIKE OR shortname LIKE)`.
             qb.push(" AND (name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR shortname LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(")");
         }
     }
@@ -807,18 +807,17 @@ pub async fn search_brief(
     keyword: &str,
     limit: u64,
 ) -> Result<Vec<CompanyBrief>, sqlx::Error> {
-    let pattern = format!("%{}%", keyword);
     sqlx::query_as::<_, CompanyBrief>(
         "SELECT \
             CAST(uid AS UNSIGNED) AS uid, \
             COALESCE(name, '') AS name, \
             logo \
          FROM phpyun_company \
-         WHERE r_status = 1 AND name LIKE ? \
+         WHERE r_status = 1 AND name LIKE ? ESCAPE '\\\\' \
          ORDER BY hits DESC, uid DESC \
          LIMIT ?",
     )
-    .bind(pattern)
+    .bind(crate::sql::like_contains(keyword))
     .bind(limit)
     .fetch_all(pool)
     .await

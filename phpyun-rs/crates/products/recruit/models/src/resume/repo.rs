@@ -223,23 +223,22 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
     }
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
-            let pat = format!("%{kw}%");
             qb.push(" AND (name LIKE ");
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(
                 " OR EXISTS (SELECT 1 FROM phpyun_resume_expect e \
                  WHERE e.uid = phpyun_resume.uid AND e.uname LIKE ",
             );
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(
                 ") OR uid IN (SELECT uid FROM phpyun_resume_work \
                  WHERE name LIKE ",
             );
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR title LIKE ");
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR content LIKE ");
-            qb.push_bind(pat);
+            crate::sql::push_contains(qb, kw);
             qb.push("))");
         }
     }

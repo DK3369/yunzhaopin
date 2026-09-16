@@ -1,7 +1,9 @@
 //! Public site settings (keys with is_public=1).
 
-use axum::{extract::State, routing::post, Json, Router};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, Lang, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    ApiError, ApiResponse, AppResult, AppState, ClientIp, Lang, ValidatedJson, ValidatedJsonOrQuery,
+};
 use phpyun_models::report::repo as report_repo;
 use phpyun_services::site_setting_service;
 use serde::{Deserialize, Serialize};
@@ -35,10 +37,11 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingView {
 
 /// List public settings, or return selectable report reasons when
 /// `key=report_reasons`.
-#[derive(Debug, Default, serde::Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Default, serde::Deserialize, utoipa::ToSchema, validator::Validate)]
 pub struct SettingsListBody {
     /// Empty = all public settings. `report_reasons` returns report-reason options.
     #[serde(default)]
+    #[validate(length(max = 64))]
     pub key: String,
 }
 
@@ -93,9 +96,9 @@ pub async fn list(
     State(state): State<AppState>,
     _lang: Lang,
     ClientIp(ip): ClientIp,
-    body: Option<Json<SettingsListBody>>,
+    ValidatedJsonOrQuery(body): ValidatedJsonOrQuery<SettingsListBody>,
 ) -> AppResult<ApiResponse<Value>> {
-    if body.as_ref().is_some_and(|b| b.key == "report_reasons") {
+    if body.key == "report_reasons" {
         return Ok(ApiResponse::data(json!(report_reasons(&state).await?)));
     }
 

@@ -171,7 +171,7 @@ pub async fn apply_to_job(
     }
 
     let com_name = job.com_name.clone().unwrap_or_default();
-    let id = apply_repo::create(
+    let id = match apply_repo::create(
         state.db.pool(),
         apply_repo::ApplyCreate {
             uid: user.uid,
@@ -185,7 +185,14 @@ pub async fn apply_to_job(
             is_browse,
         },
     )
-    .await?;
+    .await
+    {
+        Ok(id) => id,
+        Err(e) if apply_repo::is_unique_violation(&e) => {
+            return Err(ApiError::business("apply_duplicate"));
+        }
+        Err(e) => return Err(e.into()),
+    };
 
     // 5. Audit + event bus (paves the way for future email notifications)
     let _ = audit::emit(
@@ -244,7 +251,7 @@ async fn apply_scrape_job(
         .map(|e| e.id)
         .unwrap_or(0);
     let com_name = job.com_name.clone().unwrap_or_default();
-    let id = apply_repo::create(
+    let id = match apply_repo::create(
         state.db.pool(),
         apply_repo::ApplyCreate {
             uid: user.uid,
@@ -258,7 +265,14 @@ async fn apply_scrape_job(
             is_browse: 1,
         },
     )
-    .await?;
+    .await
+    {
+        Ok(id) => id,
+        Err(e) if apply_repo::is_unique_violation(&e) => {
+            return Err(ApiError::business("apply_duplicate"));
+        }
+        Err(e) => return Err(e.into()),
+    };
     let _ = audit::emit(
         state,
         AuditEvent::new("resume.apply", Actor::uid(user.uid).with_ip(client_ip))

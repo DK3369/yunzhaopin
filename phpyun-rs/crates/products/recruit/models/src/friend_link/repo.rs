@@ -31,12 +31,12 @@ pub async fn list_active(
         Some(_) => format!(
             "SELECT {FIELDS} FROM phpyun_admin_link \
              WHERE link_state = 1 AND link_type = ? AND {PREDICATE} \
-             ORDER BY link_sorting DESC, id ASC"
+             ORDER BY link_sorting DESC, id ASC LIMIT 500"
         ),
         None => format!(
             "SELECT {FIELDS} FROM phpyun_admin_link \
              WHERE link_state = 1 AND {PREDICATE} \
-             ORDER BY link_sorting DESC, id ASC"
+             ORDER BY link_sorting DESC, id ASC LIMIT 500"
         ),
     };
     let q = sqlx::query_as::<_, FriendLink>(&sql);

@@ -84,6 +84,7 @@ fn ext_of(ct: &str) -> &'static str {
         c if c.starts_with("image/jpeg") => "jpg",
         c if c.starts_with("image/png") => "png",
         c if c.starts_with("image/webp") => "webp",
+        c if c.starts_with("image/gif") => "gif",
         c if c.starts_with("application/pdf") => "pdf",
         c if c.starts_with("application/msword") => "doc",
         c if c.starts_with(
@@ -94,6 +95,18 @@ fn ext_of(ct: &str) -> &'static str {
         }
         _ => "bin",
     }
+}
+
+fn image_ct_from_body(body: &Bytes) -> AppResult<&'static str> {
+    let Some((ct, _)) = phpyun_core::utils::sniff_image(body) else {
+        return Err(ApiError::param_invalid("unsupported image"));
+    };
+    if !IMG_TYPES.iter().any(|t| ct.starts_with(t)) {
+        return Err(ApiError::param_invalid(format!(
+            "unsupported content-type: {ct}"
+        )));
+    }
+    Ok(ct)
 }
 
 async fn store(
@@ -126,12 +139,10 @@ async fn store(
 pub async fn upload_avatar(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<UploadResult>> {
-    let ct = ct_of(&headers);
-    check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_AVATAR_BYTES)?;
+    let ct = image_ct_from_body(&body)?;
     Ok(ApiResponse::data(
         store(&state, user.uid, "avatars", ct, body).await?,
     ))
@@ -149,13 +160,11 @@ pub async fn upload_avatar(
 pub async fn upload_company_logo(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<UploadResult>> {
     user.require_employer()?;
-    let ct = ct_of(&headers);
-    check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_LOGO_BYTES)?;
+    let ct = image_ct_from_body(&body)?;
     Ok(ApiResponse::data(
         store(&state, user.uid, "logos", ct, body).await?,
     ))
@@ -173,13 +182,11 @@ pub async fn upload_company_logo(
 pub async fn upload_resume_photo(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<UploadResult>> {
     user.require_jobseeker()?;
-    let ct = ct_of(&headers);
-    check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_PHOTO_BYTES)?;
+    let ct = image_ct_from_body(&body)?;
     Ok(ApiResponse::data(
         store(&state, user.uid, "resume_photos", ct, body).await?,
     ))
@@ -197,12 +204,10 @@ pub async fn upload_resume_photo(
 pub async fn upload_cert(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<UploadResult>> {
-    let ct = ct_of(&headers);
-    check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_CERT_BYTES)?;
+    let ct = image_ct_from_body(&body)?;
     Ok(ApiResponse::data(
         store(&state, user.uid, "certs", ct, body).await?,
     ))

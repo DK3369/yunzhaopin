@@ -5,11 +5,11 @@ use axum::extract::State;
 use axum::http::{header, HeaderMap};
 use axum::routing::post;
 use axum::Router;
+use phpyun_core::utils::sniff_image;
 use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser};
 use serde::Serialize;
 
 const MAX_BYTES: usize = 10 * 1024 * 1024;
-const IMG_TYPES: &[&str] = &["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/upload", post(upload))
@@ -20,13 +20,6 @@ pub struct UploadResult {
     pub url: String,
     pub key: String,
     pub bytes: usize,
-}
-
-fn ct_of(headers: &HeaderMap) -> &str {
-    headers
-        .get(header::CONTENT_TYPE)
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream")
 }
 
 /// PHP admin image upload. BFF strips multipart and posts raw bytes.
@@ -43,16 +36,14 @@ pub async fn upload(
     if body.len() > MAX_BYTES {
         return Err(ApiError::param_invalid("file too large"));
     }
-    let ct = ct_of(&headers);
-    if !IMG_TYPES.iter().any(|t| ct.starts_with(t)) && !ct.starts_with("application/octet-stream") {
-        return Err(ApiError::param_invalid(format!("unsupported content-type: {ct}")));
-    }
-    let ext = match ct {
-        c if c.starts_with("image/jpeg") => "jpg",
-        c if c.starts_with("image/png") => "png",
-        c if c.starts_with("image/webp") => "webp",
-        c if c.starts_with("image/gif") => "gif",
-        _ => "bin",
+    let Some((ct, ext)) = sniff_image(&body) else {
+        let declared = headers
+            .get(header::CONTENT_TYPE)
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("unknown");
+        return Err(ApiError::param_invalid(format!(
+            "unsupported image (declared {declared})"
+        )));
     };
     let key = format!("admin/{}/{}.{}", user.uid, uuid::Uuid::now_v7(), ext);
     let bytes_len = body.len();
