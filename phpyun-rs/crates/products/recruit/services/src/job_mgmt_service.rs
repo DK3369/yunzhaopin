@@ -155,6 +155,8 @@ pub struct CreateJobInput<'a> {
     pub jobclassid: i32,
     pub x: &'a str,
     pub y: &'a str,
+    pub custom_link_man: &'a str,
+    pub custom_link_moblie: &'a str,
 }
 
 async fn setting_on(state: &AppState, key: &str) -> bool {
@@ -204,11 +206,24 @@ struct VipPack {
 }
 
 async fn listed_job_count(state: &AppState, uid: u64) -> AppResult<u64> {
-    let (jobs, parts) = tokio::join!(
+    let (jobs, parts, lts) = tokio::join!(
         job_repo::count_listed_by_uid(state.db.reader(), uid),
         part_repo::count_listed_by_uid(state.db.reader(), uid),
+        job_repo::count_listed_lt_by_uid(state.db.reader(), uid),
     );
-    Ok(jobs? + parts?)
+    Ok(jobs? + parts? + lts?)
+}
+
+async fn contains_forbidden_keyword(state: &AppState, texts: &[&str]) -> bool {
+    let raw = setting_raw(state, "sy_fkeyword").await;
+    if raw.is_empty() {
+        return false;
+    }
+    let hay = texts.join(" ").to_lowercase();
+    raw.split(|c: char| c == ',' || c == '，' || c == '|' || c == ' ')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .any(|k| hay.contains(&k.to_lowercase()))
 }
 
 async fn vip_pack(state: &AppState, uid: u64) -> AppResult<VipPack> {
@@ -560,7 +575,38 @@ async fn save_job(
         .await?,
         input.is_link,
     );
-    if input.is_link > 1 && input.link_id == 0 {
+    if input.is_link == 2 && input.link_id <= 0 {
+        let man = input.custom_link_man.trim();
+        let mob = input.custom_link_moblie.trim();
+        if man.is_empty() || mob.is_empty() {
+            return Err(ApiError::business("common_01306"));
+        }
+        let new_id = company_address_repo::create(
+            state.db.pool(),
+            user.uid,
+            &company_address_repo::AddressFields {
+                link_man: man,
+                link_moblie: mob,
+                link_phone: "",
+                email: "",
+                link_address: "",
+                provinceid: geo_province,
+                cityid: geo_city,
+                three_cityid: geo_three,
+                x: default_x,
+                y: default_y,
+            },
+        )
+        .await?;
+        link.is_link = 2;
+        link.link_id = i32::try_from(new_id).unwrap_or(0);
+        link.provinceid = geo_province;
+        link.cityid = geo_city;
+        link.three_cityid = geo_three;
+        link.x = default_x.to_string();
+        link.y = default_y.to_string();
+    }
+    if input.is_link > 1 && input.link_id == 0 && link.link_id == 0 {
         return Err(ApiError::business("common_01306"));
     }
     if input.link_id > 0 && link.is_link == 1 {
@@ -568,7 +614,15 @@ async fn save_job(
     }
 
     let hy = if input.hy != 0 { input.hy } else { company.hy };
-    let job_state = compute_job_state(state, user.uid, company.r_status, company.rating).await?;
+    let mut job_state = compute_job_state(state, user.uid, company.r_status, company.rating).await?;
+    if contains_forbidden_keyword(
+        state,
+        &[name, desc, input.wel.unwrap_or("")],
+    )
+    .await
+    {
+        job_state = 0;
+    }
     let listed = listed_job_count(state, user.uid).await?;
     let mut status = 0;
     if edit_id.is_none() && listed >= pack.job_num.max(0) as u64 {
@@ -788,6 +842,8 @@ pub struct UpdateJobInput<'a> {
     pub jobclassid: Option<i32>,
     pub x: Option<&'a str>,
     pub y: Option<&'a str>,
+    pub custom_link_man: Option<&'a str>,
+    pub custom_link_moblie: Option<&'a str>,
 }
 
 pub async fn update(
@@ -869,6 +925,8 @@ pub async fn update(
         jobclassid: input.jobclassid.unwrap_or(0),
         x: x_owned.as_str(),
         y: y_owned.as_str(),
+        custom_link_man: input.custom_link_man.unwrap_or(""),
+        custom_link_moblie: input.custom_link_moblie.unwrap_or(""),
     };
     save_job(state, user, Some(id), create, client_ip).await
 }
@@ -922,7 +980,12 @@ pub async fn set_status(
     Ok(())
 }
 
-async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32, job_ids: &[u64]) -> AppResult<()> {
+async fn consume_refresh_quota(
+    state: &AppState,
+    uid: u64,
+    n: i32,
+    job_ids: &[u64],
+) -> AppResult<bool> {
     let now = clock::now_ts();
     let st = statis_repo::find_admin(state.db.reader(), uid)
         .await?
@@ -931,15 +994,15 @@ async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32, job_ids: &[u6
         return Err(ApiError::business("zph_need_vip"));
     }
     if st.rating_type == 2 {
-        return Ok(());
+        return Ok(true);
     }
     if st.rating_type != 1 {
-        return Err(ApiError::business("job_refresh_quota"));
+        return Ok(false);
     }
     let budget = phpyun_models::admin_gap::extra::reserve_refresh_budget(state.db.reader(), uid)
         .await?;
     if budget < i64::from(n.max(0)) {
-        return Err(ApiError::business("job_refresh_quota"));
+        return Ok(false);
     }
     let free_left = (budget - i64::from(st.breakjob_num.max(0))).max(0);
     let mut remain_free = free_left;
@@ -952,7 +1015,7 @@ async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32, job_ids: &[u6
         }
     }
     if paid > 0 && !statis_repo::try_consume_breakjob(state.db.pool(), uid, paid).await? {
-        return Err(ApiError::business("job_refresh_quota"));
+        return Ok(false);
     }
     let mut remain_free = free_left;
     for id in job_ids.iter().take(n.max(0) as usize) {
@@ -965,7 +1028,28 @@ async fn consume_refresh_quota(state: &AppState, uid: u64, n: i32, job_ids: &[u6
         let _ = job_repo::insert_refresh_log(state.db.pool(), uid, *id, now, free, i32::from(free == 1))
             .await;
     }
-    Ok(())
+    Ok(true)
+}
+
+#[derive(Debug, Clone)]
+pub struct RefreshResult {
+    pub status: i32,
+    pub integral: i64,
+    pub price: f64,
+}
+
+async fn refresh_pay_quote(state: &AppState, n: i32) -> AppResult<(i64, f64)> {
+    let unit = setting_raw(state, "integral_jobefresh")
+        .await
+        .parse::<f64>()
+        .unwrap_or(0.0);
+    let pro = setting_raw(state, "integral_proportion")
+        .await
+        .parse::<f64>()
+        .unwrap_or(1.0);
+    let price = unit * f64::from(n.max(0));
+    let integral = (price * pro).round() as i64;
+    Ok((integral, price))
 }
 
 // ==================== Refresh ====================
@@ -974,14 +1058,31 @@ pub async fn refresh(
     state: &AppState,
     user: &AuthenticatedUser,
     id: u64,
+    confirm: bool,
     client_ip: &str,
-) -> AppResult<()> {
+) -> AppResult<RefreshResult> {
     user.require_employer()?;
     let _owned = job_repo::find_by_id(state.db.reader(), id)
         .await?
         .filter(|j| j.uid == user.uid)
         .ok_or_else(|| ApiError::business("job_not_found"))?;
-    consume_refresh_quota(state, user.uid, 1, &[id]).await?;
+    let ok = consume_refresh_quota(state, user.uid, 1, &[id]).await?;
+    if !ok {
+        let (integral, price) = refresh_pay_quote(state, 1).await?;
+        if price <= 0.0 {
+            // PHP: integral_jobefresh==0 且开单项购买时直接刷新
+        } else if !confirm {
+            return Ok(RefreshResult {
+                status: 2,
+                integral,
+                price,
+            });
+        } else if integral > 0
+            && statis_repo::try_deduct_integral(state.db.pool(), user.uid, integral).await? == 0
+        {
+            return Err(ApiError::business("integral_insufficient"));
+        }
+    }
     let affected = job_repo::refresh(state.db.pool(), id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::business("job_not_found"));
@@ -992,7 +1093,11 @@ pub async fn refresh(
             .target(format!("job:{id}")),
     )
     .await;
-    Ok(())
+    Ok(RefreshResult {
+        status: 1,
+        integral: 0,
+        price: 0.0,
+    })
 }
 
 // ==================== Delete ====================
@@ -1038,7 +1143,16 @@ pub async fn batch_refresh(
             affected: 0,
         });
     }
-    consume_refresh_quota(state, user.uid, i32::try_from(ids.len()).unwrap_or(i32::MAX), ids).await?;
+    let ok = consume_refresh_quota(
+        state,
+        user.uid,
+        i32::try_from(ids.len()).unwrap_or(i32::MAX),
+        ids,
+    )
+    .await?;
+    if !ok {
+        return Err(ApiError::business("job_refresh_quota"));
+    }
     let now = clock::now_ts();
     let mut total: u64 = 0;
     for id in ids {
@@ -1127,15 +1241,17 @@ pub async fn list_mine(
     state: &AppState,
     user: &AuthenticatedUser,
     w: Option<i32>,
+    keyword: Option<&str>,
     page: Pagination,
 ) -> AppResult<MyJobsPage> {
     user.require_employer()?;
     let (total_res, list_res) = tokio::join!(
-        job_repo::count_own_w(state.db.reader(), user.uid, w),
+        job_repo::count_own_w(state.db.reader(), user.uid, w, keyword),
         job_repo::list_own_w(
             state.db.reader(),
             user.uid,
             w,
+            keyword,
             page.offset,
             page.limit
         ),

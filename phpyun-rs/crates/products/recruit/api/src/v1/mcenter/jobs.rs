@@ -186,6 +186,12 @@ pub struct CreateJobForm {
     #[serde(default)]
     #[validate(length(max = 64))]
     pub y: String,
+    #[serde(default)]
+    #[validate(length(max = 50))]
+    pub custom_link_man: String,
+    #[serde(default)]
+    #[validate(length(max = 20))]
+    pub custom_link_moblie: String,
 }
 
 fn default_is_link() -> i32 {
@@ -287,6 +293,8 @@ fn create_input(f: &CreateJobForm) -> CreateJobInput<'_> {
         jobclassid: f.jobclassid,
         x: f.x.as_str(),
         y: f.y.as_str(),
+        custom_link_man: f.custom_link_man.as_str(),
+        custom_link_moblie: f.custom_link_moblie.as_str(),
     }
 }
 
@@ -416,6 +424,10 @@ pub struct UpdateJobForm {
     pub x: Option<String>,
     #[validate(length(max = 64))]
     pub y: Option<String>,
+    #[validate(length(max = 50))]
+    pub custom_link_man: Option<String>,
+    #[validate(length(max = 20))]
+    pub custom_link_moblie: Option<String>,
 }
 
 /// Update job (re-enters review after editing)
@@ -479,6 +491,8 @@ pub async fn update(
             jobclassid: f.jobclassid,
             x: f.x.as_deref(),
             y: f.y.as_deref(),
+            custom_link_man: f.custom_link_man.as_deref(),
+            custom_link_moblie: f.custom_link_moblie.as_deref(),
         },
         &ip,
     )
@@ -579,22 +593,35 @@ pub async fn set_status(
 }
 
 /// Refresh job (bumps `lastupdate` so it sorts to the top of the public list)
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct RefreshJobForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[serde(default)]
+    pub confirm: bool,
+}
+
 #[utoipa::path(
     post,
     path = "/v1/mcenter/jobs/refresh",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = IdBody,
+    request_body = RefreshJobForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn refresh(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJson(b): ValidatedJson<RefreshJobForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    job_mgmt_service::refresh(&state, &user, b.id, &ip).await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+    let r = job_mgmt_service::refresh(&state, &user, b.id, b.confirm, &ip).await?;
+    Ok(ApiResponse::data(json::json!({
+        "ok": r.status == 1,
+        "status": r.status,
+        "integral": r.integral,
+        "price": r.price,
+    })))
 }
 
 // Member delete is `POST /v1/mcenter/jobs/batch/delete` → physical `DELETE` (PHP `delJob`).
@@ -611,6 +638,9 @@ pub struct MyJobsQuery {
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
     #[validate(range(min = 0, max = 99))]
     pub state: Option<i32>,
+    /// PHP member job list `keyword` (job name). Empty = no filter.
+    #[validate(length(max = 100))]
+    pub keyword: Option<String>,
 }
 
 /// Employer's own job item — **reuses** `wap::jobs::JobSummary` (34 fields, full dict translation + promotion status derivation + formatted time).
@@ -618,6 +648,32 @@ pub struct MyJobsQuery {
 /// Single field schema: the management backend and the public list / homepage `hot_jobs` / global search results all share the same Summary,
 /// front-end templates are reused, and i18n applies in one place.
 pub type MyJobSummary = crate::v1::wap::jobs::JobSummary;
+
+fn keyword_opt(q: &MyJobsQuery) -> Option<&str> {
+    q.keyword
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+}
+
+async fn summaries_with_jobnum(
+    state: &AppState,
+    jobs: Vec<phpyun_models::job::entity::Job>,
+) -> AppResult<Vec<MyJobSummary>> {
+    let dicts = phpyun_services::dict_service::get(state).await?;
+    let now = phpyun_core::clock::now_ts();
+    let mut rows: Vec<MyJobSummary> = jobs
+        .into_iter()
+        .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+        .collect();
+    let ids: Vec<u64> = rows.iter().map(|j| j.id).collect();
+    if let Ok(map) = phpyun_models::apply::repo::counts_by_job_ids(state.db.reader(), &ids).await {
+        for j in &mut rows {
+            j.jobnum = map.get(&j.id).copied().unwrap_or(0);
+        }
+    }
+    Ok(rows)
+}
 
 /// Employer views their own list of published jobs
 #[utoipa::path(
@@ -635,14 +691,10 @@ pub async fn list_mine(
     ValidatedJson(q): ValidatedJson<MyJobsQuery>,
 ) -> AppResult<ApiResponse<Paged<MyJobSummary>>> {
     let w = q.w.or(q.state).unwrap_or(1);
-    let r = job_mgmt_service::list_mine(&state, &user, Some(w), page).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
-    let now = phpyun_core::clock::now_ts();
+    let r = job_mgmt_service::list_mine(&state, &user, Some(w), keyword_opt(&q), page).await?;
+    let list = summaries_with_jobnum(&state, r.list).await?;
     Ok(ApiResponse::data(Paged::new(
-        r.list
-            .into_iter()
-            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
-            .collect(),
+        list,
         r.total,
         page.page,
         page.page_size,
@@ -673,22 +725,13 @@ pub async fn overview(
 ) -> AppResult<ApiResponse<JobsOverview>> {
     let w = q.w.or(q.state).unwrap_or(1);
     let (r, counts) = tokio::join!(
-        job_mgmt_service::list_mine(&state, &user, Some(w), page),
+        job_mgmt_service::list_mine(&state, &user, Some(w), keyword_opt(&q), page),
         job_mgmt_service::counts_by_state(&state, &user),
     );
     let r = r?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
-    let now = phpyun_core::clock::now_ts();
+    let list = summaries_with_jobnum(&state, r.list).await?;
     Ok(ApiResponse::data(JobsOverview {
-        jobs: Paged::new(
-            r.list
-                .into_iter()
-                .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
-                .collect(),
-            r.total,
-            page.page,
-            page.page_size,
-        ),
+        jobs: Paged::new(list, r.total, page.page, page.page_size),
         counts: job_counts_view(counts?),
     }))
 }
@@ -712,7 +755,22 @@ pub async fn detail(
         .await?
         .filter(|j| j.uid == user.uid)
         .ok_or_else(|| ApiError::business("job_not_found"))?;
-    Ok(ApiResponse::data(json::to_value(&j)?))
+    let mut val = json::to_value(&j)?;
+    if j.is_link == 2 && j.link_id > 0 {
+        if let Some(a) = phpyun_models::company_address::repo::find_by_id(
+            state.db.reader(),
+            j.link_id as u64,
+            user.uid,
+        )
+        .await?
+        {
+            if let Some(obj) = val.as_object_mut() {
+                obj.insert("custom_link_man".into(), json::json!(a.link_man));
+                obj.insert("custom_link_moblie".into(), json::json!(a.link_moblie));
+            }
+        }
+    }
+    Ok(ApiResponse::data(val))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

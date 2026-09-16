@@ -112,6 +112,10 @@ pub async fn create(pool: &MySqlPool, c: ApplyCreate<'_>) -> Result<u64, sqlx::E
     Ok(res.last_insert_id())
 }
 
+pub fn is_unique_violation(err: &sqlx::Error) -> bool {
+    matches!(err, sqlx::Error::Database(d) if d.is_unique_violation())
+}
+
 pub async fn set_apply_url(pool: &MySqlPool, id: u64, apply_url: &str) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_userid_job SET apply_url = ? WHERE id = ? AND isdel = 9")
         .bind(apply_url)
@@ -218,6 +222,32 @@ pub async fn count_by_job(pool: &MySqlPool, job_id: u64) -> Result<u64, sqlx::Er
     Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
+/// Batch `getSqJobNum` for a page of employer jobs.
+pub async fn counts_by_job_ids(
+    pool: &MySqlPool,
+    job_ids: &[u64],
+) -> Result<HashMap<u64, i32>, sqlx::Error> {
+    if job_ids.is_empty() {
+        return Ok(HashMap::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(job_id AS UNSIGNED), COUNT(*) FROM phpyun_userid_job WHERE isdel = 9 AND job_id IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for id in job_ids {
+        sep.push_bind(*id);
+    }
+    qb.push(") GROUP BY job_id");
+    let rows: Vec<(u64, i64)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows
+        .into_iter()
+        .map(|(id, n)| {
+            let n = phpyun_core::numeric::nonnegative_count(n);
+            (id, i32::try_from(n).unwrap_or(i32::MAX))
+        })
+        .collect())
+}
+
 /// PHP `is_browse > 1` treated as replied / processed.
 pub async fn count_replied_by_job(pool: &MySqlPool, job_id: u64) -> Result<u64, sqlx::Error> {
     let row: (i64,) = sqlx::query_as(
@@ -239,13 +269,37 @@ pub async fn set_browse_state(
     com_id: u64,
     state: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("UPDATE phpyun_userid_job SET is_browse = ? WHERE id = ? AND com_id = ?")
-        .bind(state)
-        .bind(id)
-        .bind(com_id)
-        .execute(pool)
-        .await?;
+    let res = sqlx::query(
+        "UPDATE phpyun_userid_job SET is_browse = ?, \
+            endtime = IF(? > 2, UNIX_TIMESTAMP(), COALESCE(endtime, 0)) \
+         WHERE id = ? AND com_id = ?",
+    )
+    .bind(state)
+    .bind(state)
+    .bind(id)
+    .bind(com_id)
+    .execute(pool)
+    .await?;
     Ok(res.rows_affected())
+}
+
+/// PHP `hr::nexts` — 下一条未查看投递。
+pub async fn next_unread_id(
+    pool: &MySqlPool,
+    com_id: u64,
+    after_id: u64,
+) -> Result<Option<(u64, u64, u64)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED), CAST(uid AS UNSIGNED), CAST(eid AS UNSIGNED) \
+         FROM phpyun_userid_job \
+         WHERE com_id = ? AND isdel = 9 AND quxiao = 0 AND COALESCE(`type`, 0) <> 3 \
+           AND is_browse = 1 AND id <> ? \
+         ORDER BY datetime ASC, id ASC LIMIT 1",
+    )
+    .bind(com_id)
+    .bind(after_id)
+    .fetch_optional(pool)
+    .await
 }
 
 /// Job seeker deletes an application (PHP `delSqJob` usertype=1 → `isdel=1`).
@@ -335,7 +389,7 @@ fn push_com_source(qb: &mut QueryBuilder<'_, sqlx::MySql>, com_id: u64, f: &Appl
     }
     qb.push(" WHERE j.com_id = ");
     qb.push_bind(com_id);
-    qb.push(" AND j.isdel = 9 AND j.quxiao = 0");
+    qb.push(" AND j.isdel = 9 AND j.quxiao = 0 AND COALESCE(j.type, 0) <> 3");
     if let Some(st) = f.browse_state {
         qb.push(" AND j.is_browse = ");
         qb.push_bind(st);
@@ -373,14 +427,8 @@ fn push_com_source(qb: &mut QueryBuilder<'_, sqlx::MySql>, com_id: u64, f: &Appl
     }
     if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|k| !k.is_empty()) {
         qb.push(" AND r.name LIKE ");
-        qb.push_bind(format!("%{}%", escape_like(kw)));
+        crate::sql::push_contains(&mut qb, kw);
     }
-}
-
-fn escape_like(raw: &str) -> String {
-    raw.replace('\\', "\\\\")
-        .replace('%', "\\%")
-        .replace('_', "\\_")
 }
 
 pub async fn list_by_com(

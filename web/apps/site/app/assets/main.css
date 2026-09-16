@@ -2800,4 +2800,91 @@ html.force-pc .site-h5 {
   }
 }
 
+.site-h5 .job-h5-badge {
+  margin-left: 0.12rem;
+  flex: none;
+  font-size: 0.28rem;
+  line-height: 1.4;
+  color: #f60;
+  border: 1px solid #f60;
+  border-radius: 0.06rem;
+  padding: 0 0.08rem;
+  white-space: nowrap;
+}
+.site-h5 .position_body_card_top {
+  flex-wrap: wrap;
+  gap: 0.08rem;
+}
+.y_verify_wtg_yuany {
+  color: #f00;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.job_tck_box {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.job_tck_box .job_tck_inner {
+  width: min(710px, 100%);
+  background: #fff;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 24px 16px 16px;
+}
+.job_tck_box .yun_prompt_writingicon {
+  width: 100%;
+  padding: 10px 0 25px;
+  text-align: center;
+}
+.job_tck_box .yun_prompt_writingicon_right {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #19b019;
+  position: relative;
+}
+.job_tck_box .yun_prompt_writingicon_right::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  width: 12px;
+  height: 22px;
+  border: solid #fff;
+  border-width: 0 4px 4px 0;
+  transform: rotate(45deg);
+}
+.job_tck_box .yun_prompt_writing {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+}
+.job_tck_box .yun_prompt_writing_tip {
+  width: 100%;
+  padding: 30px 0 0;
+  text-align: center;
+  color: #999;
+}
+.job_tck_box .yun_prompt_writing_operation {
+  width: 100%;
+  text-align: center;
+  color: #999;
+  padding-top: 20px;
+}
+@media (max-width: 1199px) {
+  .job_tck_box .yun_prompt_jobtglist li {
+    width: auto;
+  }
+  .job_tck_box .y_verify_wtg_yuany {
+    font-size: 0.28rem;
+  }
+}
+
 

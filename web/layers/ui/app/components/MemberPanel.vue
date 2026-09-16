@@ -36,6 +36,7 @@
       <div v-if="!error && empty" class="site-pc">
         <div v-if="kind === 'com'" class="com_msg_no">
           <p class="com_msg_no_name">{{ emptyText || $t('ui.no_items') }}</p>
+          <p v-if="emptySub">{{ emptySub }}</p>
           <NuxtLink v-if="emptyTo" :to="emptyTo" class="com_msg_no_bth com_submit">{{ emptyAction || $t('common.more') }}</NuxtLink>
         </div>
         <div v-else class="msg_no">
@@ -46,6 +47,7 @@
       <div v-if="!error && empty" class="site-h5">
         <div v-if="kind === 'com'" class="none_position_body">
           <div class="none_position_body_text">{{ emptyText || $t('ui.no_items') }}</div>
+          <div v-if="emptySub" class="none_position_body_text">{{ emptySub }}</div>
           <NuxtLink v-if="emptyTo" :to="emptyTo" class="com_msg_no_bth com_submit">{{ emptyAction || $t('common.more') }}</NuxtLink>
         </div>
         <div v-else class="wap_member_bgcar">
@@ -101,6 +103,7 @@ const props = defineProps<{
   error?: unknown
   empty?: boolean
   emptyText?: string
+  emptySub?: string
   emptyTo?: string
   emptyAction?: string
   kind?: 'user' | 'com'

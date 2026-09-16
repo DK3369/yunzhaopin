@@ -1,5 +1,57 @@
 <script setup lang="ts">
 import { catTree } from '~/utils/site'
+import { ApiError } from '~/utils/envelope'
+
+function emptyJobForm() {
+  return {
+    name: '',
+    job1: 0,
+    job1_son: 0,
+    job_post: 0,
+    provinceid: 0,
+    cityid: 0,
+    three_cityid: 0,
+    x: '',
+    y: '',
+    salary: 0,
+    minsalary: 0,
+    maxsalary: 0,
+    salary_type: 0,
+    type: 0,
+    number: 0,
+    zp_num: 0,
+    exp: 0,
+    edu: 0,
+    content: '',
+    wel: '',
+    sdate: 0,
+    edate: 0,
+    hy: 0,
+    report: 0,
+    age: 0,
+    sex: 0,
+    marriage: 0,
+    lang: '',
+    is_graduate: 0,
+    zp_minage: 0,
+    zp_maxage: 0,
+    link_id: -1,
+    is_link: 1,
+    custom_link_man: '',
+    custom_link_moblie: '',
+    custom_link_phone: '',
+    custom_link_email: '',
+    custom_link_address: '',
+    is_message: 1,
+    is_email: 1,
+    exp_req: '',
+    edu_req: '',
+    sex_req: 0,
+    minage_req: 0,
+    maxage_req: 0,
+    is_tblink: 0,
+  }
+}
 
 const api = useApi()
 const { t } = useI18n()
@@ -9,59 +61,17 @@ const showNegotiable = computed(() => String(settings.value.com_job_myswitch || 
 const nameLocked = computed(() => String(settings.value.joblock || '') === '1' && !!editId.value)
 const hideApplyReq = computed(() => String(settings.value.sqjob_req || '') === '2')
 const showSex = computed(() => String(settings.value.com_job_sexswitch || '') === '1')
-const form = reactive({
-  name: '',
-  job1: 0,
-  job1_son: 0,
-  job_post: 0,
-  provinceid: 0,
-  cityid: 0,
-  three_cityid: 0,
-  x: '',
-  y: '',
-  salary: 0,
-  minsalary: 0,
-  maxsalary: 0,
-  salary_type: 0,
-  type: 0,
-  number: 0,
-  zp_num: 0,
-  exp: 0,
-  edu: 0,
-  content: '',
-  wel: '',
-  sdate: 0,
-  edate: 0,
-  hy: 0,
-  report: 0,
-  age: 0,
-  sex: 0,
-  marriage: 0,
-  lang: '',
-  is_graduate: 0,
-  zp_minage: 0,
-  zp_maxage: 0,
-  link_id: -1,
-  is_link: 1,
-  custom_link_man: '',
-  custom_link_moblie: '',
-  custom_link_phone: '',
-  custom_link_email: '',
-  custom_link_address: '',
-  is_message: 1,
-  is_email: 1,
-  exp_req: '',
-  edu_req: '',
-  sex_req: 0,
-  minage_req: 0,
-  maxage_req: 0,
-  is_tblink: 0,
-})
+const form = reactive(emptyJobForm())
 const sdateN = ref('')
 const welIds = ref<number[]>([])
 const langIds = ref<number[]>([])
 const msg = ref('')
 const gateMsg = ref('')
+const days = ref(1)
+const promoMsg = ref('')
+const buyHint = ref('')
+type SavedJob = { id: number; state: number; status: number }
+const saved = ref<SavedJob | null>(null)
 type PublishGap = { key: string; href: string }
 type PublishCheck = {
   addjobnum: number
@@ -301,9 +311,47 @@ async function submit() {
     } else {
       msg.value = t('admin_tool_00502')
     }
-    await navigateTo(`/com/jobs?w=${w}`)
+    if (editId.value) {
+      await navigateTo(`/com/jobs?w=${w}`)
+      return
+    }
+    saved.value = { id: Number(r.id), state: Number(r.state), status: Number(r.status) }
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+function resetForm() {
+  Object.assign(form, emptyJobForm())
+  welIds.value = []
+  langIds.value = []
+  sdateN.value = ''
+  msg.value = ''
+  promoMsg.value = ''
+  buyHint.value = ''
+  saved.value = null
+  if (jobTypes.value?.length) form.type = jobTypes.value[0].id
+  applyLinkGeo()
+}
+function isQuotaErr(e: unknown) {
+  if (!(e instanceof ApiError)) return false
+  return e.key === 'model_00056' || e.key === 'job_refresh_quota' || e.key === 'member_com_00696' || e.key === 'wap_01287'
+}
+async function successPromote(kind: 'top' | 'rec' | 'urgent') {
+  if (!saved.value) return
+  promoMsg.value = ''
+  buyHint.value = ''
+  const n = Math.max(1, Math.min(365, Number(days.value) || 1))
+  try {
+    await api.post('/v1/mcenter/jobs/promote/quote', { job_id: saved.value.id, kind })
+    await api.post('/v1/mcenter/jobs/promote', { job_id: saved.value.id, kind, days: n })
+    promoMsg.value = t('common.success')
+  } catch (e: unknown) {
+    if (isQuotaErr(e)) {
+      buyHint.value = e instanceof ApiError ? e.message : t('wap_com_00048')
+      promoMsg.value = t('wap_com_00048')
+      return
+    }
+    promoMsg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
 useSeoMeta({ title: t('wap_00322') })
@@ -632,6 +680,52 @@ useSeoMeta({ title: t('wap_00322') })
         <button type="submit" class="issue_post_body_btn">{{ $t('member_com_00248') }}</button>
         <p v-if="msg">{{ msg }}</p>
       </form>
+    </div>
+    <div v-if="saved" class="job_tck_box">
+      <div class="job_tck_inner">
+        <div class="yun_prompt_writingicon"><i class="yun_prompt_writingicon_right"></i></div>
+        <div class="yun_prompt_writing">{{ $t('wap_01173') }}</div>
+        <div class="yun_prompt_writing_tip">
+          {{ saved.state === 1 ? $t('member_com_00232') : $t('member_com_00228') }}
+        </div>
+        <div class="yun_prompt_writing_operation">
+          <a href="javascript:;" class="yun_prompt_jobtgbth" @click.prevent="resetForm">{{ $t('member_com_00245') }}</a>
+          <NuxtLink :to="`/jobs/${saved.id}`" class="yun_prompt_jobtgbth">{{ $t('member_com_00580') }}</NuxtLink>
+          <NuxtLink :to="`/com/jobs?w=${afterSaveW(saved.state, saved.status)}`" class="yun_prompt_jobtgbth">{{ $t('member_com_00581') }}</NuxtLink>
+        </div>
+        <div v-if="saved.state === 1" class="yun_prompt_jobtg_box">
+          <div class="yun_prompt_jobtg">{{ $t('member_com_00236') }}</div>
+          <p>
+            {{ $t('member_com_00282') }}
+            <input v-model.number="days" type="number" min="1" max="365" class="com_release_textnew_text" style="width: 5em" />
+            {{ $t('common_02067') }}
+          </p>
+          <ul class="yun_prompt_jobtglist">
+            <li>
+              <span>{{ $t('wap_com_00237') }}</span>
+              <em>{{ $t('member_com_00252') }}</em>
+              <a href="javascript:;" @click.prevent="successPromote('rec')">{{ $t('member_com_00287') }}</a>
+            </li>
+            <li>
+              <span>{{ $t('member_com_00247') }}</span>
+              <em>{{ $t('member_com_00255') }}</em>
+              <a href="javascript:;" @click.prevent="successPromote('urgent')">{{ $t('member_com_00287') }}</a>
+            </li>
+            <li>
+              <span>{{ $t('wap_com_00238') }}</span>
+              <em>{{ $t('member_com_00251') }}</em>
+              <a href="javascript:;" @click.prevent="successPromote('top')">{{ $t('member_com_00287') }}</a>
+            </li>
+          </ul>
+          <p v-if="promoMsg">{{ promoMsg }}</p>
+          <p v-if="buyHint" class="muted">
+            {{ buyHint }}
+            <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
+            ·
+            <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
+          </p>
+        </div>
+      </div>
     </div>
   </MemberPanel>
 </template>

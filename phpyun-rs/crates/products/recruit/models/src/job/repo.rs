@@ -223,21 +223,20 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
     }
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
-            let pat = format!("%{kw}%");
             qb.push(" AND (name LIKE ");
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR com_name LIKE ");
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(
                 " OR uid IN (SELECT uid FROM phpyun_company WHERE name LIKE ",
             );
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR shortname LIKE ");
-            qb.push_bind(pat.clone());
+            crate::sql::push_contains(qb, kw);
             qb.push(")");
             if f.keyword_full_text {
                 qb.push(" OR description LIKE ");
-                qb.push_bind(pat);
+                crate::sql::push_contains(qb, kw);
             }
             if let Some(ids) = f.keyword_city_ids {
                 if !ids.is_empty() {
@@ -354,7 +353,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
             // welfare names, not ids. The service layer is responsible for
             // resolving the welfare id to its dict name before calling.
             qb.push(" AND welfare LIKE ");
-            qb.push_bind(format!("%{name}%"));
+            crate::sql::push_contains(qb, name);
         }
     }
     if f.urgent {
@@ -517,10 +516,19 @@ fn push_member_w(qb: &mut QueryBuilder<'_, sqlx::MySql>, w: Option<i32>) {
     }
 }
 
+fn push_own_name_kw(qb: &mut QueryBuilder<'_, sqlx::MySql>, keyword: Option<&str>) {
+    let Some(raw) = keyword.map(str::trim).filter(|s| !s.is_empty()) else {
+        return;
+    };
+    qb.push(" AND name LIKE ");
+    crate::sql::push_contains(qb, raw);
+}
+
 pub async fn list_own_w(
     pool: &MySqlPool,
     uid: u64,
     w: Option<i32>,
+    keyword: Option<&str>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Job>, sqlx::Error> {
@@ -529,6 +537,7 @@ pub async fn list_own_w(
     qb.push(" FROM phpyun_company_job WHERE uid = ");
     qb.push_bind(uid);
     push_member_w(&mut qb, w);
+    push_own_name_kw(&mut qb, keyword);
     qb.push(" ORDER BY lastupdate DESC, id DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
@@ -536,11 +545,17 @@ pub async fn list_own_w(
     qb.build_query_as::<Job>().fetch_all(pool).await
 }
 
-pub async fn count_own_w(pool: &MySqlPool, uid: u64, w: Option<i32>) -> Result<u64, sqlx::Error> {
+pub async fn count_own_w(
+    pool: &MySqlPool,
+    uid: u64,
+    w: Option<i32>,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company_job WHERE uid = ");
     qb.push_bind(uid);
     push_member_w(&mut qb, w);
+    push_own_name_kw(&mut qb, keyword);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
@@ -579,6 +594,91 @@ pub async fn count_listed_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx
     .fetch_one(pool)
     .await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+/// PHP `vipOver` 上架额度含猎头岗。表不存在时计 0。
+pub async fn count_listed_lt_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM information_schema.tables \
+         WHERE table_schema = DATABASE() AND table_name = 'phpyun_lt_job'",
+    )
+    .fetch_one(pool)
+    .await?;
+    if n == 0 {
+        return Ok(0);
+    }
+    let (c,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_lt_job \
+         WHERE uid = ? AND COALESCE(zp_status, status, 0) = 0",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(c))
+}
+
+pub async fn touch_operatime(pool: &MySqlPool, id: u64, now: i64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET operatime = ? WHERE id = ?")
+        .bind(now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_state_owned(
+    pool: &MySqlPool,
+    uid: u64,
+    id: u64,
+    state: i8,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company_job SET state = ? WHERE id = ? AND uid = ?")
+        .bind(state)
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `company.model::setJobInfo` — 资料保存后同步在招职位快照。
+pub async fn sync_com_snapshot(
+    pool: &MySqlPool,
+    uid: u64,
+    com_name: &str,
+    pr: i32,
+    mun: i32,
+    provinceid: i32,
+    cityid: i32,
+    three_cityid: i32,
+    x: &str,
+    y: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_job SET \
+            com_name = ?, pr = ?, mun = ?, com_provinceid = ?, \
+            provinceid = IF(is_link = 1, ?, provinceid), \
+            cityid = IF(is_link = 1, ?, cityid), \
+            three_cityid = IF(is_link = 1, ?, three_cityid), \
+            x = IF(is_link = 1 AND ? <> '', ?, x), \
+            y = IF(is_link = 1 AND ? <> '', ?, y) \
+         WHERE uid = ?",
+    )
+    .bind(com_name)
+    .bind(pr)
+    .bind(mun)
+    .bind(provinceid)
+    .bind(provinceid)
+    .bind(cityid)
+    .bind(three_cityid)
+    .bind(x)
+    .bind(x)
+    .bind(y)
+    .bind(y)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }
 
 /// PHP `openResumeCheck` mode 3: `company_job` rows with `r_status=1 AND state=1`
@@ -1393,7 +1493,6 @@ fn push_admin_job_filters(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &AdminJobFi
         qb.push(")");
     }
     if let Some(kw) = f.keyword {
-        let like = format!("%{kw}%");
         match f.keyword_type.unwrap_or(1) {
             3 => {
                 if let Ok(id) = kw.parse::<u64>() {
@@ -1403,9 +1502,9 @@ fn push_admin_job_filters(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &AdminJobFi
             }
             _ => {
                 qb.push(" AND (com_name LIKE ");
-                qb.push_bind(like.clone());
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR name LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
         }

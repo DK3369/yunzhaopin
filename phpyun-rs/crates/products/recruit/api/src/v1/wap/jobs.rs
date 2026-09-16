@@ -270,6 +270,8 @@ pub fn job_summary_from_dict_fav(
         newtime,
 
         jobhits: j.jobhits,
+        jobnum: 0,
+        statusbody: j.statusbody,
         is_favorited,
         is_applied: false,
         istop: j.xsdate > now,

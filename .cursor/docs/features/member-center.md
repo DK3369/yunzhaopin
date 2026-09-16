@@ -211,7 +211,9 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 ## 招聘发职位 / 职位管理
 
-对齐 PHP `jobadd` / `addJobInfo` / `job`。不改 `uploads/`。接口：`POST /v1/mcenter/jobs/check|list|counts`、`POST /v1/mcenter/jobs`、`/jobs/update`、`/jobs/status`、`/jobs/refresh`、批量删除。
+对齐 PHP `jobadd` / `addJobInfo` / `job`。不改 `uploads/`。接口：`POST /v1/mcenter/jobs/check|list|overview|counts`、`POST /v1/mcenter/jobs`、`/jobs/update`、`/jobs/status`、`/jobs/refresh`、批量删除。
+
+列表 `overview` 可带 `keyword`（职位名 `LIKE`，最长 100）。`JobSummary` 会员页填 `statusbody`（未通过原因）、`lastupdate_n`、`jobnum`（当前页 `userid_job isdel=9` 批查，勿 N+1）；公开列表 `jobnum` 仍为 0。页：[`jobs.vue`](../../../web/apps/site/app/pages/com/jobs.vue) 搜索、分 Tab 空态、H5 荐/急/顶短标、下架 Tab 勾选后循环 `jobs/status` `{status:0}` 一键上架。新建成功留在 [`jobs/new.vue`](../../../web/apps/site/app/pages/com/jobs/new.vue) 弹层（再发 / 查看 / 管理；`state==1` 才出荐急顶），编辑保存仍回列表。不做曝光量列、自动刷新 kind=5、扫码分享、H5 三 Tab。
 
 | 字段 | 口径 |
 |---|---|

@@ -25,6 +25,7 @@
         </div>
         <div v-if="addTo" class="com_topbth_box">
           <NuxtLink :to="addTo" class="com_topbth">{{ addLabel || $t('wap_00322') }}</NuxtLink>
+          <slot name="addExtra" />
         </div>
         <slot />
       </div>

@@ -112,6 +112,12 @@ pub struct JobSummary {
 
     // Stats
     pub jobhits: i32,
+    /// Employer list: applications (`userid_job isdel=9`). Public lists stay 0.
+    #[serde(default)]
+    pub jobnum: i32,
+    /// Review note (`company_job.statusbody`). Empty on public cards.
+    #[serde(default)]
+    pub statusbody: String,
 
     /// Whether the *current* user has favorited this job. Always `false` for
     /// unauthenticated requests / non-favorite contexts.
@@ -186,6 +192,8 @@ impl From<Job> for JobSummary {
             newtime: false,
 
             jobhits: j.jobhits,
+            jobnum: 0,
+            statusbody: j.statusbody,
             is_favorited: false,
             is_applied: false,
             istop: false,

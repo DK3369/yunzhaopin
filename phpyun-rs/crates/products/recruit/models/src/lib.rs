@@ -84,6 +84,7 @@ pub mod search_history;
 pub mod sign_in;
 pub mod site_page;
 pub mod seo;
+pub mod sql;
 pub mod site_setting;
 pub mod soft_delete;
 pub mod special;

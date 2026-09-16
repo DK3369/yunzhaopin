@@ -18,6 +18,8 @@ type JobRow = {
   jobhits?: number
   jobnum?: number
   jobexpoure?: number
+  lastupdate_n?: string
+  statusbody?: string
 }
 
 const api = useApi()
@@ -27,8 +29,10 @@ const { page, pageSize, inferTotal, go } = useMemberListPage()
 const route = useRoute()
 const wRaw = Number(route.query.w)
 const w = ref(Number.isFinite(wRaw) ? wRaw : 1)
+const keywordInput = ref(typeof route.query.keyword === 'string' ? route.query.keyword : '')
+const keyword = ref(keywordInput.value.trim())
 const { data: pack, error, refresh } = await useAsyncData(
-  () => `com-jobs-${page.value}-${w.value}`,
+  () => `com-jobs-${page.value}-${w.value}-${keyword.value}`,
   () =>
     api.post<{
       jobs?: { list?: JobRow[]; total?: number }
@@ -47,7 +51,12 @@ const { data: pack, error, refresh } = await useAsyncData(
         rec_num?: number
         urgent_num?: number
       }
-    }>('/v1/mcenter/jobs/overview', { page: page.value, page_size: pageSize, w: w.value }),
+    }>('/v1/mcenter/jobs/overview', {
+      page: page.value,
+      page_size: pageSize,
+      w: w.value,
+      keyword: keyword.value || undefined,
+    }),
 )
 const data = computed(() => pack.value?.jobs)
 const counts = computed(() => pack.value?.counts || null)
@@ -179,6 +188,44 @@ async function closePromote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
     msg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
 }
+const { data: vip } = await useAsyncData(
+  'com-vip-current',
+  () => api.post<{ job_num?: number; rating_type?: number }>('/v1/mcenter/vip/current', {}).catch(() => null),
+  reuseAsyncCache(),
+)
+const hintDismissed = ref(false)
+onMounted(() => {
+  hintDismissed.value = sessionStorage.getItem('i_know_job') === '1'
+})
+function dismissHint() {
+  sessionStorage.setItem('i_know_job', '1')
+  hintDismissed.value = true
+}
+const webtel = computed(() => String(settings.value.sy_comwebtel || settings.value.sy_freewebtel || ''))
+const pendingN = computed(() => Number(counts.value?.w0 || 0))
+const showPendingHint = computed(() => !hintDismissed.value && pendingN.value > 0)
+const showQuotaHint = computed(
+  () => !hintDismissed.value && pendingN.value <= 0 && Number(vip.value?.rating_type) === 1,
+)
+
+async function batchOpen() {
+  msg.value = ''
+  buyHint.value = ''
+  if (!picked.value.length) {
+    msg.value = t('common_01164')
+    return
+  }
+  try {
+    for (const id of picked.value) {
+      await api.post('/v1/mcenter/jobs/status', { id, status: 0 })
+    }
+    msg.value = t('common.success')
+    picked.value = []
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = failAct(e)
+  }
+}
 async function batch(kind: 'refresh' | 'close' | 'delete') {
   msg.value = ''
   buyHint.value = ''
@@ -294,11 +341,23 @@ function toggleH5Menu(id: number, kind: 'promote' | 'more') {
 }
 function setW(n: number) {
   w.value = n
-  go(1)
+  page.value = 1
+  picked.value = []
   if (String(route.query.w) !== String(n)) {
     navigateTo({ path: '/com/jobs', query: { ...route.query, w: String(n) } }, { replace: true })
   }
+  refresh()
 }
+function searchJobs() {
+  keyword.value = keywordInput.value.trim()
+  page.value = 1
+  picked.value = []
+  refresh()
+}
+watch(page, () => {
+  picked.value = []
+  refresh()
+})
 const jobTabs = computed(() => [
   { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.w1 ?? counts.value?.online, select: () => setW(1) },
   { value: 0, label: t('wap_user_00006'), on: w.value === 0, count: counts.value?.w0 ?? counts.value?.pending, select: () => setW(0) },
@@ -306,6 +365,16 @@ const jobTabs = computed(() => [
   { value: 4, label: t('wap_com_00245'), on: w.value === 4, count: counts.value?.w4 ?? counts.value?.closed, select: () => setW(4) },
   { value: 5, label: t('common.all'), on: w.value === 5, count: counts.value?.w5 ?? counts.value?.total, select: () => setW(5) },
 ])
+const allJobCount = computed(() => Number(counts.value?.w5 ?? counts.value?.total ?? 0))
+const emptyAll = computed(() => allJobCount.value <= 0 && !keyword.value)
+const emptyText = computed(() => {
+  if (emptyAll.value) return t('member_com_00216')
+  if (w.value === 1) return t('wap_com_00211')
+  if (w.value === 0 || w.value === 3) return t('wap_com_00210')
+  if (w.value === 4) return t('wap_com_00209')
+  return t('member_com_00216')
+})
+const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
 </script>
 
 <template>
@@ -313,10 +382,50 @@ const jobTabs = computed(() => [
     :title="$t('wap_com_00106')"
     :error="error && !isUnauthErr(error) ? error : undefined"
     :empty="!error && !list.length"
+    :empty-text="emptyText"
+    :empty-sub="emptySub"
     empty-to="/com/jobs/new"
     :empty-action="$t('wap_00322')"
   >
-    <MemberComScreen :tabs="jobTabs" add-to="/com/jobs/new" :add-label="$t('wap_00322')" />
+    <MemberComScreen
+      :tabs="jobTabs"
+      add-to="/com/jobs/new"
+      :add-label="$t('wap_00322')"
+      :keyword="keywordInput"
+      searchable
+      :search-placeholder="$t('member_com_00218')"
+      @update:keyword="keywordInput = $event"
+      @search="searchJobs"
+    >
+      <template #addExtra>
+        <div v-if="showPendingHint" class="com_topbth_zh">
+          <div class="com_topbth_zh_pd">
+            {{ $t('member_com_00040') }}
+            <div>
+              {{ $t('member_com_00224') }}
+              <font color="#FF0000">{{ pendingN }}</font>
+              {{ $t('default_00378') }}{{ webtel }}
+            </div>
+          </div>
+          <div class="com_topbth_zh_bot"><a href="javascript:;" @click.prevent="dismissHint">{{ $t('member_com_00214') }}</a></div>
+        </div>
+        <div v-else-if="showQuotaHint" class="com_topbth_zh">
+          <div class="com_topbth_zh_pd">
+            {{ $t('default_00383') }}{{ vip?.job_num ?? 0 }}{{ $t('wap_user_00151') }}
+          </div>
+          <div class="com_topbth_zh_bot"><a href="javascript:;" @click.prevent="dismissHint">{{ $t('member_com_00214') }}</a></div>
+        </div>
+      </template>
+    </MemberComScreen>
+    <div class="site-h5 com-h5-filters">
+      <input
+        v-model="keywordInput"
+        type="search"
+        class="com-h5-filters__kw"
+        :placeholder="$t('member_com_00218')"
+        @keydown.enter.prevent="searchJobs"
+      />
+    </div>
     <div class="admincont_box site-pc">
       <p v-if="counts" class="muted">
         {{ $t('wap_com_00029') }} {{ counts.breakjob_num ?? 0 }} ·
@@ -336,6 +445,7 @@ const jobTabs = computed(() => [
           <th>{{ $t('wap_com_00288') }}</th>
           <th>{{ $t('wap_00794') }}</th>
           <th>{{ $t('member_com_00268') }}</th>
+          <th>{{ $t('wap_00326') }}</th>
           <th>{{ $t('wap_com_00246') }}</th>
           <th>{{ $t('wap_com_00236') }}</th>
           <th>{{ $t('member_user_00048') }}</th>
@@ -349,12 +459,16 @@ const jobTabs = computed(() => [
               <NuxtLink :to="`/jobs/${job.id}`" class="job_looklist_name">{{ job.name }}</NuxtLink>
             </div>
             <div class="muted">{{ jobPhase(job) }}</div>
+            <div v-if="Number(job.state) === 3 && job.statusbody" class="y_verify_wtg_yuany">
+              {{ $t('admin_system_00134') }}{{ job.statusbody }}
+            </div>
           </td>
           <td align="center">
             {{ job.jobnum ?? 0 }}
             <NuxtLink v-if="job.jobnum" :to="`/com/applications?job_id=${job.id}`" class="yun_m_job_r_l">{{ $t('wap_com_00427') }}</NuxtLink>
           </td>
           <td align="center">{{ job.jobhits ?? 0 }}</td>
+          <td align="center">{{ job.lastupdate_n || '—' }}</td>
           <td align="center">
             <a href="javascript:;" class="job_looklist_fx" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00246') }}</a>
             <NuxtLink :to="`/poster/job/${job.id}`" class="job_looklist_hb">{{ $t('member_com_00270') }}</NuxtLink>
@@ -380,6 +494,7 @@ const jobTabs = computed(() => [
       <div v-if="list.length" class="com_Release_job_bot">
         <label class="com_Release_job_qx"><input v-model="allPicked" type="checkbox" class="com_job_list_check" /> {{ $t('common.all') }}</label>
         <a href="javascript:;" class="c_btn_02" @click="batch('refresh')">{{ $t('wap_com_00029') }}</a>
+        <a v-if="w === 4" href="javascript:;" class="c_btn_02 c_btn_02_w110" @click="batchOpen">{{ $t('member_com_00219') }}</a>
         <a href="javascript:;" class="c_btn_02" @click="batch('close')">{{ $t('wap_com_00245') }}</a>
         <a href="javascript:;" class="c_btn_02 c_btn_02_w110" @click="batch('delete')">{{ $t('common.delete') }}</a>
         <span v-if="reserveOn">
@@ -395,6 +510,12 @@ const jobTabs = computed(() => [
       <div v-for="job in list" :key="'h5-' + job.id" class="position_body_card">
         <div class="position_body_card_top">
           <NuxtLink :to="`/jobs/${job.id}`" class="body_card_top_name">{{ job.name }}</NuxtLink>
+          <span v-if="job.is_rec" class="job-h5-badge">{{ $t('wap_01465') }}</span>
+          <span v-if="job.is_urgent" class="job-h5-badge">{{ $t('wap_00222') }}</span>
+          <span v-if="job.istop" class="job-h5-badge">{{ $t('wap_user_00335') }}</span>
+        </div>
+        <div v-if="Number(job.state) === 3 && job.statusbody" class="y_verify_wtg_yuany">
+          {{ $t('admin_system_00134') }}{{ job.statusbody }}
         </div>
         <div class="position_body_card_center">
           <div class="body_card_center_left">
@@ -410,7 +531,7 @@ const jobTabs = computed(() => [
             </div>
             <div class="more_position_new_time">
               <div class="quantity_exposure_q">{{ $t('wap_00849') }}</div>
-              <div class="quantity_exposure_a">{{ expireOf(job, 'top') || jobPhase(job) }}</div>
+              <div class="quantity_exposure_a">{{ job.lastupdate_n || jobPhase(job) }}</div>
             </div>
           </div>
           <NuxtLink :to="`/com/applications?job_id=${job.id}`" class="body_card_center_right">
