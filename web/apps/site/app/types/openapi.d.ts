@@ -5006,7 +5006,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** List active ads for a slot */
+        /**
+         * List active ads for a slot
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initads（`slots=3:5`）
+         */
         post: operations["post_v1_wap_ads"];
         delete?: never;
         options?: never;
@@ -5830,7 +5834,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Class list */
+        /**
+         * Class list
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=footer（data.footer_classes）
+         */
         post: operations["post_v1_wap_descriptions_classes"];
         delete?: never;
         options?: never;
@@ -8112,7 +8120,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Registration rules config: clients can use this for instant validation and display copy. */
+        /**
+         * Registration rules config: clients can use this for instant validation and display copy.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=register（data.register）
+         */
         post: operations["post_v1_wap_register_config"];
         delete?: never;
         options?: never;
@@ -8319,6 +8331,8 @@ export interface paths {
          * Front-end map widget configuration. Counterpart of PHP
          *     `ajax::mapconfig_action` — bundles every `map_*` site setting into one
          *     JSON payload so the client doesn't have to issue 8 setting requests.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=map（data.map）
          */
         post: operations["post_v1_wap_site_map_config"];
         delete?: never;
@@ -8356,6 +8370,8 @@ export interface paths {
         /**
          * List public settings, or return selectable report reasons when
          *     `key=report_reasons`.
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=site（data.settings / data.report_reasons）
          */
         post: operations["post_v1_wap_site_settings"];
         delete?: never;
@@ -8555,7 +8571,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Site overview statistics */
+        /**
+         * Site overview statistics
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=stats（data.stats）
+         */
         post: operations["post_v1_wap_stats_overview"];
         delete?: never;
         options?: never;
@@ -8588,6 +8608,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=subscribe（data.subscribe）
+         */
         post: operations["post_v1_wap_subscribe_meta"];
         delete?: never;
         options?: never;
@@ -9838,6 +9862,17 @@ export interface components {
             /** Format: int64 */
             uid: number;
             username: string;
+        };
+        /** @description Class item -- all 4 columns of phpyun_desc_class. */
+        ClassItem: {
+            /** Format: int64 */
+            created_at: number;
+            created_at_n: string;
+            /** Format: int64 */
+            id: number;
+            name: string;
+            /** Format: int32 */
+            sort: number;
         };
         /**
          * @description `{ removed }` — clear-history result envelope. Used by endpoints that wipe
@@ -11128,6 +11163,20 @@ export interface components {
             /** Format: int64 */
             target_uid: number;
         };
+        /** @description Footer link row (homepage descriptions page=1 size=80, without content excerpt). */
+        FooterPageItem: {
+            /** Format: int64 */
+            class_id: number;
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            is_nav: number;
+            /** Format: int32 */
+            is_type: number;
+            link_url: string;
+            name: string;
+            title: string;
+        };
         FriendLinkItem: {
             /** Format: int64 */
             id: number;
@@ -11429,6 +11478,8 @@ export interface components {
          * @description Combined public dictionaries (the lists PC/H5 used to fetch one-by-one).
          *     Individual `/v1/wap/dict/*` stay registered (most are deprecated).
          *     `/v1/wap/countries` is not deprecated: it still supports `continent` filter.
+         *
+         *     Optional `with=` segments add site chrome / config. Omitted → same shape as before.
          */
         InitJobs: {
             company_natures: components["schemas"]["DictItem"][];
@@ -11438,21 +11489,43 @@ export interface components {
             educations_user: components["schemas"]["DictItem"][];
             experiences: components["schemas"]["DictItem"][];
             experiences_user: components["schemas"]["DictItem"][];
+            footer_classes?: components["schemas"]["ClassItem"][] | null;
+            footer_pages?: components["schemas"]["FooterPageItem"][] | null;
+            hot_job_class?: components["schemas"]["CatNode"][] | null;
+            hot_searches?: components["schemas"]["HotItem"][] | null;
             industries: components["schemas"]["DictItem"][];
             job_categories: components["schemas"]["DictItem"][];
+            job_cats?: components["schemas"]["CatNode"][] | null;
             job_types: components["schemas"]["DictItem"][];
             job_types_user: components["schemas"]["DictItem"][];
             langs: components["schemas"]["DictItem"][];
+            map?: null | components["schemas"]["MapConfigView"];
             marriages: components["schemas"]["DictItem"][];
+            nav?: components["schemas"]["NavItem"][] | null;
+            part_cats?: components["schemas"]["CatNode"][] | null;
+            register?: null | components["schemas"]["RegisterConfig"];
+            report_reasons?: components["schemas"]["ReportReasonView"][] | null;
             reports: components["schemas"]["DictItem"][];
             reports_user: components["schemas"]["DictItem"][];
             salaries: components["schemas"]["DictItem"][];
+            settings?: {
+                [key: string]: string;
+            } | null;
+            stats?: null | components["schemas"]["SiteOverviewView"];
+            subscribe?: null | components["schemas"]["SubscribeMetaView"];
             /** @description `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide. */
             sy_facebooklogin: string;
             /** @description `'1'` = show Google on PC/H5 login. Empty / `'0'` = hide. */
             sy_googlelogin: string;
             tags: components["schemas"]["DictItem"][];
             welfares: components["schemas"]["DictItem"][];
+        };
+        InitJobsQuery: {
+            /**
+             * @description Comma list: `site,nav,footer,cats,register,map,subscribe,stats,hot`.
+             *     Omit for the original dictionary-only payload (Flutter / App).
+             */
+            with?: string | null;
         };
         IntegralItemView: {
             /** Format: int32 */
@@ -24030,12 +24103,22 @@ export interface operations {
     };
     post_v1_wap_initjobs: {
         parameters: {
-            query?: never;
+            query?: {
+                /**
+                 * @description Comma list: `site,nav,footer,cats,register,map,subscribe,stats,hot`.
+                 *     Omit for the original dictionary-only payload (Flutter / App).
+                 */
+                with?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["InitJobsQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {

@@ -4,16 +4,13 @@ import { ApiError } from '~/utils/envelope'
 const { siteName, logoPc, settings, me, refreshMe } = useSiteChrome()
 const { t } = useI18n()
 const api = useApi()
-const { data: cfg } = await useAsyncData('register-config', () =>
-  api
-    .post<{
-      registration_open?: boolean
-      reg_user?: boolean
-      reg_moblie?: boolean
-      reg_email?: boolean
-    }>('/v1/wap/register/config', {})
-    .catch(() => ({ registration_open: true, reg_user: true, reg_moblie: true, reg_email: true })),
-)
+const { data: boot } = useSiteBoot()
+const cfg = computed(() => boot.value?.register ?? {
+  registration_open: true,
+  reg_user: true,
+  reg_moblie: true,
+  reg_email: true,
+})
 const registrationOpen = computed(() => {
   if (String(settings.value.reg_user_stop || '1') !== '1') return false
   return cfg.value?.registration_open !== false

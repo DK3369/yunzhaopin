@@ -22,6 +22,7 @@ type NearCompany = {
 const route = useRoute()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
+const { data: boot } = useSiteBoot()
 const { applyToQuery } = useSubSite()
 const jobId = computed(() => Number(route.query.job_id || 0))
 const api = useApi()
@@ -123,9 +124,7 @@ function locate() {
     },
   )
 }
-const { data: mapCfg } = await useAsyncData('map-config', () =>
-  api.post<{ map_x?: string; map_y?: string }>('/v1/wap/site/map-config', {}).catch(() => null),
-)
+const mapCfg = computed(() => boot.value?.map ?? null)
 const mapEl = ref<HTMLDivElement | null>(null)
 const mapReady = ref(false)
 

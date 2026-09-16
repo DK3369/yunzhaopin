@@ -7,20 +7,18 @@ import {
   isNavModuleOn,
   mapNavUrl,
   mediaUrl,
-  needsPublicSiteChrome,
   type NavItem,
 } from '../utils/site'
 import { useMemberNav } from './useMemberNav'
 import { useSiteSettings } from './useSiteSettings'
 
 export function useSiteChrome() {
-  const api = useApi()
   const route = useRoute()
   const runtime = useRuntimeConfig()
   const { t, te } = useI18n()
   const { syWebname, syWebtitle, syLogo } = useSubSite()
+  const { data: boot } = useSiteBoot()
   const { settings } = useSiteSettings()
-  const wantPublicChrome = needsPublicSiteChrome(route.path)
 
   const siteName = computed(() => {
     const fromSub = String(syWebname.value || '').trim()
@@ -41,25 +39,7 @@ export function useSiteChrome() {
   const logoPc = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_logo))
   const logoH5 = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_wap_logo || settings.value.sy_logo))
 
-  const { data: navRaw, execute: loadNav } = useAsyncData(
-    localeAsyncKey('site-nav-1'),
-    () =>
-      api
-        .get<
-          Array<{
-            id: number
-            label: string
-            url: string
-            icon?: string
-            icon_n?: string
-            parent_id?: number
-            sort?: number
-            config?: string
-          }>
-        >('/v1/wap/nav', { position: '1' })
-        .catch(() => []),
-    { immediate: wantPublicChrome, default: () => [], dedupe: 'defer' },
-  )
+  const navRaw = computed(() => boot.value?.nav || [])
 
   const NAV_LABEL_KEY: Record<string, string> = {
     '/': 'common.home',
@@ -137,22 +117,8 @@ export function useSiteChrome() {
     }))
   })
 
-  type DescClass = { id: number; name: string }
-  type DescRow = { id: number; class_id: number; name?: string; title: string; is_nav?: number; link_url?: string; is_type?: number }
-
-  const { data: descClasses, execute: loadDescClasses } = useAsyncData(
-    localeAsyncKey('site-desc-classes'),
-    () => api.post<DescClass[]>('/v1/wap/descriptions/classes', {}).catch(() => [] as DescClass[]),
-    { immediate: wantPublicChrome, default: () => [] as DescClass[], dedupe: 'defer' },
-  )
-  const { data: descRows, execute: loadDescRows } = useAsyncData(
-    localeAsyncKey('site-desc-rows'),
-    () =>
-      api
-        .post<{ list: DescRow[] }>('/v1/wap/descriptions', { page: 1, page_size: 80 })
-        .catch(() => ({ list: [] as DescRow[] })),
-    { immediate: wantPublicChrome, default: () => ({ list: [] as DescRow[] }), dedupe: 'defer' },
-  )
+  const descClasses = computed(() => boot.value?.footer_classes || [])
+  const descRows = computed(() => ({ list: boot.value?.footer_pages || [] }))
 
   const FOOTER_NAME_KEY: Record<string, string> = {
     关于我们: 'wap_00218',
@@ -267,22 +233,6 @@ export function useSiteChrome() {
   const perfor = computed(() => String(settings.value.sy_perfor || '').trim())
   const hrlicense = computed(() => String(settings.value.sy_hrlicense || '').trim())
   const secord = computed(() => String(settings.value.sy_websecord || '').trim())
-
-  if (import.meta.client) {
-    const nuxtApp = useNuxtApp() as { _sitePublicChromeWatch?: boolean }
-    if (!nuxtApp._sitePublicChromeWatch) {
-      nuxtApp._sitePublicChromeWatch = true
-      watch(
-        () => route.path,
-        (p) => {
-          if (!needsPublicSiteChrome(p)) return
-          if (!navRaw.value?.length) void loadNav()
-          if (!descClasses.value?.length) void loadDescClasses()
-          if (!descRows.value?.list?.length) void loadDescRows()
-        },
-      )
-    }
-  }
 
   const { data: me, refresh: refreshMe } = useAuthMe()
 

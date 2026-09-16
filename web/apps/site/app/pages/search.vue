@@ -4,6 +4,7 @@ const { t } = useI18n()
 const kw = computed(() => String(route.query.kw || ''))
 const scope = computed(() => String(route.query.scope || 'all'))
 const api = useApi()
+const { data: boot } = useSiteBoot()
 const { data } = await useAsyncData(
   () => `search-${scope.value}-${kw.value}`,
   () =>
@@ -25,12 +26,17 @@ const hotScope = computed(() => {
   if (scope.value === 'company' || scope.value === 'article' || scope.value === 'resume') return scope.value
   return 'job'
 })
-const { data: hots } = await useAsyncData(
+const { data: extraHots } = await useAsyncData(
   () => `search-hot-${hotScope.value}`,
   () =>
-    api
-      .get<Array<{ keyword: string }>>('/v1/wap/hot-searches', { scope: hotScope.value, limit: 12 })
-      .catch(() => [] as Array<{ keyword: string }>),
+    hotScope.value === 'job'
+      ? Promise.resolve([] as Array<{ keyword: string }>)
+      : api
+          .get<Array<{ keyword: string }>>('/v1/wap/hot-searches', { scope: hotScope.value, limit: 12 })
+          .catch(() => [] as Array<{ keyword: string }>),
+)
+const hots = computed(() =>
+  hotScope.value === 'job' ? boot.value?.hot_searches ?? [] : extraHots.value ?? [],
 )
 const HIST_KEY = 'phpyun_search_history'
 type HistItem = { kw: string; scope: string }

@@ -37,7 +37,10 @@ const emit = defineEmits<{ close: []; done: [] }>()
 const route = useRoute()
 const { t } = useI18n()
 const api = useApi()
-const reasons = ref<Reason[]>([])
+const { data: boot } = useSiteBoot()
+const reasons = computed<Reason[]>(() =>
+  (boot.value?.report_reasons || []).filter((x) => x && x.code && x.name),
+)
 const selected = ref('')
 const detail = ref('')
 const msg = ref('')
@@ -54,12 +57,6 @@ onMounted(async () => {
   if (Number(me.value?.usertype) !== needUsertype.value) {
     emit('close')
     return
-  }
-  try {
-    const r = await api.post<Reason[]>('/v1/wap/site/settings', { key: 'report_reasons' })
-    reasons.value = Array.isArray(r) ? r.filter((x) => x && x.code && x.name) : []
-  } catch {
-    reasons.value = []
   }
   await loadCaptcha()
 })

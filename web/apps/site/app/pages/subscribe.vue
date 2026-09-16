@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import { catTree } from '~/utils/site'
 
-type SubscribeMeta = { jionly?: number; cionly?: number; cycles?: number[] }
-
 const { t } = useI18n()
 const api = useApi()
+const { data: boot } = useSiteBoot()
 const { me, siteName } = useSiteChrome()
 
-const { data: meta } = await useAsyncData(
-  localeAsyncKey('subscribe-meta'),
-  () =>
-    api.get<SubscribeMeta>('/v1/wap/subscribe/meta').catch(() => ({
-      jionly: 0,
-      cionly: 0,
-      cycles: [3, 7, 14, 26],
-    })),
-)
+const meta = computed(() => boot.value?.subscribe ?? {
+  jionly: 0,
+  cionly: 0,
+  cycles: [3, 7, 14, 26],
+})
 const { data: jobCats } = await useJobCats()
 
 const jionly = computed(() => Number(meta.value?.jionly || 0) === 1)
