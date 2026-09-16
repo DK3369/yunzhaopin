@@ -28,6 +28,7 @@ pub async fn invalidate_public_list(state: &AppState) {
     public_cache()
         .invalidate(&state.redis, PUBLIC_LIST_KEY)
         .await;
+    crate::initjobs_service::invalidate(state).await;
 }
 
 pub async fn list_public(state: &AppState) -> AppResult<Vec<SiteSetting>> {

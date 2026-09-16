@@ -4,7 +4,7 @@ use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, Lang, ValidatedJson};
 use phpyun_models::report::repo as report_repo;
 use phpyun_services::site_setting_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use utoipa::ToSchema;
@@ -44,20 +44,26 @@ pub struct SettingsListBody {
 
 pub(crate) async fn public_settings_map(
     state: &AppState,
-    ip: &str,
 ) -> AppResult<BTreeMap<String, String>> {
     let list = site_setting_service::list_public(state).await?;
     let mut data = BTreeMap::new();
     for s in list {
         data.insert(s.key_name, s.value);
     }
+    Ok(data)
+}
+
+pub(crate) async fn overlay_client_ip_banned(
+    state: &AppState,
+    ip: &str,
+    settings: &mut BTreeMap<String, String>,
+) {
     if phpyun_services::site_gate_service::ensure_ip_allowed(state, ip)
         .await
         .is_err()
     {
-        data.insert("sy_client_ip_banned".into(), "1".into());
+        settings.insert("sy_client_ip_banned".into(), "1".into());
     }
-    Ok(data)
 }
 
 pub(crate) async fn report_reasons(state: &AppState) -> AppResult<Vec<ReportReasonView>> {
@@ -74,13 +80,13 @@ pub(crate) async fn report_reasons(state: &AppState) -> AppResult<Vec<ReportReas
 
 /// List public settings, or return selectable report reasons when
 /// `key=report_reasons`.
-#[deprecated(note = "use /v1/wap/initjobs?with=site")]
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/site/settings",
     tag = "wap",
     request_body = SettingsListBody,
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=site（data.settings / data.report_reasons）",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.settings / data.report_reasons）",
     responses((status = 200, description = "Public settings, or report reason options for report_reasons"))
 )]
 pub async fn list(
@@ -108,7 +114,7 @@ pub async fn list(
     Ok(ApiResponse::data(json!(data)))
 }
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct ReportReasonView {
     pub id: u64,
     /// Pass this value as `reason_code` when submitting a report.

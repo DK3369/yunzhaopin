@@ -261,7 +261,7 @@ pub async fn check_com_name(
     Ok(ApiResponse::data(CheckComNameData { taken }))
 }
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct RegisterConfig {
     pub username_min_len: u32,
     pub username_max_len: u32,
@@ -306,12 +306,12 @@ pub(crate) async fn build_config(state: &AppState) -> AppResult<RegisterConfig> 
 }
 
 /// Registration rules config: clients can use this for instant validation and display copy.
-#[deprecated(note = "use /v1/wap/initjobs?with=register")]
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/register/config",
     tag = "auth",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=register（data.register）",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.register）",
     responses((status = 200, description = "ok", body = RegisterConfig))
 )]
 pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<RegisterConfig>> {

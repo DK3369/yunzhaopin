@@ -32,7 +32,7 @@ fn default_limit() -> u64 {
 }
 
 /// Hot search keyword item — all 5 columns of phpyun_hot_search + formatted timestamp.
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct HotItem {
     pub id: u64,
     pub scope: String,

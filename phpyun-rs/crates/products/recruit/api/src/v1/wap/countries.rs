@@ -31,7 +31,7 @@ pub fn routes() -> Router<AppState> {
 /// Public-facing country shape. `name` is the localized display name
 /// (zh-CN/zh-TW → `name_zh`, otherwise `name_en`); both raw fields are
 /// also exposed so a client switching language doesn't need a refetch.
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct CountryView {
     pub id: u64,
     pub code: String,

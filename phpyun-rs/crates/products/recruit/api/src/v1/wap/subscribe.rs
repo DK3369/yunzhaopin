@@ -23,7 +23,7 @@ pub fn routes() -> Router<AppState> {
 #[derive(Debug, Deserialize, Validate, IntoParams, Default)]
 pub struct MetaQuery {}
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct SubscribeMetaView {
     pub jionly: i32,
     pub cionly: i32,
@@ -39,12 +39,12 @@ pub(crate) async fn build_meta(state: &AppState) -> AppResult<SubscribeMetaView>
     })
 }
 
-#[deprecated(note = "use /v1/wap/initjobs?with=subscribe")]
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/subscribe/meta",
     tag = "wap",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=subscribe（data.subscribe）",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.subscribe）",
     responses((status = 200, description = "ok", body = SubscribeMetaView))
 )]
 pub async fn meta(

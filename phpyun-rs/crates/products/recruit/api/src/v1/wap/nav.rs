@@ -4,7 +4,7 @@ use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::{fmt_dt, pic_n_str as icon_n};
 use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::nav_menu_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/nav"];
@@ -14,7 +14,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 /// Navigation item — all 9 columns of phpyun_navigation + CDN URL + formatted timestamp.
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct NavItem {
     pub id: u64,
     pub position: String,

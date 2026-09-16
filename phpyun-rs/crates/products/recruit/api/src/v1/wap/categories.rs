@@ -50,7 +50,7 @@ fn default_rec_limit() -> u64 {
     20
 }
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct CatNode {
     pub id: u64,
     pub parent_id: u64,

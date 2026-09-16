@@ -11,19 +11,15 @@
 //! serialization we call `phpyun_core::i18n::t()` to translate using the current request language.
 //! Translation entries are maintained under the `dict.*` namespace of `locales/<lang>.json`.
 
-use axum::{
-    extract::{Query, State},
-    routing::get,
-    Json, Router,
-};
-use phpyun_core::i18n::{current_lang, t, Lang};
+use axum::{extract::State, routing::get, Router};
+use phpyun_core::i18n::{current_lang, t, Lang, CURRENT_LANG};
 use phpyun_core::ValidatedJsonOrQuery;
 use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp};
-use phpyun_services::{country_service, dict_service};
+use phpyun_services::{country_service, dict_service, initjobs_service};
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeMap;
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
 
 use super::categories::CatNode;
@@ -93,7 +89,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
-#[derive(Debug, Clone, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct DictItem {
     pub id: i32,
     pub name: String,
@@ -144,12 +140,13 @@ fn named_or_static(rows: &[(i32, String)], fallback: &[DictEntry]) -> Vec<DictIt
     }
 }
 
-/// Combined public dictionaries (the lists PC/H5 used to fetch one-by-one).
+/// Combined public dictionaries + site chrome / config (PC/H5 first screen).
 /// Individual `/v1/wap/dict/*` stay registered (most are deprecated).
 /// `/v1/wap/countries` is not deprecated: it still supports `continent` filter.
 ///
-/// Optional `with=` segments add site chrome / config. Omitted → same shape as before.
-#[derive(Debug, Serialize, ToSchema)]
+/// Always filled. Cached per language (no per-IP fields). Handler overlays
+/// `sy_client_ip_banned` after a cache hit.
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct InitJobs {
     pub countries: Vec<CountryView>,
     pub educations: Vec<DictItem>,
@@ -173,249 +170,71 @@ pub struct InitJobs {
     pub sy_googlelogin: String,
     /// `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide.
     pub sy_facebooklogin: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub settings: Option<BTreeMap<String, String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub report_reasons: Option<Vec<ReportReasonView>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub nav: Option<Vec<NavItem>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub footer_classes: Option<Vec<ClassItem>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub footer_pages: Option<Vec<FooterPageItem>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub job_cats: Option<Vec<CatNode>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub part_cats: Option<Vec<CatNode>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hot_job_class: Option<Vec<CatNode>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub register: Option<RegisterConfig>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub map: Option<MapConfigView>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub subscribe: Option<SubscribeMetaView>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stats: Option<SiteOverviewView>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hot_searches: Option<Vec<HotItem>>,
+    pub settings: BTreeMap<String, String>,
+    pub report_reasons: Vec<ReportReasonView>,
+    pub nav: Vec<NavItem>,
+    pub footer_classes: Vec<ClassItem>,
+    pub footer_pages: Vec<FooterPageItem>,
+    pub job_cats: Vec<CatNode>,
+    pub part_cats: Vec<CatNode>,
+    pub hot_job_class: Vec<CatNode>,
+    pub register: RegisterConfig,
+    pub map: MapConfigView,
+    pub subscribe: SubscribeMetaView,
+    pub stats: SiteOverviewView,
+    pub hot_searches: Vec<HotItem>,
 }
 
-#[derive(Debug, Default, Deserialize, Validate, IntoParams, ToSchema)]
-pub struct InitJobsQuery {
-    /// Comma list: `site,nav,footer,cats,register,map,subscribe,stats,hot`.
-    /// Omit for the original dictionary-only payload (Flutter / App).
-    #[serde(default)]
-    #[validate(length(max = 128))]
-    pub with: Option<String>,
-}
-
-#[derive(Debug, Default, Clone, Copy)]
-struct Want {
-    site: bool,
-    nav: bool,
-    footer: bool,
-    cats: bool,
-    register: bool,
-    map: bool,
-    subscribe: bool,
-    stats: bool,
-    hot: bool,
-}
-
-impl Want {
-    fn parse(raw: Option<&str>) -> Self {
-        let mut w = Self::default();
-        let Some(s) = raw.map(str::trim).filter(|s| !s.is_empty()) else {
-            return w;
-        };
-        for part in s.split(',') {
-            match part.trim() {
-                "site" => w.site = true,
-                "nav" => w.nav = true,
-                "footer" => w.footer = true,
-                "cats" => w.cats = true,
-                "register" => w.register = true,
-                "map" => w.map = true,
-                "subscribe" => w.subscribe = true,
-                "stats" => w.stats = true,
-                "hot" => w.hot = true,
-                _ => {}
-            }
-        }
-        w
-    }
-
-    fn any(self) -> bool {
-        self.site
-            || self.nav
-            || self.footer
-            || self.cats
-            || self.register
-            || self.map
-            || self.subscribe
-            || self.stats
-            || self.hot
-    }
-}
-
-#[derive(Default)]
-struct Segments {
-    settings: Option<BTreeMap<String, String>>,
-    report_reasons: Option<Vec<ReportReasonView>>,
-    nav: Option<Vec<NavItem>>,
-    footer_classes: Option<Vec<ClassItem>>,
-    footer_pages: Option<Vec<FooterPageItem>>,
-    job_cats: Option<Vec<CatNode>>,
-    part_cats: Option<Vec<CatNode>>,
-    hot_job_class: Option<Vec<CatNode>>,
-    register: Option<RegisterConfig>,
-    map: Option<MapConfigView>,
-    subscribe: Option<SubscribeMetaView>,
-    stats: Option<SiteOverviewView>,
-    hot_searches: Option<Vec<HotItem>>,
-}
-
-async fn load_segments(state: &AppState, ip: &str, want: Want) -> AppResult<Segments> {
-    let (site_r, nav_r, footer_r, cats_r, register_r, map_r, subscribe_r, stats_r, hot_r) = tokio::join!(
-        async {
-            if !want.site {
-                return Ok::<_, ApiError>(None);
-            }
-            let (settings, reasons) = tokio::join!(
-                super::site_settings::public_settings_map(state, ip),
-                super::site_settings::report_reasons(state),
-            );
-            Ok(Some((settings?, reasons?)))
-        },
-        async {
-            if !want.nav {
-                return Ok::<_, ApiError>(None);
-            }
-            Ok(Some(super::nav::load_position(state, "1").await?))
-        },
-        async {
-            if !want.footer {
-                return Ok::<_, ApiError>(None);
-            }
-            let (classes, pages) = tokio::join!(
-                super::descriptions::footer_classes(state),
-                super::descriptions::footer_pages(state),
-            );
-            Ok(Some((classes?, pages?)))
-        },
-        async {
-            if !want.cats {
-                return Ok::<_, ApiError>(None);
-            }
-            let (job, part, hot) = tokio::join!(
-                super::categories::load_kind(state, "job"),
-                super::categories::load_kind(state, "part"),
-                super::categories::load_recommended(state, "job", 20),
-            );
-            Ok(Some((job?, part?, hot?)))
-        },
-        async {
-            if !want.register {
-                return Ok::<_, ApiError>(None);
-            }
-            Ok(Some(super::register::build_config(state).await?))
-        },
-        async {
-            if !want.map {
-                return Ok::<_, ApiError>(None);
-            }
-            Ok(Some(super::site::build_map_config(state).await?))
-        },
-        async {
-            if !want.subscribe {
-                return Ok::<_, ApiError>(None);
-            }
-            Ok(Some(super::subscribe::build_meta(state).await?))
-        },
-        async {
-            if !want.stats {
-                return Ok::<_, ApiError>(None);
-            }
-            Ok(Some(super::stats::build_overview(state).await?))
-        },
-        async {
-            if !want.hot {
-                return Ok::<_, ApiError>(None);
-            }
-            Ok(Some(
-                super::hot_searches::load_scope(state, "0", 12).await?,
-            ))
-        },
-    );
-    let (settings, report_reasons) = match site_r? {
-        Some((s, r)) => (Some(s), Some(r)),
-        None => (None, None),
-    };
-    let (footer_classes, footer_pages) = match footer_r? {
-        Some((c, p)) => (Some(c), Some(p)),
-        None => (None, None),
-    };
-    let (job_cats, part_cats, hot_job_class) = match cats_r? {
-        Some((j, p, h)) => (Some(j), Some(p), Some(h)),
-        None => (None, None, None),
-    };
-    Ok(Segments {
-        settings,
-        report_reasons,
-        nav: nav_r?,
-        footer_classes,
-        footer_pages,
-        job_cats,
-        part_cats,
-        hot_job_class,
-        register: register_r?,
-        map: map_r?,
-        subscribe: subscribe_r?,
-        stats: stats_r?,
-        hot_searches: hot_r?,
-    })
-}
-
-#[utoipa::path(
-    post,
-    path = "/v1/wap/initjobs",
-    tag = "wap",
-    params(InitJobsQuery),
-    responses((status = 200, description = "ok", body = InitJobs))
-)]
-pub async fn initjobs(
-    State(state): State<AppState>,
-    ClientIp(ip): ClientIp,
-    Query(query): Query<InitJobsQuery>,
-    body: Option<Json<InitJobsQuery>>,
-) -> AppResult<ApiResponse<InitJobs>> {
-    let q = body.map(|j| j.0).unwrap_or(query);
-    q.validate()
-        .map_err(|e| phpyun_core::ApiError::param_invalid(phpyun_core::extractors::first_validation_key(&e)))?;
-    let want = Want::parse(q.with.as_deref());
+async fn assemble_initjobs(state: &AppState) -> AppResult<InitJobs> {
     let lang = current_lang();
-    let (lists, dicts, countries, extra) = tokio::join!(
-        dict_service::public_lists(&state),
-        dict_service::get(&state),
-        country_service::list_all(&state),
-        async {
-            if want.any() {
-                load_segments(&state, &ip, want).await
-            } else {
-                Ok(Segments::default())
-            }
-        },
+    // Staged joins keep the async state machine small (2MB tokio worker stack).
+    let (lists, dicts, countries) = tokio::join!(
+        dict_service::public_lists(state),
+        dict_service::get(state),
+        country_service::list_all(state),
     );
     let lists = lists?;
     let dicts = dicts?;
-    let extra = extra?;
-    let countries = countries?
+    let countries = countries?;
+
+    let (settings, report_reasons) = tokio::join!(
+        super::site_settings::public_settings_map(state),
+        super::site_settings::report_reasons(state),
+    );
+    let settings = settings?;
+    let report_reasons = report_reasons?;
+
+    let (nav, footer_classes, footer_pages) = tokio::join!(
+        super::nav::load_position(state, "1"),
+        super::descriptions::footer_classes(state),
+        super::descriptions::footer_pages(state),
+    );
+    let nav = nav?;
+    let footer_classes = footer_classes?;
+    let footer_pages = footer_pages?;
+
+    let (job_cats, part_cats, hot_job_class) = tokio::join!(
+        super::categories::load_kind(state, "job"),
+        super::categories::load_kind(state, "part"),
+        super::categories::load_recommended(state, "job", 20),
+    );
+    let job_cats = job_cats?;
+    let part_cats = part_cats?;
+    let hot_job_class = hot_job_class?;
+
+    let (register, map, subscribe, stats, hot_searches) = tokio::join!(
+        super::register::build_config(state),
+        super::site::build_map_config(state),
+        super::subscribe::build_meta(state),
+        super::stats::build_overview(state),
+        super::hot_searches::load_scope(state, "0", 12),
+    );
+    let countries = countries
         .iter()
         .map(|c| country_to_view(c, lang))
         .collect();
     let job_types = render(JOB_TYPES, lang);
-    Ok(ApiResponse::data(InitJobs {
+    Ok(InitJobs {
         countries,
         educations: named_or_static(&lists.educations, EDUCATIONS),
         educations_user: named_or_static(&lists.educations_user, EDUCATIONS),
@@ -440,20 +259,44 @@ pub async fn initjobs(
         job_categories: render(JOB_CATEGORIES, lang),
         sy_googlelogin: lists.sy_googlelogin.clone(),
         sy_facebooklogin: lists.sy_facebooklogin.clone(),
-        settings: extra.settings,
-        report_reasons: extra.report_reasons,
-        nav: extra.nav,
-        footer_classes: extra.footer_classes,
-        footer_pages: extra.footer_pages,
-        job_cats: extra.job_cats,
-        part_cats: extra.part_cats,
-        hot_job_class: extra.hot_job_class,
-        register: extra.register,
-        map: extra.map,
-        subscribe: extra.subscribe,
-        stats: extra.stats,
-        hot_searches: extra.hot_searches,
-    }))
+        settings,
+        report_reasons,
+        nav,
+        footer_classes,
+        footer_pages,
+        job_cats,
+        part_cats,
+        hot_job_class,
+        register: register?,
+        map: map?,
+        subscribe: subscribe?,
+        stats: stats?,
+        hot_searches: hot_searches?,
+    })
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/wap/initjobs",
+    tag = "wap",
+    responses((status = 200, description = "ok", body = InitJobs))
+)]
+pub async fn initjobs(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+) -> AppResult<ApiResponse<InitJobs>> {
+    let lang = current_lang();
+    let st = state.clone();
+    let cached = initjobs_service::get_or_load(&state, lang.as_str(), move || async move {
+        let jobs = CURRENT_LANG
+            .scope(lang, async move { assemble_initjobs(&st).await })
+            .await?;
+        serde_json::to_string(&jobs).map_err(ApiError::internal)
+    })
+    .await?;
+    let mut jobs: InitJobs = serde_json::from_str(&cached).map_err(ApiError::internal)?;
+    super::site_settings::overlay_client_ip_banned(&state, &ip, &mut jobs.settings).await;
+    Ok(ApiResponse::data(jobs))
 }
 
 #[derive(Debug, Deserialize, Validate, utoipa::ToSchema, Default)]

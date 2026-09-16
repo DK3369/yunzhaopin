@@ -5837,7 +5837,7 @@ export interface paths {
         /**
          * Class list
          * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=footer（data.footer_classes）
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.footer_classes）
          */
         post: operations["post_v1_wap_descriptions_classes"];
         delete?: never;
@@ -8123,7 +8123,7 @@ export interface paths {
         /**
          * Registration rules config: clients can use this for instant validation and display copy.
          * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=register（data.register）
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.register）
          */
         post: operations["post_v1_wap_register_config"];
         delete?: never;
@@ -8332,7 +8332,7 @@ export interface paths {
          *     `ajax::mapconfig_action` — bundles every `map_*` site setting into one
          *     JSON payload so the client doesn't have to issue 8 setting requests.
          * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=map（data.map）
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.map）
          */
         post: operations["post_v1_wap_site_map_config"];
         delete?: never;
@@ -8371,7 +8371,7 @@ export interface paths {
          * List public settings, or return selectable report reasons when
          *     `key=report_reasons`.
          * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=site（data.settings / data.report_reasons）
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.settings / data.report_reasons）
          */
         post: operations["post_v1_wap_site_settings"];
         delete?: never;
@@ -8574,7 +8574,7 @@ export interface paths {
         /**
          * Site overview statistics
          * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=stats（data.stats）
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.stats）
          */
         post: operations["post_v1_wap_stats_overview"];
         delete?: never;
@@ -8610,7 +8610,7 @@ export interface paths {
         put?: never;
         /**
          * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs?with=subscribe（data.subscribe）
+         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.subscribe）
          */
         post: operations["post_v1_wap_subscribe_meta"];
         delete?: never;
@@ -11475,11 +11475,12 @@ export interface components {
             slots?: components["schemas"]["AdQuery"][];
         };
         /**
-         * @description Combined public dictionaries (the lists PC/H5 used to fetch one-by-one).
+         * @description Combined public dictionaries + site chrome / config (PC/H5 first screen).
          *     Individual `/v1/wap/dict/*` stay registered (most are deprecated).
          *     `/v1/wap/countries` is not deprecated: it still supports `continent` filter.
          *
-         *     Optional `with=` segments add site chrome / config. Omitted → same shape as before.
+         *     Always filled. Cached per language (no per-IP fields). Handler overlays
+         *     `sy_client_ip_banned` after a cache hit.
          */
         InitJobs: {
             company_natures: components["schemas"]["DictItem"][];
@@ -11489,43 +11490,36 @@ export interface components {
             educations_user: components["schemas"]["DictItem"][];
             experiences: components["schemas"]["DictItem"][];
             experiences_user: components["schemas"]["DictItem"][];
-            footer_classes?: components["schemas"]["ClassItem"][] | null;
-            footer_pages?: components["schemas"]["FooterPageItem"][] | null;
-            hot_job_class?: components["schemas"]["CatNode"][] | null;
-            hot_searches?: components["schemas"]["HotItem"][] | null;
+            footer_classes: components["schemas"]["ClassItem"][];
+            footer_pages: components["schemas"]["FooterPageItem"][];
+            hot_job_class: components["schemas"]["CatNode"][];
+            hot_searches: components["schemas"]["HotItem"][];
             industries: components["schemas"]["DictItem"][];
             job_categories: components["schemas"]["DictItem"][];
-            job_cats?: components["schemas"]["CatNode"][] | null;
+            job_cats: components["schemas"]["CatNode"][];
             job_types: components["schemas"]["DictItem"][];
             job_types_user: components["schemas"]["DictItem"][];
             langs: components["schemas"]["DictItem"][];
-            map?: null | components["schemas"]["MapConfigView"];
+            map: components["schemas"]["MapConfigView"];
             marriages: components["schemas"]["DictItem"][];
-            nav?: components["schemas"]["NavItem"][] | null;
-            part_cats?: components["schemas"]["CatNode"][] | null;
-            register?: null | components["schemas"]["RegisterConfig"];
-            report_reasons?: components["schemas"]["ReportReasonView"][] | null;
+            nav: components["schemas"]["NavItem"][];
+            part_cats: components["schemas"]["CatNode"][];
+            register: components["schemas"]["RegisterConfig"];
+            report_reasons: components["schemas"]["ReportReasonView"][];
             reports: components["schemas"]["DictItem"][];
             reports_user: components["schemas"]["DictItem"][];
             salaries: components["schemas"]["DictItem"][];
-            settings?: {
+            settings: {
                 [key: string]: string;
-            } | null;
-            stats?: null | components["schemas"]["SiteOverviewView"];
-            subscribe?: null | components["schemas"]["SubscribeMetaView"];
+            };
+            stats: components["schemas"]["SiteOverviewView"];
+            subscribe: components["schemas"]["SubscribeMetaView"];
             /** @description `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide. */
             sy_facebooklogin: string;
             /** @description `'1'` = show Google on PC/H5 login. Empty / `'0'` = hide. */
             sy_googlelogin: string;
             tags: components["schemas"]["DictItem"][];
             welfares: components["schemas"]["DictItem"][];
-        };
-        InitJobsQuery: {
-            /**
-             * @description Comma list: `site,nav,footer,cats,register,map,subscribe,stats,hot`.
-             *     Omit for the original dictionary-only payload (Flutter / App).
-             */
-            with?: string | null;
         };
         IntegralItemView: {
             /** Format: int32 */
@@ -24103,22 +24097,12 @@ export interface operations {
     };
     post_v1_wap_initjobs: {
         parameters: {
-            query?: {
-                /**
-                 * @description Comma list: `site,nav,footer,cats,register,map,subscribe,stats,hot`.
-                 *     Omit for the original dictionary-only payload (Flutter / App).
-                 */
-                with?: string | null;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["InitJobsQuery"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description ok */
             200: {

@@ -39,8 +39,6 @@ export type PublicDictBundle = {
   sy_facebooklogin?: string
 }
 
-export const SITE_BOOT_WITH = 'site,nav,footer,cats,register,map,subscribe,stats,hot'
-
 export type SiteBootNav = {
   id: number
   label: string
@@ -120,15 +118,12 @@ export function emptySiteBoot(): SiteBoot {
   return emptyPublicDictBundle()
 }
 
-/** One `/v1/wap/initjobs?with=` per locale for PC/H5 chrome + public config. */
+/** One `/v1/wap/initjobs` per locale for PC/H5 chrome + public config. */
 export function useSiteBoot() {
   const api = useApi()
   return useAsyncData(
     localeAsyncKey('wap-initjobs'),
-    () =>
-      api
-        .get<SiteBoot>('/v1/wap/initjobs', { with: SITE_BOOT_WITH })
-        .catch(() => emptySiteBoot()),
+    () => api.get<SiteBoot>('/v1/wap/initjobs').catch(() => emptySiteBoot()),
     { default: () => emptySiteBoot(), ...reuseAsyncCache() },
   )
 }

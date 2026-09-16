@@ -32,8 +32,10 @@
 //! admin_dashboard_service ──> site_setting / dict / region / country / category /
 //!                            ads / home / friend_link / hot_search / data_show /
 //!                            description / redeem / qna / nav / stats / announcement /
-//!                            special / zph / article / site_page / jobs / companies
-//!                            (clear_site_caches)
+//!                            special / zph / article / site_page / jobs / companies /
+//!                            initjobs (clear_site_caches)
+//! site_setting_service     ──> initjobs_service          (public list + initjobs blob)
+//! nav_menu_service         ──> initjobs_service          (nav writes drop initjobs blob)
 //! admin_php_content_service ──> admin_dashboard_service  (gen_cache bust)
 //! payment_notify_service ──> vip_service, once_service (gateway settle)
 //! ```
@@ -108,6 +110,7 @@ pub mod gongzhao_service;
 pub mod home_service;
 pub mod hot_search_service;
 pub mod hr_doc_service;
+pub mod initjobs_service;
 pub mod integral_service;
 pub mod interview_service;
 pub mod interview_template_service;
@@ -148,6 +151,7 @@ pub mod region_service;
 pub mod registration_service;
 pub mod remark_service;
 pub mod report_service;
+pub mod rating_info_service;
 pub mod resume_children_service;
 pub mod resume_download_service;
 pub mod resume_out_service;

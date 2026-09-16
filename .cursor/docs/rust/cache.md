@@ -34,6 +34,7 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 | 职位/企业侧栏 | `jobs:sidebar:{hash}:{page}` / `companies:sidebar:{hash}:{page}` | 60s |
 | 站点配置（已有） | `site_setting:{name}` | 30s |
 | 公开设置列表 | `site_settings:public` | 30s |
+| 首屏配置包 | `initjobs:{zh-CN\|zh-TW\|en}` | 60s（不含 `sy_client_ip_banned`） |
 
 职位/企业：**仅 page=1** 且侧栏形（职位 `rec` 或 `bid`、企业 `rec`，无关键词、无深分页）。带关键词或 page>1 直打 MySQL。
 
@@ -48,6 +49,7 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 - 导航：`nav_menu_service::admin_create/update/delete`
 - 公告：`admin_cms_service` upsert/delete
 - 专题 / 招聘会 / 资讯分类 / 站点页：`admin_php_content_service` 对应写路径
-- 一键清缓存：`admin_dashboard_service::clear_site_caches`（上表全部 L1 + 能 DEL 的 Redis key；含 `site_settings:public`）
-- 站点公开设置列表：`site_setting_service::admin_upsert` / `admin_delete` 同步 `invalidate` `site_settings:public`
+- 一键清缓存：`admin_dashboard_service::clear_site_caches`（上表全部 L1 + 能 DEL 的 Redis key；含 `site_settings:public`、`initjobs:{lang}`）
+- 站点公开设置列表：`site_setting_service::admin_upsert` / `admin_delete` 同步 `invalidate` `site_settings:public` 与 `initjobs:{lang}`
+- 导航写入：`nav_menu_service` 同步 `invalidate` `initjobs:{lang}`
 - 列表类 Redis 多 key 无 SCAN：L1 立刻空，L2 最多等 TTL

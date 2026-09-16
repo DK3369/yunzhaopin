@@ -13,6 +13,7 @@ use crate::dict_service;
 use crate::friend_link_service;
 use crate::home_service;
 use crate::hot_search_service;
+use crate::initjobs_service;
 use crate::job_service;
 use crate::nav_menu_service;
 use crate::qna_service;
@@ -758,6 +759,7 @@ pub async fn clear_site_caches(state: &AppState, user: &AuthenticatedUser) -> Ap
     nav_menu_service::invalidate_all(state).await;
     stats_service::invalidate(state).await;
     site_setting_service::invalidate_public_list(state).await;
+    initjobs_service::invalidate(state).await;
     announcement_service::invalidate_all(state).await;
     special_service::invalidate_all(state).await;
     zph_service::invalidate_all(state).await;

@@ -23,11 +23,13 @@ pub async fn invalidate_all(state: &AppState) {
     for p in ["0", "1", "2", "top", "bottom"] {
         cache().invalidate(&state.redis, &cache_key(p)).await;
     }
+    crate::initjobs_service::invalidate(state).await;
 }
 
 async fn invalidate_position(state: &AppState, position: &str) {
     cache().invalidate_prefix_local();
     cache().invalidate(&state.redis, &cache_key(position)).await;
+    crate::initjobs_service::invalidate(state).await;
 }
 
 pub async fn list(state: &AppState, position: &str) -> AppResult<Vec<NavMenu>> {

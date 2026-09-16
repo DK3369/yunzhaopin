@@ -275,7 +275,7 @@ pub async fn match_sub_site(
 
 // ==================== Baidu Maps config ====================
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct MapConfigView {
     /// Default centre longitude (PHP `map_x`).
     pub map_x: Option<String>,
@@ -314,12 +314,12 @@ pub(crate) async fn build_map_config(state: &AppState) -> AppResult<MapConfigVie
 /// Front-end map widget configuration. Counterpart of PHP
 /// `ajax::mapconfig_action` — bundles every `map_*` site setting into one
 /// JSON payload so the client doesn't have to issue 8 setting requests.
-#[deprecated(note = "use /v1/wap/initjobs?with=map")]
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/site/map-config",
     tag = "wap",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs?with=map（data.map）",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.map）",
     responses((status = 200, description = "ok", body = MapConfigView))
 )]
 pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<MapConfigView>> {
