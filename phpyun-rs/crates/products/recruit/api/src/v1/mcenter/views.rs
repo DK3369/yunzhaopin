@@ -6,11 +6,12 @@
 //!     * `kind=3`: jobseeker sees "who (company) has viewed my resume"
 
 use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdsBody;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::view_service;
+use phpyun_services::{resume_service, view_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
@@ -18,6 +19,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/my-views", post(list_my_views))
         .route("/profile-views", post(list_profile_views))
+        .route("/profile-views/delete", post(delete_profile_views))
 }
 
 #[derive(Debug, Deserialize, validator::Validate, IntoParams)]
@@ -105,4 +107,22 @@ pub async fn list_profile_views(
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))
+}
+
+/// Alias of `/look-resumes/delete` (PHP `phpyun_look_resume`). List on this module is `phpyun_rs_views`.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/profile-views/delete",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdsBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn delete_profile_views(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdsBody>,
+) -> AppResult<ApiResponse<phpyun_core::json::Value>> {
+    let n = resume_service::hide_look_resumes(&state, &user, &b.ids).await?;
+    Ok(ApiResponse::data(phpyun_core::json::json!({ "deleted": n })))
 }

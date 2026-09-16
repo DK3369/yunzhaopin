@@ -16,6 +16,8 @@
 /v1/mcenter/applications/state
 /v1/mcenter/applications/state-counts
 /v1/mcenter/apply
+/v1/mcenter/article-channels
+/v1/mcenter/article-channels/save
 /v1/mcenter/blacklist
 /v1/mcenter/blacklist/delete
 /v1/mcenter/blacklist/list
@@ -24,6 +26,8 @@
 /v1/mcenter/broadcasts/read
 /v1/mcenter/broadcasts/unread-count
 /v1/mcenter/cert/email/send
+/v1/mcenter/cert/idcard/status
+/v1/mcenter/cert/idcard/submit
 /v1/mcenter/cert/mobile/send
 /v1/mcenter/cert/mobile/verify
 /v1/mcenter/chat/conversations
@@ -67,6 +71,7 @@
 /v1/mcenter/company/interviews
 /v1/mcenter/company/interviews/cancel
 /v1/mcenter/company/interviews/create
+/v1/mcenter/company/interviews/detail
 /v1/mcenter/company/invite-codes
 /v1/mcenter/company/invite-codes/list
 /v1/mcenter/company/invite-codes/revoke
@@ -81,6 +86,7 @@
 /v1/mcenter/company/products/update
 /v1/mcenter/company/yqms/cancel
 /v1/mcenter/company/yqms/create
+/v1/mcenter/company/yqms/detail
 /v1/mcenter/company/yqms/list
 /v1/mcenter/crm-reports
 /v1/mcenter/crm-reports/delete
@@ -124,11 +130,14 @@
 /v1/mcenter/integral/transfer
 /v1/mcenter/integral/transfers
 /v1/mcenter/interview-templates
+/v1/mcenter/interview-templates/detail
 /v1/mcenter/interview-templates/list
 /v1/mcenter/interview-templates/update
 /v1/mcenter/interviews
 /v1/mcenter/interviews/accept
 /v1/mcenter/interviews/reject
+/v1/mcenter/interviews/review
+/v1/mcenter/interviews/review/submit
 /v1/mcenter/invite-reg
 /v1/mcenter/job-messages
 /v1/mcenter/job-messages/hide
@@ -177,13 +186,16 @@
 /v1/mcenter/oauth-bindings/unbind
 /v1/mcenter/once-jobs/orders
 /v1/mcenter/once-jobs/orders/cancel
+/v1/mcenter/once-jobs/paylogs
 /v1/mcenter/packs/list
 /v1/mcenter/packs/orders
+/v1/mcenter/packs/orders/list
 /v1/mcenter/packs/orders/mock-paid
 /v1/mcenter/packs/quote
 /v1/mcenter/password
 /v1/mcenter/profile
 /v1/mcenter/profile-views
+/v1/mcenter/profile-views/delete
 /v1/mcenter/profile/update
 /v1/mcenter/questions
 /v1/mcenter/questions/answers
@@ -228,6 +240,7 @@
 /v1/mcenter/resume/certs/list
 /v1/mcenter/resume/certs/update
 /v1/mcenter/resume/completion
+/v1/mcenter/resume/delete
 /v1/mcenter/resume/edus
 /v1/mcenter/resume/edus/list
 /v1/mcenter/resume/edus/update
@@ -293,6 +306,7 @@
 /v1/mcenter/wechat/subscribe
 /v1/mcenter/yqms/accept
 /v1/mcenter/yqms/delete
+/v1/mcenter/yqms/detail
 /v1/mcenter/yqms/list
 /v1/mcenter/yqms/reject
 /v1/mcenter/zph/com-status
@@ -449,6 +463,8 @@
 /v1/wap/posters
 /v1/wap/posters/invite-reg/me
 /v1/wap/posters/templates
+/v1/wap/qa/answers/comments
+/v1/wap/qa/topics
 /v1/wap/qna/categories
 /v1/wap/qna/hotweek
 /v1/wap/qna/top-answerers

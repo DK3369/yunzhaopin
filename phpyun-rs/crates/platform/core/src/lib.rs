@@ -3,6 +3,7 @@
 // and web frontends can share the same translations).
 // Paths are relative to `CARGO_MANIFEST_DIR` (i.e. `crates/platform/core/`),
 // hence `../../../` to reach the workspace root.
+// Locales are compiled into this crate; touch this file after editing locales/*.json.
 // The `i18n!` macro must be invoked at the crate root (lib.rs); otherwise the
 // `t!` macro in submodules cannot find the generated static symbols.
 rust_i18n::i18n!("../../../locales", fallback = "en");

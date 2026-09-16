@@ -39,6 +39,8 @@ pub struct EmployerMsgItem {
     pub reply_time_n: String,
     /// Whether the message has been answered.
     pub answered: bool,
+    /// Alias of `id` (PHP member `mid`). No `eid` on this table.
+    pub mid: u64,
 }
 
 impl From<phpyun_models::job_msg::entity::JobMsg> for EmployerMsgItem {
@@ -57,6 +59,7 @@ impl From<phpyun_models::job_msg::entity::JobMsg> for EmployerMsgItem {
             reply_time_n: fmt_dt(m.reply_time),
             reply_time: m.reply_time,
             answered,
+            mid: m.id,
         }
     }
 }

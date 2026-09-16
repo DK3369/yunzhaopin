@@ -102,3 +102,14 @@ pub async fn delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppR
     }
     Ok(())
 }
+
+pub async fn get(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<InterviewTemplate> {
+    user.require_employer()?;
+    tpl_repo::find_by_id(state.db.reader(), id, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))
+}

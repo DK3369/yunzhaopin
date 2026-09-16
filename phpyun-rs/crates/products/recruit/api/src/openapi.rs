@@ -253,6 +253,7 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::resume::update_mine,
         v1::mcenter::resume::update_status,
         v1::mcenter::resume::buy_top,
+        v1::mcenter::resume::delete_expect,
         // mcenter: company (employer)
         v1::mcenter::company::get_mine,
         v1::mcenter::company::update_mine,
@@ -278,6 +279,7 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::packs::list_packs,
         v1::mcenter::packs::quote,
         v1::mcenter::packs::create_order,
+        v1::mcenter::packs::list_orders,
         v1::mcenter::dashboard::today,
         v1::mcenter::entrust_records::list_mine,
         v1::mcenter::entrust_records::delete_mine,
@@ -331,6 +333,7 @@ impl Modify for DeprecatedIndex {
         // mcenter: views (visit trail)
         v1::mcenter::views::list_my_views,
         v1::mcenter::views::list_profile_views,
+        v1::mcenter::views::delete_profile_views,
         // mcenter: interviews
         v1::mcenter::interviews::list_mine,
         v1::mcenter::interviews::accept,
@@ -338,6 +341,9 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::interviews::create,
         v1::mcenter::interviews::list_by_company,
         v1::mcenter::interviews::cancel,
+        v1::mcenter::interviews::detail_company,
+        v1::mcenter::interview_review::get_mine,
+        v1::mcenter::interview_review::submit,
         v1::mcenter::yqms::create,
         v1::mcenter::yqms::list_mine,
         v1::mcenter::yqms::list_company,
@@ -345,6 +351,8 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::yqms::accept,
         v1::mcenter::yqms::reject,
         v1::mcenter::yqms::delete_mine,
+        v1::mcenter::yqms::detail_mine,
+        v1::mcenter::yqms::detail_company,
         // mcenter: messages
         v1::mcenter::messages::list,
         v1::mcenter::messages::mark_read,
@@ -438,8 +446,10 @@ impl Modify for DeprecatedIndex {
         v1::wap::qna::question_detail,
         v1::wap::qna::list_answers,
         v1::wap::qna::list_categories,
+        v1::wap::qna::list_topics,
         v1::wap::qna::list_hotweek,
         v1::wap::qna::list_comments,
+        v1::wap::qna::list_qa_comments,
         // mcenter: zph
         v1::mcenter::zph::reserve,
         v1::mcenter::zph::my_reservation,
@@ -496,6 +506,7 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::interview_tpl::list,
         v1::mcenter::interview_tpl::create,
         v1::mcenter::interview_tpl::update,
+        v1::mcenter::interview_tpl::detail,
         // delete merged into update (status:2 soft delete)
         // wap: resume share
         v1::wap::resume_share::view,
@@ -521,6 +532,8 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::contact_cert::mobile_send,
         v1::mcenter::contact_cert::mobile_verify,
         v1::mcenter::contact_cert::email_send,
+        v1::mcenter::idcard_cert::status,
+        v1::mcenter::idcard_cert::submit,
         // wap: email verify callback
         v1::wap::email_verify::verify,
         // wap: specials (special recruitment events)
@@ -655,6 +668,9 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::messages::unread_summary,
         v1::mcenter::once_orders::list_pending,
         v1::mcenter::once_orders::cancel,
+        v1::mcenter::once_orders::list_paylogs,
+        v1::mcenter::article_channels::list,
+        v1::mcenter::article_channels::save,
         v1::mcenter::dashboard::year_report,
         // Round 3: job-page Q&A + non-id-token OAuth (QQ / Weibo)
         v1::wap::job_messages::list,
@@ -1080,6 +1096,14 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::eval::LogItem,
             v1::mcenter::company_cert::CertView,
             v1::mcenter::company_cert::SubmitForm,
+            v1::mcenter::idcard_cert::IdcardView,
+            v1::mcenter::idcard_cert::IdcardSubmitForm,
+            v1::mcenter::interview_review::ReviewQuery,
+            v1::mcenter::interview_review::ReviewSubmitForm,
+            v1::mcenter::interview_review::ReviewOut,
+            v1::mcenter::article_channels::ChannelItem,
+            v1::mcenter::article_channels::ChannelList,
+            v1::mcenter::article_channels::SaveForm,
             v1::mcenter::resume_score::Completion,
             v1::wap::site_settings::SettingView,
             v1::wap::site_settings::ReportReasonView,
@@ -1158,6 +1182,7 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::atn::FollowItem,
             v1::mcenter::messages::UnreadSummary,
             v1::mcenter::once_orders::OrderItem,
+            v1::mcenter::once_orders::PaylogsQuery,
             v1::mcenter::dashboard::YearReportView,
             // Round 3 schemas
             v1::wap::job_messages::JobMsgView,

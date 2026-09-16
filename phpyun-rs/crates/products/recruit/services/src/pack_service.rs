@@ -1,7 +1,7 @@
 //! 企业加量包：列表 / 报价 / 下单 / 支付后入账。
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::admin_gap::entity::RatingServiceDetailRow;
 use phpyun_models::company_pack;
 use phpyun_models::company_statis::repo as statis_repo;
@@ -86,6 +86,13 @@ pub async fn create_order(
     client_ip: &str,
 ) -> AppResult<CreatedPackOrder> {
     user.require_employer()?;
+    let st = statis_repo::find_admin(state.db.reader(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("zph_need_vip"))?;
+    let now = clock::now_ts();
+    if st.rating <= 0 || (st.vip_etime != 0 && st.vip_etime < now) {
+        return Err(ApiError::business("zph_need_vip"));
+    }
     let q = quote(state, user, detail_id).await?;
     if q.price <= 0.0 {
         return Err(ApiError::business("common_01355"));
@@ -175,4 +182,17 @@ pub async fn find_owned_order(
         return Err(ApiError::param_invalid("order_not_owned"));
     }
     Ok(order)
+}
+
+pub async fn list_orders(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<(Vec<PayOrder>, u64)> {
+    user.require_employer()?;
+    let (list, total) = tokio::join!(
+        company_pack::list_orders_by_uid(state.db.reader(), user.uid, page.offset, page.limit),
+        company_pack::count_orders_by_uid(state.db.reader(), user.uid),
+    );
+    Ok((list?, total?))
 }

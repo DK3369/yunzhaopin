@@ -413,7 +413,7 @@ pub struct ZphCompanyItem {
     pub province_name: String,
 }
 
-/// Participating-company list
+/// Participating companies. Item already has `uid` / `com_name` / `com_logo` / `com_logo_n`.
 #[utoipa::path(post,
     path = "/v1/wap/zph/companies",
     tag = "wap",

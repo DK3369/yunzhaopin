@@ -599,6 +599,76 @@ pub async fn hide_look_resume(
     Ok(n)
 }
 
+/// PHP `look_resume` del — App `profile-views/delete` `{ ids }` uses the same hide.
+pub async fn hide_look_resumes(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<u64> {
+    let mut n = 0u64;
+    if user.usertype == 2 {
+        user.require_employer()?;
+        for id in ids {
+            n += phpyun_models::look_resume::hide_by_com(state.db.pool(), *id, user.uid)
+                .await
+                .unwrap_or(0);
+        }
+    } else {
+        user.require_jobseeker()?;
+        for id in ids {
+            n += phpyun_models::look_resume::hide_by_uid(state.db.pool(), *id, user.uid)
+                .await
+                .unwrap_or(0);
+        }
+    }
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    Ok(n)
+}
+
+/// PHP `resume.model::delResume` — hard-delete one `phpyun_resume_expect` (not the master resume).
+pub async fn delete_expect(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_jobseeker()?;
+    let row = phpyun_models::resume::expect::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    if row.uid != user.uid {
+        return Err(ApiError::forbidden());
+    }
+    let remaining = phpyun_models::resume::expect::count_by_uid(state.db.reader(), user.uid).await?;
+    if remaining <= 1 {
+        return Err(ApiError::business("resume_last_expect"));
+    }
+    let was_default =
+        phpyun_models::resume::expect::is_default(state.db.reader(), id, user.uid).await?;
+    phpyun_models::resume::expect::delete_children_by_eid(state.db.pool(), id).await?;
+    let n = phpyun_models::resume::expect::delete(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("not_found"));
+    }
+    if was_default {
+        if let Some(nid) =
+            phpyun_models::resume::expect::latest_id_by_uid(state.db.reader(), user.uid).await?
+        {
+            phpyun_models::resume::expect::set_default(state.db.pool(), user.uid, nid).await?;
+            resume_repo::set_def_job(state.db.pool(), user.uid, nid).await?;
+        }
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("resume.expect_delete", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("expect:{id}")),
+    )
+    .await;
+    Ok(())
+}
+
 /// PHP `member/com/look_resume` del — hide a browse record the company created.
 pub async fn hide_look_resume_by_com(
     state: &AppState,

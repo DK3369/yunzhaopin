@@ -17,6 +17,7 @@
 | 公开只读两级缓存（L1 moka + Redis） | [cache.md](./cache.md) | `TieredCache`；会员/后台计数不缓存 |
 | 鉴权信任链 | [security.md](./security.md) | 管理员 `usertype=9`；admin 回查库；不信 body 里的 uid |
 | 会员私信 HTTP | [chat.md](./chat.md) | `POST /v1/mcenter/chat/*`；表 `phpyun_rs_chat`；无 websocket |
+| App 缺口（身份证实名 / 面试评价 / 栏目订阅 / 简历删除） | [app-api-gaps.md](./app-api-gaps.md) | 两张 `phpyun_rs_*` 表；browse≠state；切站不写 Cookie |
 | 依赖怎么数、别乱砍 | [deps.md](./deps.md) | [doc/RUST_DEPENDENCIES.md](../../../doc/RUST_DEPENDENCIES.md) |
 | 本机怎么起 | [run.md](./run.md) | [`ops/restart.sh`](../../../ops/restart.sh)、[phpyun-rs/README.md](../../../phpyun-rs/README.md) |
 | 采集英文岗 / 官网申请 | [features/job-scrape.md](../features/job-scrape.md) | `job_scrape_service.rs`、`apply_service.rs`、site `jobs/[id].vue` |

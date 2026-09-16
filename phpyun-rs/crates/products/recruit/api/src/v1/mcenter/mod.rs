@@ -4,6 +4,7 @@ pub mod account_logout;
 pub mod activity;
 pub mod applications;
 pub mod apply;
+pub mod article_channels;
 pub mod atn;
 pub mod blacklist;
 pub mod broadcasts;
@@ -25,7 +26,9 @@ pub mod fans;
 pub mod favorites;
 pub mod feedback;
 pub mod finder;
+pub mod idcard_cert;
 pub mod integral;
+pub mod interview_review;
 pub mod interview_tpl;
 pub mod interviews;
 pub mod invite;
@@ -112,6 +115,7 @@ pub fn router() -> Router<AppState> {
         .merge(fans::routes())
         .merge(views::routes())
         .merge(interviews::routes())
+        .merge(interview_review::routes())
         .merge(yqms::routes())
         .merge(messages::routes())
         .merge(resume_downloads::routes())
@@ -133,6 +137,7 @@ pub fn router() -> Router<AppState> {
         .merge(company_cert::routes())
         .merge(resume_score::routes())
         .merge(contact_cert::routes())
+        .merge(idcard_cert::routes())
         .merge(blacklist::routes())
         .merge(remarks::routes())
         .merge(warnings::routes())
@@ -159,6 +164,7 @@ pub fn router() -> Router<AppState> {
         .merge(account_logout::routes())
         .merge(atn::routes())
         .merge(once_orders::routes())
+        .merge(article_channels::routes())
         .merge(company_content::routes())
         .merge(resume_tpl::routes())
         .merge(username::routes())

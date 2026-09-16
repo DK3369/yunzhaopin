@@ -513,6 +513,66 @@ pub async fn list_pending_once_orders(
         .await
 }
 
+/// `type=25` paylogs; `order_state` None = 1+2+3 (pending / paid / cancelled).
+pub async fn list_once_paylogs(
+    pool: &MySqlPool,
+    uid: u64,
+    order_state: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<OnceOrder>, sqlx::Error> {
+    let sql = match order_state {
+        Some(_) => format!(
+            "SELECT {ORDER_FIELDS} FROM phpyun_company_order \
+             WHERE uid = ? AND type = ? AND order_state = ? \
+             ORDER BY order_time DESC LIMIT ? OFFSET ?"
+        ),
+        None => format!(
+            "SELECT {ORDER_FIELDS} FROM phpyun_company_order \
+             WHERE uid = ? AND type = ? AND order_state IN (1, 2, 3) \
+             ORDER BY order_time DESC LIMIT ? OFFSET ?"
+        ),
+    };
+    let mut q = sqlx::query_as::<_, OnceOrder>(&sql)
+        .bind(uid)
+        .bind(ONCE_ORDER_TYPE);
+    if let Some(st) = order_state {
+        q = q.bind(st);
+    }
+    q.bind(limit).bind(offset).fetch_all(pool).await
+}
+
+pub async fn count_once_paylogs(
+    pool: &MySqlPool,
+    uid: u64,
+    order_state: Option<i32>,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = match order_state {
+        Some(st) => {
+            sqlx::query_as(
+                "SELECT COUNT(*) FROM phpyun_company_order \
+                 WHERE uid = ? AND type = ? AND order_state = ?",
+            )
+            .bind(uid)
+            .bind(ONCE_ORDER_TYPE)
+            .bind(st)
+            .fetch_one(pool)
+            .await?
+        }
+        None => {
+            sqlx::query_as(
+                "SELECT COUNT(*) FROM phpyun_company_order \
+                 WHERE uid = ? AND type = ? AND order_state IN (1, 2, 3)",
+            )
+            .bind(uid)
+            .bind(ONCE_ORDER_TYPE)
+            .fetch_one(pool)
+            .await?
+        }
+    };
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn list_pending_once_orders_by_fast(
     pool: &MySqlPool,
     fast: &str,

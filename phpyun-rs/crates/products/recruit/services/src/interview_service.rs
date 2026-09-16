@@ -231,3 +231,18 @@ pub async fn cancel(
     .await;
     Ok(())
 }
+
+pub async fn get_for_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<Interview> {
+    user.require_employer()?;
+    let row = interview_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    if row.com_id != user.uid {
+        return Err(ApiError::business("apply_not_owner"));
+    }
+    Ok(row)
+}

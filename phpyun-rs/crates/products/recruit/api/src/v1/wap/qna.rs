@@ -1,6 +1,7 @@
 //! Public Q&A browsing (aligned with the index/list/content parts of PHPYun `wap/ask`).
 
 use axum::{extract::State, routing::get, Router};
+use phpyun_core::date_parse::de_loose_u64;
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_dt, pic_n};
 use phpyun_core::{
@@ -17,9 +18,11 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/questions/detail",
     "/v1/wap/questions/answers",
     "/v1/wap/qna/categories",
+    "/v1/wap/qa/topics",
     "/v1/wap/qna/hotweek",
     "/v1/wap/qna/top-answerers",
     "/v1/wap/answers/comments/list",
+    "/v1/wap/qa/answers/comments",
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -34,6 +37,7 @@ pub fn routes() -> Router<AppState> {
             "/qna/categories",
             get(list_categories).post(list_categories),
         )
+        .route("/qa/topics", get(list_topics).post(list_topics))
         .route("/qna/hotweek", get(list_hotweek).post(list_hotweek))
         .route(
             "/qna/top-answerers",
@@ -42,6 +46,10 @@ pub fn routes() -> Router<AppState> {
         .route(
             "/answers/comments/list",
             get(list_comments).post(list_comments),
+        )
+        .route(
+            "/qa/answers/comments",
+            get(list_qa_comments).post(list_qa_comments),
         )
 }
 
@@ -533,7 +541,7 @@ impl From<phpyun_models::qna::entity::QClass> for CategoryItem {
     }
 }
 
-/// Q&A category list (aligned with PHP `wap/ask::qclass_action`)
+/// Q&A category list (aligned with PHP `wap/ask::qclass_action`). Alias: `/v1/wap/qa/topics`.
 #[utoipa::path(post, path = "/v1/wap/qna/categories", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list_categories(
     State(state): State<AppState>,
@@ -543,6 +551,14 @@ pub async fn list_categories(
     Ok(ApiResponse::data(
         list.iter().cloned().map(CategoryItem::from).collect(),
     ))
+}
+
+/// App alias of `/v1/wap/qna/categories`.
+#[utoipa::path(post, path = "/v1/wap/qa/topics", tag = "wap", responses((status = 200, description = "ok")))]
+pub async fn list_topics(
+    State(state): State<AppState>,
+) -> AppResult<ApiResponse<Vec<CategoryItem>>> {
+    list_categories(State(state)).await
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -612,11 +628,29 @@ pub async fn list_comments(
     page: Pagination,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ListCommentsBody>,
 ) -> AppResult<ApiResponse<Paged<CommentItem>>> {
-    let aid = b.aid;
+    let aid = if b.aid > 0 { b.aid } else { b.answer_id };
+    if aid == 0 {
+        return Err(phpyun_core::ApiError::param_missing("aid"));
+    }
     let r = qna_service::list_reviews(&state, aid, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))
+}
+
+/// App alias of `/v1/wap/answers/comments/list`. Body `answer_id` or `aid`.
+#[utoipa::path(post,
+    path = "/v1/wap/qa/answers/comments",
+    tag = "wap",
+    request_body = ListCommentsBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_qa_comments(
+    State(state): State<AppState>,
+    page: Pagination,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ListCommentsBody>,
+) -> AppResult<ApiResponse<Paged<CommentItem>>> {
+    list_comments(State(state), page, ValidatedJsonOrQuery(b)).await
 }
 
 // ==================== Top answerers leaderboard ====================
@@ -681,6 +715,8 @@ pub async fn list_top_answerers(
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct ListCommentsBody {
-    #[validate(range(min = 1, max = 99_999_999))]
+    #[serde(default, deserialize_with = "de_loose_u64")]
     pub aid: u64,
+    #[serde(default, deserialize_with = "de_loose_u64")]
+    pub answer_id: u64,
 }

@@ -20,6 +20,7 @@ pub fn routes() -> Router<AppState> {
         .route("/company/interviews", post(list_by_company))
         .route("/company/interviews/create", post(create))
         .route("/company/interviews/cancel", post(cancel))
+        .route("/company/interviews/detail", post(detail_company))
 }
 
 fn interview_status_name(s: i32) -> &'static str {
@@ -221,4 +222,22 @@ pub async fn cancel(
 ) -> AppResult<ApiResponse<json::Value>> {
     interview_service::cancel(&state, &user, b.id, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+/// Employer interview row (`phpyun_interview`) by id.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/interviews/detail",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok", body = InterviewItem))
+)]
+pub async fn detail_company(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<InterviewItem>> {
+    let row = interview_service::get_for_company(&state, &user, b.id).await?;
+    Ok(ApiResponse::data(InterviewItem::from(row)))
 }

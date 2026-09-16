@@ -1,6 +1,7 @@
 //! Member center - resume (usertype=1 job seeker only).
 
 use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
@@ -16,6 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/resume/status", post(update_status))
         .route("/resume/refresh", post(refresh))
         .route("/resume/top", post(buy_top))
+        .route("/resume/delete", post(delete_expect))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -326,4 +328,23 @@ pub async fn buy_top(
         }
     }
     Ok(ApiResponse::data(body))
+}
+
+/// PHP `delResume`: `{ id }` is `phpyun_resume_expect.id`. Refuses the last remaining expect.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume/delete",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn delete_expect(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    resume_service::delete_expect(&state, &user, b.id, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

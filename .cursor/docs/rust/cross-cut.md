@@ -45,3 +45,11 @@ Rust 拼图只走 [`media_url` / `media_url_from_cfg`](../../../phpyun-rs/crates
 - 旧 WAP 公开读 GET+POST 双挂不要删；新接口不要无故再双挂。
 - 后台 PhpOut / AdminPaged 别名不拆。
 - 上传仍走 `/api/upload`（multipart），不塞进 `useApi` 信封。
+
+## 切站
+
+`/v1/wap/regions/city-domain`、`/v1/wap/site/sub-sites`、`/v1/wap/site/sub-sites/match` **不写 Cookie**。客户端自己存 `did` 等；`mode=1` 换域名，`mode=2` 走 `indexdir`。Rust 靠请求 Host / `did` 辨站。协议在 Vue `useSubSite.ts`。
+
+## 订单列表（无总表）
+
+没有 `/orders/overview`。会员订单由客户端合并：`/v1/mcenter/vip/orders/list` + `/v1/mcenter/redeem/orders` + `/v1/mcenter/packs/orders/list` + `/v1/mcenter/once-jobs/paylogs`。

@@ -1,7 +1,7 @@
 //! Interview invitation templates (aligned with PHPYun `yqmb`) — employer-side CRUD.
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::CreatedId;
+use phpyun_core::dto::{CreatedId, IdBody};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::interview_template_service::{self, TplInput, TplPatch};
@@ -14,6 +14,7 @@ pub fn routes() -> Router<AppState> {
         .route("/interview-templates", post(create))
         .route("/interview-templates/list", post(list))
         .route("/interview-templates/update", post(update))
+        .route("/interview-templates/detail", post(detail))
 }
 
 /// Interview template item — all 11 columns of `phpyun_interview_template` + formatted time.
@@ -180,4 +181,21 @@ pub async fn update(
     )
     .await?;
     Ok(ApiResponse::message("ok"))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/interview-templates/detail",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok", body = TplItem))
+)]
+pub async fn detail(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<TplItem>> {
+    let t = interview_template_service::get(&state, &user, b.id).await?;
+    Ok(ApiResponse::data(TplItem::from(t)))
 }

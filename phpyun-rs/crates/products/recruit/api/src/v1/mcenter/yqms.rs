@@ -5,7 +5,8 @@ use phpyun_core::dto::IdBody;
 use phpyun_core::json;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
+    ValidatedJson,
 };
 use phpyun_models::apply::repo as apply_repo;
 use phpyun_services::yqms_service::{self, YqmsInput, YqmsResult};
@@ -18,10 +19,12 @@ pub fn routes() -> Router<AppState> {
         .route("/company/yqms/create", post(create))
         .route("/company/yqms/list", post(list_company))
         .route("/company/yqms/cancel", post(cancel_company))
+        .route("/company/yqms/detail", post(detail_company))
         .route("/yqms/list", post(list_mine))
         .route("/yqms/accept", post(accept))
         .route("/yqms/reject", post(reject))
         .route("/yqms/delete", post(delete_mine))
+        .route("/yqms/detail", post(detail_mine))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -121,6 +124,10 @@ pub struct YqmsItem {
     pub datetime_n: String,
     pub remark: String,
     pub uname: String,
+    /// Map longitude (list omitted this; detail includes it)
+    pub x: String,
+    pub y: String,
+    pub mappic: String,
 }
 
 impl From<phpyun_models::userid_msg::entity::UseridMsg> for YqmsItem {
@@ -143,6 +150,9 @@ impl From<phpyun_models::userid_msg::entity::UseridMsg> for YqmsItem {
             datetime: r.datetime,
             remark: r.remark,
             uname: String::new(),
+            x: r.x,
+            y: r.y,
+            mappic: r.mappic,
         }
     }
 }
@@ -279,4 +289,48 @@ pub async fn delete_mine(
 ) -> AppResult<ApiResponse<json::Value>> {
     let n = yqms_service::hide_mine(&state, &user, b.id).await?;
     Ok(ApiResponse::data(json::json!({ "deleted": n })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/yqms/detail",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok", body = YqmsItem))
+)]
+pub async fn detail_mine(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<YqmsItem>> {
+    let row = yqms_service::get_mine(&state, &user, b.id).await?;
+    let list = with_unames(&state, vec![YqmsItem::from(row)]).await?;
+    let item = list
+        .into_iter()
+        .next()
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    Ok(ApiResponse::data(item))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/yqms/detail",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok", body = YqmsItem))
+)]
+pub async fn detail_company(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<YqmsItem>> {
+    let row = yqms_service::get_company(&state, &user, b.id).await?;
+    let list = with_unames(&state, vec![YqmsItem::from(row)]).await?;
+    let item = list
+        .into_iter()
+        .next()
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    Ok(ApiResponse::data(item))
 }

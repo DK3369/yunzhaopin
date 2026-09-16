@@ -108,6 +108,17 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<UseridMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_userid_msg \
+         WHERE id = ? AND COALESCE(isdel,9) = 9 LIMIT 1"
+    );
+    sqlx::query_as::<_, UseridMsg>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
 pub async fn find_by_id_uid(
     pool: &MySqlPool,
     id: u64,

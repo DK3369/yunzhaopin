@@ -5,7 +5,7 @@ use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
 use phpyun_core::ApiError;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
 use phpyun_services::{pack_service, payment_notify_service};
 use serde::{Deserialize, Serialize};
@@ -16,7 +16,8 @@ pub fn routes() -> Router<AppState> {
     let r = Router::new()
         .route("/packs/list", post(list_packs))
         .route("/packs/quote", post(quote))
-        .route("/packs/orders", post(create_order));
+        .route("/packs/orders", post(create_order))
+        .route("/packs/orders/list", post(list_orders));
     #[cfg(debug_assertions)]
     let r = r.route("/packs/orders/mock-paid", post(mock_paid_pack));
     r
@@ -156,7 +157,7 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<PackOrderForm>,
 ) -> AppResult<ApiResponse<PackOrderCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" {
         return Err(ApiError::param_invalid("channel"));
     }
     let created =
@@ -181,6 +182,27 @@ pub async fn create_order(
         pay_url,
         channel: f.channel,
     }))
+}
+
+/// `company_order.type=5` list. Shape matches `/vip/orders/list`. Create stays at `/packs/orders`.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/packs/orders/list",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_orders(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<ApiResponse<Paged<super::vip::OrderItem>>> {
+    let (list, total) = pack_service::list_orders(&state, &user, page).await?;
+    Ok(ApiResponse::data(Paged::from_listing(
+        list.into_iter().map(super::vip::OrderItem::from).collect::<Vec<_>>(),
+        total,
+        page,
+    )))
 }
 
 #[cfg(debug_assertions)]

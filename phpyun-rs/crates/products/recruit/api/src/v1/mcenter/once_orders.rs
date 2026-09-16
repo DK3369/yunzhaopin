@@ -12,13 +12,15 @@ use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
 use phpyun_services::once_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/once-jobs/orders", post(list_pending))
         .route("/once-jobs/orders/cancel", post(cancel))
+        .route("/once-jobs/paylogs", post(list_paylogs))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -90,4 +92,34 @@ pub async fn cancel(
 ) -> AppResult<ApiResponse<json::Value>> {
     once_service::cancel_pending_order(&state, &user, b.id).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PaylogsQuery {
+    /// Optional `company_order.order_state` 1/2/3. Omit = 1+2+3.
+    #[serde(default)]
+    #[validate(range(min = 0, max = 3))]
+    pub order_state: Option<i32>,
+}
+
+/// `type=25` paylogs. `/once-jobs/orders` still lists pending (`order_state=1`) only.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/once-jobs/paylogs",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = PaylogsQuery,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_paylogs(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<PaylogsQuery>,
+) -> AppResult<ApiResponse<Paged<OrderItem>>> {
+    let st = q.order_state.filter(|s| *s > 0);
+    let r = once_service::list_my_paylogs(&state, &user, st, page).await?;
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

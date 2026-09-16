@@ -70,6 +70,7 @@ pub async fn list(
     Ok(ApiResponse::data(list.into_iter().map(OtherItem::from).collect()))
 }
 
+/// Extra named blocks (`phpyun_resume_other`). Not works (`/galleries*`) and not bio (`/resume.description`).
 #[utoipa::path(
     post,
     path = "/v1/mcenter/resume/others",

@@ -523,3 +523,26 @@ pub async fn cancel_pending_order(
     }
     Ok(())
 }
+
+pub async fn list_my_paylogs(
+    state: &AppState,
+    user: &phpyun_core::AuthenticatedUser,
+    order_state: Option<i32>,
+    page: Pagination,
+) -> AppResult<PendingOrdersPage> {
+    user.require_employer()?;
+    if let Some(st) = order_state {
+        if !matches!(st, 1 | 2 | 3) {
+            return Err(ApiError::param_invalid("order_state"));
+        }
+    }
+    let pool = state.db.reader();
+    let (list, total) = tokio::join!(
+        once_repo::list_once_paylogs(pool, user.uid, order_state, page.offset, page.limit),
+        once_repo::count_once_paylogs(pool, user.uid, order_state),
+    );
+    Ok(PendingOrdersPage {
+        list: list?,
+        total: total?,
+    })
+}

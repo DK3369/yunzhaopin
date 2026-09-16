@@ -503,3 +503,29 @@ pub async fn hide_mine(
     }
     Ok(n)
 }
+
+pub async fn get_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<phpyun_models::userid_msg::entity::UseridMsg> {
+    user.require_jobseeker()?;
+    msg_repo::find_by_id_uid(state.db.reader(), id, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))
+}
+
+pub async fn get_company(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<phpyun_models::userid_msg::entity::UseridMsg> {
+    user.require_employer()?;
+    let row = msg_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::business("not_found"))?;
+    if row.fid != user.uid {
+        return Err(ApiError::business("not_found"));
+    }
+    Ok(row)
+}
