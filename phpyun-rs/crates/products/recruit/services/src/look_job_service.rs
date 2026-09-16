@@ -14,11 +14,18 @@ pub async fn list_mine(
     state: &AppState,
     user: &AuthenticatedUser,
     page: Pagination,
+    keyword: Option<&str>,
 ) -> AppResult<LookJobPage> {
     user.require_employer()?;
     let (total, list) = tokio::join!(
-        look_job::count_by_com(state.db.reader(), user.uid),
-        look_job::list_by_com(state.db.reader(), user.uid, page.offset, page.limit),
+        look_job::count_by_com(state.db.reader(), user.uid, keyword),
+        look_job::list_by_com(
+            state.db.reader(),
+            user.uid,
+            keyword,
+            page.offset,
+            page.limit,
+        ),
     );
     Ok(LookJobPage {
         total: total?,
@@ -45,10 +52,13 @@ pub async fn list_mine_seeker(
 pub async fn hide_mine_seeker(
     state: &AppState,
     user: &AuthenticatedUser,
-    id: u64,
+    ids: &[u64],
 ) -> AppResult<u64> {
     user.require_jobseeker()?;
-    let n = look_job::hide_by_seeker(state.db.pool(), id, user.uid).await?;
+    if ids.is_empty() {
+        return Err(phpyun_core::ApiError::param_invalid("id"));
+    }
+    let n = look_job::hide_by_seeker_ids(state.db.pool(), ids, user.uid).await?;
     if n == 0 {
         return Err(phpyun_core::ApiError::business("not_found"));
     }
@@ -58,10 +68,13 @@ pub async fn hide_mine_seeker(
 pub async fn hide_mine_employer(
     state: &AppState,
     user: &AuthenticatedUser,
-    id: u64,
+    ids: &[u64],
 ) -> AppResult<u64> {
     user.require_employer()?;
-    let n = look_job::hide_by_com(state.db.pool(), id, user.uid).await?;
+    if ids.is_empty() {
+        return Err(phpyun_core::ApiError::param_invalid("id"));
+    }
+    let n = look_job::hide_by_com_ids(state.db.pool(), ids, user.uid).await?;
     if n == 0 {
         return Err(phpyun_core::ApiError::business("not_found"));
     }

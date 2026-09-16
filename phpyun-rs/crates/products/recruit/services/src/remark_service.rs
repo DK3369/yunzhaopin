@@ -8,8 +8,9 @@ pub async fn get(
     user: &AuthenticatedUser,
     target_uid: u64,
     kind: i32,
+    eid: u64,
 ) -> AppResult<Option<Remark>> {
-    Ok(remark_repo::get(state.db.reader(), user.uid, target_uid, kind).await?)
+    Ok(remark_repo::get(state.db.reader(), user.uid, target_uid, kind, eid).await?)
 }
 
 pub async fn upsert(
@@ -18,6 +19,8 @@ pub async fn upsert(
     target_uid: u64,
     kind: i32,
     note: &str,
+    eid: u64,
+    status: i32,
 ) -> AppResult<()> {
     remark_repo::upsert(
         state.db.pool(),
@@ -26,6 +29,8 @@ pub async fn upsert(
         kind,
         note,
         clock::now_ts(),
+        eid,
+        status,
     )
     .await?;
     Ok(())

@@ -516,17 +516,33 @@ pub async fn remaining_for(
 pub async fn list_mine_as_company(
     state: &AppState,
     user: &AuthenticatedUser,
+    keyword: Option<&str>,
     page: Pagination,
 ) -> AppResult<DownloadPage> {
     user.require_employer()?;
     let (total, list) = tokio::join!(
-        download_repo::count_for_company(state.db.reader(), user.uid),
-        download_repo::list_for_company(state.db.reader(), user.uid, page.offset, page.limit),
+        download_repo::count_for_company_kw(state.db.reader(), user.uid, keyword),
+        download_repo::list_for_company(
+            state.db.reader(),
+            user.uid,
+            keyword,
+            page.offset,
+            page.limit,
+        ),
     );
     Ok(DownloadPage {
         total: total?,
         list: list?,
     })
+}
+
+pub async fn delete_mine(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    ids: &[u64],
+) -> AppResult<u64> {
+    user.require_employer()?;
+    Ok(download_repo::hide_owned(state.db.pool(), user.uid, ids).await?)
 }
 
 /// Jobseeker views who has downloaded their resume

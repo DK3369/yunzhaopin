@@ -125,6 +125,13 @@ pub struct Company {
     #[serde(default)]
     pub welfare: Option<String>,
 
+    #[sqlx(default)]
+    #[serde(default)]
+    pub busstops: Option<String>,
+    #[sqlx(default)]
+    #[serde(default)]
+    pub not_disturb: Option<String>,
+
     #[sqlx(try_from = "i32")]
     pub did: u64,
 }

@@ -190,7 +190,13 @@ async function closePromote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
 }
 const { data: vip } = await useAsyncData(
   'com-vip-current',
-  () => api.post<{ job_num?: number; rating_type?: number }>('/v1/mcenter/vip/current', {}).catch(() => null),
+  () =>
+    api
+      .post<{ job_num?: number; rating_type?: number; expires_at?: number; active?: boolean }>(
+        '/v1/mcenter/vip/current',
+        {},
+      )
+      .catch(() => null),
   reuseAsyncCache(),
 )
 const hintDismissed = ref(false)
@@ -207,6 +213,16 @@ const showPendingHint = computed(() => !hintDismissed.value && pendingN.value > 
 const showQuotaHint = computed(
   () => !hintDismissed.value && pendingN.value <= 0 && Number(vip.value?.rating_type) === 1,
 )
+const vipJobQuota = computed(() => {
+  const etime = Number(vip.value?.expires_at ?? 0)
+  const todayStart = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000)
+  const ok = etime === 0 || etime > todayStart
+  if (!ok) return { prefix: 'default_00381' as const, num: '0' }
+  if (Number(vip.value?.rating_type) === 1) {
+    return { prefix: 'default_00379' as const, num: String(vip.value?.job_num ?? 0) }
+  }
+  return { prefix: 'default_00380' as const, num: t('common_01936') }
+})
 
 async function batchOpen() {
   msg.value = ''
@@ -445,6 +461,7 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
           <th>{{ $t('wap_com_00288') }}</th>
           <th>{{ $t('wap_00794') }}</th>
           <th>{{ $t('member_com_00268') }}</th>
+          <th>{{ $t('wap_00847') }}</th>
           <th>{{ $t('wap_00326') }}</th>
           <th>{{ $t('wap_com_00246') }}</th>
           <th>{{ $t('wap_com_00236') }}</th>
@@ -468,6 +485,7 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
             <NuxtLink v-if="job.jobnum" :to="`/com/applications?job_id=${job.id}`" class="yun_m_job_r_l">{{ $t('wap_com_00427') }}</NuxtLink>
           </td>
           <td align="center">{{ job.jobhits ?? 0 }}</td>
+          <td align="center">{{ job.jobexpoure ?? 0 }}{{ $t('wap_01543') }}</td>
           <td align="center">{{ job.lastupdate_n || '—' }}</td>
           <td align="center">
             <a href="javascript:;" class="job_looklist_fx" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00246') }}</a>
@@ -590,5 +608,19 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
       <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>
     </p>
     <p v-if="msg">{{ msg }}</p>
+    <div class="com_tip_bottom">
+      <div class="yun_tip_tit">{{ $t('wap_user_00205') }}</div>
+      <div class="yun_prompt_cont">
+        <p>{{ $t(vipJobQuota.prefix) }}{{ vipJobQuota.num }}{{ $t('default_00385').replace('<br>', '') }}</p>
+        <p>
+          2、{{ $t('member_com_00455') }}
+          <NuxtLink to="/com/member-right" class="yun_m_job_r_l">{{ $t('member_com_00266') }}</NuxtLink>
+        </p>
+        <p>3、{{ $t('member_com_00456') }}</p>
+        <p>4、{{ $t('member_com_00460') }}</p>
+        <p>5、{{ $t('member_com_00461') }}</p>
+        <p>6、{{ $t('member_com_00462') }}</p>
+      </div>
+    </div>
   </MemberPanel>
 </template>

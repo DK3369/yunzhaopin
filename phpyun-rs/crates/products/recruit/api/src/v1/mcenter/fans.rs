@@ -6,10 +6,13 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::fan_service;
-use serde::Serialize;
-use utoipa::ToSchema;
+use serde::{Deserialize, Serialize};
+use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/fans", post(list_mine))
@@ -41,6 +44,13 @@ impl From<fan_service::FanRow> for FanItem {
     }
 }
 
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema, Default)]
+pub struct FansQuery {
+    #[serde(default)]
+    #[validate(length(max = 60))]
+    pub keyword: Option<String>,
+}
+
 /// Paginated list of jobseekers who have favorited my company's jobs.
 /// Job-seekers receive an empty list (only `usertype=2` has fans).
 #[utoipa::path(
@@ -48,14 +58,21 @@ impl From<fan_service::FanRow> for FanItem {
     path = "/v1/mcenter/fans",
     tag = "mcenter",
     security(("bearer" = [])),
+    request_body = FansQuery,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
+    ValidatedJson(q): ValidatedJson<FansQuery>,
 ) -> AppResult<ApiResponse<Paged<FanItem>>> {
-    let r = fan_service::list_fans(&state, &user, page).await?;
+    let keyword = q
+        .keyword
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
+    let r = fan_service::list_fans(&state, &user, page, keyword).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))

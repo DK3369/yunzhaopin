@@ -11,8 +11,12 @@ use phpyun_models::apply::{entity::Apply, repo as apply_repo};
 use phpyun_models::category::repo as category_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::job_scrape::repo as scrape_repo;
+use phpyun_models::message::repo as message_repo;
 use phpyun_models::resume::expect as expect_repo;
+use phpyun_models::resume::repo as resume_repo;
+use phpyun_models::resume_download::repo as download_repo;
 use phpyun_models::site_setting::repo as setting_repo;
+use std::collections::HashMap;
 
 // ==================== Jobseeker submission ====================
 
@@ -404,6 +408,104 @@ pub async fn list_for_company(
     })
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ApplicantCard {
+    pub photo: String,
+    pub sex_n: String,
+    pub age: i32,
+    pub edu_n: String,
+    pub exp_n: String,
+    pub salary: String,
+    pub telphone: String,
+    pub islink: i32,
+}
+
+fn salary_label(min: i32, max: i32) -> String {
+    if min > 0 && max > 0 && max != min {
+        format!("{min}-{max}")
+    } else if min > 0 {
+        min.to_string()
+    } else if max > 0 {
+        max.to_string()
+    } else {
+        String::new()
+    }
+}
+
+/// Batch resume + download flags for one page of applications. Keyed by seeker uid.
+pub async fn applicant_cards(
+    state: &AppState,
+    com_id: u64,
+    rows: &[(u64, u64)],
+) -> AppResult<HashMap<u64, ApplicantCard>> {
+    let uids: Vec<u64> = rows.iter().map(|(uid, _)| *uid).collect();
+    let eids: Vec<u64> = rows.iter().map(|(_, eid)| *eid).filter(|e| *e > 0).collect();
+    let (resumes, salaries, unlocked, dicts) = tokio::join!(
+        resume_repo::cards_by_uids(state.db.reader(), &uids),
+        expect_repo::salary_by_ids(state.db.reader(), &eids),
+        download_repo::unlocked_uids(state.db.reader(), com_id, &uids),
+        crate::dict_service::get(state),
+    );
+    let resumes = resumes?;
+    let salaries = salaries?;
+    let unlocked = unlocked?;
+    let dicts = dicts?;
+    let resume_map: HashMap<u64, resume_repo::ResumeCard> =
+        resumes.into_iter().map(|r| (r.uid, r)).collect();
+    let eid_by_uid: HashMap<u64, u64> = rows.iter().copied().collect();
+    let mut out = HashMap::new();
+    for uid in uids {
+        let islink = i32::from(unlocked.contains(&uid));
+        let r = resume_map.get(&uid);
+        let (min, max) = eid_by_uid
+            .get(&uid)
+            .and_then(|eid| salaries.get(eid))
+            .copied()
+            .unwrap_or((0, 0));
+        let photo = r
+            .and_then(|c| {
+                if c.phototype == 1 {
+                    None
+                } else {
+                    c.photo
+                        .as_deref()
+                        .map(str::trim)
+                        .filter(|s| !s.is_empty())
+                        .map(str::to_owned)
+                }
+            })
+            .unwrap_or_default();
+        let sex = r.map(|c| c.sex).unwrap_or(0);
+        let edu = r.map(|c| c.education).unwrap_or(0);
+        let exp = r.map(|c| c.exp).unwrap_or(0);
+        let age = r
+            .and_then(|c| c.birthday.as_deref())
+            .map(php_year_age)
+            .filter(|a| *a > 0)
+            .unwrap_or(0);
+        let tel = if islink == 1 {
+            r.and_then(|c| c.telphone.clone())
+                .unwrap_or_default()
+        } else {
+            String::new()
+        };
+        out.insert(
+            uid,
+            ApplicantCard {
+                photo,
+                sex_n: crate::enum_labels::sex_n(sex),
+                age,
+                edu_n: dicts.user_or_com(edu).to_string(),
+                exp_n: dicts.user_or_com(exp).to_string(),
+                salary: salary_label(min, max),
+                telphone: tel,
+                islink,
+            },
+        );
+    }
+    Ok(out)
+}
+
 /// Tab counts for the received-applications screen. `browse_state` is cleared
 /// so selecting one tab does not zero out the others.
 pub async fn state_counts_for_company(
@@ -464,6 +566,33 @@ pub async fn delete_for_company(
     Ok(())
 }
 
+pub async fn delete_for_company_ids(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    ids: &[u64],
+    client_ip: &str,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    if ids.is_empty() {
+        return Err(ApiError::param_invalid("id"));
+    }
+    let affected = apply_repo::hide_by_com_ids(state.db.pool(), ids, user.uid).await?;
+    if affected == 0 {
+        return Err(ApiError::business("apply_not_owner"));
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new(
+            "application.delete",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("apply:{}", ids.len()))
+        .meta(&serde_json::json!({ "ids": ids })),
+    )
+    .await;
+    Ok(affected)
+}
+
 /// Employer side: set the application's `is_browse` to any enum value.
 /// PHPYun convention: 1=not viewed / 2=viewed / 3=interviewed / 4=not a fit / 5=unreachable / 7=hired.
 /// Invalid values are rejected.
@@ -478,10 +607,34 @@ pub async fn set_browse_state(
     if !matches!(new_state, 1 | 2 | 3 | 4 | 5 | 7) {
         return Err(ApiError::param_invalid("state"));
     }
+    let apply = apply_repo::find_by_id(state.db.reader(), apply_id)
+        .await?
+        .filter(|a| a.com_id == user.uid)
+        .ok_or_else(|| ApiError::business("apply_not_owner"))?;
     let affected =
         apply_repo::set_browse_state(state.db.pool(), apply_id, user.uid, new_state).await?;
     if affected == 0 {
         return Err(ApiError::business("apply_not_owner"));
+    }
+    let now = clock::now_ts();
+    if apply.job_id > 0 {
+        let _ = job_repo::touch_operatime(state.db.pool(), apply.job_id, now).await;
+    }
+    if new_state == 4 {
+        let _ = message_repo::create(
+            state.db.pool(),
+            message_repo::MessageCreate {
+                uid: apply.uid,
+                recipient_usertype: 1,
+                title: "sqzwhf",
+                body: Some("sqzwhf"),
+                category: "apply",
+                ref_kind: 0,
+                ref_id: apply_id,
+            },
+            now,
+        )
+        .await;
     }
     let _ = audit::emit(
         state,
@@ -514,4 +667,18 @@ pub async fn invite_interview(
     )
     .await;
     Ok(())
+}
+
+pub async fn next_unread(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    after_id: u64,
+) -> AppResult<Option<(u64, u64, u64)>> {
+    user.require_employer()?;
+    Ok(apply_repo::next_unread_id(state.db.reader(), user.uid, after_id).await?)
+}
+
+pub async fn ever_applied(state: &AppState, user: &AuthenticatedUser, eid: u64) -> AppResult<bool> {
+    user.require_employer()?;
+    Ok(apply_repo::exists_by_com_eid(state.db.reader(), user.uid, eid).await?)
 }

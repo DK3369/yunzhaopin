@@ -28,6 +28,7 @@ pub async fn list_fans(
     state: &AppState,
     user: &AuthenticatedUser,
     page: Pagination,
+    keyword: Option<&str>,
 ) -> AppResult<FanPage> {
     // Only company users have a meaningful "fans" set; for other usertypes
     // return an empty page rather than 403 — the frontend already gates the
@@ -41,8 +42,8 @@ pub async fn list_fans(
 
     let pool = state.db.reader();
     let (total, rows) = tokio::join!(
-        collect_repo::count_fans_by_com_uid(pool, user.uid),
-        collect_repo::list_fans_by_com_uid(pool, user.uid, page.offset, page.limit),
+        collect_repo::count_fans_by_com_uid(pool, user.uid, keyword),
+        collect_repo::list_fans_by_com_uid(pool, user.uid, keyword, page.offset, page.limit),
     );
     let total = total?;
     let rows = rows?;

@@ -4,29 +4,33 @@ import { isUnauthErr } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
+const keywordInput = ref('')
 const keyword = ref('')
 const inviteUid = ref(0)
 const { data, error } = await useAsyncData(
-  () => `com-fans-${page.value}`,
-  () => api.post('/v1/mcenter/fans', { page: page.value, page_size: pageSize }),
+  () => `com-fans-${page.value}-${keyword.value}`,
+  () =>
+    api.post('/v1/mcenter/fans', {
+      page: page.value,
+      page_size: pageSize,
+      keyword: keyword.value || undefined,
+    }),
 )
 const raw = computed(() => (data.value?.list || []) as Record<string, unknown>[])
-const rows = computed(() => {
-  const k = keyword.value.trim().toLowerCase()
-  return raw.value
-    .filter((row) => {
-      if (!k) return true
-      return [row.username, row.uid].some((x) => String(x || '').toLowerCase().includes(k))
-    })
-    .map((row) => ({
-      key: Number(row.uid),
-      name: String(row.username || row.uid || ''),
-      time: String(row.last_datetime_n || ''),
-      to: `/resumes/${row.uid}`,
-      info: Number(row.fav_count || 0) > 0 ? [String(row.fav_count)] : [],
-    }))
-})
+const rows = computed(() =>
+  raw.value.map((row) => ({
+    key: Number(row.uid),
+    name: String(row.username || row.uid || ''),
+    time: String(row.last_datetime_n || ''),
+    to: `/resumes/${row.uid}`,
+    info: Number(row.fav_count || 0) > 0 ? [String(row.fav_count)] : [],
+  })),
+)
 const total = computed(() => inferTotal(data.value))
+function search() {
+  keyword.value = keywordInput.value.trim()
+  go(1)
+}
 useSeoMeta({ title: t('wap_com_00407') })
 </script>
 
@@ -36,10 +40,12 @@ useSeoMeta({ title: t('wap_com_00407') })
     <template #h5Tabs><MemberHrTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <p class="site-pc">
-      <input v-model="keyword" type="search" :placeholder="$t('admin_00149')" />
+      <input v-model="keywordInput" type="search" :placeholder="$t('admin_00149')" @keydown.enter.prevent="search" />
+      <button type="button" class="com_topbth" @click="search">{{ $t('common.search') }}</button>
     </p>
     <div class="site-h5 com-h5-filters">
-      <input v-model="keyword" type="search" class="com-h5-filters__kw" :placeholder="$t('admin_00149')" />
+      <input v-model="keywordInput" type="search" class="com-h5-filters__kw" :placeholder="$t('admin_00149')" @keydown.enter.prevent="search" />
+      <button type="button" class="issue_post_body_btn" @click="search">{{ $t('common.search') }}</button>
     </div>
     <MemberHrResumeRows v-if="!error" :rows="rows">
       <template #pc-acts="{ row }">

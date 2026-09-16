@@ -153,22 +153,44 @@ pub async fn mark_all_read(
     Ok(ApiResponse::data(json::json!({ "ok": true, "updated": n })))
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct MessageDeleteBody {
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub id: Option<u64>,
+    #[serde(default)]
+    #[validate(length(max = 200))]
+    pub ids: Option<Vec<u64>>,
+}
+
+fn collect_ids(id: Option<u64>, ids: Option<Vec<u64>>) -> Vec<u64> {
+    let mut out = ids.unwrap_or_default();
+    if let Some(i) = id.filter(|x| *x > 0) {
+        if !out.contains(&i) {
+            out.push(i);
+        }
+    }
+    out.retain(|x| *x > 0 && *x <= 99_999_999);
+    out
+}
+
 /// Delete message
 #[utoipa::path(
     post,
     path = "/v1/mcenter/messages/delete",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = IdBody,
+    request_body = MessageDeleteBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJson(b): ValidatedJson<MessageDeleteBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    message_service::delete(&state, &user, b.id).await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+    let ids = collect_ids(b.id, b.ids);
+    let n = message_service::delete_ids(&state, &user, &ids).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true, "deleted": n })))
 }
 
 // ==================== Aggregate unread badge ====================

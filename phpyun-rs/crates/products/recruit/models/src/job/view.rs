@@ -112,6 +112,9 @@ pub struct JobSummary {
 
     // Stats
     pub jobhits: i32,
+    /// PHP `jobexpoure` 曝光次数。
+    #[serde(default)]
+    pub jobexpoure: i32,
     /// Employer list: applications (`userid_job isdel=9`). Public lists stay 0.
     #[serde(default)]
     pub jobnum: i32,
@@ -192,6 +195,7 @@ impl From<Job> for JobSummary {
             newtime: false,
 
             jobhits: j.jobhits,
+            jobexpoure: j.jobexpoure,
             jobnum: 0,
             statusbody: j.statusbody,
             is_favorited: false,

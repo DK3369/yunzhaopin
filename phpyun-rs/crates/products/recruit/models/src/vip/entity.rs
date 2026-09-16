@@ -36,4 +36,7 @@ pub struct PayOrder {
     pub pay_tx_id: Option<String>,
     pub created_at: i64,
     pub paid_at: i64,
+    /// PHP `company_order.type` (1 VIP / 2 integral recharge / 5 pack …).
+    pub order_kind: i32,
+    pub integral: i32,
 }

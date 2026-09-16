@@ -43,6 +43,7 @@ const rows = computed(() =>
 const total = computed(() => inferTotal(data.value))
 const msg = ref('')
 const inviteUid = ref(0)
+const picked = ref<number[]>([])
 function fail(e: unknown) {
   return e instanceof Error ? e.message : t('ui.failed')
 }
@@ -67,6 +68,23 @@ async function remove(id: number) {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/resume-downloads/delete', { ids: [id] })
+    picked.value = picked.value.filter((x) => x !== id)
+    msg.value = t('common.success')
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = fail(e)
+  }
+}
+async function removePicked() {
+  if (!picked.value.length) {
+    msg.value = t('common_01164')
+    return
+  }
+  if (!window.confirm(t('member_com_00083'))) return
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume-downloads/delete', { ids: picked.value })
+    picked.value = []
     msg.value = t('common.success')
     await refresh()
   } catch (e: unknown) {
@@ -138,6 +156,7 @@ useSeoMeta({ title: t('wap_com_00235') })
   <MemberPanel :title="$t('wap_com_00235')" :error="error" :empty="!error && !(data?.list || []).length">
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
+    <p class="muted">{{ $t('wap_com_00235') }} {{ total }}</p>
     <p class="site-pc">
       <input v-model="keyword" type="search" :placeholder="$t('admin_00149')" @keydown.enter.prevent="go(1)" />
       <button type="button" class="com_topbth" @click="go(1)">{{ $t('common.search') }}</button>
@@ -153,7 +172,7 @@ useSeoMeta({ title: t('wap_com_00235') })
       />
       <button type="button" class="issue_post_body_btn" @click="go(1)">{{ $t('common.search') }}</button>
     </div>
-    <MemberHrResumeRows :rows="rows">
+    <MemberHrResumeRows v-model:picked="picked" selectable :rows="rows">
       <template #pc-acts="{ row }">
         <a href="javascript:;" class="cblue" @click="pickInvite(Number(row.key))">{{ $t('wap_com_00046') }}</a>
         <a href="javascript:;" class="cblue" @click="openRemark(Number(row.key))">{{ $t('member_user_00242') }}</a>
@@ -165,6 +184,9 @@ useSeoMeta({ title: t('wap_com_00235') })
         <div class="hr_userlist_czicon" @click="remove(Number(row.key))">{{ $t('common.delete') }}</div>
       </template>
     </MemberHrResumeRows>
+    <div v-if="rows.length" class="com_Release_job_bot">
+      <a href="javascript:;" class="c_btn_02" @click="removePicked">{{ $t('common.delete') }}</a>
+    </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <MemberComYqmsForm
       v-if="inviteUid"

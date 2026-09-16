@@ -6,7 +6,7 @@
 //! `exists` helper before insert.
 
 use super::entity::Collect;
-use sqlx::MySqlPool;
+use sqlx::{MySqlPool, QueryBuilder};
 
 pub struct InsertJob<'a> {
     pub uid: u64,
@@ -144,42 +144,52 @@ pub async fn count_collectors_of_job(pool: &MySqlPool, job_id: u64) -> Result<u6
 /// `com.class.php::attention_me_action`, which renders a list of users
 /// "interested in me" on the company center.
 ///
+fn push_fans_filter(qb: &mut QueryBuilder<'_, sqlx::MySql>, com_uid: u64, keyword: Option<&str>) {
+    qb.push(
+        " FROM phpyun_fav_job f LEFT JOIN phpyun_member m ON m.uid = f.uid \
+         WHERE f.com_id = ",
+    );
+    qb.push_bind(com_uid);
+    qb.push(" AND f.uid > 0");
+    if let Some(kw) = keyword.map(str::trim).filter(|k| !k.is_empty()) {
+        qb.push(" AND m.username LIKE ");
+        crate::sql::push_contains(qb, kw);
+    }
+}
+
 /// Returns `(uid, fav_count, last_datetime)` ordered by most recent activity.
 pub async fn list_fans_by_com_uid(
     pool: &MySqlPool,
     com_uid: u64,
+    keyword: Option<&str>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<(u64, u64, i64)>, sqlx::Error> {
-    let rows: Vec<(u64, i64, i64)> = sqlx::query_as(
-        r#"SELECT
-              CAST(uid AS UNSIGNED)            AS uid,
-              CAST(COUNT(*) AS SIGNED)         AS fav_count,
-              CAST(MAX(datetime) AS SIGNED)    AS last_datetime
-           FROM phpyun_fav_job
-           WHERE com_id = ? AND uid > 0
-           GROUP BY uid
-           ORDER BY last_datetime DESC, uid DESC
-           LIMIT ? OFFSET ?"#,
-    )
-    .bind(com_uid)
-    .bind(limit)
-    .bind(offset)
-    .fetch_all(pool)
-    .await?;
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(f.uid AS UNSIGNED) AS uid, \
+                CAST(COUNT(*) AS SIGNED) AS fav_count, \
+                CAST(MAX(f.datetime) AS SIGNED) AS last_datetime",
+    );
+    push_fans_filter(&mut qb, com_uid, keyword);
+    qb.push(" GROUP BY f.uid ORDER BY last_datetime DESC, f.uid DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    let rows: Vec<(u64, i64, i64)> = qb.build_query_as().fetch_all(pool).await?;
     Ok(rows
         .into_iter()
         .map(|(uid, n, ts)| (uid, phpyun_core::numeric::nonnegative_count(n), ts))
         .collect())
 }
 
-pub async fn count_fans_by_com_uid(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(DISTINCT uid) FROM phpyun_fav_job WHERE com_id = ? AND uid > 0",
-    )
-    .bind(com_uid)
-    .fetch_one(pool)
-    .await?;
+pub async fn count_fans_by_com_uid(
+    pool: &MySqlPool,
+    com_uid: u64,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(DISTINCT f.uid)");
+    push_fans_filter(&mut qb, com_uid, keyword);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

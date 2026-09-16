@@ -1,12 +1,18 @@
 <template>
   <table v-if="rows.length" class="com_table site-pc">
     <tr>
+      <th v-if="selectable" width="25">
+        <label><input :checked="allPicked" type="checkbox" class="com_job_list_check" @change="toggleAll(($event.target as HTMLInputElement).checked)" /></label>
+      </th>
       <th>{{ $t('wap_00456') }}</th>
       <th v-if="showJob">{{ $t('wap_com_00288') }}</th>
       <th>{{ $t('member_user_00106') }}</th>
       <th>{{ $t('member_user_00048') }}</th>
     </tr>
     <tr v-for="row in rows" :key="row.key">
+      <td v-if="selectable" align="center">
+        <input type="checkbox" class="com_job_list_check" :checked="isPicked(row.key)" @change="toggle(row.key)" />
+      </td>
       <td>
         <div class="newcom_user_info">
           <div v-if="row.photo" class="newcom_user_pic">
@@ -47,6 +53,9 @@
         :info="row.info || []"
         @open="row.to ? navigateTo(row.to) : undefined"
       >
+        <label v-if="selectable" class="com_job_list_check">
+          <input type="checkbox" :checked="isPicked(row.key)" @click.stop @change="toggle(row.key)" />
+        </label>
         <slot name="h5-acts" :row="row" />
       </MemberHrUserCard>
     </div>
@@ -68,11 +77,34 @@ export type MemberHrResumeRow = {
   stateText?: string
 }
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     rows: MemberHrResumeRow[]
     showJob?: boolean
+    selectable?: boolean
+    picked?: number[]
   }>(),
-  { showJob: false },
+  { showJob: false, selectable: false, picked: () => [] },
 )
+const emit = defineEmits<{ 'update:picked': [number[]] }>()
+
+function idOf(key: string | number) {
+  return Number(key)
+}
+function isPicked(key: string | number) {
+  return props.picked.includes(idOf(key))
+}
+const allPicked = computed(
+  () => props.rows.length > 0 && props.rows.every((r) => props.picked.includes(idOf(r.key))),
+)
+function toggle(key: string | number) {
+  const id = idOf(key)
+  emit(
+    'update:picked',
+    props.picked.includes(id) ? props.picked.filter((x) => x !== id) : [...props.picked, id],
+  )
+}
+function toggleAll(on: boolean) {
+  emit('update:picked', on ? props.rows.map((r) => idOf(r.key)) : [])
+}
 </script>

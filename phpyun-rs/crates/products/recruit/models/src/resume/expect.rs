@@ -221,6 +221,29 @@ pub async fn list_by_ids(pool: &MySqlPool, ids: &[u64]) -> Result<Vec<Expect>, s
     q.fetch_all(pool).await
 }
 
+/// Batch salary range for application list cards.
+pub async fn salary_by_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+) -> Result<std::collections::HashMap<u64, (i32, i32)>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(std::collections::HashMap::new());
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        "SELECT CAST(id AS SIGNED) AS id, \
+                CAST(COALESCE(minsalary,0) AS SIGNED) AS minsalary, \
+                CAST(COALESCE(maxsalary,0) AS SIGNED) AS maxsalary \
+         FROM phpyun_resume_expect WHERE id IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let rows: Vec<(u64, i32, i32)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id, min, max)| (id, (min, max))).collect())
+}
+
 /// Raw CSV class ids for PHP `likeJob`.
 pub async fn class_csv_for_uid(
     pool: &MySqlPool,
@@ -612,6 +635,104 @@ pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Er
         .execute(pool)
         .await?;
     Ok(res.rows_affected())
+}
+
+pub async fn is_default(pool: &MySqlPool, id: u64, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(defaults, 0) AS SIGNED) FROM phpyun_resume_expect \
+         WHERE id = ? AND uid = ? LIMIT 1",
+    )
+    .bind(id)
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(d,)| d == 1).unwrap_or(false))
+}
+
+pub async fn latest_id_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_expect \
+         WHERE uid = ? ORDER BY lastupdate DESC, id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(id,)| id))
+}
+
+pub async fn set_default(pool: &MySqlPool, uid: u64, id: u64) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_resume_expect SET defaults = 0 WHERE uid = ?")
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    sqlx::query("UPDATE phpyun_resume_expect SET defaults = 1 WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn set_idcard_status_for_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    status: i32,
+    uname: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume_expect SET idcard_status = ?, uname = ? WHERE uid = ?",
+    )
+    .bind(status)
+    .bind(uname)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `delResume` child tables keyed by expect id. Missing tables are ignored.
+pub async fn delete_children_by_eid(pool: &MySqlPool, eid: u64) -> Result<(), sqlx::Error> {
+    const BY_EID: &[&str] = &[
+        "phpyun_down_resume",
+        "phpyun_resume_city_job_class",
+        "phpyun_resume_cityclass",
+        "phpyun_resume_doc",
+        "phpyun_resume_edu",
+        "phpyun_resume_jobclass",
+        "phpyun_resume_other",
+        "phpyun_resume_remark",
+        "phpyun_resume_project",
+        "phpyun_resume_show",
+        "phpyun_resume_skill",
+        "phpyun_resume_training",
+        "phpyun_resume_work",
+        "phpyun_talent_pool",
+        "phpyun_user_entrust",
+        "phpyun_user_entrust_record",
+        "phpyun_user_resume",
+        "phpyun_userid_job",
+    ];
+    for table in BY_EID {
+        let sql = format!("DELETE FROM {table} WHERE eid = ?");
+        if let Err(e) = sqlx::query(&sql).bind(eid).execute(pool).await {
+            if !phpyun_core::db::is_missing_table(&e) && !phpyun_core::db::is_missing_column(&e) {
+                return Err(e);
+            }
+        }
+    }
+    for (table, col) in [
+        ("phpyun_look_resume", "resume_id"),
+        ("phpyun_resume_refresh_log", "resume_id"),
+        ("phpyun_report", "eid"),
+    ] {
+        let sql = format!("DELETE FROM {table} WHERE {col} = ?");
+        if let Err(e) = sqlx::query(&sql).bind(eid).execute(pool).await {
+            if !phpyun_core::db::is_missing_table(&e) && !phpyun_core::db::is_missing_column(&e) {
+                return Err(e);
+            }
+        }
+    }
+    Ok(())
 }
 
 // ==================== Resume-expect hits counter ====================

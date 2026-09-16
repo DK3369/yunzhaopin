@@ -61,6 +61,7 @@
 /v1/mcenter/company-tpls/apply
 /v1/mcenter/company/cert
 /v1/mcenter/company/cert/list
+/v1/mcenter/company/check
 /v1/mcenter/company/hrs
 /v1/mcenter/company/hrs/remove
 /v1/mcenter/company/interviews
@@ -275,7 +276,9 @@
 /v1/mcenter/talent-pool/list
 /v1/mcenter/talent-pool/remark
 /v1/mcenter/vip/bank-accounts
+/v1/mcenter/vip/card
 /v1/mcenter/vip/current
+/v1/mcenter/vip/integral-classes
 /v1/mcenter/vip/orders
 /v1/mcenter/vip/orders/cancel
 /v1/mcenter/vip/orders/list
@@ -283,6 +286,7 @@
 /v1/mcenter/vip/orders/paybank
 /v1/mcenter/vip/packages
 /v1/mcenter/vip/quote
+/v1/mcenter/vip/recharge
 /v1/mcenter/warnings
 /v1/mcenter/warnings/read
 /v1/mcenter/warnings/unread-count

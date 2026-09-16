@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { isUnauthErr, mediaUrl } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
@@ -32,6 +32,7 @@ const form = reactive({
   cityid: 0,
   three_cityid: 0,
   logo: '',
+  comqcode: '',
   x: '',
   y: '',
 })
@@ -64,6 +65,7 @@ watch(
     form.cityid = Number(row.cityid || 0)
     form.three_cityid = Number(row.three_cityid || 0)
     form.logo = String(row.logo || '')
+    form.comqcode = String(row.comqcode || '')
     form.x = String(row.x || '')
     form.y = String(row.y || '')
   },
@@ -73,6 +75,7 @@ const nameLocked = computed(() => Number(data.value?.yyzz_status) === 1)
 const telLocked = computed(() => Number(data.value?.moblie_status) === 1)
 const mailLocked = computed(() => Number(data.value?.email_status) === 1)
 const { data: dicts } = await usePublicDicts()
+const { settings } = useSiteChrome()
 const industries = computed(() => dicts.value?.industries ?? [])
 const natures = computed(() => dicts.value?.company_natures ?? [])
 const sizes = computed(() => dicts.value?.company_sizes ?? [])
@@ -132,14 +135,92 @@ async function onLogo(ev: Event) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+async function onQcode(ev: Event) {
+  const file = (ev.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  try {
+    const r = await $fetch<{ key: string; url: string }>('/api/upload/company-logo', {
+      method: 'POST',
+      body: file,
+      headers: { 'content-type': file.type || 'image/jpeg' },
+    })
+    form.comqcode = r.key || r.url
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+const checkHint = ref('')
+async function checkField(typeStr: 'name' | 'linktel', value: string) {
+  const s = value.trim()
+  if (!s) return true
+  try {
+    const r = await api.post<{ used?: boolean }>('/v1/mcenter/company/check', {
+      type_str: typeStr,
+      check_str: s,
+    })
+    if (r.used) {
+      checkHint.value = typeStr === 'name' ? t('common_01222') : t('wap_js_00049')
+      return false
+    }
+    if (checkHint.value) checkHint.value = ''
+    return true
+  } catch (e: unknown) {
+    checkHint.value = e instanceof Error ? e.message : t('ui.failed')
+    return false
+  }
+}
+const guide = ref<{ msg: string; to: string; act: string } | null>(null)
+function settingOn(key: string) {
+  return String(settings.value[key] || '') === '1'
+}
+function afterSave() {
+  const row = data.value as Record<string, unknown> | null
+  const yyzz = Number(row?.yyzz_status) === 1
+  const mob = Number(row?.moblie_status) === 1
+  const email = Number(row?.email_status) === 1
+  const mapped = String(form.x || '').trim() !== '' && String(form.y || '').trim() !== ''
+  if (settingOn('com_enforce_licensecert') && !yyzz) {
+    guide.value = { msg: t('member_com_00162'), to: '/com/cert', act: t('member_com_00191') }
+    return
+  }
+  if (settingOn('com_enforce_mobilecert') && !mob) {
+    guide.value = { msg: t('member_com_00161'), to: '/com/binding', act: t('member_com_00190') }
+    return
+  }
+  if (settingOn('com_enforce_emailcert') && !email) {
+    guide.value = { msg: t('member_com_00164'), to: '/com/binding', act: t('member_com_00192') }
+    return
+  }
+  if (settingOn('com_enforce_setposition') && !mapped) {
+    guide.value = { msg: t('member_com_00160'), to: '/com/map', act: t('member_com_00204') }
+    return
+  }
+  if (!yyzz) {
+    guide.value = { msg: t('member_com_00187'), to: '/com/cert', act: t('member_com_00191') }
+    return
+  }
+  if (!mob) {
+    guide.value = { msg: t('member_com_00168'), to: '/com/binding', act: t('member_com_00190') }
+    return
+  }
+  if (!email) {
+    guide.value = { msg: t('member_com_00170'), to: '/com/binding', act: t('member_com_00192') }
+    return
+  }
+  guide.value = null
+}
 async function save() {
   msg.value = ''
+  guide.value = null
   try {
+    if (!(await checkField('name', form.name))) return
+    if (!(await checkField('linktel', form.linktel))) return
     form.welfare = welNames.value.join(',')
     form.not_disturb = disturbOn.value ? `${disturbStart.value}-${disturbEnd.value}` : '0'
     await api.post('/v1/mcenter/company', { ...form })
     msg.value = t('common.success')
     await refresh()
+    afterSave()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -153,7 +234,7 @@ useSeoMeta({ title: t('member_com_00378') })
     <form v-else class="com_release_box site-pc" @submit.prevent="save">
       <ul>
         <MemberReleaseRow :label="$t('wap_com_00157')" required>
-          <input v-model="form.name" class="com_release_textnew_text" :disabled="nameLocked" />
+          <input v-model="form.name" class="com_release_textnew_text" :disabled="nameLocked" @blur="checkField('name', form.name)" />
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('ui.shortname')">
           <input v-model="form.shortname" class="com_release_textnew_text" />
@@ -191,6 +272,11 @@ useSeoMeta({ title: t('member_com_00378') })
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('wap_com_00157')">
           <input type="file" accept="image/jpeg,image/png,image/webp" @change="onLogo" />
+          <img v-if="form.logo" :src="mediaUrl(form.logo)" width="40" height="40" alt="" />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('member_com_00197')">
+          <input type="file" accept="image/jpeg,image/png,image/webp" @change="onQcode" />
+          <img v-if="form.comqcode" :src="mediaUrl(form.comqcode)" width="40" height="40" alt="" />
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('ui.desc')" area>
           <textarea v-model="form.content" rows="6" />
@@ -202,7 +288,7 @@ useSeoMeta({ title: t('member_com_00378') })
           <input v-model="form.linkjob" class="com_release_textnew_text" />
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('wap_com_00142')" required>
-          <input v-model="form.linktel" class="com_release_textnew_text" :disabled="telLocked" />
+          <input v-model="form.linktel" class="com_release_textnew_text" :disabled="telLocked" @blur="checkField('linktel', form.linktel)" />
         </MemberReleaseRow>
         <MemberReleaseRow :label="$t('ui.linkphone')">
           <input v-model="form.linkphone" class="com_release_textnew_text" />
@@ -261,12 +347,17 @@ useSeoMeta({ title: t('member_com_00378') })
         </MemberReleaseRow>
       </ul>
       <button type="submit" class="btn_01">{{ $t('common.save') }}</button>
+      <p v-if="checkHint" class="muted">{{ checkHint }}</p>
       <p v-if="msg">{{ msg }}</p>
+      <p v-if="guide" class="yun_prompt_cont">
+        {{ guide.msg }}
+        <NuxtLink :to="guide.to" class="yun_m_job_r_l">{{ guide.act }}</NuxtLink>
+      </p>
     </form>
     <div v-if="!error" class="site-h5 issue_post_body">
       <form class="yun_createbox" @submit.prevent="save">
         <MemberField wap :label="$t('wap_com_00157')">
-          <input v-model="form.name" required :disabled="nameLocked" />
+          <input v-model="form.name" required :disabled="nameLocked" @blur="checkField('name', form.name)" />
         </MemberField>
         <MemberField wap :label="$t('ui.shortname')">
           <input v-model="form.shortname" />
@@ -298,6 +389,11 @@ useSeoMeta({ title: t('member_com_00378') })
         </MemberField>
         <MemberField wap :label="$t('wap_com_00157')">
           <input type="file" accept="image/jpeg,image/png,image/webp" @change="onLogo" />
+          <img v-if="form.logo" :src="mediaUrl(form.logo)" width="40" height="40" alt="" />
+        </MemberField>
+        <MemberField wap :label="$t('member_com_00197')">
+          <input type="file" accept="image/jpeg,image/png,image/webp" @change="onQcode" />
+          <img v-if="form.comqcode" :src="mediaUrl(form.comqcode)" width="40" height="40" alt="" />
         </MemberField>
         <MemberField wap area :label="$t('ui.desc')">
           <textarea v-model="form.content" rows="6" />
@@ -309,7 +405,7 @@ useSeoMeta({ title: t('member_com_00378') })
           <input v-model="form.linkjob" />
         </MemberField>
         <MemberField wap :label="$t('wap_com_00142')">
-          <input v-model="form.linktel" required :disabled="telLocked" />
+          <input v-model="form.linktel" required :disabled="telLocked" @blur="checkField('linktel', form.linktel)" />
         </MemberField>
         <MemberField wap :label="$t('ui.linkphone')">
           <input v-model="form.linkphone" />
@@ -366,7 +462,12 @@ useSeoMeta({ title: t('member_com_00378') })
           <p><NuxtLink to="/com/map">{{ $t('ui.map_addr') }}</NuxtLink></p>
         </MemberField>
         <button type="submit" class="issue_post_body_btn">{{ $t('common.save') }}</button>
+        <p v-if="checkHint" class="muted">{{ checkHint }}</p>
         <p v-if="msg">{{ msg }}</p>
+        <p v-if="guide" class="yun_prompt_cont">
+          {{ guide.msg }}
+          <NuxtLink :to="guide.to">{{ guide.act }}</NuxtLink>
+        </p>
       </form>
     </div>
   </MemberPanel>

@@ -29,3 +29,21 @@ pub struct UserIntegral {
     pub balance: i64,
     pub updated_at: i64,
 }
+
+/// `phpyun_admin_integralclass` — points packages (state=1 is on sale).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct IntegralClass {
+    pub id: u64,
+    pub integral: i32,
+    pub discount: i32,
+    pub state: i32,
+}
+
+/// `phpyun_company_card` — prepaid recharge card (PHP `cardOrder`).
+#[derive(Debug, Clone, FromRow)]
+pub struct PrepaidCard {
+    pub id: u64,
+    pub password: String,
+    pub quota: i32,
+    pub uid: u64,
+}

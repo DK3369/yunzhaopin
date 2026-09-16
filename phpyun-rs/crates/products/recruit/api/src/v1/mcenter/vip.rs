@@ -21,7 +21,11 @@ pub fn routes() -> Router<AppState> {
         .route("/vip/orders/cancel", post(cancel_order))
         .route("/vip/orders/paybank", post(paybank))
         .route("/vip/bank-accounts", post(list_bank_accounts))
-        .route("/vip/quote", post(quote_price));
+        .route("/vip/quote", post(quote_price))
+        .route("/vip/orders/integral", post(buy_integral))
+        .route("/vip/integral-classes", post(list_integral_classes))
+        .route("/vip/recharge", post(recharge))
+        .route("/vip/card", post(redeem_card));
 
     // mock-paid is only mounted in debug builds; the release binary does not include this route.
     #[cfg(debug_assertions)]
@@ -91,6 +95,14 @@ pub struct CurrentVip {
     pub package_code: Option<String>,
     pub started_at: Option<i64>,
     pub expires_at: Option<i64>,
+    pub rating: i32,
+    pub rating_name: String,
+    pub rating_type: i32,
+    pub job_num: i32,
+    pub breakjob_num: i32,
+    pub down_resume: i32,
+    pub invite_resume: i32,
+    pub integral: i64,
 }
 
 /// My current VIP status
@@ -107,19 +119,47 @@ pub async fn get_current(
 ) -> AppResult<ApiResponse<CurrentVip>> {
     let v = vip_service::get_current_vip(&state, &user).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiResponse::data(match v {
-        Some(v) => CurrentVip {
-            active: v.expires_at > now,
+    let st = phpyun_models::company_statis::repo::find_admin(state.db.reader(), user.uid)
+        .await
+        .ok()
+        .flatten();
+    let empty = || CurrentVip {
+        active: false,
+        package_code: None,
+        started_at: None,
+        expires_at: None,
+        rating: 0,
+        rating_name: String::new(),
+        rating_type: 0,
+        job_num: 0,
+        breakjob_num: 0,
+        down_resume: 0,
+        invite_resume: 0,
+        integral: 0,
+    };
+    Ok(ApiResponse::data(match (v, st) {
+        (Some(v), Some(s)) => CurrentVip {
+            active: v.expires_at == 0 || v.expires_at >= now,
             package_code: Some(v.package_code),
             started_at: Some(v.started_at),
             expires_at: Some(v.expires_at),
+            rating: s.rating,
+            rating_name: s.rating_name,
+            rating_type: s.rating_type,
+            job_num: s.job_num,
+            breakjob_num: s.breakjob_num,
+            down_resume: s.down_resume,
+            invite_resume: s.invite_resume,
+            integral: s.integral.parse().unwrap_or(0),
         },
-        None => CurrentVip {
-            active: false,
-            package_code: None,
-            started_at: None,
-            expires_at: None,
+        (Some(v), None) => CurrentVip {
+            active: v.expires_at == 0 || v.expires_at >= now,
+            package_code: Some(v.package_code),
+            started_at: Some(v.started_at),
+            expires_at: Some(v.expires_at),
+            ..empty()
         },
+        _ => empty(),
     }))
 }
 
@@ -181,6 +221,30 @@ pub async fn create_order(
     }))
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct IntegralBuyForm {
+    #[validate(length(min = 1, max = 32))]
+    pub package_code: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/vip/orders/integral",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IntegralBuyForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn buy_integral(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<IntegralBuyForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let order_no = vip_service::buy_with_integral(&state, &user, &f.package_code, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true, "order_no": order_no })))
+}
+
 /// Pay order item — all 10 columns of phpyun_pay_order + yuan-unit amount + time formatting.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OrderItem {
@@ -199,6 +263,8 @@ pub struct OrderItem {
     pub created_at_n: String,
     pub paid_at: i64,
     pub paid_at_n: String,
+    pub order_kind: i32,
+    pub integral: i32,
 }
 
 impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
@@ -223,6 +289,8 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
             created_at: o.created_at,
             paid_at_n: fmt_dt(o.paid_at),
             paid_at: o.paid_at,
+            order_kind: o.order_kind,
+            integral: o.integral,
         }
     }
 }
@@ -361,8 +429,6 @@ pub async fn paybank(
 }
 
 /// **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
-
-/// **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
 /// Only compiled in debug builds — this function does not exist in the release binary.
 #[cfg(debug_assertions)]
 #[utoipa::path(post,
@@ -380,14 +446,24 @@ pub async fn mock_paid(
     let order_no = b.order_no;
     phpyun_core::validators::ensure_path_token(&order_no)?;
     // Defensive check: the order must belong to the currently logged-in user, to avoid marking someone else's order as paid.
+    let fake_tx = format!("MOCK-{}", uuid::Uuid::now_v7().simple());
+    if let Some(order) =
+        phpyun_models::vip::repo::find_order_by_no_and_type(state.db.reader(), &order_no, 2).await?
+    {
+        if order.uid != user.uid {
+            return Err(ApiError::param_invalid("order_not_owned"));
+        }
+        vip_service::mark_recharge_paid(&state, &order_no, &fake_tx).await?;
+        return Ok(ApiResponse::data(
+            json::json!({ "ok": true, "pay_tx_id": fake_tx }),
+        ));
+    }
     let order = phpyun_models::vip::repo::find_order_by_no(state.db.reader(), &order_no)
         .await?
         .ok_or_else(|| -> phpyun_core::ApiError { ApiError::param_invalid("order_not_found") })?;
     if order.uid != user.uid {
         return Err(ApiError::param_invalid("order_not_owned"));
     }
-
-    let fake_tx = format!("MOCK-{}", uuid::Uuid::now_v7().simple());
     vip_service::mark_paid(&state, &order_no, &fake_tx).await?;
     Ok(ApiResponse::data(
         json::json!({ "ok": true, "pay_tx_id": fake_tx }),
@@ -486,4 +562,155 @@ pub struct MockPaidBody {
         custom(function = "phpyun_core::validators::path_token")
     )]
     pub order_no: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct IntegralClassItem {
+    pub id: u64,
+    pub integral: i32,
+    pub discount: i32,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct IntegralClassPack {
+    pub list: Vec<IntegralClassItem>,
+    pub min_recharge: i64,
+    pub proportion: i64,
+    pub pricename: String,
+    pub priceunit: String,
+    pub balance: i64,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/vip/integral-classes",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = IntegralClassPack))
+)]
+pub async fn list_integral_classes(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<IntegralClassPack>> {
+    let p = vip_service::list_integral_classes(&state, &user).await?;
+    Ok(ApiResponse::data(IntegralClassPack {
+        list: p
+            .list
+            .into_iter()
+            .map(|c| IntegralClassItem {
+                id: c.id,
+                integral: c.integral,
+                discount: c.discount,
+            })
+            .collect(),
+        min_recharge: p.min_recharge,
+        proportion: p.proportion,
+        pricename: p.pricename,
+        priceunit: p.priceunit,
+        balance: p.balance,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct RechargeForm {
+    #[validate(range(min = 1, max = 10_000_000))]
+    pub price_int: i64,
+    #[serde(default)]
+    pub integralid: u64,
+    #[validate(length(min = 1, max = 16))]
+    pub channel: String,
+    #[serde(default)]
+    #[validate(length(max = 500))]
+    pub remark: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct RechargeCreated {
+    pub order_no: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pay_url: Option<String>,
+    pub channel: String,
+    pub amount_cents: i32,
+    pub amount_yuan: f64,
+    pub integral: i64,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/vip/recharge",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = RechargeForm,
+    responses((status = 200, description = "ok", body = RechargeCreated))
+)]
+pub async fn recharge(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<RechargeForm>,
+) -> AppResult<ApiResponse<RechargeCreated>> {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" {
+        return Err(ApiError::param_invalid("channel"));
+    }
+    if f.channel == "alipay" {
+        payment_notify_service::ensure_alipay_page(&state).await?;
+    }
+    let created = vip_service::create_recharge(
+        &state,
+        &user,
+        f.price_int,
+        f.integralid,
+        &f.channel,
+        &f.remark,
+        &ip,
+    )
+    .await?;
+    let pay_url = if f.channel == "alipay" {
+        Some(
+            payment_notify_service::build_alipay_page_url(
+                &state,
+                &created.order_no,
+                &created.subject,
+                created.amount_cents,
+                Some("/com/pay"),
+            )
+            .await?,
+        )
+    } else {
+        None
+    };
+    Ok(ApiResponse::data(RechargeCreated {
+        order_no: created.order_no,
+        pay_url,
+        channel: f.channel,
+        amount_cents: created.amount_cents,
+        amount_yuan: f64::from(created.amount_cents) / 100.0,
+        integral: created.integral,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct CardForm {
+    #[validate(length(min = 1, max = 20))]
+    pub card: String,
+    #[validate(length(min = 1, max = 20))]
+    pub password: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/vip/card",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = CardForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn redeem_card(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<CardForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let quota = vip_service::redeem_card(&state, &user, &f.card, &f.password, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true, "quota": quota })))
 }

@@ -11,7 +11,7 @@ use phpyun_core::{
 use phpyun_models::apply::repo as apply_repo;
 use phpyun_services::talent_pool_service;
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
@@ -80,19 +80,29 @@ pub async fn add(
     Ok(ApiResponse::data(CreatedId { id }))
 }
 
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
+pub struct TalentListQuery {
+    #[serde(default)]
+    #[validate(length(max = 60))]
+    pub keyword: Option<String>,
+}
+
 #[utoipa::path(
     post,
     path = "/v1/mcenter/talent-pool/list",
     tag = "mcenter",
     security(("bearer" = [])),
+    params(TalentListQuery),
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
+    ValidatedJson(q): ValidatedJson<TalentListQuery>,
 ) -> AppResult<ApiResponse<Paged<TalentPoolView>>> {
-    let r = talent_pool_service::list_mine(&state, &user, page).await?;
+    let kw = q.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty());
+    let r = talent_pool_service::list_mine(&state, &user, kw, page).await?;
     let mut list: Vec<TalentPoolView> = r.list.into_iter().map(TalentPoolView::from).collect();
     let uids: Vec<u64> = list.iter().map(|i| i.seeker_uid).collect();
     let names = apply_repo::resume_names_by_uids(state.db.reader(), &uids).await?;

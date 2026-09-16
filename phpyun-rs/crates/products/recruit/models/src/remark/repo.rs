@@ -16,17 +16,32 @@ pub async fn get(
     company_uid: u64,
     seeker_uid: u64,
     target_kind: i32,
+    eid: u64,
 ) -> Result<Option<Remark>, sqlx::Error> {
-    if target_kind != 0 && target_kind != super::entity::REMARK_RESUME {
+    if target_kind != 0
+        && target_kind != super::entity::REMARK_RESUME
+        && target_kind != super::entity::REMARK_APPLY
+    {
         return Ok(None);
     }
-    sqlx::query_as::<_, Remark>(&format!(
-        "{SELECT} WHERE comid = ? AND uid = ? LIMIT 1"
-    ))
-    .bind(company_uid)
-    .bind(seeker_uid)
-    .fetch_optional(pool)
-    .await
+    if eid > 0 {
+        sqlx::query_as::<_, Remark>(&format!(
+            "{SELECT} WHERE comid = ? AND uid = ? AND eid = ? LIMIT 1"
+        ))
+        .bind(company_uid)
+        .bind(seeker_uid)
+        .bind(eid)
+        .fetch_optional(pool)
+        .await
+    } else {
+        sqlx::query_as::<_, Remark>(&format!(
+            "{SELECT} WHERE comid = ? AND uid = ? LIMIT 1"
+        ))
+        .bind(company_uid)
+        .bind(seeker_uid)
+        .fetch_optional(pool)
+        .await
+    }
 }
 
 pub async fn upsert(
@@ -36,30 +51,50 @@ pub async fn upsert(
     _target_kind: i32,
     note: &str,
     now: i64,
+    eid: u64,
+    status: i32,
 ) -> Result<(), sqlx::Error> {
-    let existing: Option<(u64,)> = sqlx::query_as(
-        "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_remark WHERE comid = ? AND uid = ? LIMIT 1",
-    )
-    .bind(company_uid)
-    .bind(seeker_uid)
-    .fetch_optional(pool)
-    .await?;
+    let existing: Option<(u64,)> = if eid > 0 {
+        sqlx::query_as(
+            "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_remark \
+             WHERE comid = ? AND uid = ? AND eid = ? LIMIT 1",
+        )
+        .bind(company_uid)
+        .bind(seeker_uid)
+        .bind(eid)
+        .fetch_optional(pool)
+        .await?
+    } else {
+        sqlx::query_as(
+            "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_remark WHERE comid = ? AND uid = ? LIMIT 1",
+        )
+        .bind(company_uid)
+        .bind(seeker_uid)
+        .fetch_optional(pool)
+        .await?
+    };
     if let Some((id,)) = existing {
-        sqlx::query("UPDATE phpyun_resume_remark SET remark = ?, ctime = ? WHERE id = ?")
-            .bind(note)
-            .bind(now)
-            .bind(id)
-            .execute(pool)
-            .await?;
+        sqlx::query(
+            "UPDATE phpyun_resume_remark SET remark = ?, ctime = ?, status = ?, eid = IF(? > 0, ?, eid) WHERE id = ?",
+        )
+        .bind(note)
+        .bind(now)
+        .bind(status)
+        .bind(eid)
+        .bind(eid)
+        .bind(id)
+        .execute(pool)
+        .await?;
     } else {
         sqlx::query(
             r#"INSERT INTO phpyun_resume_remark (uid, eid, comid, ctime, status, remark)
-               VALUES (?, ?, ?, ?, 0, ?)"#,
+               VALUES (?, ?, ?, ?, ?, ?)"#,
         )
         .bind(seeker_uid)
-        .bind(seeker_uid)
+        .bind(eid)
         .bind(company_uid)
         .bind(now)
+        .bind(status)
         .bind(note)
         .execute(pool)
         .await?;

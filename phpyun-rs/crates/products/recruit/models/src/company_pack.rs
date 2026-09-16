@@ -48,7 +48,9 @@ const ORDER_SELECT: &str = "
     END AS status,
     order_bank AS pay_tx_id,
     COALESCE(order_time, 0) AS created_at,
-    COALESCE(bank_time, 0) AS paid_at";
+    COALESCE(bank_time, 0) AS paid_at,
+    CAST(COALESCE(`type`, 0) AS SIGNED) AS order_kind,
+    CAST(COALESCE(integral, 0) AS SIGNED) AS integral";
 
 /// PHP `buyPackOrder`: `type=5`, `order_state=1` (待付), `rating` = detail id.
 pub async fn create_order(
@@ -118,6 +120,35 @@ pub async fn mark_order_paid(
     .execute(pool)
     .await?;
     Ok(res.rows_affected())
+}
+
+pub async fn list_orders_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PayOrder>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ORDER_SELECT} FROM phpyun_company_order \
+         WHERE uid = ? AND type = 5 \
+         ORDER BY order_time DESC, id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, PayOrder>(&sql)
+        .bind(uid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_orders_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_order WHERE uid = ? AND type = 5",
+    )
+    .bind(uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn order_detail_id(pool: &MySqlPool, order_no: &str) -> Result<Option<u64>, sqlx::Error> {

@@ -520,14 +520,27 @@ pub async fn mark_browsed_batch(
 
 /// Company deletes a received application (PHP `delSqJob` utype=com → `isdel=1`).
 pub async fn hide_by_com(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_userid_job SET isdel = 1 WHERE id = ? AND com_id = ? AND isdel = 9",
-    )
-    .bind(id)
-    .bind(com_id)
-    .execute(pool)
-    .await?;
-    Ok(res.rows_affected())
+    hide_by_com_ids(pool, &[id], com_id).await
+}
+
+pub async fn hide_by_com_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    com_id: u64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_userid_job SET isdel = 1 WHERE com_id = ");
+    qb.push_bind(com_id);
+    qb.push(" AND isdel = 9 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
 /// Company marks as viewed (is_browse: 1 -> 2).

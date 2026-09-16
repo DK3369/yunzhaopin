@@ -1,7 +1,7 @@
 //! `phpyun_look_job` — job seekers who viewed a company's jobs (PHP `look_job`).
 
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, MySqlPool};
+use sqlx::{FromRow, MySqlPool, QueryBuilder};
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct LookJob {
@@ -40,42 +40,47 @@ const FIELDS: &str = "d.id, COALESCE(d.uid,0) AS uid, COALESCE(d.jobid,0) AS job
     COALESCE(j.maxsalary,0) AS maxsalary, COALESCE(r.name,'') AS uname, \
     COALESCE(r.def_job,0) AS eid";
 
+fn push_com_look_filter(qb: &mut QueryBuilder<'_, sqlx::MySql>, com_uid: u64, keyword: Option<&str>) {
+    qb.push(" FROM phpyun_look_job d \
+         LEFT JOIN phpyun_company_job j ON j.id = d.jobid \
+         LEFT JOIN phpyun_resume r ON r.uid = d.uid \
+         WHERE d.com_id = ");
+    qb.push_bind(com_uid);
+    qb.push(" AND COALESCE(d.com_status,0) = 0");
+    if let Some(kw) = keyword.map(str::trim).filter(|k| !k.is_empty()) {
+        qb.push(" AND (r.name LIKE ");
+        crate::sql::push_contains(qb, kw);
+        qb.push(" OR j.name LIKE ");
+        crate::sql::push_contains(qb, kw);
+        qb.push(")");
+    }
+}
+
 pub async fn list_by_com(
     pool: &MySqlPool,
     com_uid: u64,
+    keyword: Option<&str>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<LookJob>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_look_job d \
-         LEFT JOIN phpyun_company_job j ON j.id = d.jobid \
-         LEFT JOIN phpyun_resume r ON r.uid = d.uid \
-         WHERE d.com_id = ? AND COALESCE(d.com_status,0) = 0 \
-         ORDER BY d.datetime DESC LIMIT ? OFFSET ?"
-    );
-    sqlx::query_as::<_, LookJob>(&sql)
-        .bind(com_uid)
-        .bind(phpyun_core::numeric::checked_db_i64(
-            limit,
-            "pagination.limit",
-        )?)
-        .bind(phpyun_core::numeric::checked_db_i64(
-            offset,
-            "pagination.offset",
-        )?)
-        .fetch_all(pool)
-        .await
+    let mut qb = QueryBuilder::new("SELECT ");
+    qb.push(FIELDS);
+    push_com_look_filter(&mut qb, com_uid, keyword);
+    qb.push(" ORDER BY d.datetime DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<LookJob>().fetch_all(pool).await
 }
 
-pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as(
-            "SELECT COUNT(*) FROM phpyun_look_job \
-             WHERE com_id = ? AND COALESCE(com_status,0) = 0",
-        )
-            .bind(com_uid)
-            .fetch_one(pool)
-            .await?;
+pub async fn count_by_com(
+    pool: &MySqlPool,
+    com_uid: u64,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*)");
+    push_com_look_filter(&mut qb, com_uid, keyword);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
@@ -138,27 +143,53 @@ pub async fn count_by_seeker(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Er
 
 /// PHP `delLookJob` for usertype=1: `status = 1`.
 pub async fn hide_by_seeker(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_look_job SET status = 1 \
-         WHERE id = ? AND uid = ? AND COALESCE(status,0) = 0",
-    )
-    .bind(id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
-    Ok(res.rows_affected())
+    hide_by_seeker_ids(pool, &[id], uid).await
 }
 
 /// PHP `delLookJob` for usertype=2: `com_status = 1`.
 pub async fn hide_by_com(pool: &MySqlPool, id: u64, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_look_job SET com_status = 1 \
-         WHERE id = ? AND com_id = ? AND COALESCE(com_status,0) = 0",
-    )
-    .bind(id)
-    .bind(com_uid)
-    .execute(pool)
-    .await?;
+    hide_by_com_ids(pool, &[id], com_uid).await
+}
+
+pub async fn hide_by_com_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    com_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_look_job SET com_status = 1 WHERE com_id = ",
+    );
+    qb.push_bind(com_uid);
+    qb.push(" AND COALESCE(com_status,0) = 0 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn hide_by_seeker_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    uid: u64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_look_job SET status = 1 WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND COALESCE(status,0) = 0 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }
 

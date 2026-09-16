@@ -38,6 +38,8 @@ const FIELDS: &str = "\
     COALESCE(fact_status, 0) AS fact_status, \
     COALESCE(ant_num, 0) AS ant_num, \
     welfare, \
+    busstops, \
+    COALESCE(not_disturb, '') AS not_disturb, \
     COALESCE(did, 0) AS did";
 
 /// Public list omits `content` (longtext); detail still uses [`FIELDS`].
@@ -440,11 +442,23 @@ pub struct CompanyUpdate<'a> {
     pub cityid: Option<i32>,
     pub three_cityid: Option<i32>,
     pub logo: Option<&'a str>,
+    pub comqcode: Option<&'a str>,
     pub content: Option<&'a str>,
     pub linkman: Option<&'a str>,
     pub linkjob: Option<&'a str>,
     pub linkphone: Option<&'a str>,
+    pub linktel: Option<&'a str>,
     pub linkmail: Option<&'a str>,
+    pub address: Option<&'a str>,
+    pub website: Option<&'a str>,
+    pub linkqq: Option<&'a str>,
+    pub sdate: Option<&'a str>,
+    pub money: Option<i32>,
+    pub moneytype: Option<i32>,
+    pub infostatus: Option<i32>,
+    pub welfare: Option<&'a str>,
+    pub busstops: Option<&'a str>,
+    pub not_disturb: Option<&'a str>,
     pub x: Option<&'a str>,
     pub y: Option<&'a str>,
     pub pr: Option<i32>,
@@ -461,11 +475,23 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<
             cityid       = COALESCE(?, cityid),
             three_cityid = COALESCE(?, three_cityid),
             logo         = COALESCE(?, logo),
+            comqcode     = COALESCE(?, comqcode),
             content      = COALESCE(?, content),
             linkman      = COALESCE(?, linkman),
             linkjob      = COALESCE(?, linkjob),
             linkphone    = COALESCE(?, linkphone),
+            linktel      = COALESCE(?, linktel),
             linkmail     = COALESCE(?, linkmail),
+            address      = COALESCE(?, address),
+            website      = COALESCE(?, website),
+            linkqq       = COALESCE(?, linkqq),
+            sdate        = COALESCE(?, sdate),
+            money        = COALESCE(?, money),
+            moneytype    = COALESCE(?, moneytype),
+            infostatus   = COALESCE(?, infostatus),
+            welfare      = COALESCE(?, welfare),
+            busstops     = COALESCE(?, busstops),
+            not_disturb  = COALESCE(?, not_disturb),
             x            = COALESCE(?, x),
             y            = COALESCE(?, y),
             pr           = COALESCE(?, pr),
@@ -479,11 +505,23 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<
     .bind(u.cityid)
     .bind(u.three_cityid)
     .bind(u.logo)
+    .bind(u.comqcode)
     .bind(u.content)
     .bind(u.linkman)
     .bind(u.linkjob)
     .bind(u.linkphone)
+    .bind(u.linktel)
     .bind(u.linkmail)
+    .bind(u.address)
+    .bind(u.website)
+    .bind(u.linkqq)
+    .bind(u.sdate)
+    .bind(u.money)
+    .bind(u.moneytype)
+    .bind(u.infostatus)
+    .bind(u.welfare)
+    .bind(u.busstops)
+    .bind(u.not_disturb)
     .bind(u.x)
     .bind(u.y)
     .bind(u.pr)
@@ -492,6 +530,30 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: CompanyUpdate<'_>) -> Result<
     .execute(pool)
     .await?;
     Ok(())
+}
+
+pub async fn exists_name_except(
+    pool: &MySqlPool,
+    name: &str,
+    uid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(i32,)> =
+        sqlx::query_as("SELECT uid FROM phpyun_company WHERE name = ? AND uid <> ? LIMIT 1")
+            .bind(name)
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.is_some())
+}
+
+pub async fn set_map(pool: &MySqlPool, uid: u64, x: &str, y: &str) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company SET x = ?, y = ? WHERE uid = ?")
+        .bind(x)
+        .bind(y)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
 }
 
 pub struct AdminCompanyProfile<'a> {

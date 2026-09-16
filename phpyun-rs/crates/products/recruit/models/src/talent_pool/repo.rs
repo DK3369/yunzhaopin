@@ -15,6 +15,13 @@ const FIELDS: &str = "id, \
     remark, \
     COALESCE(ctime, 0) AS ctime";
 
+const FIELDS_T: &str = "t.id, \
+    COALESCE(t.eid, 0) AS eid, \
+    COALESCE(t.cuid, 0) AS cuid, \
+    COALESCE(t.uid, 0) AS uid, \
+    t.remark, \
+    COALESCE(t.ctime, 0) AS ctime";
+
 // Soft-delete convention: `status = 2` means deleted. All queries include `AND status != 2`.
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<TalentPoolItem>, sqlx::Error> {
@@ -66,34 +73,66 @@ pub async fn create(
 pub async fn list_by_com(
     pool: &MySqlPool,
     cuid: u64,
+    keyword: Option<&str>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<TalentPoolItem>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_talent_pool \
-         WHERE cuid = ? AND status != 2 \
-         ORDER BY ctime DESC LIMIT ? OFFSET ?"
-    );
-    sqlx::query_as::<_, TalentPoolItem>(&sql)
-        .bind(cuid)
-        .bind(phpyun_core::numeric::checked_db_i64(
-            limit,
-            "pagination.limit",
-        )?)
-        .bind(phpyun_core::numeric::checked_db_i64(
-            offset,
-            "pagination.offset",
-        )?)
-        .fetch_all(pool)
-        .await
+    let kw = keyword.map(str::trim).filter(|s| !s.is_empty());
+    if let Some(k) = kw {
+        let sql = format!(
+            "SELECT {FIELDS_T} FROM phpyun_talent_pool t \
+             LEFT JOIN phpyun_resume r ON r.uid = t.uid \
+             WHERE t.cuid = ? AND t.status != 2 AND r.name LIKE ? \
+             ORDER BY t.ctime DESC LIMIT ? OFFSET ?"
+        );
+        sqlx::query_as::<_, TalentPoolItem>(&sql)
+            .bind(cuid)
+            .bind(format!("%{k}%"))
+            .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
+            .bind(phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?)
+            .fetch_all(pool)
+            .await
+    } else {
+        let sql = format!(
+            "SELECT {FIELDS} FROM phpyun_talent_pool \
+             WHERE cuid = ? AND status != 2 \
+             ORDER BY ctime DESC LIMIT ? OFFSET ?"
+        );
+        sqlx::query_as::<_, TalentPoolItem>(&sql)
+            .bind(cuid)
+            .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
+            .bind(phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?)
+            .fetch_all(pool)
+            .await
+    }
 }
 
 pub async fn count_by_com(pool: &MySqlPool, cuid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
+    count_by_com_kw(pool, cuid, None).await
+}
+
+pub async fn count_by_com_kw(
+    pool: &MySqlPool,
+    cuid: u64,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let kw = keyword.map(str::trim).filter(|s| !s.is_empty());
+    let (n,): (i64,) = if let Some(k) = kw {
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_talent_pool t \
+             LEFT JOIN phpyun_resume r ON r.uid = t.uid \
+             WHERE t.cuid = ? AND t.status != 2 AND r.name LIKE ?",
+        )
+        .bind(cuid)
+        .bind(format!("%{k}%"))
+        .fetch_one(pool)
+        .await?
+    } else {
         sqlx::query_as("SELECT COUNT(*) FROM phpyun_talent_pool WHERE cuid = ? AND status != 2")
             .bind(cuid)
             .fetch_one(pool)
-            .await?;
+            .await?
+    };
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 

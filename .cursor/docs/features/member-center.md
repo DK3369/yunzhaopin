@@ -253,7 +253,7 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 ## 企业资料 / 认证 / 地图
 
-`POST /v1/mcenter/company` 对齐 PHP `setCompany`：`linktel`（发岗 check 依赖）、`address`/`website`/`busstops`/`linkqq`/`sdate`/`money`/`infostatus`/`welfare`/`not_disturb`。已绑定手机/邮箱、执照通过后的企业名不可改。保存后 `setJobInfo` 同步在招快照；首次完善 `integral_userinfo`；首次标点 `integral_map`。认证 `r_status==0` 待审回流 + `com_social_credit` / `com_cert_status`。页：[`profile.vue`](../../../web/apps/site/app/pages/com/profile.vue)、[`cert.vue`](../../../web/apps/site/app/pages/com/cert.vue)、[`map.vue`](../../../web/apps/site/app/pages/com/map.vue)。
+`POST /v1/mcenter/company` 对齐 PHP `setCompany`：`linktel`（发岗 check 依赖）、`address`/`website`/`busstops`/`linkqq`/`sdate`/`money`/`infostatus`/`welfare`/`not_disturb`、企微码 `comqcode`（列已在 `company` 表）。`POST /v1/mcenter/company/check` 按 `type_str=name|linktel` 排除自己 uid 查重。保存成功后对照 `com_enforce_*` 缺执照/手机/邮箱/坐标则引导 `/com/cert` `/com/binding` `/com/map`。已绑定手机/邮箱、执照通过后的企业名不可改。页：[`profile.vue`](../../../web/apps/site/app/pages/com/profile.vue)、[`cert.vue`](../../../web/apps/site/app/pages/com/cert.vue)、[`map.vue`](../../../web/apps/site/app/pages/com/map.vue)。
 
 ## 套餐 / `ratingInfo`
 
@@ -262,16 +262,18 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - `mark_paid` 与积分全额 `/v1/mcenter/vip/orders/integral` 共用 `apply_rating`。
 - 列表：`com_vip_type`（0/2 套餐 `type=1`，1 时间会员 `type=2`）+ `company.package` 白名单 + `com_package_open`。
 - [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 展示 `company_statis` 当前等级与额度，页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。套餐/增值/充值/订单四页顶栏共用 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)（`wap_com_00380` / `wap_com_00393` / `common_01946` / `common_02029`）。
+- [`pay.vue`](../../../web/apps/site/app/pages/com/pay.vue) 是积分充值（PHP `pay.htm`），不是买 VIP：`POST /v1/mcenter/vip/integral-classes`（`phpyun_admin_integralclass` `state=1`）+ `recharge`（`price_int`/`integralid`，金额 = 积分/`integral_proportion`×折扣/100，写 `company_order.type=2`）+ `card`（`phpyun_company_card` 卡号密码）。渠道不要写死 `alipay`。套餐购买只留 member-right。
 - 增值包 VIP 未过期才可买；渠道不要写死 `alipay`。订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 只列订单（可取消未支付），购买走套餐/充值页。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。
 - `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
 
 招聘 PC/H5 已对齐的交互：
 
 - 发岗自定义联系人 `is_link=2`；职位列表 URL `w`、推广天数、关闭推广；H5 推广菜单可改天数。
-- 应聘：备注 `status` 1/2/3/4/5/7、未浏览点「查看电话」、加人才库。下载备注独立于邀请表单。人才库邀请走 `yqms/create`，简历路径用 `seeker_uid`。
-- 资料福利为字典勾选 + 自定义名（提交逗号串）；免打扰写 `HH:MM-HH:MM`。地图 [`MapPick`](../../../web/layers/ui/app/components/MapPick.vue) 高德 `PlaceSearch` 搜地名。
+- 应聘：更多筛选含性别/更新时间/简历审核；列表批查简历期望与 `down_resume.islink`；查看电话走 `resume-downloads`；底栏批量删。下载/人才库勾选批量删 + 人才库分页。
+- 谁看过/粉丝服务端 `keyword`；谁看过/消息勾选批量删，消息可批量已读（`remind_status==1` 未读加粗）。
+- 职位列表 PC 曝光列 `jobexpoure`；页底 `com_tip_bottom` 用 `com-vip-current.job_num`。
+- 资料福利为字典勾选 + 自定义名（提交逗号串）；免打扰写 `HH:MM-HH:MM`。地图 [`MapPick`](../../../web/layers/ui/app/components/MapPick.vue) 高德 `PlaceSearch` 搜地名。企微码 `comqcode` 读写 + 保存后认证/绑定/地图引导。
 - 面试列表客户端关键词 + 邀请函预览。简历详情「查看下一份」文案 `member_com_00415`，H5 底栏同样有。
-- 企微码 `comqcode` 现有 `company/list|company` **还不读写**，等后端改完再接。
 - 招聘首页配额走 `vip/current`；PC 两列 class 用 PHP `memberSubRight` / `memberSubLeft`。
 
 本轮仍不做兼职 `partadd`、招聘会、HR 子账号、企业导航 `customize`。顾问 `crm_uid`、曝光量、优惠券、`zph_num`、`lock_info`、进页「未刷新职位」遮罩仍缺接口，首页不假装有。

@@ -272,7 +272,9 @@ const ORDER_SELECT: &str = "
     COALESCE(order_state, 0) AS status,
     order_bank AS pay_tx_id,
     COALESCE(order_time, 0) AS created_at,
-    COALESCE(bank_time, 0) AS paid_at";
+    COALESCE(bank_time, 0) AS paid_at,
+    CAST(COALESCE(`type`, 0) AS SIGNED) AS order_kind,
+    CAST(COALESCE(integral, 0) AS SIGNED) AS integral";
 
 pub async fn create_order(
     pool: &MySqlPool,
@@ -311,6 +313,67 @@ pub async fn create_order(
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
+}
+
+fn dingdan_id(now: i64) -> String {
+    use std::sync::atomic::{AtomicU32, Ordering};
+    static SEQ: AtomicU32 = AtomicU32::new(10000);
+    let r = SEQ.fetch_add(1, Ordering::Relaxed) % 90_000 + 10_000;
+    format!("{now}{r}")
+}
+
+/// PHP `addComOrder` + `buyIntegral`: `type=2`, pending `order_state=0`.
+pub async fn create_recharge_order(
+    pool: &MySqlPool,
+    uid: u64,
+    did: u32,
+    channel: &str,
+    price_yuan: f64,
+    integral: i64,
+    rating: i32,
+    remark: &str,
+    now: i64,
+) -> Result<String, sqlx::Error> {
+    let order_no = dingdan_id(now);
+    sqlx::query(
+        r#"INSERT INTO phpyun_company_order
+              (order_id, uid, order_type, order_price, order_time, order_state,
+               order_remark, `type`, rating, did, sid, usertype, status,
+               order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
+               port, is_crm, order_bank, order_pic, order_info)
+           VALUES (?, ?, ?, ?, ?, 0,
+                   ?, 2, ?, ?, 0, 2, 1,
+                   0, ?, 0, 0, 0, 0,
+                   1, 0, '', '', '')"#,
+    )
+    .bind(&order_no)
+    .bind(uid)
+    .bind(channel)
+    .bind(price_yuan)
+    .bind(now)
+    .bind(remark)
+    .bind(rating)
+    .bind(did)
+    .bind(integral)
+    .execute(pool)
+    .await?;
+    Ok(order_no)
+}
+
+pub async fn find_order_by_no_and_type(
+    pool: &MySqlPool,
+    order_no: &str,
+    order_kind: i32,
+) -> Result<Option<PayOrder>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ORDER_SELECT}
+           FROM phpyun_company_order WHERE order_id = ? AND type = ? LIMIT 1"
+    );
+    sqlx::query_as::<_, PayOrder>(&sql)
+        .bind(order_no)
+        .bind(order_kind)
+        .fetch_optional(pool)
+        .await
 }
 
 pub async fn find_order_by_no(
@@ -365,7 +428,7 @@ pub async fn submit_bank_pay(
                bank_time = ?,
                order_pic = COALESCE(?, order_pic),
                order_info = COALESCE(?, order_info)
-           WHERE order_id = ? AND uid = ? AND type = 1 AND order_state IN (0, 3)"#,
+           WHERE order_id = ? AND uid = ? AND type IN (1, 2) AND order_state IN (0, 3)"#,
     )
     .bind(order_bank)
     .bind(bank_time)

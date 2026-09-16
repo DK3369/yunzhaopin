@@ -15,7 +15,7 @@
 //! `get_balance`/`add_balance`/`try_deduct` are routed to
 //! `phpyun_member.integral`.
 
-use super::entity::{IntegralExchange, IntegralItem};
+use super::entity::{IntegralClass, IntegralExchange, IntegralItem, PrepaidCard};
 use sqlx::MySqlPool;
 
 pub async fn list_items(
@@ -72,3 +72,59 @@ pub async fn count_exchanges_by_user(_pool: &MySqlPool, _uid: u64) -> Result<u64
 // `integral_repo::get_balance / try_deduct / add_balance` keep working.
 
 pub use crate::member_statis::repo::{add_balance, get_balance, try_deduct};
+
+pub async fn list_active_classes(pool: &MySqlPool) -> Result<Vec<IntegralClass>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(integral,0) AS SIGNED) AS integral, \
+         CAST(COALESCE(discount,0) AS SIGNED) AS discount, CAST(COALESCE(state,0) AS SIGNED) AS state \
+         FROM phpyun_admin_integralclass WHERE COALESCE(state,0) = 1 \
+         ORDER BY integral ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn find_class(pool: &MySqlPool, id: u64) -> Result<Option<IntegralClass>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, CAST(COALESCE(integral,0) AS SIGNED) AS integral, \
+         CAST(COALESCE(discount,0) AS SIGNED) AS discount, CAST(COALESCE(state,0) AS SIGNED) AS state \
+         FROM phpyun_admin_integralclass WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn find_prepaid_card(
+    pool: &MySqlPool,
+    card: &str,
+) -> Result<Option<PrepaidCard>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(password,'') AS password, \
+         CAST(COALESCE(quota,0) AS SIGNED) AS quota, CAST(COALESCE(uid,0) AS UNSIGNED) AS uid \
+         FROM phpyun_company_card WHERE card = ? LIMIT 1",
+    )
+    .bind(card)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn claim_prepaid_card(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    username: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_card SET uid = ?, username = ?, utime = ? \
+         WHERE id = ? AND COALESCE(uid, 0) = 0",
+    )
+    .bind(uid)
+    .bind(username)
+    .bind(now)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}

@@ -4,6 +4,8 @@
 //! - `GET /v1/mcenter/resume-downloads/inbox` — job seeker views who has downloaded their resume
 
 use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdsBody;
+use phpyun_core::json;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
@@ -20,6 +22,7 @@ pub fn routes() -> Router<AppState> {
         .route("/resume-downloads/outbox", post(list_outbox))
         .route("/resume-downloads/inbox", post(list_inbox))
         .route("/resume-downloads/export", post(export_outbox))
+        .route("/resume-downloads/delete", post(delete_outbox))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -80,20 +83,30 @@ impl From<phpyun_models::resume_download::entity::ResumeDownload> for DownloadIt
     }
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct OutboxQuery {
+    #[serde(default)]
+    #[validate(length(max = 60))]
+    pub keyword: Option<String>,
+}
+
 /// Company view: resumes I have downloaded
 #[utoipa::path(
     post,
     path = "/v1/mcenter/resume-downloads/outbox",
     tag = "mcenter",
     security(("bearer" = [])),
+    request_body = OutboxQuery,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_outbox(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
+    ValidatedJson(q): ValidatedJson<OutboxQuery>,
 ) -> AppResult<ApiResponse<Paged<DownloadItem>>> {
-    let r = resume_download_service::list_mine_as_company(&state, &user, page).await?;
+    let kw = q.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty());
+    let r = resume_download_service::list_mine_as_company(&state, &user, kw, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         with_names(&state, r.list).await?,
         r.total,
@@ -147,7 +160,7 @@ pub async fn export_outbox(
         offset: 0,
         limit: 2000,
     };
-    let r = resume_download_service::list_mine_as_company(&state, &user, page).await?;
+    let r = resume_download_service::list_mine_as_company(&state, &user, None, page).await?;
     let items = with_names(&state, r.list).await?;
     let total = items.len() as u64;
     let mut csv = String::from("\u{feff}id,uid,eid,uname,datetime\n");
@@ -166,6 +179,23 @@ pub async fn export_outbox(
         filename: "resume-downloads.csv".into(),
         total,
     }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume-downloads/delete",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdsBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn delete_outbox(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdsBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let n = resume_download_service::delete_mine(&state, &user, &b.ids).await?;
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
 
 fn csv_cell(s: &str) -> String {

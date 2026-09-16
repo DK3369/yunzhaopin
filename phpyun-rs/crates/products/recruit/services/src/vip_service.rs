@@ -17,7 +17,8 @@ pub async fn list_packages(
     state: &AppState,
     user: &AuthenticatedUser,
 ) -> AppResult<Vec<VipPackage>> {
-    Ok(vip_repo::list_active_packages(state.db.reader(), i32::from(user.usertype)).await?)
+    user.require_employer()?;
+    crate::rating_info_service::list_buyable_packages(state, user.uid).await
 }
 
 /// Create an order -- returns order_no, the client uses it to call the payment gateway.
@@ -36,9 +37,7 @@ pub async fn create_order(
     if pkg.is_active != 1 {
         return Err(ApiError::param_invalid("package_inactive"));
     }
-    if pkg.target_usertype != 0 && pkg.target_usertype != i32::from(user.usertype) {
-        return Err(ApiError::param_invalid("package_usertype_mismatch"));
-    }
+    // `company_rating.type` is 1=套餐 / 2=时间会员, not member.usertype.
 
     let order_no = format!("ON{}", Uuid::now_v7().simple());
     let now = clock::now_ts();
@@ -122,15 +121,17 @@ pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> App
     if affected == 0 {
         return Err(ApiError::param_invalid("order_already_processed"));
     }
-    // 2. Activate / renew VIP
-    vip_repo::upsert_user_vip(
+    // 2. PHP ratingInfo → company_statis + company + company_job.rating
+    let rating_id = i32::try_from(pkg.id).unwrap_or(0);
+    crate::rating_info_service::apply_rating(state, order.uid, rating_id, None).await?;
+    let _ = vip_repo::upsert_user_vip(
         state.db.pool(),
         order.uid,
         &order.package_code,
         i64::from(pkg.duration_days) * SECS_PER_DAY,
         now,
     )
-    .await?;
+    .await;
 
     // 3. Audit + event bus
     let _ = audit::emit(
@@ -188,9 +189,14 @@ pub async fn submit_bank_pay(
     if input.bank_time <= 0 {
         return Err(ApiError::business("wap_js_00127"));
     }
-    let order = vip_repo::find_order_by_no(state.db.reader(), input.order_no)
+    let order = match vip_repo::find_order_by_no_and_type(state.db.reader(), input.order_no, 2)
         .await?
-        .ok_or_else(|| ApiError::business("order_not_found"))?;
+    {
+        Some(o) => o,
+        None => vip_repo::find_order_by_no(state.db.reader(), input.order_no)
+            .await?
+            .ok_or_else(|| ApiError::business("order_not_found"))?,
+    };
     if order.uid != user.uid {
         return Err(ApiError::business("order_not_owned"));
     }
@@ -281,7 +287,52 @@ pub async fn get_current_vip(
     state: &AppState,
     user: &AuthenticatedUser,
 ) -> AppResult<Option<UserVip>> {
-    Ok(vip_repo::find_user_vip(state.db.reader(), user.uid).await?)
+    use phpyun_models::company_statis::repo as statis_repo;
+    let now = clock::now_ts();
+    let Some(st) = statis_repo::find_admin(state.db.reader(), user.uid).await? else {
+        return Ok(None);
+    };
+    if st.rating <= 0 && st.vip_etime == 0 {
+        return Ok(None);
+    }
+    Ok(Some(UserVip {
+        uid: user.uid,
+        package_code: format!("pkg_{}", st.rating),
+        started_at: st.vip_stime,
+        expires_at: st.vip_etime,
+        updated_at: now,
+    }))
+}
+
+pub async fn buy_with_integral(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    package_code: &str,
+    client_ip: &str,
+) -> AppResult<String> {
+    user.require_employer()?;
+    let pkg = vip_repo::find_package_by_code(state.db.reader(), package_code)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("unknown package"))?;
+    let q = quote_package_price(state, user, u64::from(pkg.id), "vip").await?;
+    if q.style != 2 {
+        return Err(ApiError::business("integral_insufficient"));
+    }
+    let pts = q.price.round() as i64;
+    if pts > 0 {
+        let n = phpyun_models::company_statis::repo::try_deduct_integral(
+            state.db.pool(),
+            user.uid,
+            pts,
+        )
+        .await?;
+        if n == 0 {
+            return Err(ApiError::business("integral_insufficient"));
+        }
+    }
+    let order_no = create_order(state, user, package_code, "integral", client_ip).await?;
+    mark_paid(state, &order_no, "integral").await?;
+    Ok(order_no)
 }
 
 // ==================== Pricing quote (PHPYun `getVipPrice` / `getPackPrice`) ====================
@@ -433,4 +484,299 @@ async fn read_str_setting(state: &AppState, key: &str) -> Result<Option<String>,
             .await?
             .map(|row| row.value),
     )
+}
+
+pub struct IntegralClassView {
+    pub id: u64,
+    pub integral: i32,
+    pub discount: i32,
+}
+
+pub struct IntegralClassPack {
+    pub list: Vec<IntegralClassView>,
+    pub min_recharge: i64,
+    pub proportion: i64,
+    pub pricename: String,
+    pub priceunit: String,
+    pub balance: i64,
+}
+
+pub async fn list_integral_classes(
+    state: &AppState,
+    user: &AuthenticatedUser,
+) -> AppResult<IntegralClassPack> {
+    user.require_employer()?;
+    let list = phpyun_models::integral::repo::list_active_classes(state.db.reader())
+        .await?
+        .into_iter()
+        .map(|c| IntegralClassView {
+            id: c.id,
+            integral: c.integral,
+            discount: c.discount,
+        })
+        .collect();
+    let min_recharge = read_int_setting(state, "integral_min_recharge")
+        .await?
+        .unwrap_or(0)
+        .max(0);
+    let proportion = read_int_setting(state, "integral_proportion")
+        .await?
+        .unwrap_or(1)
+        .max(1);
+    let pricename = read_str_setting(state, "integral_pricename")
+        .await?
+        .unwrap_or_default();
+    let priceunit = read_str_setting(state, "integral_priceunit")
+        .await?
+        .unwrap_or_default();
+    let balance = phpyun_models::company_statis::repo::read_integral(state.db.reader(), user.uid)
+        .await
+        .unwrap_or(0);
+    Ok(IntegralClassPack {
+        list,
+        min_recharge,
+        proportion,
+        pricename,
+        priceunit,
+        balance,
+    })
+}
+
+pub struct CreatedRechargeOrder {
+    pub order_no: String,
+    pub amount_cents: i32,
+    pub integral: i64,
+    pub subject: String,
+}
+
+fn recharge_price_yuan(pts: i64, proportion: i64, discount: i32) -> AppResult<(f64, i32)> {
+    let pro = phpyun_core::numeric::finite_to_f64_db(
+        phpyun_core::numeric::i64_to_f64(proportion.max(1)),
+        "site_setting.integral_proportion",
+    )?;
+    let pts_f = phpyun_core::numeric::finite_to_f64_db(
+        phpyun_core::numeric::i64_to_f64(pts),
+        "company_order.integral",
+    )?;
+    let mut price = pts_f / pro;
+    if discount > 0 {
+        price *= f64::from(discount) / 100.0;
+    }
+    let price = (price * 100.0).round() / 100.0;
+    let amount_cents = (price * 100.0).round() as i32;
+    if amount_cents < 1 {
+        return Err(ApiError::business("common_00644"));
+    }
+    Ok((price, amount_cents))
+}
+
+pub async fn create_recharge(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    price_int: i64,
+    integralid: u64,
+    channel: &str,
+    remark: &str,
+    client_ip: &str,
+) -> AppResult<CreatedRechargeOrder> {
+    user.require_employer()?;
+    if price_int > 10_000_000 {
+        return Err(ApiError::business("common_00644"));
+    }
+    let min_recharge = read_int_setting(state, "integral_min_recharge")
+        .await?
+        .unwrap_or(0)
+        .max(0);
+    let mut pts = price_int.max(0);
+    if min_recharge > 0 && pts < min_recharge {
+        pts = min_recharge;
+    }
+    if pts < 1 {
+        return Err(ApiError::business("common_00644"));
+    }
+    let proportion = read_int_setting(state, "integral_proportion")
+        .await?
+        .unwrap_or(1)
+        .max(1);
+    let mut discount = 0i32;
+    let mut rating = 0i32;
+    if integralid > 0 {
+        if let Some(cls) = phpyun_models::integral::repo::find_class(state.db.reader(), integralid)
+            .await?
+        {
+            if cls.state == 1 && pts >= i64::from(cls.integral) {
+                discount = cls.discount;
+                rating = i32::try_from(cls.id).unwrap_or(0);
+            }
+        }
+    }
+    let (price_yuan, amount_cents) = recharge_price_yuan(pts, proportion, discount)?;
+    let now = clock::now_ts();
+    let note = {
+        let t = remark.trim();
+        if t.is_empty() {
+            "recharge".to_string()
+        } else {
+            t.to_string()
+        }
+    };
+    let order_no = vip_repo::create_recharge_order(
+        state.db.pool(),
+        user.uid,
+        user.did,
+        channel,
+        price_yuan,
+        pts,
+        rating,
+        &note,
+        now,
+    )
+    .await?;
+    let pricename = read_str_setting(state, "integral_pricename")
+        .await?
+        .unwrap_or_default();
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("vip.recharge_create", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("order:{order_no}"))
+            .meta(&serde_json::json!({
+                "integral": pts,
+                "amount_cents": amount_cents,
+                "channel": channel,
+            })),
+    )
+    .await;
+    Ok(CreatedRechargeOrder {
+        order_no,
+        amount_cents,
+        integral: pts,
+        subject: format!("common_01946{pricename}"),
+    })
+}
+
+pub async fn mark_recharge_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
+    let order = vip_repo::find_order_by_no_and_type(state.db.reader(), order_no, 2)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
+    if order.status == 1 {
+        return Ok(());
+    }
+    if order.status != 0 {
+        return Err(ApiError::param_invalid("order_not_pending"));
+    }
+    let now = clock::now_ts();
+    let affected = vip_repo::mark_order_paid(state.db.pool(), order_no, pay_tx_id, now).await?;
+    if affected == 0 {
+        return Ok(());
+    }
+    let pts = i64::from(order.integral.max(0));
+    if pts > 0 {
+        phpyun_models::company_statis::repo::add_integral(state.db.pool(), order.uid, pts).await?;
+        let pricename = read_str_setting(state, "integral_pricename")
+            .await?
+            .unwrap_or_default();
+        let remark = format!("member_user_00285{pricename}");
+        let _ = phpyun_models::integral_transfer::repo::php_insert_pay_typed(
+            state.db.pool(),
+            order_no,
+            &pts.to_string(),
+            now,
+            order.uid,
+            &remark,
+            phpyun_models::integral_transfer::repo::LEDGER_KIND_INTEGRAL,
+            2,
+            2,
+        )
+        .await;
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("vip.recharge_paid", Actor::uid(order.uid))
+            .target(format!("order:{order_no}"))
+            .meta(&serde_json::json!({ "integral": pts, "pay_tx_id": pay_tx_id })),
+    )
+    .await;
+    Ok(())
+}
+
+fn table_missing(err: &sqlx::Error) -> bool {
+    let s = err.to_string();
+    s.contains("1146") || s.contains("doesn't exist")
+}
+
+pub async fn redeem_card(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    card: &str,
+    password: &str,
+    client_ip: &str,
+) -> AppResult<i32> {
+    user.require_employer()?;
+    let card = card.trim();
+    let password = password.trim();
+    if card.is_empty() || password.is_empty() {
+        return Err(ApiError::param_invalid("card"));
+    }
+    if !card.bytes().all(|b| b.is_ascii_digit()) || !password.bytes().all(|b| b.is_ascii_digit()) {
+        return Err(ApiError::param_invalid("card"));
+    }
+    let row = match phpyun_models::integral::repo::find_prepaid_card(state.db.reader(), card).await {
+        Ok(v) => v,
+        Err(e) if table_missing(&e) => return Err(ApiError::business("member_com_00645")),
+        Err(e) => return Err(e.into()),
+    };
+    let Some(row) = row else {
+        return Err(ApiError::business("member_com_00645"));
+    };
+    if row.password != password {
+        return Err(ApiError::business("member_com_00645"));
+    }
+    if row.uid > 0 {
+        return Err(ApiError::business("member_com_00645"));
+    }
+    if row.quota <= 0 {
+        return Err(ApiError::business("common_00644"));
+    }
+    let username = phpyun_models::user::repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .map(|m| m.username)
+        .unwrap_or_default();
+    let now = clock::now_ts();
+    let n = phpyun_models::integral::repo::claim_prepaid_card(
+        state.db.pool(),
+        row.id,
+        user.uid,
+        &username,
+        now,
+    )
+    .await?;
+    if n == 0 {
+        return Err(ApiError::business("member_com_00645"));
+    }
+    let pts = i64::from(row.quota);
+    phpyun_models::company_statis::repo::add_integral(state.db.pool(), user.uid, pts).await?;
+    let pricename = read_str_setting(state, "integral_pricename")
+        .await?
+        .unwrap_or_default();
+    let remark = format!("member_com_00645{pricename}");
+    let order_id = format!("{now}{}", user.uid % 90_000 + 10_000);
+    let _ = phpyun_models::integral_transfer::repo::php_insert_pay_typed(
+        state.db.pool(),
+        &order_id,
+        &pts.to_string(),
+        now,
+        user.uid,
+        &remark,
+        phpyun_models::integral_transfer::repo::LEDGER_KIND_INTEGRAL,
+        2,
+        2,
+    )
+    .await;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("vip.card_redeem", Actor::uid(user.uid).with_ip(client_ip))
+            .meta(&serde_json::json!({ "card": card, "quota": pts })),
+    )
+    .await;
+    Ok(row.quota)
 }

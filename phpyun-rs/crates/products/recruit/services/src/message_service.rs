@@ -42,8 +42,15 @@ pub async fn mark_all_read(state: &AppState, user: &AuthenticatedUser) -> AppRes
 }
 
 pub async fn delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
-    let _ = message_repo::delete(state.db.pool(), id, user.uid).await?;
+    let _ = delete_ids(state, user, &[id]).await?;
     Ok(())
+}
+
+pub async fn delete_ids(state: &AppState, user: &AuthenticatedUser, ids: &[u64]) -> AppResult<u64> {
+    if ids.is_empty() {
+        return Err(phpyun_core::ApiError::param_invalid("id"));
+    }
+    Ok(message_repo::delete_by_ids(state.db.pool(), ids, user.uid).await?)
 }
 
 pub async fn unread_count(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {

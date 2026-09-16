@@ -268,6 +268,12 @@ pub async fn handle_alipay(
 
 /// Mark VIP or once-job order paid after the gateway signature has been verified.
 pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
+    if vip_repo::find_order_by_no_and_type(state.db.reader(), order_no, 2)
+        .await?
+        .is_some()
+    {
+        return vip_service::mark_recharge_paid(state, order_no, pay_tx_id).await;
+    }
     if vip_repo::find_order_by_no(state.db.reader(), order_no)
         .await?
         .is_some()

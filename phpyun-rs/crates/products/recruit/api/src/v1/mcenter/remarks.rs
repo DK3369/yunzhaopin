@@ -69,6 +69,12 @@ pub struct UpsertForm {
     pub target_kind: i32,
     #[validate(length(min = 0, max = 5000))]
     pub note: String,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub eid: Option<u64>,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 7))]
+    pub status: Option<i32>,
 }
 
 /// My remarks list
@@ -106,25 +112,45 @@ pub async fn upsert(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<UpsertForm>,
 ) -> AppResult<ApiResponse> {
-    remark_service::upsert(&state, &user, f.target_uid, f.target_kind, &f.note).await?;
+    remark_service::upsert(
+        &state,
+        &user,
+        f.target_uid,
+        f.target_kind,
+        &f.note,
+        f.eid.unwrap_or(0),
+        f.status.unwrap_or(0),
+    )
+    .await?;
     Ok(ApiResponse::message("ok"))
 }
 
 /// Get a specific remark
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct GetRemarkForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub target_uid: u64,
+    #[validate(range(min = 1, max = 3))]
+    pub kind: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub eid: Option<u64>,
+}
+
 #[utoipa::path(
     post,
     path = "/v1/mcenter/remarks/get-one",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = KindTargetUidBody,
+    request_body = GetRemarkForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn get_one(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
+    ValidatedJson(b): ValidatedJson<GetRemarkForm>,
 ) -> AppResult<ApiResponse<Option<RemarkView>>> {
-    let r = remark_service::get(&state, &user, b.target_uid, b.kind).await?;
+    let r = remark_service::get(&state, &user, b.target_uid, b.kind, b.eid.unwrap_or(0)).await?;
     Ok(ApiResponse::data(r.map(RemarkView::from)))
 }
 

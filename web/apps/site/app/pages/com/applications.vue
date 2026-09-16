@@ -9,6 +9,7 @@ type Row = {
   datetime_n?: string
   is_browse?: number
   invited?: boolean
+  islink?: number
   job_name?: string
   uname?: string
   apply_url?: string
@@ -220,10 +221,41 @@ function telOf(row: Row) {
   return String(row.telphone || row.linktel || '')
 }
 function telHidden(row: Row) {
-  return Number(row.is_browse) <= 1
+  return Number(row.islink) !== 1
 }
 async function revealTel(row: Row) {
-  await run(() => api.post('/v1/mcenter/applications/browse', { id: row.id }))
+  msg.value = ''
+  try {
+    const r = await api.post<{
+      status?: number
+      private_phone?: string
+      prvusertel?: string
+      jifen?: number
+      price?: number
+      msg?: string
+    }>('/v1/mcenter/resume-downloads', { uid: row.uid, eid: row.eid || 0 })
+    if (Number(r.status) === 2) {
+      const text = r.jifen
+        ? `${t('common_00697')}${r.jifen}${t('common_01935')}?`
+        : r.price
+          ? `${t('common_00696')}${r.price}${t('common_00757')}?`
+          : t('common_00696')
+      if (window.confirm(text)) {
+        await api.post('/v1/mcenter/resume-downloads', { uid: row.uid, eid: row.eid || 0, confirm: true })
+      }
+    }
+    await reload()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('common_00888')
+  }
+}
+async function removePicked() {
+  if (!selected.value.length) {
+    msg.value = t('common_01164')
+    return
+  }
+  if (!window.confirm(t('member_com_00083'))) return
+  return run(() => api.post('/v1/mcenter/applications/delete', { ids: selected.value }))
 }
 async function addTalent(row: Row) {
   await run(() =>
@@ -298,6 +330,10 @@ const resumeStateOpts = computed(() => [
   { v: 0, label: t('wap_user_00166') },
   { v: 3, label: t('wap_user_00167') },
 ])
+const sexOpts = computed(() => [
+  { v: 1, label: t('common_02092') },
+  { v: 2, label: t('common_02069') },
+])
 useSeoMeta({ title: t('member_com_00454') })
 </script>
 
@@ -365,6 +401,39 @@ useSeoMeta({ title: t('member_com_00454') })
           @click="filters.exp = String(d.id)"
         >{{ d.name }}</a>
       </div>
+      <div class="com-h5-more__name">{{ $t('wap_00456') }}</div>
+      <div class="com-h5-more__row">
+        <a href="javascript:;" :class="{ on: !filters.sex }" @click="filters.sex = ''">{{ $t('common.all') }}</a>
+        <a
+          v-for="d in sexOpts"
+          :key="'h5sex-' + d.v"
+          href="javascript:;"
+          :class="{ on: String(filters.sex) === String(d.v) }"
+          @click="filters.sex = String(d.v)"
+        >{{ d.label }}</a>
+      </div>
+      <div class="com-h5-more__name">{{ $t('wap_00326') }}</div>
+      <div class="com-h5-more__row">
+        <a href="javascript:;" :class="{ on: !filters.uptime }" @click="filters.uptime = ''">{{ $t('common.all') }}</a>
+        <a
+          v-for="d in uptimeOpts"
+          :key="'h5up-' + d.v"
+          href="javascript:;"
+          :class="{ on: String(filters.uptime) === String(d.v) }"
+          @click="filters.uptime = String(d.v)"
+        >{{ d.label }}</a>
+      </div>
+      <div class="com-h5-more__name">{{ $t('wap_user_00165') }}</div>
+      <div class="com-h5-more__row">
+        <a href="javascript:;" :class="{ on: filters.resume_state === '' }" @click="filters.resume_state = ''">{{ $t('common.all') }}</a>
+        <a
+          v-for="d in resumeStateOpts"
+          :key="'h5rsf-' + d.v"
+          href="javascript:;"
+          :class="{ on: String(filters.resume_state) === String(d.v) }"
+          @click="filters.resume_state = String(d.v)"
+        >{{ d.label }}</a>
+      </div>
       <a href="javascript:;" class="issue_post_body_btn" @click.prevent="h5MoreOpen = false; applyFilters()">{{ $t('common.search') }}</a>
     </div>
     <div v-if="moreOpen" class="jlsx_bg site-pc" @click.self="moreOpen = false">
@@ -378,6 +447,21 @@ useSeoMeta({ title: t('member_com_00454') })
         <div class="jlsx_boxjy">
           <a href="javascript:;" :class="{ jlsx_boxjy_cur: !filters.exp }" @click="filters.exp = ''">{{ $t('common.all') }}</a>
           <a v-for="d in expDict" :key="d.id" href="javascript:;" :class="{ jlsx_boxjy_cur: String(filters.exp) === String(d.id) }" @click="filters.exp = String(d.id)">{{ d.name }}</a>
+        </div>
+        <div class="jlsx_boxname">{{ $t('wap_00456') }}</div>
+        <div class="jlsx_boxjy">
+          <a href="javascript:;" :class="{ jlsx_boxjy_cur: !filters.sex }" @click="filters.sex = ''">{{ $t('common.all') }}</a>
+          <a v-for="d in sexOpts" :key="'pcsex-' + d.v" href="javascript:;" :class="{ jlsx_boxjy_cur: String(filters.sex) === String(d.v) }" @click="filters.sex = String(d.v)">{{ d.label }}</a>
+        </div>
+        <div class="jlsx_boxname">{{ $t('wap_00326') }}</div>
+        <div class="jlsx_boxjy">
+          <a href="javascript:;" :class="{ jlsx_boxjy_cur: !filters.uptime }" @click="filters.uptime = ''">{{ $t('common.all') }}</a>
+          <a v-for="d in uptimeOpts" :key="'pcup-' + d.v" href="javascript:;" :class="{ jlsx_boxjy_cur: String(filters.uptime) === String(d.v) }" @click="filters.uptime = String(d.v)">{{ d.label }}</a>
+        </div>
+        <div class="jlsx_boxname">{{ $t('wap_user_00165') }}</div>
+        <div class="jlsx_boxjy">
+          <a href="javascript:;" :class="{ jlsx_boxjy_cur: filters.resume_state === '' }" @click="filters.resume_state = ''">{{ $t('common.all') }}</a>
+          <a v-for="d in resumeStateOpts" :key="'pcrsf-' + d.v" href="javascript:;" :class="{ jlsx_boxjy_cur: String(filters.resume_state) === String(d.v) }" @click="filters.resume_state = String(d.v)">{{ d.label }}</a>
         </div>
         <a href="javascript:;" class="com_bth" @click="moreOpen = false; applyFilters()">{{ $t('common.search') }}</a>
       </div>
@@ -410,6 +494,7 @@ useSeoMeta({ title: t('member_com_00454') })
                 <a href="javascript:;" class="newcom_user_name" @click.prevent="openResume(row)">{{ row.uname || row.uid }}</a>
                 <span class="com_received_zt" :class="browseZt(row.is_browse)"><i class="com_received_zt_icon" />{{ browseLabel(row.is_browse) }}</span>
                 <span v-if="row.invited" class="hr_yyy">{{ $t('wap_user_00216') }}</span>
+                <span v-if="Number(row.islink) === 1" class="hr_yxz">{{ $t('wap_00451') }}</span>
                 <div v-if="rowInfo(row).length" class="newcom_user_infop">{{ rowInfo(row).join(' · ') }}</div>
                 <div v-if="row.salary">{{ $t('wap_00925') }}：{{ row.salary }}</div>
               </div>
@@ -439,6 +524,7 @@ useSeoMeta({ title: t('member_com_00454') })
       </table>
       <p v-if="list.length" class="site-pc">
         <button type="button" class="com_topbth" :disabled="!selected.length" @click="batchRead">{{ $t('member_com_00492') }}</button>
+        <button type="button" class="com_topbth" :disabled="!selected.length" @click="removePicked">{{ $t('common.delete') }}</button>
       </p>
       <div class="site-h5 resume_management_body_card">
         <div class="management_body_card_content">
@@ -452,18 +538,26 @@ useSeoMeta({ title: t('member_com_00454') })
             :state-text="browseLabel(row.is_browse)"
             :is-browse="row.is_browse"
             :invited="row.invited"
+            :downloaded="Number(row.islink) === 1"
             :info="rowInfo(row)"
             @open="openResume(row)"
           >
+            <label>
+              <input v-model="selected" type="checkbox" :value="row.id" />
+            </label>
             <div class="hr_userlist_czicon" @click="pick(row)">{{ $t('wap_com_00046') }}</div>
             <div class="hr_userlist_czicon" @click="openRemark(row)">{{ $t('member_user_00242') }}</div>
             <div class="hr_userlist_czicon" @click="addTalent(row)">{{ $t('ui.add_to_talent') }}</div>
+            <div class="hr_userlist_czicon" @click="revealTel(row)">{{ $t('wap_00447') }}</div>
             <div class="hr_userlist_czicon" @click="stateOpen = stateOpen === row.id ? 0 : row.id">{{ browseLabel(row.is_browse) || $t('member_user_00181') }}</div>
             <div v-if="stateOpen === row.id" class="hr_userlist_cz_menu">
               <a v-for="s in [1, 2, 3, 4, 5, 7]" :key="s" href="javascript:;" @click.prevent="setState(row.id, s); stateOpen = 0">{{ browseLabel(s) }}</a>
             </div>
             <div class="hr_userlist_czicon" @click="removeRow(row.id)">{{ $t('common.delete') }}</div>
           </MemberHrUserCard>
+        </div>
+        <div v-if="list.length" class="com_Release_job_bot">
+          <a href="javascript:;" class="c_btn_02" @click="removePicked">{{ $t('common.delete') }}</a>
         </div>
       </div>
       <form v-if="remarkFor" class="com_release_box site-pc" @submit.prevent="saveRemark">

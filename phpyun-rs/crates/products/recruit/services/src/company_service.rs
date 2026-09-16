@@ -170,11 +170,23 @@ pub struct CompanyUpdateInput<'a> {
     pub cityid: Option<i32>,
     pub three_cityid: Option<i32>,
     pub logo: Option<&'a str>,
+    pub comqcode: Option<&'a str>,
     pub content: Option<&'a str>,
     pub linkman: Option<&'a str>,
     pub linkjob: Option<&'a str>,
     pub linkphone: Option<&'a str>,
+    pub linktel: Option<&'a str>,
     pub linkmail: Option<&'a str>,
+    pub address: Option<&'a str>,
+    pub website: Option<&'a str>,
+    pub linkqq: Option<&'a str>,
+    pub sdate: Option<&'a str>,
+    pub money: Option<i32>,
+    pub moneytype: Option<i32>,
+    pub infostatus: Option<i32>,
+    pub welfare: Option<&'a str>,
+    pub busstops: Option<&'a str>,
+    pub not_disturb: Option<&'a str>,
     pub x: Option<&'a str>,
     pub y: Option<&'a str>,
     pub pr: Option<i32>,
@@ -263,6 +275,10 @@ async fn load_company_for_viewer(
     }
 }
 
+fn nonempty(s: Option<&str>) -> Option<&str> {
+    s.map(str::trim).filter(|v| !v.is_empty())
+}
+
 pub async fn update_mine(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -271,29 +287,147 @@ pub async fn update_mine(
 ) -> AppResult<()> {
     user.require_employer()?;
     company_repo::ensure_row(state.db.pool(), user.uid, user.did).await?;
+    let old = company_repo::find_by_uid(state.db.pool(), user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("company_not_found"))?;
+
+    let mut name = nonempty(input.name);
+    if old.yyzz_status == 1 {
+        name = None;
+    }
+    if let Some(n) = name {
+        if n.len() < 2 {
+            return Err(ApiError::business("common_05982"));
+        }
+        if company_repo::exists_name_except(state.db.pool(), n, user.uid).await? {
+            return Err(ApiError::business("common_01222"));
+        }
+    }
+
+    let mut linktel = nonempty(input.linktel);
+    if old.moblie_status == 1 {
+        linktel = None;
+    }
+    if let Some(tel) = linktel {
+        if user_repo::exists_mobile_except(state.db.pool(), tel, Some(user.uid)).await? {
+            return Err(ApiError::business("wap_js_00049"));
+        }
+    }
+    let mut linkmail = nonempty(input.linkmail);
+    if old.email_status == 1 {
+        linkmail = None;
+    }
+    if let Some(em) = linkmail {
+        if user_repo::exists_email_except(state.db.pool(), em, Some(user.uid)).await? {
+            return Err(ApiError::business("wap_js_00120"));
+        }
+    }
+
+    if nonempty(input.content).is_none() && old.content.as_deref().unwrap_or("").trim().is_empty() {
+        return Err(ApiError::business("member_com_00445"));
+    }
+    if nonempty(input.linkman).is_none() && old.linkman.as_deref().unwrap_or("").trim().is_empty() {
+        return Err(ApiError::business("member_com_00677"));
+    }
+    let phone_ok = nonempty(input.linktel)
+        .or(nonempty(input.linkphone))
+        .or(old.linktel.as_deref().filter(|s| !s.trim().is_empty()))
+        .or(old.linkphone.as_deref().filter(|s| !s.trim().is_empty()))
+        .is_some();
+    if old.moblie_status != 1 && !phone_ok {
+        return Err(ApiError::business("common_00670"));
+    }
+
+    let first_info = old.name.as_deref().unwrap_or("").trim().is_empty() && name.is_some();
+    let first_map = old.x.as_deref().unwrap_or("").trim().is_empty()
+        && nonempty(input.x).is_some()
+        && nonempty(input.y).is_some();
+
     company_repo::update(
         state.db.pool(),
         user.uid,
         company_repo::CompanyUpdate {
-            name: input.name,
-            shortname: input.shortname,
+            name,
+            shortname: nonempty(input.shortname),
             hy: input.hy,
             provinceid: input.provinceid,
             cityid: input.cityid,
             three_cityid: input.three_cityid,
-            logo: input.logo,
-            content: input.content,
-            linkman: input.linkman,
-            linkjob: input.linkjob,
-            linkphone: input.linkphone,
-            linkmail: input.linkmail,
-            x: input.x,
-            y: input.y,
+            logo: nonempty(input.logo),
+            comqcode: nonempty(input.comqcode),
+            content: nonempty(input.content),
+            linkman: nonempty(input.linkman),
+            linkjob: nonempty(input.linkjob),
+            linkphone: nonempty(input.linkphone),
+            linktel,
+            linkmail,
+            address: nonempty(input.address),
+            website: nonempty(input.website),
+            linkqq: nonempty(input.linkqq),
+            sdate: nonempty(input.sdate),
+            money: input.money,
+            moneytype: input.moneytype,
+            infostatus: input.infostatus,
+            welfare: nonempty(input.welfare),
+            busstops: nonempty(input.busstops),
+            not_disturb: nonempty(input.not_disturb),
+            x: nonempty(input.x),
+            y: nonempty(input.y),
             pr: input.pr,
             mun: input.mun,
         },
     )
     .await?;
+
+    let saved = company_repo::find_by_uid(state.db.pool(), user.uid)
+        .await?
+        .unwrap_or(old);
+    let member = user_repo::find_by_uid(state.db.pool(), user.uid).await?;
+    let mob = if saved.moblie_status == 1 {
+        member
+            .as_ref()
+            .and_then(|m| m.moblie.clone())
+            .unwrap_or_default()
+    } else {
+        saved.linktel.clone().unwrap_or_default()
+    };
+    let em = if saved.email_status == 1 {
+        member
+            .as_ref()
+            .and_then(|m| m.email.clone())
+            .unwrap_or_default()
+    } else {
+        saved.linkmail.clone().unwrap_or_default()
+    };
+    let _ = user_repo::update_contact(
+        state.db.pool(),
+        user.uid,
+        em.trim(),
+        mob.trim(),
+        saved.address.as_deref().unwrap_or(""),
+    )
+    .await;
+
+    let _ = job_repo::sync_com_snapshot(
+        state.db.pool(),
+        user.uid,
+        saved.name.as_deref().unwrap_or(""),
+        saved.pr,
+        saved.mun,
+        saved.provinceid,
+        saved.cityid,
+        saved.three_cityid,
+        saved.x.as_deref().unwrap_or(""),
+        saved.y.as_deref().unwrap_or(""),
+    )
+    .await;
+
+    if first_info {
+        award_integral(state, user.uid, "integral_userinfo").await;
+    }
+    if first_map {
+        award_integral(state, user.uid, "integral_map").await;
+    }
 
     let _ = audit::emit(
         state,
@@ -302,4 +436,68 @@ pub async fn update_mine(
     )
     .await;
     Ok(())
+}
+
+async fn award_integral(state: &AppState, uid: u64, key: &str) {
+    let pts = setting_repo::find(state.db.reader(), key)
+        .await
+        .ok()
+        .flatten()
+        .and_then(|r| r.value.trim().parse::<i64>().ok())
+        .unwrap_or(0);
+    if pts > 0 {
+        let _ = statis_repo::add_integral(state.db.pool(), uid, pts).await;
+    }
+}
+
+/// PHP `map.class::setMap`.
+pub async fn set_map(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    x: &str,
+    y: &str,
+    client_ip: &str,
+) -> AppResult<()> {
+    user.require_employer()?;
+    company_repo::ensure_row(state.db.pool(), user.uid, user.did).await?;
+    let old = company_repo::find_by_uid(state.db.pool(), user.uid).await?;
+    let first = old
+        .as_ref()
+        .map(|c| c.x.as_deref().unwrap_or("").trim().is_empty())
+        .unwrap_or(true);
+    if x.trim().is_empty() || y.trim().is_empty() {
+        return Err(ApiError::business("common_06414"));
+    }
+    company_repo::set_map(state.db.pool(), user.uid, x.trim(), y.trim()).await?;
+    if first {
+        award_integral(state, user.uid, "integral_map").await;
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("company.set_map", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("uid:{}", user.uid)),
+    )
+    .await;
+    Ok(())
+}
+
+/// PHP `ajaxCheck` / `getCheckUsed`: name vs other companies, mobile vs other members.
+pub async fn check_used(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    type_str: &str,
+    check_str: &str,
+) -> AppResult<bool> {
+    user.require_employer()?;
+    let s = check_str.trim();
+    if s.is_empty() {
+        return Ok(false);
+    }
+    match type_str {
+        "name" => Ok(company_repo::exists_name_except(state.db.reader(), s, user.uid).await?),
+        "linktel" => {
+            Ok(user_repo::exists_mobile_except(state.db.reader(), s, Some(user.uid)).await?)
+        }
+        _ => Err(ApiError::param_invalid("type")),
+    }
 }

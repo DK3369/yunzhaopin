@@ -83,33 +83,92 @@ pub async fn already_freedown_eid(
 }
 
 /// Company viewing the resumes they have downloaded
-pub async fn list_for_company(
+    pub async fn list_for_company(
     pool: &MySqlPool,
     com_id: u64,
+    keyword: Option<&str>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<ResumeDownload>, sqlx::Error> {
-    sqlx::query_as::<_, ResumeDownload>(
-        r#"SELECT id, COALESCE(comid, 0) AS com_id, COALESCE(uid, 0) AS uid,
-                  COALESCE(eid, 0) AS eid, downtime AS datetime
-           FROM phpyun_down_resume
-           WHERE comid = ?
-           ORDER BY downtime DESC
-           LIMIT ? OFFSET ?"#,
-    )
-    .bind(com_id)
-    .bind(limit)
-    .bind(offset)
-    .fetch_all(pool)
-    .await
+    let kw = keyword.map(str::trim).filter(|s| !s.is_empty());
+    if let Some(k) = kw {
+        sqlx::query_as::<_, ResumeDownload>(
+            r#"SELECT d.id, COALESCE(d.comid, 0) AS com_id, COALESCE(d.uid, 0) AS uid,
+                      COALESCE(d.eid, 0) AS eid, d.downtime AS datetime
+               FROM phpyun_down_resume d
+               LEFT JOIN phpyun_resume r ON r.uid = d.uid
+               WHERE d.comid = ? AND COALESCE(d.isdel, 9) = 9 AND r.name LIKE ?
+               ORDER BY d.downtime DESC
+               LIMIT ? OFFSET ?"#,
+        )
+        .bind(com_id)
+        .bind(format!("%{k}%"))
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+    } else {
+        sqlx::query_as::<_, ResumeDownload>(
+            r#"SELECT id, COALESCE(comid, 0) AS com_id, COALESCE(uid, 0) AS uid,
+                      COALESCE(eid, 0) AS eid, downtime AS datetime
+               FROM phpyun_down_resume
+               WHERE comid = ? AND COALESCE(isdel, 9) = 9
+               ORDER BY downtime DESC
+               LIMIT ? OFFSET ?"#,
+        )
+        .bind(com_id)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+    }
+}
+
+pub async fn count_for_company_kw(
+    pool: &MySqlPool,
+    com_id: u64,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let kw = keyword.map(str::trim).filter(|s| !s.is_empty());
+    let (n,): (i64,) = if let Some(k) = kw {
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_down_resume d \
+             LEFT JOIN phpyun_resume r ON r.uid = d.uid \
+             WHERE d.comid = ? AND COALESCE(d.isdel, 9) = 9 AND r.name LIKE ?",
+        )
+        .bind(com_id)
+        .bind(format!("%{k}%"))
+        .fetch_one(pool)
+        .await?
+    } else {
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_down_resume WHERE comid = ? AND COALESCE(isdel, 9) = 9",
+        )
+        .bind(com_id)
+        .fetch_one(pool)
+        .await?
+    };
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_for_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_down_resume WHERE comid = ?")
-        .bind(com_id)
-        .fetch_one(pool)
-        .await?;
-    Ok(phpyun_core::numeric::nonnegative_count(n))
+    count_for_company_kw(pool, com_id, None).await
+}
+
+pub async fn hide_owned(pool: &MySqlPool, com_id: u64, ids: &[u64]) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_down_resume SET isdel = 2 WHERE comid = ");
+    qb.push_bind(com_id);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(",");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
 }
 
 /// Job seeker viewing who has downloaded their resume

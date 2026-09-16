@@ -18,18 +18,55 @@ const { data: dash } = await useAsyncData(
       .catch(() => null),
   reuseAsyncCache(),
 )
+const picked = ref<number[]>([])
+const list = computed(() => (data.value?.list || []) as Array<Record<string, unknown>>)
+const allPicked = computed({
+  get: () => list.value.length > 0 && picked.value.length === list.value.length,
+  set: (v: boolean) => {
+    picked.value = v ? list.value.map((r) => Number(r.id)) : []
+  },
+})
+function isUnread(row: Record<string, unknown>) {
+  if (row.is_read === false) return true
+  if (row.is_read === true) return false
+  return Number(row.remind_status) === 1
+}
+function rowTime(row: Record<string, unknown>) {
+  return String(row.created_at_n || row.datetime_n || '')
+}
+function rowBody(row: Record<string, unknown>) {
+  return String(row.body || row.content || row.title || row.id || '')
+}
+function togglePick(id: number) {
+  picked.value = picked.value.includes(id) ? picked.value.filter((x) => x !== id) : [...picked.value, id]
+}
 async function read(id: number) {
   await api.post('/v1/mcenter/messages/read', { id })
   refresh()
 }
 async function remove(id: number) {
   await api.post('/v1/mcenter/messages/delete', { id })
+  picked.value = picked.value.filter((x) => x !== id)
   refresh()
 }
 async function readAll() {
   await api.post('/v1/mcenter/messages/read-all', {})
   refresh()
 }
+async function removePicked() {
+  if (!picked.value.length) return
+  await api.post('/v1/mcenter/messages/delete', { ids: picked.value })
+  picked.value = []
+  refresh()
+}
+async function readPicked() {
+  for (const id of picked.value) await api.post('/v1/mcenter/messages/read', { id })
+  picked.value = []
+  refresh()
+}
+watch(page, () => {
+  picked.value = []
+})
 useSeoMeta({ title: t('common.message') })
 const total = computed(() => inferTotal(data.value))
 </script>
@@ -48,34 +85,53 @@ const total = computed(() => inferTotal(data.value))
       </ul>
     </div>
     <p class="site-pc">
-      <a href="javascript:;" class="com_bth cblue" @click="readAll">{{ $t('common.confirm') }}</a>
+      <a href="javascript:;" class="com_bth cblue" @click="readAll">{{ $t('member_user_00463') }}</a>
     </p>
-    <table v-if="(data?.list || []).length" class="com_table mt20 site-pc">
+    <table v-if="list.length" class="com_table mt20 site-pc">
       <tr>
+        <th width="25">
+          <label><input v-model="allPicked" type="checkbox" class="com_job_list_check" /></label>
+        </th>
         <th>{{ $t('common.message') }}</th>
         <th>{{ $t('member_user_00104') }}</th>
         <th>{{ $t('member_user_00048') }}</th>
       </tr>
-      <tr v-for="row in data?.list || []" :key="row.id">
-        <td>{{ row.body || row.content || row.title || row.id }}</td>
-        <td>{{ row.datetime_n }}</td>
+      <tr v-for="row in list" :key="Number(row.id)">
+        <td align="center">
+          <input type="checkbox" class="com_job_list_check" :checked="picked.includes(Number(row.id))" @change="togglePick(Number(row.id))" />
+        </td>
+        <td :style="isUnread(row) ? 'font-weight:bold' : ''">{{ rowBody(row) }}</td>
+        <td>{{ rowTime(row) }}</td>
         <td>
-          <a href="javascript:;" class="com_bth cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
-          <a href="javascript:;" class="com_bth cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+          <a href="javascript:;" class="com_bth cblue" @click="read(Number(row.id))">{{ $t('member_user_00462') }}</a>
+          <a href="javascript:;" class="com_bth cblue" @click="remove(Number(row.id))">{{ $t('common.delete') }}</a>
         </td>
       </tr>
     </table>
+    <div v-if="list.length" class="com_Release_job_bot site-pc">
+      <label class="com_Release_job_qx"><input v-model="allPicked" type="checkbox" class="com_job_list_check" /> {{ $t('common.all') }}</label>
+      <a href="javascript:;" class="c_btn_02" @click="removePicked">{{ $t('common.delete') }}</a>
+      <a href="javascript:;" class="c_btn_02" @click="readPicked">{{ $t('member_user_00462') }}</a>
+      <a href="javascript:;" class="c_btn_02" @click="readAll">{{ $t('member_user_00463') }}</a>
+    </div>
     <div class="site-h5">
-      <div v-for="row in data?.list || []" :key="'h5-' + row.id" class="com_cardlist">
-        <div class="com_cardlist_tit">{{ row.body || row.content || row.title || row.id }}</div>
+      <div v-for="row in list" :key="'h5-' + Number(row.id)" class="com_cardlist">
+        <label>
+          <input type="checkbox" :checked="picked.includes(Number(row.id))" @change="togglePick(Number(row.id))" />
+        </label>
+        <div class="com_cardlist_tit" :style="isUnread(row) ? 'font-weight:bold' : ''">{{ rowBody(row) }}</div>
         <div class="com_cardlist_p">
           <span class="com_cardlist_p_name">{{ $t('member_user_00104') }}</span>
-          {{ row.datetime_n }}
+          {{ rowTime(row) }}
         </div>
         <div class="com_card_cz">
-          <a href="javascript:;" class="com_bth cblue" @click="read(row.id)">{{ $t('common.confirm') }}</a>
-          <span class="com_card_delete" @click="remove(row.id)" />
+          <a href="javascript:;" class="com_bth cblue" @click="read(Number(row.id))">{{ $t('member_user_00462') }}</a>
+          <span class="com_card_delete" @click="remove(Number(row.id))" />
         </div>
+      </div>
+      <div v-if="list.length" class="com_Release_job_bot">
+        <a href="javascript:;" class="c_btn_02" @click="removePicked">{{ $t('common.delete') }}</a>
+        <a href="javascript:;" class="c_btn_02" @click="readPicked">{{ $t('member_user_00462') }}</a>
       </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />

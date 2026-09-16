@@ -40,6 +40,39 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Resume>, s
         .await
 }
 
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct ResumeCard {
+    #[sqlx(try_from = "i32")]
+    pub uid: u64,
+    pub photo: Option<String>,
+    pub phototype: i32,
+    pub sex: i32,
+    pub education: i32,
+    pub exp: i32,
+    pub birthday: Option<String>,
+    pub telphone: Option<String>,
+}
+
+pub async fn cards_by_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<Vec<ResumeCard>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(uid AS SIGNED) AS uid, photo, COALESCE(phototype, 0) AS phototype, \
+         COALESCE(sex, 0) AS sex, COALESCE(edu, 0) AS education, COALESCE(exp, 0) AS exp, \
+         birthday, telphone FROM phpyun_resume WHERE uid IN (",
+    );
+    let mut sep = qb.separated(", ");
+    for uid in uids {
+        sep.push_bind(*uid);
+    }
+    qb.push(")");
+    qb.build_query_as::<ResumeCard>().fetch_all(pool).await
+}
+
 /// Publicly visible: status=1 (public) + r_status=1. `status=3` (visible only to applied companies) does not go through here.
 pub async fn find_public(pool: &MySqlPool, uid: u64) -> Result<Option<Resume>, sqlx::Error> {
     let sql = format!(
@@ -978,6 +1011,60 @@ pub async fn written_off_clear_email(pool: &MySqlPool, uid: u64) -> Result<u64, 
     let res = sqlx::query(
         "UPDATE phpyun_resume SET email = '', email_status = 0 WHERE uid = ?",
     )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// Identity-card cert columns used by App `/cert/idcard/*` (not on the main Resume projection).
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct IdcardRow {
+    pub name: String,
+    pub idcard: String,
+    pub idcard_pic: String,
+    pub idcard_status: i32,
+    pub statusbody: String,
+    pub cert_time: i64,
+    pub r_status: i32,
+}
+
+pub async fn find_idcard(pool: &MySqlPool, uid: u64) -> Result<Option<IdcardRow>, sqlx::Error> {
+    sqlx::query_as::<_, IdcardRow>(
+        "SELECT COALESCE(name,'') AS name, \
+                COALESCE(idcard,'') AS idcard, \
+                COALESCE(idcard_pic,'') AS idcard_pic, \
+                CAST(COALESCE(idcard_status, 0) AS SIGNED) AS idcard_status, \
+                COALESCE(statusbody,'') AS statusbody, \
+                CAST(COALESCE(cert_time, 0) AS SIGNED) AS cert_time, \
+                CAST(COALESCE(r_status, 0) AS SIGNED) AS r_status \
+         FROM phpyun_resume WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+/// PHP `upidcardInfo` write: name / idcard / pic / status / cert_time.
+pub async fn submit_idcard(
+    pool: &MySqlPool,
+    uid: u64,
+    name: &str,
+    idcard: &str,
+    idcard_pic: &str,
+    idcard_status: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume SET name = ?, idcard = ?, idcard_pic = ?, \
+                idcard_status = ?, cert_time = ?, statusbody = '' \
+         WHERE uid = ?",
+    )
+    .bind(name)
+    .bind(idcard)
+    .bind(idcard_pic)
+    .bind(idcard_status)
+    .bind(now)
     .bind(uid)
     .execute(pool)
     .await?;

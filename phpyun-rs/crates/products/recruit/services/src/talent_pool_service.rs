@@ -73,12 +73,13 @@ pub async fn add(
 pub async fn list_mine(
     state: &AppState,
     user: &AuthenticatedUser,
+    keyword: Option<&str>,
     page: Pagination,
 ) -> AppResult<TalentPoolPage> {
     user.require_employer()?;
     let (total, list) = tokio::join!(
-        tp_repo::count_by_com(state.db.reader(), user.uid),
-        tp_repo::list_by_com(state.db.reader(), user.uid, page.offset, page.limit),
+        tp_repo::count_by_com_kw(state.db.reader(), user.uid, keyword),
+        tp_repo::list_by_com(state.db.reader(), user.uid, keyword, page.offset, page.limit),
     );
     Ok(TalentPoolPage {
         total: total?,

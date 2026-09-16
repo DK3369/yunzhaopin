@@ -25,6 +25,8 @@ pub fn routes() -> Router<AppState> {
         .route("/applications/state", post(set_state))
         .route("/applications/delete", post(delete_received))
         .route("/applications/invite", post(invite))
+        .route("/applications/next", post(next_unread))
+        .route("/applications/ever-applied", post(ever_applied))
 }
 
 /// Filters of the PHP employer screen `member/com/model/hr.class.php`.
@@ -124,6 +126,23 @@ pub struct ApplicantSummary {
     pub isdel: i32,
     /// Whether the job seeker has withdrawn
     pub quxiao: i32,
+    #[serde(default)]
+    pub photo: String,
+    #[serde(default)]
+    pub sex_n: String,
+    #[serde(default)]
+    pub age: i32,
+    #[serde(default)]
+    pub edu_n: String,
+    #[serde(default)]
+    pub exp_n: String,
+    #[serde(default)]
+    pub salary: String,
+    #[serde(default)]
+    pub telphone: String,
+    /// 1 = already downloaded (`down_resume` / `freedown_resume`).
+    #[serde(default)]
+    pub islink: i32,
 }
 
 impl From<phpyun_models::apply::entity::Apply> for ApplicantSummary {
@@ -147,8 +166,42 @@ impl From<phpyun_models::apply::entity::Apply> for ApplicantSummary {
             invite_time: a.invite_time,
             isdel: a.isdel,
             quxiao: a.quxiao,
+            photo: String::new(),
+            sex_n: String::new(),
+            age: 0,
+            edu_n: String::new(),
+            exp_n: String::new(),
+            salary: String::new(),
+            telphone: String::new(),
+            islink: 0,
         }
     }
+}
+
+async fn with_cards(
+    state: &AppState,
+    com_id: u64,
+    list: Vec<phpyun_models::apply::entity::Apply>,
+) -> AppResult<Vec<ApplicantSummary>> {
+    let pairs: Vec<(u64, u64)> = list.iter().map(|a| (a.uid, a.eid)).collect();
+    let cards = apply_service::applicant_cards(state, com_id, &pairs).await?;
+    Ok(list
+        .into_iter()
+        .map(|a| {
+            let mut s = ApplicantSummary::from(a);
+            if let Some(c) = cards.get(&s.uid) {
+                s.photo = c.photo.clone();
+                s.sex_n = c.sex_n.clone();
+                s.age = c.age;
+                s.edu_n = c.edu_n.clone();
+                s.exp_n = c.exp_n.clone();
+                s.salary = c.salary.clone();
+                s.telphone = c.telphone.clone();
+                s.islink = c.islink;
+            }
+            s
+        })
+        .collect())
 }
 
 /// Employer views all received applications
@@ -167,8 +220,9 @@ pub async fn list_received(
     ValidatedJson(q): ValidatedJson<ApplicationsQuery>,
 ) -> AppResult<ApiResponse<Paged<ApplicantSummary>>> {
     let r = apply_service::list_for_company(&state, &user, q.to_filter(), page).await?;
+    let list = with_cards(&state, user.uid, r.list).await?;
     Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
+        list, r.total, page,
     )))
 }
 
@@ -207,6 +261,10 @@ async fn load_state_counts(
         unsuitable: at(4),
         unreachable: at(5),
         hired: at(7),
+        freenum: phpyun_models::company_statis::repo::find_admin(state.db.reader(), user.uid)
+            .await?
+            .map(|s| s.down_resume.max(0) as u64)
+            .unwrap_or(0),
     })
 }
 
@@ -238,8 +296,9 @@ pub async fn overview(
         load_state_counts(&state, &user, filter),
     );
     let r = list?;
+    let applications = with_cards(&state, user.uid, r.list).await?;
     Ok(ApiResponse::data(ApplicationsOverview {
-        applications: Paged::from_listing(r.list, r.total, page),
+        applications: Paged::from_listing(applications, r.total, page),
         counts: counts?,
     }))
 }
@@ -260,16 +319,18 @@ pub struct StateCounts {
     pub unreachable: u64,
     /// is_browse = 7
     pub hired: u64,
+    /// Remaining `company_statis.down_resume` (PHP `freenum`).
+    pub freenum: u64,
 }
 
-/// Mark as read (idempotent)
+/// Mark as read only: sets `is_browse` 1→2. Not interviewed / unsuitable — use `/applications/state`.
 #[utoipa::path(
     post,
     path = "/v1/mcenter/applications/browse",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = IdBody,
-    responses((status = 200, description = "ok"))
+    responses((status = 200, description = "Mark read (is_browse 1→2 only)"))
 )]
 pub async fn mark_browsed(
     State(state): State<AppState>,
@@ -301,13 +362,34 @@ pub async fn batch_read(
     }))
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ApplicationDeleteBody {
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub id: Option<u64>,
+    #[serde(default)]
+    #[validate(length(max = 200))]
+    pub ids: Option<Vec<u64>>,
+}
+
+fn collect_ids(id: Option<u64>, ids: Option<Vec<u64>>) -> Vec<u64> {
+    let mut out = ids.unwrap_or_default();
+    if let Some(i) = id.filter(|x| *x > 0) {
+        if !out.contains(&i) {
+            out.push(i);
+        }
+    }
+    out.retain(|x| *x > 0 && *x <= 99_999_999);
+    out
+}
+
 /// Remove a received application from the employer's list
 #[utoipa::path(
     post,
     path = "/v1/mcenter/applications/delete",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = IdBody,
+    request_body = ApplicationDeleteBody,
     responses(
         (status = 200, description = "ok"),
         (status = 403, description = "Application does not belong to you"),
@@ -317,9 +399,10 @@ pub async fn delete_received(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJson(b): ValidatedJson<ApplicationDeleteBody>,
 ) -> AppResult<ApiResponse> {
-    apply_service::delete_for_company(&state, &user, b.id, &ip).await?;
+    let ids = collect_ids(b.id, b.ids);
+    apply_service::delete_for_company_ids(&state, &user, &ids, &ip).await?;
     Ok(ApiResponse::message("deleted"))
 }
 
@@ -332,7 +415,7 @@ pub struct SetStateBody {
     pub state: i32,
 }
 
-/// Set application feedback state (richer than the binary value of /browse — accepts 5 enum values)
+/// Set `is_browse`: `1` 未查看 / `2` 已查看 / `3` 已面试 / `4` 不合适 / `5` 无法联系 / `7` 已入职.
 #[utoipa::path(
     post,
     path = "/v1/mcenter/applications/state",
@@ -374,4 +457,47 @@ pub async fn invite(
 ) -> AppResult<ApiResponse<json::Value>> {
     apply_service::invite_interview(&state, &user, b.id, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/applications/next",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn next_unread(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let hit = apply_service::next_unread(&state, &user, b.id).await?;
+    Ok(ApiResponse::data(match hit {
+        Some((id, uid, eid)) => json::json!({ "id": id, "uid": uid, "eid": eid }),
+        None => json::json!({ "id": 0 }),
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct EverAppliedForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub eid: u64,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/applications/ever-applied",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = EverAppliedForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn ever_applied(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<EverAppliedForm>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let hit = apply_service::ever_applied(&state, &user, f.eid).await?;
+    Ok(ApiResponse::data(json::json!({ "applied": hit })))
 }
