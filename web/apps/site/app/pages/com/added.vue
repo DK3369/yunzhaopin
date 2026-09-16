@@ -17,18 +17,31 @@ type Group = { id: number; name: string; details: Detail[] }
 
 const api = useApi()
 const { t } = useI18n()
+const { settings } = useSiteChrome()
 const { data, error, refresh } = await useAsyncData('com-packs', () =>
   api.post<Group[]>('/v1/mcenter/packs/list', {}).catch(() => [] as Group[]),
 )
 const groups = computed(() => (Array.isArray(data.value) ? data.value : []) as Group[])
 const msg = ref('')
+const channel = ref('alipay')
+const wxPayOn = computed(() =>
+  Boolean(settings.value.sy_wxpayid || settings.value.sy_wxpaykey || settings.value.wx_appid),
+)
+function payChannel() {
+  if (channel.value === 'bank') return 'bank'
+  if (channel.value !== 'wxpay') return channel.value
+  if (import.meta.client && /Android|iPhone|iPad|Mobile|MicroMessenger/i.test(navigator.userAgent)) return 'wxh5'
+  return 'wxpay'
+}
 
 async function buy(detailId: number) {
   msg.value = ''
   try {
+    const q = await api.post<{ price?: number }>('/v1/mcenter/packs/quote', { detail_id: detailId }).catch(() => null)
+    if (q?.price && !window.confirm(`${t('common_00696')}${q.price}${t('common_00757')}?`)) return
     const created = await api.post<{ order_no?: string; pay_url?: string; msg?: string }>('/v1/mcenter/packs/orders', {
       detail_id: detailId,
-      channel: 'alipay',
+      channel: payChannel(),
     })
     if (created?.pay_url) {
       window.location.href = created.pay_url
@@ -46,9 +59,19 @@ useSeoMeta({ title: t('wap_com_00393') })
 
 <template>
   <MemberPanel :title="$t('wap_com_00393')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !groups.length">
+    <template #pcTabs><MemberComVipTabs /></template>
+    <template #h5Tabs><MemberComVipTabs /></template>
     <p>
       <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
     </p>
+    <div class="payment_list site-pc">
+        <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
+      <div class="payment_list_r">
+        <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
+        <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
+        <label><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+      </div>
+    </div>
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <div v-for="g in groups" :key="g.id" class="payment_list site-pc">
       <div class="payment_list_s">{{ g.name }}</div>
@@ -70,6 +93,13 @@ useSeoMeta({ title: t('wap_com_00393') })
       </div>
     </div>
     <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent>
+        <MemberField wap :label="$t('wap_user_00313')">
+          <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
+          <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
+          <label><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+        </MemberField>
+      </form>
       <div v-for="g in groups" :key="'h5g-' + g.id">
         <div class="comshowtip">{{ g.name }}</div>
         <div v-for="d in g.details || []" :key="'h5d-' + d.id" class="issue_post_body_card">

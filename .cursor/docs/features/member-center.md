@@ -178,8 +178,8 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 - **第一期（已做）**：PC 有、H5 卡上点不到的动作。简历分享/删作品技能/缺项/置顶；面试拒信表单进 H5 卡；收藏/关注取消；投递天数第二行 tab；职位 H5 最新/急聘（`urgent=1`）+ 地图 `/map`；企业 H5 已认证 `cert=1` + 福利；`/com/jobs` H5 推广/下架/删除/分享。
 - **第二期前半（已做）**：资讯/兼职/问答公开列表+详情换成 WAP 皮（`news_in_*` / `part_box`+`jz_top_box` / `ask_header_bg`+`ask_ct_list`+`askct_iss`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。问答 `ask.css` 只在问答页 `useHead`，不进全局 H5 包。会员补动作：应聘 H5 状态/备注；企业兼职 H5 刷新/编辑/删除 + 报名 `#h5-acts`；求职兼职卡删除；求职消息点卡已读并展开（不要 PC 勾选批量）。
 - **第二期后半（已做）**：招聘会/专题/once/tiny、公告/公招、问答话题、搜索换成 WAP 皮（`newzph_*` / `special_*` / `tiny_bg`+`com_new_contnet_box` / `news_in_*` / `asktopic_*` / `wap_search_header`+`search_history_*`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。招聘资料/发职位 H5 用 `issue_post_body`+`yun_createbox`+`MemberField wap`（同一套 `v-model` / `save` / `submit`），**不要**给 `MemberReleaseRow` 加媒体查询。应聘 H5 在 `m_taball` 下加关键词/职位/学历经验筛，不改 PC `jlsx_*`。企业新闻/产品 H5 卡有编辑删除；表单同样双皮。
-- **招聘会员剩余子页（已做）**：地址/环境/横幅、兼职发布、面试模板、投诉、HR 建码/加入、搜索器、套餐/增值/充值、统计、应聘备注邀请、人才库备注、积分转账均 `.site-pc` 外包 + H5 `yun_createbox` / `com_cardlist` / `issue_post_body_card` / `company_photo_box` 并列，复用同页函数。**不要**给 `payment_list` 加媒体查询当切皮。登录/兑换/地图仍第三期。
-- **第三期**：登录是否换成 `login_cont`；兑换、HR 工具箱、地图页壳。求职首页 H5 默认不加 PC 那块推荐职位。
+- **招聘会员剩余子页（已做）**：地址/环境/横幅、兼职发布、面试模板、投诉、HR 建码/加入、搜索器、套餐/增值/充值、统计、应聘备注邀请、人才库备注、积分转账均 `.site-pc` 外包 + H5 `yun_createbox` / `com_cardlist` / `issue_post_body_card` / `company_photo_box` 并列，复用同页函数。**不要**给 `payment_list` 加媒体查询当切皮。登录/兑换仍第三期；地图页 `/com/map` 已用 `MapPick`。
+- **第三期**：登录是否换成 `login_cont`；兑换、HR 工具箱。求职首页 H5 默认不加 PC 那块推荐职位。
 
 ## 命名陷阱
 
@@ -219,4 +219,47 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 | PC 城市 | 来自 `link_id`（`-1` 企业默认 / 地址簿），不要独立城市行覆盖 |
 | H5 | 可带 `provinceid/cityid/x/y` 与 `jobclassid`（末级反查三级） |
 
-入口：[`job_mgmt_service.rs`](../../../phpyun-rs/crates/products/recruit/services/src/job_mgmt_service.rs)、[`web/apps/site/app/pages/com/jobs/new.vue`](../../../web/apps/site/app/pages/com/jobs/new.vue)、[`jobs.vue`](../../../web/apps/site/app/pages/com/jobs.vue)。本轮不做应聘管线、套餐支付、兼职 `partadd`、企业导航 `customize`。
+入口：[`job_mgmt_service.rs`](../../../phpyun-rs/crates/products/recruit/services/src/job_mgmt_service.rs)、[`web/apps/site/app/pages/com/jobs/new.vue`](../../../web/apps/site/app/pages/com/jobs/new.vue)、[`jobs.vue`](../../../web/apps/site/app/pages/com/jobs.vue)。
+
+- 在招计数含兼职 + `lt_job.status=0`。`islink=2` 自定义联系人写 `company_job_link`。违禁词 `sy_fkeyword` 把 `state` 置 0。刷新额度不够返回 `status=2`（积分/现金确认），不要只跳套餐页。
+- `com_enforce_setposition` 未标点拦发岗 → `/com/map`（`POST /v1/mcenter/company/map` 只存 xy）。
+
+## 应聘管线
+
+对齐 PHP `hr` / `down` / `invite` / `talent_pool`。接口：`/v1/mcenter/applications`（`type<>3`、`isdel=9`）、`/state`、`/next`、`/ever-applied`、`/resume-downloads/outbox|delete`、`/talent-pool/list`。
+
+| PHP | 口径 |
+|---|---|
+| `BrowseSqJob` | `is_browse` 1/2/3/4/5/7；`>2` 写 `endtime`；改职位 `operatime`；不合适(4) 发站内 `sqzwhf` |
+| 备注 | `phpyun_resume_remark`：`eid/uid/comid/status/remark`。Vue 用 `kind=1` 并带 `eid` |
+| `resumeInfo` | 隐私 `status=2` 关闭、`status=3` 仅已投递；`openResumeCheck`；今日 `freelook`。从应聘带 `eid`/`apply` 进 [`resumes/[uid].vue`](../../../web/apps/site/app/pages/resumes/[uid].vue)，不要另做简历皮 |
+| `nexts` / `everApplied` | 下一条 `is_browse=1`；该 `eid` 是否投过本企业 |
+| `ReportResume` | 同企业+同 eid 不可重复 → `job_00004` |
+| 下载删除 | `down_resume.isdel=2` + 姓名搜 |
+| 角标 | dcl/yck/dtz/bhs/yrz + `freenum`（`company_statis.down_resume`） |
+
+面试邀请继续 `/v1/mcenter/company/yqms/create`。
+
+## 企业资料 / 认证 / 地图
+
+`POST /v1/mcenter/company` 对齐 PHP `setCompany`：`linktel`（发岗 check 依赖）、`address`/`website`/`busstops`/`linkqq`/`sdate`/`money`/`infostatus`/`welfare`/`not_disturb`。已绑定手机/邮箱、执照通过后的企业名不可改。保存后 `setJobInfo` 同步在招快照；首次完善 `integral_userinfo`；首次标点 `integral_map`。认证 `r_status==0` 待审回流 + `com_social_credit` / `com_cert_status`。页：[`profile.vue`](../../../web/apps/site/app/pages/com/profile.vue)、[`cert.vue`](../../../web/apps/site/app/pages/com/cert.vue)、[`map.vue`](../../../web/apps/site/app/pages/com/map.vue)。
+
+## 套餐 / `ratingInfo`
+
+VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis` + `company.rating*` + 在招 `company_job.rating`**。`job_num` **赋值不累加**；`vip_etime` 日终 23:59:59。不要只 upsert `phpyun_rs_user_vip`。
+
+- `mark_paid` 与积分全额 `/v1/mcenter/vip/orders/integral` 共用 `apply_rating`。
+- 列表：`com_vip_type`（0/2 套餐 `type=1`，1 时间会员 `type=2`）+ `company.package` 白名单 + `com_package_open`。
+- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 展示 `company_statis` 当前等级与额度，页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。套餐/增值/充值/订单四页顶栏共用 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)（`wap_com_00380` / `wap_com_00393` / `common_01946` / `common_02029`）。
+- 增值包 VIP 未过期才可买；渠道不要写死 `alipay`。订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 只列订单（可取消未支付），购买走套餐/充值页。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。
+- `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
+
+招聘 PC/H5 已对齐的交互（仍用现有 `/v1/mcenter/*`，后端改完再换接口）：
+
+- 发岗自定义联系人 `is_link=2`；职位列表 URL `w`、推广天数、关闭推广；H5 推广菜单可改天数。
+- 应聘：备注 `status` 1/2/3/4/5/7、未浏览点「查看电话」、加人才库。下载备注独立于邀请表单。人才库邀请走 `yqms/create`，简历路径用 `seeker_uid`。
+- 资料福利为字典勾选 + 自定义名（提交逗号串）；免打扰写 `HH:MM-HH:MM`。地图 [`MapPick`](../../../web/layers/ui/app/components/MapPick.vue) 高德 `PlaceSearch` 搜地名。
+- 面试列表客户端关键词 + 邀请函预览。简历详情「查看下一份」文案 `member_com_00415`，H5 底栏同样有。
+- 企微码 `comqcode` 现有 `company/list|company` **还不读写**，等后端改完再接。
+
+本轮仍不做兼职 `partadd`、招聘会、HR 子账号、企业导航 `customize`。

@@ -106,11 +106,24 @@ function failAct(e: unknown) {
   return e instanceof Error ? e.message : t('ui.load_failed')
 }
 
-async function refreshJob(id: number) {
+async function refreshJob(id: number, confirm = false) {
   msg.value = ''
   buyHint.value = ''
   try {
-    await api.post('/v1/mcenter/jobs/refresh', { id })
+    const r = await api.post<{ status?: number; integral?: number; jifen?: number; price?: number }>(
+      '/v1/mcenter/jobs/refresh',
+      { id, confirm },
+    )
+    if (Number(r.status) === 2) {
+      const pts = r.integral || r.jifen
+      const text = pts
+        ? `${t('common_00697')}${pts}${t('common_01935')}?`
+        : r.price
+          ? `${t('common_00696')}${r.price}${t('common_00757')}?`
+          : t('common_00696')
+      if (window.confirm(text)) await refreshJob(id, true)
+      return
+    }
     msg.value = t('common.success')
     await refresh()
     await refreshCounts()
@@ -129,6 +142,15 @@ async function setStatus(id: number, status: number) {
   } catch (e: unknown) {
     msg.value = failAct(e)
   }
+}
+function promoOn(job: JobRow, kind: 'top' | 'rec' | 'urgent') {
+  if (kind === 'top') return Boolean(job.istop)
+  if (kind === 'rec') return Boolean(job.is_rec)
+  return Boolean(job.is_urgent)
+}
+async function promoteOrClose(job: JobRow, kind: 'top' | 'rec' | 'urgent') {
+  if (promoOn(job, kind)) return closePromote(job.id, kind)
+  return promote(job.id, kind)
 }
 async function promote(jobId: number, kind: 'top' | 'rec' | 'urgent') {
   msg.value = ''
@@ -274,12 +296,19 @@ function toggleH5Menu(id: number, kind: 'promote' | 'more') {
   h5Menu.value = id
   h5MenuKind.value = kind
 }
+function setW(n: number) {
+  w.value = n
+  go(1)
+  if (String(route.query.w) !== String(n)) {
+    navigateTo({ path: '/com/jobs', query: { ...route.query, w: String(n) } }, { replace: true })
+  }
+}
 const jobTabs = computed(() => [
-  { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.w1 ?? counts.value?.online, select: () => { w.value = 1; go(1) } },
-  { value: 0, label: t('wap_user_00006'), on: w.value === 0, count: counts.value?.w0 ?? counts.value?.pending, select: () => { w.value = 0; go(1) } },
-  { value: 3, label: t('wap_user_00167'), on: w.value === 3, count: counts.value?.w3, select: () => { w.value = 3; go(1) } },
-  { value: 4, label: t('wap_com_00245'), on: w.value === 4, count: counts.value?.w4 ?? counts.value?.closed, select: () => { w.value = 4; go(1) } },
-  { value: 5, label: t('common.all'), on: w.value === 5, count: counts.value?.w5 ?? counts.value?.total, select: () => { w.value = 5; go(1) } },
+  { value: 1, label: t('wap_com_00243'), on: w.value === 1, count: counts.value?.w1 ?? counts.value?.online, select: () => setW(1) },
+  { value: 0, label: t('wap_user_00006'), on: w.value === 0, count: counts.value?.w0 ?? counts.value?.pending, select: () => setW(0) },
+  { value: 3, label: t('wap_user_00167'), on: w.value === 3, count: counts.value?.w3, select: () => setW(3) },
+  { value: 4, label: t('wap_com_00245'), on: w.value === 4, count: counts.value?.w4 ?? counts.value?.closed, select: () => setW(4) },
+  { value: 5, label: t('common.all'), on: w.value === 5, count: counts.value?.w5 ?? counts.value?.total, select: () => setW(5) },
 ])
 </script>
 
@@ -298,6 +327,11 @@ const jobTabs = computed(() => [
         {{ $t('wap_com_00238') }} {{ counts.top_num ?? 0 }}{{ $t('common_02067') }} ·
         {{ $t('wap_com_00237') }} {{ counts.rec_num ?? 0 }}{{ $t('common_02067') }} ·
         {{ $t('member_com_00613') }} {{ counts.urgent_num ?? 0 }}{{ $t('common_02067') }}
+      </p>
+      <p>
+        {{ $t('member_com_00282') }}
+        <input v-model.number="days" type="number" min="1" max="365" class="com_release_textnew_text" style="width: 5em" />
+        {{ $t('common_02067') }}
       </p>
       <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
       <table v-if="list.length" class="com_table">
@@ -331,9 +365,9 @@ const jobTabs = computed(() => [
           </td>
           <td align="center">
             <div class="job_looklist_tgbox">
-              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.is_rec }" @click="promote(job.id, 'rec')">{{ $t('wap_01465') }}</a>
-              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.is_urgent }" @click="promote(job.id, 'urgent')">{{ $t('wap_00222') }}</a>
-              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.istop }" @click="promote(job.id, 'top')">{{ $t('wap_user_00335') }}</a>
+              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.is_rec }" @click="promoteOrClose(job, 'rec')">{{ job.is_rec ? $t('wap_com_00224') : $t('wap_01465') }}</a>
+              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.is_urgent }" @click="promoteOrClose(job, 'urgent')">{{ job.is_urgent ? $t('wap_com_00224') : $t('wap_00222') }}</a>
+              <a href="javascript:;" class="job_looklist_tg" :class="{ job_looklist_tg_kq: job.istop }" @click="promoteOrClose(job, 'top')">{{ job.istop ? $t('wap_com_00224') : $t('wap_user_00335') }}</a>
               <a v-if="reserveOn" href="javascript:;" class="job_looklist_tg" @click="fillReserve(job.id)">{{ $t('member_com_00267') }}</a>
             </div>
           </td>
@@ -394,9 +428,14 @@ const jobTabs = computed(() => [
               <div class="body_card_bom_icon"><img src="/legacy/h5/images/job_promotion.png" alt="" /></div>
               <div class="body_card_bom_name">{{ $t('wap_com_00236') }}</div>
               <div v-if="h5Menu === job.id && h5MenuKind === 'promote'" class="job_czmore" @click.stop>
-                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.istop }" @click="promote(job.id, 'top')">{{ $t('wap_user_00335') }}</span>
-                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.is_rec }" @click="promote(job.id, 'rec')">{{ $t('wap_01465') }}</span>
-                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.is_urgent }" @click="promote(job.id, 'urgent')">{{ $t('wap_00222') }}</span>
+                <span class="job_czmore_a">
+                  {{ $t('member_com_00282') }}
+                  <input v-model.number="days" type="number" min="1" max="365" style="width: 4em" />
+                  {{ $t('common_02067') }}
+                </span>
+                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.istop }" @click="promoteOrClose(job, 'top')">{{ job.istop ? $t('wap_com_00224') : $t('wap_user_00335') }}</span>
+                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.is_rec }" @click="promoteOrClose(job, 'rec')">{{ job.is_rec ? $t('wap_com_00224') : $t('wap_01465') }}</span>
+                <span class="job_czmore_a" :class="{ job_looklist_tg_kq: job.is_urgent }" @click="promoteOrClose(job, 'urgent')">{{ job.is_urgent ? $t('wap_com_00224') : $t('wap_00222') }}</span>
               </div>
             </li>
             <li @click="refreshJob(job.id)">

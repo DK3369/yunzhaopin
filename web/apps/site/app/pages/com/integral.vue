@@ -98,7 +98,7 @@ const tasks = computed(() => [
   { done: mission.value?.logo, title: t('wap_com_00180'), reward: pts('integral_avatar'), to: '/com/profile', doneText: t('wap_user_00123'), go: t('wap_user_00116'), sign: false },
   { done: mission.value?.phone_checked, title: t('wap_user_00109'), reward: pts('integral_mobliecert'), to: '/com/binding', doneText: t('wap_user_00128'), go: t('wap_user_00120'), sign: false },
   { done: mission.value?.weixin_bind, title: t('wap_user_00115'), reward: pts('integral_bind_wx'), to: '/com/binding', doneText: t('wap_user_00127'), go: t('wap_user_00119'), sign: false },
-  { done: mission.value?.map, title: t('wap_com_00182'), reward: pts('integral_map'), to: '/com/profile', doneText: t('wap_com_00189'), go: t('wap_com_00185'), sign: false },
+  { done: mission.value?.map, title: t('wap_com_00182'), reward: pts('integral_map'), to: '/com/map', doneText: t('wap_com_00189'), go: t('wap_com_00185'), sign: false },
   { done: mission.value?.yyzz, title: t('wap_com_00181'), reward: pts('integral_comcert'), to: '/com/cert', doneText: t('wap_user_00128'), go: t('wap_user_00120'), sign: false },
   { done: mission.value?.base_info, title: t('wap_00990'), reward: pts('integral_userinfo'), to: '/com/profile', doneText: t('wap_user_00125'), go: t('wap_user_00117'), sign: false },
   { done: mission.value?.email_checked, title: t('wap_user_00122'), reward: pts('integral_emailcert'), to: '/com/binding', doneText: t('wap_user_00128'), go: t('wap_com_00186'), sign: false },

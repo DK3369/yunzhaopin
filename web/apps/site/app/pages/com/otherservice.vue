@@ -14,6 +14,7 @@ const items = computed(() =>
     { to: '/com/jobs/new', label: t('wap_00322'), icon: '/legacy/h5/images/yun_cy_icon6.png' },
     { to: '/com/pay', label: t('common_01946'), icon: '/legacy/h5/images/caiwuegl.png' },
     { to: '/com/cert', label: t('wap_com_00075'), icon: '/legacy/h5/images/sz.png' },
+    { to: '/com/map', label: t('ui.map_addr'), icon: '/legacy/h5/images/yun_cy_icon3.png' },
     { to: '/com/job-messages', label: t('member_user_00115'), icon: '/legacy/h5/images/fk.png' },
     { to: '/com/messages', label: t('common.message'), icon: '/legacy/h5/images/fk.png' },
     { to: '/com/news', label: t('ui.com_news'), icon: '/legacy/h5/images/job_training.png' },

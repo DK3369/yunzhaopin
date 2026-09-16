@@ -51,7 +51,9 @@ const expectCities = computed(() =>
 const expectTitle = computed(() => expectJobs.value[0] || '')
 const expectCity = computed(() => expectCities.value[0] || '')
 const expectSalary = computed(() => String(expect0.value.salary_n || ''))
-const eid = computed(() => Number(row.value.def_job || expect0.value.id || 0))
+const eid = computed(() => Number(route.query.eid || row.value.def_job || expect0.value.id || 0))
+const applyId = computed(() => Number(route.query.apply || 0))
+const everApplied = ref(false)
 const unlocked = computed(() => Number(row.value.m_status) === 1)
 const bodyOpen = computed(() => Number(row.value.resume_check ?? 1) === 1)
 const tj = computed(() => (row.value.tj || {}) as Record<string, unknown>)
@@ -171,7 +173,13 @@ onMounted(async () => {
       })
       fav.value = Boolean(row.value.in_talentpool) || Boolean(r.exists || r.favorited)
     } catch {
-      /* keep in_talentpool */
+      /* ignore */
+    }
+    if (me.value?.usertype === 2 && eid.value > 0) {
+      const hit = await api
+        .post<{ applied?: boolean }>('/v1/mcenter/applications/ever-applied', { eid: eid.value })
+        .catch(() => null)
+      everApplied.value = Boolean(hit?.applied)
     }
   }
 })
@@ -328,6 +336,17 @@ async function toggleFav() {
     }
   } catch (e: unknown) {
     if (isLoginRequiredErr(e)) await goLogin(route.fullPath)
+  }
+}
+async function goNext() {
+  if (!applyId.value) return
+  const hit = await api
+    .post<{ id?: number; uid?: number; eid?: number }>('/v1/mcenter/applications/next', { id: applyId.value })
+    .catch(() => null)
+  if (hit?.id && hit.uid) {
+    await navigateTo(`/resumes/${hit.uid}?eid=${hit.eid || ''}&apply=${hit.id}`)
+  } else {
+    actionMsg.value = t('ui.no_data')
   }
 }
 async function report() {
@@ -540,7 +559,9 @@ async function report() {
                 fav ? $t('wap_00378') : $t('wap_00379')
               }}</a>
               <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="report">{{ $t('wap_com_00350') }}</a>
+              <a v-if="applyId" href="javascript:;" class="job_ceil_jobsc" @click.prevent="goNext">{{ $t('member_com_00415') }}</a>
             </p>
+            <p v-if="everApplied" class="muted">{{ $t('wap_user_00270') }}</p>
             <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
             <EmailRecommendForm v-if="eid" kind="resume" :id="eid" />
           </div>
@@ -706,6 +727,7 @@ async function report() {
           <button v-if="me?.usertype === 2" type="button" class="job_ceil_jobtd" @click="download">{{ $t('resume_00029') }}</button>
           <NuxtLink v-else to="/login" class="job_ceil_jobtd">{{ $t('common.login') }}</NuxtLink>
         </div>
+        <p v-if="everApplied" class="muted">{{ $t('wap_user_00270') }}</p>
         <p v-if="actionMsg" class="muted">{{ actionMsg }}</p>
         <EmailRecommendForm v-if="eid" kind="resume" :id="eid" />
         <ShareSceneQr
@@ -725,6 +747,9 @@ async function report() {
               <a v-if="unlocked && tel" :href="`tel:${tel}`">{{ $t('wap_00279') }}</a>
               <a v-else-if="me?.usertype === 2" href="javascript:;" @click.prevent="download">{{ $t('wap_00279') }}</a>
               <NuxtLink v-else to="/login">{{ $t('wap_00279') }}</NuxtLink>
+            </div>
+            <div v-if="applyId" class="yun_czfoot_lt yun_czfoot_lt_td">
+              <a href="javascript:;" @click.prevent="goNext">{{ $t('member_com_00415') }}</a>
             </div>
           </div>
         </div>
@@ -777,7 +802,7 @@ async function report() {
     <ReportSheet
       v-if="reportOpen"
       :target-kind="3"
-      :target-id="Number(row.def_job || expect0.id || 0)"
+      :target-id="eid || Number(row.def_job || expect0.id || 0)"
       @close="reportOpen = false"
       @done="actionMsg = $t('common.success')"
     />

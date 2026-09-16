@@ -120,6 +120,7 @@ export function useMemberNav() {
           { to: '/com/products', label: t('ui.com_products') },
           { to: '/com/banners', label: t('ui.com_banner') },
           { to: '/com/addresses', label: t('ui.map_addr') },
+          { to: '/com/map', label: t('ui.map_addr') },
           { to: '/com/tpls', label: t('ui.com_tpl') },
           { to: '/com/interview-tpls', label: t('ui.interview_tpl') },
           { to: '/com/messages', label: t('common.message') },

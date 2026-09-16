@@ -29,6 +29,7 @@ type Counts = {
   unsuitable: number
   unreachable: number
   hired: number
+  freenum?: number
 }
 
 const api = useApi()
@@ -37,7 +38,16 @@ const { t } = useI18n()
 const PAGE_SIZE = 20
 const page = ref(1)
 const state = ref<number | null>(null)
-const filters = reactive({ job_id: '', keyword: '', edu: '', exp: '', sex: '', uptime: '', resume_state: '' })
+const route = useRoute()
+const filters = reactive({
+  job_id: String(route.query.job_id || ''),
+  keyword: '',
+  edu: '',
+  exp: '',
+  sex: '',
+  uptime: '',
+  resume_state: '',
+})
 
 /** Only send filled-in filters: Rust treats an absent key as "no filter". */
 function activeFilters() {
@@ -134,7 +144,7 @@ async function run(fn: () => Promise<unknown>) {
 }
 async function openResume(row: Row) {
   await api.post('/v1/mcenter/applications/browse', { id: row.id }).catch(() => null)
-  await navigateTo(`/resumes/${row.eid || row.uid}`)
+  await navigateTo(`/resumes/${row.uid}?eid=${row.eid || ''}&apply=${row.id}`)
 }
 function setState(id: number, next: number) {
   return run(() => api.post('/v1/mcenter/applications/state', { id, state: next }))
@@ -175,16 +185,21 @@ function rowInfo(row: Row) {
 
 const remarkFor = ref<Row | null>(null)
 const remarkText = ref('')
+const remarkStatus = ref(1)
+const remarkStates = [1, 2, 3, 4, 5, 7]
 async function openRemark(row: Row) {
   remarkFor.value = row
   remarkText.value = ''
+  remarkStatus.value = Number(row.is_browse || 1)
   const hit = await api
-    .post<{ note?: string } | null>('/v1/mcenter/remarks/get-one', {
+    .post<{ note?: string; status?: number } | null>('/v1/mcenter/remarks/get-one', {
       target_uid: row.uid,
-      kind: 3,
+      kind: 1,
+      eid: row.eid || 0,
     })
     .catch(() => null)
   remarkText.value = hit?.note || ''
+  if (hit?.status) remarkStatus.value = Number(hit.status)
 }
 async function saveRemark() {
   const row = remarkFor.value
@@ -192,11 +207,27 @@ async function saveRemark() {
   await run(() =>
     api.post('/v1/mcenter/remarks', {
       target_uid: row.uid,
-      target_kind: 3,
+      target_kind: 1,
+      eid: row.eid || 0,
+      status: remarkStatus.value,
       note: remarkText.value,
     }),
   )
   remarkFor.value = null
+}
+function telOf(row: Row) {
+  return String(row.telphone || row.linktel || '')
+}
+function telHidden(row: Row) {
+  return Number(row.is_browse) <= 1
+}
+async function revealTel(row: Row) {
+  await run(() => api.post('/v1/mcenter/applications/browse', { id: row.id }))
+}
+async function addTalent(row: Row) {
+  await run(() =>
+    api.post('/v1/mcenter/talent-pool', { eid: row.eid || 0, seeker_uid: row.uid }),
+  )
 }
 
 // ==================== Interview invite ====================
@@ -353,6 +384,7 @@ useSeoMeta({ title: t('member_com_00454') })
 
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <template v-else>
+      <p v-if="counts" class="muted">{{ $t('wap_00451') }} {{ counts.freenum ?? 0 }}</p>
       <p v-if="msg" class="muted">{{ msg }}</p>
       <table v-if="list.length" class="com_table site-pc">
         <tr>
@@ -387,11 +419,13 @@ useSeoMeta({ title: t('member_com_00454') })
             <div class="com_received_tdtime">{{ row.datetime_n }}</div>
           </td>
           <td>
-            <span class="newcom_user_tel">{{ row.telphone || row.linktel || '—' }}</span>
+            <span v-if="!telHidden(row)" class="newcom_user_tel">{{ telOf(row) || '—' }}</span>
+            <a v-else href="javascript:;" class="cblue" @click="revealTel(row)">{{ $t('wap_00447') }}</a>
           </td>
           <td>
             <a href="javascript:;" class="com_bth" @click="pick(row)">{{ $t('wap_com_00046') }}</a>
             <a href="javascript:;" class="com_bth" @click="openRemark(row)">{{ $t('member_user_00242') }}</a>
+            <a href="javascript:;" class="com_bth" @click="addTalent(row)">{{ $t('ui.add_to_talent') }}</a>
             <div class="com_received_username_bjbox">
               <a href="javascript:;" class="com_received_username_bj">{{ $t('member_user_00181') }}</a>
               <div class="com_received_username_bjbox_show">
@@ -422,6 +456,7 @@ useSeoMeta({ title: t('member_com_00454') })
           >
             <div class="hr_userlist_czicon" @click="pick(row)">{{ $t('wap_com_00046') }}</div>
             <div class="hr_userlist_czicon" @click="openRemark(row)">{{ $t('member_user_00242') }}</div>
+            <div class="hr_userlist_czicon" @click="addTalent(row)">{{ $t('ui.add_to_talent') }}</div>
             <div class="hr_userlist_czicon" @click="stateOpen = stateOpen === row.id ? 0 : row.id">{{ browseLabel(row.is_browse) || $t('member_user_00181') }}</div>
             <div v-if="stateOpen === row.id" class="hr_userlist_cz_menu">
               <a v-for="s in [1, 2, 3, 4, 5, 7]" :key="s" href="javascript:;" @click.prevent="setState(row.id, s); stateOpen = 0">{{ browseLabel(s) }}</a>
@@ -432,6 +467,11 @@ useSeoMeta({ title: t('member_com_00454') })
       </div>
       <form v-if="remarkFor" class="com_release_box site-pc" @submit.prevent="saveRemark">
         <ul>
+          <MemberReleaseRow :label="$t('member_user_00530')">
+            <select v-model.number="remarkStatus">
+              <option v-for="s in remarkStates" :key="s" :value="s">{{ browseLabel(s) }}</option>
+            </select>
+          </MemberReleaseRow>
           <MemberReleaseRow :label="$t('member_user_00242')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
         </ul>
         <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
@@ -439,6 +479,11 @@ useSeoMeta({ title: t('member_com_00454') })
       </form>
       <div v-if="remarkFor" class="site-h5 issue_post_body">
         <form class="yun_createbox" @submit.prevent="saveRemark">
+          <MemberField wap :label="$t('member_user_00530')">
+            <select v-model.number="remarkStatus">
+              <option v-for="s in remarkStates" :key="'h5rs-' + s" :value="s">{{ browseLabel(s) }}</option>
+            </select>
+          </MemberField>
           <MemberField wap area :label="$t('member_user_00242')"><textarea v-model="remarkText" rows="3" /></MemberField>
           <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
           <button type="button" class="issue_post_body_btn" @click="remarkFor = null">{{ $t('common.cancel') }}</button>

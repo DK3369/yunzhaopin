@@ -2,6 +2,8 @@
 const api = useApi()
 const { t } = useI18n()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
+const keyword = ref('')
+const preview = ref<Record<string, unknown> | null>(null)
 const { data, error, refresh } = await useAsyncData(
   () => `com-yqms-${page.value}`,
   () => api.post('/v1/mcenter/company/yqms/list', { page: page.value, page_size: pageSize }),
@@ -91,18 +93,33 @@ function browseLabel(state?: number) {
   if (state === 4) return t('wap_user_00257')
   return t('wap_user_00260')
 }
-useSeoMeta({ title: t('wap_user_00216') })
-const ivRows = computed(() =>
-  (data.value?.list || []).map((row: Record<string, unknown>) => ({
-    key: Number(row.id),
-    name: String(row.uname || row.uid || ''),
-    job: String(row.job_name || row.job_id || ''),
-    time: String(row.datetime_n || ''),
-    to: `/resumes/${row.uid}`,
-    invited: true,
-    info: [String(row.address || ''), String(row.intertime || '')].filter(Boolean),
-  })),
-)
+function openPreview(id: number) {
+  const row = (data.value?.list || []).find((r: Record<string, unknown>) => Number(r.id) === id) as
+    | Record<string, unknown>
+    | undefined
+  preview.value = row || null
+}
+const ivRows = computed(() => {
+  const k = keyword.value.trim().toLowerCase()
+  return (data.value?.list || [])
+    .filter((row: Record<string, unknown>) => {
+      if (!k) return true
+      const blob = [row.uname, row.uid, row.job_name, row.job_id, row.content, row.address]
+        .map((x) => String(x || '').toLowerCase())
+        .join(' ')
+      return blob.includes(k)
+    })
+    .map((row: Record<string, unknown>) => ({
+      key: Number(row.id),
+      name: String(row.uname || row.uid || ''),
+      job: String(row.job_name || row.job_id || ''),
+      time: String(row.datetime_n || ''),
+      to: `/resumes/${row.uid}`,
+      invited: true,
+      stateText: browseLabel(Number(row.is_browse)),
+      info: [String(row.address || ''), String(row.intertime || '')].filter(Boolean),
+    }))
+})
 const ivTotal = computed(() => inferTotal(data.value))
 const tplRows = computed(() => {
   const raw = tpls.value as unknown
@@ -112,15 +129,24 @@ const tplRows = computed(() => {
   }
   return []
 })
+useSeoMeta({ title: t('wap_user_00216') })
 </script>
 
 <template>
   <MemberPanel :title="$t('wap_user_00216')" :error="error" :empty="false">
+    <p class="site-pc">
+      <input v-model="keyword" type="search" :placeholder="$t('admin_00149')" />
+    </p>
+    <div class="site-h5 com-h5-filters">
+      <input v-model="keyword" type="search" class="com-h5-filters__kw" :placeholder="$t('admin_00149')" />
+    </div>
     <MemberHrResumeRows show-job :rows="ivRows">
       <template #pc-acts="{ row }">
+        <a href="javascript:;" class="com_bth cblue" @click="openPreview(Number(row.key))">{{ $t('member_user_00410') }}</a>
         <a href="javascript:;" class="List_dete cblue" @click="cancel(Number(row.key))">{{ $t('common.delete') }}</a>
       </template>
       <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="openPreview(Number(row.key))">{{ $t('member_user_00410') }}</div>
         <div class="hr_userlist_czicon" @click="cancel(Number(row.key))">{{ $t('common.delete') }}</div>
       </template>
     </MemberHrResumeRows>
@@ -175,5 +201,25 @@ const tplRows = computed(() => {
       </form>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <div v-if="preview" class="com_release_box site-pc">
+      <h3>{{ $t('member_user_00427') }}</h3>
+      <p>{{ preview.uname }} · {{ preview.job_name }}</p>
+      <p>{{ $t('member_user_00421') }} {{ preview.intertime }}</p>
+      <p>{{ $t('member_user_00422') }} {{ preview.address }}</p>
+      <p>{{ $t('member_user_00423') }} {{ preview.content }}</p>
+      <p>{{ $t('common_02051') }} {{ preview.linkman }} {{ preview.linktel }}</p>
+      <button type="button" class="btn_01" @click="preview = null">{{ $t('common.close') }}</button>
+    </div>
+    <div v-if="preview" class="site-h5 issue_post_body">
+      <div class="issue_post_body_card">
+        <h3>{{ $t('member_user_00427') }}</h3>
+        <p>{{ preview.uname }} · {{ preview.job_name }}</p>
+        <p>{{ $t('member_user_00421') }} {{ preview.intertime }}</p>
+        <p>{{ $t('member_user_00422') }} {{ preview.address }}</p>
+        <p>{{ $t('member_user_00423') }} {{ preview.content }}</p>
+        <p>{{ $t('common_02051') }} {{ preview.linkman }} {{ preview.linktel }}</p>
+        <button type="button" class="issue_post_body_btn" @click="preview = null">{{ $t('common.close') }}</button>
+      </div>
+    </div>
   </MemberPanel>
 </template>

@@ -43,6 +43,11 @@ const form = reactive({
   zp_maxage: 0,
   link_id: -1,
   is_link: 1,
+  custom_link_man: '',
+  custom_link_moblie: '',
+  custom_link_phone: '',
+  custom_link_email: '',
+  custom_link_address: '',
   is_message: 1,
   is_email: 1,
   exp_req: '',
@@ -170,7 +175,13 @@ if (editId.value) {
     form.zp_minage = Number(row.zp_minage || 0)
     form.zp_maxage = Number(row.zp_maxage || 0)
     const lid = Number(row.link_id || 0)
-    form.link_id = lid > 0 ? lid : -1
+    const isLink = Number(row.is_link || 1)
+    form.link_id = isLink === 2 && lid <= 0 ? 0 : lid > 0 ? lid : -1
+    form.custom_link_man = String(row.custom_link_man || '')
+    form.custom_link_moblie = String(row.custom_link_moblie || '')
+    form.custom_link_phone = String(row.custom_link_phone || '')
+    form.custom_link_email = String(row.custom_link_email || '')
+    form.custom_link_address = String(row.custom_link_address || row.address || '')
     form.is_message = Number(row.is_message || 1) === 2 ? 2 : 1
     form.is_email = Number(row.is_email || 1) === 3 ? 3 : 1
     form.exp_req = String(row.exp_req || '')
@@ -178,7 +189,7 @@ if (editId.value) {
     form.sex_req = Number(row.sex_req || 0)
     form.minage_req = Number(row.minage_req || 0)
     form.maxage_req = Number(row.maxage_req || 0)
-    form.is_link = Number(row.is_link || 1) === 3 ? 3 : 1
+    form.is_link = isLink === 3 ? 3 : isLink === 2 ? 2 : 1
     form.salary_type = form.minsalary === 0 && form.maxsalary === 0 ? 1 : 0
     if (form.sdate > 0) {
       const d = new Date(form.sdate * 1000)
@@ -198,6 +209,7 @@ watch(langs, (list) => {
 }, { immediate: true })
 
 function applyLinkGeo() {
+  if (form.link_id === 0) return
   if (form.link_id > 0) {
     const a = addrList.value.find((row) => row.id === form.link_id)
     if (!a) return
@@ -238,6 +250,10 @@ function clientCheck(): string {
   if (form.maxage_req && (form.maxage_req < 16 || form.maxage_req > 99)) return t('wap_com_00269')
   if (!form.content.replace(/<[^>]+>/g, '').trim()) return t('member_com_00587')
   if (form.link_id === null || Number.isNaN(Number(form.link_id))) return t('member_com_00588')
+  if (form.link_id === 0) {
+    if (!form.custom_link_man.trim()) return t('member_com_00588')
+    if (!form.custom_link_moblie.trim() && !form.custom_link_phone.trim()) return t('common_00670')
+  }
   return ''
 }
 
@@ -265,6 +281,7 @@ async function submit() {
       form.sdate = Math.floor(new Date(`${sdateN.value}T00:00:00`).getTime() / 1000)
     }
     const jobclassid = form.job_post || form.job1_son || form.job1
+    const isLink = form.is_link === 3 ? 3 : form.link_id === -1 ? 1 : 2
     const body = {
       ...form,
       wel,
@@ -273,6 +290,7 @@ async function submit() {
       zp_num: form.zp_num,
       number: form.zp_num,
       is_graduate: form.is_graduate ? 1 : 0,
+      is_link: isLink,
     }
     const r = editId.value
       ? await api.post<{ id: number; state: number; status: number }>('/v1/mcenter/jobs/update', { id: editId.value, ...body })
@@ -401,11 +419,32 @@ useSeoMeta({ title: t('wap_00322') })
             {{ company?.linkphone || '' }}
             （{{ $t('member_com_00528') }}）
           </option>
+          <option :value="0">{{ $t('wap_01431') }}</option>
           <option v-for="a in addrList" :key="a.id" :value="a.id">
             {{ a.link_man }} {{ a.link_moblie }} {{ a.link_address || '' }}
           </option>
         </select>
       </MemberReleaseRow>
+      <template v-if="form.link_id === 0">
+        <MemberReleaseRow :label="$t('wap_01431')" required>
+          <input v-model="form.custom_link_man" required class="com_release_textnew_text" />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('common.phone')">
+          <input v-model="form.custom_link_moblie" class="com_release_textnew_text" />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_com_00014')">
+          <input v-model="form.custom_link_phone" class="com_release_textnew_text" />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('member_user_00282')">
+          <input v-model="form.custom_link_email" class="com_release_textnew_text" />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_01362')">
+          <input v-model="form.custom_link_address" class="com_release_textnew_text" />
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00243')">
+          <MapPick v-model:x="form.x" v-model:y="form.y" />
+        </MemberReleaseRow>
+      </template>
       <p>
         <NuxtLink to="/com/addresses">{{ $t('wap_com_00304') }}</NuxtLink>
       </p>
@@ -548,7 +587,21 @@ useSeoMeta({ title: t('wap_00322') })
             <input v-model.number="form.link_id" type="radio" :value="a.id" />
             {{ a.link_man }} {{ a.link_moblie }} {{ a.link_address || '' }}
           </label>
+          <label>
+            <input v-model.number="form.link_id" type="radio" :value="0" />
+            {{ $t('wap_01431') }}
+          </label>
         </MemberField>
+        <template v-if="form.link_id === 0">
+          <MemberField wap :label="$t('wap_01431')"><input v-model="form.custom_link_man" required /></MemberField>
+          <MemberField wap :label="$t('common.phone')"><input v-model="form.custom_link_moblie" /></MemberField>
+          <MemberField wap :label="$t('wap_com_00014')"><input v-model="form.custom_link_phone" /></MemberField>
+          <MemberField wap :label="$t('member_user_00282')"><input v-model="form.custom_link_email" /></MemberField>
+          <MemberField wap :label="$t('wap_01362')"><input v-model="form.custom_link_address" /></MemberField>
+          <MemberField wap :label="$t('wap_user_00243')">
+            <MapPick v-model:x="form.x" v-model:y="form.y" />
+          </MemberField>
+        </template>
         <p>
           <NuxtLink to="/com/addresses">{{ $t('wap_com_00304') }}</NuxtLink>
         </p>

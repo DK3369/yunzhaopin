@@ -4,21 +4,30 @@ import { isUnauthErr, mediaUrl } from '~/utils/site'
 const api = useApi()
 const { t } = useI18n()
 const { page, pageSize, inferTotal, go } = useMemberListPage()
+const keyword = ref('')
+const inviteUid = ref(0)
 const { data, error, refresh } = await useAsyncData(
   () => `com-look-jobs-${page.value}`,
   () => api.post('/v1/mcenter/look-jobs/list', { page: page.value, page_size: pageSize }),
 )
-const rows = computed(() =>
-  (data.value?.list || []).map((row: Record<string, unknown>) => ({
-    key: Number(row.id),
-    name: String(row.uname || row.uid || ''),
-    job: String(row.job_name || row.job_id || ''),
-    time: String(row.datetime_n || ''),
-    photo: row.photo ? mediaUrl(String(row.photo)) : undefined,
-    info: [row.sex_n, row.edu_n, row.exp_n].map((x) => String(x || '')).filter(Boolean),
-    salary: row.salary ? String(row.salary) : undefined,
-  })),
-)
+const raw = computed(() => (data.value?.list || []) as Record<string, unknown>[])
+const rows = computed(() => {
+  const k = keyword.value.trim().toLowerCase()
+  return raw.value
+    .filter((row) => {
+      if (!k) return true
+      return [row.uname, row.job_name, row.uid].some((x) => String(x || '').toLowerCase().includes(k))
+    })
+    .map((row) => ({
+      key: Number(row.id),
+      name: String(row.uname || row.uid || ''),
+      job: String(row.job_name || row.job_id || ''),
+      time: String(row.datetime_n || ''),
+      to: `/resumes/${row.uid}?eid=${row.eid || ''}`,
+      photo: row.photo ? mediaUrl(String(row.photo)) : undefined,
+      info: [row.sex_n, row.edu_n, row.exp_n].map((x) => String(x || '')).filter(Boolean),
+    }))
+})
 const total = computed(() => inferTotal(data.value))
 const msg = ref('')
 async function remove(id: number) {
@@ -30,6 +39,10 @@ async function remove(id: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+function pickInvite(id: number) {
+  const row = raw.value.find((r) => Number(r.id) === id)
+  if (row) inviteUid.value = Number(row.uid || 0)
+}
 useSeoMeta({ title: t('member_com_00007') })
 </script>
 
@@ -38,14 +51,23 @@ useSeoMeta({ title: t('member_com_00007') })
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <MemberHrResumeRows v-else show-job :rows="rows">
+    <p class="site-pc">
+      <input v-model="keyword" type="search" :placeholder="$t('admin_00149')" />
+    </p>
+    <div class="site-h5 com-h5-filters">
+      <input v-model="keyword" type="search" class="com-h5-filters__kw" :placeholder="$t('admin_00149')" />
+    </div>
+    <MemberHrResumeRows v-if="!error" show-job :rows="rows">
       <template #pc-acts="{ row }">
+        <a href="javascript:;" class="com_bth" @click="pickInvite(Number(row.key))">{{ $t('wap_com_00046') }}</a>
         <a href="javascript:;" class="com_bth" @click="remove(Number(row.key))">{{ $t('common.delete') }}</a>
       </template>
       <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="pickInvite(Number(row.key))">{{ $t('wap_com_00046') }}</div>
         <div class="hr_userlist_czicon" @click="remove(Number(row.key))">{{ $t('common.delete') }}</div>
       </template>
     </MemberHrResumeRows>
+    <MemberComYqmsForm v-if="inviteUid" :seeker-uid="inviteUid" @done="inviteUid = 0" @cancel="inviteUid = 0" />
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

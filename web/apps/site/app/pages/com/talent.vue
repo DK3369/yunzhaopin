@@ -12,17 +12,23 @@ type PoolRow = {
 
 const api = useApi()
 const { t } = useI18n()
-const { data: pool, error, refresh } = await useAsyncData('talent-pool', () =>
-  api.post<{ list: PoolRow[]; total: number }>('/v1/mcenter/talent-pool/list', {
-    page: 1,
-    page_size: 20,
-  }),
+const keyword = ref('')
+const { data: pool, error, refresh } = await useAsyncData(
+  () => `talent-pool-${keyword.value}`,
+  () =>
+    api.post<{ list: PoolRow[]; total: number }>('/v1/mcenter/talent-pool/list', {
+      page: 1,
+      page_size: 50,
+      keyword: keyword.value || undefined,
+    }),
 )
 const { data: publicResumes } = await useAsyncData('talent-search', () =>
   api.get('/v1/wap/resumes', { page: 1, page_size: 20 }),
 )
 const msg = ref('')
 const list = computed<PoolRow[]>(() => pool.value?.list || [])
+const inviteUid = ref(0)
+const inviteJob = ref(0)
 
 function fail(e: unknown) {
   return e instanceof Error ? e.message : t('ui.failed')
@@ -47,6 +53,11 @@ async function add(row: { uid: number; eid?: number; def_job?: number }) {
 function addByUid(uid: number) {
   const r = (publicResumes.value?.list || []).find((x: { uid: number }) => Number(x.uid) === uid)
   if (r) return add(r)
+}
+
+function pickInvite(row: PoolRow) {
+  inviteUid.value = row.seeker_uid
+  inviteJob.value = 0
 }
 
 const remarkFor = ref(0)
@@ -79,6 +90,7 @@ async function remove(row: PoolRow) {
   try {
     await api.post('/v1/mcenter/talent-pool/delete', { ids: [row.id] })
     if (remarkFor.value === row.id) remarkFor.value = 0
+    if (inviteUid.value === row.seeker_uid) inviteUid.value = 0
     msg.value = t('common.success')
     await refresh()
   } catch (e: unknown) {
@@ -96,13 +108,27 @@ useSeoMeta({ title: t('member_com_00597') })
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
+    <p class="site-pc">
+      <input v-model="keyword" type="search" :placeholder="$t('admin_00149')" @keydown.enter.prevent="refresh()" />
+      <button type="button" class="com_topbth" @click="refresh()">{{ $t('common.search') }}</button>
+    </p>
+    <div class="site-h5 com-h5-filters">
+      <input
+        v-model="keyword"
+        type="search"
+        class="com-h5-filters__kw"
+        :placeholder="$t('admin_00149')"
+        @keydown.enter.prevent="refresh()"
+      />
+      <button type="button" class="issue_post_body_btn" @click="refresh()">{{ $t('common.search') }}</button>
+    </div>
     <MemberResumeH1 :title="$t('ui.public_resumes')" />
     <MemberHrResumeRows
       :rows="(publicResumes?.list || []).map((r: Record<string, unknown>) => ({
         key: Number(r.uid),
         name: String(r.display_name || r.name || r.uid || ''),
         time: [r.education_n, r.exp_n].filter(Boolean).join(' · '),
-        to: `/resumes/${r.uid}`,
+        to: `/resumes/${r.uid}${r.eid || r.def_job ? `?eid=${r.eid || r.def_job}` : ''}`,
         info: [String(r.education_n || ''), String(r.exp_n || '')].filter(Boolean),
         photo: r.photo ? mediaUrl(String(r.photo)) : undefined,
       }))"
@@ -120,19 +146,28 @@ useSeoMeta({ title: t('member_com_00597') })
         key: row.id,
         name: String(row.uname || row.seeker_uid),
         time: row.ctime_n,
-        to: `/resumes/${row.eid || row.seeker_uid}`,
+        to: `/resumes/${row.seeker_uid}?eid=${row.eid || ''}`,
         info: row.remark ? [row.remark] : [],
       }))"
     >
       <template #pc-acts="{ row }">
+        <a href="javascript:;" class="cblue" @click="pickInvite(list.find((x) => x.id === Number(row.key))!)">{{ $t('wap_com_00046') }}</a>
         <a href="javascript:;" class="cblue" @click="openRemark(list.find((x) => x.id === Number(row.key))!)">{{ $t('wap_com_00069') }}</a>
         <a href="javascript:;" class="List_dete cblue" @click="remove(list.find((x) => x.id === Number(row.key))!)">{{ $t('common.delete') }}</a>
       </template>
       <template #h5-acts="{ row }">
+        <div class="hr_userlist_czicon" @click="pickInvite(list.find((x) => x.id === Number(row.key))!)">{{ $t('wap_com_00046') }}</div>
         <div class="hr_userlist_czicon" @click="openRemark(list.find((x) => x.id === Number(row.key))!)">{{ $t('wap_com_00069') }}</div>
         <div class="hr_userlist_czicon" @click="remove(list.find((x) => x.id === Number(row.key))!)">{{ $t('common.delete') }}</div>
       </template>
     </MemberHrResumeRows>
+    <MemberComYqmsForm
+      v-if="inviteUid"
+      :seeker-uid="inviteUid"
+      :job-id="inviteJob || undefined"
+      @done="inviteUid = 0; msg = $t('wap_00291')"
+      @cancel="inviteUid = 0"
+    />
     <form v-if="remarkFor" class="com_release_box site-pc" @submit.prevent="saveRemark">
       <ul>
         <MemberReleaseRow :label="$t('wap_00807')" area><textarea v-model="remarkText" rows="3" /></MemberReleaseRow>
@@ -150,12 +185,3 @@ useSeoMeta({ title: t('member_com_00597') })
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>
-
-<style scoped>
-.row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-</style>

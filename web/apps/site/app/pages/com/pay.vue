@@ -149,9 +149,11 @@ useSeoMeta({ title: t('common_01946') })
 
 <template>
   <MemberPanel :title="$t('common_01946')">
+    <template #pcTabs><MemberComVipTabs /></template>
+    <template #h5Tabs><MemberComVipTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <div class="payment_list site-pc">
-      <div class="payment_list_s mt10">{{ $t('member_com_00317') }}：</div>
+        <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
       <div class="payment_list_r">
         <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
         <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
@@ -175,7 +177,7 @@ useSeoMeta({ title: t('common_01946') })
     </div>
     <div class="site-h5 issue_post_body">
       <form class="yun_createbox" @submit.prevent>
-        <MemberField wap :label="$t('member_com_00317')">
+        <MemberField wap :label="$t('wap_user_00313')">
           <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
           <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
           <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
