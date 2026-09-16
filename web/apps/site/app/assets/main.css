@@ -1357,6 +1357,28 @@ html.force-pc .site-h5 {
   .member-shell-com .memberSubRight--full .site-pc {
     display: flow-root;
   }
+  /* 招聘首页：slot 直接落在 memberSubCont，PHP two_style 的左右栏 */
+  .member-shell-home.member-shell-com .memberSubCont {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    overflow: visible !important;
+    gap: 12px;
+  }
+  .member-shell-home.member-shell-com .memberSubRight,
+  .member-shell-home.member-shell-com .memberSubLeft {
+    height: auto;
+    overflow: visible;
+  }
+  .member-shell-home.member-shell-com .memberSubRight {
+    width: calc(100% - 332px);
+    flex: 1;
+    min-width: 0;
+  }
+  .member-shell-home.member-shell-com .memberSubLeft {
+    width: 320px;
+    flex: none;
+  }
   .member-page .user_new_tit::after,
   .member-page .user_new_listtit::after,
   .member-page .member_right_index_h1::after,
@@ -2299,6 +2321,13 @@ html.force-pc .site-h5 {
     margin: 0 !important;
     float: none !important;
   }
+  .member-shell-home.member-shell-com .memberSubCont {
+    display: block !important;
+  }
+  .member-shell-home.member-shell-com .memberSubRight,
+  .member-shell-home.member-shell-com .memberSubLeft {
+    width: 100% !important;
+  }
   .user_new_listtit {
     display: none;
   }
@@ -2701,4 +2730,74 @@ html.force-pc .site-h5 {
   color: #f60;
   text-decoration: underline;
 }
+
+.member-shell-home .comIndexButn {
+  cursor: pointer;
+}
+.member-shell-home .comIndexButn span {
+  display: block;
+  background: #fff;
+  padding: 10px 12px;
+  text-align: center;
+  border-radius: 3px;
+  color: #2778f8;
+}
+
+/* 招聘首页年度报告：数据弹层，不做 PHP PNG */
+.member-year-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.member-year-box {
+  background: #fff;
+  border-radius: 8px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: auto;
+  padding: 20px 18px 16px;
+  box-sizing: border-box;
+}
+.member-year-box h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.member-year-box ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.member-year-box li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+}
+.member-year-box .member-year-close {
+  display: block;
+  margin: 16px auto 0;
+  min-width: 96px;
+}
+@media (max-width: 1199px) {
+  .member-year-box {
+    padding: 0.4rem 0.32rem 0.32rem;
+  }
+  .member-year-box h2 {
+    font-size: 0.4rem;
+  }
+  .member-year-box li {
+    font-size: 0.32rem;
+  }
+}
+
 

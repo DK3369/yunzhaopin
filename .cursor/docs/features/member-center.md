@@ -33,6 +33,14 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 `.site-pc` / `.site-h5` **显示时不强制 `display:block`**（`display: revert`），避免打扁 PHP 的 flex（`userheader` / `userparticulars` / `hr_userlist`）。隐藏时才 `display: none`。
 
+## 招聘首页 `/com`
+
+`MemberShell` **仅** `kind=com` 且路径 `/com` 时，slot 直接落在 `memberSubCont`（不要 `memberSubRight--full`）；其它 `/com/*` 仍全宽右栏。[`index.vue`](../../../web/apps/site/app/pages/com/index.vue) 自己输出 PHP `memberSubRight` + `memberSubLeft`，左栏 [`MemberComHomeAside.vue`](../../../web/layers/ui/app/components/MemberComHomeAside.vue)。
+
+配额：`POST /v1/mcenter/vip/current` 的 `job_num` / `invite_resume` / `down_resume`；刷新 / 置顶 / 急聘 / 推荐用 `com-dash` 的 `job_counts.breakjob_num/top_num/urgent_num/rec_num`。**不要**把 `job_counts.online` 当剩余可发。购买资源点只在 `rating_type==1` 且 VIP 有效且 `com_integral_online != 4` 时链 `/com/added`。招聘会 `zph_num`、曝光量、专属顾问、优惠券、`lock_info` **接口没有，不渲染**。
+
+公告：`r_status` / 无公司名 / `yyzz_status!=1` / VIP 到期；`expires_at` 距今不足 7 天当续费 remind（不调新接口）。推荐 `POST /v1/mcenter/recommend/resumes` `{limit:8}`，字段只有 uid / 名 / 性别 / 学历 / 更新时间。广告 `useAdsBundle` slot `530`（右栏）/`511`（左栏）。发布先 `POST /v1/mcenter/jobs/check`；一键刷新拉 `jobs/overview` `w=1` 再 `jobs/batch/refresh`。年度报告用 `com-dash.year_report` 数字弹层，**不**做 PHP PNG。H5 第四个数是在招 `job_counts.online` + `wap_com_00243`；VIP 条有效时显示 `rating_name` + 到期日。
+
 ## 顶栏
 
 登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/integral` 与 `/com/pay` `/com/integral` `/com/orders` `/com/record` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
@@ -110,6 +118,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 会员壳里给 `yun_m_rightbox` 再套 `fltR`（flex 右栏会裁掉白底）
 - 会员 PC 顶栏继续用 PHP `float:right` / 通知栏 70px（英文折行）
 - 会员 H5 首页把缺项清单或公众号 QR 塞进 `userheader`
+- 招聘首页配额用 `job_counts.online`（在招数）冒充可发职位 / 把累计邀面、累计下载当剩余次数
 - 会员页藏掉 H5 五项底栏，或 PC 会员再出前台 `hp_foot`
 - 会员顶栏用 PHPYun 默认 `sy_member_logo` / `sy_unit_logo` 盖住公开 `sy_logo`
 - 再把 `m_css` 和 `m_style` 打进同一份 `/legacy/pc.css`
@@ -191,8 +200,8 @@ PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
 
 ## 改代码入口
 
-- 导航：`web/layers/ui/app/composables/useMemberNav.ts`（按 `isMemberModuleOn` 过滤）、`MemberShell.vue`、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype` + 职位模块；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
-- 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`
+- 导航：`web/layers/ui/app/composables/useMemberNav.ts`（按 `isMemberModuleOn` 过滤）、`MemberShell.vue`（招聘首页两列，其它 `/com/*` 仍 `--full`）、`MemberPcHeader.vue`（登录后 PC 顶栏）；前台 `AppHeader.vue` 右侧按 `usertype` + 职位模块；串端 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts)
+- 列表壳：`MemberPanel.vue`（`userTitle` / `userWrap`，旧 `shell` 仍可用）、`MemberPostedCard.vue`（投递/收藏/速配/谁看过 H5）、`MemberSxNewsCard.vue`、`MemberApplyH5State.vue`、`MemberHrUserCard.vue`、`MemberHrResumeRows.vue`、`MemberComScreen.vue`、`MemberPager.vue`、`MemberComHomeAside.vue`（招聘首页左栏）
 - 表单：`MemberField.vue`（求职 PC `verification_form*` + `verification_text`；H5 简历 `wap` → `yun_createlist`，不要再打 `verification_formname`）；`MemberReleaseRow.vue`（招聘 `com_release_*`）
 - 简历：`MemberResumeSection.vue`、`MemberResumeExpItem.vue`、`MemberResumeH1.vue`；同页编辑，点小节展开表单。H5 `/user/resume` 是一张 `resume_min_body_cord`（空简历 `create_resume`）；H5 表单 `yun_createlist` / `Create_resume_btn`，不是 PC `MemberField`。意向接口字段是 `job_class_n` / `city_class_n` / `salary_n`，不是 `job_classid_n`。小节头上的 + 是新增（会清空表单），点经历行才是编辑。H5 分享与 PC 同一套 token 接口（卡内小节，不要 `h5Kind=none`）；作品格/技能行可删；缺项用一行 `resume_hint_word`，不要搬 PC `user_resume_wzd`；置顶走现有 `/v1/mcenter/resume/top`。
 - 分页：`useMemberListPage.ts`
@@ -261,5 +270,6 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 资料福利为字典勾选 + 自定义名（提交逗号串）；免打扰写 `HH:MM-HH:MM`。地图 [`MapPick`](../../../web/layers/ui/app/components/MapPick.vue) 高德 `PlaceSearch` 搜地名。
 - 面试列表客户端关键词 + 邀请函预览。简历详情「查看下一份」文案 `member_com_00415`，H5 底栏同样有。
 - 企微码 `comqcode` 现有 `company/list|company` **还不读写**，等后端改完再接。
+- 招聘首页配额走 `vip/current`；PC 两列 class 用 PHP `memberSubRight` / `memberSubLeft`。
 
-本轮仍不做兼职 `partadd`、招聘会、HR 子账号、企业导航 `customize`。
+本轮仍不做兼职 `partadd`、招聘会、HR 子账号、企业导航 `customize`。顾问 `crm_uid`、曝光量、优惠券、`zph_num`、`lock_info`、进页「未刷新职位」遮罩仍缺接口，首页不假装有。

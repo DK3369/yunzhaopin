@@ -90,7 +90,10 @@
           </div>
         </div>
         <div class="memberSubCont">
-          <div class="memberSubRight memberSubRight--full">
+          <template v-if="isComHome">
+            <slot />
+          </template>
+          <div v-else class="memberSubRight memberSubRight--full">
             <slot />
           </div>
         </div>
@@ -118,6 +121,7 @@ const route = useRoute()
 const userMoreOpen = ref(false)
 const comMoreOpen = ref(false)
 const isMemberHome = computed(() => route.path === '/user' || route.path === '/com')
+const isComHome = computed(() => props.kind === 'com' && route.path === '/com')
 const isResumeSkin = computed(() => {
   const p = route.path
   return p === '/user/resume' || p.startsWith('/user/resume/') || p === '/user/expects'
