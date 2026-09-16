@@ -1,10 +1,10 @@
 # 已合并 / 即将失效接口
 
-路径以 [`doc/snapshots/v1_paths.txt`](../../../doc/snapshots/v1_paths.txt) 为准。App 看 OpenAPI：现网 `:3003/api-docs/v1/openapi.json`（快照 `doc/snapshots/v1.openapi.json`）。即将失效操作带 `"deprecated": true`，`description` 写替代路径。Swagger 顶栏「即将失效」列表由 `openapi.rs` 的 `DeprecatedIndex` 从 `deprecated` 操作自动生成，不要再手写进 `info.description`。
+路径以 [`doc/snapshots/v1_paths.txt`](../../../doc/snapshots/v1_paths.txt) 为准。App 看 OpenAPI：现网 `:3003/api-docs/v1/openapi.json`（快照 `doc/snapshots/v1.openapi.json`）。即将失效操作带 `"deprecated": true`，`description` 写替代路径。Swagger 顶栏「即将失效」列表由 `openapi.rs` 的 `DeprecatedIndex` 从 `deprecated` 操作自动生成（V1 与 Admin 都挂了）；不要再手写进 `info.description`。
 
 v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改快照。
 
-**site 仍在打旧接口，迁移另批。** 本批只加聚合、打标，不切 `web/apps/site`。
+公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 会员首页 / 简历编辑 / 职位列表仍有扇出，**切聚合另批**。
 
 ## 聚合接口（新集成优先）
 
@@ -15,13 +15,13 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 | `POST /v1/mcenter/com-dashboard/full` | 招聘首页：`ComDashboardView` 字段 + `today` + `year_report` + `job_counts` | `com-stats/today`、`dashboard/year-report`；`jobs/counts` **不**标 |
 | `POST /v1/mcenter/jobs/overview` | `{ jobs: Paged, counts }`，body 同 `MyJobsQuery` | `com/jobs` 双打 list+counts |
 | `POST /v1/mcenter/applications/overview` | `{ applications: Paged, counts }`，body 同 `ApplicationsQuery` | `com/applications` 双打 list+state-counts |
-| `GET/POST /v1/wap/initjobs` | 原字典包 + `marriages` + `langs` | `dict/marriages`、`dict/langs` |
+| `GET/POST /v1/wap/initjobs` | 字典包（含 `marriages`/`langs`/`tags`/`job_categories`） | 几乎全部 `/v1/wap/dict/*` |
 
-既有聚合（本批未改语义）：`/v1/wap/rankings`、`/v1/wap/home/aggregate`、`/v1/mcenter/messages/unread-summary`、`/v1/mcenter/company-contents`、`/v1/wap/regions`。
+既有聚合（未改语义）：`/v1/wap/rankings`、`/v1/wap/home/aggregate`、`/v1/mcenter/messages/unread-summary`、`/v1/mcenter/company-contents`、`/v1/wap/regions`。
 
 ## 即将失效（仍注册，新集成勿用）
 
-OpenAPI 约 26 个操作。site 可能仍打其中若干条。勿再扩展旧模块。
+OpenAPI 约 37 个操作。site 可能仍打其中若干条。勿再扩展旧模块。
 
 | 旧路径（仍挂） | 改用 |
 |---|---|
@@ -32,9 +32,11 @@ OpenAPI 约 26 个操作。site 可能仍打其中若干条。勿再扩展旧模
 | `POST /v1/mcenter/com-stats/today`、`/v1/mcenter/dashboard/year-report` | `POST /v1/mcenter/com-dashboard/full` |
 | `POST /v1/mcenter/broadcasts/unread-count`、`/warnings/unread-count` | `POST /v1/mcenter/messages/unread-summary` |
 | `POST /v1/mcenter/follows`、`/follows/list`、`/follows/exists` | `favorites*`。映射：`target_kind=2(企业)→kind=2`，`target_kind=1(用户)→kind=3`，`target_uid→target_id`。**`followers`、`fans` 不动** |
-| `GET/POST /v1/wap/dict/marriages`、`/dict/langs` | `/v1/wap/initjobs` 的 `data.marriages` / `data.langs` |
+| `GET/POST /v1/wap/dict/{educations,experiences,salaries,industries,welfares,reports,job-types,company-natures,company-sizes,marriages,langs,tags,job-categories}` | `/v1/wap/initjobs` 对应字段；`source=user` 用 `*_user` |
 
 公开读 `GET/POST /v1/wap/company/...` 产品/新闻列表不是这套，不要当废弃。
+
+`/v1/wap/countries` **不**标即将失效：全量在 `initjobs.countries`，但本接口仍支持 `continent` 过滤；`/countries/get`、`/by-code` 是单条查询。
 
 ## 已合并完成（独立路径已不在快照，勿再恢复）
 
@@ -53,7 +55,14 @@ OpenAPI 约 26 个操作。site 可能仍打其中若干条。勿再扩展旧模
 | `/v1/mcenter/follows*` 与 `/favorites*` | `follows*` 已标即将失效，新代码走 favorites `{kind,target_id}`：1 职位收藏 / 2 关注企业 / 3 关注用户。旧 follows `{target_kind,target_uid}` 仍挂。 |
 | `/v1/mcenter/fans` vs `followers` | 语义不同：招聘「对我感兴趣」用 `fans`，**不要** `followers`。见 [member-center.md](../features/member-center.md)。 |
 | `sign/status`、`resume/completion`、`jobs/counts`、`applications/state-counts` | 各自页面仍单用，不打即将失效。 |
-| `views` / `look-*`、`company-banners` | 两套表 / 结构未核，本批不动。 |
+| `look-jobs` / `look-resumes` / `my-views` / `profile-views` | **三套表**（`phpyun_look_job` / `phpyun_look_resume` / `phpyun_rs_views`），不要合成一个「浏览记录」接口。 |
+| `company-banners` vs `company-tpls` | 表不同；Admin 另有 `/v1/admin/company-banners`。结构未核前不并。 |
+
+## 下一批（未做）
+
+- site 会员页切已有聚合：`user/resume`→`resume/bundle`，`com/jobs`→`jobs/overview`，`com/applications`→`applications/overview`，`user/index`→`dashboard/full`，`com/index`+`com/stats`→`com-dashboard/full`，`follows*`→`favorites*`。
+- Admin：`company-news`/`company-products` 仿 `company-contents`（`kind`），或 list+statist 的 `/overview`。Admin OpenAPI 目前 0 条 deprecated。
+- 不要并 look/views/banners，不要删旧路由。
 
 ## 不算合并
 

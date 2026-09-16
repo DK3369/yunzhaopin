@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { catTree } from '~/utils/site'
-import type { DictItem } from '~/utils/query'
 
 const api = useApi()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const { settings } = useSiteChrome()
 const editId = computed(() => Number(useRoute().query.id || 0))
 const showNegotiable = computed(() => String(settings.value.com_job_myswitch || '') === '1')
@@ -90,14 +89,8 @@ const welfares = computed(() => dicts.value?.welfares ?? [])
 const jobTypes = computed(() => dicts.value?.job_types ?? [])
 const industries = computed(() => dicts.value?.industries ?? [])
 const reports = computed(() => dicts.value?.reports ?? [])
-const { data: marriages } = await useAsyncData(
-  () => `dict-marriage-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/marriages').catch(() => [] as DictItem[]),
-)
-const { data: langs } = await useAsyncData(
-  () => `dict-lang-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/langs').catch(() => [] as DictItem[]),
-)
+const marriages = computed(() => dicts.value?.marriages ?? [])
+const langs = computed(() => dicts.value?.langs ?? [])
 type AddrRow = {
   id: number
   link_man: string

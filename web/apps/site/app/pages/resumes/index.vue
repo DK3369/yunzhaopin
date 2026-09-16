@@ -158,10 +158,7 @@ const job3Items = computed(() => jobLevel3.value.map((c) => ({ id: c.id, name: c
 
 const edus = computed(() => dicts.value?.educations_user ?? [])
 const exps = computed(() => dicts.value?.experiences_user ?? [])
-const { data: tags } = await useAsyncData(
-  () => `dict-user-tag-${locale.value}`,
-  () => api.get<DictItem[]>('/v1/wap/dict/tags').catch(() => [] as DictItem[]),
-)
+const tags = computed(() => dicts.value?.tags ?? [])
 const industries = computed(() => dicts.value?.industries ?? [])
 const reports = computed(() => dicts.value?.reports_user ?? [])
 const jobTypes = computed(() => dicts.value?.job_types_user ?? [])

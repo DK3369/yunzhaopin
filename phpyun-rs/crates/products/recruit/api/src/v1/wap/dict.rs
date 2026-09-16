@@ -130,8 +130,9 @@ fn named_or_static(rows: &[(i32, String)], fallback: &[DictEntry]) -> Vec<DictIt
     }
 }
 
-/// Combined public dictionaries (the 10 lists PC/H5 used to fetch one-by-one).
-/// Individual `/v1/wap/dict/*` and `/v1/wap/countries` routes stay unchanged.
+/// Combined public dictionaries (the lists PC/H5 used to fetch one-by-one).
+/// Individual `/v1/wap/dict/*` stay registered (most are deprecated).
+/// `/v1/wap/countries` is not deprecated: it still supports `continent` filter.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct InitJobs {
     pub countries: Vec<CountryView>,
@@ -150,6 +151,8 @@ pub struct InitJobs {
     pub company_sizes: Vec<DictItem>,
     pub marriages: Vec<DictItem>,
     pub langs: Vec<DictItem>,
+    pub tags: Vec<DictItem>,
+    pub job_categories: Vec<DictItem>,
     /// `'1'` = show Google on PC/H5 login. Empty / `'0'` = hide.
     pub sy_googlelogin: String,
     /// `'1'` = show Facebook on PC/H5 login. Empty / `'0'` = hide.
@@ -197,6 +200,8 @@ pub async fn initjobs(State(state): State<AppState>) -> AppResult<ApiResponse<In
         company_sizes: named_cloned(&lists.company_sizes),
         marriages: named_items(dicts.comclass_by_variable("job_marriage")),
         langs: named_items(dicts.comclass_by_variable("job_lang")),
+        tags: named_items(dicts.userclass_by_variable("user_tag")),
+        job_categories: render(JOB_CATEGORIES, lang),
         sy_googlelogin: lists.sy_googlelogin.clone(),
         sy_facebooklogin: lists.sy_facebooklogin.clone(),
     }))
@@ -261,10 +266,12 @@ pub async fn cities_of_province(
 }
 
 /// Industry categories from `phpyun_industry` (PHP `$industry_name`)
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/industries",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.industries）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn industries(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -277,10 +284,12 @@ pub async fn industries(State(state): State<AppState>) -> AppResult<ApiResponse<
 }
 
 /// Education levels — `source=user` uses resume userclass; default is job comclass `job_edu`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/educations",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.educations；source=user → data.educations_user）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn educations(
@@ -300,10 +309,12 @@ pub async fn educations(
 }
 
 /// Work experience — `source=user` uses resume `user_word`; default job `job_exp`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/experiences",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.experiences；source=user → data.experiences_user）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn experiences(
@@ -322,10 +333,12 @@ pub async fn experiences(
     Ok(ApiResponse::data(named_items(rows)))
 }
 
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/welfares",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.welfares）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn welfares(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -336,10 +349,12 @@ pub async fn welfares(State(state): State<AppState>) -> AppResult<ApiResponse<Ve
 }
 
 /// Top-level job categories
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/job-categories",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.job_categories）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn job_categories() -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -347,10 +362,12 @@ pub async fn job_categories() -> AppResult<ApiResponse<Vec<DictItem>>> {
 }
 
 /// Salary ranges
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/salaries",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.salaries）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn salaries() -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -359,10 +376,12 @@ pub async fn salaries() -> AppResult<ApiResponse<Vec<DictItem>>> {
 
 /// Job types (full-time / part-time / internship / temporary / remote).
 /// `source=user` uses resume `user_type`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/job-types",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.job_types；source=user → data.job_types_user）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn job_types(
@@ -380,10 +399,12 @@ pub async fn job_types(
 }
 
 /// Salary cycle / report-time. `source=user` uses resume `user_report`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/reports",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.reports；source=user → data.reports_user）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn reports(
@@ -432,10 +453,12 @@ pub async fn langs(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<D
 }
 
 /// Resume person tags — PHP `$userdata.user_tag`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/tags",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.tags）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn tags(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -446,10 +469,12 @@ pub async fn tags(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<Di
 }
 
 /// Company nature — PHP `$comclass_name` `job_pr` (国企/民营/…).
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/company-natures",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.company_natures）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn company_natures(
@@ -462,10 +487,12 @@ pub async fn company_natures(
 }
 
 /// Company size — PHP `job_mun`.
+#[deprecated(note = "use /v1/wap/initjobs")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/company-sizes",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.company_sizes）",
     responses((status = 200, description = "ok"))
 )]
 pub async fn company_sizes(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {

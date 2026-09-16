@@ -1,6 +1,6 @@
 //! OpenAPI document for `/v1/admin/*` only.
 
-use phpyun_handlers::openapi::{SecurityAddon, TagCounts, UniqueOperationId};
+use phpyun_handlers::openapi::{DeprecatedIndex, SecurityAddon, TagCounts, UniqueOperationId};
 use utoipa::OpenApi;
 
 use crate::v1;
@@ -415,7 +415,7 @@ use crate::v1;
             v1::feedback::BatchStatusForm,
         ),
     ),
-    modifiers(&SecurityAddon, &UniqueOperationId, &TagCounts),
+    modifiers(&SecurityAddon, &UniqueOperationId, &TagCounts, &DeprecatedIndex),
     tags(
         (name = "admin", description = "Admin"),
     )
