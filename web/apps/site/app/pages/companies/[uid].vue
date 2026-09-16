@@ -214,11 +214,11 @@ async function toggleFollow() {
   followMsg.value = ''
   if (!(await ensureLogin(me.value, route.fullPath))) return
   try {
-    const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
-      target_kind: 2,
-      target_uid: uid,
+    const r = await api.post<{ favorited?: boolean }>('/v1/mcenter/favorites', {
+      kind: 2,
+      target_id: uid,
     })
-    following.value = Boolean(r.following)
+    following.value = Boolean(r.favorited)
   } catch (e: unknown) {
     if (isLoginRequiredErr(e)) {
       await goLogin(route.fullPath)

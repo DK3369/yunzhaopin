@@ -3,7 +3,9 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('expects', () => api.post('/v1/mcenter/resume/expects/list', {}))
+const { data, error, refresh } = await useAsyncData('user-home-bundle', () =>
+  api.post<{ expects?: unknown }>('/v1/mcenter/resume/bundle', {}).catch(() => null),
+)
 const form = reactive({ id: 0, name: '', salary: 8000, type: 57, job_classid: 0, city_classid: 0 })
 const msg = ref('')
 const adding = ref(false)
@@ -27,7 +29,7 @@ function childList(v: unknown): ExpectRow[] {
   if (typeof v === 'object' && v && 'list' in v) return ((v as { list?: ExpectRow[] }).list || [])
   return []
 }
-const list = computed(() => childList(data.value))
+const list = computed(() => childList((data.value as { expects?: unknown } | null)?.expects))
 function resetForm() {
   Object.assign(form, { id: 0, name: '', salary: 8000, type: 57, job_classid: 0, city_classid: 0 })
 }

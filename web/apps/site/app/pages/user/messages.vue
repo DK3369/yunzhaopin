@@ -6,10 +6,13 @@ const { data, error, refresh } = await useAsyncData(
   () => `msgs-${page.value}`,
   () => api.post('/v1/mcenter/messages', { page: page.value, page_size: pageSize }),
 )
-const { data: dash } = await useAsyncData('user-msg-dash', () =>
-  api
-    .post<{ wkyqnum?: number; commsgnum?: number; sxnum?: number }>('/v1/mcenter/dashboard', {})
-    .catch(() => null),
+const { data: dash } = await useAsyncData(
+  'user-dash',
+  () =>
+    api
+      .post<{ wkyqnum?: number; commsgnum?: number; sxnum?: number }>('/v1/mcenter/dashboard/full', {})
+      .catch(() => null),
+  reuseAsyncCache(),
 )
 const picked = ref<number[]>([])
 const openId = ref(0)

@@ -127,7 +127,7 @@ const { data: userDash } = useAsyncData(
   () => (props.kind === 'user' ? 'user-dash' : 'hdr-skip-user-dash'),
   () =>
     props.kind === 'user'
-      ? api.post<{ wkyqnum?: number }>('/v1/mcenter/dashboard', {}).catch(() => null)
+      ? api.post<{ wkyqnum?: number }>('/v1/mcenter/dashboard/full', {}).catch(() => null)
       : Promise.resolve(null),
   reuseAsyncCache(),
 )
@@ -135,7 +135,7 @@ const { data: comDash } = useAsyncData(
   () => (props.kind === 'com' ? 'com-dash' : 'hdr-skip-com-dash'),
   () =>
     props.kind === 'com'
-      ? api.post<{ applies_unread?: number }>('/v1/mcenter/com-dashboard', {}).catch(() => null)
+      ? api.post<{ applies_unread?: number }>('/v1/mcenter/com-dashboard/full', {}).catch(() => null)
       : Promise.resolve(null),
   reuseAsyncCache(),
 )

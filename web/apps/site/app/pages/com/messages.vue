@@ -6,14 +6,17 @@ const { data, error, refresh } = await useAsyncData(
   () => `com-msgs-${page.value}`,
   () => api.post('/v1/mcenter/messages', { page: page.value, page_size: pageSize }),
 )
-const { data: dash } = await useAsyncData('com-msg-dash', () =>
-  api
-    .post<{
-      applies_unread?: number
-      job_msg_unanswered?: number
-      unread_messages?: number
-    }>('/v1/mcenter/com-dashboard', {})
-    .catch(() => null),
+const { data: dash } = await useAsyncData(
+  'com-dash',
+  () =>
+    api
+      .post<{
+        applies_unread?: number
+        job_msg_unanswered?: number
+        unread_messages?: number
+      }>('/v1/mcenter/com-dashboard/full', {})
+      .catch(() => null),
+  reuseAsyncCache(),
 )
 async function read(id: number) {
   await api.post('/v1/mcenter/messages/read', { id })

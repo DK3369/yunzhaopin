@@ -156,12 +156,17 @@ const userInfoOpen = ref(false)
 const comMsgOpen = ref(false)
 const comInfoOpen = ref(false)
 
-const { data: userDash } = useAsyncData(
+const { data: userDash, refresh: refreshUserDash } = useAsyncData(
   () => (kind.value === 'user' ? 'user-dash' : 'hdr-skip-user-dash'),
   () =>
     kind.value === 'user'
       ? api
-          .post<{ wkyqnum?: number; sysnum?: number; commsgnum?: number }>('/v1/mcenter/dashboard', {})
+          .post<{
+            wkyqnum?: number
+            sysnum?: number
+            commsgnum?: number
+            sign?: { signed_today?: boolean }
+          }>('/v1/mcenter/dashboard/full', {})
           .catch(() => null)
       : Promise.resolve(null),
   reuseAsyncCache(),
@@ -185,14 +190,7 @@ async function ensureBal() {
     balLoading = false
   }
 }
-const { data: signSt, refresh: refreshSign } = useAsyncData(
-  () => (kind.value === 'user' ? 'user-home-sign' : 'hdr-skip-sign'),
-  () =>
-    kind.value === 'user'
-      ? api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null)
-      : Promise.resolve(null),
-  reuseAsyncCache(),
-)
+const signSt = computed(() => userDash.value?.sign || null)
 const { data: comDash } = useAsyncData(
   () => (kind.value === 'com' ? 'com-dash' : 'hdr-skip-com-dash'),
   () =>
@@ -202,7 +200,7 @@ const { data: comDash } = useAsyncData(
             applies_unread?: number
             unread_messages?: number
             job_msg_unanswered?: number
-          }>('/v1/mcenter/com-dashboard', {})
+          }>('/v1/mcenter/com-dashboard/full', {})
           .catch(() => null)
       : Promise.resolve(null),
   reuseAsyncCache(),
@@ -237,7 +235,7 @@ async function sign() {
   if (signSt.value?.signed_today) return
   try {
     await api.post('/v1/mcenter/sign', {})
-    await refreshSign()
+    await refreshUserDash()
   } catch {
     /* ignore */
   }

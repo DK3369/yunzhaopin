@@ -37,7 +37,7 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/integral` 与 `/com/pay` `/com/integral` `/com/orders` `/com/record` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
 
-会员页 **不要**顺手打前台导航/页脚/热搜：`useSiteChrome` 只在 `needsPublicSiteChrome`（非 `/user` `/com`、非登录）时拉 `/v1/wap/nav` 和 descriptions。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 一份。左栏角标、顶栏、首页的 dashboard / 简历列表用同一个 `useAsyncData` key（`user-dash`、`user-home-resume`），不要 `member-shell-user-dash-*` 再打一遍。积分余额等下拉才用的接口，悬停再请求。
+会员页 **不要**顺手打前台导航/页脚/热搜：`useSiteChrome` 只在 `needsPublicSiteChrome`（非 `/user` `/com`、非登录）时拉 `/v1/wap/nav` 和 descriptions。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 一份。左栏角标、顶栏、首页、消息页的 dashboard 共用 `useAsyncData` key `user-dash` / `com-dash`，fetcher 必须是 `POST /v1/mcenter/dashboard/full` 与 `/com-dashboard/full`，不要再打瘦 `/dashboard`、`/com-dashboard`。求职意向列表（`/user/expects`、外发）与首页共用 `user-home-bundle`（`POST /v1/mcenter/resume/bundle`），create/update 仍走 `/resume/expects*`。公开企业关注开关走 `POST /v1/mcenter/favorites`（`kind=2`，`target_id`，读 `favorited`），不要 `follows`。积分余额等下拉才用的接口，悬停再请求。
 
 前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`（`sy_job_web` 关则藏）。未登录只显示登录/注册。中间导航仍走 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。判断必须用 `/com` 与 `/com/`（[`isComMemberPath`](../../web/layers/ui/app/utils/site.ts)），**不要** `startsWith('/com')`，否则公开「找企业」`/companies`（PHP `company/`）会被当成企业中心，求职账号会进 `/user`。PC 顶栏 Companies 应对齐 PHP `navmap` 的找企业，进企业列表。登录后访问 `/advice` 也走会员壳（求职/招聘按 `usertype`），未登录仍是前台反馈页。
 
@@ -254,7 +254,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 增值包 VIP 未过期才可买；渠道不要写死 `alipay`。订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 只列订单（可取消未支付），购买走套餐/充值页。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。
 - `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
 
-招聘 PC/H5 已对齐的交互（仍用现有 `/v1/mcenter/*`，后端改完再换接口）：
+招聘 PC/H5 已对齐的交互：
 
 - 发岗自定义联系人 `is_link=2`；职位列表 URL `w`、推广天数、关闭推广；H5 推广菜单可改天数。
 - 应聘：备注 `status` 1/2/3/4/5/7、未浏览点「查看电话」、加人才库。下载备注独立于邀请表单。人才库邀请走 `yqms/create`，简历路径用 `seeker_uid`。

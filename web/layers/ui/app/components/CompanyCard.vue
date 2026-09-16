@@ -216,11 +216,11 @@ async function toggleFollow() {
     return
   }
   try {
-    const r = await api.post<{ following?: boolean }>('/v1/mcenter/follows', {
-      target_kind: 2,
-      target_uid: props.company.uid,
+    const r = await api.post<{ favorited?: boolean }>('/v1/mcenter/favorites', {
+      kind: 2,
+      target_id: props.company.uid,
     })
-    const next = Boolean(r.following)
+    const next = Boolean(r.favorited)
     if (next !== following.value) {
       antNum.value = Math.max(0, antNum.value + (next ? 1 : -1))
     }

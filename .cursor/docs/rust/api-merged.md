@@ -4,7 +4,7 @@
 
 v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改快照。
 
-公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 公开页 / 会员页与 admin 首页已切聚合（`home/full`、详情 `*/detail/full`、侧栏、`dashboard/full` / `resume/bundle` / `jobs/overview` 等）。
+公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()`）。site 公开页 / 会员页与 admin 首页已切聚合（`home/full`、详情 `*/detail/full`、侧栏、`dashboard/full` / `resume/bundle` / `jobs/overview` 等）。site 即将失效调用（`follows`、`resume/*/list`、瘦 `dashboard`/`com-dashboard`、phpMap 兜底 `company-news|products`）也已切完。map / 分享页仍用未标即将失效的薄 `jobs/detail`、`companies/detail`。
 
 ## 聚合接口（新集成优先）
 
@@ -28,7 +28,7 @@ v1 **只加法**。本文不承诺摘除日期；摘路由须另批任务并改�
 
 ## 即将失效（仍注册，新集成勿用）
 
-OpenAPI 约 38 个操作。site 可能仍打其中若干条。勿再扩展旧模块。
+OpenAPI 约 38 个操作。Vue 新代码不要再打这些路径（site 已切完）。旧路由仍挂。勿再扩展旧模块。
 
 | 旧路径（仍挂） | 改用 |
 |---|---|

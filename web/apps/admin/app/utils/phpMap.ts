@@ -1595,8 +1595,6 @@ const MODULE_ROUTES: Record<string, ModuleRoutes> = {
   'user/users_trust': { list: '/v1/admin/user-entrusts', del: '/v1/admin/user-entrusts/delete', status: '/v1/admin/user-entrusts/status' },
   'user/users_userset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
   'user/company_comset': { list: '/v1/admin/site-settings/list', save: '/v1/admin/site-settings/batch' },
-  'user/company_news': { list: '/v1/admin/company-news', status: '/v1/admin/company-news/status', del: '/v1/admin/company-news/delete' },
-  'user/company_product': { list: '/v1/admin/company-products', status: '/v1/admin/company-products/status', del: '/v1/admin/company-products/delete' },
   'user/company_interview': { list: '/v1/admin/php-content/interview/index' },
   'user/company_pay': { list: '/v1/admin/php-content/finance-pay/index', del: '/v1/admin/php-content/finance-pay/delete' },
   'user/company_job_refresh_log': { list: '/v1/admin/job-refresh-logs' },

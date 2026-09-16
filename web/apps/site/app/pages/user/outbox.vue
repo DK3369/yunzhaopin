@@ -8,13 +8,15 @@ const { data, error, refresh } = await useAsyncData(
   () => `resume-outbox-${page.value}`,
   () => api.post('/v1/mcenter/resume-outbox/list', { page: page.value, page_size: pageSize }),
 )
-const { data: expects } = await useAsyncData('outbox-expects', () =>
-  api.post('/v1/mcenter/resume/expects/list', {}).catch(() => []),
+type ExpectPick = { id?: number; name?: string }
+const { data: bundle } = await useAsyncData('user-home-bundle', () =>
+  api.post<{ expects?: unknown }>('/v1/mcenter/resume/bundle', {}).catch(() => null),
 )
-const expectList = computed(() => {
-  const raw = expects.value
-  if (Array.isArray(raw)) return raw
-  return raw?.list || []
+const expectList = computed((): ExpectPick[] => {
+  const raw = bundle.value?.expects
+  if (Array.isArray(raw)) return raw as ExpectPick[]
+  if (raw && typeof raw === 'object' && 'list' in raw) return ((raw as { list?: ExpectPick[] }).list || [])
+  return []
 })
 const form = reactive({
   resume_id: 0,
