@@ -144,7 +144,7 @@ impl Modify for UniqueOperationId {
     info(
         title = "PHPYun API v1",
         version = "1.0.0",
-        description = "PHPYun WAP API v1 (stable)"
+        description = "PHPYun WAP API v1 (stable)\n\n即将失效（仍注册，新集成勿用）：\n- POST /v1/mcenter/company/products*、/company/news* → POST /v1/mcenter/company-contents/*（body.kind=product|news）\n- GET/POST /v1/wap/dict/cities* → /v1/wap/regions*"
     ),
     servers(
         (url = "/yapi", description = "Nginx proxy (dev.test/yapi → 127.0.0.1:3000)"),
@@ -1121,6 +1121,7 @@ impl Modify for UniqueOperationId {
         (name = "wap", description = "Public browsing endpoints"),
     )
 )]
+#[allow(deprecated)]
 pub struct V1Doc;
 
 #[cfg(debug_assertions)]

@@ -200,10 +200,12 @@ pub struct DictSourceQuery {
 }
 
 /// Province dictionary — PHP `$city_index` / `$city_name` from city.cache.php
+#[deprecated(note = "use /v1/wap/regions")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/cities",
     tag = "wap",
+    description = "即将失效：请改用 GET/POST /v1/wap/regions",
     responses((status = 200, description = "ok"))
 )]
 pub async fn cities(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<DictItem>>> {
@@ -221,11 +223,13 @@ pub struct ProvinceBody {
     pub province_id: i32,
 }
 
+#[deprecated(note = "use /v1/wap/regions")]
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/cities/by-province",
     tag = "wap",
     request_body = ProvinceBody,
+    description = "即将失效：请改用 GET/POST /v1/wap/regions/children",
     responses((status = 200, description = "ok"))
 )]
 pub async fn cities_of_province(

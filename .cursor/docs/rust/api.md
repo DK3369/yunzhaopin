@@ -37,3 +37,5 @@ PHP 页继续 `httpPost('m=&c=&a=')` → `web/apps/admin/app/utils/phpMap.ts` �
 现网 JSON：`:3003/api-docs/v1|admin/openapi.json`（dev/test）。`/docs` Swagger UI 已去掉。
 
 [API_V1_SUMMARY.md](../../../phpyun-rs/docs/API_V1_SUMMARY.md) 里的「305 条」是旧口径；以快照和 `utoipa` 为准。
+
+已合并 / 即将失效（App 以 OpenAPI `deprecated` 为准）见 [api-merged.md](./api-merged.md)。

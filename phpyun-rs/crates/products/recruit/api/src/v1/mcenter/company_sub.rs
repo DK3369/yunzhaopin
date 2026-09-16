@@ -19,6 +19,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         // products
@@ -89,7 +90,15 @@ pub struct ProductPatch {
 }
 
 /// My product list
-#[utoipa::path(post, path = "/v1/mcenter/company/products/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/mcenter/company-contents")]
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/products/list",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    description = "即将失效：请改用 POST /v1/mcenter/company-contents/list（body.kind=product）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn list_products(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -103,7 +112,16 @@ pub async fn list_products(
 }
 
 /// Create product
-#[utoipa::path(post, path = "/v1/mcenter/company/products", tag = "mcenter", security(("bearer" = [])), request_body = ProductForm, responses((status = 200, description = "ok", body = CreatedId)))]
+#[deprecated(note = "use /v1/mcenter/company-contents")]
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/products",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ProductForm,
+    description = "即将失效：请改用 POST /v1/mcenter/company-contents/create（body.kind=product）",
+    responses((status = 200, description = "ok", body = CreatedId))
+)]
 pub async fn create_product(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -125,7 +143,16 @@ pub async fn create_product(
 }
 
 /// Update or soft-delete a product (body with `"status":2` triggers deletion)
-#[utoipa::path(post, path = "/v1/mcenter/company/products/update", tag = "mcenter", security(("bearer" = [])), request_body = ProductPatch, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/mcenter/company-contents")]
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/products/update",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ProductPatch,
+    description = "即将失效：请改用 POST /v1/mcenter/company-contents/update 或 /delete（body.kind=product）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn update_product(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -204,7 +231,15 @@ pub struct NewsPatch {
 }
 
 /// My news list
-#[utoipa::path(post, path = "/v1/mcenter/company/news/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/mcenter/company-contents")]
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/news/list",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    description = "即将失效：请改用 POST /v1/mcenter/company-contents/list（body.kind=news）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn list_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -218,7 +253,16 @@ pub async fn list_news(
 }
 
 /// Create news
-#[utoipa::path(post, path = "/v1/mcenter/company/news", tag = "mcenter", security(("bearer" = [])), request_body = NewsForm, responses((status = 200, description = "ok", body = CreatedId)))]
+#[deprecated(note = "use /v1/mcenter/company-contents")]
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/news",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = NewsForm,
+    description = "即将失效：请改用 POST /v1/mcenter/company-contents/create（body.kind=news）",
+    responses((status = 200, description = "ok", body = CreatedId))
+)]
 pub async fn create_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -239,7 +283,16 @@ pub async fn create_news(
 }
 
 /// Update or soft-delete a news entry (body with `"status":2` triggers deletion)
-#[utoipa::path(post, path = "/v1/mcenter/company/news/update", tag = "mcenter", security(("bearer" = [])), request_body = NewsPatch, responses((status = 200, description = "ok")))]
+#[deprecated(note = "use /v1/mcenter/company-contents")]
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/company/news/update",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = NewsPatch,
+    description = "即将失效：请改用 POST /v1/mcenter/company-contents/update 或 /delete（body.kind=news）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn update_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
