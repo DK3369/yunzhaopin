@@ -134,13 +134,16 @@ pub async fn invalidate_sidebar(state: &AppState) {
     let _ = state;
 }
 
-/// Drop public list L1 and DEL this job's detail Redis key. List Redis keys
-/// still expire on TTL (no SCAN).
+/// Drop public list L1 and DEL this job's detail Redis key. Also drop home /
+/// ranking L1 so admin/member job writes are not stuck behind 60s stale copy.
+/// List Redis keys still expire on TTL (no SCAN).
 pub async fn invalidate_job(state: &AppState, id: u64) {
     list_cache().invalidate_prefix_local();
     detail_cache()
         .invalidate(&state.redis, &format!("jobs:detail:{id}"))
         .await;
+    crate::home_service::invalidate_all().await;
+    crate::ranking_service::invalidate_all().await;
 }
 
 pub async fn invalidate_jobs(state: &AppState, ids: &[u64]) {
@@ -153,6 +156,8 @@ pub async fn invalidate_jobs(state: &AppState, ids: &[u64]) {
             .invalidate(&state.redis, &format!("jobs:detail:{id}"))
             .await;
     }
+    crate::home_service::invalidate_all().await;
+    crate::ranking_service::invalidate_all().await;
 }
 
 pub async fn list_public(

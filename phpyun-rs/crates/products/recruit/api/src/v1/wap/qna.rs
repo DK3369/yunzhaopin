@@ -5,7 +5,7 @@ use phpyun_core::date_parse::de_loose_u64;
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_dt, pic_n};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
 };
 use phpyun_models::qna::repo::QuestionOrder;
 use phpyun_services::qna_service::{self, QuestionListFilter};
@@ -335,9 +335,11 @@ fn parse_order(s: &str) -> QuestionOrder {
 #[utoipa::path(post, path = "/v1/wap/questions", tag = "wap", params(QListQuery), responses((status = 200, description = "ok")))]
 pub async fn list_questions(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<QListQuery>,
 ) -> AppResult<ApiResponse<Paged<QuestionSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let f = QuestionListFilter {
         keyword: q.keyword.as_deref(),
         category_id: q.category_id,

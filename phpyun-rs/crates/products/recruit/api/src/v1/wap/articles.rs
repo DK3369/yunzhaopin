@@ -8,7 +8,8 @@ use axum::{
 use phpyun_core::dto::{HitsResp, IdBody};
 use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    ValidatedJsonOrQuery,
 };
 use phpyun_models::article::repo::ArticleFilter;
 use phpyun_services::article_service;
@@ -272,9 +273,11 @@ pub async fn list_groups(
 )]
 pub async fn list_articles(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ArticleListQuery>,
 ) -> AppResult<ApiResponse<Paged<ArticleSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let filter = ArticleFilter {
         category: q.category.as_deref(),
         keyword: q.keyword.as_deref(),

@@ -510,7 +510,7 @@ pub async fn create_admin_company(
     let x = json_str(body, "x");
     let y = json_str(body, "y");
     let linkman = json_str(body, "linkman");
-    let content = json_str(body, "content");
+    let content = phpyun_core::html::sanitize_html(&json_str(body, "content"));
     let hy = json_i32(body, "hy");
     let pr = json_i32(body, "pr");
     let mun = json_i32(body, "mun");
@@ -836,11 +836,13 @@ pub async fn company_comeditsave(
     if name.is_empty() {
         return Err(ApiError::business("admin_user_00021"));
     }
-    let content = json_str(body, "content")
-        .replace("&amp;", "&")
-        .replace("background-color:#ffffff", "background-color:")
-        .replace("background-color:#fff", "background-color:")
-        .replace("white-space:nowrap;", "white-space:");
+    let content = phpyun_core::html::sanitize_html(
+        &json_str(body, "content")
+            .replace("&amp;", "&")
+            .replace("background-color:#ffffff", "background-color:")
+            .replace("background-color:#fff", "background-color:")
+            .replace("white-space:nowrap;", "white-space:"),
+    );
     let lastupdate = clock::now_ts().to_string();
     let r_status = if body.get("r_status").is_some() {
         Some(json_i32(body, "r_status"))
@@ -909,6 +911,7 @@ pub async fn company_comeditsave(
         &json_str(body, "address"),
     )
     .await?;
+    crate::company_service::invalidate_company(state, uid).await;
     audit_write(state, user, "admin.company.edit", format!("uid:{uid}")).await;
     Ok(())
 }
@@ -1540,6 +1543,7 @@ async fn create_jobseeker(
     exp: i32,
     description: &str,
 ) -> AppResult<u64> {
+    let description = phpyun_core::html::sanitize_html(description);
     add_member_check(state, username, mobile, email, None).await?;
     let now = clock::now_ts();
     let salt = gen_salt();
@@ -1594,7 +1598,7 @@ async fn create_jobseeker(
         exp,
         mobile,
         email,
-        description,
+        &description,
         now,
     )
     .await?;
@@ -1641,7 +1645,7 @@ pub async fn resume_php_add(
     let living = json_str(body, "living");
     let edu = json_i32(body, "edu");
     let exp = json_i32(body, "exp");
-    let description = json_str(body, "description");
+    let description = phpyun_core::html::sanitize_html(&json_str(body, "description"));
     let now = clock::now_ts();
     if uid > 0 {
         resume_repo::ensure_row(state.db.pool(), uid, 0, now).await?;
@@ -1843,7 +1847,7 @@ pub async fn member_edit_save(
         &json_str(body, "address"),
         &json_str(body, "homepage"),
         &json_str(body, "qq"),
-        &json_str(body, "description"),
+        &phpyun_core::html::sanitize_html(&json_str(body, "description")),
         now,
     )
     .await?;
@@ -1943,7 +1947,7 @@ pub async fn resume_save_tag(
     if tags.len() > 5 {
         return Err(ApiError::business("admin_user_00206"));
     }
-    let description = json_str(body, "description");
+    let description = phpyun_core::html::sanitize_html(&json_str(body, "description"));
     if description.is_empty() {
         return Err(ApiError::business("admin_01319"));
     }

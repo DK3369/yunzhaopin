@@ -40,8 +40,8 @@ async fn robots_txt() -> impl IntoResponse {
     ([(header::CONTENT_TYPE, "text/plain; charset=utf-8")], BODY)
 }
 
-/// Returns long-lived dev/test tokens (one per role) in non-prod, or 404 in
-/// prod. Used by Scalar bootstrap and by curl/Postman during development.
+/// Returns long-lived dev/test tokens (one per role) when `DEV_TOKENS=1`,
+/// otherwise 404. Used by Scalar bootstrap and by curl/Postman on a laptop.
 ///
 /// `token` defaults to the admin token (works for `/admin/*` plus everything
 /// that doesn't role-check); the `tokens` map exposes all three roles so a

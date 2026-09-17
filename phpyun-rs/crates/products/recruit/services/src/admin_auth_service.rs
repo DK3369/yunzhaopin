@@ -9,7 +9,9 @@ use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::extractors::USERTYPE_ADMIN;
 use phpyun_core::jwt::{issue_pair, JwtIssued};
-use phpyun_core::{clock, numeric, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{
+    clock, numeric, rate_limit, ApiError, AppEnvironment, AppResult, AppState, AuthenticatedUser,
+};
 use phpyun_models::admin_rbac::repo::{self as rbac_repo, AdminNavRow};
 use serde::Serialize;
 
@@ -65,9 +67,8 @@ pub async fn login(
     let account = username.replace(' ', "");
     // Namespace so a member account named `admin` cannot lock the admin user.
     let rl_account = format!("admin:{account}");
-    // APP_ENV=dev/test skips this lockout (same policy as Governor). Prod keeps
-    // 5 failures / 15 minutes. PHP admin had no equivalent Redis lock.
-    let lock_fails = !state.config.env.is_dev_or_test();
+    // Skip lockout only in `APP_ENV=test`. Public `APP_ENV=dev` still locks.
+    let lock_fails = !matches!(state.config.env, AppEnvironment::Test);
     if lock_fails {
         rate_limit::check_login_fail(&state.redis, &rl_account).await?;
         rate_limit::check_login_fail_ip(&state.redis, ctx.ip).await?;

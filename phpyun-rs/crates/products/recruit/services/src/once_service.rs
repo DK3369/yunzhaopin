@@ -143,6 +143,7 @@ pub struct UpsertResult {
 
 pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertResult> {
     validate_fields(input)?;
+    let require = phpyun_core::html::sanitize_html(&input.require);
     let pwd_md5 = if input.password.is_empty() {
         String::new()
     } else {
@@ -164,7 +165,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
             address: &input.address,
             mans: &input.mans,
             salary: &input.salary,
-            require: &input.require,
+            require: &require,
         };
         let n = once_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;
         if n == 0 {
@@ -219,7 +220,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
         address: &input.address,
         mans: &input.mans,
         salary: &input.salary,
-        require: &input.require,
+        require: &require,
         pic: &input.pic,
         yyzz: &input.yyzz,
         password_md5: &pwd_md5,

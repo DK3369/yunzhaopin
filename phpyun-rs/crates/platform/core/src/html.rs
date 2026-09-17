@@ -218,6 +218,13 @@ mod tests {
     }
 
     #[test]
+    fn esc_encodes_angle_brackets_for_html_attrs() {
+        let out = esc("<img src=x onerror=alert(1)>");
+        assert!(out.contains("&lt;"));
+        assert!(!out.contains("<img"));
+    }
+
+    #[test]
     fn strip_nul_drops_zero_bytes() {
         assert_eq!(strip_nul("a\0b"), "ab");
         assert_eq!(strip_nul("ok"), "ok");

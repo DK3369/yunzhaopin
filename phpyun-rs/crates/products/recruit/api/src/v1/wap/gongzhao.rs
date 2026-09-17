@@ -3,7 +3,9 @@
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJsonOrQuery,
+};
 use phpyun_services::gongzhao_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -177,9 +179,11 @@ impl GzDetail {
 )]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<GzSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = gongzhao_service::list(&state, q.tag.as_deref(), q.did, page).await?;
     Ok(ApiResponse::data(Paged::new(
         r.list

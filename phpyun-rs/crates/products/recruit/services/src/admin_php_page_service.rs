@@ -16,7 +16,10 @@ use phpyun_models::job::repo as job_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 use serde_json::{json, Map, Value};
 
-use crate::{admin_dashboard_service, category_service, dict_service, enum_labels, redeem_service};
+use crate::{
+    admin_dashboard_service, category_service, dict_service, enum_labels, job_service,
+    redeem_service,
+};
 use phpyun_models::vip::repo as vip_repo;
 
 const USERSET_KEYS: &[&str] = &[
@@ -1017,10 +1020,12 @@ fn json_bool01(v: &Value, key: &str) -> i32 {
 }
 
 fn php_job_description(raw: &str) -> String {
-    raw.replace("&amp;", "&")
-        .replace("background-color:#ffffff", "background-color:")
-        .replace("background-color:#fff", "background-color:")
-        .replace("white-space:nowrap;", "white-space:")
+    phpyun_core::html::sanitize_html(
+        &raw.replace("&amp;", "&")
+            .replace("background-color:#ffffff", "background-color:")
+            .replace("background-color:#fff", "background-color:")
+            .replace("white-space:nowrap;", "white-space:"),
+    )
 }
 
 /// PHP `job::addJobInfo` (`utype=admin`)：新增或修改职位。
@@ -1177,6 +1182,7 @@ pub async fn save_admin_job(
         ("common_06274", id)
     };
     company_repo::touch_jobtime(state.db.pool(), uid, now).await?;
+    job_service::invalidate_job(state, job_id).await;
     Ok((msg_key, job_id))
 }
 

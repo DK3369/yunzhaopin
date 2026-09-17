@@ -121,10 +121,10 @@ pub async fn logo_statusbody(pool: &MySqlPool, uid: u64) -> Result<String, sqlx:
 }
 
 pub async fn gallery_statusbody(pool: &MySqlPool, kind: &str, id: u64) -> Result<String, sqlx::Error> {
-    let table = if kind == "resume" {
-        "phpyun_resume_show"
-    } else {
-        "phpyun_company_show"
+    let table = match kind {
+        "resume" => "phpyun_resume_show",
+        "company" => "phpyun_company_show",
+        _ => return Err(sqlx::Error::Protocol("invalid gallery kind".into())),
     };
     let sql = format!(
         "SELECT COALESCE(statusbody,'') FROM {table} WHERE id=? AND COALESCE(deleted,0)=0 LIMIT 1"
@@ -351,10 +351,10 @@ pub async fn save_gallery_pic(
 }
 
 pub async fn delete_gallery(pool: &MySqlPool, kind: &str, ids: &[u64]) -> Result<u64, sqlx::Error> {
-    let table = if kind == "resume" {
-        "phpyun_resume_show"
-    } else {
-        "phpyun_company_show"
+    let table = match kind {
+        "resume" => "phpyun_resume_show",
+        "company" => "phpyun_company_show",
+        _ => return Err(sqlx::Error::Protocol("invalid gallery kind".into())),
     };
     soft_delete::mark_ids(pool, table, ids).await
 }
@@ -369,10 +369,10 @@ pub async fn set_gallery_review(
     if ids.is_empty() {
         return Ok(0);
     }
-    let table = if kind == "resume" {
-        "phpyun_resume_show"
-    } else {
-        "phpyun_company_show"
+    let table = match kind {
+        "resume" => "phpyun_resume_show",
+        "company" => "phpyun_company_show",
+        _ => return Err(sqlx::Error::Protocol("invalid gallery kind".into())),
     };
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new(format!("UPDATE {table} SET status="));
@@ -5075,6 +5075,10 @@ pub fn is_safe_phpyun_table(name: &str) -> bool {
     name.starts_with("phpyun_")
         && name.len() <= 64
         && name.bytes().all(|c| c == b'_' || c.is_ascii_alphanumeric())
+        && !matches!(
+            name,
+            "phpyun_admin_user" | "phpyun_member" | "phpyun_user_session"
+        )
 }
 
 pub async fn php_optimize_table(pool: &MySqlPool, name: &str, repair: bool) -> Result<u64, sqlx::Error> {

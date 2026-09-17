@@ -213,6 +213,7 @@ pub async fn refresh_jobs(
     ids: &[u64],
 ) -> AppResult<u64> {
     let n = job_repo::admin_refresh(state.db.pool(), ids, clock::now_ts()).await?;
+    crate::job_service::invalidate_jobs(state, ids).await;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.job.refresh", Actor::uid(actor.uid))
@@ -228,6 +229,7 @@ pub async fn delete_jobs(
     ids: &[u64],
 ) -> AppResult<u64> {
     let n = job_repo::admin_delete(state.db.pool(), ids).await?;
+    crate::job_service::invalidate_jobs(state, ids).await;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.job.delete", Actor::uid(actor.uid))
@@ -245,6 +247,7 @@ pub async fn set_job_state(
     state_val: i32,
 ) -> AppResult<()> {
     job_repo::admin_set_state(state.db.pool(), job_id, state_val).await?;
+    crate::job_service::invalidate_job(state, job_id).await;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.job.set_state", Actor::uid(actor.uid))

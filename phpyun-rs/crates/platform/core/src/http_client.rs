@@ -24,6 +24,7 @@ use crate::metrics as m;
 use crate::{ApiError, AppResult};
 use reqwest::Client;
 use serde::{de::DeserializeOwned, Serialize};
+use std::net::IpAddr;
 use std::time::{Duration, Instant};
 use tracing::Instrument;
 
@@ -41,6 +42,15 @@ fn build_client(timeout_secs: u64, pool_max_idle_per_host: usize) -> anyhow::Res
         .tcp_nodelay(true)
         .tcp_keepalive(Some(Duration::from_secs(60)))
         .user_agent(concat!("phpyun-rs/", env!("CARGO_PKG_VERSION")))
+        .redirect(reqwest::redirect::Policy::custom(|attempt| {
+            if attempt.previous().len() >= 5 {
+                return attempt.error("too many redirects");
+            }
+            if redirect_target_blocked(attempt.url()) {
+                return attempt.error("blocked redirect");
+            }
+            attempt.follow()
+        }))
         .build()?;
     Ok(client)
 }
@@ -169,6 +179,7 @@ impl Http {
     /// GET HTML / text (job scrape and similar). Browser-like UA so
     /// Next.js pages that ignore empty/bot UAs still return the document.
     pub async fn get_text(&self, url: &str) -> AppResult<String> {
+        deny_private_egress(url).await?;
         let host = host_of(url);
         let span = tracing::info_span!("http.get_text", url = %url, host = %host);
         async move {
@@ -204,6 +215,7 @@ impl Http {
 
     /// GET raw bytes (WeChat mmbiz images and other binary fetches).
     pub async fn get_bytes(&self, url: &str) -> AppResult<bytes::Bytes> {
+        deny_private_egress(url).await?;
         let host = host_of(url);
         let span = tracing::info_span!("http.get_bytes", url = %url, host = %host);
         async move {
@@ -344,6 +356,90 @@ fn map_reqwest_err(e: reqwest::Error) -> ApiError {
     ApiError::upstream(e.to_string())
 }
 
+fn is_blocked_ip(ip: IpAddr) -> bool {
+    match ip {
+        IpAddr::V4(v) => {
+            v.is_loopback()
+                || v.is_private()
+                || v.is_link_local()
+                || v.is_unspecified()
+                || v.is_broadcast()
+                || v.is_multicast()
+                || v.octets()[0] == 0
+        }
+        IpAddr::V6(v) => {
+            if let Some(v4) = v.to_ipv4_mapped() {
+                return is_blocked_ip(IpAddr::V4(v4));
+            }
+            let seg0 = v.segments()[0];
+            v.is_loopback()
+                || v.is_unspecified()
+                || v.is_multicast()
+                || (seg0 & 0xfe00) == 0xfc00
+                || (seg0 & 0xffc0) == 0xfe80
+        }
+    }
+}
+
+fn is_blocked_hostname(host: &str) -> bool {
+    let h = host.trim_end_matches('.').to_ascii_lowercase();
+    h == "localhost"
+        || h.ends_with(".localhost")
+        || h == "metadata.google.internal"
+        || h.ends_with(".internal")
+}
+
+fn redirect_target_blocked(url: &reqwest::Url) -> bool {
+    if url.scheme() != "http" && url.scheme() != "https" {
+        return true;
+    }
+    let Some(host) = url.host_str() else {
+        return true;
+    };
+    if is_blocked_hostname(host) {
+        return true;
+    }
+    if let Ok(ip) = host.parse::<IpAddr>() {
+        return is_blocked_ip(ip);
+    }
+    false
+}
+
+async fn deny_private_egress(url: &str) -> AppResult<()> {
+    let parsed = reqwest::Url::parse(url).map_err(|_| ApiError::param_invalid("url"))?;
+    if parsed.scheme() != "http" && parsed.scheme() != "https" {
+        return Err(ApiError::param_invalid("url"));
+    }
+    let host = parsed
+        .host_str()
+        .ok_or_else(|| ApiError::param_invalid("url"))?;
+    if is_blocked_hostname(host) {
+        return Err(ApiError::param_invalid("url"));
+    }
+    if let Ok(ip) = host.parse::<IpAddr>() {
+        if is_blocked_ip(ip) {
+            return Err(ApiError::param_invalid("url"));
+        }
+        return Ok(());
+    }
+    let port = parsed.port_or_known_default().unwrap_or(80);
+    let lookup = format!("{host}:{port}");
+    let addrs = tokio::net::lookup_host(lookup)
+        .await
+        .map_err(|_| ApiError::param_invalid("url"))?;
+    let mut any = false;
+    for addr in addrs {
+        any = true;
+        if is_blocked_ip(addr.ip()) {
+            return Err(ApiError::param_invalid("url"));
+        }
+    }
+    if !any {
+        return Err(ApiError::param_invalid("url"));
+    }
+    Ok(())
+}
+
 /// Extract the host from the URL for the metric label. Label cardinality is
 /// bounded (the set of outbound upstreams is finite).
 fn host_of(url: &str) -> String {
@@ -435,5 +531,19 @@ mod tests {
     #[test]
     fn retry_policy_none_is_single_attempt() {
         assert_eq!(RetryPolicy::NONE.max_attempts, 1);
+    }
+
+    #[test]
+    fn private_and_metadata_ips_are_blocked() {
+        assert!(is_blocked_ip("127.0.0.1".parse().unwrap()));
+        assert!(is_blocked_ip("10.0.0.1".parse().unwrap()));
+        assert!(is_blocked_ip("192.168.1.1".parse().unwrap()));
+        assert!(is_blocked_ip("172.16.0.1".parse().unwrap()));
+        assert!(is_blocked_ip("169.254.169.254".parse().unwrap()));
+        assert!(is_blocked_ip("::1".parse().unwrap()));
+        assert!(is_blocked_hostname("localhost"));
+        assert!(is_blocked_hostname("metadata.google.internal"));
+        assert!(!is_blocked_ip("8.8.8.8".parse().unwrap()));
+        assert!(!is_blocked_hostname("mmbiz.qpic.cn"));
     }
 }

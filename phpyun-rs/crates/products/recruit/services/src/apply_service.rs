@@ -100,6 +100,14 @@ pub async fn apply_to_job(
         return Err(ApiError::business("apply_own_job"));
     }
 
+    if !state
+        .redis
+        .acquire_lock(&format!("apply:{}:{job_id}", user.uid), "1", 8_000)
+        .await?
+    {
+        return Err(ApiError::business("apply_duplicate"));
+    }
+
     let source_url = scrape_repo::find_url_by_job_id(state.db.reader(), job_id)
         .await?
         .unwrap_or_default();

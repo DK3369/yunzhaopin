@@ -764,7 +764,7 @@ pub async fn list_show_items(
                 CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime \
          FROM phpyun_company_show \
          WHERE uid = ? AND status = 0 AND COALESCE(deleted,0)=0 \
-         ORDER BY sort ASC, id ASC",
+         ORDER BY sort ASC, id ASC LIMIT 50",
     )
     .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
     .fetch_all(pool)

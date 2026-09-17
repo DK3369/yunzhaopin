@@ -459,11 +459,14 @@ pub async fn list_jobs(
 pub async fn job_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
     if let Some(u) = user.as_ref() {
         phpyun_services::site_gate_service::ensure_public_detail_rate(&state, u.uid).await?;
+    } else {
+        phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     }
     Ok(ApiResponse::data(
         build_job_detail_value(

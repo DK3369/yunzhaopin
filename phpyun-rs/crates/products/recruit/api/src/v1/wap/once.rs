@@ -106,9 +106,11 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
 #[utoipa::path(post, path = "/v1/wap/once-jobs/list", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<OnceListItem>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let search = OnceSearch {
         keyword: q.keyword,
         country: q.country,

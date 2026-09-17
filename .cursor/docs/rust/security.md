@@ -25,16 +25,27 @@
 
 - IP 失败桶 `rl:login:ip:{ip}`（约 20 次 / 15 分）。同一账号连续失败 ≥3 次强制图形验证码（不看后台 `code_web`）。
 - OTP 用 `Uuid::new_v4()`。
+- 管理员登录失败锁（约 5 次 / 15 分）**只在 `APP_ENV=test` 跳过**；现网 `APP_ENV=dev` 也锁。
+
+## 调试后门（不要靠 `APP_ENV=prod`）
+
+现网是 debug 二进制 + `EVENTBUS_KIND=memory`，`validate_production_policy` 不允许 `APP_ENV=prod`。公网关掉万能 JWT / 固定邮箱码靠 **`DEV_TOKENS` 默认关**：
+
+- 只有 `APP_ENV=dev|test` **且** `DEV_TOKENS=1` 才 mint `/dev/token`（30 年 uid=1 JWT）和邮箱固定码 `111111`。
+- 现网 `.env` **不要**写 `DEV_TOKENS=1`。`GET /dev/token` 因此 404。`/docs` 仍可开。
+- 本机调试再显式 `DEV_TOKENS=1`。
 
 ## LIKE 与上传
 
 - 关键词走 `phpyun_models::sql::escape_like` / `push_contains` / `push_escaped`（`LIKE ? ESCAPE '\\'`）。`models/**` 里原先 `format!("%{kw}%")` 的 admin/会员 LIKE 已全部改走转义绑定，`%` `_` 当字面量。
 - 表/列/枚举等标识符走 `phpyun_models::sql::ident_ok`（小写字母开头，`[a-z0-9_]`，≤64）；再 `match` 到静态 SQL 片段。
-- 富文本：写侧与公开详情读侧过 `phpyun_core::html::sanitize_html`（问答/简历小节含后台子表与附件 `doc`/兼职/广告 `pic_content`/文章/公告/公招/专题/招聘会含展位 `content`/面试邀请与模板/微信模板 header·body·footer/关站 `sy_webclose` 与封 IP `sy_bannedip_alert`/HR 文档/单页/兑换/企业新闻产品；职位/企业简介原先已有）。拼进 HTML option 的名称走 `esc`。`strip_nul` 去掉 `\0`。
+- 富文本：写侧与公开详情读侧过 `phpyun_core::html::sanitize_html`（问答/简历小节含后台子表与附件 `doc`/兼职/广告 `pic_content`/文章/公告/公招/专题/招聘会含展位 `content`/面试邀请与模板/微信模板 header·body·footer/关站 `sy_webclose` 与封 IP `sy_bannedip_alert`/HR 文档/单页/兑换/企业新闻产品；职位/企业简介原先已有）。后台旁路同样洗：改企/发岗 HTML、once `require`、站内信、yqmb、简历 `description`、问答 review、邮件/短信单页模板；datacall 预览替换值与 `getJobHtml` 公司名/岗名走 `esc`。拼进 HTML option 的名称走 `esc`。`strip_nul` 去掉 `\0`。
 - 简历访客上限：详情必须登录。`sy_resume_visitors > 0` 时，查看者 ≠ 简历主用 Redis `resume_visitors:{viewer_uid}:{YYYYMMDD}` 日计数；超限 `visitor_blocked=true` 且不解锁联系方式/正文。`0` = 不限。Redis 出错 fail-open。
 - URL：`validators::http_or_site_url`（`http(s)://` 或 `/` 开头的站内路径，拒 `javascript:` / `//` / `\`）。挂在 App `download_url`、广告 `link`、友链 `link_url`、导航 `url`、单页 `link_url`。前台 `:href` 过 `safeHref()`；登录 `?next=` 过 `safeLoginNext()`。
+- 出站 HTTP：`Http::get_bytes` / `get_text` 拒绝 loopback / RFC1918 / 链路本地 / 未指定 / 组播，以及 `localhost`、`*.internal`、`metadata.google.internal`；hostname 解析到私网也拒。微信 `mmbiz.qpic.cn`（含子域）才拉图，写入前 `sniff_image`。
 - 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；附件按 `%PDF` / `PK` / `D0CF11E0` 判 pdf/docx/doc，不匹配 400。admin 上传不接受 `application/octet-stream`。
-- datacall 简历列表脱敏（手机 / 邮箱 / 身份证）。投递唯一键 SQL 在 `migrations/sqlx/20260916000001_apply_unique.sql`，**不自动跑**。
+- datacall 简历列表脱敏（手机 / 邮箱 / 身份证）。投递唯一键 SQL 在 `migrations/sqlx/20260916000001_apply_unique.sql`，**不自动跑**；现网用 Redis `SET NX` 短锁 `apply:{uid}:{job_id}` / `part_apply:{uid}:{id}` 挡竞态。
+- `OPTIMIZE`/`REPAIR` 拒 `phpyun_admin_user` / `phpyun_member` / `phpyun_user_session`。相册 `kind` 只认 `resume`|`company`，未知参数错误。
 
 ## 下一批（本轮不做）
 

@@ -8,8 +8,8 @@ use axum::{
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-    ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
+    ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_services::special_service;
 use serde::{Deserialize, Serialize};
@@ -180,8 +180,10 @@ pub type SpecialJob = super::jobs::JobSummary;
 #[utoipa::path(post, path = "/v1/wap/specials", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<SpecialSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = special_service::list(&state, page).await?;
     Ok(ApiResponse::data(Paged::new(
         r.list

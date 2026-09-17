@@ -414,18 +414,15 @@ pub async fn send_email_login_code(state: &AppState, email: &str) -> AppResult<(
     )
     .await?;
 
-    // Development-only fallback: local environments often do not have an MTA
-    // configured. Keep production fail-closed so a mail delivery failure never
-    // turns into a known login code.
-    let code = if state.config.env.is_dev_or_test() {
+    // Laptop-only fallback: `DEV_TOKENS=1` skips the MTA and uses a known code.
+    // Public `APP_ENV=dev` debug binaries must still send real mail.
+    let use_dev_code = state.config.dev_tokens && state.config.env.is_dev_or_test();
+    let code = if use_dev_code {
         DEV_EMAIL_LOGIN_CODE.to_string()
     } else {
         verify::gen_digit_code(6)
     };
-    if state.config.env.is_dev_or_test() {
-        // Development must not wait for a host MTA. A missing or misconfigured
-        // sendmail can block forever, preventing the endpoint from returning
-        // even though the fixed development code is already known.
+    if use_dev_code {
         tracing::info!(email = %email, code = %code, "development email login code issued");
     } else {
         crate::mail_service::send_text(

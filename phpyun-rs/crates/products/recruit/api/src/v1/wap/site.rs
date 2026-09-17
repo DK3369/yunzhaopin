@@ -51,7 +51,7 @@ pub async fn get_page(
     Ok(ApiResponse::data(SitePageView {
         code: p.code,
         title: p.title,
-        content: p.content,
+        content: phpyun_core::html::sanitize_html(&p.content),
         updated_at: p.updated_at,
     }))
 }

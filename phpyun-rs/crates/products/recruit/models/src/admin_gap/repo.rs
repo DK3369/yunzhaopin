@@ -649,31 +649,35 @@ pub async fn set_logo_status_many(
     Ok(qb.build().execute(pool).await?.rows_affected())
 }
 
-fn gallery_table(kind: &str) -> &'static str {
-    if kind == "resume" {
-        "phpyun_resume_show"
-    } else {
-        "phpyun_company_show"
+fn gallery_table(kind: &str) -> Result<&'static str, sqlx::Error> {
+    match kind {
+        "resume" => Ok("phpyun_resume_show"),
+        "company" => Ok("phpyun_company_show"),
+        _ => Err(sqlx::Error::Protocol("invalid gallery kind".into())),
     }
 }
 
-fn gallery_list_from(kind: &str) -> &'static str {
-    if kind == "resume" {
-        " FROM phpyun_resume_show t \
+fn gallery_list_from(kind: &str) -> Result<&'static str, sqlx::Error> {
+    match kind {
+        "resume" => Ok(
+            " FROM phpyun_resume_show t \
          LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_resume GROUP BY uid) r \
-         ON r.uid = t.uid WHERE COALESCE(t.deleted,0)=0"
-    } else {
-        " FROM phpyun_company_show t \
+         ON r.uid = t.uid WHERE COALESCE(t.deleted,0)=0",
+        ),
+        "company" => Ok(
+            " FROM phpyun_company_show t \
          LEFT JOIN (SELECT uid, MAX(name) AS name FROM phpyun_company GROUP BY uid) c \
-         ON c.uid = t.uid WHERE COALESCE(t.deleted,0)=0"
+         ON c.uid = t.uid WHERE COALESCE(t.deleted,0)=0",
+        ),
+        _ => Err(sqlx::Error::Protocol("invalid gallery kind".into())),
     }
 }
 
-fn gallery_name_expr(kind: &str) -> &'static str {
-    if kind == "resume" {
-        "r.name"
-    } else {
-        "c.name"
+fn gallery_name_expr(kind: &str) -> Result<&'static str, sqlx::Error> {
+    match kind {
+        "resume" => Ok("r.name"),
+        "company" => Ok("c.name"),
+        _ => Err(sqlx::Error::Protocol("invalid gallery kind".into())),
     }
 }
 
@@ -682,17 +686,18 @@ fn apply_gallery_keyword(
     kind: &str,
     keyword: Option<&str>,
     keyword_type: i32,
-) {
+) -> Result<(), sqlx::Error> {
     let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) else {
-        return;
+        return Ok(());
     };
     if keyword_type == 2 {
         qb.push(" AND t.uid = ");
         qb.push_bind(kw.parse::<u64>().unwrap_or(0));
     } else {
-        qb.push(format!(" AND {} LIKE ", gallery_name_expr(kind)));
+        qb.push(format!(" AND {} LIKE ", gallery_name_expr(kind)?));
         crate::sql::push_contains(qb, kw);
     }
+    Ok(())
 }
 
 pub async fn list_gallery(
@@ -705,19 +710,19 @@ pub async fn list_gallery(
     limit: u64,
 ) -> Result<Vec<GalleryAdminRow>, sqlx::Error> {
     let (l, o) = lim(limit, offset)?;
-    let name_expr = gallery_name_expr(kind);
+    let name_expr = gallery_name_expr(kind)?;
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
         "SELECT CAST(t.id AS UNSIGNED) AS id, CAST(COALESCE(t.uid,0) AS UNSIGNED) AS uid, \
          COALESCE(t.title,'') AS title, COALESCE(t.picurl,'') AS picurl, \
          CAST(COALESCE(t.status,0) AS SIGNED) AS status, CAST(COALESCE(t.sort,0) AS SIGNED) AS sort, \
          COALESCE({name_expr},'') AS name{}",
-        gallery_list_from(kind)
+        gallery_list_from(kind)?
     ));
     if let Some(s) = status {
         qb.push(" AND t.status = ");
         qb.push_bind(s);
     }
-    apply_gallery_keyword(&mut qb, kind, keyword, keyword_type);
+    apply_gallery_keyword(&mut qb, kind, keyword, keyword_type)?;
     qb.push(" ORDER BY t.status DESC, t.id DESC LIMIT ");
     qb.push_bind(l);
     qb.push(" OFFSET ");
@@ -733,12 +738,12 @@ pub async fn count_gallery(
     keyword_type: i32,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new(format!("SELECT COUNT(*){}", gallery_list_from(kind)));
+        QueryBuilder::new(format!("SELECT COUNT(*){}", gallery_list_from(kind)?));
     if let Some(s) = status {
         qb.push(" AND t.status = ");
         qb.push_bind(s);
     }
-    apply_gallery_keyword(&mut qb, kind, keyword, keyword_type);
+    apply_gallery_keyword(&mut qb, kind, keyword, keyword_type)?;
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
@@ -752,7 +757,7 @@ pub async fn set_gallery_status(
     if ids.is_empty() {
         return Ok(0);
     }
-    let table = gallery_table(kind);
+    let table = gallery_table(kind)?;
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new(format!("UPDATE {table} SET status = "));
     qb.push_bind(status);

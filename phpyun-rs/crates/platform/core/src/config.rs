@@ -84,6 +84,7 @@ const DEFAULT_BOT_UA_DENYLIST: &[&str] = &[
 // the parent shell can never fill a key omitted from the shared dev/test file.
 const CONFIG_ENV_VARS: &[&str] = &[
     "APP_ENV",
+    "DEV_TOKENS",
     "BIND",
     "RUST_LOG",
     "WORKER_THREADS",
@@ -200,6 +201,11 @@ pub struct Config {
 
     // Run mode
     pub env: AppEnvironment,
+    /// Mint `/dev/token` JWTs and use the fixed email login code `111111`.
+    /// Default off even when `APP_ENV=dev`, so a public debug binary cannot
+    /// hand out 30-year admin tokens. Set `DEV_TOKENS=1` only on a laptop.
+    #[serde(default)]
+    pub dev_tokens: bool,
     pub log_level: String,
 
     /// Site timezone, minutes east of UTC. Must match PHP
@@ -380,6 +386,16 @@ fn env_parse<T: std::str::FromStr>(key: &str, default: T) -> T {
         .unwrap_or(default)
 }
 
+fn env_flag(key: &str) -> bool {
+    match env::var(key).ok().as_deref().map(str::trim) {
+        Some(v) => matches!(
+            v,
+            "1" | "true" | "TRUE" | "yes" | "YES" | "on" | "ON"
+        ),
+        None => false,
+    }
+}
+
 fn parse_app_environment(value: Option<&str>) -> anyhow::Result<AppEnvironment> {
     value
         .context("APP_ENV is required; expected one of: dev, test, prod")?
@@ -466,6 +482,7 @@ impl Config {
             bind: env::var("BIND").unwrap_or_else(|_| "0.0.0.0:3000".into()),
 
             env: parse_app_environment(env::var("APP_ENV").ok().as_deref())?,
+            dev_tokens: env_flag("DEV_TOKENS"),
             log_level: env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
 
             tz_offset_minutes: env_parse(

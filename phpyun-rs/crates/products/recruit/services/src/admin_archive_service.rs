@@ -33,6 +33,13 @@ fn content_ctime_min(time_days: Option<i32>) -> Option<i64> {
     }
 }
 
+fn ensure_gallery_kind(kind: &str) -> AppResult<()> {
+    match kind {
+        "resume" | "company" => Ok(()),
+        _ => Err(ApiError::param_invalid("kind")),
+    }
+}
+
 async fn audit_write(state: &AppState, actor: &AuthenticatedUser, action: &'static str, target: String) {
     let _ = audit::emit(
         state,
@@ -341,6 +348,7 @@ pub async fn list_gallery(
     keyword_type: Option<i32>,
     page: Pagination,
 ) -> AppResult<Paged<GalleryAdminRow>> {
+    ensure_gallery_kind(kind)?;
     let db = state.db.reader();
     let kt = keyword_type.unwrap_or(0);
     let mut list =
@@ -361,6 +369,7 @@ pub async fn set_gallery_status(
     status: i32,
     statusbody: &str,
 ) -> AppResult<()> {
+    ensure_gallery_kind(kind)?;
     if statusbody.is_empty() {
         gap::set_gallery_status(state.db.pool(), kind, ids, status).await?;
     } else {
@@ -699,6 +708,7 @@ pub async fn logo_statusbody(state: &AppState, uid: u64) -> AppResult<String> {
 }
 
 pub async fn gallery_statusbody(state: &AppState, kind: &str, id: u64) -> AppResult<String> {
+    ensure_gallery_kind(kind)?;
     Ok(gap2::gallery_statusbody(state.db.reader(), kind, id).await?)
 }
 
@@ -711,6 +721,7 @@ pub async fn content_statusbody(state: &AppState, kind: &str, id: u64) -> AppRes
 }
 
 pub async fn gallery_stat(state: &AppState, kind: &str) -> AppResult<PhotoStat> {
+    ensure_gallery_kind(kind)?;
     let db = state.db.reader();
     Ok(PhotoStat {
         num_all: gap::count_gallery(db, kind, None, None, 0).await?,

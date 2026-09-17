@@ -273,6 +273,14 @@ pub async fn apply(
         return Err(ApiError::business("part_pending"));
     }
 
+    if !state
+        .redis
+        .acquire_lock(&format!("part_apply:{}:{job_id}", user.uid), "1", 8_000)
+        .await?
+    {
+        return Err(ApiError::business("part_apply_duplicate"));
+    }
+
     // Deduplicate
     if part_repo::find_apply(state.db.reader(), user.uid, job_id)
         .await?
@@ -581,14 +589,14 @@ async fn resolve_part_audit_state(state: &AppState, uid: u64) -> AppResult<i32> 
 async fn resolve_part_shelf_status(state: &AppState, uid: u64) -> AppResult<i32> {
     let st = match statis_repo::find_admin(state.db.reader(), uid).await? {
         Some(s) => s,
-        None => return Ok(0),
+        None => return Ok(1),
     };
     if st.rating_type != 1 {
-        return Ok(0);
+        return Ok(1);
     }
     let cap = statis_repo::read_rating_part_num(state.db.reader(), st.rating).await?;
     if cap <= 0 {
-        return Ok(0);
+        return Ok(1);
     }
     let listed = part_repo::count_listed_by_uid(state.db.reader(), uid).await?;
     if listed >= u64::try_from(cap).unwrap_or(0) {
@@ -598,6 +606,17 @@ async fn resolve_part_shelf_status(state: &AppState, uid: u64) -> AppResult<i32>
     }
 }
 
+async fn ensure_can_publish_part(state: &AppState, uid: u64) -> AppResult<()> {
+    let now = clock::now_ts();
+    let st = statis_repo::find_admin(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ApiError::business("member_com_00696"))?;
+    if !is_vip(st.vip_etime, now) || st.rating_type == 0 {
+        return Err(ApiError::business("member_com_00696"));
+    }
+    Ok(())
+}
+
 pub async fn create_com_part(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -605,6 +624,7 @@ pub async fn create_com_part(
     client_ip: &str,
 ) -> AppResult<u64> {
     user.require_employer()?;
+    ensure_can_publish_part(state, user.uid).await?;
     let now = clock::now_ts();
     let content = phpyun_core::html::sanitize_html(input.content);
     let looked_up = company_repo::find_by_uid(state.db.reader(), user.uid)

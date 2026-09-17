@@ -1,7 +1,9 @@
 //! Public browsing of job fairs (mirrors PHPYun `wap/zph`).
 
 use axum::{extract::State, routing::get, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJsonOrQuery,
+};
 use phpyun_services::zph_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -334,9 +336,11 @@ pub struct ZphListQuery {
 #[utoipa::path(post, path = "/v1/wap/zph", tag = "wap", params(ZphListQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ZphListQuery>,
 ) -> AppResult<ApiResponse<Paged<ZphSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = zph_service::list(&state, page, q.keyword.as_deref()).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     Ok(ApiResponse::data(Paged::new(

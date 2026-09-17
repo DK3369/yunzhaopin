@@ -10,8 +10,9 @@
 //! Each token has a fixed jti so restarts don't change the string and any
 //! Authorize header pasted into Scalar keeps working.
 //!
-//! - `init` is called once after `AppState::build`. In prod it's a no-op so
-//!   `tokens()` keeps returning `None`.
+//! - `init` is called once after `AppState::build`. It is a no-op unless
+//!   `APP_ENV` is `dev`/`test` **and** `DEV_TOKENS=1`, so `tokens()` stays
+//!   `None` on the public debug binary.
 //! - The session row is upserted (one row per usertype) with `revoked_at = 0`.
 //! - The session-presence cache is primed for each jti so the very first
 //!   request on the token doesn't hit the DB.
@@ -79,9 +80,9 @@ fn jti_refresh(usertype: u8) -> String {
 }
 
 /// Idempotent. Call once at startup, after `AppState::build`. Skipped (no-op,
-/// `tokens()` returns `None`) unless the environment is `dev` or `test`.
+/// `tokens()` returns `None`) unless `APP_ENV` is `dev`/`test` and `DEV_TOKENS=1`.
 pub async fn init(cfg: &Config, db: &sqlx::MySqlPool, kv: &Kv) {
-    if !cfg.env.is_dev_or_test() {
+    if !cfg.env.is_dev_or_test() || !cfg.dev_tokens {
         let _ = DEV_TOKENS.set(None);
         return;
     }

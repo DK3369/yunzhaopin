@@ -20,7 +20,12 @@ const RECYCLE_KEEP_DAYS: i64 = 30;
 pub async fn expire_jobs(state: &AppState) {
     let now = clock::now_ts();
     match job_repo::expire_overdue(state.db.pool(), now).await {
-        Ok(n) if n > 0 => tracing::info!(rows = n, "cron: expired jobs marked"),
+        Ok(n) if n > 0 => {
+            tracing::info!(rows = n, "cron: expired jobs marked");
+            crate::job_service::invalidate_sidebar(state).await;
+            crate::home_service::invalidate_all().await;
+            crate::ranking_service::invalidate_all().await;
+        }
         Ok(_) => {}
         Err(e) => tracing::warn!(error = %e, "expire_jobs failed"),
     }

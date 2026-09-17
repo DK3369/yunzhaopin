@@ -144,6 +144,7 @@ pub fn part_summary_from_dict(
 pub async fn list_parts(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
+    ClientIp(ip): ClientIp,
     headers: HeaderMap,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<PartListQuery>,
@@ -154,6 +155,7 @@ pub async fn list_parts(
         &crate::v1::wap::request_user_agent(&headers),
     )
     .await?;
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     phpyun_services::site_gate_service::ensure_module_on(&state, "sy_part_web").await?;
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());

@@ -126,6 +126,7 @@ pub mod expect_svc {
                 .target(format!("expect:{existing_id}")),
             )
             .await;
+            crate::resume_service::invalidate_list(state).await;
             return Ok(existing_id);
         }
 
@@ -141,6 +142,7 @@ pub mod expect_svc {
                 .target(format!("expect:{id}")),
         )
         .await;
+        crate::resume_service::invalidate_list(state).await;
         Ok(id)
     }
 
@@ -166,6 +168,7 @@ pub mod expect_svc {
             .target(format!("expect:{id}")),
         )
         .await;
+        crate::resume_service::invalidate_list(state).await;
         Ok(())
     }
 
@@ -193,6 +196,7 @@ pub mod expect_svc {
             .target(format!("expect:{id}")),
         )
         .await;
+        crate::resume_service::invalidate_list(state).await;
         Ok(())
     }
 
@@ -216,6 +220,7 @@ pub mod expect_svc {
             .target(format!("expect:{id}")),
         )
         .await;
+        crate::resume_service::invalidate_list(state).await;
         Ok(())
     }
 }

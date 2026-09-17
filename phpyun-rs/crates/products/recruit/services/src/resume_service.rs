@@ -411,6 +411,7 @@ pub async fn update_mine(
             .target(format!("uid:{}", user.uid)),
     )
     .await;
+    invalidate_list(state).await;
     Ok(())
 }
 
@@ -441,6 +442,7 @@ pub async fn refresh_mine(
             .target(format!("uid:{}", user.uid)),
     )
     .await;
+    invalidate_list(state).await;
     Ok(now)
 }
 
@@ -472,6 +474,7 @@ pub async fn set_status(
         .meta(&serde_json::json!({ "status": label })),
     )
     .await;
+    invalidate_list(state).await;
     Ok(())
 }
 
@@ -669,6 +672,7 @@ pub async fn delete_expect(
             .target(format!("expect:{id}")),
     )
     .await;
+    invalidate_list(state).await;
     Ok(())
 }
 

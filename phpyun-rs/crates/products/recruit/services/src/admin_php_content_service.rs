@@ -77,6 +77,7 @@ use crate::home_service;
 use crate::mail_service;
 use crate::redeem_service;
 use crate::job_scrape_service;
+use crate::job_service;
 use crate::site_page_service;
 use crate::site_setting_service;
 use crate::special_service;
@@ -2364,6 +2365,7 @@ async fn question_save_review(state: &AppState, body: &Value) -> AppResult<PhpOu
     if id == 0 || content.is_empty() {
         return Err(ApiError::business("wap_com_00228"));
     }
+    let content = phpyun_core::html::sanitize_html(&content);
     qna_repo::update_review_content(state.db.pool(), id, &content).await?;
     Ok(PhpOut::Message("admin_model_00013"))
 }
@@ -4604,6 +4606,7 @@ async fn once_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         Some(md5_hex(&pwd))
     };
     let hashed_ref = hashed.as_deref();
+    let require = phpyun_core::html::sanitize_html(&json_str(body, "require"));
     let _ = once_repo::admin_save(
         state.db.pool(),
         json_u64(body, "id"),
@@ -4616,7 +4619,7 @@ async fn once_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             cityid: json_i32(body, "cityid"),
             three_cityid: json_i32(body, "three_cityid"),
             address: &json_str(body, "address"),
-            require: &json_str(body, "require"),
+            require: &require,
             salary: &json_str(body, "salary"),
             password_md5: hashed_ref,
             edate,
@@ -6282,7 +6285,9 @@ async fn email_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut> 
     if name.is_empty() {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
-    let content = json_str(body, "content").replace("amp;nbsp;", "nbsp;");
+    let content = phpyun_core::html::sanitize_html(
+        &json_str(body, "content").replace("amp;nbsp;", "nbsp;"),
+    );
     site_page_repo::upsert_content(
         state.db.pool(),
         &name,
@@ -7054,6 +7059,7 @@ async fn company_job_status(state: &AppState, body: &Value) -> AppResult<PhpOut>
     if n == 0 {
         return Err(ApiError::business("model_00115"));
     }
+    job_service::invalidate_jobs(state, &ids).await;
     let single = has_flag(body, "single");
     let next = if single && json_i32(body, "atype") != 1 {
         gap_extra::php_next_pending_job(state.db.reader()).await?
@@ -7082,6 +7088,7 @@ async fn company_job_cjobstatus(state: &AppState, body: &Value) -> AppResult<Php
     if n == 0 {
         return Err(ApiError::business("model_00115"));
     }
+    job_service::invalidate_job(state, id).await;
     if status == 1 {
         let _ = user_repo::admin_set_status(state.db.pool(), uid, 1).await?;
         let _ = gap_extra::reinstate_company(state.db.pool(), uid).await?;
@@ -8960,7 +8967,7 @@ async fn interview_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let linkman = json_str(body, "linkman");
     let linktel = json_str(body, "linktel");
     let address = json_str(body, "address");
-    let content = json_str(body, "content");
+    let content = phpyun_core::html::sanitize_html(&json_str(body, "content"));
     let intertime = parse_intertime(body);
     if linkman.is_empty() {
         return Err(ApiError::param_invalid("member_com_00677"));
@@ -12328,7 +12335,7 @@ async fn sysmsg_send(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if utype == 0 {
         return Err(ApiError::business("admin_system_00210"));
     }
-    let content = json_str(body, "content");
+    let content = phpyun_core::html::sanitize_html(&json_str(body, "content"));
     if content.is_empty() {
         return Err(ApiError::business("admin_system_00016"));
     }
@@ -13773,7 +13780,9 @@ async fn message_set_savetpl(state: &AppState, body: &Value) -> AppResult<PhpOut
     if name.is_empty() {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
-    let content = json_str(body, "content").replace("amp;nbsp;", "nbsp;");
+    let content = phpyun_core::html::sanitize_html(
+        &json_str(body, "content").replace("amp;nbsp;", "nbsp;"),
+    );
     let title = {
         let t = json_str(body, "title");
         if t.is_empty() {
@@ -14201,7 +14210,12 @@ async fn company_job_get_html(state: &AppState, body: &Value) -> AppResult<Value
     };
     Ok(Value::String(format!(
         "<div><p><b>{}</b> · {}</p><p>薪资：{}</p><p>{}</p><p>电话：{}</p><p>地址：{}</p></div>",
-        job.name, com_name, salary, desc, phone, addr
+        phpyun_core::html::esc(&job.name),
+        phpyun_core::html::esc(&com_name),
+        phpyun_core::html::esc(&salary),
+        phpyun_core::html::esc(&desc),
+        phpyun_core::html::esc(&phone),
+        phpyun_core::html::esc(&addr)
     )))
 }
 
@@ -14858,18 +14872,15 @@ async fn rewrite_mmbiz(state: &AppState, html: &str) -> String {
     let mut i = 0;
     while let Some(p) = html[i..].find("mmbiz.qpic.cn") {
         let abs = i + p;
-        let start = html[..abs].rfind("http").unwrap_or(abs);
-        let slice = &html[start..];
-        let end = slice
-            .find(|c: char| matches!(c, '"' | '\'' | ' ' | '>' | ')'))
-            .unwrap_or(slice.len());
-        let raw = &slice[..end];
-        let clean = raw.split('?').next().unwrap_or(raw).to_string();
-        if !clean.is_empty() && !urls.iter().any(|(a, _)| a == &clean) {
-            urls.push((clean, raw.to_string()));
-        }
-        i = start + end;
-        if i <= abs {
+        if let Some(raw) = extract_mmbiz_src(html, abs) {
+            if mmbiz_host_allowed(raw) {
+                let clean = raw.split('?').next().unwrap_or(raw).to_string();
+                if !clean.is_empty() && !urls.iter().any(|(a, _)| a == &clean) {
+                    urls.push((clean, raw.to_string()));
+                }
+            }
+            i = abs + "mmbiz.qpic.cn".len();
+        } else {
             i = abs + 1;
         }
     }
@@ -14877,8 +14888,12 @@ async fn rewrite_mmbiz(state: &AppState, html: &str) -> String {
     for (clean, raw) in urls {
         match state.http.get_bytes(&clean).await {
             Ok(bytes) => {
+                let Some((mime, _)) = phpyun_core::utils::sniff_image(&bytes) else {
+                    tracing::warn!(url = %clean, "mmbiz image rejected: not an image");
+                    continue;
+                };
                 let key = format!("wx/{}/{}", clock::now_ts(), Uuid::now_v7());
-                if let Ok(stored) = state.storage.put(&key, "image/jpeg", bytes).await {
+                if let Ok(stored) = state.storage.put(&key, mime, bytes).await {
                     out = out.replace(&raw, &stored);
                 }
             }
@@ -14886,6 +14901,48 @@ async fn rewrite_mmbiz(state: &AppState, html: &str) -> String {
         }
     }
     out
+}
+
+fn extract_mmbiz_src(html: &str, mmbiz_at: usize) -> Option<&str> {
+    let head = html.get(..mmbiz_at)?;
+    let https = head.rfind("https://");
+    let http = head.rfind("http://");
+    let start = match (https, http) {
+        (Some(a), Some(b)) => a.max(b),
+        (Some(a), None) => a,
+        (None, Some(b)) => b,
+        (None, None) => return None,
+    };
+    let between = html.get(start..mmbiz_at)?;
+    if between
+        .bytes()
+        .any(|b| matches!(b, b'"' | b'\'' | b' ' | b'>' | b')' | b'\n' | b'\r' | b'<'))
+    {
+        return None;
+    }
+    let rest = html.get(start..)?;
+    let end = rest
+        .find(|c: char| matches!(c, '"' | '\'' | ' ' | '>' | ')' | '\n' | '\r' | '<'))
+        .unwrap_or(rest.len());
+    rest.get(..end)
+}
+
+fn mmbiz_host_allowed(url: &str) -> bool {
+    let rest = url
+        .strip_prefix("https://")
+        .or_else(|| url.strip_prefix("http://"));
+    let Some(rest) = rest else {
+        return false;
+    };
+    let host = rest
+        .split(|c| c == '/' || c == '?' || c == '#')
+        .next()
+        .unwrap_or("")
+        .split(':')
+        .next()
+        .unwrap_or("")
+        .to_ascii_lowercase();
+    host == "mmbiz.qpic.cn" || host.ends_with(".mmbiz.qpic.cn")
 }
 
 async fn fabutool_wx_pub_temp_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
@@ -17149,7 +17206,7 @@ fn render_loop(code: &str, items: &[HashMap<String, String>], urltype: i32) -> S
     for item in items {
         let mut row = tpl.to_string();
         for (k, v) in item {
-            row = row.replace(&format!("{{{k}}}"), v);
+            row = row.replace(&format!("{{{k}}}"), &phpyun_core::html::esc(v));
         }
         row = row.replace("{target}", target);
         mid.push_str(&row);

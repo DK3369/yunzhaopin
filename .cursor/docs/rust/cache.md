@@ -60,8 +60,11 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 - 站点公开设置列表：`site_setting_service::admin_upsert` / `admin_delete` 同步 `invalidate` `site_settings:public`、`site_settings:all` 与 `initjobs:{lang}`
 - 导航写入：`nav_menu_service` 同步 `invalidate` `initjobs:{lang}`
 - 列表类 Redis 多 key 无 SCAN：L1 立刻空，L2 最多等 TTL
-- 会员发岗 / 改岗 / 刷新 / 上下架 / 删除：`job_service::invalidate_job(s)` — L1 列表立刻空 + Redis `DEL jobs:detail:{id}`
-- 企业资料 / 地图：`company_service::invalidate_company` — L1 列表立刻空 + Redis `DEL companies:detail:{uid}`
+- 会员发岗 / 改岗 / 刷新 / 上下架 / 删除：`job_service::invalidate_job(s)` — L1 列表立刻空 + Redis `DEL jobs:detail:{id}`，并清首页 / 排行 L1
+- 后台改岗（`save_admin_job` / `company_job_status` / 删除刷新）：同样走 `invalidate_job(s)`
+- `vip_over` 后 `invalidate_company(uid)`；`expire_jobs` 批处理后 `invalidate_sidebar` + 首页 / 排行 L1
+- 企业资料 / 地图 / 后台 `company_comeditsave`：`company_service::invalidate_company` — L1 列表立刻空 + Redis `DEL companies:detail:{uid}`
+- 简历 `update_mine` / `refresh` / `set_status` / expect 可见性变化：`resume_service::invalidate_list`（L1；列表 Redis 靠 TTL）
 
 ## 下一批
 

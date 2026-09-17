@@ -4,7 +4,7 @@ use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{
-    ApiError, ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery,
+    ApiError, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJsonOrQuery,
 };
 use phpyun_services::announcement_service;
 use serde::Serialize;
@@ -119,8 +119,10 @@ impl From<phpyun_models::announcement::entity::Announcement> for AnnouncementDet
 )]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<AnnouncementSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = announcement_service::list(&state, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,

@@ -235,6 +235,7 @@ pub async fn vip_over(state: &AppState, uid: u64) -> AppResult<()> {
     let done = parse_i32(cfg.get("com_vip_done").map(String::as_str), 0);
     if done != 0 {
         apply_rating(state, uid, done, Some(2)).await?;
+        crate::company_service::invalidate_company(state, uid).await;
         return Ok(());
     }
     if st.rating > 0 {
@@ -252,6 +253,7 @@ pub async fn vip_over(state: &AppState, uid: u64) -> AppResult<()> {
         )
         .await?;
     }
+    crate::company_service::invalidate_company(state, uid).await;
     Ok(())
 }
 
