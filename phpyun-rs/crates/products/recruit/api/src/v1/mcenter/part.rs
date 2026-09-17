@@ -27,10 +27,12 @@ pub fn routes() -> Router<AppState> {
         // Company view
         .route("/com-parts", post(com_delete_parts))
         .route("/com-parts/list", post(com_parts))
+        .route("/com-parts/detail", post(com_part_detail))
         .route("/com-parts/create", post(com_create_part))
         .route("/com-parts/update", post(com_update_part))
         .route("/com-parts/refresh", post(com_refresh_part))
         .route("/com-parts/status", post(com_set_part_status))
+        .route("/com-parts/batch/status", post(com_batch_part_status))
         .route("/com-part-applications", post(com_applies))
         .route(
             "/com-part-applications/status",
@@ -292,29 +294,85 @@ pub async fn delete_collects(
 
 // ==================== Company ====================
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ComPartListForm {
+    #[serde(default)]
+    #[validate(range(min = 0, max = 4))]
+    pub w: Option<i32>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PartCountsView {
+    pub w0: u64,
+    pub w1: u64,
+    pub w2: u64,
+    pub w3: u64,
+    pub w4: u64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ComPartListData {
+    pub list: Vec<ComPartSummary>,
+    pub total: u64,
+    pub page: u32,
+    pub page_size: u32,
+    pub counts: PartCountsView,
+}
+
 #[utoipa::path(
     post,
     path = "/v1/mcenter/com-parts/list",
     tag = "mcenter",
     security(("bearer" = [])),
-    responses((status = 200, description = "ok"))
+    request_body = ComPartListForm,
+    responses((status = 200, description = "ok", body = ComPartListData))
 )]
 pub async fn com_parts(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiResponse<Paged<ComPartSummary>>> {
-    let r = part_service::list_com_parts(&state, &user, page).await?;
+    ValidatedJson(f): ValidatedJson<ComPartListForm>,
+) -> AppResult<ApiResponse<ComPartListData>> {
+    let r = part_service::list_com_parts(&state, &user, page, f.w).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiResponse::data(Paged::new(
-        r.list
+    Ok(ApiResponse::data(ComPartListData {
+        list: r
+            .list
             .into_iter()
             .map(|j| crate::v1::wap::part::part_summary_from_dict(j, &state, &dicts, now))
             .collect(),
-        r.total,
-        page.page,
-        page.page_size,
+        total: r.total,
+        page: page.page,
+        page_size: page.page_size,
+        counts: PartCountsView {
+            w0: phpyun_core::numeric::nonnegative_count(r.counts.w0),
+            w1: phpyun_core::numeric::nonnegative_count(r.counts.w1),
+            w2: phpyun_core::numeric::nonnegative_count(r.counts.w2),
+            w3: phpyun_core::numeric::nonnegative_count(r.counts.w3),
+            w4: phpyun_core::numeric::nonnegative_count(r.counts.w4),
+        },
+    }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-parts/detail",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn com_part_detail(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ComPartSummary>> {
+    let j = part_service::get_com_part(&state, &user, b.id).await?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let now = phpyun_core::clock::now_ts();
+    Ok(ApiResponse::data(crate::v1::wap::part::part_summary_from_dict(
+        j, &state, &dicts, now,
     )))
 }
 
@@ -408,6 +466,31 @@ pub async fn com_set_part_status(
 ) -> AppResult<ApiResponse<json::Value>> {
     part_service::set_com_part_status(&state, &user, b.id, b.status, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true, "status": b.status })))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ComPartBatchStatusBody {
+    pub ids: Vec<u64>,
+    #[validate(range(min = 0, max = 2))]
+    pub status: i32,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/com-parts/batch/status",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ComPartBatchStatusBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn com_batch_part_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(b): ValidatedJson<ComPartBatchStatusBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    let n = part_service::batch_set_com_part_status(&state, &user, &b.ids, b.status, &ip).await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true, "updated": n, "status": b.status })))
 }
 
 #[utoipa::path(

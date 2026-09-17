@@ -16,8 +16,11 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_models::company::repo as company_repo;
+use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::part::entity::{PartApply, PartCollect, PartJob};
 use phpyun_models::part::repo as part_repo;
+use phpyun_models::site_setting::repo as setting_repo;
 
 // ==================== Public browsing ====================
 
@@ -402,20 +405,41 @@ pub async fn delete_my_collects(
 
 // ==================== Company: manage own part-time listings ====================
 
+pub struct PartListPage {
+    pub list: Vec<PartJob>,
+    pub total: u64,
+    pub counts: part_repo::ComPartCounts,
+}
+
 pub async fn list_com_parts(
     state: &AppState,
     user: &AuthenticatedUser,
     page: Pagination,
-) -> AppResult<PartPage<PartJob>> {
+    w: Option<i32>,
+) -> AppResult<PartListPage> {
     user.require_employer()?;
-    let (total, list) = tokio::join!(
-        part_repo::count_by_com(state.db.reader(), user.uid),
-        part_repo::list_by_com(state.db.reader(), user.uid, page.offset, page.limit),
+    let (total, list, counts) = tokio::join!(
+        part_repo::count_by_com(state.db.reader(), user.uid, w),
+        part_repo::list_by_com(state.db.reader(), user.uid, w, page.offset, page.limit),
+        part_repo::counts_by_com(state.db.reader(), user.uid),
     );
-    Ok(PartPage {
+    Ok(PartListPage {
         total: total?,
         list: list?,
+        counts: counts?,
     })
+}
+
+pub async fn get_com_part(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<PartJob> {
+    user.require_employer()?;
+    part_repo::find_by_id(state.db.reader(), id)
+        .await?
+        .filter(|j| j.uid == user.uid)
+        .ok_or_else(|| ApiError::business("job_not_found"))
 }
 
 pub async fn delete_com_parts(
@@ -538,6 +562,41 @@ fn write_from_input<'a>(input: &'a MemberPartInput<'a>) -> part_repo::MemberPart
     }
 }
 
+async fn resolve_part_audit_state(state: &AppState, uid: u64) -> AppResult<i32> {
+    let r_status = company_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .map(|c| c.r_status)
+        .unwrap_or(0);
+    if r_status != 1 {
+        return Ok(0);
+    }
+    let raw = setting_repo::find(state.db.reader(), "com_partjob_status")
+        .await?
+        .map(|r| r.value)
+        .unwrap_or_default();
+    Ok(raw.trim().parse::<i32>().unwrap_or(0).clamp(0, 3))
+}
+
+async fn resolve_part_shelf_status(state: &AppState, uid: u64) -> AppResult<i32> {
+    let st = match statis_repo::find_admin(state.db.reader(), uid).await? {
+        Some(s) => s,
+        None => return Ok(0),
+    };
+    if st.rating_type != 1 {
+        return Ok(0);
+    }
+    let cap = statis_repo::read_rating_part_num(state.db.reader(), st.rating).await?;
+    if cap <= 0 {
+        return Ok(0);
+    }
+    let listed = part_repo::count_listed_by_uid(state.db.reader(), uid).await?;
+    if listed >= u64::try_from(cap).unwrap_or(0) {
+        Ok(1)
+    } else {
+        Ok(0)
+    }
+}
+
 pub async fn create_com_part(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -546,10 +605,12 @@ pub async fn create_com_part(
 ) -> AppResult<u64> {
     user.require_employer()?;
     let now = clock::now_ts();
-    let looked_up = phpyun_models::company::repo::find_by_uid(state.db.reader(), user.uid)
+    let looked_up = company_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
         .and_then(|c| c.name)
         .unwrap_or_default();
+    let audit_state = resolve_part_audit_state(state, user.uid).await?;
+    let shelf = resolve_part_shelf_status(state, user.uid).await?;
     let id = part_repo::locoy_create(
         state.db.pool(),
         &part_repo::LocoyPartCreate {
@@ -572,12 +633,13 @@ pub async fn create_com_part(
             content: input.content,
             linkman: input.linkman,
             linktel: input.linktel,
-            state: 0,
+            state: audit_state,
             x: input.x,
             y: input.y,
             deadline: input.deadline,
             now,
             did: user.did,
+            status: shelf,
         },
     )
     .await?;
@@ -599,7 +661,15 @@ pub async fn update_com_part(
 ) -> AppResult<()> {
     user.require_employer()?;
     let now = clock::now_ts();
-    let n = part_repo::update_for_com(state.db.pool(), id, user.uid, &write_from_input(&input), now)
+    let audit_state = resolve_part_audit_state(state, user.uid).await?;
+    let n = part_repo::update_for_com(
+        state.db.pool(),
+        id,
+        user.uid,
+        &write_from_input(&input),
+        now,
+        audit_state,
+    )
         .await?;
     if n == 0 {
         return Err(ApiError::business("job_not_found"));
@@ -645,6 +715,29 @@ pub async fn set_com_part_status(
     )
     .await;
     Ok(())
+}
+
+pub async fn batch_set_com_part_status(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    ids: &[u64],
+    status: i32,
+    client_ip: &str,
+) -> AppResult<u64> {
+    user.require_employer()?;
+    let status = match status {
+        0 => 0,
+        1 | 2 => 1,
+        _ => return Err(ApiError::param_invalid("status")),
+    };
+    let n = part_repo::set_status_for_com_ids(state.db.pool(), ids, user.uid, status).await?;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("part.batch_status", Actor::uid(user.uid).with_ip(client_ip))
+            .meta(&serde_json::json!({ "status": status, "n": n })),
+    )
+    .await;
+    Ok(n)
 }
 
 pub async fn refresh_com_part(

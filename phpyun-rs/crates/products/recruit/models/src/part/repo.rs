@@ -51,7 +51,7 @@ const FIELDS: &str = "id, COALESCE(uid, 0) AS uid, name, com_name, \
     COALESCE(edate, 0) AS edate, \
     content, linkman, linktel, \
     COALESCE(state, 0) AS state, \
-    status, \
+    COALESCE(status, 0) AS status, \
     COALESCE(r_status, 0) AS r_status, \
     COALESCE(rec_time, 0) AS rec_time, \
     COALESCE(lastupdate, 0) AS lastupdate, \
@@ -295,6 +295,7 @@ pub struct LocoyPartCreate<'a> {
     pub deadline: i64,
     pub now: i64,
     pub did: u32,
+    pub status: i32,
 }
 
 pub async fn locoy_create(pool: &MySqlPool, c: &LocoyPartCreate<'_>) -> Result<u64, sqlx::Error> {
@@ -305,7 +306,7 @@ pub async fn locoy_create(pool: &MySqlPool, c: &LocoyPartCreate<'_>) -> Result<u
             deadline, linkman, linktel, addtime, r_status, state, lastupdate, statusbody,
             hits, com_name, rec_time, did, status, upstatus_count, upstatus_time)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, '',
-                 0, ?, 0, ?, 0, 0, ?)",
+                 0, ?, 0, ?, ?, 0, ?)",
     )
     .bind(c.uid)
     .bind(c.name)
@@ -333,6 +334,7 @@ pub async fn locoy_create(pool: &MySqlPool, c: &LocoyPartCreate<'_>) -> Result<u
     .bind(c.now)
     .bind(c.com_name)
     .bind(c.did)
+    .bind(c.status)
     .bind(c.now)
     .execute(pool)
     .await?;
@@ -348,37 +350,71 @@ pub async fn incr_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     Ok(res.rows_affected())
 }
 
-/// Company: list its own part-time postings (all states).
+/// Company: list its own part-time postings (optional PHP partok `w` bucket).
 pub async fn list_by_com(
     pool: &MySqlPool,
     com_uid: u64,
+    w: Option<i32>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<PartJob>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_partjob WHERE uid = ? \
-         ORDER BY rec_time DESC, lastupdate DESC LIMIT ? OFFSET ?"
-    );
-    sqlx::query_as::<_, PartJob>(&sql)
-        .bind(com_uid)
-        .bind(phpyun_core::numeric::checked_db_i64(
-            limit,
-            "pagination.limit",
-        )?)
-        .bind(phpyun_core::numeric::checked_db_i64(
-            offset,
-            "pagination.offset",
-        )?)
-        .fetch_all(pool)
-        .await
+    let mut qb = QueryBuilder::new(format!("SELECT {FIELDS} FROM phpyun_partjob WHERE uid = "));
+    qb.push_bind(com_uid);
+    push_com_part_w(&mut qb, w);
+    qb.push(" ORDER BY rec_time DESC, lastupdate DESC LIMIT ");
+    qb.push_bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?);
+    qb.push(" OFFSET ");
+    qb.push_bind(phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?);
+    qb.build_query_as().fetch_all(pool).await
 }
 
-pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_partjob WHERE uid = ?")
-        .bind(com_uid)
-        .fetch_one(pool)
-        .await?;
+pub async fn count_by_com(pool: &MySqlPool, com_uid: u64, w: Option<i32>) -> Result<u64, sqlx::Error> {
+    let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_partjob WHERE uid = ");
+    qb.push_bind(com_uid);
+    push_com_part_w(&mut qb, w);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+#[derive(Debug, Clone, Default, sqlx::FromRow)]
+pub struct ComPartCounts {
+    pub w0: i64,
+    pub w1: i64,
+    pub w2: i64,
+    pub w3: i64,
+    pub w4: i64,
+}
+
+pub async fn counts_by_com(pool: &MySqlPool, com_uid: u64) -> Result<ComPartCounts, sqlx::Error> {
+    sqlx::query_as::<_, ComPartCounts>(
+        "SELECT \
+            CAST(COALESCE(SUM(CASE WHEN state = 0 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w0, \
+            CAST(COALESCE(SUM(CASE WHEN status = 0 AND state = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w1, \
+            CAST(COALESCE(SUM(CASE WHEN state = 2 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w2, \
+            CAST(COALESCE(SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w3, \
+            CAST(COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS w4 \
+         FROM phpyun_partjob WHERE uid = ?",
+    )
+    .bind(com_uid)
+    .fetch_optional(pool)
+    .await
+    .map(|r| r.unwrap_or_default())
+}
+
+fn push_com_part_w(qb: &mut QueryBuilder<'_, sqlx::MySql>, w: Option<i32>) {
+    match w {
+        Some(4) => {
+            qb.push(" AND status = 1");
+        }
+        Some(1) => {
+            qb.push(" AND status = 0 AND state = 1");
+        }
+        Some(n) if (0..=3).contains(&n) => {
+            qb.push(" AND state = ");
+            qb.push_bind(n);
+        }
+        _ => {}
+    }
 }
 
 /// PHP `addJobInfo` / `vipOver` 上架额度：`partjob.status = 0`.
@@ -951,11 +987,12 @@ pub async fn update_for_com(
     uid: u64,
     w: &MemberPartWrite<'_>,
     now: i64,
+    state: i32,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_partjob SET name=?, `type`=?, sdate=?, edate=?, worktime=?, number=?, sex=?, \
          salary=?, salary_type=?, billing_cycle=?, provinceid=?, cityid=?, three_cityid=?, address=?, \
-         x=?, y=?, content=?, deadline=?, linkman=?, linktel=?, lastupdate=? \
+         x=?, y=?, content=?, deadline=?, linkman=?, linktel=?, lastupdate=?, state=? \
          WHERE id=? AND uid=?",
     )
     .bind(w.name)
@@ -979,6 +1016,7 @@ pub async fn update_for_com(
     .bind(w.linkman)
     .bind(w.linktel)
     .bind(now)
+    .bind(state)
     .bind(id)
     .bind(uid)
     .execute(pool)
@@ -998,6 +1036,32 @@ pub async fn set_status_for_com(
         .bind(uid)
         .execute(pool)
         .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_status_for_com_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    uid: u64,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_partjob SET status = ");
+    qb.push_bind(status);
+    qb.push(" WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    if status == 0 {
+        qb.push(" AND state = 1");
+    }
+    let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }
 

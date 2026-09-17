@@ -268,6 +268,7 @@ async fn ingest_partjob(state: &AppState, post: &HashMap<String, String>) -> App
             deadline: now + 7 * 86_400,
             now,
             did: u32::try_from(parse_i32(post, "did").max(0)).unwrap_or(0),
+            status: 0,
         },
     )
     .await?;
