@@ -62,7 +62,7 @@ pub async fn list(
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(sql);
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC LIMIT ");
     qb.push_bind(limit);
@@ -76,7 +76,7 @@ pub async fn count(pool: &MySqlPool, keyword: Option<&str>) -> Result<u64, sqlx:
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(sql);
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -292,10 +292,10 @@ pub async fn list_spaces(
 ) -> Result<Vec<ZphSpace>, sqlx::Error> {
     let sql = format!(
         "SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE {PREDICATE} \
-         {key} {kw} ORDER BY sort ASC, id ASC",
+         {key} {kw} ORDER BY sort ASC, id ASC LIMIT 2000",
         key = if keyid.is_some() { "AND keyid = ?" } else { "AND keyid = 0" },
         kw = if keyword.map(|s| !s.is_empty()).unwrap_or(false) {
-            "AND name LIKE ?"
+            "AND name LIKE ? ESCAPE '\\\\'"
         } else {
             ""
         }
@@ -306,10 +306,19 @@ pub async fn list_spaces(
     }
     if let Some(kw) = keyword {
         if !kw.is_empty() {
-            q = q.bind(format!("%{kw}%"));
+            q = q.bind(crate::sql::like_contains(kw));
         }
     }
     q.fetch_all(pool).await
+}
+
+/// All booth rows (any `keyid`), capped so the public tree does not unbounded-scan.
+pub async fn list_all_spaces(pool: &MySqlPool) -> Result<Vec<ZphSpace>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ZS_FIELDS} FROM phpyun_zhaopinhui_space WHERE {PREDICATE} \
+         ORDER BY sort ASC, id ASC LIMIT 2000"
+    );
+    sqlx::query_as::<_, ZphSpace>(&sql).fetch_all(pool).await
 }
 
 pub struct SpaceUpsert<'a> {
@@ -535,13 +544,13 @@ fn push_zph_admin_filters<'a>(
     now: i64,
 ) {
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if f.keyword_type == 2 {
             qb.push(" AND address LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(qb, like);
         } else {
             qb.push(" AND title LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(qb, like);
         }
     }
     match f.status {
@@ -788,16 +797,16 @@ pub async fn admin_list_coms(
         qb.push_bind(st);
     }
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if f.keyword_type == 1 {
             qb.push(" AND c.zid IN (SELECT id FROM phpyun_zhaopinhui WHERE title LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(&mut qb, like);
             qb.push(" AND COALESCE(deleted,0)=0)");
         } else if f.keyword_type == 2 {
             qb.push(" AND (co.name LIKE ");
-            qb.push_bind(like.clone());
+            crate::sql::push_escaped(&mut qb, like.clone());
             qb.push(" OR c.com_name LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(&mut qb, like);
             qb.push(")");
         }
     }
@@ -821,16 +830,16 @@ pub async fn admin_count_coms(pool: &MySqlPool, f: &AdminZphComFilter<'_>) -> Re
         qb.push_bind(st);
     }
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if f.keyword_type == 1 {
             qb.push(" AND c.zid IN (SELECT id FROM phpyun_zhaopinhui WHERE title LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(&mut qb, like);
             qb.push(" AND COALESCE(deleted,0)=0)");
         } else if f.keyword_type == 2 {
             qb.push(" AND (co.name LIKE ");
-            qb.push_bind(like.clone());
+            crate::sql::push_escaped(&mut qb, like.clone());
             qb.push(" OR c.com_name LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(&mut qb, like);
             qb.push(")");
         }
     }
@@ -1015,9 +1024,9 @@ pub async fn search_company_labels(
 ) -> Result<Vec<(u64, String)>, sqlx::Error> {
     sqlx::query_as(
         "SELECT CAST(uid AS UNSIGNED), COALESCE(name,'') FROM phpyun_company \
-         WHERE name LIKE ? ORDER BY uid DESC LIMIT ?",
+         WHERE name LIKE ? ESCAPE '\\\\' ORDER BY uid DESC LIMIT ?",
     )
-    .bind(format!("%{name}%"))
+    .bind(crate::sql::like_contains(name))
     .bind(limit)
     .fetch_all(pool)
     .await

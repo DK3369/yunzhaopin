@@ -5,9 +5,12 @@
 
 use phpyun_core::{clock, AppState};
 use phpyun_models::audit_log::repo as audit_repo;
+use phpyun_models::company::repo as company_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::recycle_bin::repo as recycle_repo;
 use phpyun_models::resume_share::repo as share_repo;
+
+use crate::rating_info_service;
 
 const AUDIT_KEEP_DAYS: i64 = 90;
 const SHARE_TOKEN_GRACE_DAYS: i64 = 7;
@@ -20,6 +23,43 @@ pub async fn expire_jobs(state: &AppState) {
         Ok(n) if n > 0 => tracing::info!(rows = n, "cron: expired jobs marked"),
         Ok(_) => {}
         Err(e) => tracing::warn!(error = %e, "expire_jobs failed"),
+    }
+}
+
+/// Batch `vip_over` for companies whose `vip_etime > 0` and is in the past.
+/// `vip_etime == 0` stays never-expires (PHP parity). Does not change that rule.
+pub async fn expire_vip(state: &AppState) {
+    const BATCH: u64 = 200;
+    const MAX_BATCHES: u32 = 25;
+    let now = clock::now_ts();
+    let mut offset = 0u64;
+    let mut ok = 0u32;
+    for _ in 0..MAX_BATCHES {
+        let rows = match company_repo::list_expire(state.db.pool(), true, now, offset, BATCH).await
+        {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::warn!(error = %e, "expire_vip list failed");
+                return;
+            }
+        };
+        if rows.is_empty() {
+            break;
+        }
+        let n = rows.len() as u64;
+        for row in rows {
+            match rating_info_service::vip_over(state, row.uid).await {
+                Ok(()) => ok += 1,
+                Err(e) => tracing::warn!(uid = row.uid, error = %e, "expire_vip vip_over failed"),
+            }
+        }
+        offset = offset.saturating_add(n);
+        if n < BATCH {
+            break;
+        }
+    }
+    if ok > 0 {
+        tracing::info!(rows = ok, "cron: expired vip packages processed");
     }
 }
 

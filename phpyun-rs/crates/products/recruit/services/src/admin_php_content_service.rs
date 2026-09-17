@@ -2935,6 +2935,17 @@ async fn ads_saveadd(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         pic_url
     };
     let target = if json_i32(body, "target") == 2 { 2 } else { 1 };
+    let pic_src = json_str(body, "pic_src");
+    let word_url = json_str(body, "word_url");
+    let lianmeng_url = json_str(body, "lianmeng_url");
+    phpyun_core::validators::ensure_http_or_site_url(&pic_src)?;
+    phpyun_core::validators::ensure_http_or_site_url(&word_url)?;
+    phpyun_core::validators::ensure_http_or_site_url(&lianmeng_url)?;
+    let pic_content = phpyun_core::html::sanitize_html(&json_str(body, "pic_content"));
+    let word_info = json_str(body, "word_info");
+    let pic_width = json_str(body, "pic_width");
+    let pic_height = json_str(body, "pic_height");
+    let remark = json_str(body, "remark");
     ad_repo::upsert_php(
         state.db.pool(),
         ad_repo::AdPhpWrite {
@@ -2949,16 +2960,16 @@ async fn ads_saveadd(state: &AppState, body: &Value) -> AppResult<PhpOut> {
             did: json_i32(body, "did"),
             is_open: json_i32(body, "is_open"),
             sort: json_i32(body, "sort"),
-            remark: &json_str(body, "remark"),
+            remark: &remark,
             pic_url: if ad_type == "pic" { &pictures } else { "" },
-            pic_src: &json_str(body, "pic_src"),
-            pic_content: &json_str(body, "pic_content"),
-            word_info: &json_str(body, "word_info"),
-            word_url: &json_str(body, "word_url"),
-            pic_width: &json_str(body, "pic_width"),
-            pic_height: &json_str(body, "pic_height"),
+            pic_src: &pic_src,
+            pic_content: &pic_content,
+            word_info: &word_info,
+            word_url: &word_url,
+            pic_width: &pic_width,
+            pic_height: &pic_height,
             flash_url: if ad_type == "flash" { &pictures } else { "" },
-            lianmeng_url: &json_str(body, "lianmeng_url"),
+            lianmeng_url: &lianmeng_url,
         },
     )
     .await?;
@@ -5165,7 +5176,7 @@ async fn resume_project(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
     let title = json_str(body, "title");
-    let content = json_str(body, "content");
+    let content = amp(&json_str(body, "content"));
     let input = project_repo::ProjectInput {
         name: &json_str(body, "name"),
         sdate: parse_date_ts(&json_str(body, "sdate")),
@@ -5189,9 +5200,10 @@ async fn resume_other(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     if uid == 0 || eid == 0 {
         return Err(ApiError::param_invalid("wap_com_00228"));
     }
+    let content = amp(&json_str(body, "content"));
     let input = other_repo::OtherInput {
         name: &json_str(body, "name"),
-        content: &json_str(body, "content"),
+        content: &content,
     };
     let id = json_u64(body, "id");
     let nid = if id > 0 {
@@ -11260,12 +11272,14 @@ async fn friend_link_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     } else {
         stored_pic(&json_str(body, "uplocadpic"))
     };
+    let url = json_str(body, "url");
+    phpyun_core::validators::ensure_http_or_site_url(&url)?;
     let n = friend_link_repo::php_save(
         state.db.pool(),
         &friend_link_repo::PhpLinkSave {
             id: if id > 0 { Some(id) } else { None },
             link_name: &json_str(body, "title"),
-            link_url: &json_str(body, "url"),
+            link_url: &url,
             pic: pic.as_deref(),
             link_type: &json_str(body, "type"),
             link_sorting: json_i32(body, "sorting"),
@@ -12874,7 +12888,11 @@ async fn shop_set_redeem_option(state: &AppState, body: &Value) -> AppResult<Val
     if tnid > 0 {
         let rows = redeem_repo::list_classes(state.db.reader(), Some(tnid)).await?;
         for c in rows {
-            html.push_str(&format!("<option value='{}'>{}</option>", c.id, c.name));
+            html.push_str(&format!(
+                "<option value='{}'>{}</option>",
+                c.id,
+                phpyun_core::html::esc(&c.name)
+            ));
         }
     }
     Ok(json!({ "html": html }))
@@ -14885,9 +14903,9 @@ async fn fabutool_wx_pub_temp_save(state: &AppState, body: &Value) -> AppResult<
     let mut header = rewrite_mmbiz(state, &json_str(body, "header")).await;
     let mut body_html = rewrite_mmbiz(state, &json_str(body, "body")).await;
     let mut footer = rewrite_mmbiz(state, &json_str(body, "footer")).await;
-    header = strip_yun_tags(replace_admin_style(&header, &web));
-    body_html = strip_yun_tags(replace_admin_style(&body_html, &web));
-    footer = strip_yun_tags(replace_admin_style(&footer, &web));
+    header = amp(&strip_yun_tags(replace_admin_style(&header, &web)));
+    body_html = amp(&strip_yun_tags(replace_admin_style(&body_html, &web)));
+    footer = amp(&strip_yun_tags(replace_admin_style(&footer, &web)));
     let mut ty = json_str(body, "type");
     if id > 0 {
         if let Some(old) = gap_extra::php_find_wxpub_temp(state.db.reader(), id).await? {
@@ -17764,7 +17782,7 @@ async fn zph_space_add(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let sort = json_i32(body, "sort");
     let price = json_i32(body, "price");
     let pic = json_str(body, "pic");
-    let content = json_str(body, "content").replace("&amp;", "&");
+    let content = amp(&json_str(body, "content").replace("&amp;", "&"));
     if id > 0 {
         zph_repo::upsert_space(
             state.db.pool(),

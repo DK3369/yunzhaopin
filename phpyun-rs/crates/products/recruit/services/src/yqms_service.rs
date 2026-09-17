@@ -253,6 +253,12 @@ pub async fn create_from_resume(
         return Err(ApiError::business("member_com_00680"));
     }
 
+    let content = phpyun_core::html::sanitize_html(input.content);
+    let input = YqmsInput {
+        content: &content,
+        ..input
+    };
+
     let inter_ts = parse_intertime(input.intertime)?;
     let now = clock::now_ts();
     if inter_ts <= now {

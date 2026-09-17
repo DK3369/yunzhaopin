@@ -714,6 +714,7 @@ pub fn resume_expect_item_from_dict(
         status: e.status,
         r_status: e.r_status,
         state: e.state,
+        defaults: e.defaults,
         lastupdate_n: fmt_dt(e.lastupdate),
         lastupdate: e.lastupdate,
     })
@@ -1034,9 +1035,10 @@ pub async fn resume_detail(
     )
     .await
     .ok()
-    .and_then(|m| m.get("sy_resume_visitors")?.trim().parse().ok())
+    .and_then(|m| m.get("sy_resume_visitors")?.trim().parse::<i32>().ok())
     .unwrap_or(0);
-    let visitor_blocked = false;
+    let visitor_blocked =
+        resume_service::visitor_blocked(&state, user.uid, uid, i64::from(visitor_max.max(0))).await;
     let body_open = gate.resume_check == 1 && !visitor_blocked;
     if visitor_blocked {
         unlocked = false;
@@ -1211,7 +1213,7 @@ pub async fn resume_detail(
                     uid: o.uid,
                     eid: o.eid,
                     name: o.name,
-                    content: o.content,
+                    content: phpyun_core::html::sanitize_opt(o.content),
                 })
                 .collect()
         } else {
@@ -1236,7 +1238,7 @@ pub async fn resume_detail(
                     Some(ResumeDocItem {
                         id: d.id,
                         eid: d.eid,
-                        doc,
+                        doc: phpyun_core::html::sanitize_html(&doc),
                     })
                 })
                 .collect()

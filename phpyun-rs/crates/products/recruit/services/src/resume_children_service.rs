@@ -62,6 +62,10 @@ async fn after_child(
     }
 }
 
+fn sanitize_html_opt(s: Option<&str>) -> Option<String> {
+    s.map(phpyun_core::html::sanitize_html)
+}
+
 /// Resolve the eid to attach a child row (work / edu / project / skill / ...)
 /// to. PHPYun fans every child off `phpyun_resume_expect.id`, so this looks
 /// up the user's default expect (or most-recent fallback). If the user has no
@@ -157,6 +161,33 @@ pub mod expect_svc {
             state,
             AuditEvent::new(
                 "resume.expect_update",
+                Actor::uid(user.uid).with_ip(client_ip),
+            )
+            .target(format!("expect:{id}")),
+        )
+        .await;
+        Ok(())
+    }
+
+    pub async fn set_default(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        client_ip: &str,
+    ) -> AppResult<()> {
+        user.require_jobseeker()?;
+        let row = expect::find_by_id(state.db.reader(), id)
+            .await?
+            .ok_or_else(|| ApiError::business("resume_not_found"))?;
+        if row.uid != user.uid {
+            return Err(ApiError::forbidden());
+        }
+        expect::set_default(state.db.pool(), user.uid, id).await?;
+        resume_repo::set_def_job(state.db.pool(), user.uid, id).await?;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new(
+                "resume.expect_default",
                 Actor::uid(user.uid).with_ip(client_ip),
             )
             .target(format!("expect:{id}")),
@@ -321,6 +352,11 @@ pub mod work_svc {
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = work::WorkInput {
+            content: content.as_deref(),
+            ..input
+        };
         let id = work::create(state.db.pool(), user.uid, eid, &input).await?;
         tracing::info!(
             op = "work.create",
@@ -361,6 +397,11 @@ pub mod work_svc {
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Work, id, user.uid)
             .await?
             .ok_or(ApiError::business("resume_not_found"))?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = work::WorkInput {
+            content: content.as_deref(),
+            ..input
+        };
         let affected = work::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ApiError::business("resume_not_found"));
@@ -442,6 +483,11 @@ pub mod project_svc {
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = project::ProjectInput {
+            content: content.as_deref(),
+            ..input
+        };
         let id = project::create(state.db.pool(), user.uid, eid, &input).await?;
         super::after_child(
             state,
@@ -475,6 +521,11 @@ pub mod project_svc {
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Project, id, user.uid)
             .await?
             .ok_or(ApiError::business("resume_not_found"))?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = project::ProjectInput {
+            content: content.as_deref(),
+            ..input
+        };
         let affected = project::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ApiError::business("resume_not_found"));
@@ -700,6 +751,11 @@ pub mod training_svc {
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = training::TrainingInput {
+            content: content.as_deref(),
+            ..input
+        };
         let id = training::create(state.db.pool(), user.uid, eid, &input).await?;
         super::after_child(
             state,
@@ -730,6 +786,11 @@ pub mod training_svc {
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Training, id, user.uid)
             .await?
             .ok_or(ApiError::business("resume_not_found"))?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = training::TrainingInput {
+            content: content.as_deref(),
+            ..input
+        };
         let affected = training::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ApiError::business("resume_not_found"));
@@ -808,6 +869,11 @@ pub mod cert_svc {
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = cert::CertInput {
+            content: content.as_deref(),
+            ..input
+        };
         let id = cert::create(state.db.pool(), user.uid, eid, &input).await?;
         super::after_child(
             state,
@@ -838,6 +904,11 @@ pub mod cert_svc {
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Cert, id, user.uid)
             .await?
             .ok_or(ApiError::business("resume_not_found"))?;
+        let content = super::sanitize_html_opt(input.content);
+        let input = cert::CertInput {
+            content: content.as_deref(),
+            ..input
+        };
         let affected = cert::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ApiError::business("resume_not_found"));
@@ -898,6 +969,11 @@ pub mod other_svc {
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
+        let content = phpyun_core::html::sanitize_html(input.content);
+        let input = other::OtherInput {
+            name: input.name,
+            content: &content,
+        };
         let id = other::create(state.db.pool(), user.uid, eid, &input).await?;
         super::after_child(
             state,
@@ -928,6 +1004,11 @@ pub mod other_svc {
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Other, id, user.uid)
             .await?
             .ok_or(ApiError::business("resume_not_found"))?;
+        let content = phpyun_core::html::sanitize_html(input.content);
+        let input = other::OtherInput {
+            name: input.name,
+            content: &content,
+        };
         let affected = other::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ApiError::business("resume_not_found"));
@@ -1026,7 +1107,27 @@ pub async fn get_full_bundle(
         cert::list_by_uid(db, uid),
         other::list_by_uid(db, uid),
     );
-    Ok((e?, ed?, w?, p?, s?, tr?, c?, o?))
+    let mut works = w?;
+    let mut projects = p?;
+    let mut trainings = tr?;
+    let mut certs = c?;
+    let mut others = o?;
+    for row in &mut works {
+        row.content = sanitize_html_opt(row.content.as_deref());
+    }
+    for row in &mut projects {
+        row.content = sanitize_html_opt(row.content.as_deref());
+    }
+    for row in &mut trainings {
+        row.content = sanitize_html_opt(row.content.as_deref());
+    }
+    for row in &mut certs {
+        row.content = sanitize_html_opt(row.content.as_deref());
+    }
+    for row in &mut others {
+        row.content = sanitize_html_opt(row.content.as_deref());
+    }
+    Ok((e?, ed?, works, projects, s?, trainings, certs, others))
 }
 
 /// Nine child tables for the member-center editor (includes language, which

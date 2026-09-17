@@ -37,7 +37,7 @@ pub async fn list_by_com(
          LEFT JOIN phpyun_company_job j ON j.id = d.jobid \
          WHERE d.comid = ? ORDER BY d.id DESC LIMIT ? OFFSET ?"
     );
-    sqlx::query_as::<_, EntrustRecord>(&sql)
+    let rows = sqlx::query_as::<_, EntrustRecord>(&sql)
         .bind(comid)
         .bind(phpyun_core::numeric::checked_db_i64(
             limit,
@@ -48,16 +48,18 @@ pub async fn list_by_com(
             "pagination.offset",
         )?)
         .fetch_all(pool)
-        .await
+        .await;
+    phpyun_core::db::ok_default_if_object_missing(rows)
 }
 
 pub async fn count_by_com(pool: &MySqlPool, comid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
+    let row = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_user_entrust_record WHERE comid = ?",
     )
     .bind(comid)
     .fetch_one(pool)
-    .await?;
+    .await;
+    let (n,): (i64,) = phpyun_core::db::ok_default_if_object_missing(row)?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
@@ -74,7 +76,8 @@ pub async fn delete_by_com(pool: &MySqlPool, comid: u64, ids: &[u64]) -> Result<
         sep.push_bind(*id);
     }
     qb.push(")");
-    Ok(qb.build().execute(pool).await?.rows_affected())
+    let r = qb.build().execute(pool).await.map(|x| x.rows_affected());
+    phpyun_core::db::ok_default_if_object_missing(r)
 }
 
 pub async fn exists_record(

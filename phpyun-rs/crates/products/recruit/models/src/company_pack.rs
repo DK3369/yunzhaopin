@@ -19,6 +19,12 @@ pub async fn list_details(
     gap::list_rating_details(pool, type_id).await
 }
 
+pub async fn list_all_details(
+    pool: &MySqlPool,
+) -> Result<Vec<RatingServiceDetailRow>, sqlx::Error> {
+    gap::list_all_rating_details(pool).await
+}
+
 pub async fn find_detail(
     pool: &MySqlPool,
     id: u64,

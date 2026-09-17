@@ -35,7 +35,10 @@ pub(crate) async fn public_settings_map(
     let list = site_setting_service::list_public(state).await?;
     let mut data = BTreeMap::new();
     for s in list {
-        data.insert(s.key_name, s.value);
+        data.insert(
+            s.key_name.clone(),
+            phpyun_core::html::sanitize_html_setting(&s.key_name, &s.value),
+        );
     }
     Ok(data)
 }

@@ -411,7 +411,7 @@ pub async fn list_banners(
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (c.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(" OR b.uid=");
         qb.push_bind(kw.parse::<u64>().unwrap_or(0));
         qb.push(")");
@@ -439,7 +439,7 @@ pub async fn count_banners(
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (c.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(" OR b.uid=");
         qb.push_bind(kw.parse::<u64>().unwrap_or(0));
         qb.push(")");
@@ -520,11 +520,11 @@ async fn list_biz(
         QueryBuilder::new(format!("SELECT {BIZ_SELECT} FROM ({inner}) t WHERE 1=1"));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (t.username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(" OR t.com_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(" OR t.job_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(")");
     }
     qb.push(" ORDER BY t.id DESC LIMIT ");
@@ -539,11 +539,11 @@ async fn count_biz(pool: &MySqlPool, inner: &str, keyword: Option<&str>) -> Resu
         QueryBuilder::new(format!("SELECT COUNT(*) FROM ({inner}) t WHERE 1=1"));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (t.username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(" OR t.com_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(" OR t.job_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
         qb.push(")");
     }
     let row: Result<(i64,), _> = qb.build_query_as().fetch_one(pool).await;
@@ -891,6 +891,17 @@ pub async fn list_rating_details(
         .await
 }
 
+pub async fn list_all_rating_details(
+    pool: &MySqlPool,
+) -> Result<Vec<RatingServiceDetailRow>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {DETAIL_FIELDS} FROM phpyun_company_service_detail WHERE COALESCE(deleted,0)=0 ORDER BY sort DESC, id DESC"
+    );
+    sqlx::query_as::<_, RatingServiceDetailRow>(&sql)
+        .fetch_all(pool)
+        .await
+}
+
 pub async fn find_rating_detail(
     pool: &MySqlPool,
     id: u64,
@@ -1212,7 +1223,7 @@ pub async fn list_cron_logs(
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND c.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY l.id DESC LIMIT ");
     qb.push_bind(l);
@@ -1227,7 +1238,7 @@ pub async fn count_cron_logs(pool: &MySqlPool, keyword: Option<&str>) -> Result<
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND c.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -1248,7 +1259,7 @@ fn push_cron_log_where(qb: &mut QueryBuilder<sqlx::MySql>, f: &PhpCronLogFilter<
     );
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND c.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(t) = f.time_min {
         qb.push(" AND l.ctime >= ");
@@ -1319,14 +1330,14 @@ pub async fn find_display_uids_like(
     pool: &MySqlPool,
     keyword: &str,
 ) -> Result<Vec<u64>, sqlx::Error> {
-    let like = format!("%{keyword}%");
+    let like = crate::sql::like_contains(keyword);
     let rows: Vec<(u64,)> = sqlx::query_as(
         "SELECT CAST(uid AS UNSIGNED) AS uid FROM ( \
-            SELECT uid FROM phpyun_company WHERE name LIKE ? LIMIT 50 \
+            SELECT uid FROM phpyun_company WHERE name LIKE ? ESCAPE '\\\\' LIMIT 50 \
             UNION \
-            SELECT uid FROM phpyun_resume WHERE name LIKE ? LIMIT 50 \
+            SELECT uid FROM phpyun_resume WHERE name LIKE ? ESCAPE '\\\\' LIMIT 50 \
             UNION \
-            SELECT uid FROM phpyun_member WHERE username LIKE ? LIMIT 50 \
+            SELECT uid FROM phpyun_member WHERE username LIKE ? ESCAPE '\\\\' LIMIT 50 \
          ) t LIMIT 50",
     )
     .bind(&like)
@@ -1446,8 +1457,8 @@ pub async fn count_wx_zdkeyword(pool: &MySqlPool, keyword: Option<&str>) -> Resu
             .fetch_one(pool)
             .await?
     } else {
-        let like = format!("%{kw}%");
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_wxzdkeyword WHERE keyword LIKE ?")
+        let like = crate::sql::like_contains(kw);
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_wxzdkeyword WHERE keyword LIKE ? ESCAPE '\\\\'")
             .bind(like)
             .fetch_one(pool)
             .await?
@@ -1474,12 +1485,12 @@ pub async fn list_wx_zdkeyword(
         .fetch_all(pool)
         .await
     } else {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         sqlx::query_as::<_, WxZdKeywordRow>(
             "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(title,'') AS title, \
                     COALESCE(keyword,'') AS keyword, COALESCE(content,'') AS content, \
                     CAST(COALESCE(time,0) AS SIGNED) AS time \
-             FROM phpyun_wxzdkeyword WHERE keyword LIKE ? \
+             FROM phpyun_wxzdkeyword WHERE keyword LIKE ? ESCAPE '\\\\' \
              ORDER BY time DESC LIMIT ? OFFSET ?",
         )
         .bind(like)
@@ -1654,19 +1665,19 @@ pub struct UseridJobPhpFilter<'a> {
 
 fn push_userid_job_php<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &UseridJobPhpFilter<'a>) {
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         match f.keyword_type {
             2 => {
                 qb.push(" AND t.com_name LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(qb, like);
             }
             3 => {
                 qb.push(" AND t.username LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(qb, like);
             }
             _ => {
                 qb.push(" AND t.job_name LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(qb, like);
             }
         }
     }
@@ -2047,7 +2058,7 @@ fn push_reserve_filters<'a>(
             "j.name"
         };
         qb.push(format!(" AND {col} LIKE "));
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(uid) = f.uid.filter(|v| *v > 0) {
         qb.push(" AND j.uid = ");
@@ -3052,7 +3063,7 @@ fn push_wx_bound_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, keyword: Option<&
     qb.push(" FROM phpyun_member WHERE wxid IS NOT NULL AND wxid <> ''");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
 }
 
@@ -3123,7 +3134,7 @@ pub async fn php_list_wx_hot_keys(
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND key_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY num DESC, id DESC LIMIT ");
     qb.push_bind(limit as i64);
@@ -3138,7 +3149,7 @@ pub async fn php_count_wx_hot_keys(pool: &MySqlPool, keyword: Option<&str>) -> R
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND key_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -3511,15 +3522,15 @@ fn push_php_user_member_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &
         match f.kw_type {
             2 => {
                 qb.push(" AND r.name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             3 => {
                 qb.push(" AND r.telphone LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             4 => {
                 qb.push(" AND r.email LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             5 => {
                 let uid: u64 = kw.parse().unwrap_or(0);
@@ -3528,11 +3539,11 @@ fn push_php_user_member_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &
             }
             6 => {
                 qb.push(" AND m.login_ip LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             _ => {
                 qb.push(" AND m.username LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
         }
     }
@@ -3643,7 +3654,7 @@ pub async fn php_list_wxpub_temps_php(
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(
         " ORDER BY CASE WHEN `type`='job' THEN 1 WHEN `type`='company' THEN 2 WHEN `type`='resume' THEN 3 ELSE 9 END ASC, id DESC LIMIT ",
@@ -3712,10 +3723,10 @@ pub async fn php_search_wxpub_jobs(
     sqlx::query_as(
         "SELECT CAST(id AS UNSIGNED) AS value, COALESCE(`name`,'') AS `name`, COALESCE(com_name,'') AS upname \
          FROM phpyun_company_job WHERE state = 1 AND status = 0 AND r_status = 1 \
-         AND (`name` LIKE ? OR com_name LIKE ?) ORDER BY lastupdate DESC LIMIT 20",
+         AND (`name` LIKE ? ESCAPE '\\\\' OR com_name LIKE ? ESCAPE '\\\\') ORDER BY lastupdate DESC LIMIT 20",
     )
-    .bind(format!("%{kw}%"))
-    .bind(format!("%{kw}%"))
+    .bind(crate::sql::like_contains(kw))
+    .bind(crate::sql::like_contains(kw))
     .fetch_all(pool)
     .await
 }
@@ -3730,9 +3741,9 @@ pub async fn php_search_wxpub_coms(
     }
     sqlx::query_as(
         "SELECT CAST(uid AS UNSIGNED) AS value, COALESCE(`name`,'') AS `name`, '' AS upname \
-         FROM phpyun_company WHERE r_status = 1 AND `name` LIKE ? ORDER BY uid DESC LIMIT 10",
+         FROM phpyun_company WHERE r_status = 1 AND `name` LIKE ? ESCAPE '\\\\' ORDER BY uid DESC LIMIT 10",
     )
-    .bind(format!("%{kw}%"))
+    .bind(crate::sql::like_contains(kw))
     .fetch_all(pool)
     .await
 }
@@ -3801,28 +3812,28 @@ fn push_twtask_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpTwTask
                 qb.push(" AND (t.jobid = ");
                 qb.push_bind(id);
                 qb.push(" OR t.content LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             } else {
                 qb.push(" AND (t.cuid = ");
                 qb.push_bind(id);
                 qb.push(" OR t.content LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
         } else if f.kind == 1 {
             qb.push(" AND (t.jobname LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR t.comname LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR t.content LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(")");
         } else {
             qb.push(" AND (t.comname LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR t.content LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(")");
         }
     }
@@ -3988,9 +3999,9 @@ fn push_pub_job_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpPubJo
     }
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (j.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
         qb.push(" OR j.com_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
         qb.push(")");
     }
     if let Some(v) = f.provinceid.filter(|n| *n > 0) {
@@ -4048,7 +4059,7 @@ fn push_pub_job_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpPubJo
     if let Some(w) = f.welfare.map(str::trim).filter(|s| !s.is_empty()) {
         for part in w.split(['|', ' ']).map(str::trim).filter(|s| !s.is_empty()) {
             qb.push(" AND j.welfare LIKE ");
-            qb.push_bind(format!("%{part}%"));
+            crate::sql::push_contains(qb, part);
         }
     }
 }
@@ -5463,11 +5474,11 @@ fn push_wxqrcode_filters(
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND (q.wxloginid LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
         qb.push(" OR q.wxid LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
         qb.push(" OR m.username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
         qb.push(")");
     }
     if let Some(ts) = since {
@@ -5895,9 +5906,9 @@ pub async fn php_search_company_uids(
     pool: &MySqlPool,
     keyword: &str,
 ) -> Result<Vec<u64>, sqlx::Error> {
-    let kw = format!("%{}%", keyword.trim());
+    let kw = crate::sql::like_contains(keyword.trim());
     let rows: Vec<(u64,)> = sqlx::query_as(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? LIMIT 500",
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? ESCAPE '\\\\' LIMIT 500",
     )
     .bind(kw)
     .fetch_all(pool)

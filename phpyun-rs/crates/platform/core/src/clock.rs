@@ -71,6 +71,15 @@ pub fn start_of_today() -> i64 {
     start_of_day(now_ts())
 }
 
+/// Site-timezone `YYYYMMDD` for the current day (daily Redis keys).
+pub fn today_ymd() -> String {
+    use chrono::TimeZone;
+    tz().timestamp_opt(start_of_today(), 0)
+        .single()
+        .map(|d| d.format("%Y%m%d").to_string())
+        .unwrap_or_else(|| start_of_today().to_string())
+}
+
 /// Midnight of the site-timezone day that `ts` falls in.
 pub fn start_of_day(ts: i64) -> i64 {
     let offset = i64::from(tz().local_minus_utc());

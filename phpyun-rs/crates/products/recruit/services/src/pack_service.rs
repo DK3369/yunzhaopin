@@ -7,6 +7,7 @@ use phpyun_models::company_pack;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::vip::entity::PayOrder;
 use phpyun_models::vip::repo as vip_repo;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub struct PackGroup {
@@ -17,10 +18,23 @@ pub struct PackGroup {
 
 pub async fn list_packs(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<PackGroup>> {
     user.require_employer()?;
-    let services = company_pack::list_visible_services(state.db.reader()).await?;
+    let db = state.db.reader();
+    let (services, details) = tokio::join!(
+        company_pack::list_visible_services(db),
+        company_pack::list_all_details(db),
+    );
+    let services = services?;
+    let mut by_type: HashMap<u64, Vec<RatingServiceDetailRow>> = HashMap::new();
+    for d in details? {
+        if d.r#type > 0 {
+            by_type.entry(d.r#type as u64).or_default().push(d);
+        }
+    }
     let mut out = Vec::new();
     for s in services {
-        let details = company_pack::list_details(state.db.reader(), s.id).await?;
+        let Some(details) = by_type.remove(&s.id) else {
+            continue;
+        };
         if details.is_empty() {
             continue;
         }

@@ -83,6 +83,14 @@ pub async fn invalidate_sidebar(state: &AppState) {
     let _ = state;
 }
 
+/// Drop public list L1 and DEL this company's detail Redis key.
+pub async fn invalidate_company(state: &AppState, uid: u64) {
+    list_cache().invalidate_prefix_local();
+    detail_cache()
+        .invalidate(&state.redis, &format!("companies:detail:{uid}"))
+        .await;
+}
+
 /// Public company list search (keyword / province / city / industry).
 pub async fn list_public(
     state: &AppState,
@@ -436,6 +444,7 @@ pub async fn update_mine(
             .target(format!("uid:{}", user.uid)),
     )
     .await;
+    invalidate_company(state, user.uid).await;
     Ok(())
 }
 
@@ -479,6 +488,7 @@ pub async fn set_map(
             .target(format!("uid:{}", user.uid)),
     )
     .await;
+    invalidate_company(state, user.uid).await;
     Ok(())
 }
 

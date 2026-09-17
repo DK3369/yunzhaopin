@@ -35,12 +35,13 @@ pub async fn create(
     if used >= MAX_PER_EMPLOYER {
         return Err(ApiError::param_invalid("tpl_limit_reached"));
     }
+    let content = phpyun_core::html::sanitize_html(input.content);
     let id = tpl_repo::create(
         state.db.pool(),
         tpl_repo::TplCreate {
             uid: user.uid,
             name: input.name,
-            content: input.content,
+            content: &content,
             address: input.address,
             linkman: input.linkman,
             linktel: input.linktel,
@@ -73,13 +74,14 @@ pub async fn update(
             return Err(ApiError::param_invalid("intertime_past"));
         }
     }
+    let content = patch.content.map(phpyun_core::html::sanitize_html);
     let affected = tpl_repo::update(
         state.db.pool(),
         id,
         user.uid,
         tpl_repo::TplUpdate {
             name: patch.name,
-            content: patch.content,
+            content: content.as_deref(),
             address: patch.address,
             linkman: patch.linkman,
             linktel: patch.linktel,

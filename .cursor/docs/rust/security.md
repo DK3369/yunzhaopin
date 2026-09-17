@@ -28,15 +28,17 @@
 
 ## LIKE 与上传
 
-- 公开热路径关键词走 `phpyun_models::sql::escape_like` / `push_contains`（`LIKE ? ESCAPE '\\'`）。admin 列表其余 LIKE **下一批**逐文件改。
-- 表/列/枚举等标识符走 `phpyun_models::sql::ident_ok`（小写字母开头，`[a-z0-9_]`，≤64）；再 `match` 到静态 SQL 片段。富文本写入/公开读出过 `phpyun_core::html::sanitize_html`。
-- 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；admin 上传不接受 `application/octet-stream`。
+- 关键词走 `phpyun_models::sql::escape_like` / `push_contains` / `push_escaped`（`LIKE ? ESCAPE '\\'`）。`models/**` 里原先 `format!("%{kw}%")` 的 admin/会员 LIKE 已全部改走转义绑定，`%` `_` 当字面量。
+- 表/列/枚举等标识符走 `phpyun_models::sql::ident_ok`（小写字母开头，`[a-z0-9_]`，≤64）；再 `match` 到静态 SQL 片段。
+- 富文本：写侧与公开详情读侧过 `phpyun_core::html::sanitize_html`（问答/简历小节含后台子表与附件 `doc`/兼职/广告 `pic_content`/文章/公告/公招/专题/招聘会含展位 `content`/面试邀请与模板/微信模板 header·body·footer/关站 `sy_webclose` 与封 IP `sy_bannedip_alert`/HR 文档/单页/兑换/企业新闻产品；职位/企业简介原先已有）。拼进 HTML option 的名称走 `esc`。`strip_nul` 去掉 `\0`。
+- 简历访客上限：详情必须登录。`sy_resume_visitors > 0` 时，查看者 ≠ 简历主用 Redis `resume_visitors:{viewer_uid}:{YYYYMMDD}` 日计数；超限 `visitor_blocked=true` 且不解锁联系方式/正文。`0` = 不限。Redis 出错 fail-open。
+- URL：`validators::http_or_site_url`（`http(s)://` 或 `/` 开头的站内路径，拒 `javascript:` / `//` / `\`）。挂在 App `download_url`、广告 `link`、友链 `link_url`、导航 `url`、单页 `link_url`。前台 `:href` 过 `safeHref()`；登录 `?next=` 过 `safeLoginNext()`。
+- 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；附件按 `%PDF` / `PK` / `D0CF11E0` 判 pdf/docx/doc，不匹配 400。admin 上传不接受 `application/octet-stream`。
 - datacall 简历列表脱敏（手机 / 邮箱 / 身份证）。投递唯一键 SQL 在 `migrations/sqlx/20260916000001_apply_unique.sql`，**不自动跑**。
 
 ## 下一批（本轮不做）
 
 - systemd 切 `--release`
 - 现网执行公开列表 `CREATE INDEX`（SQL 已落 `20260916000002_public_list_indexes.sql`）
-- admin `Json<Value>` typed 化
-- admin 其余 LIKE 转义
+- admin `Json<Value>` typed 化（常用三文件本轮会先改）
 - 缩短 access JWT TTL

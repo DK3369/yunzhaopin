@@ -263,6 +263,8 @@ pub async fn get_public(
             }
         }
     }
+    let mut resume = resume;
+    resume.description = phpyun_core::html::sanitize_opt(resume.description);
     Ok(resume)
 }
 
@@ -368,6 +370,7 @@ pub async fn update_mine(
 ) -> AppResult<()> {
     user.require_jobseeker()?;
     resume_repo::ensure_row(state.db.pool(), user.uid, user.did, clock::now_ts()).await?;
+    let description = input.description.map(phpyun_core::html::sanitize_html);
     resume_repo::update(
         state.db.pool(),
         user.uid,
@@ -387,7 +390,7 @@ pub async fn update_mine(
             height: input.height,
             weight: input.weight,
             address: input.address,
-            description: input.description,
+            description: description.as_deref(),
             qq: input.qq,
             idcard: input.idcard,
             idcard_pic: input.idcard_pic,
@@ -819,4 +822,28 @@ pub async fn settle_top_order(state: &AppState, order_no: &str) -> AppResult<()>
     )
     .await;
     Ok(())
+}
+
+/// Daily per-viewer resume-browse cap (`sy_resume_visitors`). `0` = unlimited.
+/// Owner viewing their own resume is not counted. Redis errors fail-open.
+pub async fn visitor_blocked(
+    state: &AppState,
+    viewer_uid: u64,
+    resume_uid: u64,
+    daily_max: i64,
+) -> bool {
+    if daily_max <= 0 || viewer_uid == 0 || viewer_uid == resume_uid {
+        return false;
+    }
+    let start = clock::start_of_today();
+    let ymd = clock::today_ymd();
+    let key = format!("resume_visitors:{viewer_uid}:{ymd}");
+    let ttl = clock::ttl_until(start.saturating_add(86_400));
+    match state.redis.incr_with_expire(&key, ttl).await {
+        Ok(n) => n > daily_max,
+        Err(e) => {
+            tracing::warn!(error = %e, "resume_visitors incr failed");
+            false
+        }
+    }
 }

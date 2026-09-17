@@ -113,6 +113,16 @@ fn start_scheduler(state: &AppState) {
     }
 
     let s = state.clone();
+    if let Err(e) = sch.cron("expire_vip", "0 0 * * * *", move || {
+        let s = s.clone();
+        async move {
+            phpyun_services::maintenance::expire_vip(&s).await;
+        }
+    }) {
+        tracing::warn!(error = %e, "register expire_vip cron failed");
+    }
+
+    let s = state.clone();
     if let Err(e) = sch.cron("purge_share_tokens", "0 15 3 * * *", move || {
         let s = s.clone();
         async move {

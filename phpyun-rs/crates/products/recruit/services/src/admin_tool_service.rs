@@ -23,6 +23,11 @@ pub fn list_cron_jobs() -> Vec<CronJobItem> {
             kind: "cron".into(),
         },
         CronJobItem {
+            name: "expire_vip".into(),
+            schedule: "0 0 * * * *".into(),
+            kind: "cron".into(),
+        },
+        CronJobItem {
             name: "purge_share_tokens".into(),
             schedule: "0 15 3 * * *".into(),
             kind: "cron".into(),

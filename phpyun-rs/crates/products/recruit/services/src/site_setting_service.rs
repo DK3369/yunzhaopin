@@ -71,10 +71,11 @@ pub async fn admin_upsert(
 ) -> AppResult<()> {
     user.require_admin()?;
     let now = clock::now_ts();
+    let value = phpyun_core::html::sanitize_html_setting(input.key, input.value);
     setting_repo::upsert(
         state.db.pool(),
         input.key,
-        input.value,
+        &value,
         input.description,
         input.is_public,
         now,

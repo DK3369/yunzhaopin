@@ -91,13 +91,14 @@ pub async fn upsert_article(
     if a.title.trim().is_empty() || a.content.trim().is_empty() || a.nid <= 0 {
         return Err(ApiError::param_invalid("title_nid_content"));
     }
+    let content = phpyun_core::html::sanitize_html(a.content);
     let id = article_repo::upsert(
         state.db.pool(),
         article_repo::ArticleUpsert {
             id: a.id,
             title: a.title.trim(),
             nid: a.nid,
-            content: a.content,
+            content: &content,
             author: a.author,
             description: a.description,
             keyword: a.keyword,
@@ -152,6 +153,7 @@ pub async fn upsert_announcement(
     if a.title.trim().is_empty() {
         return Err(ApiError::param_invalid("title"));
     }
+    let content = phpyun_core::html::sanitize_html(a.content);
     let id = ann_repo::upsert(
         state.db.pool(),
         ann_repo::AnnouncementUpsert {
@@ -159,7 +161,7 @@ pub async fn upsert_announcement(
             title: a.title.trim(),
             keyword: a.keyword,
             description: a.description,
-            content: a.content,
+            content: &content,
             startime: a.startime,
             endtime: a.endtime,
             did: a.did,
@@ -459,6 +461,7 @@ pub async fn upsert_friend_link(
     if a.link_name.trim().is_empty() || a.link_url.trim().is_empty() {
         return Err(ApiError::param_invalid("link_name_url"));
     }
+    phpyun_core::validators::ensure_http_or_site_url(a.link_url)?;
     let id = friend_link_repo::upsert(
         state.db.pool(),
         friend_link_repo::FriendLinkUpsert {
@@ -540,6 +543,7 @@ pub async fn upsert_fair_space(
     if a.name.trim().is_empty() {
         return Err(ApiError::param_invalid("name"));
     }
+    let content = phpyun_core::html::sanitize_html(a.content);
     let id = zph_repo::upsert_space(
         state.db.pool(),
         zph_repo::SpaceUpsert {
@@ -548,7 +552,7 @@ pub async fn upsert_fair_space(
             sort: a.sort,
             keyid: a.keyid,
             pic: a.pic,
-            content: a.content,
+            content: &content,
             price: a.price,
         },
     )
@@ -593,6 +597,7 @@ pub async fn upsert_gongzhao(
     if a.title.trim().is_empty() {
         return Err(ApiError::param_invalid("title"));
     }
+    let content = phpyun_core::html::sanitize_html(a.content);
     let id = gongzhao_repo::upsert(
         state.db.pool(),
         gongzhao_repo::GongzhaoUpsert {
@@ -600,7 +605,7 @@ pub async fn upsert_gongzhao(
             title: a.title.trim(),
             keyword: a.keyword,
             description: a.description,
-            content: a.content,
+            content: &content,
             pic: a.pic,
             startime: a.startime,
             endtime: a.endtime,

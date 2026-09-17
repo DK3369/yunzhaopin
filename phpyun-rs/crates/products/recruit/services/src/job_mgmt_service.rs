@@ -791,6 +791,7 @@ async fn save_job(
     let stored = job_repo::find_by_id(state.db.reader(), id)
         .await?
         .ok_or_else(|| ApiError::business("job_not_found"))?;
+    crate::job_service::invalidate_job(state, id).await;
     Ok(PublishJobResult {
         id,
         state: stored.state,
@@ -978,6 +979,7 @@ pub async fn set_status(
             .meta(&serde_json::json!({ "status": label })),
     )
     .await;
+    crate::job_service::invalidate_job(state, id).await;
     Ok(())
 }
 
@@ -1094,6 +1096,7 @@ pub async fn refresh(
             .target(format!("job:{id}")),
     )
     .await;
+    crate::job_service::invalidate_job(state, id).await;
     Ok(RefreshResult {
         status: 1,
         integral: 0,
@@ -1120,6 +1123,7 @@ pub async fn delete(
             .target(format!("job:{id}")),
     )
     .await;
+    crate::job_service::invalidate_job(state, id).await;
     Ok(())
 }
 
@@ -1165,6 +1169,7 @@ pub async fn batch_refresh(
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
     )
     .await;
+    crate::job_service::invalidate_jobs(state, ids).await;
     Ok(BatchReport {
         requested: ids.len(),
         affected: total,
@@ -1195,6 +1200,7 @@ pub async fn batch_close(
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
     )
     .await;
+    crate::job_service::invalidate_jobs(state, ids).await;
     Ok(BatchReport {
         requested: ids.len(),
         affected: total,
@@ -1225,6 +1231,7 @@ pub async fn batch_delete(
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
     )
     .await;
+    crate::job_service::invalidate_jobs(state, ids).await;
     Ok(BatchReport {
         requested: ids.len(),
         affected: total,

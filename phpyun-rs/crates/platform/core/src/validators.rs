@@ -206,6 +206,31 @@ pub fn http_url(v: &str) -> Result<(), ValidationError> {
     }
 }
 
+/// `http(s)://…` or a same-site path starting with `/` (not `//`, no `\`).
+/// Empty string is allowed; required-ness stays on the field.
+pub fn http_or_site_url(v: &str) -> Result<(), ValidationError> {
+    if v.is_empty() {
+        return Ok(());
+    }
+    if v.len() > 2048 {
+        return Err(ValidationError::new("url_too_long"));
+    }
+    if v.contains('\0') || v.contains('\\') || v.contains('\n') || v.contains('\r') {
+        return Err(ValidationError::new("url_scheme"));
+    }
+    if v.starts_with("http://") || v.starts_with("https://") {
+        return Ok(());
+    }
+    if v.starts_with('/') && !v.starts_with("//") {
+        return Ok(());
+    }
+    Err(ValidationError::new("url_scheme"))
+}
+
+pub fn ensure_http_or_site_url(v: &str) -> Result<(), crate::ApiError> {
+    http_or_site_url(v).map_err(|e| crate::ApiError::param_invalid(e.code))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -270,6 +295,17 @@ mod tests {
         assert!(http_url("javascript:alert(1)").is_err());
         assert!(http_url("data:text/html,x").is_err());
         assert!(http_url("ftp://example.com").is_err());
+    }
+
+    #[test]
+    fn http_or_site_url_rules() {
+        assert!(http_or_site_url("").is_ok());
+        assert!(http_or_site_url("https://example.com/a").is_ok());
+        assert!(http_or_site_url("/jobs/1").is_ok());
+        assert!(http_or_site_url("javascript:alert(1)").is_err());
+        assert!(http_or_site_url("//evil.com").is_err());
+        assert!(http_or_site_url("/\\evil.com").is_err());
+        assert!(http_or_site_url("data:text/html,x").is_err());
     }
 
     #[test]

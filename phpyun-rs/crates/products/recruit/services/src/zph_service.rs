@@ -75,6 +75,8 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Zph> {
     if z.is_open != 1 {
         return Err(ApiError::business("zph_closed"));
     }
+    let mut z = z;
+    z.body = phpyun_core::html::sanitize_html(&z.body);
     Ok(z)
 }
 
@@ -93,20 +95,24 @@ pub struct PublicSpace {
 pub async fn list_public_spaces(state: &AppState, zid: u64) -> AppResult<Vec<PublicSpace>> {
     let _ = get_detail(state, zid).await?;
     let db = state.db.reader();
-    let parents = zph_repo::list_spaces(db, None, None).await?;
+    let all = zph_repo::list_all_spaces(db).await?;
+    let mut by_parent: HashMap<i64, Vec<ZphSpace>> = HashMap::new();
+    for s in all {
+        by_parent.entry(s.keyid).or_default().push(s);
+    }
+    let parents = by_parent.remove(&0).unwrap_or_default();
     let mut booths: Vec<ZphSpace> = Vec::new();
-    for p in &parents {
-        let kids = zph_repo::space_children(db, p.id as i64).await?;
-        if kids.is_empty() {
-            booths.push(p.clone());
-        } else {
-            booths.extend(kids);
+    for p in parents {
+        match by_parent.remove(&(p.id as i64)) {
+            Some(kids) if !kids.is_empty() => booths.extend(kids),
+            _ => booths.push(p),
         }
     }
     let taken: HashSet<i32> = zph_repo::taken_bids(db, zid).await?.into_iter().collect();
     Ok(booths
         .into_iter()
-        .map(|space| {
+        .map(|mut space| {
+            space.content = phpyun_core::html::sanitize_html(&space.content);
             let id_i = i32::try_from(space.id).unwrap_or(0);
             PublicSpace {
                 taken: taken.contains(&id_i),

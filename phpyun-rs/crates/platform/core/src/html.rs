@@ -9,6 +9,25 @@ const ALLOWED_TAGS: &[&str] = &[
     "p", "br", "ul", "ol", "li", "h1", "h2", "h3", "strong", "em", "b", "i", "a", "div", "span",
 ];
 
+pub fn strip_nul(s: &str) -> String {
+    if !s.contains('\0') {
+        return s.to_string();
+    }
+    s.replace('\0', "")
+}
+
+pub fn sanitize_opt(s: Option<String>) -> Option<String> {
+    s.map(|v| sanitize_html(&v))
+}
+
+/// Site settings that are rendered with `v-html` (close page / IP ban).
+pub fn sanitize_html_setting(key: &str, value: &str) -> String {
+    match key {
+        "sy_webclose" | "sy_bannedip_alert" => sanitize_html(value),
+        _ => strip_nul(value),
+    }
+}
+
 pub fn sanitize_html(input: &str) -> String {
     let mut s = strip_dangerous_blocks(input);
     s = s.replace('\0', "");
@@ -196,5 +215,23 @@ mod tests {
         assert!(out.contains("50%"));
         assert!(out.contains("O'Reilly"));
         assert!(out.contains("&quot;ok&quot;") || out.contains("\"ok\""));
+    }
+
+    #[test]
+    fn strip_nul_drops_zero_bytes() {
+        assert_eq!(strip_nul("a\0b"), "ab");
+        assert_eq!(strip_nul("ok"), "ok");
+    }
+
+    #[test]
+    fn sanitize_html_setting_only_washes_close_and_ban_copy() {
+        let dirty = "<img src=x onerror=alert(1)><p>关站</p>";
+        let out = sanitize_html_setting("sy_webclose", dirty);
+        assert!(!out.to_ascii_lowercase().contains("onerror"));
+        assert!(out.contains("关站"));
+        assert_eq!(
+            sanitize_html_setting("sy_webname", "A\0B"),
+            "AB"
+        );
     }
 }
