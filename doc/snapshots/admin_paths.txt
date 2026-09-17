@@ -171,6 +171,10 @@
 /v1/admin/login
 /v1/admin/login-logs
 /v1/admin/logout
+/v1/admin/logs/company
+/v1/admin/logs/company/delete
+/v1/admin/logs/user
+/v1/admin/logs/user/delete
 /v1/admin/marketing/email-send
 /v1/admin/marketing/email-status
 /v1/admin/marketing/export

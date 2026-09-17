@@ -29,6 +29,7 @@
 ## LIKE 与上传
 
 - 公开热路径关键词走 `phpyun_models::sql::escape_like` / `push_contains`（`LIKE ? ESCAPE '\\'`）。admin 列表其余 LIKE **下一批**逐文件改。
+- 表/列/枚举等标识符走 `phpyun_models::sql::ident_ok`（小写字母开头，`[a-z0-9_]`，≤64）；再 `match` 到静态 SQL 片段。富文本写入/公开读出过 `phpyun_core::html::sanitize_html`。
 - 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；admin 上传不接受 `application/octet-stream`。
 - datacall 简历列表脱敏（手机 / 邮箱 / 身份证）。投递唯一键 SQL 在 `migrations/sqlx/20260916000001_apply_unique.sql`，**不自动跑**。
 

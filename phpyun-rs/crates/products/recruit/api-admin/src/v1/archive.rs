@@ -18,8 +18,9 @@ use serde_json::Value;
 use utoipa::ToSchema;
 use validator::Validate;
 
-use crate::dto::AdminPaged;
+use crate::dto::{AdminPaged, ListWithStat};
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/user-photos", post(list_user_photos))
@@ -53,6 +54,10 @@ pub fn routes() -> Router<AppState> {
         .route("/user-logs/talent-pool/delete", post(delete_talent_logs))
         .route("/user-logs/trust/delete", post(delete_trust_logs))
         .route("/user-logs/refresh/delete", post(delete_refresh_resume_logs))
+        .route("/logs/user", post(list_logs_user))
+        .route("/logs/user/delete", post(delete_logs_user))
+        .route("/logs/company", post(list_logs_company))
+        .route("/logs/company/delete", post(delete_logs_company))
         .route("/company-photos", post(list_company_photos))
         .route("/company-photos/status", post(set_logo_status))
         .route("/company-photos/statist", post(company_photo_statist))
@@ -196,25 +201,7 @@ pub struct LogoStatusForm {
 }
 
 fn de_u64_list<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<u64>, D::Error> {
-    let v = serde_json::Value::deserialize(d)?;
-    let one = |v: &serde_json::Value| -> Option<u64> {
-        match v {
-            serde_json::Value::Number(n) => n.as_u64(),
-            serde_json::Value::String(s) => s.trim().parse().ok(),
-            _ => None,
-        }
-        .filter(|n| *n > 0)
-    };
-    Ok(match v {
-        serde_json::Value::Array(a) => a.iter().filter_map(one).collect(),
-        serde_json::Value::String(s) => s
-            .split([',', ';'])
-            .filter_map(|x| x.trim().parse().ok())
-            .filter(|n: &u64| *n > 0)
-            .collect(),
-        serde_json::Value::Number(n) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
-        _ => Vec::new(),
-    })
+    phpyun_core::date_parse::de_u64_list(d)
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -228,18 +215,22 @@ pub struct IdsStatusForm {
     pub statusbody: String,
 }
 
-#[utoipa::path(post, path = "/v1/admin/user-photos", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/user-photos", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_user_photos(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<UserPhotoRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<UserPhotoRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_user_photos(&state, q.status, q.keyword.as_deref(), page)
-            .await?,
-    )))
+    let (list, statist) = tokio::join!(
+        admin_archive_service::list_user_photos(&state, q.status, q.keyword.as_deref(), page),
+        admin_archive_service::photo_stat(&state),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/user-photos/status", tag = "admin", security(("bearer" = [])), request_body = UidStatusForm, responses((status = 200, description = "ok")))]
@@ -253,17 +244,22 @@ pub async fn set_photo_status(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/user-certs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/user-certs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_user_certs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<UserCertRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<UserCertRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_user_certs(&state, q.status, q.keyword.as_deref(), page).await?,
-    )))
+    let (list, statist) = tokio::join!(
+        admin_archive_service::list_user_certs(&state, q.status, q.keyword.as_deref(), page),
+        admin_archive_service::cert_stat(&state),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/user-certs/status", tag = "admin", security(("bearer" = [])), request_body = UidStatusForm, responses((status = 200, description = "ok")))]
@@ -277,15 +273,15 @@ pub async fn set_cert_status(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/user-msgs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/user-msgs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_user_msgs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MsgListQuery>,
-) -> AppResult<ApiResponse<AdminPaged<UserMsgRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<UserMsgRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
+    let (list, statist) = tokio::join!(
         admin_archive_service::list_user_msgs(
             &state,
             admin_archive_service::MsgListFilter {
@@ -299,9 +295,13 @@ pub async fn list_user_msgs(
                 dir: q.order.as_deref().unwrap_or("desc"),
             },
             page,
-        )
-        .await?,
-    )))
+        ),
+        admin_archive_service::msg_stat(&state),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/user-msgs/delete", tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
@@ -375,7 +375,15 @@ pub async fn delete_user_certs(
     Ok(ApiMessage::new("admin_user_00187", msg))
 }
 
-#[utoipa::path(post, path = "/v1/admin/user-logs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated]
+#[utoipa::path(
+    post,
+    path = "/v1/admin/user-logs",
+    tag = "admin",
+    security(("bearer" = [])),
+    description = "改用 POST /v1/admin/logs/user（无 kind 时仍为 member_log）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn list_user_logs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -388,18 +396,22 @@ pub async fn list_user_logs(
     )))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-photos", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/company-photos", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_company_photos(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<CompanyPhotoRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<CompanyPhotoRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_company_photos(&state, q.status, q.keyword.as_deref(), page)
-            .await?,
-    )))
+    let (list, statist) = tokio::join!(
+        admin_archive_service::list_company_photos(&state, q.status, q.keyword.as_deref(), page),
+        admin_archive_service::company_logo_stat(&state),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/company-photos/status", tag = "admin", security(("bearer" = [])), request_body = LogoStatusForm, responses((status = 200, description = "ok")))]
@@ -413,15 +425,15 @@ pub async fn set_logo_status(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-shows", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/company-shows", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_company_shows(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<GalleryAdminRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<GalleryAdminRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
+    let (list, statist) = tokio::join!(
         admin_archive_service::list_gallery(
             &state,
             "company",
@@ -429,9 +441,13 @@ pub async fn list_company_shows(
             q.keyword.as_deref(),
             q.r#type,
             page,
-        )
-        .await?,
-    )))
+        ),
+        admin_archive_service::gallery_stat(&state, "company"),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/company-shows/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, responses((status = 200, description = "ok")))]
@@ -446,15 +462,15 @@ pub async fn set_company_shows(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/resume-shows", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/resume-shows", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_resume_shows(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<GalleryAdminRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<GalleryAdminRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
+    let (list, statist) = tokio::join!(
         admin_archive_service::list_gallery(
             &state,
             "resume",
@@ -462,9 +478,13 @@ pub async fn list_resume_shows(
             q.keyword.as_deref(),
             q.r#type,
             page,
-        )
-        .await?,
-    )))
+        ),
+        admin_archive_service::gallery_stat(&state, "resume"),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/resume-shows/status", tag = "admin", security(("bearer" = [])), request_body = IdsStatusForm, responses((status = 200, description = "ok")))]
@@ -496,7 +516,15 @@ pub async fn list_interviews(
     )))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-logs", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[deprecated]
+#[utoipa::path(
+    post,
+    path = "/v1/admin/company-logs",
+    tag = "admin",
+    security(("bearer" = [])),
+    description = "改用 POST /v1/admin/logs/company（无 kind 时仍为 member_log）",
+    responses((status = 200, description = "ok"))
+)]
 pub async fn list_company_logs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -1249,17 +1277,22 @@ pub async fn delete_resume_shows(
     Ok(ApiResponse::message("ok"))
 }
 
-#[utoipa::path(post, path = "/v1/admin/company-banners", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/company-banners", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_banners(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<BannerAdminRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<BannerAdminRow, PhotoStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_banners(&state, q.status, q.keyword.as_deref(), page).await?,
-    )))
+    let (list, statist) = tokio::join!(
+        admin_archive_service::list_banners(&state, q.status, q.keyword.as_deref(), page),
+        admin_archive_service::banner_stat(&state),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -1338,7 +1371,15 @@ pub async fn save_banner(
 
 macro_rules! biz_handler {
     ($fn:ident, $path:expr, $svc:path) => {
-        #[utoipa::path(post, path = $path, tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+        #[deprecated]
+        #[utoipa::path(
+            post,
+            path = $path,
+            tag = "admin",
+            security(("bearer" = [])),
+            description = "改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举",
+            responses((status = 200, description = "ok"))
+        )]
         pub async fn $fn(
             State(state): State<AppState>,
             user: AuthenticatedUser,
@@ -1373,7 +1414,16 @@ biz_handler!(list_job_tellog_logs, "/v1/admin/company-logs/job-tellog", admin_ar
 /// `/v1/admin` prefix.
 macro_rules! biz_delete_handler {
     ($fn:ident, $path:expr, $svc:path) => {
-        #[utoipa::path(post, path = $path, tag = "admin", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "ok")))]
+        #[deprecated]
+        #[utoipa::path(
+            post,
+            path = $path,
+            tag = "admin",
+            security(("bearer" = [])),
+            description = "改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids",
+            request_body = IdsBody,
+            responses((status = 200, description = "ok"))
+        )]
         pub async fn $fn(
             State(state): State<AppState>,
             user: AuthenticatedUser,
@@ -1398,6 +1448,198 @@ biz_delete_handler!(delete_look_job_logs, "/v1/admin/company-logs/look-job/delet
 biz_delete_handler!(delete_part_apply_logs, "/v1/admin/company-logs/part-apply/delete", admin_archive_service::delete_part_apply_logs);
 biz_delete_handler!(delete_fav_job_logs, "/v1/admin/company-logs/fav-job/delete", admin_archive_service::delete_fav_job_logs);
 biz_delete_handler!(delete_job_tellog_logs, "/v1/admin/company-logs/job-tellog/delete", admin_archive_service::delete_job_tellog_logs);
+
+#[derive(Debug, Default, Deserialize, Validate, ToSchema)]
+pub struct LogQuery {
+    #[serde(flatten)]
+    #[validate(nested)]
+    pub q: KwQuery,
+    #[validate(length(max = 32))]
+    pub kind: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct LogDeleteForm {
+    #[validate(length(min = 1, max = 32))]
+    pub kind: String,
+    #[serde(default, deserialize_with = "de_u64_list")]
+    #[validate(length(min = 1, max = 200))]
+    pub ids: Vec<u64>,
+}
+
+fn parse_log_kind(kind: Option<&str>) -> Result<Option<String>, ApiError> {
+    let k = kind.map(str::trim).filter(|s| !s.is_empty());
+    let Some(k) = k else {
+        return Ok(None);
+    };
+    if !phpyun_models::sql::ident_ok(k) {
+        return Err(ApiError::param_invalid("kind"));
+    }
+    Ok(Some(k.to_string()))
+}
+
+/// `POST /v1/admin/logs/user` — no kind: member_log usertype=1; kind: down|freedown|look_resume|refresh|talent_pool|trust.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/logs/user",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = LogQuery,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_logs_user(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<LogQuery>,
+) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    let kind = parse_log_kind(q.kind.as_deref())?;
+    let kw = q.q.keyword.as_deref();
+    let data = match kind.as_deref() {
+        None => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_member_logs(&state, Some(1), q.q.uid, page).await?,
+        )),
+        Some("down") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_down_logs(&state, kw, page).await?,
+        )),
+        Some("freedown") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_freedown_logs(&state, kw, page).await?,
+        )),
+        Some("look_resume") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_look_resume_logs(&state, kw, page).await?,
+        )),
+        Some("refresh") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_refresh_resume_logs(&state, kw, page).await?,
+        )),
+        Some("talent_pool") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_talent_logs(&state, kw, page).await?,
+        )),
+        Some("trust") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_trust_logs(&state, kw, page).await?,
+        )),
+        _ => return Err(ApiError::param_invalid("kind")),
+    }
+    .unwrap_or(Value::Null);
+    Ok(ApiResponse::data(data))
+}
+
+/// `POST /v1/admin/logs/company` — no kind: member_log usertype=2; kind: fav_job|job_tellog|look_job|part_apply|userid_job|userid_msg.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/logs/company",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = LogQuery,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_logs_company(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(q): ValidatedJson<LogQuery>,
+) -> AppResult<ApiResponse<Value>> {
+    user.require_admin()?;
+    let kind = parse_log_kind(q.kind.as_deref())?;
+    let kw = q.q.keyword.as_deref();
+    let data = match kind.as_deref() {
+        None => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_member_logs(&state, Some(2), q.q.uid, page).await?,
+        )),
+        Some("fav_job") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_fav_job_logs(&state, kw, page).await?,
+        )),
+        Some("job_tellog") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_job_tellog_logs(&state, kw, page).await?,
+        )),
+        Some("look_job") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_look_job_logs(&state, kw, page).await?,
+        )),
+        Some("part_apply") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_part_apply_logs(&state, kw, page).await?,
+        )),
+        Some("userid_job") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_userid_job_logs(&state, kw, page).await?,
+        )),
+        Some("userid_msg") => serde_json::to_value(AdminPaged::from(
+            admin_archive_service::list_userid_msg_logs(&state, kw, page).await?,
+        )),
+        _ => return Err(ApiError::param_invalid("kind")),
+    }
+    .unwrap_or(Value::Null);
+    Ok(ApiResponse::data(data))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/logs/user/delete",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = LogDeleteForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn delete_logs_user(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
+    ValidatedJson(f): ValidatedJson<LogDeleteForm>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    if !phpyun_models::sql::ident_ok(&f.kind) {
+        return Err(ApiError::param_invalid("kind"));
+    }
+    let path = uri.path();
+    let msg = match f.kind.as_str() {
+        "down" => admin_archive_service::delete_down_logs(&state, &user, &f.ids, path).await?,
+        "freedown" => admin_archive_service::delete_freedown_logs(&state, &user, &f.ids, path).await?,
+        "look_resume" => {
+            admin_archive_service::delete_look_resume_logs(&state, &user, &f.ids, path).await?
+        }
+        "refresh" => {
+            admin_archive_service::delete_refresh_resume_logs(&state, &user, &f.ids, path).await?
+        }
+        "talent_pool" => admin_archive_service::delete_talent_logs(&state, &user, &f.ids, path).await?,
+        "trust" => admin_archive_service::delete_trust_logs(&state, &user, &f.ids, path).await?,
+        _ => return Err(ApiError::param_invalid("kind")),
+    };
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/logs/company/delete",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = LogDeleteForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn delete_logs_company(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    OriginalUri(uri): OriginalUri,
+    ValidatedJson(f): ValidatedJson<LogDeleteForm>,
+) -> AppResult<ApiMessage> {
+    user.require_admin()?;
+    if !phpyun_models::sql::ident_ok(&f.kind) {
+        return Err(ApiError::param_invalid("kind"));
+    }
+    let path = uri.path();
+    let msg = match f.kind.as_str() {
+        "fav_job" => admin_archive_service::delete_fav_job_logs(&state, &user, &f.ids, path).await?,
+        "job_tellog" => {
+            admin_archive_service::delete_job_tellog_logs(&state, &user, &f.ids, path).await?
+        }
+        "look_job" => admin_archive_service::delete_look_job_logs(&state, &user, &f.ids, path).await?,
+        "part_apply" => {
+            admin_archive_service::delete_part_apply_logs(&state, &user, &f.ids, path).await?
+        }
+        "userid_msg" => {
+            admin_archive_service::delete_userid_msg_logs(&state, &user, &f.ids, path).await?
+        }
+        _ => return Err(ApiError::param_invalid("kind")),
+    };
+    Ok(ApiMessage::new("admin_user_00187", msg))
+}
 
 /// PHP `company_comlog::jobtellog_search_list_action` — the one dropdown on the
 /// 拨号记录 grid. Static, so it needs neither the database nor a page.

@@ -14,7 +14,7 @@ handlers / api-admin **禁止** `sqlx`、`redis`、`reqwest`、业务规则。SQ
 
 ## 契约
 
-信封 `{code,key,msg,data}`；`msg` 是已翻译文本。PHP 列表筛选项用 `de_loose_i32_opt` 接 `""`/`"0"`。软删：`format!(... {PREDICATE} ...)`，不要把 `{PREDICATE}` 写进普通 SQL 字符串。改公开路由才动 `doc/snapshots/`。
+信封 `{code,key,msg,data}`；`msg` 是已翻译文本。PHP 列表筛选项用 `de_loose_i32_opt` 接 `""`/`"0"`。软删：`format!(... {PREDICATE} ...)`，不要把 `{PREDICATE}` 写进普通 SQL 字符串。改公开路由才动 `doc/snapshots/`。新增路径/字段/枚举见 [`api-naming.mdc`](./api-naming.mdc)（`ident_ok`，值必须绑定，SQL `{…}` 只许 const/match）。
 
 ## 编译 / 重启
 

@@ -2,8 +2,9 @@
 
 use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::{
-    dto::BatchResult, utils::fmt_dt, ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination,
-    ValidatedJson,
+    dto::{merge_id_and_ids, BatchResult},
+    utils::fmt_dt,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
 use phpyun_models::job::entity::Job;
 use phpyun_models::job::repo::AdminJobFilter;
@@ -16,6 +17,7 @@ use validator::Validate;
 
 use crate::dto::AdminPaged;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/jobs", post(list))
@@ -210,8 +212,10 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetJobStateForm {
-    #[validate(range(min = 1, max = 999_999_999))]
-    pub id: u64,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
+    pub id: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_u64_list")]
+    pub ids: Vec<u64>,
     #[validate(range(min = 1, max = 3))]
     pub state: i32,
 }
@@ -228,9 +232,9 @@ pub async fn set_state(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<SetJobStateForm>,
 ) -> AppResult<ApiResponse> {
-    let id = f.id;
     user.require_admin()?;
-    admin_service::set_job_state(&state, &user, id, f.state).await?;
+    let ids = merge_id_and_ids(f.id, f.ids)?;
+    let _ = admin_service::batch_set_job_state(&state, &user, &ids, f.state).await?;
     Ok(ApiResponse::message("ok"))
 }
 
@@ -242,11 +246,13 @@ pub struct BatchStateForm {
     pub state: i32,
 }
 
+#[deprecated]
 #[utoipa::path(
     post,
     path = "/v1/admin/jobs/batch/state",
     tag = "admin",
     security(("bearer" = [])),
+    description = "改用 POST /v1/admin/jobs/state（body 可传 ids）",
     request_body = BatchStateForm,
     responses((status = 200, description = "ok", body = BatchResult))
 )]

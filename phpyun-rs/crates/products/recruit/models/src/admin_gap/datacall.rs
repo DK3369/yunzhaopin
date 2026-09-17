@@ -161,16 +161,17 @@ pub struct TinyCallRow {
     pub time: i64,
 }
 
-fn order_parts(byorder: &str, allowed: &[&str], lastedit_to: &str) -> (String, &'static str) {
+fn order_parts(byorder: &str, allowed: &[&'static str], lastedit_to: &'static str) -> (&'static str, &'static str) {
     let s = byorder.replace("lastedit", lastedit_to);
     let mut parts = s.split(',');
     let col = parts.next().unwrap_or("").trim();
     let dir = parts.next().unwrap_or("desc").trim();
-    let col = if allowed.iter().any(|c| *c == col) {
-        col.to_string()
+    let col = if crate::sql::ident_ok(col) {
+        allowed.iter().copied().find(|c| *c == col)
     } else {
-        allowed.first().copied().unwrap_or("id").to_string()
-    };
+        None
+    }
+    .unwrap_or_else(|| allowed.first().copied().unwrap_or("id"));
     let dir = if dir.eq_ignore_ascii_case("asc") {
         "ASC"
     } else {
@@ -179,7 +180,7 @@ fn order_parts(byorder: &str, allowed: &[&str], lastedit_to: &str) -> (String, &
     (col, dir)
 }
 
-fn order_sql(byorder: &str, allowed: &[&str], lastedit_to: &str) -> String {
+fn order_sql(byorder: &str, allowed: &[&'static str], lastedit_to: &'static str) -> String {
     let (col, dir) = order_parts(byorder, allowed, lastedit_to);
     format!("`{col}` {dir}")
 }

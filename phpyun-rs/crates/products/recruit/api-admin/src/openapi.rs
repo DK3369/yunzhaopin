@@ -230,6 +230,10 @@ use crate::v1;
         v1::archive::user_msg_show,
         v1::archive::edit_user_msg,
         v1::archive::list_user_logs,
+        v1::archive::list_logs_user,
+        v1::archive::delete_logs_user,
+        v1::archive::list_logs_company,
+        v1::archive::delete_logs_company,
         v1::archive::list_down_logs,
         v1::archive::list_freedown_logs,
         v1::archive::list_look_resume_logs,
@@ -410,6 +414,8 @@ use crate::v1;
             v1::archive::ContentStatusBodyForm,
             v1::archive::ContentDeleteForm,
             v1::archive::CompanyContentListData,
+            v1::archive::LogQuery,
+            v1::archive::LogDeleteForm,
             v1::feedback::SetFeedbackStatusForm,
             phpyun_models::job::view::JobSummary,
             v1::jobs::SetJobStateForm,
@@ -423,4 +429,5 @@ use crate::v1;
         (name = "admin", description = "Admin"),
     )
 )]
+#[allow(deprecated)]
 pub struct AdminDoc;

@@ -83,9 +83,9 @@ pub async fn php_list_nav(
     order_dir: &str,
 ) -> Result<Vec<PhpNavRow>, sqlx::Error> {
     let col = match order_col {
-        "sort" => "sort",
-        "name" => "name",
-        "nid" => "nid",
+        s if crate::sql::ident_ok(s) && s == "sort" => "sort",
+        s if crate::sql::ident_ok(s) && s == "name" => "name",
+        s if crate::sql::ident_ok(s) && s == "nid" => "nid",
         _ => "id",
     };
     let dir = if order_dir.eq_ignore_ascii_case("asc") {

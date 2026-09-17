@@ -1263,7 +1263,7 @@ fn push_cron_log_where(qb: &mut QueryBuilder<sqlx::MySql>, f: &PhpCronLogFilter<
 fn cron_log_order(sort: &str, dir: &str) -> &'static str {
     let desc = !dir.eq_ignore_ascii_case("asc");
     match sort {
-        "ctime" => {
+        "ctime" if crate::sql::ident_ok(sort) => {
             if desc {
                 " ORDER BY l.ctime DESC, l.id DESC"
             } else {
@@ -2075,7 +2075,7 @@ pub async fn list_reserve_jobs(
     push_reserve_filters(&mut qb, f);
     // Sorting is a whitelist: the Element table only offers `id`, and PHP falls
     // back to `lastupdate desc`.
-    let col = if f.order_col == "id" {
+    let col = if crate::sql::ident_ok(f.order_col) && f.order_col == "id" {
         "j.id"
     } else {
         "j.lastupdate"
@@ -5867,9 +5867,9 @@ pub async fn php_cert_list(
     );
     php_cert_list_where(&mut qb, &f);
     let col = match f.order_col {
-        "ctime" => "sc.ctime",
-        "uid" => "sc.uid",
-        "status" => "sc.status",
+        s if crate::sql::ident_ok(s) && s == "ctime" => "sc.ctime",
+        s if crate::sql::ident_ok(s) && s == "uid" => "sc.uid",
+        s if crate::sql::ident_ok(s) && s == "status" => "sc.status",
         _ => "sc.status",
     };
     let dir = if f.order_dir.eq_ignore_ascii_case("asc") {

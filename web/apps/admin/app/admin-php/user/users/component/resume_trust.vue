@@ -243,8 +243,6 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
 				}
 			},
 			init() {
-				// this.resetSearch();
-				this.getCountData();
 				this.search();
 			},
 
@@ -318,6 +316,11 @@ const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts
 					that.list = data.list;
 					that.total = parseInt(data.total);
 					that.pageSizes = data.page_sizes;
+					if (data.statist) {
+						that.resumeAllNum = data.statist.resumeAllNum;
+						that.resumeStatusNum1 = data.statist.resumeStatusNum1;
+						that.resumeStatusNum2 = data.statist.resumeStatusNum2;
+					}
 					if (that.limit === 0) {
 						that.limit = parseInt(data.limit); // Use default count from system config
 					}

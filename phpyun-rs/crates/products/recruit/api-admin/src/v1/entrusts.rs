@@ -11,7 +11,7 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
-use crate::dto::AdminPaged;
+use crate::dto::{AdminPaged, ListWithStat};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -45,15 +45,15 @@ pub struct SetStatusForm {
     pub status: i32,
 }
 
-#[utoipa::path(post, path = "/v1/admin/user-entrusts", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/user-entrusts", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiResponse<AdminPaged<UserEntrustRow>>> {
+) -> AppResult<ApiResponse<ListWithStat<UserEntrustRow, TrustStat>>> {
     user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
+    let (list, statist) = tokio::join!(
         admin_entrust_service::list(
             &state,
             ListFilter {
@@ -65,9 +65,13 @@ pub async fn list(
                 dir: q.order.as_deref().unwrap_or("desc"),
             },
             page,
-        )
-        .await?,
-    )))
+        ),
+        admin_entrust_service::stat(&state),
+    );
+    Ok(ApiResponse::data(ListWithStat {
+        page: AdminPaged::from(list?),
+        statist: statist?,
+    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/user-entrusts/statist", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]

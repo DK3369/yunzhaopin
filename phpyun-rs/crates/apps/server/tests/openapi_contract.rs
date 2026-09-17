@@ -28,7 +28,7 @@ fn admin_paths_match_t2_snapshot() {
         t2_admin_paths(),
         "admin OpenAPI paths drifted from T2 snapshot (doc/snapshots/admin_paths.txt)"
     );
-        assert_eq!(actual.len(), 347, "admin path count is {}", actual.len());
+        assert_eq!(actual.len(), 351, "admin path count is {}", actual.len());
 }
 
 fn collect_ops(doc: &utoipa::openapi::OpenApi) -> Vec<(String, String, String)> {
@@ -113,4 +113,90 @@ fn v1_wap_and_mcenter_baseline_paths_still_exist() {
         assert!(keys.contains(required), "missing baseline path {required}");
     }
     assert!(!keys.iter().any(|p| p.starts_with("/v1/admin")));
+}
+
+fn ident_ok(s: &str) -> bool {
+    let n = s.len();
+    if n == 0 || n > 64 {
+        return false;
+    }
+    let mut b = s.bytes();
+    matches!(b.next(), Some(c) if c.is_ascii_lowercase())
+        && b.all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'_')
+}
+
+fn allow_set(name: &str) -> BTreeSet<String> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../../../doc/snapshots")
+        .join(name);
+    std::fs::read_to_string(&path)
+        .unwrap_or_else(|e| panic!("read {}: {e}", path.display()))
+        .lines()
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .map(str::to_string)
+        .collect()
+}
+
+fn op_deprecated(op: Option<&utoipa::openapi::path::Operation>) -> bool {
+    op.and_then(|o| o.deprecated.as_ref())
+        .map(|d| matches!(d, utoipa::openapi::Deprecated::True))
+        .unwrap_or(false)
+}
+
+#[test]
+fn new_admin_path_segments_and_forms_are_ident_ok() {
+    let allow = allow_set("admin_ident_path_allow.txt");
+    let admin = phpyun_api_admin::openapi();
+    let mut unexpected = BTreeSet::new();
+    for (path, item) in &admin.paths.paths {
+        let dep = op_deprecated(item.get.as_ref())
+            || op_deprecated(item.post.as_ref())
+            || op_deprecated(item.put.as_ref())
+            || op_deprecated(item.delete.as_ref())
+            || op_deprecated(item.patch.as_ref());
+        if dep {
+            continue;
+        }
+        for seg in path.trim_start_matches('/').split('/') {
+            if matches!(seg, "v1" | "admin") || ident_ok(seg) || allow.contains(seg) {
+                continue;
+            }
+            unexpected.insert(format!("{path} :: {seg}"));
+        }
+    }
+    assert!(
+        unexpected.is_empty(),
+        "non-deprecated path segments must be ident_ok or in admin_ident_path_allow.txt (whitelist only shrinks): {unexpected:?}"
+    );
+
+    let field_allow = allow_set("admin_ident_field_allow.txt");
+    let mut bad_fields = BTreeSet::new();
+    if let Some(components) = &admin.components {
+        for (name, schema) in &components.schemas {
+            collect_bad_props(name, schema, &field_allow, &mut bad_fields);
+        }
+    }
+    assert!(
+        bad_fields.is_empty(),
+        "schema property names must be ident_ok or in admin_ident_field_allow.txt (whitelist only shrinks): {bad_fields:?}"
+    );
+}
+
+fn collect_bad_props(
+    schema_name: &str,
+    schema: &utoipa::openapi::RefOr<utoipa::openapi::schema::Schema>,
+    allow: &BTreeSet<String>,
+    out: &mut BTreeSet<String>,
+) {
+    let utoipa::openapi::RefOr::T(s) = schema else {
+        return;
+    };
+    let utoipa::openapi::schema::Schema::Object(obj) = s else {
+        return;
+    };
+    for key in obj.properties.keys() {
+        if !ident_ok(key) && !allow.contains(key) {
+            out.insert(format!("{schema_name}.{key}"));
+        }
+    }
 }

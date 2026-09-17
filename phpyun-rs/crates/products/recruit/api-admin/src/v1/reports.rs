@@ -3,7 +3,7 @@
 use axum::{extract::State, routing::post, Json, Router};
 use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 use phpyun_core::{
-    dto::{BatchResult, StatusFilterBody},
+    dto::{merge_id_and_ids, BatchResult, StatusFilterBody},
     ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
     ValidatedJson,
 };
@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
+#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/reports", post(list))
@@ -331,8 +332,10 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetReportStatusForm {
-    #[validate(range(min = 1, max = 99_999_999))]
-    pub id: u64,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64_opt")]
+    pub id: Option<u64>,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_u64_list")]
+    pub ids: Vec<u64>,
     /// 1=approved / 2=rejected
     #[validate(range(min = 1, max = 2))]
     pub status: i32,
@@ -351,9 +354,9 @@ pub async fn set_status(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<SetReportStatusForm>,
 ) -> AppResult<ApiResponse> {
-    let id = f.id;
     user.require_admin()?;
-    admin_service::set_report_status(&state, &user, id, f.status).await?;
+    let ids = merge_id_and_ids(f.id, f.ids)?;
+    let _ = admin_service::batch_set_report_status(&state, &user, &ids, f.status).await?;
     Ok(ApiResponse::message("ok"))
 }
 
@@ -366,11 +369,13 @@ pub struct BatchStatusForm {
 }
 
 /// Batch process reports
+#[deprecated]
 #[utoipa::path(
     post,
     path = "/v1/admin/reports/batch/status",
     tag = "admin",
     security(("bearer" = [])),
+    description = "改用 POST /v1/admin/reports/status（body 可传 ids）",
     request_body = BatchStatusForm,
     responses((status = 200, description = "ok", body = BatchResult))
 )]

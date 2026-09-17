@@ -972,7 +972,7 @@ fn json_day_range(body: &Value, key: &str) -> (Option<i64>, Option<i64>) {
 }
 
 fn amp(s: &str) -> String {
-    s.replace("&amp;", "&")
+    phpyun_core::html::sanitize_html(&s.replace("&amp;", "&"))
 }
 
 fn preview_base(state: &AppState) -> String {
@@ -4906,7 +4906,7 @@ async fn part_show(state: &AppState, body: &Value) -> AppResult<PhpOut> {
                 r_status,
                 x: &json_str(body, "x"),
                 y: &json_str(body, "y"),
-                content: &json_str(body, "content"),
+                content: &phpyun_core::html::sanitize_html(&json_str(body, "content")),
                 linkman: &json_str(body, "linkman"),
                 linktel: &json_str(body, "linktel"),
                 state: job_state,

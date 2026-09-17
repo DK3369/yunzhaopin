@@ -241,6 +241,31 @@ pub fn de_loose_u64_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<u64>, 
     u64::try_from(n).map(Some).map_err(de::Error::custom)
 }
 
+/// PHP Vue often sends `ids` as a number, csv string, or array of strings.
+pub fn de_u64_list<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u64>, D::Error> {
+    let v = Value::deserialize(d)?;
+    let one = |v: &Value| -> Option<u64> {
+        match v {
+            Value::Number(n) => n
+                .as_u64()
+                .or_else(|| n.as_i64().and_then(|i| u64::try_from(i).ok())),
+            Value::String(s) => s.trim().parse().ok(),
+            _ => None,
+        }
+        .filter(|n| *n > 0)
+    };
+    Ok(match v {
+        Value::Array(a) => a.iter().filter_map(one).collect(),
+        Value::String(s) => s
+            .split([',', ';'])
+            .filter_map(|x| x.trim().parse().ok())
+            .filter(|n: &u64| *n > 0)
+            .collect(),
+        Value::Number(_) => one(&v).into_iter().collect(),
+        _ => Vec::new(),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

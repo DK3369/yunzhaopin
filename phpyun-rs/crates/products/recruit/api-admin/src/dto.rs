@@ -2,6 +2,7 @@
 
 use phpyun_core::Paged;
 use serde::Serialize;
+use utoipa::ToSchema;
 
 #[derive(Debug, Serialize)]
 pub struct AdminPaged<T: Serialize> {
@@ -35,4 +36,14 @@ impl<T: Serialize> From<Paged<T>> for AdminPaged<T> {
             page_sizes: sizes,
         }
     }
+}
+
+/// List envelope plus tab counts. `statist` shape matches the sibling `/statist` API.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ListWithStat<T: Serialize, S: Serialize> {
+    #[serde(flatten)]
+    #[schema(value_type = Object)]
+    pub page: AdminPaged<T>,
+    #[schema(value_type = Object)]
+    pub statist: S,
 }

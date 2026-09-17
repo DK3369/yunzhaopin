@@ -148,11 +148,18 @@ function usersetLogoShape(data: unknown): Record<string, unknown> {
   }
 }
 
-function pageQuery(body: Record<string, unknown>): Record<string, unknown> {
-  const page = Number(body.page || body.currentPage || 1) || 1
-  const page_size =
-    Number(body.page_size || body.pageSize || body.limit || body.perPage || 20) || 20
-  return { ...body, page, page_size }
+function pageQueryKind(kind: string) {
+  return (body: Record<string, unknown>): Record<string, unknown> => ({
+    ...pageQuery(body),
+    kind,
+  })
+}
+
+function idsKind(kind: string) {
+  return (body: Record<string, unknown>): Record<string, unknown> => ({
+    ...idsFromDel(body),
+    kind,
+  })
 }
 
 function pageQueryDef(def: number) {
@@ -870,20 +877,20 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/users_msg/msgshow': { path: '/v1/admin/user-msgs/show' },
   'user/users_msg/msgedit': { path: '/v1/admin/user-msgs/edit' },
   'user/users_msg/status': { path: '/v1/admin/user-msgs/status', transformReq: idsStatusFromPhp },
-  'user/users_userlog': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
-  'user/users_userlog/index': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
-  'user/users_userlog/down': { path: '/v1/admin/user-logs/down', transformReq: pageQuery },
-  'user/users_userlog/freedown': { path: '/v1/admin/user-logs/freedown', transformReq: pageQuery },
-  'user/users_userlog/lookresume': { path: '/v1/admin/user-logs/look-resume', transformReq: pageQuery },
-  'user/users_userlog/talentpool': { path: '/v1/admin/user-logs/talent-pool', transformReq: pageQuery },
-  'user/users_userlog/trust': { path: '/v1/admin/user-logs/trust', transformReq: pageQuery },
-  'user/users_userlog/sxLog': { path: '/v1/admin/user-logs/refresh', transformReq: pageQuery },
-  'user/users_userlog/deldown': { path: '/v1/admin/user-logs/down/delete', transformReq: idsFromDel },
-  'user/users_userlog/delfreedown': { path: '/v1/admin/user-logs/freedown/delete', transformReq: idsFromDel },
-  'user/users_userlog/dellook': { path: '/v1/admin/user-logs/look-resume/delete', transformReq: idsFromDel },
-  'user/users_userlog/deltalentpool': { path: '/v1/admin/user-logs/talent-pool/delete', transformReq: idsFromDel },
-  'user/users_userlog/deltrust': { path: '/v1/admin/user-logs/trust/delete', transformReq: idsFromDel },
-  'user/users_userlog/delSxLog': { path: '/v1/admin/user-logs/refresh/delete', transformReq: idsFromDel },
+  'user/users_userlog': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('down') },
+  'user/users_userlog/index': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('down') },
+  'user/users_userlog/down': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('down') },
+  'user/users_userlog/freedown': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('freedown') },
+  'user/users_userlog/lookresume': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('look_resume') },
+  'user/users_userlog/talentpool': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('talent_pool') },
+  'user/users_userlog/trust': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('trust') },
+  'user/users_userlog/sxLog': { path: '/v1/admin/logs/user', transformReq: pageQueryKind('refresh') },
+  'user/users_userlog/deldown': { path: '/v1/admin/logs/user/delete', transformReq: idsKind('down') },
+  'user/users_userlog/delfreedown': { path: '/v1/admin/logs/user/delete', transformReq: idsKind('freedown') },
+  'user/users_userlog/dellook': { path: '/v1/admin/logs/user/delete', transformReq: idsKind('look_resume') },
+  'user/users_userlog/deltalentpool': { path: '/v1/admin/logs/user/delete', transformReq: idsKind('talent_pool') },
+  'user/users_userlog/deltrust': { path: '/v1/admin/logs/user/delete', transformReq: idsKind('trust') },
+  'user/users_userlog/delSxLog': { path: '/v1/admin/logs/user/delete', transformReq: idsKind('refresh') },
   'user/company_pic': { path: '/v1/admin/company-photos', transformReq: pageQuery },
   'user/company_pic/index': { path: '/v1/admin/company-photos', transformReq: pageQuery },
   'user/company_pic/status': { path: '/v1/admin/company-photos/status' },
@@ -975,17 +982,17 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'user/company_comlog': phpContent('comlog', 'userid-job'),
   'user/company_comlog/index': phpContent('comlog', 'userid-job'),
   'user/company_comlog/deluseridjob': phpContent('comlog', 'deluseridjob'),
-  'user/company_comlog/useridmsg': { path: '/v1/admin/company-logs/userid-msg', transformReq: pageQuery },
-  'user/company_comlog/lookjob': { path: '/v1/admin/company-logs/look-job', transformReq: pageQuery },
-  'user/company_comlog/partapply': { path: '/v1/admin/company-logs/part-apply', transformReq: pageQuery },
-  'user/company_comlog/favjob': { path: '/v1/admin/company-logs/fav-job', transformReq: pageQuery },
-  'user/company_comlog/jobtellog': { path: '/v1/admin/company-logs/job-tellog', transformReq: pageQuery },
+  'user/company_comlog/useridmsg': { path: '/v1/admin/logs/company', transformReq: pageQueryKind('userid_msg') },
+  'user/company_comlog/lookjob': { path: '/v1/admin/logs/company', transformReq: pageQueryKind('look_job') },
+  'user/company_comlog/partapply': { path: '/v1/admin/logs/company', transformReq: pageQueryKind('part_apply') },
+  'user/company_comlog/favjob': { path: '/v1/admin/logs/company', transformReq: pageQueryKind('fav_job') },
+  'user/company_comlog/jobtellog': { path: '/v1/admin/logs/company', transformReq: pageQueryKind('job_tellog') },
   'user/company_comlog/jobtellog_search_list': { path: '/v1/admin/company-logs/job-tellog/search-list' },
-  'user/company_comlog/deluseridmsg': { path: '/v1/admin/company-logs/userid-msg/delete', transformReq: idsFromDel },
-  'user/company_comlog/dellookjob': { path: '/v1/admin/company-logs/look-job/delete', transformReq: idsFromDel },
-  'user/company_comlog/delpartapply': { path: '/v1/admin/company-logs/part-apply/delete', transformReq: idsFromDel },
-  'user/company_comlog/delfavjob': { path: '/v1/admin/company-logs/fav-job/delete', transformReq: idsFromDel },
-  'user/company_comlog/deljobtellog': { path: '/v1/admin/company-logs/job-tellog/delete', transformReq: idsFromDel },
+  'user/company_comlog/deluseridmsg': { path: '/v1/admin/logs/company/delete', transformReq: idsKind('userid_msg') },
+  'user/company_comlog/dellookjob': { path: '/v1/admin/logs/company/delete', transformReq: idsKind('look_job') },
+  'user/company_comlog/delpartapply': { path: '/v1/admin/logs/company/delete', transformReq: idsKind('part_apply') },
+  'user/company_comlog/delfavjob': { path: '/v1/admin/logs/company/delete', transformReq: idsKind('fav_job') },
+  'user/company_comlog/deljobtellog': { path: '/v1/admin/logs/company/delete', transformReq: idsKind('job_tellog') },
   'user/company_job_refresh_log': phpContent('user-gap', 'job-refresh-index'),
   'user/company_job_refresh_log/index': phpContent('user-gap', 'job-refresh-index'),
   'user/company_job_refresh_log/delSxLog': phpContent('user-gap', 'job-refresh-del'),

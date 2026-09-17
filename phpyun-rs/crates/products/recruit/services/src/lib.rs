@@ -137,7 +137,7 @@ pub mod locoy_service;
 mod job_scrape_jd;
 mod job_scrape_board;
 pub mod job_scrape_service;
-pub use job_scrape_jd::sanitize_html;
+pub use phpyun_core::html::sanitize_html;
 pub mod look_job_service;
 pub mod oauth_service;
 pub mod payment_notify_service;

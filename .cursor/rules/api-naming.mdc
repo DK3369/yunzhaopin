@@ -1,0 +1,50 @@
+---
+description: API 标识符白名单、值绑定、SQL 拼接只许常量/whitelist
+alwaysApply: true
+---
+
+# API 命名与 SQL 安全
+
+把请求里的「东西」分三类，各自一条铁律。适用 `/v1/admin`、`/v1/wap`、`/v1/mcenter` 的**新增**接口、新字段、新枚举。App 契约只加法；旧路径本轮不改名。
+
+## A. 标识符：只许 `^[a-z][a-z0-9_]*$`
+
+路径段、query/body **字段名**、**枚举值**（`kind`、`sort`、`order`、`type_str`、`table`、`field`…）、`site-settings` 的 `key`、地区/国家 `code` 等**会被拿去选表/选列/选分支**的字符串。
+
+长度 ≤ 64。必须小写字母开头，后接小写字母、数字、下划线。
+
+**全部禁止**（不止 `-`）：
+
+- 引号与注释：`'` `"` `` ` `` `;` `#` `--` `/*` `*/`
+- 转义与通配：`\` `%`（`_` 作为下划线允许，但进 `LIKE` 时必须 `escape_like`）
+- 运算与分隔：`=` `<` `>` `!` `|` `&` `+` `*` `/` `,` `.` `(` `)` `[` `]` `{` `}` `$` `@` `^` `~` `?` `:`
+- 空白与控制：空格、Tab、换行、`\0`
+- 非 ASCII、大写字母、以数字或 `_` 开头
+
+多词路径段拆成 `/`（`status-body` → `status/body`），或用单词；字段与枚举 snake_case（`page_size`、`look_resume`）。
+
+代码：`phpyun_models::sql::ident_ok(&str) -> bool`。所有把请求字符串当分支/列名用的地方先 `ident_ok`，再 `match` 到**静态** `&'static str`；不在 match 里的一律 400 `param_invalid`，**不要**把请求字符串直接 `format!` 进 SQL。
+
+## B. 值：不限字符，但必须绑定
+
+关键词、公司名、正文、备注等用户**值**可以含任何字符（`'`、`%`、emoji 都合法）：
+
+- 只走 `?` / `push_bind`；禁止 `format!("... '{v}' ...")`。
+- `LIKE` 一律 `escape_like` / `push_contains` + `ESCAPE '\\'`。
+- 去 `\0`；限长（`validator` `length`）。
+- JSON 字段名（如 `site-settings/batch` 的 object key）按 **A** 类校验。
+- **富文本值**（职位描述、企业简介、新闻/产品正文、面试邀请函等会 `v-html` 的字段）：不禁字符，但**写入必须过 `phpyun_core::html::sanitize_html`**（白名单标签/属性，去 `script`/`on*`/`javascript:`），公开详情读出再过一遍兜住 PHP 时代的历史数据。纯文本字段（公司名、职位名、备注）不清洗 HTML，前端用文本插值不用 `v-html`。这是防 XSS，不是防 SQL。
+
+## C. SQL 文本里的 `{…}`
+
+只允许两种来源：`const` 片段（`{FIELDS}`、`{PREDICATE}`）或 `match` 出来的 `&'static str`（`ORDER BY {col} {dir}`）。
+
+## D. 范围说明
+
+路径段由 axum 匹配、不进 SQL，`-` 本身不构成注入；A 类规则是为了统一、可预测，少一层「这个值会不会被拼进 SQL」的判断。真正的安全线是 B 和 C。
+
+## 下一波改名清单（只列、本轮不做）
+
+旧路径标 deprecated 并存一版，phpMap 同批切：
+
+`status-body`→`status/body`、`user-logs`/`company-logs`→`logs/user|company`（本轮新路径已加）、`company-certs`/`user-certs`→`certs/company|user`、`rating-packages`/`rating-services`、`redeem-classes`/`redeem-orders`、`question-classes`、`desc-classes`、`app-versions`、`friend-links`、`domain-admins`、`wx-navs`、`wxpub-temps`、`third-data`、`data-call`、`fastlogin-config`/`gsd-config`/`oss-config`、`recycle-bin`、`account-logouts`、`usertype-changes`、`dict-i18n`、`login-logs`/`admin-logs`/`error-logs`/`email-logs`/`sms-logs`/`hr-logs`/`job-refresh-logs`、`company-*`/`resume-shows`/`user-*` 系列、`toolbox`、`site-settings`、`check-com-name`/`check-username`、`php-*`。

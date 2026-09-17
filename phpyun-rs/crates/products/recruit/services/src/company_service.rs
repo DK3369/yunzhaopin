@@ -342,6 +342,7 @@ pub async fn update_mine(
     let first_map = old.x.as_deref().unwrap_or("").trim().is_empty()
         && nonempty(input.x).is_some()
         && nonempty(input.y).is_some();
+    let content_html = nonempty(input.content).map(phpyun_core::html::sanitize_html);
 
     company_repo::update(
         state.db.pool(),
@@ -355,7 +356,7 @@ pub async fn update_mine(
             three_cityid: input.three_cityid,
             logo: nonempty(input.logo),
             comqcode: nonempty(input.comqcode),
-            content: nonempty(input.content),
+            content: content_html.as_deref(),
             linkman: nonempty(input.linkman),
             linkjob: nonempty(input.linkjob),
             linkphone: nonempty(input.linkphone),

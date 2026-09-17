@@ -52,12 +52,16 @@ fn apply_filter(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &Filter<'_>) {
 }
 
 fn order_clause(sort: &str, dir: &str) -> (&'static str, &'static str) {
-    let col = match sort {
-        "uid" => "uid",
-        "add_time" => "add_time",
-        "price" => "price",
-        "status" => "status",
-        _ => "id",
+    let col = if !crate::sql::ident_ok(sort) {
+        "id"
+    } else {
+        match sort {
+            "uid" => "uid",
+            "add_time" => "add_time",
+            "price" => "price",
+            "status" => "status",
+            _ => "id",
+        }
     };
     let dir = if dir.eq_ignore_ascii_case("asc") {
         "ASC"

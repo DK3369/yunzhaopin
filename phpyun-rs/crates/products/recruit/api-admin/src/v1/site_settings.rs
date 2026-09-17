@@ -175,6 +175,7 @@ pub async fn batch(
             continue;
         }
         if phpyun_core::validators::path_token(&k).is_err() {
+            // PHP `phpyun_admin_config.name` 可含点号/连字符，不能用 ident_ok 盲拒。
             continue;
         }
         let value = match v {

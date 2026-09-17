@@ -153,6 +153,7 @@ pub struct SourceCount {
 }
 
 fn table_sql(name: &str) -> Option<&'static str> {
+    // Request string is only a match key; SQL is always a static table name.
     Some(match name {
         "member" => "phpyun_member",
         "resume_expect" => "phpyun_resume_expect",

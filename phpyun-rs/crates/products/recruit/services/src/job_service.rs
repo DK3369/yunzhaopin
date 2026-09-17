@@ -426,7 +426,7 @@ async fn assemble_detail(state: &AppState, job: Job) -> AppResult<JobDetailData>
             c.email_status,
             c.fact_status,
             c.money,
-            c.content.unwrap_or_default(),
+            phpyun_core::html::sanitize_html(&c.content.unwrap_or_default()),
             c.linkjob.unwrap_or_default(),
         )
     } else {
@@ -457,6 +457,11 @@ async fn assemble_detail(state: &AppState, job: Job) -> AppResult<JobDetailData>
         .ok()
         .flatten()
         .unwrap_or_default();
+
+    let mut job = job;
+    if let Some(d) = job.description.as_mut() {
+        *d = phpyun_core::html::sanitize_html(d);
+    }
 
     Ok(JobDetailData {
         job,

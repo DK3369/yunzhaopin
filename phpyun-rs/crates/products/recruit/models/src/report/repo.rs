@@ -294,7 +294,11 @@ pub struct AdminReportFilter<'a> {
 /// PHP's admin list accepts `t` (column) + `order` from the grid header. Only
 /// let through columns the grid can actually sort on.
 fn order_column(requested: Option<&str>) -> &'static str {
-    match requested.unwrap_or("id") {
+    let requested = requested.unwrap_or("id");
+    if !crate::sql::ident_ok(requested) {
+        return "id";
+    }
+    match requested {
         "inputtime" => "inputtime",
         "status" => "status",
         "rtime" => "rtime",

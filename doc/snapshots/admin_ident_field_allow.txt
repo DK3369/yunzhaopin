@@ -1,0 +1,21 @@
+# 旧 OpenAPI 字段名（camelCase / 历史 PHP 名）。只减不增。
+numAll
+numAudited
+numUnaudited
+numFailed
+perPage
+pageSize
+pageSizes
+statusbody
+resumeAllNum
+resumeStatusNum1
+resumeStatusNum2
+comCertAll
+comCert1
+comCert2
+partAllNum
+partStatusNum1
+partStatusNum2
+partStatusNum3
+browseNum
+inviteNum

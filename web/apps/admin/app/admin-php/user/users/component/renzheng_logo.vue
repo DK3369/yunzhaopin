@@ -234,10 +234,6 @@ export default {
         }
     },
     mounted() {
-        var that = this
-        setTimeout(function () {
-            that.getStatistFun();
-        }, 200)
     },
     created() {
         this.getList();
@@ -310,6 +306,11 @@ export default {
                     _this.total = res.data.total;
                     _this.searchForm.limit = res.data.perPage;
                     _this.pageSizes = res.data.pageSizes;
+                    if (res.data.statist) {
+                        _this.numAll = res.data.statist.numAll;
+                        _this.numUnaudited = res.data.statist.numUnaudited;
+                        _this.numAudited = res.data.statist.numAudited;
+                    }
                     _this.loading = false;
                     if(_this.prevPage != _this.searchForm.page){
                         _this.prevPage = _this.searchForm.page;

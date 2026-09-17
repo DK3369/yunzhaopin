@@ -481,10 +481,11 @@ async fn save_job(
     if name.len() < 2 {
         return Err(ApiError::business("member_com_00585"));
     }
-    let desc = input.content.unwrap_or("");
-    if strip_tags(desc).trim().is_empty() {
+    let desc_raw = input.content.unwrap_or("");
+    if strip_tags(desc_raw).trim().is_empty() {
         return Err(ApiError::business("member_com_00587"));
     }
+    let desc = phpyun_core::html::sanitize_html(desc_raw);
     let zp_num = if input.zp_num > 0 {
         input.zp_num
     } else {
@@ -617,7 +618,7 @@ async fn save_job(
     let mut job_state = compute_job_state(state, user.uid, company.r_status, company.rating).await?;
     if contains_forbidden_keyword(
         state,
-        &[name, desc, input.wel.unwrap_or("")],
+        &[name, desc.as_str(), input.wel.unwrap_or("")],
     )
     .await
     {
@@ -656,7 +657,7 @@ async fn save_job(
                 number: Some(input.number),
                 exp: Some(input.exp),
                 edu: Some(input.edu),
-                description: Some(desc),
+                description: Some(desc.as_str()),
                 welfare: input.wel,
                 sdate: None,
                 edate: if input.edate > 0 { Some(input.edate) } else { None },
@@ -720,7 +721,7 @@ async fn save_job(
                 number: input.number,
                 exp: input.exp,
                 edu: input.edu,
-                description: Some(desc),
+                description: Some(desc.as_str()),
                 welfare: input.wel,
                 sdate: now,
                 edate: input.edate,

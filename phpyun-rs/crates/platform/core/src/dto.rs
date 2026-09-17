@@ -214,6 +214,24 @@ fn validate_id_items(ids: &[u64]) -> Result<(), validator::ValidationError> {
     Ok(())
 }
 
+/// Union of optional single `id` and `ids` (PHP Vue may send either).
+pub fn merge_id_and_ids(id: Option<u64>, ids: Vec<u64>) -> Result<Vec<u64>, crate::ApiError> {
+    let mut out = ids;
+    if let Some(v) = id.filter(|n| *n > 0) {
+        if !out.contains(&v) {
+            out.push(v);
+        }
+    }
+    out.retain(|n| *n > 0 && *n <= 99_999_999);
+    if out.is_empty() {
+        return Err(crate::ApiError::param_invalid("ids"));
+    }
+    if out.len() > 200 {
+        out.truncate(200);
+    }
+    Ok(out)
+}
+
 // ==================== Limit / password / status-filter bodies ====================
 //
 // Note: `{ id, status }` and `{ ids, status }` are *not* extracted into shared

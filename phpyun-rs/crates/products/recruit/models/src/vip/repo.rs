@@ -796,9 +796,9 @@ pub async fn php_list_orders(
     let mut qb = QueryBuilder::new(format!("SELECT {PHP_ORDER_FIELDS}"));
     push_php_order_where(&mut qb, f);
     let col = match f.sort.map(str::trim) {
-        Some("order_time") => "o.order_time",
-        Some("order_price") => "o.order_price",
-        Some("order_state") => "o.order_state",
+        Some(s) if crate::sql::ident_ok(s) && s == "order_time" => "o.order_time",
+        Some(s) if crate::sql::ident_ok(s) && s == "order_price" => "o.order_price",
+        Some(s) if crate::sql::ident_ok(s) && s == "order_state" => "o.order_state",
         _ => "o.id",
     };
     let dir = if f.dir.is_some_and(|s| s.eq_ignore_ascii_case("asc")) {

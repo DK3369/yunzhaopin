@@ -612,7 +612,7 @@ async fn build_company_detail(
         firmpic: c.firmpic,
         comqcode: c.comqcode,
 
-        content: c.content,
+        content: c.content.map(|s| phpyun_core::html::sanitize_html(&s)),
 
         r_status: c.r_status,
         rec: c.rec,

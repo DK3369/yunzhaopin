@@ -86,15 +86,25 @@
 | `look-jobs` / `look-resumes` / `my-views` / `profile-views` | **三套表**（`phpyun_look_job` / `phpyun_look_resume` / `phpyun_rs_views`），不要合成一个「浏览记录」接口。 |
 | `com-stats/trend\|package\|range\|chart\|talent\|details\|week` 与 `com-tongji/*` | 数据中心页，**不要**当下线。`com-stats/today` 已 404（首页用 `com-dashboard/full`）。 |
 | `company-banners` vs `company-tpls` | 表不同；Admin 另有 `/v1/admin/company-banners`。结构未核前不并。 |
+| `status` / `status-body` / `statist` | 写审 / 读驳回文案 / 分桶计数，**不是重复**。 |
+| JSON REST vs `php-content` | 后台现网走 php-content 的模块（sysmsgs、warnings、navmap、modules、recycle、部分 logs）**双轨都留**，不要删 JSON 轨。 |
+| `broadcasts` vs `announcements` | 同表；`rating-packages` vs `rating-services` 不同表；`companies/rating(s)` 是指派不是套餐配置。 |
 | `nav`、`categories*`、`descriptions`、`hot-searches` | 带 position / kind / class_id / scope 参数，App 可能用非默认档。默认档已进 `initjobs`。 |
 | `regions*`、`site/sub-sites`、`friend-links`、`legal` / `site/pages` / `descriptions/get` | 带参或单页；`friend-links` 已在 `home/full`。不要塞进 `initjobs`。 |
 | 模块自己的分类（`articles/groups`、`hr-docs/classes`、`redeem/classes`、`qna/categories`、`once-jobs/gears`、`posters/templates`、`specials/industries`） | 只在对应模块页用，不进首屏包。 |
 
 ## 下一批（未做）
 
-- archive 其余 12 组 list+statist、`user-logs`/`company-logs` 按 kind 收口、company-certs 双轨。
+- 带连字符旧路径按 [`api-naming.mdc`](../../rules/api-naming.mdc) 下一波改名清单逐条改（`status-body`→`status/body`、`user-certs`→`certs/user` 等）；改名时旧路径标 deprecated 并存。
+- company-certs 双轨。
 - 不要并 look/views/banners，不要恢复本批已摘路由。
 - HTTP `Cache-Control`（BFF 需 `Vary` 语言与登录态）。
+
+## 本轮已做（Admin 收口，不删路径）
+
+- jobs / feedback / reports 单条 `status`/`state` 吃 `id` 或 `ids`；对应 `batch/*` 标 deprecated。
+- 8 个 archive list 内嵌 `statist`（`user-photos`、`user-certs`、`user-msgs`、`company-photos`、`company-shows`、`resume-shows`、`company-banners`、`user-entrusts`）。独立 `/statist` 仍在。
+- 新路径 `POST /v1/admin/logs/user|company`（+ `/delete`），`kind` 为 snake_case；旧 `user-logs*` / `company-logs*` 标 deprecated。`company_comlog/index` 仍走 php-content。
 
 ## 不算合并
 

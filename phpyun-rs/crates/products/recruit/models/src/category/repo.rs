@@ -22,6 +22,9 @@ use std::collections::HashSet;
 
 /// Resolve `kind` to (real PHPYun table, parent id column).
 fn resolve(kind: &str) -> Option<(&'static str, &'static str)> {
+    if !crate::sql::ident_ok(kind) {
+        return None;
+    }
     match kind {
         "job" => Some(("phpyun_job_class", "keyid")),
         "company" | "com" | "comclass" => Some(("phpyun_comclass", "keyid")),

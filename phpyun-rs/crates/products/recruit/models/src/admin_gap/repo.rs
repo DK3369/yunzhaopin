@@ -237,11 +237,15 @@ fn apply_msg_filter(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &MsgFilter<'_>) {
 }
 
 fn msg_order(sort: &str, dir: &str) -> (&'static str, &'static str) {
-    let col = match sort {
-        "datetime" => "datetime",
-        "reply_time" => "reply_time",
-        "status" => "status",
-        _ => "id",
+    let col = if !crate::sql::ident_ok(sort) {
+        "id"
+    } else {
+        match sort {
+            "datetime" => "datetime",
+            "reply_time" => "reply_time",
+            "status" => "status",
+            _ => "id",
+        }
     };
     let dir = if dir.eq_ignore_ascii_case("asc") {
         "ASC"
