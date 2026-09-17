@@ -107,6 +107,9 @@ pub async fn create_order(
     if st.rating <= 0 || (st.vip_etime != 0 && st.vip_etime < now) {
         return Err(ApiError::business("zph_need_vip"));
     }
+    if st.rating_type == 2 {
+        return Err(ApiError::business("member_com_00705"));
+    }
     let q = quote(state, user, detail_id).await?;
     if q.price <= 0.0 {
         return Err(ApiError::business("common_01355"));

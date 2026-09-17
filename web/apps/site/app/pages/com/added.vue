@@ -18,8 +18,14 @@ type Group = { id: number; name: string; details: Detail[] }
 const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
+const { data: current } = await useAsyncData('com-vip-current', () =>
+  api.post<{ rating_type?: number }>('/v1/mcenter/vip/current', {}).catch(() => null),
+)
+const blocked = computed(() => Number(current.value?.rating_type) === 2)
 const { data, error, refresh } = await useAsyncData('com-packs', () =>
-  api.post<Group[]>('/v1/mcenter/packs/list', {}).catch(() => [] as Group[]),
+  blocked.value
+    ? Promise.resolve([] as Group[])
+    : api.post<Group[]>('/v1/mcenter/packs/list', {}).catch(() => [] as Group[]),
 )
 const groups = computed(() => (Array.isArray(data.value) ? data.value : []) as Group[])
 const msg = ref('')
@@ -58,12 +64,17 @@ useSeoMeta({ title: t('wap_com_00393') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('wap_com_00393')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !groups.length">
+  <MemberPanel :title="$t('wap_com_00393')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !blocked && !groups.length">
     <template #pcTabs><MemberComVipTabs /></template>
     <template #h5Tabs><MemberComVipTabs /></template>
     <p>
       <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
     </p>
+    <p v-if="blocked" class="muted">
+      {{ $t('member_com_00705') }}
+      <NuxtLink to="/com/member-right" class="cblue">{{ $t('wap_com_00097') }}</NuxtLink>
+    </p>
+    <template v-if="!blocked">
     <div class="payment_list site-pc">
         <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
       <div class="payment_list_r">
@@ -118,6 +129,7 @@ useSeoMeta({ title: t('wap_com_00393') })
         </div>
       </div>
     </div>
+    </template>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

@@ -6,6 +6,13 @@ const page = computed(() => Number(route.query.page || 1))
 const nid = computed(() => Number(route.query.nid || 0) || undefined)
 const { t } = useI18n()
 const api = useApi()
+const { me } = useSiteChrome()
+const ordersTo = computed(() => {
+  const ut = Number(me.value?.usertype)
+  if (ut === 2) return '/com/rewards'
+  if (ut === 1) return '/user/rewards'
+  return '/redeem/orders'
+})
 const { data, error } = await useAsyncData(
   () => `redeem-${page.value}-${nid.value || 0}`,
   () =>
@@ -30,7 +37,7 @@ const list = computed(() => data.value?.list || [])
 
 <template>
   <section class="site-pc">
-    <p><NuxtLink to="/redeem/orders">{{ $t('common.more') }}</NuxtLink></p>
+    <p><NuxtLink :to="ordersTo">{{ $t('wap_user_00170') }}</NuxtLink></p>
     <FilterRow
       v-if="classItems.length"
       :label="$t('common_06524')"

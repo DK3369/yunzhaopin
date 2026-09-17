@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatUnixDate, isUnauthErr } from '~/utils/site'
+import { formatUnixDate, isMemberModuleOn, isUnauthErr } from '~/utils/site'
 
 type Mission = {
   base_info?: boolean
@@ -18,6 +18,7 @@ type Mission = {
 const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
+const mallOn = computed(() => isMemberModuleOn(settings.value, '/redeem'))
 const { page, pageSize, inferTotal } = useMemberListPage()
 const { data: bal, error, refresh: refreshBal } = await useAsyncData('integral-bal', () =>
   api.post('/v1/mcenter/integral/balance', {}),
@@ -87,7 +88,7 @@ useSeoMeta({ title: t('wap_user_00008') })
           <li>
             <NuxtLink to="/user/pay"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_icongz" />{{ $t('common_01946') }}</NuxtLink>
           </li>
-          <li>
+          <li v-if="mallOn">
             <NuxtLink to="/redeem"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconsc" />{{ $t('wap_00398') }}</NuxtLink>
           </li>
         </ul>
@@ -96,6 +97,7 @@ useSeoMeta({ title: t('wap_user_00008') })
         <ul>
           <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_user_00008') }}</a></li>
           <li><NuxtLink to="/user/finance">{{ $t('member_user_00190') }}</NuxtLink></li>
+          <li v-if="mallOn"><NuxtLink to="/redeem">{{ $t('wap_00398') }}</NuxtLink></li>
         </ul>
       </div>
       <p class="site-pc muted">{{ $t('ui.balance') }} {{ bal?.balance ?? 0 }}

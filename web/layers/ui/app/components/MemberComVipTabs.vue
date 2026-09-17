@@ -29,12 +29,22 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const route = useRoute()
-const items = computed(() => [
-  { to: '/com/member-right', label: t('wap_com_00380') },
-  { to: '/com/added', label: t('wap_com_00393') },
-  { to: '/com/pay', label: t('common_01946') },
-  { to: '/com/orders', label: t('common_02029') },
-])
+const api = useApi()
+const { data: current } = useAsyncData('com-vip-current', () =>
+  api.post<{ rating_type?: number }>('/v1/mcenter/vip/current', {}).catch(() => null),
+)
+const { settings } = useSiteChrome()
+const hideAdded = computed(
+  () => Number(current.value?.rating_type) === 2 || String(settings.value.com_integral_online || '') === '4',
+)
+const items = computed(() =>
+  [
+    { to: '/com/member-right', label: t('wap_com_00380') },
+    ...(hideAdded.value ? [] : [{ to: '/com/added', label: t('wap_com_00393') }]),
+    { to: '/com/pay', label: t('common_01946') },
+    { to: '/com/orders', label: t('common_02029') },
+  ],
+)
 function on(to: string) {
   return route.path === to
 }

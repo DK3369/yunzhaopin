@@ -34,6 +34,17 @@ export function useMemberNav() {
     },
     { watch: [() => me.value?.usertype] },
   )
+  const { data: vipNow } = useAsyncData(
+    'com-vip-current',
+    () => {
+      if (Number(me.value?.usertype) !== 2) return Promise.resolve(null)
+      return api.post<{ rating_type?: number }>('/v1/mcenter/vip/current', {}).catch(() => null)
+    },
+    { watch: [() => me.value?.usertype] },
+  )
+  const hideAdded = computed(
+    () => Number(vipNow.value?.rating_type) === 2 || String(settings.value.com_integral_online || '') === '4',
+  )
 
   const userMain = computed<MemberNavLink[]>(() => [
     { to: '/user', label: t('member_user_00183'), icon: 'left_navicon_i1' },
@@ -174,7 +185,12 @@ export function useMemberNav() {
     return groups
       .map((g) => ({
         ...g,
-        items: g.items.filter((it) => on(it.to) && !(isSub.value && it.to === '/com/sub-accounts')),
+        items: g.items.filter(
+          (it) =>
+            on(it.to) &&
+            !(isSub.value && it.to === '/com/sub-accounts') &&
+            !(hideAdded.value && it.to === '/com/added'),
+        ),
       }))
       .filter((g) => g.items.length)
   })

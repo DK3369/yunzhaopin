@@ -178,19 +178,19 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 
 招聘多出来：职位管理/发布、应聘/下载/谁看过职位/粉丝/看过的简历/人才库（`MemberHrTabs`）、面试模板、企业资料/环境/新闻/产品/横幅/地图/模板、会员套餐/增值、招聘会、专题、消费记录、统计、预警、群发、HR 邀请码、经典子账号、左栏自定义。
 
-企业左栏自定义走 [`/com/customize`](../../../web/apps/site/app/pages/com/customize.vue)：`POST /v1/mcenter/company/nav` 读写 `phpyun_company_nav.nav_info` **JSON**（不做 PHP serialize）+ `company.is_nav`（1 默认 / 2 自定义）。`useMemberNav` 的 `comMain` 在 `is_nav==2` 时按返回顺序/显隐重排，首页 `/com` 固定第一；模块开关 `on()` 仍生效。只允许改 sort/show/target，`to` 白名单。H5 只提示去 PC 设置。邀请码协作 `/com/hrs` 保留，不与经典 `member.pid` 子账号混用。
+企业左栏自定义走 [`/com/customize`](../../../web/apps/site/app/pages/com/customize.vue)：`POST /v1/mcenter/company/nav` 读写 `phpyun_company_nav.nav_info` **JSON**（不做 PHP serialize）+ `company.is_nav`（1 默认 / 2 自定义）。`useMemberNav` 的 `comMain` 在 `is_nav==2` 时按返回顺序/显隐重排，首页 `/com` 固定第一；模块开关 `on()` 仍生效。只允许改 sort/show/target，`to` 白名单。H5 只提示去 PC 设置。邀请码协作 `/com/hrs` 是 RS 邀请码页（`phpyun_rs_company_hrs`），不与经典 `member.pid` 子账号、公开 `/hr` 混用。
 
 ## H5 / PC 对齐分期
 
 一套路由、`.site-pc` / `.site-h5` 切皮，**只加 H5 / 窄屏 CSS，不改 `.site-pc` 内部结构**。
 
-已经齐的不当缺口：首页、职位/企业/简历列表与详情、注册；求职投递状态 tab、足迹删除、财务/积分、`/user/set`、密码/认证/绑定分端皮；招聘应聘管线 `hr_userlist`、多数 `com_cardlist`。登录页是自研 `lgp-*`（不是 PHP `login_cont`），**先别改**。
+已经齐的不当缺口：首页、职位/企业/简历列表与详情、注册；求职投递状态 tab、足迹删除、财务/积分、`/user/set`、密码/认证/绑定分端皮；招聘应聘管线 `hr_userlist`、多数 `com_cardlist`。登录/绑定已换成 PHP `login_cont` 双皮（脚本仍走 `/api/auth/*`）。
 
 - **第一期（已做）**：PC 有、H5 卡上点不到的动作。简历分享/删作品技能/缺项/置顶；面试拒信表单进 H5 卡；收藏/关注取消；投递天数第二行 tab；职位 H5 最新/急聘（`urgent=1`）+ 地图 `/map`；企业 H5 已认证 `cert=1` + 福利；`/com/jobs` H5 推广/下架/删除/分享。
 - **第二期前半（已做）**：资讯/兼职/问答公开列表+详情换成 WAP 皮（`news_in_*` / `part_box`+`jz_top_box` / `ask_header_bg`+`ask_ct_list`+`askct_iss`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。问答 `ask.css` 只在问答页 `useHead`，不进全局 H5 包。会员补动作：应聘 H5 状态/备注；企业兼职 H5 刷新/编辑/删除 + 报名 `#h5-acts`；求职兼职卡删除；求职消息点卡已读并展开（不要 PC 勾选批量）。
 - **第二期后半（已做）**：招聘会/专题/once/tiny、公告/公招、问答话题、搜索换成 WAP 皮（`newzph_*` / `special_*` / `tiny_bg`+`com_new_contnet_box` / `news_in_*` / `asktopic_*` / `wap_search_header`+`search_history_*`），`NewsListShell` 的 `index_news_list_*` 只留在 `.site-pc`。招聘资料/发职位 H5 用 `issue_post_body`+`yun_createbox`+`MemberField wap`（同一套 `v-model` / `save` / `submit`），**不要**给 `MemberReleaseRow` 加媒体查询。应聘 H5 在 `m_taball` 下加关键词/职位/学历经验筛，不改 PC `jlsx_*`。企业新闻/产品 H5 卡有编辑删除；表单同样双皮。
-- **招聘会员剩余子页（已做）**：地址/环境/横幅、兼职发布、面试模板、投诉、HR 建码/加入、搜索器、套餐/增值/充值、统计、应聘备注邀请、人才库备注、积分转账均 `.site-pc` 外包 + H5 `yun_createbox` / `com_cardlist` / `issue_post_body_card` / `company_photo_box` 并列，复用同页函数。**不要**给 `payment_list` 加媒体查询当切皮。登录/兑换仍第三期；地图页 `/com/map` 已用 `MapPick`。
-- **第三期**：登录是否换成 `login_cont`；兑换、HR 工具箱。求职首页 H5 默认不加 PC 那块推荐职位。
+- **招聘会员剩余子页（已做）**：地址/环境/横幅、兼职发布、面试模板、投诉、HR 建码/加入、搜索器、套餐/增值/充值、统计、应聘备注邀请、人才库备注、积分转账均 `.site-pc` 外包 + H5 `yun_createbox` / `com_cardlist` / `issue_post_body_card` / `company_photo_box` 并列，复用同页函数。**不要**给 `payment_list` 加媒体查询当切皮。地图页 `/com/map` 已用 `MapPick`。
+- **第三期（已做）**：登录/绑定 `login_cont`（记住我 7d、短信、App 扫码、现 OAuth，不接 PHP `qqlogin.php`）；兑换不新开会员商城页，公开 `/redeem` + 会员记录 `/user/rewards` `/com/rewards`（`StatusFilterBody` 的 status tab；积分不足 `insufficient_balance` 去 `/user/pay` 或 `/com/pay`）；`/redeem/orders` 登录后重定向到对应记录页。HR 邀请码 [`/com/hrs`](../../../web/apps/site/app/pages/com/hrs.vue) 露出 `max_uses`/`expires_at`、剩余次数、复制、用户名/公司名；`/com/hrs/join?code=` 预填加入。不与公开 `/hr`、子账号 `member.pid` 混用。求职首页 H5 默认不加 PC 那块推荐职位。
 
 ## 命名陷阱
 
@@ -263,7 +263,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 - `mark_paid` 与积分全额 `/v1/mcenter/vip/orders/integral` 共用 `apply_rating`。
 - 列表：`com_vip_type`（0/2 套餐 `type=1`，1 时间会员 `type=2`）+ `company.package` 白名单 + `com_package_open`。
-- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 展示 `company_statis` 当前等级与额度，页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。套餐/增值/充值/订单四页顶栏共用 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)（`wap_com_00380` / `wap_com_00393` / `common_01946` / `common_02029`）。
+- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 展示 `company_statis` 当前等级与额度，页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。`POST /v1/mcenter/vip/packages` 可选 body `kind=package|time`（`ident_ok` 后 match）；省略仍按站点 `com_vip_type`（0 双开默认套餐、1 仅时间、2 仅套餐）。显式 `kind` 仍受开关约束（关了对应档给空列表）。`vip/current` 带 `com_vip_type` 给前端出 Tab。PC 套餐 `vip_box` / 时间 `vip_timebox`，H5 `dredge_body*`，不要拿 `payment_list` 冒充套餐卡。`rating_type==2` 时 [`added.vue`](../../../web/apps/site/app/pages/com/added.vue) 拦购买（对齐 PHP `right::added` / `member_com_00705`），顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue) 藏增值入口。套餐/增值/充值/订单四页顶栏共用该组件（`wap_com_00380` / `wap_com_00393` / `common_01946` / `common_02029`）。
 - [`pay.vue`](../../../web/apps/site/app/pages/com/pay.vue) 是积分充值（PHP `pay.htm`），不是买 VIP：`POST /v1/mcenter/vip/integral-classes`（`phpyun_admin_integralclass` `state=1`）+ `recharge`（`price_int`/`integralid`，金额 = 积分/`integral_proportion`×折扣/100，写 `company_order.type=2`）+ `card`（`phpyun_company_card` 卡号密码）。渠道不要写死 `alipay`。套餐购买只留 member-right。
 - 增值包 VIP 未过期才可买；渠道不要写死 `alipay`。订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 客户端合并 `vip/orders/list` + `packs/orders/list` + `redeem/orders`（按类型标签）。购买走套餐/充值页。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。
 - `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
@@ -312,7 +312,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 `POST /v1/mcenter/orders/detail|{pay}` 按 `order_id` 查任意 `company_order`（VIP/充值/增值/once/置顶/type=28）。待付 `order_state=0`；已付=1；取消=2；银行待审=3。支付宝出 `pay_url`，银行返回汇款账户；`wxpay` 仅当 `sy_wxpayid` 有值，只改渠道不给下单 URL。展位现金链不走套餐扣次：`zph/reserve` 仍可能 `zph_need_pay`，前端再 `zph/order`。
 
-本轮仍不做：邀请码协作工具箱（`/com/hrs` 保留但不做成 PHP 工具箱）、顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。微信支付商户下单 URL。
+本轮仍不做：协作「切换企业上下文」新鉴权（下游职位/应聘尚未读 `company_hrs`）、顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。微信支付商户下单 URL。不要给求职做 VIP 套餐页，也不要让 `/user/pay` 打 `/v1/mcenter/vip/packages`。
 
 ## 登录走查（2026-09-17）
 

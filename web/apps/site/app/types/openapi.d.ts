@@ -10725,6 +10725,11 @@ export interface components {
             urgent_num: number;
             /** Format: int32 */
             zph_num: number;
+            /**
+             * Format: int32
+             * @description 站点 `com_vip_type`：0 套餐+时间 / 1 仅时间 / 2 仅套餐。
+             */
+            com_vip_type: number;
         };
         DashboardFull: {
             /** Format: int64 */
@@ -11476,6 +11481,7 @@ export interface components {
             role: string;
             /** Format: int32 */
             status: number;
+            username: string;
         };
         /** @description Body carrying just `{ id }`. Use for any "act on one resource by id" call. */
         IdBody: {
@@ -12268,6 +12274,7 @@ export interface components {
             /** Format: int64 */
             joined_at: number;
             role: string;
+            company_name: string;
         };
         MyJobsQuery: {
             /** @description PHP member job list `keyword` (job name). Empty = no filter. */
@@ -15763,6 +15770,10 @@ export interface components {
             user: string;
             weburl: string;
             zwpic: string;
+        };
+        ListPackagesForm: {
+            /** @description `package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。 */
+            kind?: string | null;
         };
     };
     responses: never;
@@ -22632,7 +22643,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListPackagesForm"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {

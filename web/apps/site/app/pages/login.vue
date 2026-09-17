@@ -3,7 +3,7 @@ import { ApiError } from '~/utils/envelope'
 import { qrSvgDataUri } from '~/utils/qr'
 import { OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin, safeLoginNext } from '~/utils/site'
 
-const { siteName, logoPc, settings, me, worktime, phone, refreshMe } = useSiteChrome()
+const { siteName, logoPc, settings, me, refreshMe } = useSiteChrome()
 const { data: dicts } = await usePublicDicts()
 const { t } = useI18n()
 const api = useApi()
@@ -353,205 +353,287 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="lgp">
-    <div class="lgp-top">
-      <a href="javascript:;" class="lgp-back" @click.prevent="goBack">{{ $t('common.back') }}</a>
-      <LangSwitch />
-    </div>
-    <div class="lgp-card">
-      <aside class="lgp-side">
-        <NuxtLink to="/" class="lgp-side-head">
-          <span class="lgp-mark">
-            <img v-if="logoPc" :src="logoPc" :alt="siteName" />
-            <span v-else>{{ siteName.slice(0, 2) || 'JOB' }}</span>
-          </span>
-          <span class="lgp-side-copy">
-            <strong>{{ $t('loginPage.side_job') }}</strong>
-            <em>{{ $t('loginPage.side_talk', { site: siteName }) }}</em>
-          </span>
-        </NuxtLink>
-        <ul v-if="role === 1" class="lgp-feat">
-          <li>
-            <span class="lgp-feat-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 12h4v8H4v-8zm6-6h4v14h-4V6zm6 3h4v11h-4V9z" /></svg>
-            </span>
-            <span>
-              <strong>{{ $t('loginPage.seek_f2_t') }}</strong>
-              <em>{{ $t('loginPage.seek_f2_d') }}</em>
-            </span>
-          </li>
-          <li>
-            <span class="lgp-feat-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 3h6l1 2h4v3H4V5h4l1-2zm-3 8h12l-1.5 9h-9L6 11z" /></svg>
-            </span>
-            <span>
-              <strong>{{ $t('loginPage.seek_f3_t') }}</strong>
-              <em>{{ $t('loginPage.seek_f3_d') }}</em>
-            </span>
-          </li>
-        </ul>
-        <ul v-else class="lgp-feat">
-          <li>
-            <span class="lgp-feat-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h10v8H8l-4 3V4zm12 4h6v10l-4-3h-2V8z" /></svg>
-            </span>
-            <span>
-              <strong>{{ $t('loginPage.hire_f1_t') }}</strong>
-              <em>{{ $t('loginPage.hire_f1_d') }}</em>
-            </span>
-          </li>
-          <li>
-            <span class="lgp-feat-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.5 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2 19c0-2.7 3.1-5 7-5s7 2.3 7 5v1H2v-1zm14 1v-1c0-1.3-.5-2.5-1.4-3.4 1.8.3 4.4 1.3 4.4 3.4V20h-3z" /></svg>
-            </span>
-            <span>
-              <strong>{{ $t('loginPage.hire_f2_t') }}</strong>
-              <em>{{ $t('loginPage.hire_f2_d') }}</em>
-            </span>
-          </li>
-          <li>
-            <span class="lgp-feat-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 3h6l1 2h4v3H4V5h4l1-2zm-3 8h12l-1.5 9h-9L6 11z" /></svg>
-            </span>
-            <span>
-              <strong>{{ $t('loginPage.hire_f3_t') }}</strong>
-              <em>{{ $t('loginPage.hire_f3_d') }}</em>
-            </span>
-          </li>
-        </ul>
-      </aside>
-      <div class="lgp-main">
-        <button type="button" class="lgp-qr-btn" @click="openPanel(panel === 'qr' ? (smsLoginOn ? 'sms' : 'pass') : 'qr')">
-          <svg v-if="panel !== 'qr'" class="lgp-qr-ico" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v4h-4v-2h2v-2z" />
-          </svg>
-          <svg v-else class="lgp-qr-ico" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M4 4h16v12H4V4zm2 2v8h12V6H6zm-2 12h16v2H4v-2z" />
-          </svg>
-          {{ panel === 'qr' ? $t('loginPage.sms_title') : $t('loginPage.tab_qr') }}
-        </button>
-
-        <template v-if="panel === 'qr'">
-          <h1 class="lgp-h1">{{ $t('loginPage.qr_title', { site: siteName }) }}</h1>
-          <div class="lgp-qr">
-            <img v-if="appQrSrc" :src="appQrSrc" alt="" width="200" height="200" />
-            <p v-else class="muted">{{ $t('common_02409') }}</p>
-            <p v-if="appQrHint" class="lgp-err">{{ appQrHint }}</p>
-            <button v-if="appQrHint" type="button" class="lgp-send" @click="startAppQr">{{ $t('loginPage.qr_refresh') }}</button>
+  <div class="site-pc">
+    <div class="login_cont">
+      <div class="login_w960">
+        <div class="login_header">
+          <div class="logo fl">
+            <NuxtLink to="/">
+              <img v-if="logoPc" :src="logoPc" :alt="siteName" />
+              <span v-else class="site-wordmark">{{ siteName }}</span>
+            </NuxtLink>
           </div>
-          <p v-if="err" class="lgp-err">{{ err }}</p>
-          <p class="lgp-qr-links">
-            <NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink>
-            <span>{{ $t('loginPage.qr_help') }}</span>
-          </p>
-        </template>
-
-        <template v-else>
-          <h1 class="lgp-h1">{{ panel === 'pass' ? $t('common.login') : $t('loginPage.sms_title') }}</h1>
-          <p v-if="panel !== 'pass'" class="lgp-sub">{{ $t('loginPage.sms_hint', { site: siteName }) }}</p>
-          <div class="lgp-role">
-            <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
-            <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
+          <a href="javascript:;" class="logo_fh fr" @click.prevent="goBack">{{ $t('member_user_00116') }} ></a>
+          <span class="fr" style="margin-right: 16px; line-height: 60px"><LangSwitch /></span>
+        </div>
+      </div>
+      <div class="logoin_cont_box">
+        <div class="login_left">
+          <div class="login_box_cont">
+            <div class="login_box_h1_d">
+              <ul class="login_box_h_list">
+                <li :class="{ login_box_h_list_cur: panel === 'pass' }" @click="openPanel('pass')">
+                  {{ $t('default_00062') }}<i class="login_box_h_icon" />
+                </li>
+                <li
+                  v-if="smsLoginOn"
+                  :class="{ login_box_h_list_cur: panel === 'sms' }"
+                  @click="openPanel('sms')"
+                >
+                  {{ $t('default_00259') }}<i class="login_box_h_icon" />
+                </li>
+              </ul>
+              <div
+                class="wxcode_login"
+                :title="$t('loginPage.tab_qr')"
+                :class="{ none: panel === 'qr' }"
+                @click="openPanel('qr')"
+              />
+              <div
+                class="normal_login"
+                :class="{ none: panel !== 'qr' }"
+                :title="$t('common.login')"
+                @click="openPanel(smsLoginOn ? 'sms' : 'pass')"
+              />
+            </div>
+            <div v-if="panel === 'qr'" class="wx_login_show">
+              <div class="wx_login_show_new">
+                <div class="wxlogintext">
+                  <img v-if="appQrSrc" :src="appQrSrc" alt="" width="180" height="180" />
+                  <p v-else class="muted">{{ $t('common_02409') }}</p>
+                </div>
+                <div class="wxlogintxt">{{ $t('loginPage.qr_title', { site: siteName }) }}</div>
+                <p class="muted" style="padding: 8px 0">
+                  <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
+                  <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
+                </p>
+                <p v-if="appQrHint" class="muted">{{ appQrHint }}</p>
+                <button v-if="appQrHint" type="button" class="login_box_bth2" @click="startAppQr">{{ $t('loginPage.qr_refresh') }}</button>
+                <p>
+                  <NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink>
+                </p>
+              </div>
+            </div>
+            <div v-else class="login_t_box">
+              <form v-if="panel === 'sms'" @submit.prevent="submitSms">
+                <div class="login_box_list">
+                  <i class="login_box_icon login_box_usersj" />
+                  <input
+                    v-model="mobile"
+                    required
+                    type="tel"
+                    maxlength="11"
+                    class="login_box_bth"
+                    autocomplete="tel"
+                    :placeholder="$t('loginPage.mobile_ph')"
+                  />
+                </div>
+                <div v-if="needImageCaptcha && captcha?.image" class="login_box_list">
+                  <input v-model="authcode" maxlength="8" class="login_box_bth" autocomplete="off" :placeholder="$t('wap_00262')" />
+                  <img :src="captcha.image" alt="" @click="loadCaptcha" />
+                </div>
+                <div class="login_box_list">
+                  <input
+                    v-model="smsCode"
+                    required
+                    maxlength="6"
+                    class="login_box_bth"
+                    autocomplete="one-time-code"
+                    :placeholder="$t('loginPage.sms_code')"
+                  />
+                  <button type="button" :disabled="smsWait > 0" @click="sendSms">
+                    {{ smsWait > 0 ? `${smsWait}s` : $t('loginPage.send_code') }}
+                  </button>
+                </div>
+                <div class="login_box_cz">
+                  <input type="submit" class="login_box_bth2" :disabled="submitting" :value="$t('common.login')" />
+                </div>
+              </form>
+              <form v-else @submit.prevent="submitPass">
+                <div class="login_box_list">
+                  <i class="login_box_icon login_box_username" />
+                  <input
+                    v-model="username"
+                    required
+                    class="login_box_bth"
+                    autocomplete="username"
+                    :placeholder="$t('admin_user_00140')"
+                  />
+                </div>
+                <div class="login_box_list">
+                  <i class="login_box_icon loginpwd" />
+                  <input
+                    v-model="password"
+                    required
+                    type="password"
+                    class="login_box_bth"
+                    autocomplete="current-password"
+                    :placeholder="$t('wap_user_00371')"
+                  />
+                </div>
+                <div v-if="needImageCaptcha && captcha?.image" class="login_box_list">
+                  <input v-model="authcode" maxlength="8" class="login_box_bth" autocomplete="off" :placeholder="$t('wap_00262')" />
+                  <img :src="captcha.image" alt="" @click="loadCaptcha" />
+                </div>
+                <div class="login_box_cz">
+                  <input type="submit" class="login_box_bth2" :disabled="submitting" :value="$t('common.login')" />
+                </div>
+                <div class="login_box_fw">
+                  <NuxtLink to="/forgetpw">{{ $t('wap_00680') }}</NuxtLink>
+                  <NuxtLink to="/register">{{ $t('common.register') }}</NuxtLink>
+                </div>
+              </form>
+            </div>
+            <p v-if="err" class="muted">{{ err }}</p>
+            <div v-if="oauth.length" class="login_other">
+              <a v-for="o in oauth" :key="o.provider" href="javascript:;" class="l-icon" @click.prevent="startOauth(o)">
+                {{
+                  o.provider === 'wechat'
+                    ? $t('loginPage.wechat')
+                    : o.provider === 'qq'
+                      ? $t('loginPage.qq')
+                      : o.provider === 'weibo'
+                        ? $t('loginPage.weibo')
+                        : o.provider === 'google'
+                          ? $t('loginPage.google')
+                          : o.provider === 'facebook'
+                            ? $t('loginPage.facebook')
+                            : o.name
+                }}
+              </a>
+            </div>
+            <div class="login_xy">
+              <label class="login_xy_zx">
+                <input v-model="remember" type="checkbox" />
+                <i class="policy">{{ $t('loginPage.remember') }}</i>
+              </label>
+              <label class="login_xy_zx">
+                <input v-model="agreed" type="checkbox" />
+                <i class="policy">{{ $t('wap_00309') }}</i>
+                <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+                <i class="policy">{{ $t('wap_00679') }}</i>
+                <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+              </label>
+            </div>
           </div>
-
-          <form v-if="panel === 'sms'" @submit.prevent="submitSms">
-            <div class="lgp-field">
-              <span class="lgp-cc">+86 <i /></span>
-              <input v-model="mobile" required type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('loginPage.mobile_ph')" />
-            </div>
-            <div v-if="needImageCaptcha && captcha?.image" class="lgp-field">
-              <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
-              <img :src="captcha.image" alt="" class="lgp-captcha" @click="loadCaptcha" />
-            </div>
-            <div class="lgp-field">
-              <input v-model="smsCode" required maxlength="6" autocomplete="one-time-code" :placeholder="$t('loginPage.sms_code')" />
-              <button type="button" class="lgp-send" :disabled="smsWait > 0" @click="sendSms">
-                {{ smsWait > 0 ? `${smsWait}s` : $t('loginPage.send_code') }}
-              </button>
-            </div>
-            <button type="submit" class="lgp-submit" :disabled="submitting">{{ $t('loginPage.submit') }}</button>
-          </form>
-
-          <form v-else @submit.prevent="submitPass">
-            <div class="lgp-field">
-              <input v-model="username" required autocomplete="username" :placeholder="$t('admin_user_00140')" />
-            </div>
-            <div class="lgp-field">
-              <input v-model="password" required type="password" autocomplete="current-password" :placeholder="$t('wap_user_00371')" />
-            </div>
-            <div v-if="needImageCaptcha && captcha?.image" class="lgp-field">
-              <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
-              <img :src="captcha.image" alt="" class="lgp-captcha" @click="loadCaptcha" />
-            </div>
-            <button type="submit" class="lgp-submit" :disabled="submitting">{{ $t('common.login') }}</button>
-            <p class="lgp-extra">
-              <NuxtLink to="/forgetpw">{{ $t('wap_00680') }}</NuxtLink>
-              <NuxtLink to="/register">{{ $t('common.register') }}</NuxtLink>
-            </p>
-          </form>
-
-          <p v-if="err" class="lgp-err">{{ err }}</p>
-          <div class="lgp-other">
-            <a
-              v-for="o in oauth"
-              :key="o.provider"
-              href="javascript:;"
-              @click.prevent="startOauth(o)"
-            >
-              <svg v-if="o.provider === 'wechat'" viewBox="0 0 24 24" aria-hidden="true"><path fill="#2aae67" d="M9.5 7.2c-3.7 0-6.7 2.4-6.7 5.4 0 1.7.9 3.2 2.4 4.3l-.6 1.8 2.1-1.1c.8.2 1.5.4 2.3.4.3 0 .6 0 .9-.1-.2-.5-.3-1.1-.3-1.7 0-3.2 2.9-5.7 6.5-5.7.2 0 .4 0 .6.1-1-2.1-3.4-3.4-6.2-3.4zm-1.7 2.2a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.5 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zM16.8 11c-3.3 0-6 2.2-6 5s2.7 5 6 5c.6 0 1.2-.1 1.8-.3l1.7.9-.5-1.5c1.2-.9 2-2.2 2-3.6 0-2.8-2.7-5-5-5zm-1.5 1.9a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4zm3.1 0a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4z" /></svg>
-              {{
-                o.provider === 'wechat' ? $t('loginPage.wechat')
-                  : o.provider === 'qq' ? $t('loginPage.qq')
-                    : o.provider === 'weibo' ? $t('loginPage.weibo')
-                      : o.provider === 'google' ? $t('loginPage.google')
-                        : o.provider === 'facebook' ? $t('loginPage.facebook')
-                          : o.name
-              }}
-            </a>
-          </div>
-          <label class="lgp-agree">
-            <input v-model="remember" class="lgp-agree-box" type="checkbox" />
-            <span class="lgp-agree-ui" aria-hidden="true" />
-            <span>{{ $t('loginPage.remember') }}</span>
-          </label>
-          <label class="lgp-agree">
-            <input v-model="agreed" class="lgp-agree-box" type="checkbox" />
-            <span class="lgp-agree-ui" aria-hidden="true" />
-            <span>
-              {{ $t('loginPage.agree_prefix', { site: siteName }) }}
-              <NuxtLink to="/pages/protocol" @click.stop>{{ $t('loginPage.protocol') }}</NuxtLink>
-              <NuxtLink to="/pages/privacy" @click.stop>{{ $t('loginPage.privacy') }}</NuxtLink>
-              {{ $t('loginPage.agree_suffix', { site: siteName }) }}
-            </span>
-          </label>
-        </template>
-        <p class="lgp-foot">
-          {{ $t('loginPage.service', { tel: phone || settings.sy_freewebtel || '', time: worktime || '8:00-22:00' }) }}
-          <br />
-          {{ $t('loginPage.license') }}
-        </p>
+        </div>
       </div>
     </div>
-    <svg class="lgp-sky" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <g fill="none" stroke="#0aa9a8" stroke-opacity="0.45" stroke-width="1.4">
-        <path d="M0 210 H1440" />
-        <path d="M20 210 V150 h28 v-22 h18 v32 h22 V210" />
-        <path d="M100 210 V120 h50 V210" />
-        <path d="M118 132 h14 v10 h-14z M118 148 h14 v10 h-14z M118 164 h14 v10 h-14z M118 180 h14 v10 h-14z" />
-        <path d="M165 210 V88 h36 V210" />
-        <path d="M220 210 V140 h70 V210" />
-        <path d="M236 152 h14 v12 h-14z M258 152 h14 v12 h-14z M236 172 h14 v12 h-14z M258 172 h14 v12 h-14z" />
-        <path d="M310 210 V100 h24 v-36 h18 v36 h24 V210" />
-        <path d="M400 210 V70 l18-28 18 28 V210" />
-        <path d="M460 210 V150 h90 V210" />
-        <path d="M580 210 V110 h40 V210" />
-        <path d="M1080 210 V130 h60 V210" />
-        <path d="M1096 142 h12 v10 h-12z M1116 142 h12 v10 h-12z M1096 160 h12 v10 h-12z M1116 160 h12 v10 h-12z" />
-        <path d="M1160 210 V80 h18 v-50 h12 v50 h18 V210" />
-        <path d="M1220 210 V40 c8-28 18-48 22-70 4 22 14 42 22 70 V210" />
-        <path d="M1288 210 V120 h70 V210" />
-        <path d="M1368 210 V150 h52 V210" />
-      </g>
-    </svg>
+  </div>
+  <div class="site-h5">
+    <div class="Back_to_the_previous_level">
+      <a href="javascript:;" class="login_back" @click.prevent="goBack">
+        <img src="/legacy/h5/images/return.png" alt="" width="100%" height="100%" />
+      </a>
+    </div>
+    <div class="login_cont">
+      <div style="text-align: right; padding: 0.24rem 0.32rem 0"><LangSwitch /></div>
+      <div class="bottom_nav_bom" style="padding-top: 0; text-align: right">
+        <i class="bottom_nav_bom_word">{{ $t('wap_00672') }}</i>
+        <NuxtLink to="/register" class="register_1">{{ $t('wap_00673') }}</NuxtLink>
+      </div>
+      <div class="login_welcome">
+        <div>{{ $t('common.login') }}</div>
+        <div>{{ siteName }}</div>
+      </div>
+      <form v-if="panel === 'qr'" @submit.prevent>
+        <div class="The_login_subject">
+          <p>
+            <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
+            <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
+          </p>
+          <img v-if="appQrSrc" :src="appQrSrc" alt="" width="180" height="180" />
+          <p v-else class="muted">{{ $t('common_02409') }}</p>
+          <p v-if="appQrHint" class="muted">{{ appQrHint }}</p>
+          <button v-if="appQrHint" type="button" class="login_bth" @click="startAppQr">{{ $t('loginPage.qr_refresh') }}</button>
+          <p><NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink></p>
+        </div>
+      </form>
+      <form v-else-if="panel === 'sms'" @submit.prevent="submitSms">
+        <div class="The_login_subject">
+          <div class="login_textbox">
+            <input v-model="mobile" required type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('loginPage.mobile_ph')" />
+          </div>
+          <div v-if="needImageCaptcha && captcha?.image" class="login_textbox">
+            <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
+            <img :src="captcha.image" alt="" class="authcode" @click="loadCaptcha" />
+          </div>
+          <div class="login_textbox">
+            <input v-model="smsCode" required maxlength="6" autocomplete="one-time-code" :placeholder="$t('loginPage.sms_code')" />
+            <div class="dx_yz_hq" :class="{ muted: smsWait > 0 }" @click="smsWait > 0 ? undefined : sendSms()">
+              {{ smsWait > 0 ? `${smsWait}s` : $t('loginPage.send_code') }}
+            </div>
+          </div>
+          <div class="login_xy">
+            <div class="login_xy_zx"><input v-model="agreed" type="checkbox" /></div>
+            <div>
+              <i class="policy">{{ $t('wap_00309') }}</i>
+              <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+              <i class="policy">{{ $t('wap_00679') }}</i>
+              <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+            </div>
+          </div>
+          <label class="login_xy_zx"><input v-model="remember" type="checkbox" /> {{ $t('loginPage.remember') }}</label>
+        </div>
+        <p v-if="err" class="muted">{{ err }}</p>
+        <div class="login_bthbox">
+          <button type="submit" class="login_bth" :disabled="submitting">{{ $t('common.login') }}</button>
+        </div>
+      </form>
+      <form v-else @submit.prevent="submitPass">
+        <div class="The_login_subject">
+          <div class="login_textbox">
+            <input v-model="username" required autocomplete="username" :placeholder="$t('admin_user_00140')" />
+          </div>
+          <div class="login_textbox">
+            <input v-model="password" required type="password" autocomplete="current-password" :placeholder="$t('wap_user_00371')" />
+          </div>
+          <div v-if="needImageCaptcha && captcha?.image" class="login_textbox">
+            <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
+            <img :src="captcha.image" alt="" class="authcode" @click="loadCaptcha" />
+          </div>
+          <div class="login_xy">
+            <div class="login_xy_zx"><input v-model="agreed" type="checkbox" /></div>
+            <div>
+              <i class="policy">{{ $t('wap_00309') }}</i>
+              <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+              <i class="policy">{{ $t('wap_00679') }}</i>
+              <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+            </div>
+          </div>
+          <label class="login_xy_zx"><input v-model="remember" type="checkbox" /> {{ $t('loginPage.remember') }}</label>
+        </div>
+        <p v-if="err" class="muted">{{ err }}</p>
+        <div class="login_bthbox">
+          <button type="submit" class="login_bth" :disabled="submitting">{{ $t('common.login') }}</button>
+        </div>
+      </form>
+      <div class="login_otherfs">
+        <div v-if="smsLoginOn && panel !== 'sms'" class="verification_code_word" @click="openPanel('sms')">{{ $t('wap_00648') }}</div>
+        <div v-if="panel === 'sms'" class="verification_code_word" @click="openPanel('pass')">{{ $t('wap_00308') }}</div>
+        <div class="verification_code_word" @click="openPanel(panel === 'qr' ? 'pass' : 'qr')">{{ $t('loginPage.tab_qr') }}</div>
+        <NuxtLink to="/forgetpw" class="login_wjmm">{{ $t('wap_00680') }}</NuxtLink>
+      </div>
+    </div>
+    <div v-if="oauth.length" class="bottom_nav">
+      <div class="bottom_nav_top">{{ $t('wap_00681') }}</div>
+      <div class="bottom_nav_center">
+        <a v-for="o in oauth" :key="'h5-' + o.provider" href="javascript:;" class="bottom_nav_center_logo" @click.prevent="startOauth(o)">
+          {{
+            o.provider === 'wechat'
+              ? $t('loginPage.wechat')
+              : o.provider === 'qq'
+                ? $t('loginPage.qq')
+                : o.provider === 'weibo'
+                  ? $t('loginPage.weibo')
+                  : o.provider === 'google'
+                    ? $t('loginPage.google')
+                    : o.provider === 'facebook'
+                      ? $t('loginPage.facebook')
+                      : o.name
+          }}
+        </a>
+      </div>
+    </div>
   </div>
 </template>

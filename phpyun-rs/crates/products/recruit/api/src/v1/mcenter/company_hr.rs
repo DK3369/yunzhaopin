@@ -39,7 +39,11 @@ pub struct CodeView {
 
 impl From<phpyun_models::company_hr::entity::InviteCode> for CodeView {
     fn from(c: phpyun_models::company_hr::entity::InviteCode) -> Self {
-        let remaining = i64::from(c.max_uses) - i64::from(c.used_count);
+        let remaining = if c.max_uses == 0 {
+            -1
+        } else {
+            i64::from(c.max_uses) - i64::from(c.used_count)
+        };
         Self {
             id: c.id,
             company_uid: c.company_uid,
@@ -65,6 +69,7 @@ pub struct HrView {
     pub status: i32,
     pub joined_at: i64,
     pub joined_at_n: String,
+    pub username: String,
 }
 
 impl From<phpyun_models::company_hr::entity::CompanyHr> for HrView {
@@ -76,6 +81,7 @@ impl From<phpyun_models::company_hr::entity::CompanyHr> for HrView {
             status: h.status,
             joined_at_n: fmt_dt(h.joined_at),
             joined_at: h.joined_at,
+            username: h.hr_name,
         }
     }
 }
@@ -85,6 +91,7 @@ pub struct MyCompany {
     pub company_uid: u64,
     pub role: String,
     pub joined_at: i64,
+    pub company_name: String,
 }
 
 impl From<phpyun_models::company_hr::entity::CompanyHr> for MyCompany {
@@ -93,6 +100,7 @@ impl From<phpyun_models::company_hr::entity::CompanyHr> for MyCompany {
             company_uid: h.company_uid,
             role: h.role,
             joined_at: h.joined_at,
+            company_name: h.company_name,
         }
     }
 }

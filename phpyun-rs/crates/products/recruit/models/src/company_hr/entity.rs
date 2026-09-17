@@ -21,4 +21,6 @@ pub struct CompanyHr {
     pub role: String,
     pub joined_at: i64,
     pub status: i32,
+    pub hr_name: String,
+    pub company_name: String,
 }
