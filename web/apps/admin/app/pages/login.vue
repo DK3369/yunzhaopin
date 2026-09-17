@@ -22,7 +22,8 @@ async function login() {
     return
   }
   const me = body.data
-  if (me.usertype !== 9) {
+  // JWT / 信封里是数字 9；旧后台包曾误判 3（校园会员），会在登录成功后立刻 logout。
+  if (Number(me.usertype) !== 9) {
     err.value = lc('ui.need_admin', null, '需要管理员账号')
     await $fetch(bffUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' })
     return

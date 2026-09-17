@@ -5,6 +5,7 @@
 ## 管理员
 
 - JWT `usertype=9`（`USERTYPE_ADMIN`）。校园会员仍是 `3`（`USERTYPE_CAMPUS`），**不能**进 `/v1/admin/*`。
+- 后台 SPA（`login.vue` / `auth.global.ts`）也认 **9**。现网 hashed 包若仍判断 `===3`，登录 200 后会立刻 `POST /admin/api/auth/logout`。改完必须 `ops/restart.sh admin --build`。
 - `admin_guard`：先认 `usertype==9`，再 `require_active_admin` 回查 `phpyun_admin_user`（`status=1`、did），按 uid **L1 60s**。禁用/删除后最多 60s 失效。
 - 删/清数据的 `delete_guard` **跳过缓存直查**。
 - 旧管理员 token（usertype=3）会 403，需重新登录。
