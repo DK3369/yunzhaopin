@@ -25,6 +25,7 @@ type ChildRow = {
 
 const api = useApi()
 const { t } = useI18n()
+const route = useRoute()
 const { data, error, refresh } = await useAsyncData('my-resume', () =>
   api.post('/v1/mcenter/resume/list', {}),
 )
@@ -298,6 +299,17 @@ async function delChild(kind: string, row: ChildRow, reload: () => Promise<unkno
   }
 }
 const openSec = ref('')
+onMounted(() => {
+  const h = String(route.hash || '').replace(/^#/, '')
+  if (h) openSec.value = h
+})
+watch(
+  () => route.hash,
+  (hash) => {
+    const h = String(hash || '').replace(/^#/, '')
+    if (h) openSec.value = h
+  },
+)
 function toggleSec(name: string) {
   openSec.value = openSec.value === name ? '' : name
 }

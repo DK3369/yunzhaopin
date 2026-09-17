@@ -8,7 +8,11 @@ const { data, error, refresh } = await useAsyncData(
 )
 const openId = ref(0)
 const rejectId = ref(0)
+const reviewId = ref(0)
 const remark = ref('')
+const reviewComment = ref('')
+const reviewScores = reactive({ desscore: 5, comscore: 5, hrscore: 5 })
+const reviewView = ref<{ submitted?: boolean; comment?: string; dimensions?: Array<{ key: string; score: number }>; total?: number } | null>(null)
 const msg = ref('')
 async function accept(id: number) {
   msg.value = ''
@@ -44,6 +48,46 @@ async function remove(id: number) {
   try {
     await api.post('/v1/mcenter/yqms/delete', { id })
     await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+async function openReview(id: number) {
+  reviewId.value = id
+  reviewComment.value = ''
+  reviewScores.desscore = 5
+  reviewScores.comscore = 5
+  reviewScores.hrscore = 5
+  reviewView.value = null
+  try {
+    const r = await api.post<{ submitted?: boolean; comment?: string; dimensions?: Array<{ key: string; score: number }>; total?: number }>(
+      '/v1/mcenter/interviews/review',
+      { yqms_id: id },
+    )
+    reviewView.value = r
+    if (r?.submitted) {
+      for (const d of r.dimensions || []) {
+        if (d.key in reviewScores) (reviewScores as Record<string, number>)[d.key] = d.score
+      }
+      reviewComment.value = r.comment || ''
+    }
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+async function submitReview() {
+  msg.value = ''
+  try {
+    reviewView.value = await api.post('/v1/mcenter/interviews/review/submit', {
+      yqms_id: reviewId.value,
+      dimensions: [
+        { key: 'desscore', score: reviewScores.desscore },
+        { key: 'comscore', score: reviewScores.comscore },
+        { key: 'hrscore', score: reviewScores.hrscore },
+      ],
+      comment: reviewComment.value,
+    })
+    msg.value = t('common.success')
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -101,6 +145,7 @@ useSeoMeta({ title: t('wap_user_00216') })
       </div>
       <div class="user_new_cz">
         <a href="javascript:;" class="user_new_yqh_sc" @click="remove(row.id)">{{ $t('common.delete') }}</a>
+        <a v-if="row.is_browse === 3" href="javascript:;" class="user_new_yqh_a" @click="openReview(row.id)">{{ $t('common_01866') }}</a>
       </div>
       <div v-if="openId === row.id" class="invitation_cont site-pc">
         <div class="invitation_user">{{ $t('wap_00529') }} <span class="invitation_user_name">{{ row.username || row.fname }}</span></div>
@@ -167,10 +212,40 @@ useSeoMeta({ title: t('wap_user_00216') })
               <button type="submit">{{ $t('common.confirm') }}</button>
             </div>
           </form>
+          <p v-if="row.is_browse === 3">
+            <a href="javascript:;" @click="openReview(row.id)">{{ $t('common_01866') }}</a>
+          </p>
         </div>
       </div>
     </div>
     <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
+    <form v-if="reviewId" class="invite_no" @submit.prevent="submitReview">
+      <p>{{ $t('common_01866') }}</p>
+      <p v-if="reviewView?.submitted">{{ reviewView.total }}</p>
+      <p>
+        {{ $t('company_00008') }}
+        <select v-model.number="reviewScores.desscore">
+          <option v-for="n in 5" :key="'d' + n" :value="n">{{ n }}</option>
+        </select>
+      </p>
+      <p>
+        {{ $t('wap_com_00096') }}
+        <select v-model.number="reviewScores.comscore">
+          <option v-for="n in 5" :key="'c' + n" :value="n">{{ n }}</option>
+        </select>
+      </p>
+      <p>
+        {{ $t('wap_01073') }}
+        <select v-model.number="reviewScores.hrscore">
+          <option v-for="n in 5" :key="'h' + n" :value="n">{{ n }}</option>
+        </select>
+      </p>
+      <textarea v-model="reviewComment" class="invite_notextarea" :placeholder="$t('common_01866')" />
+      <div class="invite_nobth">
+        <button type="submit" class="invite_nobth_bth">{{ $t('common.submit') }}</button>
+        <button type="button" class="invite_nobth_bth" @click="reviewId = 0">{{ $t('common.close') }}</button>
+      </div>
+    </form>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

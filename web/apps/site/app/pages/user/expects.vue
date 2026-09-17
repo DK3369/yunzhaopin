@@ -56,7 +56,12 @@ async function submit() {
     if (form.id) {
       await api.post('/v1/mcenter/resume/expects/update', { ...form })
     } else {
+      const first = list.value.length === 0
       await api.post('/v1/mcenter/resume/expects', { ...form })
+      if (first) {
+        await navigateTo('/user/resume/success')
+        return
+      }
     }
     msg.value = t('common.success')
     adding.value = false

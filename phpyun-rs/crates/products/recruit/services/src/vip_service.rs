@@ -501,11 +501,49 @@ pub struct IntegralClassPack {
     pub balance: i64,
 }
 
+fn member_usertype(user: &AuthenticatedUser) -> i32 {
+    if user.usertype == 1 { 1 } else { 2 }
+}
+
+fn order_usertype(order: &PayOrder) -> i32 {
+    if order.usertype == 1 { 1 } else { 2 }
+}
+
+async fn integral_balance(state: &AppState, uid: u64, usertype: i32) -> i64 {
+    if usertype == 1 {
+        phpyun_models::member_statis::repo::get_balance(state.db.reader(), uid)
+            .await
+            .map(|u| u.balance)
+            .unwrap_or(0)
+    } else {
+        phpyun_models::company_statis::repo::read_integral(state.db.reader(), uid)
+            .await
+            .unwrap_or(0)
+    }
+}
+
+async fn credit_integral(
+    state: &AppState,
+    uid: u64,
+    usertype: i32,
+    pts: i64,
+    now: i64,
+) -> AppResult<()> {
+    if pts <= 0 {
+        return Ok(());
+    }
+    if usertype == 1 {
+        phpyun_models::member_statis::repo::add_balance(state.db.pool(), uid, pts, now).await?;
+    } else {
+        phpyun_models::company_statis::repo::add_integral(state.db.pool(), uid, pts).await?;
+    }
+    Ok(())
+}
+
 pub async fn list_integral_classes(
     state: &AppState,
     user: &AuthenticatedUser,
 ) -> AppResult<IntegralClassPack> {
-    user.require_employer()?;
     let list = phpyun_models::integral::repo::list_active_classes(state.db.reader())
         .await?
         .into_iter()
@@ -529,9 +567,8 @@ pub async fn list_integral_classes(
     let priceunit = read_str_setting(state, "integral_priceunit")
         .await?
         .unwrap_or_default();
-    let balance = phpyun_models::company_statis::repo::read_integral(state.db.reader(), user.uid)
-        .await
-        .unwrap_or(0);
+    let ut = member_usertype(user);
+    let balance = integral_balance(state, user.uid, ut).await;
     Ok(IntegralClassPack {
         list,
         min_recharge,
@@ -579,7 +616,6 @@ pub async fn create_recharge(
     remark: &str,
     client_ip: &str,
 ) -> AppResult<CreatedRechargeOrder> {
-    user.require_employer()?;
     if price_int > 10_000_000 {
         return Err(ApiError::business("common_00644"));
     }
@@ -624,6 +660,7 @@ pub async fn create_recharge(
         state.db.pool(),
         user.uid,
         user.did,
+        member_usertype(user),
         channel,
         price_yuan,
         pts,
@@ -670,8 +707,9 @@ pub async fn mark_recharge_paid(state: &AppState, order_no: &str, pay_tx_id: &st
         return Ok(());
     }
     let pts = i64::from(order.integral.max(0));
+    let ut = order_usertype(&order);
     if pts > 0 {
-        phpyun_models::company_statis::repo::add_integral(state.db.pool(), order.uid, pts).await?;
+        credit_integral(state, order.uid, ut, pts, now).await?;
         let pricename = read_str_setting(state, "integral_pricename")
             .await?
             .unwrap_or_default();
@@ -684,7 +722,7 @@ pub async fn mark_recharge_paid(state: &AppState, order_no: &str, pay_tx_id: &st
             order.uid,
             &remark,
             phpyun_models::integral_transfer::repo::LEDGER_KIND_INTEGRAL,
-            2,
+            ut,
             2,
         )
         .await;
@@ -711,7 +749,6 @@ pub async fn redeem_card(
     password: &str,
     client_ip: &str,
 ) -> AppResult<i32> {
-    user.require_employer()?;
     let card = card.trim();
     let password = password.trim();
     if card.is_empty() || password.is_empty() {
@@ -754,7 +791,8 @@ pub async fn redeem_card(
         return Err(ApiError::business("member_com_00645"));
     }
     let pts = i64::from(row.quota);
-    phpyun_models::company_statis::repo::add_integral(state.db.pool(), user.uid, pts).await?;
+    let ut = member_usertype(user);
+    credit_integral(state, user.uid, ut, pts, now).await?;
     let pricename = read_str_setting(state, "integral_pricename")
         .await?
         .unwrap_or_default();
@@ -768,7 +806,7 @@ pub async fn redeem_card(
         user.uid,
         &remark,
         phpyun_models::integral_transfer::repo::LEDGER_KIND_INTEGRAL,
-        2,
+        ut,
         2,
     )
     .await;

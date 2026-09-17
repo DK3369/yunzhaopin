@@ -274,7 +274,8 @@ const ORDER_SELECT: &str = "
     COALESCE(order_time, 0) AS created_at,
     COALESCE(bank_time, 0) AS paid_at,
     CAST(COALESCE(`type`, 0) AS SIGNED) AS order_kind,
-    CAST(COALESCE(integral, 0) AS SIGNED) AS integral";
+    CAST(COALESCE(integral, 0) AS SIGNED) AS integral,
+    CAST(COALESCE(usertype, 0) AS SIGNED) AS usertype";
 
 pub async fn create_order(
     pool: &MySqlPool,
@@ -327,6 +328,7 @@ pub async fn create_recharge_order(
     pool: &MySqlPool,
     uid: u64,
     did: u32,
+    usertype: i32,
     channel: &str,
     price_yuan: f64,
     integral: i64,
@@ -335,6 +337,7 @@ pub async fn create_recharge_order(
     now: i64,
 ) -> Result<String, sqlx::Error> {
     let order_no = dingdan_id(now);
+    let ut = if usertype == 1 { 1 } else { 2 };
     sqlx::query(
         r#"INSERT INTO phpyun_company_order
               (order_id, uid, order_type, order_price, order_time, order_state,
@@ -342,7 +345,7 @@ pub async fn create_recharge_order(
                order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
                port, is_crm, order_bank, order_pic, order_info)
            VALUES (?, ?, ?, ?, ?, 0,
-                   ?, 2, ?, ?, 0, 2, 1,
+                   ?, 2, ?, ?, 0, ?, 1,
                    0, ?, 0, 0, 0, 0,
                    1, 0, '', '', '')"#,
     )
@@ -354,6 +357,7 @@ pub async fn create_recharge_order(
     .bind(remark)
     .bind(rating)
     .bind(did)
+    .bind(ut)
     .bind(integral)
     .execute(pool)
     .await?;

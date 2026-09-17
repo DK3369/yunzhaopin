@@ -1,20 +1,41 @@
 <script setup lang="ts">
 import { isUnauthErr } from '~/utils/site'
 
+type Cls = { id: number; integral: number; discount: number }
+type ClassPack = {
+  list?: Cls[]
+  min_recharge?: number
+  proportion?: number
+  pricename?: string
+  priceunit?: string
+  balance?: number
+}
+type OrderRow = {
+  order_no?: string
+  amount_yuan?: number
+  channel?: string
+  status?: number
+  status_n?: string
+  order_kind?: number
+}
+
 const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
-const { page, pageSize, inferTotal } = useMemberListPage()
-const { data: packs, error } = await useAsyncData('user-vip-packs', () =>
-  api.post('/v1/mcenter/vip/packages', {}),
+const { data: pack, error, refresh: refreshPack } = await useAsyncData('user-integral-classes', () =>
+  api.post<ClassPack>('/v1/mcenter/vip/integral-classes', {}),
 )
-const { data: orders, refresh } = await useAsyncData(
-  () => `user-vip-orders-${page.value}`,
-  () => api.post('/v1/mcenter/vip/orders/list', { page: page.value, page_size: pageSize }),
+const { data: orders, refresh } = await useAsyncData('user-recharge-orders', () =>
+  api.post('/v1/mcenter/vip/orders/list', { page: 1, page_size: 20 }),
 )
 const msg = ref('')
 const channel = ref('alipay')
-const picked = ref('')
+const pickedId = ref(0)
+const custom = ref('')
+const remark = ref('')
+const showCard = ref(false)
+const cardNo = ref('')
+const cardPw = ref('')
 const bankOrderNo = ref('')
 const bankForm = reactive({
   bank_name: '',
@@ -40,44 +61,89 @@ function payChannel() {
   if (import.meta.client && /Android|iPhone|iPad|Mobile|MicroMessenger/i.test(navigator.userAgent)) return 'wxh5'
   return 'wxpay'
 }
-type PackDesc = {
-  job_num?: number
-  breakjob_num?: number
-  resume?: number
-  interview?: number
-  top_num?: number
-  rec_num?: number
-  urgent_num?: number
-  zph_num?: number
-  part_num?: number
-}
-const packages = computed(() => (Array.isArray(packs.value) ? packs.value : packs.value?.list || []))
-watch(packages, (list) => {
-  if (!picked.value && list[0]?.code) picked.value = String(list[0].code)
+const classes = computed(() => pack.value?.list || [])
+const minRecharge = computed(() => Number(pack.value?.min_recharge || settings.value.integral_min_recharge || 0))
+const proportion = computed(() => Math.max(1, Number(pack.value?.proportion || settings.value.integral_proportion || 1)))
+const priceName = computed(() => String(pack.value?.pricename || settings.value.integral_pricename || t('wap_user_00008')))
+const priceUnit = computed(() => String(pack.value?.priceunit || settings.value.integral_priceunit || ''))
+const balance = computed(() => Number(pack.value?.balance || 0))
+const picked = computed(() => classes.value.find((c) => c.id === pickedId.value) || null)
+const priceInt = computed(() => {
+  const n = Number(custom.value)
+  if (Number.isFinite(n) && n > 0) return Math.floor(n)
+  return Number(picked.value?.integral || 0)
+})
+const integralId = computed(() => {
+  const n = priceInt.value
+  if (picked.value && !custom.value) return picked.value.id
+  let id = 0
+  for (const c of classes.value) {
+    if (n >= c.integral) id = c.id
+  }
+  return id
+})
+const discount = computed(() => {
+  const id = integralId.value
+  const c = classes.value.find((x) => x.id === id)
+  if (c && priceInt.value >= c.integral) return Number(c.discount || 0)
+  return 0
+})
+const payYuan = computed(() => {
+  const n = priceInt.value
+  if (n < 1) return 0
+  let p = n / proportion.value
+  if (discount.value > 0) p *= discount.value / 100
+  return Math.round(p * 100) / 100
+})
+const rechargeOrders = computed(() =>
+  ((orders.value?.list || []) as OrderRow[]).filter((o) => o.order_kind === 2),
+)
+watch(classes, (list) => {
+  if (pickedId.value || custom.value) return
+  const min = minRecharge.value
+  const first = list.find((c) => !min || c.integral >= min) || list[0]
+  if (first) pickedId.value = first.id
 }, { immediate: true })
-function quotaLines(p: { desc?: PackDesc | null }) {
-  const raw = p.desc
-  const d = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
-  const rows: Array<[number, string, string?]> = [
-    [Number(d.job_num || 0), 'wap_com_00106'],
-    [Number(d.breakjob_num || 0), 'wap_com_00029'],
-    [Number(d.resume || 0), 'wap_00451'],
-    [Number(d.interview || 0), 'wap_user_00216'],
-    [Number(d.top_num || 0), 'wap_com_00238', 'common_02067'],
-    [Number(d.rec_num || 0), 'wap_com_00237', 'common_02067'],
-    [Number(d.urgent_num || 0), 'member_com_00613', 'common_02067'],
-    [Number(d.zph_num || 0), 'member_com_00293'],
-    [Number(d.part_num || 0), 'wap_user_00271'],
-  ]
-  return rows.filter(([n]) => n > 0)
-}
-async function buy(code: string) {
+function pickClass(c: Cls) {
+  const min = minRecharge.value
+  if (min > 0 && c.integral < min) {
+    msg.value = t('default_00088') + min + priceName.value
+    return
+  }
   msg.value = ''
+  custom.value = ''
+  pickedId.value = c.id
+}
+function onCustom() {
+  pickedId.value = 0
+  const n = Math.floor(Number(custom.value) || 0)
+  const min = minRecharge.value
+  if (n > 0 && min > 0 && n < min) {
+    custom.value = String(min)
+  }
+}
+async function buy() {
+  msg.value = ''
+  const n = priceInt.value
+  const min = minRecharge.value
+  if (min > 0 && n < min) {
+    msg.value = t('default_00088') + min + priceName.value
+    return
+  }
+  if (n < 1) {
+    msg.value = t('common_00644')
+    return
+  }
   try {
-    const created = await api.post('/v1/mcenter/vip/orders', { package_code: code, channel: payChannel() })
+    const created = await api.post('/v1/mcenter/vip/recharge', {
+      price_int: n,
+      integralid: integralId.value || undefined,
+      channel: payChannel(),
+      remark: remark.value,
+    })
     if (channel.value === 'bank') {
       bankOrderNo.value = String(created?.order_no || '')
-      bankForm.bank_price = String(created?.amount_yuan ?? '')
+      bankForm.bank_price = String(created?.amount_yuan ?? payYuan.value)
       msg.value = created?.order_no || t('common.success')
       await refresh()
       return
@@ -130,13 +196,13 @@ async function submitBank() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-function canFillBank(o: { channel?: string; status?: number; status_n?: string }) {
+function canFillBank(o: OrderRow) {
   return o.channel === 'bank' && (o.status === 0 || o.status === 3 || o.status_n === 'awaiting_confirm')
 }
-function canCancel(o: { status?: number }) {
+function canCancel(o: OrderRow) {
   return o.status === 0
 }
-async function cancelOrder(o: { order_no?: string }) {
+async function cancelOrder(o: OrderRow) {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/vip/orders/cancel', { order_no: String(o.order_no || '') })
@@ -146,123 +212,171 @@ async function cancelOrder(o: { order_no?: string }) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-function fillBank(o: { order_no?: string; amount_yuan?: number }) {
+function fillBank(o: OrderRow) {
   bankOrderNo.value = String(o.order_no || '')
   bankForm.bank_price = String(o.amount_yuan ?? '')
 }
-const orderTotal = computed(() => inferTotal(orders.value))
-useSeoMeta({ title: t('ui.pay') })
+async function submitCard() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/vip/card', { card: cardNo.value, password: cardPw.value })
+    msg.value = t('common.success')
+    showCard.value = false
+    cardNo.value = ''
+    cardPw.value = ''
+    await refreshPack()
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+useSeoMeta({ title: t('common_01946') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('ui.pay')">
-    <div class="resume_Prompt_box">
-      <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('ui.pay_hint') }}</div>
-    </div>
-    <div class="site-h5 pay_header">
-      <div class="pay_header_c">
-        <div class="pay_header_p">
-          <div class="pay_header_icon">
-            <img src="/legacy/h5/images/integral_notice.png" alt="" width="100%" />
-          </div>
-          {{ $t('ui.pay_hint') }}
-        </div>
-      </div>
-    </div>
+  <MemberPanel :title="$t('common_01946')">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <div class="payment_list">
-      <div class="payment_list_s mt10">{{ $t('member_com_00317') }}：</div>
+    <div class="com_new_tip">
+      <span class="com_new_tip_h">{{ $t('member_com_00040') }}</span>
+      {{ $t('common_01984') }}{{ priceName }}{{ balance }}，1{{ $t('common_02056') }}={{ proportion }}{{ priceUnit }}{{ priceName }}
+      <template v-if="minRecharge > 0">，{{ $t('default_00088') }}{{ minRecharge }}{{ priceName }}</template>
+      <a href="javascript:;" class="cblue" @click="showCard = true">{{ $t('member_com_00485') }}</a>
+    </div>
+    <div class="payment_list site-pc">
+      <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
       <div class="payment_list_r">
         <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
         <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
         <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
       </div>
     </div>
-    <div v-if="channel === 'bank' && bankList.length" class="wxts_box">
+    <div v-if="channel === 'bank' && bankList.length" class="wxts_box site-pc">
       <div v-for="b in bankList" :key="b.id" class="wxts">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
     </div>
-    <div class="payment_list">
+    <div class="payment_list site-pc">
       <div class="payment_list_s mt10">{{ $t('member_com_00316') }}：</div>
       <div class="payment_list_r">
         <span
-          v-for="p in packages"
-          :key="p.code"
+          v-for="c in classes"
+          :key="c.id"
           class="payment_list_text"
-          :class="{ payment_list_cur: picked === p.code }"
-          @click="picked = p.code"
+          :class="{ payment_list_cur: pickedId === c.id && !custom }"
+          :style="minRecharge > 0 && c.integral < minRecharge ? 'background-color:#E0E0E0' : undefined"
+          @click="pickClass(c)"
         >
           <div class="payment_list_text_n">
-            <i class="payment_list_text_icon" />
-            {{ p.name }}
-            <em class="payment_list_text_dw">{{ p.price_yuan }} {{ $t('wap_00925') }}</em>
-            <span v-if="quotaLines(p).length" class="payment_list_text_zk">{{ quotaLines(p).map((r) => $t(r[1])).join(' · ') }}</span>
+            <i class="payment_list_text_icon" />{{ c.integral }}
+            <em class="payment_list_text_dw">{{ priceName }}</em>
           </div>
+          <em v-if="c.discount" class="payment_list_text_zk">{{ c.discount / 10 }}{{ $t('common_02080') }}</em>
         </span>
+        <div class="payment_list_zdy" :class="{ payment_list_cur: !!custom }">
+          <input
+            v-model="custom"
+            type="text"
+            class="payment_list_input"
+            :placeholder="$t('wap_user_00309')"
+            maxlength="6"
+            @focus="pickedId = 0"
+            @blur="onCustom"
+            @input="custom = custom.replace(/[^0-9]/g, '')"
+          >
+          <div class="payment_list_text_dw">{{ priceName }}</div>
+        </div>
       </div>
     </div>
-    <div class="site-h5 integral_body">
-      <div class="integral_body_card">
-        <ul>
-          <li
-            v-for="p in packages"
-            :key="'h5-' + p.code"
-            :class="picked === p.code ? 'discount_opt_for' : 'body_card_bumber'"
-            @click="picked = p.code"
-          >
-            <i class="body_card_bumber">{{ p.name }}</i>
-            <i>{{ p.price_yuan }} {{ $t('wap_00925') }}</i>
-          </li>
-        </ul>
-        <div class="dredge_body_pay" style="padding: 0">
-          <div class="dredge_body_zfb">
-            <div class="dredge_body_wx_box">
-              <div class="wx_box_name">{{ channel === 'wxpay' ? $t('wap_user_00202') : channel === 'bank' ? $t('wap_01805') : $t('wap_00627') }}</div>
-            </div>
+    <div class="payment_list site-pc">
+      <div class="payment_list_s">{{ $t('wap_01032') }}</div>
+      <div class="payment_list_r">
+        <span class="payintegral">{{ payYuan }}</span>{{ $t('common_02056') }}
+      </div>
+    </div>
+    <div class="payment_list site-pc">
+      <div class="payment_list_s">{{ $t('member_com_00317') }}</div>
+      <div class="payment_list_r">
+        <textarea v-model="remark" class="payment_list_textarea" cols="40" />
+      </div>
+    </div>
+    <div class="payment_list site-pc">
+      <div class="payment_list_s">&nbsp;</div>
+      <div class="payment_list_r">
+        <input type="button" class="payment_list_other" :value="$t('member_user_00238')" @click="buy">
+      </div>
+    </div>
+    <div class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="buy">
+        <MemberField wap :label="$t('wap_user_00313')">
+          <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
+          <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
+          <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+        </MemberField>
+        <div v-if="channel === 'bank' && bankList.length" class="issue_post_body_card">
+          <div v-for="b in bankList" :key="'h5b-' + b.id">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
+        </div>
+        <div
+          v-for="c in classes"
+          :key="'h5c-' + c.id"
+          class="issue_post_body_card"
+          :class="{ payment_list_cur: pickedId === c.id && !custom }"
+          @click="pickClass(c)"
+        >
+          <div class="Posted_card_top">
+            <div class="Posted_card_name">{{ c.integral }} {{ priceName }}</div>
+            <div v-if="c.discount" class="Posted_card_pay">{{ c.discount / 10 }}{{ $t('common_02080') }}</div>
           </div>
         </div>
-        <div class="integral_body_btn" @click="picked && buy(picked)">{{ $t('member_user_00238') }}</div>
-      </div>
+        <MemberField wap :label="$t('wap_user_00309')">
+          <input v-model="custom" type="text" maxlength="6" @focus="pickedId = 0" @blur="onCustom" @input="custom = custom.replace(/[^0-9]/g, '')">
+        </MemberField>
+        <MemberField wap :label="$t('wap_01032')">{{ payYuan }} {{ $t('common_02056') }}</MemberField>
+        <MemberField wap :label="$t('member_com_00317')"><textarea v-model="remark" /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ $t('member_user_00238') }}</button>
+        <p><a href="javascript:;" @click="showCard = true">{{ $t('member_com_00485') }}</a></p>
+      </form>
     </div>
-    <div v-if="picked" class="site-pc payment_list">
-      <div class="payment_list_s">&nbsp;</div>
-      <div class="payment_list_r">
-        <ul v-if="quotaLines(packages.find((p) => p.code === picked) || {}).length" class="muted">
-          <li v-for="(row, i) in quotaLines(packages.find((p) => p.code === picked) || {})" :key="i">
-            {{ $t(row[1]) }} {{ row[0] }}<template v-if="row[2]">{{ $t(row[2]) }}</template>
-          </li>
-        </ul>
-        <input type="button" class="payment_list_other" :value="$t('member_user_00238')" @click="buy(picked)" />
-      </div>
-    </div>
-    <form v-if="bankOrderNo" class="payment_list" @submit.prevent="submitBank">
-      <div class="payment_list_s">{{ $t('ui.order_no') }}</div>
-      <div class="payment_list_r">{{ bankOrderNo }}</div>
-      <div class="payment_list_s">{{ $t('model_00022') }}</div>
-      <div class="payment_list_r"><input v-model="bankForm.bank_name" class="payment_list_input" required /></div>
-      <div class="payment_list_s">{{ $t('model_00023') }}</div>
-      <div class="payment_list_r"><input v-model="bankForm.bank_number" class="payment_list_input" required /></div>
-      <div class="payment_list_s">{{ $t('model_00024') }}</div>
-      <div class="payment_list_r"><input v-model="bankForm.bank_price" class="payment_list_zdy" required /></div>
-      <div class="payment_list_s">{{ $t('member_user_00106') }}</div>
-      <div class="payment_list_r"><input v-model="bankForm.bank_time" type="date" class="payment_list_input" required /></div>
-      <div class="payment_list_s">{{ $t('wap_com_00345') }}</div>
-      <div class="payment_list_r"><textarea v-model="bankForm.order_remark" class="payment_list_textarea" rows="3" /></div>
-      <div class="payment_list_s">&nbsp;</div>
-      <div class="payment_list_r">
-        <input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" />
-        <input type="submit" class="payment_list_other" :value="$t('common.submit')" />
-      </div>
+    <form v-if="showCard" class="com_release_box" @submit.prevent="submitCard">
+      <ul>
+        <MemberReleaseRow :label="$t('admin_system_00534')" required>
+          <input v-model="cardNo" class="com_release_textnew_text" required @input="cardNo = cardNo.replace(/[^0-9]/g, '')">
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00371')" required>
+          <input v-model="cardPw" class="com_release_textnew_text" required @input="cardPw = cardPw.replace(/[^0-9]/g, '')">
+        </MemberReleaseRow>
+      </ul>
+      <button type="submit" class="btn_01">{{ $t('common.confirm') }}</button>
+      <button type="button" class="btn_02" @click="showCard = false">{{ $t('common.cancel') }}</button>
     </form>
-    <div class="site-pc wxts_box">
-      <div class="wxts">{{ $t('wap_user_00205') }}</div>
+    <form v-if="bankOrderNo" class="com_release_box site-pc" @submit.prevent="submitBank">
+      <ul>
+        <MemberReleaseRow :label="$t('ui.order_no')"><span>{{ bankOrderNo }}</span></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('model_00022')" required><input v-model="bankForm.bank_name" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('model_00023')" required><input v-model="bankForm.bank_number" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('model_00024')" required><input v-model="bankForm.bank_price" required class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('member_user_00106')" required><input v-model="bankForm.bank_time" type="date" required /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" class="com_release_textnew_text" /></MemberReleaseRow>
+        <MemberReleaseRow :label="$t('ui.image')"><input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" /></MemberReleaseRow>
+      </ul>
+      <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
+    </form>
+    <div v-if="bankOrderNo" class="site-h5 issue_post_body">
+      <form class="yun_createbox" @submit.prevent="submitBank">
+        <MemberField wap :label="$t('ui.order_no')"><span>{{ bankOrderNo }}</span></MemberField>
+        <MemberField wap :label="$t('model_00022')"><input v-model="bankForm.bank_name" required /></MemberField>
+        <MemberField wap :label="$t('model_00023')"><input v-model="bankForm.bank_number" required /></MemberField>
+        <MemberField wap :label="$t('model_00024')"><input v-model="bankForm.bank_price" required /></MemberField>
+        <MemberField wap :label="$t('member_user_00106')"><input v-model="bankForm.bank_time" type="date" required /></MemberField>
+        <MemberField wap :label="$t('wap_com_00345')"><input v-model="bankForm.order_remark" /></MemberField>
+        <MemberField wap :label="$t('ui.image')"><input type="file" accept="image/jpeg,image/png,image/webp" @change="onVoucher" /></MemberField>
+        <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+      </form>
     </div>
-    <MemberResumeH1 :title="$t('ui.orders')" />
-    <div v-if="(orders?.list || []).length" class="site-pc paylist_tit">
+    <MemberResumeH1 :title="$t('common_02029')" />
+    <div v-if="rechargeOrders.length" class="site-pc paylist_tit">
       <span class="paylist_span paylist_dh">{{ $t('ui.order_no') }}</span>
       <span class="paylist_span paylist_money">{{ $t('wap_00925') }}</span>
       <span class="paylist_span paylist_zt">{{ $t('member_user_00104') }}</span>
     </div>
-    <div v-for="o in orders?.list || []" :key="o.order_no" class="site-pc paylist_list">
+    <div v-for="o in rechargeOrders" :key="o.order_no" class="site-pc paylist_list">
       <span class="paylist_span paylist_dh">{{ o.order_no }}</span>
       <span class="paylist_span paylist_money">{{ o.amount_yuan }}</span>
       <span class="paylist_span paylist_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
@@ -272,26 +386,23 @@ useSeoMeta({ title: t('ui.pay') })
       </span>
     </div>
     <div class="site-h5 detail_body">
-      <div v-for="o in orders?.list || []" :key="'h5-' + o.order_no" class="detail_body_card">
-        <div class="detail_card_title">
-          <div class="detail_card_add">{{ o.order_no }}</div>
-          <div class="detail_card_state">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</div>
-        </div>
-        <div class="detail_card_odd">
-          <div class="detail_odd_q">{{ $t('ui.order_no') }}</div>
-          <div class="detail_odd_a">{{ o.order_no }}</div>
-        </div>
-        <div class="detail_card_recharge">
-          <div class="detail_odd_q">{{ $t('wap_00925') }}</div>
-          <div class="detail_odd_a">{{ o.amount_yuan }}</div>
-        </div>
-        <div v-if="canFillBank(o) || canCancel(o)" class="detail_card_btns">
-          <div v-if="canFillBank(o)" class="detail_card_yes" @click="fillBank(o)">{{ $t('wap_01805') }}</div>
-          <div v-if="canCancel(o)" class="detail_card_cancel" @click="cancelOrder(o)">{{ $t('common.cancel') }}</div>
-        </div>
+      <div v-if="rechargeOrders.length" class="detail_body_card">
+        <ul>
+          <li v-for="o in rechargeOrders" :key="'h5-' + o.order_no">
+            <div class="detail_box">
+              <div class="detail_box_title">{{ o.order_no }}</div>
+              <div class="detail_box_time">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</div>
+            </div>
+            <div class="detail_integral">{{ o.amount_yuan }}</div>
+            <div class="detail_box_cz">
+              <a v-if="canFillBank(o)" href="javascript:;" @click="fillBank(o)">{{ $t('wap_01805') }}</a>
+              <a v-if="canCancel(o)" href="javascript:;" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
-    <MemberPager :page="page" :page-size="pageSize" :total="orderTotal" @update:page="page = $event" />
     <p v-if="msg">{{ msg }}</p>
+    <p><NuxtLink to="/user/integral-rules">{{ $t('wap_user_00008') }}</NuxtLink></p>
   </MemberPanel>
 </template>

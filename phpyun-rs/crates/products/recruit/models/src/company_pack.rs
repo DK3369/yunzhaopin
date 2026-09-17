@@ -50,7 +50,8 @@ const ORDER_SELECT: &str = "
     COALESCE(order_time, 0) AS created_at,
     COALESCE(bank_time, 0) AS paid_at,
     CAST(COALESCE(`type`, 0) AS SIGNED) AS order_kind,
-    CAST(COALESCE(integral, 0) AS SIGNED) AS integral";
+    CAST(COALESCE(integral, 0) AS SIGNED) AS integral,
+    CAST(COALESCE(usertype, 0) AS SIGNED) AS usertype";
 
 /// PHP `buyPackOrder`: `type=5`, `order_state=1` (待付), `rating` = detail id.
 pub async fn create_order(
