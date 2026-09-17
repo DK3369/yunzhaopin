@@ -1444,6 +1444,25 @@ pub async fn list_rating_options(pool: &MySqlPool) -> Result<Vec<CompanyRatingOp
     .await
 }
 
+pub async fn set_is_nav(pool: &MySqlPool, uid: u64, is_nav: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company SET is_nav = ? WHERE uid = ?")
+        .bind(is_nav)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn read_is_nav(pool: &MySqlPool, uid: u64) -> Result<i32, sqlx::Error> {
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(is_nav, 1) AS SIGNED) FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(1))
+}
+
 pub async fn set_rating(
     pool: &MySqlPool,
     uid: u64,

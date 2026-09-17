@@ -59,7 +59,7 @@
             <ul class="left_nav_ul">
               <li v-for="item in comMain" :key="item.to" :class="{ left_nav_newcur: active(item.to) }">
                 <span>
-                  <NuxtLink :to="item.to" class="new_com_nav_a">
+                  <NuxtLink :to="item.to" class="new_com_nav_a" :target="item.target || undefined">
                     <i class="com_left_icon" :class="item.icon" />
                     {{ item.label }}
                     <i v-if="item.badge === 'resume' && resumeBadge" class="com_icon com_icon_new">{{ resumeBadge }}</i>

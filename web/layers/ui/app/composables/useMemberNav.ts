@@ -6,6 +6,7 @@ export type MemberNavLink = {
   label: string
   icon: string
   badge?: 'interview' | 'resume'
+  target?: string
 }
 
 export type MemberMoreGroup = {
@@ -16,7 +17,23 @@ export type MemberMoreGroup = {
 export function useMemberNav() {
   const { t } = useI18n()
   const { settings } = useSiteSettings()
+  const { data: me } = useAuthMe()
+  const api = useApi()
   const on = (to: string) => isMemberModuleOn(settings.value, to)
+  const isSub = computed(() => Boolean(me.value?.is_sub))
+  const { data: navPack } = useAsyncData(
+    'com-nav',
+    () => {
+      if (Number(me.value?.usertype) !== 2) return Promise.resolve(null)
+      return api
+        .post<{
+          is_nav: number
+          items: Array<{ to: string; show: boolean; sort: number; target?: string }>
+        }>('/v1/mcenter/company/nav', {})
+        .catch(() => null)
+    },
+    { watch: [() => me.value?.usertype] },
+  )
 
   const userMain = computed<MemberNavLink[]>(() => [
     { to: '/user', label: t('member_user_00183'), icon: 'left_navicon_i1' },
@@ -67,8 +84,8 @@ export function useMemberNav() {
       .filter((g) => g.items.length)
   })
 
-  const comMain = computed<MemberNavLink[]>(() =>
-    [
+  const comMain = computed<MemberNavLink[]>(() => {
+    const all: MemberNavLink[] = [
       { to: '/com', label: t('member_com_00290'), icon: 'com_left_icon1' },
       { to: '/com/jobs', label: t('wap_com_00106'), icon: 'com_left_icon2' },
       { to: '/com/applications', label: t('wap_com_00105'), icon: 'com_left_icon4', badge: 'resume' },
@@ -78,8 +95,25 @@ export function useMemberNav() {
       { to: '/com/fairs', label: t('member_com_00293'), icon: 'com_left_icon12' },
       { to: '/com/profile', label: t('wap_com_00096'), icon: 'com_left_icon8' },
       { to: '/com/binding', label: t('member_user_00059'), icon: 'com_left_icon11' },
-    ].filter((it) => on(it.to)),
-  )
+    ]
+    const pack = navPack.value
+    if (pack && pack.is_nav === 2 && Array.isArray(pack.items)) {
+      const home = all[0]
+      const rest = all.slice(1)
+      const byTo = new Map(rest.map((x) => [x.to, x]))
+      const ordered = [...pack.items]
+        .filter((i) => i.show)
+        .sort((a, b) => a.sort - b.sort)
+        .map((i) => {
+          const hit = byTo.get(i.to)
+          if (!hit) return null
+          return { ...hit, target: i.target === '_blank' ? '_blank' : undefined }
+        })
+        .filter((x): x is MemberNavLink => Boolean(x))
+      return [home, ...ordered].filter((it) => on(it.to))
+    }
+    return all.filter((it) => on(it.to))
+  })
 
   const comMoreTitle = computed(() => t('member_com_00292'))
   const comMore = computed<MemberMoreGroup[]>(() => {
@@ -132,11 +166,16 @@ export function useMemberNav() {
           { to: '/com/messages', label: t('common.message') },
           { to: '/com/job-messages', label: t('member_user_00115') },
           { to: '/com/follows', label: t('wap_01142') },
+          { to: '/com/sub-accounts', label: t('common_01597') },
+          { to: '/com/customize', label: t('member_com_00397') },
         ],
       },
     ]
     return groups
-      .map((g) => ({ ...g, items: g.items.filter((it) => on(it.to)) }))
+      .map((g) => ({
+        ...g,
+        items: g.items.filter((it) => on(it.to) && !(isSub.value && it.to === '/com/sub-accounts')),
+      }))
       .filter((g) => g.items.length)
   })
 
@@ -144,7 +183,7 @@ export function useMemberNav() {
     const out: Array<{ to: string; label: string }> = main.map(({ to, label }) => ({ to, label }))
     for (const g of more) out.push(...g.items)
     out.push(...extras)
-    return out.filter((it) => on(it.to))
+    return out.filter((it) => on(it.to) && !(isSub.value && it.to === '/com/sub-accounts'))
   }
 
   const userItems = computed(() =>
@@ -172,12 +211,15 @@ export function useMemberNav() {
   const comItems = computed(() =>
     flatten(comMain.value, comMore.value, [
       { to: '/com/jobs/new', label: t('wap_00322') },
+      { to: '/com/parts/new', label: t('member_com_00480') },
       { to: '/com/looks', label: t('member_com_00007') },
       { to: '/com/views', label: t('member_com_00006') },
       { to: '/com/fans', label: t('wap_com_00407') },
       { to: '/com/downloads', label: t('wap_00451') },
       { to: '/com/cert', label: t('member_user_00235') },
       { to: '/com/account', label: t('wap_user_00338') },
+      { to: '/com/sub-accounts', label: t('common_01597') },
+      { to: '/com/customize', label: t('member_com_00397') },
       { to: '/com/talent', label: t('member_com_00597') },
       { to: '/com/binding', label: t('member_user_00059') },
       { to: '/com/password', label: t('member_user_00226') },
