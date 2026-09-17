@@ -1325,6 +1325,7 @@ pub async fn temporary_apply(
         jti: String::new(),
         iat: 0,
         exp: r.access_exp,
+        hr_uid: None,
     };
     let job_cid: i64 = job_classid.parse().unwrap_or(0);
     let city_cid: i64 = city_classid.parse().unwrap_or(0);

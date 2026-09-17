@@ -38,6 +38,39 @@ pub async fn dec_zph_num(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error>
     Ok(res.rows_affected())
 }
 
+pub async fn read_sons_num(pool: &MySqlPool, uid: u64) -> Result<i32, sqlx::Error> {
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(sons_num, 0) AS SIGNED) FROM phpyun_company_statis WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}
+
+pub async fn dec_sons_num(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis SET sons_num = sons_num - 1 WHERE uid = ? AND sons_num > 0",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn read_rating_part_num(pool: &MySqlPool, rating: i32) -> Result<i32, sqlx::Error> {
+    if rating <= 0 {
+        return Ok(0);
+    }
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(part_num, 0) AS SIGNED) FROM phpyun_company_rating WHERE id = ? LIMIT 1",
+    )
+    .bind(rating)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}
+
 pub async fn insert_admin_created<'e, E>(
     exec: E,
     uid: u64,
@@ -197,6 +230,7 @@ pub struct AdminStatisRow {
     pub rating_type: i32,
     pub suspend_num: i32,
     pub max_time: i64,
+    pub sons_num: i32,
 }
 
 pub async fn find_admin(pool: &MySqlPool, uid: u64) -> Result<Option<AdminStatisRow>, sqlx::Error> {
@@ -209,7 +243,8 @@ pub async fn find_admin(pool: &MySqlPool, uid: u64) -> Result<Option<AdminStatis
          CAST(COALESCE(urgent_num,0) AS SIGNED) AS urgent_num, CAST(COALESCE(rec_num,0) AS SIGNED) AS rec_num, \
          CAST(COALESCE(vip_stime,0) AS SIGNED) AS vip_stime, CAST(COALESCE(vip_etime,0) AS SIGNED) AS vip_etime, \
          COALESCE(integral,'') AS integral, CAST(COALESCE(rating_type,0) AS SIGNED) AS rating_type, \
-         CAST(COALESCE(suspend_num,0) AS SIGNED) AS suspend_num, CAST(COALESCE(max_time,0) AS SIGNED) AS max_time \
+         CAST(COALESCE(suspend_num,0) AS SIGNED) AS suspend_num, CAST(COALESCE(max_time,0) AS SIGNED) AS max_time, \
+         CAST(COALESCE(sons_num,0) AS SIGNED) AS sons_num \
          FROM phpyun_company_statis WHERE uid = ? LIMIT 1",
     )
     .bind(uid)

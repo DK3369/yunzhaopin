@@ -31,6 +31,10 @@ pub struct Claims {
     /// "access" | "refresh"
     pub typ: String,
     pub iss: String,
+    /// Classic sub-account: JWT `sub` is the parent company uid; this is the
+    /// member who actually logged in. Absent on ordinary accounts.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hr_uid: Option<u64>,
 }
 
 pub struct JwtIssued {
@@ -51,11 +55,23 @@ pub fn issue_pair(
     usertype: u8,
     did: u32,
 ) -> AppResult<JwtIssued> {
+    issue_pair_ex(cfg, uid, usertype, did, None)
+}
+
+/// Same as [`issue_pair`], with optional `hr_uid` for classic company sub-accounts.
+pub fn issue_pair_ex(
+    cfg: &crate::config::Config,
+    uid: u64,
+    usertype: u8,
+    did: u32,
+    hr_uid: Option<u64>,
+) -> AppResult<JwtIssued> {
     let now = clock::now_ts();
     let access_exp = now + cfg.jwt_access_ttl_secs;
     // Guarantee refresh outlives access even if env was misconfigured.
     let refresh_exp = now + cfg.jwt_refresh_ttl_secs.max(cfg.jwt_access_ttl_secs);
     let secret = cfg.jwt_secret.as_str();
+    let hr_uid = hr_uid.filter(|n| *n > 0);
 
     let jti_a = Uuid::now_v7().to_string();
     let jti_r = Uuid::now_v7().to_string();
@@ -72,6 +88,7 @@ pub fn issue_pair(
             jti: jti_a.clone(),
             typ: "access".into(),
             iss: JWT_ISSUER.into(),
+            hr_uid,
         },
     )?;
     let refresh = encode_claim(
@@ -85,6 +102,7 @@ pub fn issue_pair(
             jti: jti_r.clone(),
             typ: "refresh".into(),
             iss: JWT_ISSUER.into(),
+            hr_uid,
         },
     )?;
 

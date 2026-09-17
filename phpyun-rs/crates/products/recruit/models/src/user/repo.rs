@@ -34,7 +34,8 @@ const FIELDS: &str = "\
     CAST(COALESCE(status, 0) AS SIGNED) AS status, \
     CAST(COALESCE(did, 0) AS UNSIGNED) AS did, \
     CAST(COALESCE(reg_date, 0) AS SIGNED) AS reg_date, \
-    CAST(COALESCE(login_date, 0) AS SIGNED) AS login_date";
+    CAST(COALESCE(login_date, 0) AS SIGNED) AS login_date, \
+    CAST(COALESCE(pid, 0) AS UNSIGNED) AS pid";
 
 /// Maps a provider name (external Rust protocol) to the real `phpyun_member` column in PHPYun.
 /// Returns None for unmapped providers to avoid SQL against empty columns.

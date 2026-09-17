@@ -10,6 +10,7 @@ type Caps = {
   urgent_num?: number
   rec_num?: number
   zph_num?: number
+  sons_num?: number
 }
 type Vip = {
   rating_name?: string
@@ -24,6 +25,7 @@ type Vip = {
   top_num?: number
   urgent_num?: number
   rec_num?: number
+  sons_num?: number
   caps?: Caps
 }
 
@@ -55,6 +57,7 @@ const rows = computed(() => {
     { title: t('member_com_00613'), left: v.urgent_num || 0, cap: c.urgent_num },
     { title: t('wap_com_00237'), left: v.rec_num || 0, cap: c.rec_num },
     { title: t('member_com_00293'), left: v.zph_num || 0, cap: c.zph_num },
+    { title: t('common_01597'), left: v.sons_num || 0, cap: c.sons_num },
   ]
 })
 

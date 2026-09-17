@@ -28,6 +28,7 @@ pub struct ProfileData {
     pub moblie: Option<String>,
     pub usertype: u8,
     pub did: u32,
+    pub is_sub: bool,
 }
 
 /// Current user summary
@@ -53,6 +54,7 @@ pub async fn get_profile(
         moblie: p.moblie.clone(),
         usertype: p.usertype,
         did: p.did,
+        is_sub: user.is_sub_account(),
     }))
 }
 

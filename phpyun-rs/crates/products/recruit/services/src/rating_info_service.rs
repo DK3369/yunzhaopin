@@ -92,6 +92,7 @@ fn empty_statis() -> AdminStatisRow {
         rating_type: 0,
         suspend_num: 0,
         max_time: 0,
+        sons_num: 0,
     }
 }
 
@@ -365,6 +366,7 @@ mod tests {
             rating_type: 1,
             suspend_num: 0,
             max_time: 0,
+            sons_num: 0,
         };
         let next = compute_statis(&row(1, 30, 4, 6), &cur, 1_700_000_000, 1);
         assert_eq!(next.job_num, 4);

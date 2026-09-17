@@ -15,6 +15,9 @@ pub struct Member {
     pub did: u64,
     pub reg_date: i64,
     pub login_date: Option<i64>,
+    /// Parent company uid when this row is a classic sub-account (`0` otherwise).
+    #[sqlx(default)]
+    pub pid: u64,
 }
 
 /// PHP `admin_member::index_action` list row (not used for login).

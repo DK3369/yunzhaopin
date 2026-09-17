@@ -41,7 +41,7 @@ pub async fn change_password(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ChangePasswordForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    mcenter_service::change_password(&state, user.uid, &f.old_password, &f.new_password, &ip)
+    mcenter_service::change_password(&state, user.self_uid(), &f.old_password, &f.new_password, &ip)
         .await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

@@ -53,6 +53,7 @@ pub struct RatingCaps {
     pub top_num: i32,
     pub urgent_num: i32,
     pub rec_num: i32,
+    pub sons_num: i32,
 }
 
 #[derive(Debug, Clone, FromRow, serde::Serialize)]
@@ -706,7 +707,8 @@ pub async fn find_rating_caps(pool: &MySqlPool, rating: i32) -> Result<Option<Ra
                 CAST(COALESCE(zph_num,0) AS SIGNED) AS zph_num, \
                 CAST(COALESCE(top_num,0) AS SIGNED) AS top_num, \
                 CAST(COALESCE(urgent_num,0) AS SIGNED) AS urgent_num, \
-                CAST(COALESCE(rec_num,0) AS SIGNED) AS rec_num \
+                CAST(COALESCE(rec_num,0) AS SIGNED) AS rec_num, \
+                CAST(COALESCE(sons_num,0) AS SIGNED) AS sons_num \
          FROM phpyun_company_rating WHERE id = ? LIMIT 1",
     )
     .bind(rating)

@@ -3,6 +3,7 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
+const { data: me } = await useAuthMe()
 const { data: logoutSt, error } = await useAsyncData('com-logout-st', () =>
   api.post<{ pending?: boolean; status?: number }>('/v1/mcenter/account/logout/status', {}),
 )
@@ -51,11 +52,11 @@ useSeoMeta({ title: t('wap_user_00338') })
         <button type="submit" class="issue_post_body_btn">{{ $t('common.save') }}</button>
       </form>
     </div>
-    <div v-if="logoutSt?.pending" class="com_msg_no">
+    <div v-if="logoutSt?.pending && !me?.is_sub" class="com_msg_no">
       <p>{{ $t('wap_00749') }}</p>
       <p>{{ $t('wap_00750') }}</p>
     </div>
-    <template v-else>
+    <template v-else-if="!me?.is_sub">
       <form class="com_release_box site-pc" @submit.prevent="applyLogout">
         <ul>
           <MemberReleaseRow :label="$t('wap_js_00139')" required>

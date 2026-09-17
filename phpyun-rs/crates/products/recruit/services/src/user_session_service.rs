@@ -267,7 +267,7 @@ pub async fn list_my_sessions(
     user: &AuthenticatedUser,
 ) -> AppResult<Arc<Vec<SessionItem>>> {
     let now = clock::now_ts();
-    let rows = session_repo::list_active_by_uid(state.db.reader(), user.uid, now).await?;
+    let rows = session_repo::list_active_by_uid(state.db.reader(), user.self_uid(), now).await?;
     let items: Vec<SessionItem> = rows
         .into_iter()
         .map(|r| SessionItem::from_row(r, &user.jti))
@@ -282,7 +282,7 @@ pub async fn revoke_session(
     user: &AuthenticatedUser,
     session_id: u64,
 ) -> AppResult<()> {
-    let row = session_repo::find_by_id_and_uid(state.db.reader(), session_id, user.uid).await?;
+    let row = session_repo::find_by_id_and_uid(state.db.reader(), session_id, user.self_uid()).await?;
     let Some(s) = row else {
         return Err(ApiError::param_invalid("session_not_found"));
     };
@@ -294,7 +294,7 @@ pub async fn revoke_session(
     }
     let now = clock::now_ts();
     if let Some((acc_jti, acc_exp, ref_jti, ref_exp)) =
-        session_repo::revoke_by_id(state.db.pool(), session_id, user.uid, now).await?
+        session_repo::revoke_by_id(state.db.pool(), session_id, user.self_uid(), now).await?
     {
         let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;
         let _ = jwt_blacklist::revoke(&state.redis, &ref_jti, ref_exp).await;
@@ -307,7 +307,7 @@ pub async fn revoke_session(
 /// Returns the count of revoked sessions for the response payload.
 pub async fn revoke_other_sessions(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
     let now = clock::now_ts();
-    let revoked = session_repo::revoke_others(state.db.pool(), user.uid, &user.jti, now).await?;
+    let revoked = session_repo::revoke_others(state.db.pool(), user.self_uid(), &user.jti, now).await?;
     let n = phpyun_core::numeric::checked_internal(revoked.len(), "revoked_sessions.len")?;
     for (acc_jti, acc_exp, ref_jti, ref_exp) in revoked {
         let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;

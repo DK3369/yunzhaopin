@@ -37,6 +37,9 @@ pub struct AuthenticatedUser {
     /// Access-token expiration timestamp (seconds); used to compute the precise
     /// TTL on revocation.
     pub exp: i64,
+    /// Classic sub-account login: the member row that authenticated. `uid` is
+    /// the parent company. `None` for ordinary accounts.
+    pub hr_uid: Option<u64>,
 }
 
 /// PHPYun member `usertype`: 1 = jobseeker, 2 = employer, 3 = campus.
@@ -82,6 +85,16 @@ impl AuthenticatedUser {
         }
         Ok(())
     }
+
+    /// Member row for password / binding / logout / sessions. Parent company
+    /// `uid` is used for `/com/*` business data.
+    pub fn self_uid(&self) -> u64 {
+        self.hr_uid.filter(|n| *n > 0).unwrap_or(self.uid)
+    }
+
+    pub fn is_sub_account(&self) -> bool {
+        self.hr_uid.filter(|n| *n > 0).is_some()
+    }
 }
 
 impl FromRequestParts<AppState> for AuthenticatedUser {
@@ -118,6 +131,11 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
         if crate::jwt_blacklist::is_token_stale(&state.redis, claims.sub, claims.iat).await {
             return Err(ApiError::session_expired());
         }
+        if let Some(hr) = claims.hr_uid.filter(|n| *n > 0) {
+            if crate::jwt_blacklist::is_token_stale(&state.redis, hr, claims.iat).await {
+                return Err(ApiError::session_expired());
+            }
+        }
 
         // 5. Session-row presence: the JWT may pass signature + blacklist +
         //    pw_epoch yet correspond to a row that's been removed or marked
@@ -135,6 +153,7 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
             jti: claims.jti,
             iat: claims.iat,
             exp: claims.exp,
+            hr_uid: claims.hr_uid.filter(|n| *n > 0),
         };
         user.require_uid()?;
         Ok(user)
@@ -621,6 +640,7 @@ mod auth_user_tests {
             jti: String::new(),
             iat: 0,
             exp: 0,
+            hr_uid: None,
         }
     }
 

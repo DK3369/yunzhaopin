@@ -16,7 +16,7 @@ use phpyun_models::member_logout::repo as logout_repo;
 use phpyun_models::user::repo as user_repo;
 
 pub async fn status(state: &AppState, user: &AuthenticatedUser) -> AppResult<Option<MemberLogout>> {
-    Ok(logout_repo::find_by_uid(state.db.reader(), user.uid).await?)
+    Ok(logout_repo::find_by_uid(state.db.reader(), user.self_uid()).await?)
 }
 
 pub async fn apply(
@@ -29,7 +29,8 @@ pub async fn apply(
         return Err(ApiError::param_invalid("password"));
     }
 
-    let member = user_repo::find_by_uid(state.db.reader(), user.uid)
+    let uid = user.self_uid();
+    let member = user_repo::find_by_uid(state.db.reader(), uid)
         .await?
         .ok_or_else(|| ApiError::param_invalid("account_not_found"))?;
 
@@ -44,7 +45,7 @@ pub async fn apply(
     }
 
     // Reuse an existing pending request if present
-    if let Some(existing) = logout_repo::find_by_uid(state.db.reader(), user.uid).await? {
+    if let Some(existing) = logout_repo::find_by_uid(state.db.reader(), uid).await? {
         if existing.status == 1 {
             return Ok(existing.id);
         }
@@ -52,7 +53,7 @@ pub async fn apply(
 
     let id = logout_repo::create(
         state.db.pool(),
-        user.uid,
+        uid,
         &member.username,
         member.moblie.as_deref(),
         clock::now_ts(),
@@ -63,7 +64,7 @@ pub async fn apply(
         state,
         AuditEvent::new(
             "account.logout_apply",
-            Actor::uid(user.uid).with_ip(client_ip),
+            Actor::uid(uid).with_ip(client_ip),
         )
         .target(format!("logout:{id}")),
     )

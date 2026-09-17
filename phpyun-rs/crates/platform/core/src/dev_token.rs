@@ -157,6 +157,7 @@ async fn build_one(
         jti: jti_a,
         typ: "access".into(),
         iss: crate::jwt::JWT_ISSUER.into(),
+        hr_uid: None,
     };
     let key = EncodingKey::from_secret(cfg.jwt_secret.as_bytes());
     encode(

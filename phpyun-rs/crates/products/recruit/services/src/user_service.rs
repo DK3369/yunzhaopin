@@ -15,13 +15,13 @@
 use phpyun_auth::{argon2_hash_async, verify_password_async};
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::json;
-use phpyun_core::jwt::{issue_pair, JwtIssued};
+use phpyun_core::extractors::{USERTYPE_ADMIN, USERTYPE_EMPLOYER};
+use phpyun_core::jwt::{issue_pair_ex, JwtIssued};
 use phpyun_core::{
     background, jwt_blacklist,
     metrics::{auth_event, cache_hit, cache_miss},
     rate_limit, ApiError, AppResult, AppState,
 };
-use phpyun_core::extractors::USERTYPE_ADMIN;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
@@ -34,6 +34,82 @@ fn auth_identity(user: &Member) -> AppResult<(u8, u32)> {
         phpyun_core::numeric::checked_db(user.usertype, "phpyun_member.usertype")?,
         phpyun_core::numeric::checked_db(user.did, "phpyun_member.did")?,
     ))
+}
+
+struct LoginIdentity {
+    token_uid: u64,
+    hr_uid: Option<u64>,
+    usertype: u8,
+    did: u32,
+}
+
+async fn identity_for_login(state: &AppState, user: &Member) -> AppResult<LoginIdentity> {
+    let (usertype, did) = auth_identity(user)?;
+    if usertype == USERTYPE_EMPLOYER && user.pid > 0 && user.pid != user.uid {
+        let parent = user_repo::find_by_uid(state.db.reader(), user.pid)
+            .await?
+            .ok_or_else(|| ApiError::business("sub_account_not_found"))?;
+        if parent.status == 2 {
+            return Err(ApiError::locked());
+        }
+        let (_, parent_did) = auth_identity(&parent)?;
+        return Ok(LoginIdentity {
+            token_uid: parent.uid,
+            hr_uid: Some(user.uid),
+            usertype: USERTYPE_EMPLOYER,
+            did: parent_did,
+        });
+    }
+    Ok(LoginIdentity {
+        token_uid: user.uid,
+        hr_uid: None,
+        usertype,
+        did,
+    })
+}
+
+async fn issue_login_tokens(
+    state: &AppState,
+    user: &Member,
+    ctx: &LoginContext<'_>,
+) -> AppResult<LoginResult> {
+    let ident = identity_for_login(state, user).await?;
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair_ex(
+        &state.config,
+        ident.token_uid,
+        ident.usertype,
+        ident.did,
+        ident.hr_uid,
+    )?;
+    let _ = user_session_service::record_login(
+        state,
+        LoginRecord {
+            uid: user.uid,
+            usertype: ident.usertype,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: ctx.ip,
+            ua: ctx.ua,
+        },
+    )
+    .await;
+    Ok(LoginResult {
+        access,
+        refresh,
+        uid: ident.token_uid,
+        usertype: ident.usertype,
+        access_exp,
+        refresh_exp,
+    })
 }
 
 /// Login context — carried alongside credentials so the service can record
@@ -134,33 +210,7 @@ pub async fn login(
         });
     }
 
-    // 6. Validate persisted identity fields before issuing credentials.
-    let (usertype, did) = auth_identity(&user)?;
-    let JwtIssued {
-        access,
-        refresh,
-        access_exp,
-        refresh_exp,
-        jti_access,
-        jti_refresh,
-    } = issue_pair(&state.config, user.uid, usertype, did)?;
-
-    // Record the login as a session row so the user can list / kick devices.
-    // Best-effort: never blocks login on session-table failure.
-    let _ = user_session_service::record_login(
-        state,
-        LoginRecord {
-            uid: user.uid,
-            usertype,
-            jti_access: &jti_access,
-            jti_refresh: &jti_refresh,
-            access_exp,
-            refresh_exp,
-            ip: ctx.ip,
-            ua: ctx.ua,
-        },
-    )
-    .await;
+    let tokens = issue_login_tokens(state, &user, &ctx).await?;
 
     auth_event("login_success", None);
 
@@ -173,14 +223,7 @@ pub async fn login(
     )
     .await;
 
-    Ok(LoginResult {
-        access,
-        refresh,
-        uid: user.uid,
-        usertype,
-        access_exp,
-        refresh_exp,
-    })
+    Ok(tokens)
 }
 
 /// Issue a session for an already-identified member (WeChat scan-to-login).
@@ -195,38 +238,7 @@ pub async fn login_by_uid(
     if user.status == 2 {
         return Err(ApiError::locked());
     }
-    let (usertype, did) = auth_identity(&user)?;
-    let JwtIssued {
-        access,
-        refresh,
-        access_exp,
-        refresh_exp,
-        jti_access,
-        jti_refresh,
-    } = issue_pair(&state.config, user.uid, usertype, did)?;
-    let _ = user_session_service::record_login(
-        state,
-        LoginRecord {
-            uid: user.uid,
-            usertype,
-            jti_access: &jti_access,
-            jti_refresh: &jti_refresh,
-            access_exp,
-            refresh_exp,
-            ip: ctx.ip,
-            ua: ctx.ua,
-        },
-    )
-    .await;
-    auth_event("login_success", None);
-    Ok(LoginResult {
-        access,
-        refresh,
-        uid: user.uid,
-        usertype,
-        access_exp,
-        refresh_exp,
-    })
+    Ok(issue_login_tokens(state, &user, &ctx).await?)
 }
 
 /// Admin simulate-login: issue a member JWT without password (PHP 模拟登录).
@@ -248,29 +260,7 @@ pub async fn impersonate(
     if user.status == 2 {
         return Err(ApiError::locked());
     }
-    let (usertype, did) = auth_identity(&user)?;
-    let JwtIssued {
-        access,
-        refresh,
-        access_exp,
-        refresh_exp,
-        jti_access,
-        jti_refresh,
-    } = issue_pair(&state.config, user.uid, usertype, did)?;
-    let _ = user_session_service::record_login(
-        state,
-        LoginRecord {
-            uid: user.uid,
-            usertype,
-            jti_access: &jti_access,
-            jti_refresh: &jti_refresh,
-            access_exp,
-            refresh_exp,
-            ip: ctx.ip,
-            ua: ctx.ua,
-        },
-    )
-    .await;
+    let tokens = issue_login_tokens(state, &user, &ctx).await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.user.impersonate", Actor::uid(actor_uid))
@@ -278,14 +268,7 @@ pub async fn impersonate(
             .success(true),
     )
     .await;
-    Ok(LoginResult {
-        access,
-        refresh,
-        uid: user.uid,
-        usertype,
-        access_exp,
-        refresh_exp,
-    })
+    Ok(tokens)
 }
 
 // ==================== SMS one-time code login ====================
@@ -333,32 +316,7 @@ pub async fn login_with_sms_code(
     rate_limit::clear_login_fail(&state.redis, mobile).await;
     rate_limit::clear_login_fail_ip(&state.redis, ctx.ip).await;
 
-    // 5. Validate persisted identity fields before issuing credentials.
-    let (usertype, did) = auth_identity(&user)?;
-    let JwtIssued {
-        access,
-        refresh,
-        access_exp,
-        refresh_exp,
-        jti_access,
-        jti_refresh,
-    } = issue_pair(&state.config, user.uid, usertype, did)?;
-
-    let _ = user_session_service::record_login(
-        state,
-        LoginRecord {
-            uid: user.uid,
-            usertype,
-            jti_access: &jti_access,
-            jti_refresh: &jti_refresh,
-            access_exp,
-            refresh_exp,
-            ip: ctx.ip,
-            ua: ctx.ua,
-        },
-    )
-    .await;
-
+    let tokens = issue_login_tokens(state, &user, &ctx).await?;
     auth_event("login_success", Some("sms"));
     let _ = audit::emit(
         state,
@@ -367,15 +325,7 @@ pub async fn login_with_sms_code(
             .meta(&serde_json::json!({ "via": "sms" })),
     )
     .await;
-
-    Ok(LoginResult {
-        access,
-        refresh,
-        uid: user.uid,
-        usertype,
-        access_exp,
-        refresh_exp,
-    })
+    Ok(tokens)
 }
 
 /// Issue a one-time code for the merged email login/registration flow.
@@ -516,30 +466,8 @@ pub async fn login_or_register_with_email_code(
     if user.status == 2 {
         return Err(ApiError::locked());
     }
-    let (usertype, did) = auth_identity(&user)?;
     rate_limit::clear_login_fail(&state.redis, &email).await;
-    let JwtIssued {
-        access,
-        refresh,
-        access_exp,
-        refresh_exp,
-        jti_access,
-        jti_refresh,
-    } = issue_pair(&state.config, user.uid, usertype, did)?;
-    let _ = user_session_service::record_login(
-        state,
-        LoginRecord {
-            uid: user.uid,
-            usertype,
-            jti_access: &jti_access,
-            jti_refresh: &jti_refresh,
-            access_exp,
-            refresh_exp,
-            ip: ctx.ip,
-            ua: ctx.ua,
-        },
-    )
-    .await;
+    let tokens = issue_login_tokens(state, &user, &ctx).await?;
     auth_event("login_success", Some("email"));
     let _ = audit::emit(
         state,
@@ -549,17 +477,7 @@ pub async fn login_or_register_with_email_code(
     )
     .await;
 
-    Ok((
-        LoginResult {
-            access,
-            refresh,
-            uid: user.uid,
-            usertype,
-            access_exp,
-            refresh_exp,
-        },
-        is_new,
-    ))
+    Ok((tokens, is_new))
 }
 
 // ==================== Logout ====================
@@ -594,6 +512,11 @@ pub async fn refresh_access(
     if jwt_blacklist::is_token_stale(&state.redis, user.uid, user.iat).await {
         return Err(ApiError::session_expired());
     }
+    if let Some(hr) = user.hr_uid.filter(|n| *n > 0) {
+        if jwt_blacklist::is_token_stale(&state.redis, hr, user.iat).await {
+            return Err(ApiError::session_expired());
+        }
+    }
 
     let JwtIssued {
         access,
@@ -602,7 +525,13 @@ pub async fn refresh_access(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(&state.config, user.uid, user.usertype, user.did)?;
+    } = issue_pair_ex(
+        &state.config,
+        user.uid,
+        user.usertype,
+        user.did,
+        user.hr_uid,
+    )?;
 
     // Match the session row by the OLD access jti (the client passed an
     // access_token, not a refresh_token). If the row is gone or revoked,
@@ -769,6 +698,7 @@ mod conversion_tests {
             did,
             reg_date: 0,
             login_date: None,
+            pid: 0,
         }
     }
 

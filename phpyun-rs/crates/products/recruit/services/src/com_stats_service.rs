@@ -524,6 +524,7 @@ pub async fn package(state: &AppState, user: &AuthenticatedUser) -> AppResult<Ve
             top_num: 0,
             urgent_num: 0,
             rec_num: 0,
+            sons_num: 0,
         });
     let mut job_left = st.job_num;
     if st.rating_type == 1 {

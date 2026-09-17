@@ -42,7 +42,7 @@ pub async fn rename(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<RenameForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    mcenter_service::rename_username(&state, user.uid, &f.old_password, &f.new_username, &ip)
+    mcenter_service::rename_username(&state, user.self_uid(), &f.old_password, &f.new_username, &ip)
         .await?;
     Ok(ApiResponse::data(
         json::json!({ "ok": true, "new_username": f.new_username }),

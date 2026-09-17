@@ -3,6 +3,7 @@ import { isMemberModuleOn } from '~/utils/site'
 
 const { t } = useI18n()
 const { settings } = useSiteChrome()
+const { data: me } = await useAuthMe()
 useSeoMeta({ title: t('wap_user_00214') })
 const items = computed(() =>
   [
@@ -14,9 +15,11 @@ const items = computed(() =>
     { to: '/com/binding', label: t('member_user_00059') },
     { to: '/com/password', label: t('wap_00817') },
     { to: '/com/account', label: t('wap_user_00338') },
+    { to: '/com/sub-accounts', label: t('common_01597') },
+    { to: '/com/customize', label: t('member_com_00397') },
     { to: '/com/otherservice', label: t('wap_user_00196') },
     { to: '/advice', label: t('wap_user_00203') },
-  ].filter((item) => isMemberModuleOn(settings.value, item.to)),
+  ].filter((item) => isMemberModuleOn(settings.value, item.to) && !(me.value?.is_sub && item.to === '/com/sub-accounts')),
 )
 </script>
 

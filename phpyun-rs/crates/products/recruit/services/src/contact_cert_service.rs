@@ -39,10 +39,10 @@ pub async fn verify_and_change_mobile(
     if !ok {
         return Err(ApiError::captcha());
     }
-    user_repo::update_mobile(state.db.pool(), user.uid, new_mobile).await?;
+    user_repo::update_mobile(state.db.pool(), user.self_uid(), new_mobile).await?;
     let _ = audit::emit(
         state,
-        audit::AuditEvent::new("user.mobile_change", audit::Actor::uid(user.uid))
+        audit::AuditEvent::new("user.mobile_change", audit::Actor::uid(user.self_uid()))
             .target(format!("mobile:{new_mobile}")),
     )
     .await;
@@ -64,7 +64,7 @@ pub async fn send_email_link(
     }
     let token = Uuid::now_v7().simple().to_string();
     // Reuse the verify store: key=target=token, value=code=uid:new_email
-    let payload = format!("{}:{}", user.uid, new_email);
+    let payload = format!("{}:{}", user.self_uid(), new_email);
     verify::issue(
         &state.redis,
         VerifyKind::EmailChange,
@@ -79,7 +79,7 @@ pub async fn send_email_link(
             "email.verify_queued",
             &serde_json::json!({
                 "kind": "email_change",
-                "uid": user.uid,
+                "uid": user.self_uid(),
                 "email": new_email,
                 "token": token,
             }),

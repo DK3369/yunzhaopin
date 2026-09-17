@@ -39,7 +39,7 @@ pub async fn list_bindings(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiResponse<BindingsData>> {
-    let list = mcenter_service::list_bindings(&state, user.uid).await?;
+    let list = mcenter_service::list_bindings(&state, user.self_uid()).await?;
     Ok(ApiResponse::data(BindingsData {
         providers: list.into_iter().map(|s| s.to_string()).collect(),
     }))
@@ -67,6 +67,6 @@ pub async fn unbind(
     phpyun_core::validators::ensure_path_token(&b.provider)?;
     let kind = ProviderKind::parse(&b.provider)
         .ok_or_else(|| ApiError::param_invalid(format!("provider: {}", b.provider)))?;
-    mcenter_service::unbind(&state, user.uid, kind, &ip).await?;
+    mcenter_service::unbind(&state, user.self_uid(), kind, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

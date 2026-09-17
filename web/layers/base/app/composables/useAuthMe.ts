@@ -7,6 +7,7 @@ export type AuthMe = {
   usertype: number
   moblie?: string | null
   email?: string | null
+  is_sub?: boolean
 }
 
 export const AUTH_ME_KEY = 'auth-me'

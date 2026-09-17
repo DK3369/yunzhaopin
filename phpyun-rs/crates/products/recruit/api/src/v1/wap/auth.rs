@@ -89,10 +89,11 @@ pub struct MeData {
     pub moblie: Option<String>,
     pub usertype: u8,
     pub did: u32,
+    pub is_sub: bool,
 }
 
-impl From<&UserProfile> for MeData {
-    fn from(p: &UserProfile) -> Self {
+impl MeData {
+    fn from_profile(p: &UserProfile, is_sub: bool) -> Self {
         Self {
             uid: p.uid,
             username: p.username.clone(),
@@ -100,6 +101,7 @@ impl From<&UserProfile> for MeData {
             moblie: p.moblie.clone(),
             usertype: p.usertype,
             did: p.did,
+            is_sub,
         }
     }
 }
@@ -120,7 +122,10 @@ pub async fn me(
     user: AuthenticatedUser,
 ) -> AppResult<ApiResponse<MeData>> {
     let profile = user_service::get_profile(&state, user.uid).await?;
-    Ok(ApiResponse::data(MeData::from(profile.as_ref())))
+    Ok(ApiResponse::data(MeData::from_profile(
+        profile.as_ref(),
+        user.is_sub_account(),
+    )))
 }
 
 // ==================== POST /v1/wap/usertype/select ====================
