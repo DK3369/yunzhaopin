@@ -40,6 +40,7 @@
             <el-table-column prop="usertype_n" :label="lc('admin_user_00162')" width="120">
             </el-table-column>
             <el-table-column prop="content" :label="lc('admin_system_00580')">
+                <template #default="scope">{{ packedLog(scope.row.content) }}</template>
             </el-table-column>
             <el-table-column prop="ctime_n" :label="lc('member_user_00241')" width="220">
             </el-table-column>

@@ -18,10 +18,11 @@ use phpyun_core::json;
 use phpyun_core::extractors::{USERTYPE_ADMIN, USERTYPE_EMPLOYER};
 use phpyun_core::jwt::{issue_pair_ex, JwtIssued};
 use phpyun_core::{
-    background, jwt_blacklist,
+    background, clock, jwt_blacklist,
     metrics::{auth_event, cache_hit, cache_miss},
     rate_limit, ApiError, AppResult, AppState,
 };
+use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::site_setting::repo as setting_repo;
@@ -102,6 +103,7 @@ async fn issue_login_tokens(
         },
     )
     .await;
+    record_member_login_log(state, user, ctx, &ident).await;
     Ok(LoginResult {
         access,
         refresh,
@@ -119,6 +121,66 @@ async fn issue_login_tokens(
 pub struct LoginContext<'a> {
     pub ip: &'a str,
     pub ua: &'a str,
+}
+
+fn is_wap_ua(ua: &str) -> bool {
+    let l = ua.to_ascii_lowercase();
+    l.contains("mobile")
+        || l.contains("android")
+        || l.contains("iphone")
+        || l.contains("ipad")
+        || l.contains("ipod")
+        || l.contains("harmonyos")
+        || l.contains("okhttp")
+        || l.contains("micromessenger")
+        || l.contains("miniprogram")
+        || l.contains("uni-app")
+        || l.contains("wap")
+}
+
+/// Numbered keys only. Never concatenate Chinese like PHP `端口延续登录`.
+fn login_log_content(ua: &str, continued: bool) -> &'static str {
+    let wap = is_wap_ua(ua);
+    if continued {
+        if wap {
+            "wap_01557admin_tool_00738"
+        } else {
+            "admin_tool_00739"
+        }
+    } else if wap {
+        "common_06521"
+    } else {
+        "common_06522"
+    }
+}
+
+async fn record_member_login_log(
+    state: &AppState,
+    user: &Member,
+    ctx: &LoginContext<'_>,
+    ident: &LoginIdentity,
+) {
+    if ident.usertype == USERTYPE_ADMIN {
+        return;
+    }
+    let now = clock::now_ts();
+    let prev = user.login_date.unwrap_or(0);
+    let continued = prev >= clock::start_of_today();
+    let content = login_log_content(ctx.ua, continued);
+    let usertype = i32::from(ident.usertype);
+    let did = i32::try_from(ident.did).unwrap_or(0);
+    let _ = admin_msg_repo::insert_php_login_log(
+        state.db.pool(),
+        ident.token_uid,
+        usertype,
+        content,
+        ctx.ip,
+        now,
+        0,
+        did,
+    )
+    .await;
+    let _ = user_repo::touch_login(state.db.pool(), user.uid, ctx.ip, now).await;
 }
 
 use std::sync::Arc;
@@ -717,5 +779,37 @@ mod conversion_tests {
         assert_eq!(error.tag(), "db");
         assert!(error.to_string().contains("phpyun_member.did"));
         assert_eq!(error.http_status().as_u16(), 500);
+    }
+
+    #[test]
+    fn login_log_content_pc_success() {
+        assert_eq!(
+            login_log_content("Mozilla/5.0 (Windows NT 10.0; Win64; x64)", false),
+            "common_06522"
+        );
+    }
+
+    #[test]
+    fn login_log_content_wap_success() {
+        assert_eq!(
+            login_log_content("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)", false),
+            "common_06521"
+        );
+    }
+
+    #[test]
+    fn login_log_content_pc_continue() {
+        assert_eq!(
+            login_log_content("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", true),
+            "admin_tool_00739"
+        );
+    }
+
+    #[test]
+    fn login_log_content_wap_continue() {
+        assert_eq!(
+            login_log_content("okhttp/4.9.3", true),
+            "wap_01557admin_tool_00738"
+        );
     }
 }

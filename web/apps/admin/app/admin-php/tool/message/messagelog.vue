@@ -59,6 +59,7 @@
                         </template>
 					</el-table-column>
 					<el-table-column prop="content" :label="lc('wap_user_00102')" min-width="300">
+                        <template #default="scope">{{ packedLog(scope.row.content) }}</template>
 					</el-table-column>
 					<el-table-column prop="ctime_n" :label="lc('admin_tool_00504')" sortable="custom" width="200">
 						<template #default="scope">

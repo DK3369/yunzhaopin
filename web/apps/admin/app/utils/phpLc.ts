@@ -106,6 +106,8 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00735: '职位收藏：收藏了职位：',
     admin_tool_00736: '收藏管理：取消收藏职位：',
     admin_tool_00737: '采集进行中',
+    admin_tool_00738: '端口延续登录',
+    admin_tool_00739: 'PC端口延续登录',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -166,6 +168,8 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00735: 'Favorites: favorited job ',
     admin_tool_00736: 'Favorites: removed job ',
     admin_tool_00737: 'Scraping in progress',
+    admin_tool_00738: 'Session continued',
+    admin_tool_00739: 'PC session continued',
   },
 }
 

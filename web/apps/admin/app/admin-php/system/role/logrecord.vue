@@ -18,7 +18,9 @@
         <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
             <el-table-column prop="id" :label="lc('member_com_00345')" width="80"></el-table-column>
             <el-table-column prop="username" :label="lc('admin_system_00218')"></el-table-column>
-            <el-table-column prop="content" :label="lc('wap_user_00102')"></el-table-column>
+            <el-table-column prop="content" :label="lc('wap_user_00102')">
+                <template #default="scope">{{ packedLog(scope.row.content) }}</template>
+            </el-table-column>
             <el-table-column prop="ip" label="IP"></el-table-column>
             <el-table-column prop="did_name" :label="lc('admin_00151')"></el-table-column>
             <el-table-column prop="ctime_n" :label="lc('member_user_00241')"></el-table-column>

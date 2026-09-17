@@ -365,6 +365,33 @@ pub async fn delete_php_login_logs_by_usertype(
     Ok(r.rows_affected())
 }
 
+/// Member login success. `content` must be numbered i18n keys only (no Chinese).
+pub async fn insert_php_login_log(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+    content: &str,
+    ip: &str,
+    ctime: i64,
+    remoteport: i32,
+    did: i32,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"INSERT INTO phpyun_login_log (uid, usertype, content, ip, ctime, remoteport, did)
+           VALUES (?, ?, ?, ?, ?, ?, ?)"#,
+    )
+    .bind(uid)
+    .bind(usertype)
+    .bind(content)
+    .bind(ip)
+    .bind(ctime)
+    .bind(remoteport)
+    .bind(did)
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
 pub struct AdminLogRow {
     pub id: u64,

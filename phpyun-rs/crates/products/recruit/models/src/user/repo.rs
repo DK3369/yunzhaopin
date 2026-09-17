@@ -1166,6 +1166,21 @@ pub async fn update_login_address(
     Ok(res.rows_affected())
 }
 
+pub async fn touch_login(
+    pool: &MySqlPool,
+    uid: u64,
+    login_ip: &str,
+    login_date: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET login_ip = ?, login_date = ? WHERE uid = ?")
+        .bind(login_ip)
+        .bind(login_date)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn update_moblie_address(
     pool: &MySqlPool,
     uid: u64,

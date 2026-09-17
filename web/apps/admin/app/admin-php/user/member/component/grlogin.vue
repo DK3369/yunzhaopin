@@ -29,7 +29,9 @@
                 <el-table-column prop="ip" label="IP"></el-table-column>
                 <el-table-column prop="remoteport" :label="lc('admin_user_00159')"></el-table-column>
                 <el-table-column prop="ctime_ymd" :label="lc('wap_js_00088')" sortable="custom" width="180"></el-table-column>
-                <el-table-column prop="content" :label="lc('wap_user_00102')" min-width="180" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="content" :label="lc('wap_user_00102')" min-width="180" show-overflow-tooltip>
+                    <template #default="scope">{{ packedLog(scope.row.content) }}</template>
+                </el-table-column>
                 <el-table-column :label="lc('member_user_00048')" width="80" fixed="right">
                     <template #default="scope">
                         <div class="cz_button">
