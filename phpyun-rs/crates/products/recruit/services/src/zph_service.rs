@@ -2,14 +2,17 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::TieredCache;
+use phpyun_core::json;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::{
     job::repo as job_repo,
+    vip::repo as vip_repo,
     zph::{
         entity::{Zph, ZphCompany, ZphPic, ZphReservation, ZphSpace},
         repo as zph_repo,
     },
 };
+use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 use std::time::Duration;
@@ -131,16 +134,42 @@ pub struct ReserveInput<'a> {
     pub bid: i32,
 }
 
-pub async fn reserve(
+struct ZphBoothReady {
+    job_ids: String,
+    name: String,
+    sid: i32,
+    cid: i32,
+    bid: i32,
+    price: i32,
+    rating_type: i32,
+    zph_num: i32,
+}
+
+#[derive(Debug, Deserialize, Default)]
+struct ZphOrderInfo {
+    #[serde(default)]
+    zid: u64,
+    #[serde(default)]
+    bid: i32,
+    #[serde(default)]
+    sid: i32,
+    #[serde(default)]
+    cid: i32,
+    #[serde(default)]
+    jobid: String,
+    #[serde(default)]
+    com_name: String,
+}
+
+async fn resolve_booth(
     state: &AppState,
     user: &AuthenticatedUser,
     zid: u64,
     input: ReserveInput<'_>,
-) -> AppResult<u64> {
+) -> AppResult<ZphBoothReady> {
     user.require_employer()?;
     let now = clock::now_ts();
     let reader = state.db.reader();
-    let pool = state.db.pool();
 
     let zph = zph_repo::find_by_id(reader, zid)
         .await?
@@ -148,7 +177,6 @@ pub async fn reserve(
     if zph.status != 1 || zph.is_open != 1 {
         return Err(ApiError::business("zph_closed"));
     }
-    // PHP: starttime already passed → too late; endtime passed → ended.
     if zph.start_at > 0 && zph.start_at < now {
         return Err(ApiError::business("zph_already_started"));
     }
@@ -203,9 +231,39 @@ pub async fn reserve(
     if !vip_ok {
         return Err(ApiError::business("zph_need_vip"));
     }
-    if statis.rating_type == 1 {
-        if statis.zph_num <= 0 {
-            if space.price > 0 {
+
+    let com_name = input.name.trim();
+    let name = if com_name.is_empty() {
+        com.name.clone().unwrap_or_default()
+    } else {
+        com_name.to_string()
+    };
+    let _ = input.mobile;
+
+    Ok(ZphBoothReady {
+        job_ids: input.job_ids.to_string(),
+        name,
+        sid,
+        cid,
+        bid: input.bid,
+        price: space.price,
+        rating_type: statis.rating_type,
+        zph_num: statis.zph_num,
+    })
+}
+
+pub async fn reserve(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    zid: u64,
+    input: ReserveInput<'_>,
+) -> AppResult<u64> {
+    let now = clock::now_ts();
+    let pool = state.db.pool();
+    let ready = resolve_booth(state, user, zid, input).await?;
+    if ready.rating_type == 1 {
+        if ready.zph_num <= 0 {
+            if ready.price > 0 {
                 return Err(ApiError::business("zph_need_pay"));
             }
         } else {
@@ -216,29 +274,97 @@ pub async fn reserve(
         }
     }
 
-    let com_name = input.name.trim();
-    let name = if com_name.is_empty() {
-        com.name.clone().unwrap_or_default()
-    } else {
-        com_name.to_string()
-    };
-    let _ = input.mobile;
-
     let id = zph_repo::upsert_reservation(
         pool,
         zph_repo::ReservationCreate {
             zid,
             uid: user.uid,
-            job_ids: input.job_ids,
-            name: &name,
-            sid,
-            cid,
-            bid: input.bid,
+            job_ids: &ready.job_ids,
+            name: &ready.name,
+            sid: ready.sid,
+            cid: ready.cid,
+            bid: ready.bid,
         },
         now,
     )
     .await?;
     Ok(id)
+}
+
+pub struct CreatedZphOrder {
+    pub order_no: String,
+    pub price: f64,
+}
+
+pub async fn create_zph_order(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    zid: u64,
+    input: ReserveInput<'_>,
+) -> AppResult<CreatedZphOrder> {
+    let ready = resolve_booth(state, user, zid, input).await?;
+    if ready.rating_type != 1 || ready.zph_num > 0 || ready.price <= 0 {
+        return Err(ApiError::param_invalid("price"));
+    }
+    for row in vip_repo::list_pending_zph_orders(state.db.reader(), user.uid).await? {
+        let info: ZphOrderInfo = json::from_str(&row.order_info).unwrap_or_default();
+        if info.zid == zid {
+            return Err(ApiError::business("zph_order_exists"));
+        }
+    }
+    let info = json::json!({
+        "zid": zid,
+        "bid": ready.bid,
+        "sid": ready.sid,
+        "cid": ready.cid,
+        "jobid": ready.job_ids,
+        "com_name": ready.name,
+    });
+    let raw = json::to_string(&info)?;
+    let now = clock::now_ts();
+    let price = f64::from(ready.price.max(0));
+    let order_no = vip_repo::create_zph_order(state.db.pool(), user.uid, user.did, price, &raw, now)
+        .await?;
+    Ok(CreatedZphOrder { order_no, price })
+}
+
+pub async fn settle_zph_order(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
+    let o = vip_repo::find_any_order_by_no(state.db.reader(), order_no)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
+    if o.order_kind != 28 {
+        return Err(ApiError::param_invalid("order_not_found"));
+    }
+    if o.status == 1 {
+        return Ok(());
+    }
+    if o.status != 0 {
+        return Err(ApiError::business("order_not_pending"));
+    }
+    let info: ZphOrderInfo = json::from_str(&o.order_info).unwrap_or_default();
+    if info.zid == 0 || info.bid <= 0 {
+        return Err(ApiError::param_invalid("order_info"));
+    }
+    let now = clock::now_ts();
+    let price = (o.amount_cents.max(0) / 100) as i32;
+    zph_repo::upsert_reservation_paid(
+        state.db.pool(),
+        info.zid,
+        o.uid,
+        &info.jobid,
+        &info.com_name,
+        info.sid,
+        info.cid,
+        info.bid,
+        price,
+        now,
+    )
+    .await?;
+    let n = vip_repo::mark_order_paid(state.db.pool(), order_no, pay_tx_id, now).await?;
+    if n == 0 {
+        return Err(ApiError::business("order_not_pending"));
+    }
+    Ok(())
 }
 
 pub async fn my_reservation(

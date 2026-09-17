@@ -141,18 +141,11 @@ async function buy() {
       channel: payChannel(),
       remark: remark.value,
     })
-    if (channel.value === 'bank') {
-      bankOrderNo.value = String(created?.order_no || '')
-      bankForm.bank_price = String(created?.amount_yuan ?? payYuan.value)
-      msg.value = created?.order_no || t('common.success')
-      await refresh()
+    if (created?.order_no) {
+      await navigateTo(`/com/cashier/${created.order_no}`)
       return
     }
-    if (created?.pay_url) {
-      window.location.href = created.pay_url
-      return
-    }
-    msg.value = created?.msg || created?.order_no || t('common.success')
+    msg.value = created?.msg || t('common.success')
     await refresh()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
@@ -383,6 +376,7 @@ useSeoMeta({ title: t('common_01946') })
       <span class="paylist_span paylist_money">{{ o.amount_yuan }}</span>
       <span class="paylist_span paylist_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
       <span class="paylist_span paylist_cz">
+        <NuxtLink v-if="o.status === 0 && o.order_no" :to="`/com/cashier/${o.order_no}`" class="cblue">{{ $t('wap_00401') }}</NuxtLink>
         <a v-if="canFillBank(o)" href="javascript:;" class="cblue" @click="fillBank(o)">{{ $t('wap_01805') }}</a>
         <a v-if="canCancel(o)" href="javascript:;" class="cblue" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
       </span>
@@ -397,6 +391,7 @@ useSeoMeta({ title: t('common_01946') })
             </div>
             <div class="detail_integral">{{ o.amount_yuan }}</div>
             <div class="detail_box_cz">
+              <NuxtLink v-if="o.status === 0 && o.order_no" :to="`/com/cashier/${o.order_no}`">{{ $t('wap_00401') }}</NuxtLink>
               <a v-if="canFillBank(o)" href="javascript:;" @click="fillBank(o)">{{ $t('wap_01805') }}</a>
               <a v-if="canCancel(o)" href="javascript:;" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
             </div>

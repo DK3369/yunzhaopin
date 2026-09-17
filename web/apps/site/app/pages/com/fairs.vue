@@ -14,6 +14,7 @@ type Row = {
   statusbody?: string
   booth_name?: string
   job_names?: string
+  price?: number
   notstart?: number
 }
 
@@ -72,6 +73,7 @@ useSeoMeta({ title: t('wap_00558') })
       <tr>
         <th>{{ $t('member_com_00293') }}</th>
         <th>{{ $t('member_com_00378') }}</th>
+        <th>{{ $t('wap_00925') }}</th>
         <th>{{ $t('wap_user_00304') }}</th>
         <th>{{ $t('member_user_00181') }}</th>
         <th>{{ $t('member_user_00048') }}</th>
@@ -82,6 +84,7 @@ useSeoMeta({ title: t('wap_00558') })
           <span v-else>{{ row.title || row.name || row.id }}</span>
         </td>
         <td>{{ row.address }}</td>
+        <td>{{ row.price || 0 }}</td>
         <td>{{ row.datetime_n }}</td>
         <td>
           <span :class="{ wap_member_wtg: row.status === 2 }">{{ statusText(row.status) }}</span>
@@ -110,6 +113,10 @@ useSeoMeta({ title: t('wap_00558') })
           {{ row.address }}
         </div>
         <div class="com_cardlist_p">
+          <span class="com_cardlist_p_name">{{ $t('wap_00925') }}</span>
+          {{ row.price || 0 }}
+        </div>
+        <div class="com_cardlist_p">
           <span class="com_cardlist_p_name">{{ $t('wap_user_00087') }}</span>
           {{ row.start_at_n }}
         </div>
@@ -135,6 +142,7 @@ useSeoMeta({ title: t('wap_00558') })
         <li>{{ $t('member_com_00293') }}：{{ detail.title || detail.name }}</li>
         <li>{{ $t('wap_js_00088') }}：{{ detail.start_at_n }} ~ {{ detail.end_at_n }}</li>
         <li>{{ $t('wap_com_00425') }}：{{ detail.booth_name }}</li>
+        <li>{{ $t('wap_00925') }}：{{ detail.price || 0 }}</li>
         <li>{{ $t('wap_com_00424') }}：{{ detail.address }}</li>
         <li v-if="detail.job_names">{{ $t('wap_com_00288') }}：{{ detail.job_names }}</li>
       </ul>

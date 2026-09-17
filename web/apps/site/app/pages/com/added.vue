@@ -43,11 +43,11 @@ async function buy(detailId: number) {
       detail_id: detailId,
       channel: payChannel(),
     })
-    if (created?.pay_url) {
-      window.location.href = created.pay_url
+    if (created?.order_no) {
+      await navigateTo(`/com/cashier/${created.order_no}`)
       return
     }
-    msg.value = created?.msg || created?.order_no || t('ui.load_failed')
+    msg.value = created?.msg || t('ui.load_failed')
     await refresh()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')

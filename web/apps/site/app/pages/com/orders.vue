@@ -54,6 +54,9 @@ function kindLabel(o: OrderRow) {
 function canCancel(o: OrderRow) {
   return o.status === 0 && o.kind !== 'pack'
 }
+function canPay(o: OrderRow) {
+  return o.status === 0 && o.kind !== 'redeem' && Boolean(o.order_no)
+}
 async function cancelOrder(o: OrderRow) {
   msg.value = ''
   try {
@@ -87,6 +90,7 @@ useSeoMeta({ title: t('common_02029') })
       <span class="paylist_span paylist_money">{{ o.amount_yuan }}</span>
       <span class="paylist_span paylist_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
       <span class="paylist_span paylist_cz">
+        <NuxtLink v-if="canPay(o)" :to="`/com/cashier/${o.order_no}`" class="cblue">{{ $t('wap_00401') }}</NuxtLink>
         <a v-if="canCancel(o)" href="javascript:;" class="cblue" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
       </span>
     </div>
@@ -100,6 +104,7 @@ useSeoMeta({ title: t('common_02029') })
             </div>
             <div class="detail_integral">{{ o.amount_yuan }}</div>
             <div class="detail_box_cz">
+              <NuxtLink v-if="canPay(o)" :to="`/com/cashier/${o.order_no}`">{{ $t('wap_00401') }}</NuxtLink>
               <a v-if="canCancel(o)" href="javascript:;" @click="cancelOrder(o)">{{ $t('common.cancel') }}</a>
             </div>
           </li>

@@ -230,6 +230,52 @@ pub async fn upsert_reservation(
     Ok(res.last_insert_id())
 }
 
+pub async fn upsert_reservation_paid(
+    pool: &MySqlPool,
+    zid: u64,
+    uid: u64,
+    job_ids: &str,
+    name: &str,
+    sid: i32,
+    cid: i32,
+    bid: i32,
+    price: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if let Some(row) = find_my_reservation(pool, zid, uid).await? {
+        sqlx::query(
+            "UPDATE phpyun_zhaopinhui_com SET jobid=?, com_name=?, sid=?, cid=?, bid=?, price=? WHERE id=?",
+        )
+        .bind(job_ids)
+        .bind(name)
+        .bind(sid)
+        .bind(cid)
+        .bind(bid)
+        .bind(price)
+        .bind(row.id)
+        .execute(pool)
+        .await?;
+        return Ok(row.id);
+    }
+    let res = sqlx::query(
+        "INSERT INTO phpyun_zhaopinhui_com \
+         (zid, uid, jobid, com_name, ctime, status, sid, cid, bid, price) \
+         VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?)",
+    )
+    .bind(zid)
+    .bind(uid)
+    .bind(job_ids)
+    .bind(name)
+    .bind(now)
+    .bind(sid)
+    .bind(cid)
+    .bind(bid)
+    .bind(price)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 const ZS_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
     COALESCE(name, '') AS name, \

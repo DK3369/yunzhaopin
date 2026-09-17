@@ -99,6 +99,7 @@ pub struct VipCaps {
     pub urgent_num: i32,
     pub rec_num: i32,
     pub zph_num: i32,
+    pub sons_num: i32,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -119,6 +120,7 @@ pub struct CurrentVip {
     pub urgent_num: i32,
     pub rec_num: i32,
     pub integral: i64,
+    pub sons_num: i32,
     pub caps: VipCaps,
 }
 
@@ -154,6 +156,7 @@ pub async fn get_current(
                 urgent_num: c.urgent_num,
                 rec_num: c.rec_num,
                 zph_num: c.zph_num,
+                sons_num: c.sons_num,
             })
             .unwrap_or_default()
     } else {
@@ -176,6 +179,7 @@ pub async fn get_current(
         urgent_num: 0,
         rec_num: 0,
         integral: 0,
+        sons_num: 0,
         caps: VipCaps::default(),
     };
     Ok(ApiResponse::data(match (v, st) {
@@ -196,6 +200,7 @@ pub async fn get_current(
             urgent_num: s.urgent_num,
             rec_num: s.rec_num,
             integral: s.integral.parse().unwrap_or(0),
+            sons_num: s.sons_num,
             caps,
         },
         (Some(v), None) => CurrentVip {
@@ -503,6 +508,19 @@ pub async fn mock_paid(
         return Ok(ApiResponse::data(
             json::json!({ "ok": true, "pay_tx_id": fake_tx }),
         ));
+    }
+    if let Some(any) = phpyun_models::vip::repo::find_any_order_by_no(state.db.reader(), &order_no).await?
+    {
+        if any.uid != user.uid {
+            return Err(ApiError::param_invalid("order_not_owned"));
+        }
+        if any.order_kind == 28 {
+            phpyun_services::payment_notify_service::settle_paid(&state, &order_no, &fake_tx)
+                .await?;
+            return Ok(ApiResponse::data(
+                json::json!({ "ok": true, "pay_tx_id": fake_tx }),
+            ));
+        }
     }
     let order = phpyun_models::vip::repo::find_order_by_no(state.db.reader(), &order_no)
         .await?

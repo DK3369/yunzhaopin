@@ -268,6 +268,11 @@ pub async fn handle_alipay(
 
 /// Mark VIP or once-job order paid after the gateway signature has been verified.
 pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
+    if let Some(o) = vip_repo::find_any_order_by_no(state.db.reader(), order_no).await? {
+        if o.order_kind == 28 {
+            return crate::zph_service::settle_zph_order(state, order_no, pay_tx_id).await;
+        }
+    }
     if vip_repo::find_order_by_no_and_type(state.db.reader(), order_no, 2)
         .await?
         .is_some()

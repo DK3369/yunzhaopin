@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { seoJoin } from '~/utils/seo'
 import { mediaUrl, type CompanyLike, type JobLike } from '~/utils/site'
+import { ApiError } from '~/utils/envelope'
 
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
@@ -77,6 +78,30 @@ async function submitReserve() {
     reserveMsg.value = t('common.success')
     await loadComStatus()
   } catch (e: unknown) {
+    if (e instanceof ApiError && e.key === 'zph_need_pay') {
+      const space = (spaces.value || []).find((s) => s.id === reserveForm.bid)
+      const price = Number(space?.price || 0)
+      const ok = window.confirm(`${t('wap_01344')} ${price}${t('common_02056')}?`)
+      if (!ok) {
+        reserveMsg.value = e.message
+        return
+      }
+      try {
+        const created = await api.post<{ order_no?: string }>('/v1/mcenter/zph/order', {
+          zid: id,
+          bid: reserveForm.bid,
+          jobid: reserveForm.job_ids.join(','),
+          name: reserveForm.name,
+        })
+        if (created?.order_no) {
+          await navigateTo(`/com/cashier/${created.order_no}`)
+          return
+        }
+      } catch (e2: unknown) {
+        reserveMsg.value = e2 instanceof Error ? e2.message : t('common_00888')
+        return
+      }
+    }
     reserveMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }

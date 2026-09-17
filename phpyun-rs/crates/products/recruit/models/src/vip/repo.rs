@@ -394,6 +394,114 @@ pub async fn find_order_by_no(
         .await
 }
 
+const ANY_ORDER_SELECT: &str = "
+    CAST(id AS UNSIGNED) AS id,
+    COALESCE(order_id, '') AS order_no,
+    CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid,
+    COALESCE(order_remark, '') AS package_code,
+    CAST(COALESCE(order_price, 0) * 100 AS SIGNED) AS amount_cents,
+    COALESCE(order_type, '') AS channel,
+    COALESCE(order_state, 0) AS status,
+    order_bank AS pay_tx_id,
+    COALESCE(order_time, 0) AS created_at,
+    COALESCE(bank_time, 0) AS paid_at,
+    CAST(COALESCE(`type`, 0) AS SIGNED) AS order_kind,
+    CAST(COALESCE(integral, 0) AS SIGNED) AS integral,
+    CAST(COALESCE(usertype, 0) AS SIGNED) AS usertype,
+    COALESCE(order_info, '') AS order_info";
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct AnyOrder {
+    pub id: u64,
+    pub order_no: String,
+    pub uid: u64,
+    pub package_code: String,
+    pub amount_cents: i32,
+    pub channel: String,
+    pub status: i32,
+    pub pay_tx_id: Option<String>,
+    pub created_at: i64,
+    pub paid_at: i64,
+    pub order_kind: i32,
+    pub integral: i32,
+    pub usertype: i32,
+    pub order_info: String,
+}
+
+pub async fn find_any_order_by_no(
+    pool: &MySqlPool,
+    order_no: &str,
+) -> Result<Option<AnyOrder>, sqlx::Error> {
+    let sql = format!("SELECT {ANY_ORDER_SELECT} FROM phpyun_company_order WHERE order_id = ? LIMIT 1");
+    sqlx::query_as::<_, AnyOrder>(&sql)
+        .bind(order_no)
+        .fetch_optional(pool)
+        .await
+}
+
+pub async fn set_order_channel(
+    pool: &MySqlPool,
+    order_no: &str,
+    uid: u64,
+    channel: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_order SET order_type = ? \
+         WHERE order_id = ? AND uid = ? AND order_state = 0",
+    )
+    .bind(channel)
+    .bind(order_no)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn create_zph_order(
+    pool: &MySqlPool,
+    uid: u64,
+    did: u32,
+    price_yuan: f64,
+    order_info_json: &str,
+    now: i64,
+) -> Result<String, sqlx::Error> {
+    let order_no = dingdan_id(now);
+    sqlx::query(
+        r#"INSERT INTO phpyun_company_order
+              (order_id, uid, order_type, order_price, order_time, order_state,
+               order_remark, `type`, rating, did, sid, usertype, status,
+               order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
+               port, is_crm, order_bank, order_pic, order_info)
+           VALUES (?, ?, 'alipay', ?, ?, 0,
+                   'zph', 28, 0, ?, 0, 2, 1,
+                   0, 0, 0, 0, 0, 0,
+                   1, 0, '', '', ?)"#,
+    )
+    .bind(&order_no)
+    .bind(uid)
+    .bind(price_yuan)
+    .bind(now)
+    .bind(did)
+    .bind(order_info_json)
+    .execute(pool)
+    .await?;
+    Ok(order_no)
+}
+
+pub async fn list_pending_zph_orders(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Vec<AnyOrder>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ANY_ORDER_SELECT} FROM phpyun_company_order \
+         WHERE uid = ? AND `type` = 28 AND order_state = 0 ORDER BY id DESC LIMIT 20"
+    );
+    sqlx::query_as::<_, AnyOrder>(&sql)
+        .bind(uid)
+        .fetch_all(pool)
+        .await
+}
+
 pub async fn mark_order_paid(
     pool: &MySqlPool,
     order_no: &str,
@@ -432,7 +540,7 @@ pub async fn submit_bank_pay(
                bank_time = ?,
                order_pic = COALESCE(?, order_pic),
                order_info = COALESCE(?, order_info)
-           WHERE order_id = ? AND uid = ? AND type IN (1, 2) AND order_state IN (0, 3)"#,
+           WHERE order_id = ? AND uid = ? AND type IN (1, 2, 5, 28) AND order_state IN (0, 3)"#,
     )
     .bind(order_bank)
     .bind(bank_time)

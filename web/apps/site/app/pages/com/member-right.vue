@@ -83,11 +83,11 @@ async function buy(p: Pack) {
       '/v1/mcenter/vip/orders',
       { package_code: p.code, channel: payChannel() },
     )
-    if (created?.pay_url) {
-      window.location.href = created.pay_url
+    if (created?.order_no) {
+      await navigateTo(`/com/cashier/${created.order_no}`)
       return
     }
-    msg.value = created?.msg || created?.order_no || t('common.success')
+    msg.value = created?.msg || t('common.success')
     await refreshCurrent()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')

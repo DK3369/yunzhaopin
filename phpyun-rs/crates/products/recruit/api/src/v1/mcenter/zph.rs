@@ -14,6 +14,7 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/zph/reserve", post(reserve))
+        .route("/zph/order", post(order))
         .route("/zph/my-reservation", post(my_reservation))
         .route("/zph/cancel", post(cancel))
         .route("/zph/com-status", post(com_status))
@@ -67,6 +68,59 @@ pub async fn reserve(
     )
     .await?;
     Ok(ApiResponse::data(CreatedId { id: rid }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ZphOrderForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub zid: u64,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub bid: i32,
+    #[serde(default, alias = "job_ids")]
+    #[validate(length(max = 500))]
+    pub jobid: String,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ZphOrderCreated {
+    pub order_no: String,
+    pub price: f64,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/zph/order",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ZphOrderForm,
+    responses((status = 200, description = "ok", body = ZphOrderCreated))
+)]
+pub async fn order(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ZphOrderForm>,
+) -> AppResult<ApiResponse<ZphOrderCreated>> {
+    user.require_employer()?;
+    let created = zph_service::create_zph_order(
+        &state,
+        &user,
+        f.zid,
+        ReserveInput {
+            job_ids: &f.jobid,
+            name: &f.name,
+            mobile: "",
+            bid: f.bid,
+        },
+    )
+    .await?;
+    Ok(ApiResponse::data(ZphOrderCreated {
+        order_no: created.order_no,
+        price: created.price,
+    }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
