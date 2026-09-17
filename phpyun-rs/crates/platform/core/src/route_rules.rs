@@ -5,7 +5,7 @@
 //!
 //! 1. *Is this a business API path?* — those are POST-only and every framework
 //!    rejection on them is rewritten into the JSON envelope. Ops probes and the
-//!    Swagger UI are not.
+//!    Scalar docs UI are not.
 //! 2. *Is GET allowed here anyway?* — a handful of endpoints implement
 //!    third-party protocols (OAuth callbacks, webhook handshakes) whose verb we
 //!    do not control.

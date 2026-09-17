@@ -94,7 +94,6 @@ axum-test = "17"
 
 # ---- OpenAPI auto docs ----
 utoipa = { version = "5", features = ["axum_extras", "chrono"] }
-utoipa-swagger-ui = { version = "9", features = ["axum"] }
 
 # ---- Internal workspace crate aliases (avoid clashing with Rust's built-in `core`) ----
 phpyun_core = { path = "crates/platform/core", package = "phpyun-core" }

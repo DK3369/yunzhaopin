@@ -41,7 +41,7 @@ async fn robots_txt() -> impl IntoResponse {
 }
 
 /// Returns long-lived dev/test tokens (one per role) in non-prod, or 404 in
-/// prod. Used by Swagger UI bootstrap and by curl/Postman during development.
+/// prod. Used by Scalar bootstrap and by curl/Postman during development.
 ///
 /// `token` defaults to the admin token (works for `/admin/*` plus everything
 /// that doesn't role-check); the `tokens` map exposes all three roles so a

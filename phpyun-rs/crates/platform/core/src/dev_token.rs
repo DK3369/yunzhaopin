@@ -1,5 +1,5 @@
 //! Dev/test convenience: long-lived JWTs (one per role) minted at boot when
-//! `APP_ENV` is `dev` or `test`, used by Swagger UI / Postman / curl so engineers don't
+//! `APP_ENV` is `dev` or `test`, used by Scalar / Postman / curl so engineers don't
 //! have to log in to play with auth-gated endpoints.
 //!
 //! Three tokens are pre-minted, all bound to `uid = 1`:
@@ -8,7 +8,7 @@
 //!   - **admin**     (usertype = 9) — `/v1/admin/*`
 //!
 //! Each token has a fixed jti so restarts don't change the string and any
-//! Authorize header pasted into Swagger keeps working.
+//! Authorize header pasted into Scalar keeps working.
 //!
 //! - `init` is called once after `AppState::build`. In prod it's a no-op so
 //!   `tokens()` keeps returning `None`.

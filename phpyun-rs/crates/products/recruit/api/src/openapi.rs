@@ -1,16 +1,21 @@
 //! OpenAPI schema aggregation — **one per version**.
 //!
-//! - `/api-docs/v1/openapi.json` — V1 spec
-//! - `/api-docs/v2/openapi.json` — V2 spec
-//! - `/docs` — Swagger UI（仅 `APP_ENV=dev|test`；生产不挂）
+//! - `/api-docs/v1/openapi.json` — V1 spec（PC/H5 + App）
+//! - `/api-docs/v2/openapi.json` — V2 spec（破坏性登录）
+//! - `/api-docs/admin/openapi.json` — Admin spec（由 extra 挂上）
+//! - `/docs` — Scalar API Reference（仅 `APP_ENV=dev|test`；生产不挂）
 //!
-//! When adding v3: define `V3Doc` and add one more `.url(...)` in `api_docs_router()`.
+//! When adding v3: define `V3Doc` and add one more JSON route + Scalar source.
 
+use axum::{
+    response::Html,
+    routing::get,
+    Json, Router,
+};
 use utoipa::{
     openapi::security::{Http, HttpAuthScheme, SecurityScheme},
     Modify, OpenApi,
 };
-use utoipa_swagger_ui::{Config, SwaggerUi};
 
 use crate::{v1, v2};
 
@@ -27,10 +32,9 @@ impl Modify for SecurityAddon {
     }
 }
 
-/// Inject the operation count into each tag's description so Swagger UI shows
-/// `<tag> [N 个接口]` in the section header. Swagger UI doesn't compute counts
-/// itself; we walk every operation, tally its tags, then prefix each existing
-/// tag description with the total. Tags absent from `tags(...)` are auto-added.
+/// Inject the operation count into each tag's description so Scalar / 文档 UI
+/// 显示 `<tag> [N 个接口]`。我们遍历操作、按 tag 计数，再写进已有 tag 的
+/// description。未在 `tags(...)` 声明的会补上。
 pub struct TagCounts;
 
 impl Modify for TagCounts {
@@ -90,7 +94,7 @@ impl Modify for TagCounts {
 ///
 /// utoipa uses Rust function names as operationId by default; same-named `fn list`
 /// / `fn create` / `fn issue` across handler modules all collide, violating the
-/// OpenAPI spec (which requires global uniqueness), causing Swagger UI deep-links
+/// OpenAPI spec (which requires global uniqueness), causing docs deep-links
 /// to jump around and YApi imports to overwrite each other.
 pub struct UniqueOperationId;
 
@@ -190,9 +194,13 @@ impl Modify for DeprecatedIndex {
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "PHPYun API v1",
+        title = "PHPYun v1（PC/H5 + App 共用）",
         version = "1.0.0",
-        description = "PHPYun WAP API v1 (stable)"
+        description = "PC/H5 前台与 Flutter App 共用契约（`/v1/wap` + `/v1/mcenter`）。管理后台请切到 **Admin 后台** 源。\n\n\
+            - 新代码只加法；破坏性登录形状走 v2。\n\
+            - PC 新集成优先 `initjobs`、`home/full`、详情 `*/detail/full`、会员 `dashboard/full` / `resume/bundle`。\n\
+            - Try it 默认 server 是 `/api/proxy`（job1 BFF）；本机直连选 `/`。\n\
+            - 即将失效接口仍注册，见下文索引；新代码勿用。"
     ),
     servers(
         (url = "/api/proxy", description = "PC/H5 BFF（job1.ov6.com）"),
@@ -1255,9 +1263,9 @@ pub fn v1_openapi() -> utoipa::openapi::OpenApi {
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "OV6 API v2",
+        title = "PHPYun v2（登录形状）",
         version = "2.0.0",
-        description = "OV6 WAP API v2: login response time uses RFC3339; other endpoints match v1"
+        description = "只覆盖破坏性登录（时间字段 RFC3339 等）。其余接口请用 v1。"
     ),
     servers(
         (url = "/api/proxy", description = "PC/H5 BFF（job1.ov6.com）"),
@@ -1292,8 +1300,8 @@ fn inject_dev_banner(openapi: &mut utoipa::openapi::OpenApi) {
     };
     let banner = format!(
         "\n\n---\n\n## 开发环境快捷登录\n\n\
-            uid=1，30 年 TTL。Swagger 点右上角 **Authorize**，在 bearer 框粘贴 token\
-            （**不要**带 `Bearer ` 前缀，UI 会自己加）。浏览器会记住。\n\n\
+            uid=1，30 年 TTL。Scalar 打开 **Auth**，在 bearer 框粘贴 token\
+            （**不要**带 `Bearer ` 前缀，UI 会自己加）。浏览器会记住（persistAuth）。\n\n\
             curl / JSON：`Authorization: Bearer …`。\n\n\
             **admin**（`/v1/admin/*`）：\n```\n{admin}\n```\n\n\
             **jobseeker**（求职会员）：\n```\n{js}\n```\n\n\
@@ -1309,7 +1317,44 @@ fn inject_dev_banner(openapi: &mut utoipa::openapi::OpenApi) {
     ));
 }
 
-/// Swagger UI at `/docs` plus OpenAPI JSON (dev/test only). Extra spec is typically admin.
+fn scalar_page(sources: &[serde_json::Value]) -> String {
+    let sources_json = serde_json::to_string(sources).unwrap_or_else(|_| "[]".into());
+    format!(
+        r#"<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>PHPYun API</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+  <script>
+    Scalar.createApiReference('#app', {{
+      persistAuth: true,
+      hideDarkModeToggle: false,
+      sources: {sources_json}
+    }});
+  </script>
+</body>
+</html>
+"#
+    )
+}
+
+fn serve_openapi(
+    spec: utoipa::openapi::OpenApi,
+) -> impl Fn() -> std::future::Ready<Json<utoipa::openapi::OpenApi>> + Clone {
+    move || std::future::ready(Json(spec.clone()))
+}
+
+fn serve_html(html: String) -> impl Fn() -> std::future::Ready<Html<String>> + Clone {
+    move || std::future::ready(Html(html.clone()))
+}
+
+/// Scalar at `/docs` plus OpenAPI JSON (dev/test only). Extra spec is typically admin.
 pub fn api_docs_router<S>(extra: Option<(&'static str, utoipa::openapi::OpenApi)>) -> axum::Router<S>
 where
     S: Clone + Send + Sync + 'static,
@@ -1318,18 +1363,38 @@ where
     let mut v2 = V2Doc::openapi();
     inject_dev_banner(&mut v1);
     inject_dev_banner(&mut v2);
-    let mut extra = extra;
-    if let Some((_, spec)) = extra.as_mut() {
-        inject_dev_banner(spec);
+
+    let mut sources = vec![
+        serde_json::json!({
+            "title": "v1 PC/H5+App",
+            "slug": "v1",
+            "url": "/api-docs/v1/openapi.json",
+        }),
+        serde_json::json!({
+            "title": "v2 登录",
+            "slug": "v2",
+            "url": "/api-docs/v2/openapi.json",
+        }),
+    ];
+
+    let mut router = Router::new()
+        .route("/api-docs/v1/openapi.json", get(serve_openapi(v1)))
+        .route("/api-docs/v2/openapi.json", get(serve_openapi(v2)));
+
+    if let Some((url, mut spec)) = extra {
+        inject_dev_banner(&mut spec);
+        sources.push(serde_json::json!({
+            "title": "Admin 后台",
+            "slug": "admin",
+            "url": url,
+        }));
+        router = router.route(url, get(serve_openapi(spec)));
     }
-    let mut ui = SwaggerUi::new("/docs")
-        .url("/api-docs/v1/openapi.json", v1)
-        .url("/api-docs/v2/openapi.json", v2)
-        .config(Config::default().persist_authorization(true));
-    if let Some((url, spec)) = extra {
-        ui = ui.url(url, spec);
-    }
-    ui.into()
+
+    let html = scalar_page(&sources);
+    router
+        .route("/docs", get(serve_html(html.clone())))
+        .route("/docs/", get(serve_html(html)))
 }
 
 #[cfg(test)]

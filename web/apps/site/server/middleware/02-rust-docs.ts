@@ -2,7 +2,7 @@ import { rustLangHeaders } from '../../../../layers/base/server/utils/lang'
 
 /**
  * job1 直连 :3001，没有 nginx `/yapi/`。
- * 把 Swagger / OpenAPI JSON 转到 Rust :3003，公网用 https://job1.ov6.com/docs/
+ * 把 Scalar / OpenAPI JSON 转到 Rust :3003，公网用 https://job1.ov6.com/docs/
  */
 export default defineEventHandler(async (event) => {
   const path = getRequestURL(event).pathname

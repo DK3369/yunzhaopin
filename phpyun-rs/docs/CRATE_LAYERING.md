@@ -50,7 +50,7 @@ BIND=127.0.0.1:3003 METRICS_BIND=127.0.0.1:9091 \
   PHPYUN_ENV_FILE=/www/wwwroot/zzzz.com/phpyun-rs/.env.dev \
   cargo run -p phpyun-rs
 curl -i http://127.0.0.1:3003/health
-# /docs Swagger；/api-docs/v1/openapi.json 与 /api-docs/admin/openapi.json
+# /docs Scalar；/api-docs/v1/openapi.json 与 /api-docs/admin/openapi.json
 ```
 
 Binary 手搓 `tokio::runtime::Builder`，消费 `WORKER_THREADS` / `THREAD_STACK_MB` / `MAX_BLOCKING_THREADS`。

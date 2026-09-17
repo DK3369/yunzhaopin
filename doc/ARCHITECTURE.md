@@ -54,7 +54,7 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 | 契约快照 | `doc/snapshots/v1_paths.txt`（**405** 条） |
 | 进程 | systemd `test-jobs-phpyun-rs-3003` **`:3003`**（metrics `:9091`），库 **jobs**。旧 `:3000` 已停用。 |
 | 本机 URL | `http://127.0.0.1:3003/v1/wap/*`、`/v1/mcenter/*`、`/v2/wap/*`、`/callback/*`、`/health` |
-| OpenAPI | `http://127.0.0.1:3003/api-docs/v1/openapi.json`（Swagger `/docs/`） |
+| OpenAPI | `http://127.0.0.1:3003/api-docs/v1/openapi.json`（Scalar `/docs/`） |
 | 公网 Flutter | nginx **`/yapi/`** 剥前缀后打 **`:3003`**，如 `https://test-jobs.ov6.com/yapi/v1/wap/...` |
 | 支付回调 | 公网 **`/callback/`** → **`:3003`**（库 **jobs**） |
 
@@ -172,6 +172,7 @@ OpenAPI：
 
 - App：`/api-docs/v1/openapi.json`（快照 `doc/snapshots/v1_paths.txt`，**405** 条）
 - 后台：`/api-docs/admin/openapi.json`（快照 `doc/snapshots/admin_paths.txt`，**297** 条）
+- 文档 UI：`/docs` **Scalar**（仅 dev/test；左上角切 v1 / v2 / Admin）
 - **`POST /v1/admin/php-content/{module}/{action}` 不进 AdminDoc**，避免每接一个 PHP action 就改快照。
 
 `api` 与 `api-admin` 平级，互不依赖，都只调 `services`。

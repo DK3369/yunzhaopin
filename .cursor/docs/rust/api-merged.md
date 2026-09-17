@@ -1,6 +1,6 @@
 # 已合并 / 已摘除接口
 
-路径以 [`doc/snapshots/v1_paths.txt`](../../../doc/snapshots/v1_paths.txt) 为准。App 看 OpenAPI：现网 `:3003/api-docs/v1/openapi.json`（快照 `doc/snapshots/v1.openapi.json`）。Swagger 顶栏「即将失效」列表由 `openapi.rs` 的 `DeprecatedIndex` 从 `deprecated` 操作生成（V1 与 Admin 都挂了）；本批摘完后列表为空属预期。不要再手写进 `info.description`。
+路径以 [`doc/snapshots/v1_paths.txt`](../../../doc/snapshots/v1_paths.txt) 为准。App 看 OpenAPI：现网 `:3003/api-docs/v1/openapi.json`（快照 `doc/snapshots/v1.openapi.json`）。即将失效索引由 `openapi.rs` 的 `DeprecatedIndex` 写入 spec `info.description`（V1 与 Admin 都挂了，Scalar `/docs` 会显示）；本批摘完后列表为空属预期。不要再手写进 `info.description`。
 
 公开字典统一走 **`GET/POST /v1/wap/initjobs`**（`usePublicDicts()` / `useSiteBoot()`）。site 公开页 / 会员页与 admin 首页走聚合（`home/full`、详情 `*/detail/full`、侧栏、`dashboard/full` / `resume/bundle` / `jobs/overview` 等）。map / 分享页仍用薄 `jobs/detail`、`companies/detail`。
 

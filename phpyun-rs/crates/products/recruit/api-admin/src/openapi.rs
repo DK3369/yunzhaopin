@@ -8,9 +8,9 @@ use crate::v1;
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "OV6 Admin API",
+        title = "PHPYun Admin（后台）",
         version = "1.0.0",
-        description = "Admin endpoints (`/v1/admin/*`). App/Web clients must use `/api-docs/v1/openapi.json` instead."
+        description = "仅 `/v1/admin/*`，给 Nuxt 管理后台。App / PC 会员请用 v1。`POST /v1/admin/php-content/{module}/{action}` **不进** 本 spec。"
     ),
     servers(
         (url = "/api/proxy", description = "PC/H5 BFF（job1.ov6.com）"),

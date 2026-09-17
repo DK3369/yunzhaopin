@@ -9,7 +9,7 @@
 //! - `/health`, `/ready` — ops probes
 //! - `/files/*` — static uploaded files (local FS backend for dev; prod uses CDN, mounting here is optional)
 //! - `/api-docs/vN/openapi.json` — OpenAPI JSON (dev/test only; one spec per version)
-//! - `/docs` — Swagger UI (dev/test only; production 不挂)
+//! - `/docs` — Scalar API Reference (dev/test only; production 不挂)
 //!
 //! ## Middleware mounted on demand
 //! - Global middleware is installed by `mw::install`;
@@ -58,8 +58,8 @@ pub fn build_router(cfg: &phpyun_core::Config, state: AppState) -> Router<AppSta
 }
 
 /// Production assembly. `extra` is merged at the router root (typically the
-/// admin crate's `/v1/admin` tree). `extra_docs` is an optional extra Swagger
-/// spec (`(url, spec)`).
+/// admin crate's `/v1/admin` tree). `extra_docs` is an optional extra OpenAPI
+/// spec (`(url, spec)`). `/docs` is Scalar.
 pub fn assemble(
     cfg: &phpyun_core::Config,
     extra: Router<AppState>,
@@ -111,7 +111,8 @@ mod tests {
                 status_for(env, "/api-docs/v2/openapi.json").await,
                 StatusCode::OK
             );
-            assert_ne!(status_for(env, "/docs/").await, StatusCode::NOT_FOUND);
+            assert_eq!(status_for(env, "/docs/").await, StatusCode::OK);
+            assert_eq!(status_for(env, "/docs").await, StatusCode::OK);
         }
     }
 

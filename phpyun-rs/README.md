@@ -15,7 +15,7 @@ PHPYun 的 Rust 后端。Web 前台与管理后台见仓库根目录 `web/`（Nu
 curl -i http://127.0.0.1:3003/health
 ```
 
-本地另起进程时才 `cargo run -p phpyun-rs`（须改 `BIND`）。契约：`https://job1.ov6.com/docs/`（Swagger，仅 dev/test）、本机 `/api-docs/v1/openapi.json`。细节见 [`.cursor/docs/rust/run.md`](../.cursor/docs/rust/run.md)。
+本地另起进程时才 `cargo run -p phpyun-rs`（须改 `BIND`）。契约：`https://job1.ov6.com/docs/`（Scalar，仅 dev/test）、本机 `/api-docs/v1/openapi.json`。细节见 [`.cursor/docs/rust/run.md`](../.cursor/docs/rust/run.md)。
 
 `APP_ENV` 只能是 `dev` / `test` / `prod`。debug 读 `.env.dev`，release 读 `.env.pro`。也可用 `PHPYUN_ENV_FILE` 指定文件。现网 unit 用 `PHPYUN_ENV_FILE` 指 `.env`（库 **jobs**）。
 
