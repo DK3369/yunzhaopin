@@ -14,7 +14,7 @@
 
 - `uid` / `usertype` **只来自**已校验 JWT，禁止再信 body / query / header 里的身份字段。
 - 会员路径 Redis/DB 出错时鉴权仍可能放行（保持可用性）；**admin 路径 fail-closed**（出错 → 401）。
-- JWT：`Validation::new(HS256)` + 固定 `iss=phpyun-rs`。`pw_epoch` TTL = `max(access, refresh) + 1d`。经典子账号 token 可选 `hr_uid`（自己的 member.uid），`sub` 仍是父企业；`self_uid()` 只用于改密/绑定/注销/用户名/会话。
+- JWT：`Validation::new(HS256)` + 固定 `iss=phpyun-rs`。`pw_epoch` TTL = `max(access, refresh) + 1d`。经典子账号 token 可选 `hr_uid`（自己的 member.uid），`sub` 仍是父企业；`self_uid()` 只用于改密/绑定/注销/用户名/会话。后台锁号（`status!=1`）与改密成功后 `bump_pw_epoch` + `revoke_all_by_uid`（会话行 `revoked_at` + 把返回的 jti 写入黑名单）。会员改邮箱必须带当前密码，缺字段 400 `param_missing("password")`，错密码 `bad_credentials`。
 
 ## IP 与 CORS
 
@@ -26,7 +26,8 @@
 - IP 失败桶 `rl:login:ip:{ip}`（约 20 次 / 15 分）。同一账号连续失败 ≥3 次强制图形验证码（不看后台 `code_web`）。邮箱验证码登录失败也走该 IP 桶。
 - OTP 用 `Uuid::new_v4()`。
 - 管理员登录失败锁（约 5 次 / 15 分）**只在 `APP_ENV=test` 跳过**；现网 `APP_ENV=dev` 也锁。
-- 短信：号段 1/分 + 5/时，另加 `rl:sms:ip:{ip}` 10/时。once 创建 5/时/IP；问答写 20/时/uid；认领 10/时/uid；找回密码申诉 5/时/IP，响应不回 `ticket_uid`、不暴露账号是否存在。
+- 短信：号段 1/分 + 5/时，另加 `rl:sms:ip:{ip}` 10/时。once 创建 5/时/IP；问答写 20/时/uid；认领 10/时/uid；找回密码申诉 5/时/IP，响应不回 `ticket_uid`、不暴露账号是否存在。找回密码邮件另加 `rl:email:ip:{ip}` 10/时（handler 传 `ClientIp`）。
+- 公开列表 `ensure_public_list_rate`（约 60/分/IP）还盖：职位/企业/简历/兼职/once/公招/专题/招聘会/问答/资讯/公告，以及 tiny 列表、HR 文档、测评列表、全站搜索、排行榜、热搜、单页 CMS、广告 `initads`、友链。
 
 ## 联系方式与角色
 
@@ -45,6 +46,7 @@
 ## 支付回调金额
 
 - `settle_paid` 前用 `phpyun_company_order.order_price`（分）比对。支付宝 `total_fee` 按元、微信 `total_fee` 按分；微信还要 `return_code==SUCCESS` 且 `result_code==SUCCESS`。`X-Pay-Token` 回调必填 `amount_cents`。不等则拒，只 warn。
+- 下载简历 / 面试邀请现金模式（`com_integral_online != 3`）`confirm=true` **只建单**，不直接解锁：`type=19`（`sid=eid`，`order_info` JSON `{eid,uid}`，remark `wap_00451`）/ `type=23`（remark `wap_com_00046`），`order_state=0` 待付。响应 `status=2` 带 `order_no`。回调 `settle_paid` / 调试 `mock-paid` 按 kind 分派：19 写 `down_resume` + 首次通知；23 `invite_resume+1`。`mark_single_paid` 仅 `order_state=0` 才更新。积分模式与套餐/时间会员路径不变。channel 只认 `alipay|wechat`，默认 `wechat`。
 
 ## LIKE 与上传
 
@@ -54,7 +56,8 @@
 - 简历访客上限：详情必须登录。`sy_resume_visitors > 0` 时，查看者 ≠ 简历主用 Redis `resume_visitors:{viewer_uid}:{YYYYMMDD}` 日计数；超限 `visitor_blocked=true` 且不解锁联系方式/正文。`0` = 不限。Redis 出错 fail-open。
 - URL：`validators::http_or_site_url`（`http(s)://` 或 `/` 开头的站内路径，拒 `javascript:` / `//` / `\`）。挂在 App `download_url`、广告 `link`、友链 `link_url`、导航 `url`、单页 `link_url`。前台 `:href` 过 `safeHref()`；登录 `?next=` 过 `safeLoginNext()`。
 - 出站 HTTP：`Http::get_bytes` / `get_text` 拒绝 loopback / RFC1918 / 链路本地 / 未指定 / 组播，以及 `localhost`、`*.internal`、`metadata.google.internal`；hostname 解析到私网也拒。微信 `mmbiz.qpic.cn`（含子域）才拉图，写入前 `sniff_image`。
-- 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；附件按 `%PDF` / `PK` / `D0CF11E0` 判 pdf/docx/doc，不匹配 400。admin 上传不接受 `application/octet-stream`。
+- 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；附件按 `%PDF` / `PK`+`[Content_Types].xml` / `D0CF11E0` 判 pdf/docx/doc，不匹配 400。admin 上传不接受 `application/octet-stream`。
+- once / tiny 发帖：`daily_total_limit` / `daily_ip_limit` / `default_status` 请求字段保留但不生效；限额与审核状态只读 `sy_once_totalnum`/`sy_once`/`com_fast_status` 与 `sy_tiny_totalnum`/`sy_tiny`/`user_wjl`。tiny 更新不再写 `status`。招聘会展位 `job_ids` 必须属于当前企业；简历外发 `resume_id` 必须是本人 expect。公开简历详情非本人只看 `state=1 AND r_status=1` 的期望。
 - datacall 简历列表脱敏（手机 / 邮箱 / 身份证）。投递唯一键 SQL 在 `migrations/sqlx/20260916000001_apply_unique.sql`，**不自动跑**；现网用 Redis `SET NX` 短锁 `apply:{uid}:{job_id}` / `part_apply:{uid}:{id}` 挡竞态。
 - 每日投递：`warning_sendresume_type==2` 计今日条数；`warning_sqjob_type==2` 计今日 `job1` 去重。简历子表写完重算 `integrity`（55+work/edu/skill 10+project 8+training 7）。
 - `OPTIMIZE`/`REPAIR` 拒 `phpyun_admin_user` / `phpyun_member` / `phpyun_user_session`。相册 `kind` 只认 `resume`|`company`，未知参数错误。

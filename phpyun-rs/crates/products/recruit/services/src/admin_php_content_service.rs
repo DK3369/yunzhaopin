@@ -2080,6 +2080,7 @@ async fn gongzhao_del(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         return Err(ApiError::business("wap_com_00228"));
     }
     gongzhao_repo::delete_ids(state.db.pool(), &ids).await?;
+    crate::gongzhao_service::invalidate_list();
     Ok(PhpOut::Message("ok"))
 }
 
@@ -2089,6 +2090,7 @@ async fn gongzhao_checksitedid(state: &AppState, body: &Value) -> AppResult<PhpO
         return Err(ApiError::business("common_01236"));
     }
     gongzhao_repo::set_did_ids(state.db.pool(), &ids, json_i32(body, "did")).await?;
+    crate::gongzhao_service::invalidate_list();
     Ok(PhpOut::Message("admin_model_00192"))
 }
 
@@ -2099,6 +2101,7 @@ async fn gongzhao_set_rec(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     let rec = json_i32(body, "rec");
     gongzhao_repo::set_rec(state.db.pool(), id, if rec == 1 { 1 } else { 0 }).await?;
+    crate::gongzhao_service::invalidate_list();
     Ok(PhpOut::Message("ok"))
 }
 
@@ -8158,6 +8161,9 @@ async fn user_gap_mem_lock(state: &AppState, body: &Value) -> AppResult<PhpOut> 
         return Err(ApiError::business("common_01071"));
     }
     user_repo::lock_related_r_status(db, uid, status).await?;
+    if status != 1 {
+        let _ = crate::user_session_service::revoke_all_sessions(state, uid).await;
+    }
     Ok(PhpOut::Message("common_01944"))
 }
 
@@ -8220,6 +8226,9 @@ async fn user_gap_mem_edit(state: &AppState, body: &Value) -> AppResult<PhpOut> 
         return Err(ApiError::business("member_user_00603"));
     }
     user_repo::sync_php_profile_contact(db, uid, &mobile, &email).await?;
+    if pw.is_some() {
+        let _ = crate::user_session_service::revoke_all_sessions(state, uid).await;
+    }
     Ok(PhpOut::Message("member_user_00602"))
 }
 

@@ -614,6 +614,7 @@ pub async fn upsert_gongzhao(
         },
     )
     .await?;
+    crate::gongzhao_service::invalidate_list();
     audit_write(state, actor, "admin.gongzhao.upsert", format!("gongzhao:{id}")).await;
     Ok(id)
 }

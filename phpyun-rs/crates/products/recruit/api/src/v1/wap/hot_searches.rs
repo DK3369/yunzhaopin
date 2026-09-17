@@ -2,7 +2,7 @@
 
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
+use phpyun_core::{ApiResponse, AppResult, AppState, ClientIp, ValidatedJsonOrQuery};
 use phpyun_services::hot_search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -74,8 +74,10 @@ pub(crate) async fn load_scope(
 )]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HotQuery>,
 ) -> AppResult<ApiResponse<Vec<HotItem>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     Ok(ApiResponse::data(
         load_scope(&state, &q.scope, q.limit).await?,
     ))

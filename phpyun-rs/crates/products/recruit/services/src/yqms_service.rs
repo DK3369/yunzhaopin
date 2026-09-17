@@ -12,7 +12,7 @@ use phpyun_models::interview_template::repo as tpl_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::message::repo as message_repo;
 use phpyun_models::resume::repo as resume_repo;
-use phpyun_models::site_setting::repo as setting_repo;
+use phpyun_models::user::repo as user_repo;
 use phpyun_models::userid_msg::repo as msg_repo;
 use serde::Serialize;
 
@@ -51,6 +51,8 @@ pub struct YqmsResult {
     pub online: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pro: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order_no: Option<String>,
 }
 
 fn today_start_ts(now: i64) -> i64 {
@@ -66,19 +68,15 @@ fn parse_integral(raw: &str) -> i64 {
 }
 
 async fn read_setting_i64(state: &AppState, key: &str) -> i64 {
-    setting_repo::find_many(state.db.reader(), &[key])
+    crate::site_gate_service::config_str(state, key)
         .await
-        .ok()
-        .and_then(|m| m.get(key).and_then(|s| s.trim().parse().ok()))
+        .trim()
+        .parse()
         .unwrap_or(0)
 }
 
 async fn read_setting_str(state: &AppState, key: &str) -> String {
-    setting_repo::find_many(state.db.reader(), &[key])
-        .await
-        .ok()
-        .and_then(|m| m.get(key).cloned())
-        .unwrap_or_default()
+    crate::site_gate_service::config_str(state, key).await
 }
 
 fn need_pay_result(
@@ -107,6 +105,7 @@ fn need_pay_result(
         integral: Some(integral),
         online: Some(online),
         pro: Some(proportion),
+        order_no: None,
     }
 }
 
@@ -226,6 +225,37 @@ async fn do_insert(
         now,
     )
     .await;
+    let content_line = format!(
+        "您收到来自 {company_name} 的面试邀请，职位：{jobname}"
+    );
+    if let Err(e) = message_repo::insert_simple(
+        state.db.pool(),
+        input.seeker_uid,
+        1,
+        &content_line,
+        now,
+    )
+    .await
+    {
+        tracing::warn!(?e, uid = input.seeker_uid, "yqms sysmsg failed");
+    }
+    let email_on = read_setting_i64(state, "sy_email_set").await == 1
+        && read_setting_i64(state, "sy_email_yqms").await == 1;
+    if email_on {
+        match user_repo::find_by_uid(state.db.reader(), input.seeker_uid).await {
+            Ok(Some(mem)) => {
+                if let Some(mail) = mem.email.filter(|s| s.contains('@')) {
+                    if let Err(e) =
+                        crate::mail_service::send_text(state, &mail, "yqms", &content_line).await
+                    {
+                        tracing::warn!(?e, uid = input.seeker_uid, "yqms email failed");
+                    }
+                }
+            }
+            Ok(None) => {}
+            Err(e) => tracing::warn!(?e, uid = input.seeker_uid, "yqms email lookup failed"),
+        }
+    }
     let _ = audit::emit(
         state,
         AuditEvent::new("yqms.create", Actor::uid(user.uid).with_ip(client_ip))
@@ -240,6 +270,7 @@ pub async fn create_from_resume(
     user: &AuthenticatedUser,
     input: YqmsInput<'_>,
     confirm: bool,
+    channel: Option<&str>,
     client_ip: &str,
 ) -> AppResult<YqmsResult> {
     user.require_employer()?;
@@ -314,6 +345,7 @@ pub async fn create_from_resume(
         integral: None,
         online: None,
         pro: None,
+        order_no: None,
     };
 
     if statis.rating_type == 1 {
@@ -360,10 +392,22 @@ pub async fn create_from_resume(
             if statis_repo::try_deduct_integral(state.db.pool(), user.uid, jifen).await? == 0 {
                 return Err(ApiError::business("integral_insufficient"));
             }
+            let id = do_insert(state, user, &input, &fname, &jobname, inter_ts, client_ip).await?;
+            return Ok(finish(id));
         }
 
-        let id = do_insert(state, user, &input, &fname, &jobname, inter_ts, client_ip).await?;
-        return Ok(finish(id));
+        let ch = crate::single_order_service::pay_channel(channel)?;
+        let order_no = crate::single_order_service::create_invite_order(state, user, ch).await?;
+        let mut out = need_pay_result(
+            online,
+            price_yuan,
+            jifen,
+            com_integral,
+            proportion,
+            integral_mode,
+        );
+        out.order_no = Some(order_no);
+        return Ok(out);
     }
 
     if statis.rating_type == 2 {

@@ -48,8 +48,10 @@ impl From<phpyun_models::friend_link::entity::FriendLink> for LinkItem {
 #[utoipa::path(post, path = "/v1/wap/friend-links", tag = "wap", params(LinkQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<LinkQuery>,
 ) -> AppResult<ApiResponse<Vec<LinkItem>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let list = friend_link_service::list(&state, q.category.as_deref()).await?;
     Ok(ApiResponse::data(
         list.iter().cloned().map(LinkItem::from).collect(),

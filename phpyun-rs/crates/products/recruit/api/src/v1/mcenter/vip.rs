@@ -531,7 +531,7 @@ async fn mock_paid_inner(
         if any.uid != user.uid {
             return Err(ApiError::param_invalid("order_not_owned"));
         }
-        if any.order_kind == 28 {
+        if any.order_kind == 28 || any.order_kind == 19 || any.order_kind == 23 {
             phpyun_services::payment_notify_service::settle_paid(&state, &order_no, &fake_tx)
                 .await?;
             return Ok(ApiResponse::data(

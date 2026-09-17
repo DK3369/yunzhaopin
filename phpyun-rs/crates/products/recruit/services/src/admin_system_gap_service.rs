@@ -712,7 +712,8 @@ fn cron_task_key(row: &CronRow) -> &'static str {
     let name = row.name.trim().to_ascii_lowercase();
     let token = if !dir.is_empty() { dir.as_str() } else { name.as_str() };
     match token {
-        "expire_jobs" | "upjob" | "autojob" => "expire_jobs",
+        "expire_jobs" => "expire_jobs",
+        "upjob" | "autojob" => "unknown",
         "expire_vip" | "viped" => "expire_vip",
         "purge_share_tokens" => "purge_share_tokens",
         "rotate_audit_log" => "rotate_audit_log",

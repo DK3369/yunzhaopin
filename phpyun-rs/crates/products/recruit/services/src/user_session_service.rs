@@ -317,6 +317,22 @@ pub async fn revoke_other_sessions(state: &AppState, user: &AuthenticatedUser) -
     Ok(n)
 }
 
+/// Lock / admin password change: bump pw_epoch and revoke every session.
+pub async fn revoke_all_sessions(state: &AppState, uid: u64) -> AppResult<()> {
+    if uid == 0 {
+        return Ok(());
+    }
+    let _ = jwt_blacklist::bump_pw_epoch(&state.redis, uid, state.config.pw_epoch_ttl_secs()).await;
+    let now = clock::now_ts();
+    let revoked = session_repo::revoke_all_by_uid(state.db.pool(), uid, now).await?;
+    for (acc_jti, acc_exp, ref_jti, ref_exp) in revoked {
+        let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;
+        let _ = jwt_blacklist::revoke(&state.redis, &ref_jti, ref_exp).await;
+        session_presence::invalidate(&acc_jti).await;
+    }
+    Ok(())
+}
+
 /// Called by logout — marks the row revoked. Caller is also expected to
 /// blacklist the access jti via the existing logout pathway.
 pub async fn revoke_current(state: &AppState, access_jti: &str) -> AppResult<()> {

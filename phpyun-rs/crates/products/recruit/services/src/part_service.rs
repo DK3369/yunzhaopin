@@ -14,6 +14,7 @@
 //! - Roles: only jobseekers (usertype=1) may apply or favourite
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::cache::TieredCache;
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company::repo as company_repo;
@@ -21,6 +22,9 @@ use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::part::entity::{PartApply, PartCollect, PartJob};
 use phpyun_models::part::repo as part_repo;
 use phpyun_models::site_setting::repo as setting_repo;
+use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
+use std::time::Duration;
 
 // ==================== Public browsing ====================
 
@@ -42,12 +46,64 @@ pub struct PartSearch {
     pub did: u32,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PartPage<T> {
     pub list: Vec<T>,
     pub total: u64,
 }
 
+const LIST_TTL: Duration = Duration::from_secs(20);
+static LIST_CACHE: OnceLock<TieredCache<PartPage<PartJob>>> = OnceLock::new();
+
+fn list_cache() -> &'static TieredCache<PartPage<PartJob>> {
+    LIST_CACHE.get_or_init(|| TieredCache::new(128, LIST_TTL))
+}
+
+pub fn invalidate_list() {
+    list_cache().invalidate_prefix_local();
+}
+
+fn list_cache_key(search: &PartSearch, page: &Pagination) -> String {
+    format!(
+        "part:list:k={}:c={}:p={}:ci={}:t={}:pt={}:st={}:bc={}:mn={}:mx={}:r={}:d={}:pg={}:ps={}",
+        search.keyword.as_deref().unwrap_or(""),
+        search.country.as_deref().unwrap_or(""),
+        search.province_id.unwrap_or(0),
+        search.city_id.unwrap_or(0),
+        search.three_city_id.unwrap_or(0),
+        search.part_type.unwrap_or(0),
+        search.salary_type.unwrap_or(0),
+        search.billing_cycle.unwrap_or(0),
+        search.min_salary.unwrap_or(0),
+        search.max_salary.unwrap_or(0),
+        i32::from(search.rec),
+        search.did,
+        page.page,
+        page.page_size,
+    )
+}
+
 pub async fn list_public(
+    state: &AppState,
+    search: &PartSearch,
+    page: Pagination,
+) -> AppResult<PartPage<PartJob>> {
+    let key = list_cache_key(search, &page);
+    let st = state.clone();
+    let search = search.clone();
+    let arc = list_cache()
+        .get_or_load(
+            &state.redis,
+            key,
+            LIST_TTL,
+            "part.list",
+            move || async move { load_list_public(&st, &search, page).await },
+        )
+        .await?;
+    Ok((*arc).clone())
+}
+
+async fn load_list_public(
     state: &AppState,
     search: &PartSearch,
     page: Pagination,
@@ -671,6 +727,7 @@ pub async fn create_com_part(
             .target(format!("part:{id}")),
     )
     .await;
+    invalidate_list();
     Ok(id)
 }
 
@@ -703,6 +760,7 @@ pub async fn update_com_part(
             .target(format!("part:{id}")),
     )
     .await;
+    invalidate_list();
     Ok(())
 }
 
@@ -737,6 +795,7 @@ pub async fn set_com_part_status(
             .meta(&serde_json::json!({ "status": status })),
     )
     .await;
+    invalidate_list();
     Ok(())
 }
 
@@ -760,6 +819,7 @@ pub async fn batch_set_com_part_status(
             .meta(&serde_json::json!({ "status": status, "n": n })),
     )
     .await;
+    invalidate_list();
     Ok(n)
 }
 
@@ -786,5 +846,6 @@ pub async fn refresh_com_part(
             .target(format!("part:{id}")),
     )
     .await;
+    invalidate_list();
     Ok(())
 }

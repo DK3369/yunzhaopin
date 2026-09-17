@@ -323,6 +323,68 @@ fn dingdan_id(now: i64) -> String {
     format!("{now}{r}")
 }
 
+/// PHP `buyDownresume` type=19 / `buyInviteResume` type=23. Pending `order_state=0`.
+pub async fn create_single_order(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+    order_kind: i32,
+    sid: u64,
+    remark: &str,
+    amount_cents: i32,
+    channel: &str,
+    order_info: &str,
+    now: i64,
+) -> Result<String, sqlx::Error> {
+    let order_no = dingdan_id(now);
+    let price_yuan = f64::from(amount_cents) / 100.0;
+    let sid_i = i64::try_from(sid).unwrap_or(0);
+    sqlx::query(
+        r#"INSERT INTO phpyun_company_order
+              (order_id, uid, order_type, order_price, order_time, order_state,
+               order_remark, `type`, rating, did, sid, usertype, status,
+               order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
+               port, is_crm, order_bank, order_pic, order_info)
+           VALUES (?, ?, ?, ?, ?, 0,
+                   ?, ?, 0, 0, ?, ?, 1,
+                   0, 0, 0, 0, 0, 0,
+                   1, 0, '', '', ?)"#,
+    )
+    .bind(&order_no)
+    .bind(uid)
+    .bind(channel)
+    .bind(price_yuan)
+    .bind(now)
+    .bind(remark)
+    .bind(order_kind)
+    .bind(sid_i)
+    .bind(usertype)
+    .bind(order_info)
+    .execute(pool)
+    .await?;
+    Ok(order_no)
+}
+
+/// Mark type 19/23 paid only while still pending (`order_state=0`).
+pub async fn mark_single_paid(
+    pool: &MySqlPool,
+    order_no: &str,
+    pay_tx_id: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"UPDATE phpyun_company_order
+           SET order_state = 1, order_bank = ?, bank_time = ?
+           WHERE order_id = ? AND type IN (19, 23) AND order_state = 0"#,
+    )
+    .bind(pay_tx_id)
+    .bind(now)
+    .bind(order_no)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 /// PHP `addComOrder` + `buyIntegral`: `type=2`, pending `order_state=0`.
 pub async fn create_recharge_order(
     pool: &MySqlPool,

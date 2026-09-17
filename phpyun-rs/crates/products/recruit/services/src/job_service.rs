@@ -150,11 +150,9 @@ pub async fn invalidate_jobs(state: &AppState, ids: &[u64]) {
         return;
     }
     list_cache().invalidate_prefix_local();
-    for id in ids {
-        detail_cache()
-            .invalidate(&state.redis, &format!("jobs:detail:{id}"))
-            .await;
-    }
+    let keys: Vec<String> = ids.iter().map(|id| format!("jobs:detail:{id}")).collect();
+    let futs = keys.iter().map(|k| detail_cache().invalidate(&state.redis, k));
+    futures::future::join_all(futs).await;
     crate::home_service::invalidate_all().await;
     crate::ranking_service::invalidate_all().await;
 }

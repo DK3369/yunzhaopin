@@ -25,7 +25,6 @@ use phpyun_core::{
 use phpyun_models::admin_msg::repo as admin_msg_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
-use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::user::{entity::Member, repo as user_repo};
 
 use crate::user_session_service::{self, LoginRecord};
@@ -168,6 +167,20 @@ async fn record_member_login_log(
     let continued = prev >= clock::start_of_today();
     let content = login_log_content(ctx.ua, continued);
     let usertype = i32::from(ident.usertype);
+    if !continued {
+        if let Err(e) = crate::integral_grant_service::grant(
+            state,
+            user.uid,
+            usertype,
+            "integral_login",
+            "wap_00555",
+            0,
+        )
+        .await
+        {
+            tracing::warn!(?e, uid = user.uid, "login integral grant failed");
+        }
+    }
     let did = i32::try_from(ident.did).unwrap_or(0);
     let _ = admin_msg_repo::insert_php_login_log(
         state.db.pool(),
@@ -194,10 +207,7 @@ const DEV_EMAIL_LOGIN_CODE: &str = "111111";
 /// PHP `jycheck(..., wap_js_00062)`：`code_web` 勾了「前台登录」必须验码；
 /// 账号连续失败 ≥3 次也强制图形码（不依赖后台开关）。
 pub async fn password_login_needs_captcha(state: &AppState, account: &str) -> AppResult<bool> {
-    let v = setting_repo::find(state.db.reader(), "code_web")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let v = crate::site_gate_service::config_str(state, "code_web").await;
     if v.contains("前台登录") || v.contains("wap_js_00062") {
         return Ok(true);
     }

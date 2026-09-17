@@ -198,7 +198,6 @@ pub struct UpdateTiny<'a> {
     pub cityid: i32,
     pub three_cityid: i32,
     pub production: &'a str,
-    pub status: i32,
     pub now: i64,
 }
 
@@ -211,7 +210,7 @@ pub async fn update_with_password_check(
     let res = sqlx::query(
         "UPDATE phpyun_resume_tiny SET
            username = ?, sex = ?, exp = ?, job = ?, provinceid = ?, cityid = ?, three_cityid = ?,
-           production = ?, status = ?, lastupdate = ?
+           production = ?, lastupdate = ?
          WHERE id = ? AND password = ?",
     )
     .bind(u.username)
@@ -222,7 +221,6 @@ pub async fn update_with_password_check(
     .bind(u.cityid)
     .bind(u.three_cityid)
     .bind(u.production)
-    .bind(u.status)
     .bind(u.now)
     .bind(id)
     .bind(password_md5)

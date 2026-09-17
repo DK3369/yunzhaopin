@@ -390,6 +390,11 @@ pub async fn add_service_nums(
     )
 }
 
+/// PHP `invite_resume + 1` after type=23 cash settle.
+pub async fn add_invite_resume(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    add_service_nums(pool, uid, 0, 0, 0, 1, 0, 0, 0, 0).await
+}
+
 /// PHP 开通套餐天数：从 max(now, vip_etime) 起加 `days` 天。
 pub async fn extend_vip_days(
     pool: &MySqlPool,

@@ -246,8 +246,32 @@ async fn resolve_booth(
     };
     let _ = input.mobile;
 
+    let mut seen = HashSet::new();
+    let mut job_ids: Vec<u64> = Vec::new();
+    for part in input.job_ids.split(',') {
+        let Ok(id) = part.trim().parse::<u64>() else {
+            continue;
+        };
+        if id == 0 || !seen.insert(id) {
+            continue;
+        }
+        job_ids.push(id);
+    }
+    if !job_ids.is_empty() {
+        let owned = job_repo::owned_job_ids(reader, &job_ids, user.uid).await?;
+        let owned_set: HashSet<u64> = owned.into_iter().collect();
+        if job_ids.iter().any(|id| !owned_set.contains(id)) {
+            return Err(ApiError::param_invalid("job_ids"));
+        }
+    }
+    let job_ids = job_ids
+        .iter()
+        .map(|id| id.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+
     Ok(ZphBoothReady {
-        job_ids: input.job_ids.to_string(),
+        job_ids,
         name,
         sid,
         cid,

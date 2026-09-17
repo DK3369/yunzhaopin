@@ -37,7 +37,7 @@
 //! site_setting_service     ──> initjobs_service          (public list + initjobs blob)
 //! nav_menu_service         ──> initjobs_service          (nav writes drop initjobs blob)
 //! admin_php_content_service ──> admin_dashboard_service  (gen_cache bust)
-//! payment_notify_service ──> vip_service, once_service (gateway settle)
+//! payment_notify_service ──> vip_service, once_service, single_order_service (gateway settle)
 //! ```
 //!
 //! Everything else is a **leaf**: services orchestrate `phpyun_models::*::repo`
@@ -117,6 +117,7 @@ pub mod hot_search_service;
 pub mod hr_doc_service;
 pub mod idcard_cert_service;
 pub mod initjobs_service;
+pub mod integral_grant_service;
 pub mod integral_service;
 pub mod interview_service;
 pub mod interview_review_service;
@@ -172,6 +173,7 @@ pub mod saved_search_service;
 pub mod search_history_service;
 pub mod search_service;
 pub mod sign_service;
+pub mod single_order_service;
 pub mod site_gate_service;
 pub mod site_page_service;
 pub mod site_setting_service;

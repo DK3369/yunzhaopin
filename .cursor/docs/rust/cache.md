@@ -38,12 +38,13 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 | 职位列表 page=1 无关键词 | `jobs:list:p1:n…`（稳定字段拼接，不用 `Debug` hash） | 60s |
 | 企业列表 page=1 无关键词 | `companies:list:…` | 60s |
 | 简历列表 page=1 无关键词 | `resumes:list:…` | 60s |
+| 兼职/once/公招公开列表 | `part:list:…` / `once:list:…` / `gongzhao:list:…`（筛选参数拼进 key） | 20s |
 | 职位详情（原始 view） | `jobs:detail:{id}` | 60s |
 | 企业详情（原始 view） | `companies:detail:{uid}` | 60s |
 | 首页聚合 | `home:{did}` | 60s（L1+L2） |
 | 排行榜 | `ranking:{did}` | 60s（L1+L2） |
 
-职位/企业/简历列表：**page=1 且无关键词** 进 `TieredCache`；带关键词或 page>1 直打 MySQL。详情缓存**不含**登录态：已投递 / 收藏 / 联系方式解锁在命中后由 handler 叠加。`site_gate_service::config_str` 读 `site_settings:all`，不再逐 key 查表。
+职位/企业/简历列表：**page=1 且无关键词** 进 `TieredCache`；带关键词或 page>1 直打 MySQL。兼职 / once / 公招公开列表按筛选参数缓存 20s。详情缓存**不含**登录态：已投递 / 收藏 / 联系方式解锁在命中后由 handler 叠加。`site_gate_service::config_str` 读 `site_settings:all`，不再逐 key 查表。热路径 `yqms` 设置、签到 `integral_signin`、登录验证码 `code_web`、简历访客 `sy_resume_visitors` 同样走 `config_str`。
 
 ## 不要缓存
 
@@ -60,7 +61,8 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 - 站点公开设置列表：`site_setting_service::admin_upsert` / `admin_delete` 同步 `invalidate` `site_settings:public`、`site_settings:all` 与 `initjobs:{lang}`
 - 导航写入：`nav_menu_service` 同步 `invalidate` `initjobs:{lang}`
 - 列表类 Redis 多 key 无 SCAN：L1 立刻空，L2 最多等 TTL
-- 会员发岗 / 改岗 / 刷新 / 上下架 / 删除：`job_service::invalidate_job(s)` — L1 列表立刻空 + Redis `DEL jobs:detail:{id}`，并清首页 / 排行 L1
+- 会员发岗 / 改岗 / 刷新 / 上下架 / 删除：`job_service::invalidate_job(s)` — L1 列表立刻空 + Redis `DEL jobs:detail:{id}`（批量 `join_all`），并清首页 / 排行 L1
+- 兼职 / once / 公招写路径：`invalidate_list()` 只清 L1（L2 靠 20s TTL）
 - 后台改岗（`save_admin_job` / `company_job_status` / 删除刷新）：同样走 `invalidate_job(s)`
 - `vip_over` 后 `invalidate_company(uid)`；`expire_jobs` 批处理后 `invalidate_sidebar` + 首页 / 排行 L1
 - `expire_vip` 在 `jobunder==1 && job_under_delay>0` 时延迟下架到期职位，随后 `invalidate_sidebar`

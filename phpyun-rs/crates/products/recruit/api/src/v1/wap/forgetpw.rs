@@ -133,6 +133,7 @@ pub struct SendEmailForm {
 )]
 pub async fn send_email(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SendEmailForm>,
 ) -> AppResult<ApiResponse> {
     let code = f.authcode.to_uppercase();
@@ -146,7 +147,7 @@ pub async fn send_email(
     {
         return Err(ApiError::captcha());
     }
-    password_reset_service::send_email_code(&state, &f.email).await?;
+    password_reset_service::send_email_code(&state, &f.email, &ip).await?;
     Ok(ApiResponse::message("sent"))
 }
 

@@ -10,9 +10,13 @@
 
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::cache::TieredCache;
 use phpyun_core::{clock, ApiError, AppResult, AppState, Pagination};
 use phpyun_models::once_job::entity::OnceJob;
 use phpyun_models::once_job::repo as once_repo;
+use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
+use std::time::Duration;
 
 // ==================== Public browsing ====================
 
@@ -28,12 +32,60 @@ pub struct OnceSearch {
     pub did: u32,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OncePage {
     pub list: Vec<OnceJob>,
     pub total: u64,
 }
 
+const LIST_TTL: Duration = Duration::from_secs(20);
+static LIST_CACHE: OnceLock<TieredCache<OncePage>> = OnceLock::new();
+
+fn list_cache() -> &'static TieredCache<OncePage> {
+    LIST_CACHE.get_or_init(|| TieredCache::new(128, LIST_TTL))
+}
+
+pub fn invalidate_list() {
+    list_cache().invalidate_prefix_local();
+}
+
+fn list_cache_key(search: &OnceSearch, page: &Pagination) -> String {
+    format!(
+        "once:list:k={}:c={}:p={}:ci={}:t={}:e={}:ed={}:d={}:pg={}:ps={}",
+        search.keyword.as_deref().unwrap_or(""),
+        search.country.as_deref().unwrap_or(""),
+        search.province_id.unwrap_or(0),
+        search.city_id.unwrap_or(0),
+        search.three_city_id.unwrap_or(0),
+        search.exp.unwrap_or(0),
+        search.edu.unwrap_or(0),
+        search.did,
+        page.page,
+        page.page_size,
+    )
+}
+
 pub async fn list_public(
+    state: &AppState,
+    search: &OnceSearch,
+    page: Pagination,
+) -> AppResult<OncePage> {
+    let key = list_cache_key(search, &page);
+    let st = state.clone();
+    let search = search.clone();
+    let arc = list_cache()
+        .get_or_load(
+            &state.redis,
+            key,
+            LIST_TTL,
+            "once.list",
+            move || async move { load_list_public(&st, &search, page).await },
+        )
+        .await?;
+    Ok((*arc).clone())
+}
+
+async fn load_list_public(
     state: &AppState,
     search: &OnceSearch,
     page: Pagination,
@@ -180,6 +232,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
             .target(format!("once:{id}")),
         )
         .await;
+        invalidate_list();
         return Ok(UpsertResult { id, created: false });
     }
 
@@ -250,6 +303,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
         .target(format!("once:{id}")),
     )
     .await;
+    invalidate_list();
     Ok(UpsertResult { id, created: true })
 }
 
@@ -309,12 +363,14 @@ pub async fn manage(state: &AppState, id: u64, password: &str, op: ManageOp) -> 
             if n == 0 {
                 return Err(ApiError::business("tiny_pwd_mismatch"));
             }
+            invalidate_list();
         }
         ManageOp::Delete => {
             let n = once_repo::delete_with_password(state.db.pool(), id, &pwd_md5).await?;
             if n == 0 {
                 return Err(ApiError::business("tiny_pwd_mismatch"));
             }
+            invalidate_list();
         }
     }
     Ok(())

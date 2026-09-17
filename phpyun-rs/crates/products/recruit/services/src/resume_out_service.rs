@@ -11,6 +11,7 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_models::resume::expect;
 use phpyun_models::resume_out::entity::ResumeOut;
 use phpyun_models::resume_out::repo as ro_repo;
 
@@ -75,6 +76,13 @@ pub async fn send(
                 return Err(ApiError::rate_limit());
             }
         }
+    }
+
+    let exp = expect::find_by_id(state.db.reader(), input.resume_id)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("resume_id"))?;
+    if exp.uid != user.uid {
+        return Err(ApiError::param_invalid("resume_id"));
     }
 
     let id = ro_repo::create(

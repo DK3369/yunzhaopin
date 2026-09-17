@@ -44,6 +44,9 @@ pub async fn set_user_status(
     status: i32,
 ) -> AppResult<()> {
     user_repo::admin_set_status(state.db.pool(), target_uid, status).await?;
+    if status != 1 {
+        let _ = crate::user_session_service::revoke_all_sessions(state, target_uid).await;
+    }
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.user.set_status", Actor::uid(actor.uid))

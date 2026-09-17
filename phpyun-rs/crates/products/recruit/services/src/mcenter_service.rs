@@ -19,11 +19,28 @@ pub async fn update_email(
     state: &AppState,
     uid: u64,
     new_email: &str,
+    password: &str,
     client_ip: &str,
 ) -> AppResult<()> {
+    if password.is_empty() {
+        return Err(ApiError::param_missing("password"));
+    }
     // Empty string is treated as clearing the field
     if new_email.is_empty() {
         return Err(ApiError::param_invalid("email"));
+    }
+
+    let user = user_repo::find_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("user_not_found") })?;
+    let valid = verify_password_async(
+        password.to_string(),
+        user.password.clone(),
+        user.salt.clone(),
+    )
+    .await;
+    if !valid {
+        return Err(ApiError::bad_credentials());
     }
 
     // Uniqueness

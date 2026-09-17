@@ -139,12 +139,21 @@ async fn check_email_rate(kv: &phpyun_core::Kv, email: &str) -> AppResult<()> {
 }
 
 /// Send a 6-digit password-reset code to the given email address.
-pub async fn send_email_code(state: &AppState, email: &str) -> AppResult<()> {
+pub async fn send_email_code(state: &AppState, email: &str, ip: &str) -> AppResult<()> {
     if !email.contains('@') {
         return Err(ApiError::param_invalid("email"));
     }
 
     check_email_rate(&state.redis, email).await?;
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:email:ip:{ip}"),
+        rate_limit::LimitRule {
+            max: 10,
+            window: Duration::from_secs(3600),
+        },
+    )
+    .await?;
 
     if user_repo::find_by_email_loose(state.db.reader(), email)
         .await?

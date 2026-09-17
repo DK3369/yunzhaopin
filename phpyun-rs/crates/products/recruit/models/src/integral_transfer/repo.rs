@@ -522,6 +522,15 @@ pub async fn count_remark_today(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+/// PHP `checkOnceIntegral`: this uid already has a ledger row with `pay_remark`.
+pub async fn exists_pay_remark(
+    pool: &MySqlPool,
+    uid: u64,
+    remark: &str,
+) -> Result<bool, sqlx::Error> {
+    Ok(count_by_remark(pool, uid, remark).await? > 0)
+}
+
 /// PHP `companyorder::getCompanyPayNum` by `com_id` + `pay_remark`.
 pub async fn count_by_remark(
     pool: &MySqlPool,

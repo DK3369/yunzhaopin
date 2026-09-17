@@ -8,7 +8,7 @@ use axum::{
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_services::description_service;
 use serde::{Deserialize, Serialize};
@@ -149,9 +149,11 @@ impl From<phpyun_models::description::entity::Description> for DescItem {
 )]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<DescItem>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = description_service::public_list(&state, q.class_id, true, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,

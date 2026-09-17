@@ -199,6 +199,19 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
         let _ = apply_default_company_rating(state, uid).await;
     }
 
+    if let Err(e) = crate::integral_grant_service::grant_once(
+        state,
+        uid,
+        i32::from(input.usertype),
+        "integral_reg",
+        "common_01806",
+        0,
+    )
+    .await
+    {
+        tracing::warn!(?e, uid, "register integral grant failed");
+    }
+
     Ok(RegisterResult {
         uid,
         access,

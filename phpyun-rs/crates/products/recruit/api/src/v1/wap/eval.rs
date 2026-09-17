@@ -4,7 +4,7 @@ use axum::{extract::State, routing::{get, post}, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::json;
 use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -120,8 +120,10 @@ fn strip_scores(v: &json::Value) -> json::Value {
 #[utoipa::path(post, path = "/v1/wap/eval-papers", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list_papers(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<PaperSummary>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = eval_service::list_papers(&state, page).await?;
     Ok(ApiResponse::data(Paged::new(
         r.list
@@ -256,9 +258,11 @@ impl From<phpyun_models::eval::repo::PaperMessage> for PaperMessageItem {
 )]
 pub async fn list_messages(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<Paged<PaperMessageItem>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let id = b.id;
     let examid = phpyun_core::numeric::checked_param(id, "eval.paper_id")?;
     let pool = state.db.reader();
@@ -307,8 +311,10 @@ impl From<phpyun_models::eval::repo::ExamineeBrief> for ExamineeItem {
 )]
 pub async fn list_recent_examinees(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<Vec<ExamineeItem>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let id = b.id;
     let examid = phpyun_core::numeric::checked_param(id, "eval.paper_id")?;
     let rows =

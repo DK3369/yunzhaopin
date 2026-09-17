@@ -8,20 +8,19 @@ use phpyun_core::{audit, clock, AppResult, AppState, AuthenticatedUser, Paged, P
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::referral::{entity::Referral, repo as ref_repo};
 
-/// Points awarded to the inviter for each successful invitation. In production this should be read from site_setting.
-const REFERRAL_POINTS: i32 = 20;
-
 /// Called after a successful signup. On failure we only warn (no error returned) — a reward failure must not roll back the signup.
 pub async fn record_on_signup(state: &AppState, inviter_uid: u64, invitee_uid: u64) {
     if inviter_uid == 0 || inviter_uid == invitee_uid {
         return;
     }
+    let raw = crate::site_gate_service::config_str(state, "integral_invite_reg").await;
+    let points: i32 = raw.trim().parse().unwrap_or(20);
     let now = clock::now_ts();
     let affected = match ref_repo::record(
         state.db.pool(),
         inviter_uid,
         invitee_uid,
-        REFERRAL_POINTS,
+        points,
         now,
     )
     .await
@@ -33,11 +32,11 @@ pub async fn record_on_signup(state: &AppState, inviter_uid: u64, invitee_uid: u
         }
     };
 
-    if affected > 0 {
+    if affected > 0 && points > 0 {
         if let Err(e) = integral_repo::add_balance(
             state.db.pool(),
             inviter_uid,
-            i64::from(REFERRAL_POINTS),
+            i64::from(points),
             now,
         )
         .await
@@ -49,7 +48,7 @@ pub async fn record_on_signup(state: &AppState, inviter_uid: u64, invitee_uid: u
             state,
             audit::AuditEvent::new("referral.grant", audit::Actor::uid(inviter_uid))
                 .target(format!("invitee:{invitee_uid}"))
-                .meta(&serde_json::json!({ "points": REFERRAL_POINTS })),
+                .meta(&serde_json::json!({ "points": points })),
         )
         .await;
     }

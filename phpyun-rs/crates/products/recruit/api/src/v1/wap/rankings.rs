@@ -2,7 +2,7 @@
 
 use axum::{extract::State, routing::get, Router};
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
+use phpyun_core::{ApiResponse, AppResult, AppState, ClientIp, ValidatedJsonOrQuery};
 use phpyun_services::ranking_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -72,8 +72,10 @@ fn keyword_meta(scope: &str) -> (&'static str, &'static str) {
 )]
 pub async fn rankings(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<RankingsQuery>,
 ) -> AppResult<ApiResponse<RankingsData>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let p = ranking_service::rankings(&state, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();

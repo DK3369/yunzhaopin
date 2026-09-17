@@ -14,7 +14,6 @@ use phpyun_models::company_statis::repo as company_statis_repo;
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::integral_transfer::repo as pay_repo;
 use phpyun_models::sign_in::{entity::UserSign, repo as sign_repo};
-use phpyun_models::site_setting::repo as setting_repo;
 
 const BASE_REWARD: u32 = 5;
 const STREAK_BONUS_DAYS: u32 = 5;
@@ -123,16 +122,14 @@ pub async fn sign(
     };
 
     // 2) Reward from site config `integral_signin` (default 5); streak >= 5 doubles.
-    let base = match setting_repo::find(state.db.reader(), "integral_signin").await {
-        Ok(Some(row)) => {
-            let s = row.value.trim();
-            if s.is_empty() {
-                BASE_REWARD
-            } else {
-                s.parse::<u32>().unwrap_or(BASE_REWARD)
-            }
+    let base = {
+        let s = crate::site_gate_service::config_str(state, "integral_signin").await;
+        let s = s.trim();
+        if s.is_empty() {
+            BASE_REWARD
+        } else {
+            s.parse::<u32>().unwrap_or(BASE_REWARD)
         }
-        _ => BASE_REWARD,
     };
     let reward = if signday >= STREAK_BONUS_DAYS {
         base.saturating_mul(2)

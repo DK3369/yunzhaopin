@@ -60,6 +60,10 @@ pub struct YqmsForm {
     /// PHP second-step confirm for integral/cash single purchase.
     #[serde(default)]
     pub confirm: bool,
+    /// `alipay` | `wechat` (default wechat) when creating a cash single-purchase order.
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub channel: Option<String>,
 }
 
 #[utoipa::path(
@@ -99,6 +103,7 @@ pub async fn create(
             ymid: f.ymid,
         },
         f.confirm,
+        f.channel.as_deref(),
         &ip,
     )
     .await?;

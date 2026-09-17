@@ -1024,14 +1024,11 @@ pub async fn resume_detail(
     let m_status = resume_m_status(&state, Some(&user), uid).await;
     let mut unlocked = m_status == 1;
     let gate = resume_service::open_resume_check(&state, Some(&user), uid).await;
-    let visitor_max = phpyun_models::site_setting::repo::find_many(
-        state.db.reader(),
-        &["sy_resume_visitors"],
-    )
-    .await
-    .ok()
-    .and_then(|m| m.get("sy_resume_visitors")?.trim().parse::<i32>().ok())
-    .unwrap_or(0);
+    let visitor_max = phpyun_services::site_gate_service::config_str(&state, "sy_resume_visitors")
+        .await
+        .trim()
+        .parse::<i32>()
+        .unwrap_or(0);
     let visitor_blocked =
         resume_service::visitor_blocked(&state, user.uid, uid, i64::from(visitor_max.max(0))).await;
     let body_open = gate.resume_check == 1 && !visitor_blocked;
@@ -1040,7 +1037,7 @@ pub async fn resume_detail(
     }
     let db = state.db.reader();
     let (bundle_res, dicts, shows_res, docs_res) = tokio::join!(
-        resume_children_service::get_full_bundle(&state, uid),
+        resume_children_service::get_full_bundle(&state, uid, Some(user.uid)),
         phpyun_services::dict_service::get(&state),
         phpyun_models::gallery::repo::list_public_by_uid(
             db,

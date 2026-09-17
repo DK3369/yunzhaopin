@@ -103,10 +103,12 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
 )]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<TinyListItem>>> {
     phpyun_services::site_gate_service::ensure_module_on(&state, "sy_tiny_web").await?;
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let search = TinySearch {
         keyword: q.keyword,
         country: q.country,
@@ -285,23 +287,20 @@ async fn upsert_common(
             return Err(ApiError::param_invalid("moblie_code"));
         }
     }
-    let daily_total_limit = if b.daily_total_limit > 0 {
-        b.daily_total_limit
-    } else {
-        phpyun_services::site_gate_service::setting_i32(&state, "sy_tiny_totalnum")
-            .await
-            .max(0) as u64
+    let daily_total_limit = phpyun_services::site_gate_service::setting_i32(state, "sy_tiny_totalnum")
+        .await
+        .max(0) as u64;
+    let daily_ip_limit = phpyun_services::site_gate_service::setting_i32(state, "sy_tiny")
+        .await
+        .max(0) as u64;
+    let default_status = {
+        let v = phpyun_services::site_gate_service::setting_i32(state, "user_wjl").await;
+        if v == 1 {
+            1
+        } else {
+            0
+        }
     };
-    let daily_ip_limit = if b.daily_ip_limit > 0 {
-        b.daily_ip_limit
-    } else {
-        phpyun_services::site_gate_service::setting_i32(&state, "sy_tiny")
-            .await
-            .max(0) as u64
-    };
-    let mut b = b;
-    b.daily_total_limit = daily_total_limit;
-    b.daily_ip_limit = daily_ip_limit;
     let (today_by_ip, today_total) = tiny_service::usage_today(state, ip).await?;
     let input = UpsertInput {
         id,
@@ -315,11 +314,11 @@ async fn upsert_common(
         cityid: b.city_id,
         three_cityid: b.three_city_id,
         production: b.production,
-        default_status: b.default_status,
+        default_status,
         today_by_ip,
         today_total,
-        daily_total_limit: b.daily_total_limit,
-        daily_ip_limit: b.daily_ip_limit,
+        daily_total_limit,
+        daily_ip_limit,
         did: b.did,
         login_ip: ip.to_string(),
     };

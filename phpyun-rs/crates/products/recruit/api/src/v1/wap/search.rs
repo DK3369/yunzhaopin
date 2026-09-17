@@ -4,7 +4,7 @@
 //! so the search page and list pages keep the same field shapes.
 
 use axum::{extract::State, routing::get, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
+use phpyun_core::{ApiResponse, AppResult, AppState, ClientIp, ValidatedJsonOrQuery};
 use phpyun_services::search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -53,9 +53,11 @@ pub struct SearchData {
 #[utoipa::path(post, path = "/v1/wap/search", tag = "wap", params(SearchQuery), responses((status = 200, description = "ok", body = SearchData)))]
 pub async fn search(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     phpyun_core::MaybeUser(user): phpyun_core::MaybeUser,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<SearchQuery>,
 ) -> AppResult<ApiResponse<SearchData>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = search_service::global_search(&state, &q.kw, &q.scope, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();

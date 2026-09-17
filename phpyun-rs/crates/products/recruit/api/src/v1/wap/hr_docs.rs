@@ -8,7 +8,7 @@ use axum::{
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_services::hr_doc_service;
 use serde::{Deserialize, Serialize};
@@ -112,10 +112,12 @@ impl From<phpyun_models::hr_doc::entity::HrDoc> for HrDetail {
 #[utoipa::path(post, path = "/v1/wap/hr-docs", tag = "wap", params(HrQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HrQuery>,
 ) -> AppResult<ApiResponse<Paged<HrSummary>>> {
     phpyun_services::site_gate_service::ensure_module_on(&state, "sy_hr_web").await?;
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let r = hr_doc_service::list(&state, q.cid, q.keyword.as_deref(), q.order.as_deref(), page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,

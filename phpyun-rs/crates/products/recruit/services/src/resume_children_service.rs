@@ -145,6 +145,18 @@ pub mod expect_svc {
         )
         .await;
         crate::resume_service::invalidate_list(state).await;
+        if let Err(e) = crate::integral_grant_service::grant_once(
+            state,
+            user.uid,
+            1,
+            "integral_add_resume",
+            "wap_user_00111",
+            0,
+        )
+        .await
+        {
+            tracing::warn!(?e, uid = user.uid, "first resume integral grant failed");
+        }
         Ok(id)
     }
 
@@ -1229,6 +1241,7 @@ pub async fn get_public_bundle(
 pub async fn get_full_bundle(
     state: &AppState,
     uid: u64,
+    viewer_uid: Option<u64>,
 ) -> AppResult<(
     Vec<expect::Expect>,
     Vec<edu::Edu>,
@@ -1240,8 +1253,15 @@ pub async fn get_full_bundle(
     Vec<other::Other>,
 )> {
     let db = state.db.reader();
+    let owner = viewer_uid == Some(uid);
     let (e, ed, w, p, s, tr, c, o) = tokio::join!(
-        expect::list_by_uid(db, uid),
+        async {
+            if owner {
+                expect::list_by_uid(db, uid).await
+            } else {
+                expect::list_public_by_uid(db, uid).await
+            }
+        },
         edu::list_by_uid(db, uid),
         work::list_by_uid(db, uid),
         project::list_by_uid(db, uid),

@@ -314,8 +314,11 @@ pub async fn settle_paid_checked(
 /// Mark VIP or once-job order paid after the gateway signature has been verified.
 pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
     if let Some(o) = vip_repo::find_any_order_by_no(state.db.reader(), order_no).await? {
-        if o.order_kind == 28 {
-            return crate::zph_service::settle_zph_order(state, order_no, pay_tx_id).await;
+        match o.order_kind {
+            28 => return crate::zph_service::settle_zph_order(state, order_no, pay_tx_id).await,
+            19 => return crate::single_order_service::settle_download(state, &o, pay_tx_id).await,
+            23 => return crate::single_order_service::settle_invite(state, &o, pay_tx_id).await,
+            _ => {}
         }
     }
     if vip_repo::find_order_by_no_and_type(state.db.reader(), order_no, 2)

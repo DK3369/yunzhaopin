@@ -151,7 +151,6 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
             cityid: input.cityid,
             three_cityid: input.three_cityid,
             production: &input.production,
-            status: input.default_status,
             now,
         };
         let n = tiny_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;

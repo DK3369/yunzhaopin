@@ -353,6 +353,20 @@ async fn upsert_common(
         }
     }
     let (today_by_ip, today_total) = once_service::usage_today(state, ip).await?;
+    let daily_total_limit = phpyun_services::site_gate_service::setting_i32(state, "sy_once_totalnum")
+        .await
+        .max(0) as u64;
+    let daily_ip_limit = phpyun_services::site_gate_service::setting_i32(state, "sy_once")
+        .await
+        .max(0) as u64;
+    let default_status = {
+        let v = phpyun_services::site_gate_service::setting_i32(state, "com_fast_status").await;
+        if v == 1 {
+            1
+        } else {
+            0
+        }
+    };
     let input = UpsertInput {
         id,
         title: b.title,
@@ -369,12 +383,12 @@ async fn upsert_common(
         require: b.require,
         pic: b.pic,
         yyzz: b.yyzz,
-        default_status: b.default_status,
+        default_status,
         oncepricegear: b.oncepricegear,
         today_by_ip,
         today_total,
-        daily_total_limit: b.daily_total_limit,
-        daily_ip_limit: b.daily_ip_limit,
+        daily_total_limit,
+        daily_ip_limit,
         did: b.did,
         login_ip: ip.to_string(),
     };

@@ -163,7 +163,7 @@ pub fn sniff_document(bytes: &[u8]) -> Option<(&'static str, &'static str)> {
     {
         return Some(("application/msword", "doc"));
     }
-    if bytes.starts_with(b"PK") {
+    if bytes.starts_with(b"PK") && bytes.windows(19).any(|w| w == b"[Content_Types].xml") {
         return Some((
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "docx",
@@ -503,8 +503,11 @@ mod tests {
             sniff_document(&ole),
             Some(("application/msword", "doc"))
         );
+        assert!(sniff_document(b"PK\x03\x04xxxx").is_none());
+        let mut docx = b"PK\x03\x04".to_vec();
+        docx.extend_from_slice(b"[Content_Types].xml");
         assert_eq!(
-            sniff_document(b"PK\x03\x04xxxx"),
+            sniff_document(&docx),
             Some((
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "docx"

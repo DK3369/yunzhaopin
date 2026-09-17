@@ -53,6 +53,8 @@ pub struct DownloadResult {
     pub pro: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub f: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order_no: Option<String>,
 }
 
 fn today_start_ts(now: i64) -> i64 {
@@ -87,7 +89,7 @@ async fn read_setting_str(state: &AppState, key: &str) -> String {
 }
 
 /// PHP `resume.model.php::setDayprice`.
-async fn resume_day_price(state: &AppState, eid: u64, integral: bool) -> AppResult<i64> {
+pub(crate) async fn resume_day_price(state: &AppState, eid: u64, integral: bool) -> AppResult<i64> {
     let lastupdate = if eid > 0 {
         phpyun_models::resume::expect::find_by_id(state.db.reader(), eid)
             .await?
@@ -211,10 +213,11 @@ async fn success_result(state: &AppState, r: &Resume, f: Option<i32>) -> AppResu
         online: None,
         pro: None,
         f,
+        order_no: None,
     })
 }
 
-async fn notify_first(
+pub(crate) async fn notify_first(
     state: &AppState,
     com_id: u64,
     target_uid: u64,
@@ -309,6 +312,7 @@ fn need_pay_result(
         online: Some(online),
         pro: Some(proportion),
         f: None,
+        order_no: None,
     }
 }
 
@@ -319,6 +323,7 @@ pub async fn download(
     target_uid: u64,
     eid: Option<u64>,
     confirm: bool,
+    channel: Option<&str>,
     client_ip: &str,
 ) -> AppResult<DownloadResult> {
     user.require_employer()?;
@@ -447,8 +452,23 @@ pub async fn download(
                 if statis_repo::try_deduct_integral(state.db.pool(), user.uid, jifen).await? == 0 {
                     return Err(ApiError::business("integral_insufficient"));
                 }
+                return record_and_finish(state, user, &r, eid, now, false, client_ip, 2).await;
             }
-            return record_and_finish(state, user, &r, eid, now, false, client_ip, 2).await;
+            let ch = crate::single_order_service::pay_channel(channel)?;
+            let order_no = crate::single_order_service::create_download_order(
+                state, user, eid, r.uid, ch,
+            )
+            .await?;
+            let mut out = need_pay_result(
+                online,
+                price_yuan,
+                jifen,
+                com_integral,
+                proportion,
+                integral_mode,
+            );
+            out.order_no = Some(order_no);
+            return Ok(out);
         }
 
         if statis.rating_type == 2 {
@@ -482,8 +502,21 @@ pub async fn download(
         if statis_repo::try_deduct_integral(state.db.pool(), user.uid, jifen).await? == 0 {
             return Err(ApiError::business("integral_insufficient"));
         }
+        return record_and_finish(state, user, &r, eid, now, false, client_ip, 2).await;
     }
-    record_and_finish(state, user, &r, eid, now, false, client_ip, 2).await
+    let ch = crate::single_order_service::pay_channel(channel)?;
+    let order_no =
+        crate::single_order_service::create_download_order(state, user, eid, r.uid, ch).await?;
+    let mut out = need_pay_result(
+        online,
+        price_yuan,
+        jifen,
+        com_integral,
+        proportion,
+        integral_mode,
+    );
+    out.order_no = Some(order_no);
+    Ok(out)
 }
 
 /// Remaining package / free_look counts for the resume detail confirm dialog.

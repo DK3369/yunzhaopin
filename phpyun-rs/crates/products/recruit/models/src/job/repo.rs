@@ -1394,7 +1394,7 @@ fn push_id_in(qb: &mut QueryBuilder<'_, sqlx::MySql>, ids: &[u64]) {
     qb.push(")");
 }
 
-async fn owned_job_ids(
+pub async fn owned_job_ids(
     pool: &MySqlPool,
     ids: &[u64],
     uid: u64,

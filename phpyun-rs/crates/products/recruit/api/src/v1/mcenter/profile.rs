@@ -64,6 +64,9 @@ pub async fn get_profile(
 pub struct UpdateProfileForm {
     #[validate(email)]
     pub email: String,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub password: String,
 }
 
 /// Update email
@@ -85,6 +88,6 @@ pub async fn update_profile(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateProfileForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    mcenter_service::update_email(&state, user.uid, &f.email, &ip).await?;
+    mcenter_service::update_email(&state, user.uid, &f.email, &f.password, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

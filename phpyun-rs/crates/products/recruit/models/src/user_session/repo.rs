@@ -233,6 +233,31 @@ pub async fn revoke_others(
     Ok(rows)
 }
 
+/// Revoke every active session for a uid (lock / admin password change).
+pub async fn revoke_all_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    now: i64,
+) -> Result<Vec<(String, i64, String, i64)>, sqlx::Error> {
+    let rows: Vec<(String, i64, String, i64)> = sqlx::query_as(
+        "SELECT jti_access, CAST(access_exp AS SIGNED) AS access_exp, jti_refresh, CAST(refresh_exp AS SIGNED) AS refresh_exp
+           FROM phpyun_user_session
+          WHERE uid = ? AND revoked_at = 0",
+    )
+    .bind(uid)
+    .fetch_all(pool)
+    .await?;
+    sqlx::query(
+        "UPDATE phpyun_user_session SET revoked_at = ?
+          WHERE uid = ? AND revoked_at = 0",
+    )
+    .bind(now)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(rows)
+}
+
 /// Revoke by current access jti — used by logout.
 pub async fn revoke_by_access_jti(
     pool: &MySqlPool,

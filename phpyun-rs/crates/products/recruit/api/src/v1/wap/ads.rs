@@ -198,8 +198,10 @@ fn de_slots<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<AdQuery>, 
 )]
 pub async fn initads(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<InitAdsInput>,
 ) -> AppResult<ApiResponse<BTreeMap<String, Vec<AdView>>>> {
+    phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     let needs: Vec<ad_service::SlotNeed> = q
         .slots
         .into_iter()

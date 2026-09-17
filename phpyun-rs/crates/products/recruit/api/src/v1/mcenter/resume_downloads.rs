@@ -36,6 +36,10 @@ pub struct DownloadForm {
     /// PHP second-step confirm for integral/cash single purchase.
     #[serde(default)]
     pub confirm: bool,
+    /// `alipay` | `wechat` (default wechat) when creating a cash single-purchase order.
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub channel: Option<String>,
 }
 
 /// Company downloads a resume
@@ -53,8 +57,16 @@ pub async fn download(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<DownloadForm>,
 ) -> AppResult<ApiResponse<DownloadResult>> {
-    let data =
-        resume_download_service::download(&state, &user, f.uid, f.eid, f.confirm, &ip).await?;
+    let data = resume_download_service::download(
+        &state,
+        &user,
+        f.uid,
+        f.eid,
+        f.confirm,
+        f.channel.as_deref(),
+        &ip,
+    )
+    .await?;
     Ok(ApiResponse::data(data))
 }
 

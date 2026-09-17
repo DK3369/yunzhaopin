@@ -71,6 +71,18 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx
         .await
 }
 
+/// Public resume detail: only approved, visible expects.
+pub async fn list_public_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_resume_expect
+         WHERE uid = ? AND state = 1 AND r_status = 1 ORDER BY lastupdate DESC"
+    );
+    sqlx::query_as::<_, Expect>(&sql)
+        .bind(uid)
+        .fetch_all(pool)
+        .await
+}
+
 /// Resolve the user's "current" expect id — prefer the row marked
 /// `defaults = 1`, fall back to the most-recently-updated row, or `None`
 /// if the user has no expect yet.
