@@ -136,6 +136,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 其他服务仍用 PHP 的 `position_management_body{position:absolute}`（Vue 已有蓝条，宫格会飞出视口）
 - 前台挂 `/data-show` 或页脚「招聘大数据」（后台只配参数；PHP 导航没有这项）
 - H5 底栏 `.wap_footerbox` 改 flex / `overflow-x:hidden`（会裁上凸发布钮）；消息角标给 `.wap_footericon` 写 `position:relative`（会把五项挤乱）
+- 再按 PHP action 找缺页：`jobcopy` 是死参数、批量置顶/急聘/推荐 PHP 也是单条、`down.xls` 用已有 CSV `resume-downloads/export`
 
 ## 菜单对照（求职你列的项）
 
@@ -301,6 +302,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 搜索器订阅：[`user/searches.vue`](../../../web/apps/site/app/pages/user/searches.vue)、[`com/finder.vue`](../../../web/apps/site/app/pages/com/finder.vue) 接 `saved-searches/notify`。
 - 粘贴简历 [`user/resume/paste.vue`](../../../web/apps/site/app/pages/user/resume/paste.vue)：`POST /v1/mcenter/resume/paste` + `/paste/get`；`resume_expect.doc=1` + `phpyun_resume_doc`；正文 `sanitize_html`。
 - 企业新闻/产品列映射：news 无 `file`/`usertype`，产品图 `pic AS file`。`/com/follows` 的 `favorites/list|exists` `kind=2/3` 不限 usertype。职位列表二维码用 `qrSvgDataUri` + `/v1/wap/jobs/share-text` 的 `share_url`。绑定页按 `initjobs.settings` 的 fastlogin 开关渲染 provider，oauth-bindings 400 只提示不白屏。
+- 求职动作：头像不公开写 `POST /v1/mcenter/resume {phototype}`（0 公开 / 1 隐藏）；黑名单「清空」走已有 `POST /blacklist/delete`；自我评价范例 `POST /resume/introduce` 读 `phpyun_introduce_class`（空表给空数组）。不要恢复已 404 的 PHP 旧路径。
 
 ## 子账号
 

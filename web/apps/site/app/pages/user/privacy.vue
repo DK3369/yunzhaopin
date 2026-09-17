@@ -43,6 +43,18 @@ async function removeBlack(uid?: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+async function clearBlacks() {
+  if (!blackRows.value.length) return
+  if (!window.confirm(t('member_user_00564'))) return
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/blacklist/delete', {})
+    await refreshBlacks()
+    msg.value = t('common.success')
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 useSeoMeta({ title: t('wap_user_00215') })
 </script>
 
@@ -126,6 +138,12 @@ useSeoMeta({ title: t('wap_user_00215') })
           <span>{{ $t('member_user_00257') }}</span>
           <span class="blacklist_tip">{{ $t('member_user_00558') }}</span>
           <NuxtLink to="/user/blacklist">+{{ $t('wap_js_00091') }}</NuxtLink>
+          <a
+            v-if="blackRows.length"
+            id="clearcontent"
+            href="javascript:;"
+            @click.prevent="clearBlacks"
+          ><i class="d" />{{ $t('member_user_00259') }}</a>
         </p>
         <ul v-if="blackRows.length" class="clearfix" id="company_blench">
           <li v-for="row in blackRows" :key="row.id">

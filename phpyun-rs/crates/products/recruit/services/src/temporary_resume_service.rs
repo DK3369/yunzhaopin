@@ -87,6 +87,7 @@ pub async fn after_register(
             telphone: Some(telphone),
             email: None,
             photo: None,
+            phototype: None,
             exp: None,
             living: None,
             domicile: None,

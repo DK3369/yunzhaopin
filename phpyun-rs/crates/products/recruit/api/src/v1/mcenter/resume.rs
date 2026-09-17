@@ -14,6 +14,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume", post(update_mine))
         .route("/resume/list", post(get_mine))
+        .route("/resume/introduce", post(list_introduce))
         .route("/resume/status", post(update_status))
         .route("/resume/refresh", post(refresh))
         .route("/resume/top", post(buy_top))
@@ -147,6 +148,13 @@ pub struct UpdateResumeForm {
     pub email: Option<String>,
     #[validate(length(max = 255))]
     pub photo: Option<String>,
+    /// 0 = public avatar / 1 = hide avatar (PHP `phototype`)
+    #[serde(
+        default,
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
+    #[validate(range(min = 0, max = 1))]
+    pub phototype: Option<i32>,
     #[serde(
         default,
         deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
@@ -201,6 +209,7 @@ pub async fn update_mine(
             telphone: f.telphone.as_deref(),
             email: f.email.as_deref(),
             photo: f.photo.as_deref(),
+            phototype: f.phototype,
             exp: f.exp,
             living: f.living.as_deref(),
             domicile: f.domicile.as_deref(),
@@ -216,6 +225,37 @@ pub async fn update_mine(
     )
     .await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct IntroduceItem {
+    pub id: u64,
+    pub name: String,
+    pub content: String,
+}
+
+/// Self-intro samples from `phpyun_introduce_class` (admin kind=`introduce`).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume/introduce",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = Vec<IntroduceItem>))
+)]
+pub async fn list_introduce(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Vec<IntroduceItem>>> {
+    let rows = resume_service::list_introduce(&state, &user).await?;
+    Ok(ApiResponse::data(
+        rows.into_iter()
+            .map(|r| IntroduceItem {
+                id: r.id,
+                name: r.name,
+                content: r.content,
+            })
+            .collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

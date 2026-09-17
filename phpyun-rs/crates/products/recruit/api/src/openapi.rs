@@ -260,6 +260,7 @@ impl Modify for DeprecatedIndex {
         // mcenter: resume (jobseeker)
         v1::mcenter::resume::get_mine,
         v1::mcenter::resume::update_mine,
+        v1::mcenter::resume::list_introduce,
         v1::mcenter::resume::update_status,
         v1::mcenter::resume::buy_top,
         v1::mcenter::resume::delete_expect,
@@ -864,6 +865,7 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::resume::ResumeData,
             v1::mcenter::resume_bundle::ResumeBundle,
             v1::mcenter::resume::UpdateResumeForm,
+            v1::mcenter::resume::IntroduceItem,
             v1::mcenter::resume::UpdateStatusForm,
             v1::mcenter::company::CompanyData,
             v1::mcenter::company::UpdateCompanyForm,

@@ -660,6 +660,7 @@ pub struct ResumeUpdate<'a> {
     pub telphone: Option<&'a str>,
     pub email: Option<&'a str>,
     pub photo: Option<&'a str>,
+    pub phototype: Option<i32>,
     pub exp: Option<i32>,
     pub living: Option<&'a str>,
     pub domicile: Option<&'a str>,
@@ -691,6 +692,7 @@ pub async fn update(
             telphone   = COALESCE(?, telphone),
             email      = COALESCE(?, email),
             photo      = COALESCE(?, photo),
+            phototype  = COALESCE(?, phototype),
             exp        = COALESCE(?, exp),
             living     = COALESCE(?, living),
             domicile   = COALESCE(?, domicile),
@@ -714,6 +716,7 @@ pub async fn update(
     .bind(u.telphone)
     .bind(u.email)
     .bind(u.photo)
+    .bind(u.phototype)
     .bind(u.exp)
     .bind(u.living)
     .bind(u.domicile)

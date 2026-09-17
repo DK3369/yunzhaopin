@@ -120,6 +120,7 @@ const form = reactive({
   description: '',
   qq: '',
   marriage: 0,
+  phototype: 0,
 })
 watch(
   data,
@@ -141,6 +142,7 @@ watch(
     form.description = String(row.description || '')
     form.qq = String(row.qq || '')
     form.marriage = Number(row.marriage || 0)
+    form.phototype = Number(row.phototype || 0)
   },
   { immediate: true },
 )
@@ -196,6 +198,49 @@ async function onAvatar(ev: Event) {
   } catch (e: unknown) {
     msg.value = fail(e)
   }
+}
+async function togglePhototype(ev: Event) {
+  const on = (ev.target as HTMLInputElement).checked
+  const next = on ? 1 : 0
+  const prev = form.phototype
+  form.phototype = next
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume', { phototype: next })
+    msg.value = t('common.success')
+  } catch (e: unknown) {
+    form.phototype = prev
+    ;(ev.target as HTMLInputElement).checked = prev === 1
+    msg.value = fail(e)
+  }
+}
+type IntroduceRow = { id: number; name?: string; content?: string }
+const showIntroduce = ref(false)
+const introduceRows = ref<IntroduceRow[]>([])
+const introduceIdx = ref(0)
+const currentIntroduce = computed(() => introduceRows.value[introduceIdx.value] || null)
+async function toggleIntroduce() {
+  showIntroduce.value = !showIntroduce.value
+  if (!showIntroduce.value || introduceRows.value.length) return
+  msg.value = ''
+  try {
+    const rows = await api.post<IntroduceRow[]>('/v1/mcenter/resume/introduce', {})
+    introduceRows.value = Array.isArray(rows) ? rows : []
+    if (introduceRows.value.length) {
+      introduceIdx.value = Math.floor(Math.random() * introduceRows.value.length)
+    }
+  } catch (e: unknown) {
+    msg.value = fail(e)
+  }
+}
+function nextIntroduce() {
+  if (!introduceRows.value.length) return
+  introduceIdx.value = (introduceIdx.value + 1) % introduceRows.value.length
+}
+function applyIntroduce() {
+  const row = currentIntroduce.value
+  if (!row?.content) return
+  form.description = String(row.content).replace(/<[^>]+>/g, '')
 }
 async function onShow(ev: Event) {
   const file = (ev.target as HTMLInputElement).files?.[0]
@@ -540,6 +585,10 @@ useSeoMeta({ title: t('wap_user_00204') })
               <input type="file" accept="image/jpeg,image/png,image/webp" @change="onAvatar" />
             </div>
           </div>
+          <label v-if="form.photo" class="yun_uer_info_gk" @click.stop>
+            <input type="checkbox" :checked="form.phototype === 1" @change="togglePhototype" />
+            {{ $t('ui.photo_private') }}
+          </label>
           <div class="resume_min_body_cord_intention">
             <div class="cord_intention_top">
               <div class="cord_intention_top_word">{{ $t('wap_00460') }}</div>
@@ -576,6 +625,12 @@ useSeoMeta({ title: t('wap_user_00204') })
       <div class="user_resume_box">
         <div class="user_resume_photo">
           <img v-if="form.photo" :src="mediaUrl(form.photo)" alt="" />
+        </div>
+        <div v-if="form.photo" class="yun_uer_info_gk">
+          <label>
+            <input type="checkbox" :checked="form.phototype === 1" @change="togglePhototype" />
+            {{ $t('ui.photo_private') }}
+          </label>
         </div>
         <div class="user_resume_info">
           <div class="user_resume_name">
@@ -653,7 +708,26 @@ useSeoMeta({ title: t('wap_user_00204') })
       <MemberField wap :label="$t('member_user_00282')"><input v-model="form.email" /></MemberField>
       <MemberField wap :label="$t('wap_user_00243')"><input v-model="form.address" /></MemberField>
       <MemberField wap label="QQ"><input v-model="form.qq" /></MemberField>
-      <MemberField wap :label="$t('wap_user_00102')" area><textarea v-model="form.description" rows="4" /></MemberField>
+      <MemberField wap :label="$t('wap_user_00102')" area>
+        <textarea v-model="form.description" rows="4" />
+        <div class="look_other_tit">
+          <a href="javascript:;" class="look_other_h" @click.prevent="toggleIntroduce">{{ $t('wap_user_00062') }}</a>
+        </div>
+        <div v-if="showIntroduce" class="eva_ex_list_bx">
+          <i class="eva_ex_list_bx_img" />
+          <div class="eva_ex_list_ct">
+            <div class="ct_cs">
+              <div class="look_other_tit">
+                <span v-if="currentIntroduce" class="look_other_tit_n">{{ currentIntroduce.name }}</span>
+                <a href="javascript:;" class="look_other_h" @click.prevent="nextIntroduce">{{ $t('wap_00955') }}</a>
+              </div>
+              <div v-if="currentIntroduce" v-html="currentIntroduce.content" />
+              <div v-else>{{ $t('ui.no_data') }}</div>
+              <a v-if="currentIntroduce" href="javascript:;" class="look_other_h" @click.prevent="applyIntroduce">{{ $t('ui.use_sample') }}</a>
+            </div>
+          </div>
+        </div>
+      </MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('ui.save_resume') }}</button>
     </form>
     <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" h5-kind="none" :open="openSec === 'expect'" @toggle="openAdd('expect')">

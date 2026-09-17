@@ -45,6 +45,18 @@ async function remove(blockedUid: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+async function clearAll() {
+  if (!(data.value?.list || []).length) return
+  if (!window.confirm(t('member_user_00564'))) return
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/blacklist/delete', {})
+    msg.value = t('common.success')
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('member_user_00044') })
 </script>
@@ -57,6 +69,14 @@ useSeoMeta({ title: t('member_user_00044') })
       <input type="button" class="black_sumit" :value="$t('common.search')" @click="search" />
     </div>
     <div class="blacklist site-pc">
+      <p class="yun_usertitle">
+        <a
+          v-if="(data?.list || []).length"
+          id="clearcontent"
+          href="javascript:;"
+          @click.prevent="clearAll"
+        ><i class="d" />{{ $t('member_user_00259') }}</a>
+      </p>
       <ul class="clearfix" id="company_blench">
         <li v-for="row in hits" :key="'h-' + row.uid">
           <a href="javascript:;" @click="add(row.uid)">{{ row.name || row.uid }}</a>
@@ -80,6 +100,11 @@ useSeoMeta({ title: t('member_user_00044') })
         </div>
         <div class="blacklist_tip_bth">
           <span class="blacklist_tip_bth_a_tj" @click="showAdd = !showAdd">{{ $t('wap_01125') }}</span>
+          <span
+            v-if="(data?.list || []).length"
+            class="blacklist_tip_bth_a_tj"
+            @click="clearAll"
+          >{{ $t('member_user_00259') }}</span>
         </div>
         <div v-if="showAdd" class="black_sumit_box" style="padding: 0.24rem">
           <input v-model="keyword" class="black_text" :placeholder="$t('member_user_00563')" />

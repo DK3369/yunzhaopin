@@ -4309,6 +4309,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/resume/introduce": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Self-intro samples from `phpyun_introduce_class` (admin kind=`introduce`). */
+        post: operations["post_v1_mcenter_resume_introduce"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/resume/languages": {
         parameters: {
             query?: never;
@@ -9172,14 +9189,6 @@ export interface components {
             linkman: string;
             linkphone: string;
         };
-        AppealResponse: {
-            /**
-             * Format: int64
-             * @description Submitted ticket id (the matched user's uid). Admin reviews via the admin
-             *     console; client should display "appeal submitted" and stop polling.
-             */
-            ticket_uid: number;
-        };
         /** @description Application record item — full 11 columns of phpyun_userid_job + formatted timestamps + derived unread/invited booleans. */
         ApplicantSummary: {
             /** Format: int32 */
@@ -9608,6 +9617,8 @@ export interface components {
             code: string;
         };
         CallbackForm: {
+            /** Format: int32 */
+            amount_cents: number;
             order_no: string;
             pay_tx_id: string;
         };
@@ -10826,6 +10837,8 @@ export interface components {
             score: number;
         };
         DownloadForm: {
+            /** @description `alipay` | `wechat` (default wechat) when creating a cash single-purchase order. */
+            channel?: string | null;
             /** @description PHP second-step confirm for integral/cash single purchase. */
             confirm?: boolean;
             /**
@@ -11627,6 +11640,12 @@ export interface components {
             status_n: string;
             /** Format: int64 */
             uid: number;
+        };
+        IntroduceItem: {
+            content: string;
+            /** Format: int64 */
+            id: number;
+            name: string;
         };
         InviteForm: {
             content: string;
@@ -15236,6 +15255,7 @@ export interface components {
         };
         UpdateProfileForm: {
             email: string;
+            password?: string;
         };
         UpdateResumeForm: {
             address?: string | null;
@@ -15268,6 +15288,11 @@ export interface components {
              */
             nametype?: number | null;
             photo?: string | null;
+            /**
+             * Format: int32
+             * @description 0 = public avatar / 1 = hide avatar (PHP `phototype`)
+             */
+            phototype?: number | null;
             qq?: string | null;
             /** Format: int32 */
             sex?: number | null;
@@ -15508,6 +15533,8 @@ export interface components {
         };
         YqmsForm: {
             address: string;
+            /** @description `alipay` | `wechat` (default wechat) when creating a cash single-purchase order. */
+            channel?: string | null;
             /** @description PHP second-step confirm for integral/cash single purchase. */
             confirm?: boolean;
             content?: string;
@@ -21566,6 +21593,26 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_resume_introduce: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntroduceItem"][];
+                };
+            };
+        };
+    };
     post_v1_mcenter_resume_languages: {
         parameters: {
             query?: never;
@@ -24227,10 +24274,10 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AppealResponse"];
+                    "application/json": components["schemas"]["OkResp"];
                 };
             };
-            /** @description Validation failed / account not found */
+            /** @description Validation failed */
             400: {
                 headers: {
                     [name: string]: unknown;

@@ -490,6 +490,29 @@ pub async fn list_php(
     phpyun_core::db::ok_default_if_object_missing(rows)
 }
 
+/// Jobseeker self-intro samples (`phpyun_introduce_class`). Empty table is valid.
+#[derive(Debug, Clone, FromRow)]
+pub struct IntroduceSample {
+    pub id: u64,
+    pub name: String,
+    pub content: String,
+}
+
+pub async fn list_introduce_samples(
+    pool: &MySqlPool,
+) -> Result<Vec<IntroduceSample>, sqlx::Error> {
+    let rows = sqlx::query_as::<_, IntroduceSample>(
+        "SELECT CAST(id AS UNSIGNED) AS id, \
+                COALESCE(name,'') AS name, \
+                COALESCE(content,'') AS content \
+         FROM phpyun_introduce_class \
+         ORDER BY sort ASC, id ASC",
+    )
+    .fetch_all(pool)
+    .await;
+    phpyun_core::db::ok_default_if_object_missing(rows)
+}
+
 /// Parent ids that actually have at least one child (`keyid` / `pid` in `parent_ids`).
 pub async fn ids_with_children(
     pool: &MySqlPool,

@@ -254,6 +254,7 @@
 /v1/mcenter/resume/expects
 /v1/mcenter/resume/expects/set-default
 /v1/mcenter/resume/expects/update
+/v1/mcenter/resume/introduce
 /v1/mcenter/resume/languages
 /v1/mcenter/resume/languages/update
 /v1/mcenter/resume/list

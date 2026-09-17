@@ -336,6 +336,7 @@ pub struct ResumeUpdateInput<'a> {
     pub telphone: Option<&'a str>,
     pub email: Option<&'a str>,
     pub photo: Option<&'a str>,
+    pub phototype: Option<i32>,
     pub exp: Option<i32>,
     pub living: Option<&'a str>,
     pub domicile: Option<&'a str>,
@@ -384,6 +385,7 @@ pub async fn update_mine(
             telphone: input.telphone,
             email: input.email,
             photo: input.photo,
+            phototype: input.phototype,
             exp: input.exp,
             living: input.living,
             domicile: input.domicile,
@@ -413,6 +415,30 @@ pub async fn update_mine(
     .await;
     invalidate_list(state).await;
     Ok(())
+}
+
+pub struct IntroduceSample {
+    pub id: u64,
+    pub name: String,
+    pub content: String,
+}
+
+/// Samples for the jobseeker self-intro textarea (PHP `getIntroduceInfo`).
+pub async fn list_introduce(
+    state: &AppState,
+    user: &AuthenticatedUser,
+) -> AppResult<Vec<IntroduceSample>> {
+    user.require_jobseeker()?;
+    let rows =
+        phpyun_models::category::repo::list_introduce_samples(state.db.reader()).await?;
+    Ok(rows
+        .into_iter()
+        .map(|r| IntroduceSample {
+            id: r.id,
+            name: r.name,
+            content: phpyun_core::html::sanitize_html(&r.content),
+        })
+        .collect())
 }
 
 /// Refresh the resume (bump lastupdate) — backs the jobseeker's "refresh resume" button.
