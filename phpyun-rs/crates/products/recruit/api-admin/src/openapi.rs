@@ -5,7 +5,6 @@ use utoipa::OpenApi;
 
 use crate::v1;
 
-#[allow(deprecated)]
 #[derive(OpenApi)]
 #[openapi(
     info(
@@ -37,8 +36,6 @@ use crate::v1;
         v1::nav::create,
         v1::nav::update,
         v1::dashboard::dashboard_full,
-        v1::dashboard::overview,
-        v1::dashboard::recent_signups,
         v1::dashboard::msg_num,
         v1::dashboard::home_data,
         v1::dashboard::ajax_statis,
@@ -259,16 +256,6 @@ use crate::v1;
         v1::archive::banner_statist,
         v1::archive::banner_status_body,
         v1::archive::save_banner,
-        v1::archive::list_products,
-        v1::archive::set_products,
-        v1::archive::product_statist,
-        v1::archive::product_status_body,
-        v1::archive::delete_products,
-        v1::archive::list_news,
-        v1::archive::set_news,
-        v1::archive::news_statist,
-        v1::archive::news_status_body,
-        v1::archive::delete_news,
         v1::archive::company_contents_list,
         v1::archive::company_contents_status,
         v1::archive::company_contents_statist,
@@ -400,8 +387,6 @@ use crate::v1;
             v1::nav::NavItem,
             v1::nav::NavForm,
             v1::nav::NavPatchForm,
-            v1::dashboard::OverviewView,
-            v1::dashboard::RecentUser,
             v1::orders::OrderItem,
             v1::orders::SetStatusForm,
             v1::users::AdminUserItem,

@@ -1,27 +1,23 @@
 //! Public job-alert subscribe (PHP `index.php?m=subscribe`).
 
-use axum::{extract::State, routing::{get, post}, Router};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::CreatedId;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson, ValidatedJsonOrQuery,
+    ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson,
 };
 use phpyun_services::job_alert_service::{self, SubscribeInput};
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/subscribe/meta"];
+pub const GET_ALLOWED_PATHS: &[&str] = &[];
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/subscribe/meta", get(meta).post(meta))
         .route("/subscribe", post(create))
         .route("/subscribe/send-email", post(send_email))
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams, Default)]
-pub struct MetaQuery {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct SubscribeMetaView {
@@ -39,20 +35,6 @@ pub(crate) async fn build_meta(state: &AppState) -> AppResult<SubscribeMetaView>
     })
 }
 
-#[deprecated(note = "use /v1/wap/initjobs")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/subscribe/meta",
-    tag = "wap",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.subscribe）",
-    responses((status = 200, description = "ok", body = SubscribeMetaView))
-)]
-pub async fn meta(
-    State(state): State<AppState>,
-    ValidatedJsonOrQuery(_q): ValidatedJsonOrQuery<MetaQuery>,
-) -> AppResult<ApiResponse<SubscribeMetaView>> {
-    Ok(ApiResponse::data(build_meta(&state).await?))
-}
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SubscribeForm {

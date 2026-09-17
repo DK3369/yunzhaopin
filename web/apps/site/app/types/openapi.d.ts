@@ -202,7 +202,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Mark as read (idempotent) */
+        /** Mark as read only: sets `is_browse` 1→2. Not interviewed / unsuitable — use `/applications/state`. */
         post: operations["post_v1_mcenter_applications_browse"];
         delete?: never;
         options?: never;
@@ -270,7 +270,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Set application feedback state (richer than the binary value of /browse — accepts 5 enum values) */
+        /** Set `is_browse`: `1` 未查看 / `2` 已查看 / `3` 已面试 / `4` 不合适 / `5` 无法联系 / `7` 已入职. */
         post: operations["post_v1_mcenter_applications_state"];
         delete?: never;
         options?: never;
@@ -309,6 +309,43 @@ export interface paths {
         put?: never;
         /** Job seeker submits a resume application to a job */
         post: operations["post_v1_mcenter_apply"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/article-channels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * All `phpyun_news_group` rows plus this user's subscription marks.
+         *     **Not** the job-email subscribe at `/v1/wap/subscribe`.
+         */
+        post: operations["post_v1_mcenter_article_channels"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/article-channels/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Replace the subscription set (`ids` empty = unsubscribe all). */
+        post: operations["post_v1_mcenter_article_channels_save"];
         delete?: never;
         options?: never;
         head?: never;
@@ -417,27 +454,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/broadcasts/unread-count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Unread broadcast count
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/messages/unread-summary
-         */
-        post: operations["post_v1_mcenter_broadcasts_unread_count"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/mcenter/cert/email/send": {
         parameters: {
             query?: never;
@@ -449,6 +465,38 @@ export interface paths {
         put?: never;
         /** Send email verification link (delivered via event bus; SMTP is sent by the consumer) */
         post: operations["post_v1_mcenter_cert_email_send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/cert/idcard/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_cert_idcard_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/cert/idcard/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_cert_idcard_submit"];
         delete?: never;
         options?: never;
         head?: never;
@@ -483,6 +531,91 @@ export interface paths {
         put?: never;
         /** Verify SMS code and change mobile number */
         post: operations["post_v1_mcenter_cert_mobile_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/chat/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** My conversation list (latest message per peer). */
+        post: operations["post_v1_mcenter_chat_conversations"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/chat/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send a private message. Body: `{ peer_uid, body }` (`peer` also accepted). */
+        post: operations["post_v1_mcenter_chat_send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/chat/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unread private-message count. */
+        post: operations["post_v1_mcenter_chat_unread_count"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/chat/with": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recent messages with one peer, oldest-first. Body: `{ peer, limit }`. */
+        post: operations["post_v1_mcenter_chat_with"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/chat/with/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark messages from this peer as read. */
+        post: operations["post_v1_mcenter_chat_with_read"];
         delete?: never;
         options?: never;
         head?: never;
@@ -571,6 +704,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/com-parts/batch/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_parts_batch_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/com-parts/create": {
         parameters: {
             query?: never;
@@ -581,6 +730,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_com_parts_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-parts/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_parts_detail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -651,7 +816,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/com-stats/today": {
+    "/v1/mcenter/com-stats/chart": {
         parameters: {
             query?: never;
             header?: never;
@@ -660,12 +825,135 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * PHP `zhaopin::getTodayData` — 今日五项及较昨日。
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/com-dashboard/full
-         */
-        post: operations["post_v1_mcenter_com_stats_today"];
+        post: operations["post_v1_mcenter_com_stats_chart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-stats/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_stats_details"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-stats/package": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_stats_package"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-stats/range": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_stats_range"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-stats/talent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_stats_talent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-stats/trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_stats_trend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-stats/week": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_stats_week"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-tongji/pie": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_tongji_pie"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/com-tongji/trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_com_tongji_trend"];
         delete?: never;
         options?: never;
         head?: never;
@@ -980,6 +1268,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/company/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_company_check"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/company/hrs": {
         parameters: {
             query?: never;
@@ -1059,6 +1363,23 @@ export interface paths {
         put?: never;
         /** Employer creates an interview invitation (based on an apply record) */
         post: operations["post_v1_mcenter_company_interviews_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/company/interviews/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Employer interview row (`phpyun_interview`) by id. */
+        post: operations["post_v1_mcenter_company_interviews_detail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1167,7 +1488,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/company/news": {
+    "/v1/mcenter/company/nav": {
         parameters: {
             query?: never;
             header?: never;
@@ -1176,19 +1497,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Create news
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/create（body.kind=news）
-         */
-        post: operations["post_v1_mcenter_company_news"];
+        post: operations["post_v1_mcenter_company_nav"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/company/news/list": {
+    "/v1/mcenter/company/nav/reset": {
         parameters: {
             query?: never;
             header?: never;
@@ -1197,19 +1513,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * My news list
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/list（body.kind=news）
-         */
-        post: operations["post_v1_mcenter_company_news_list"];
+        post: operations["post_v1_mcenter_company_nav_reset"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/company/news/update": {
+    "/v1/mcenter/company/nav/save": {
         parameters: {
             query?: never;
             header?: never;
@@ -1218,19 +1529,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Update or soft-delete a news entry (body with `"status":2` triggers deletion)
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/update 或 /delete（body.kind=news）
-         */
-        post: operations["post_v1_mcenter_company_news_update"];
+        post: operations["post_v1_mcenter_company_nav_save"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/company/products": {
+    "/v1/mcenter/company/sub-accounts/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -1239,19 +1545,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Create product
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/create（body.kind=product）
-         */
-        post: operations["post_v1_mcenter_company_products"];
+        post: operations["post_v1_mcenter_company_sub_accounts_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/company/products/list": {
+    "/v1/mcenter/company/sub-accounts/delete": {
         parameters: {
             query?: never;
             header?: never;
@@ -1260,19 +1561,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * My product list
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/list（body.kind=product）
-         */
-        post: operations["post_v1_mcenter_company_products_list"];
+        post: operations["post_v1_mcenter_company_sub_accounts_delete"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/company/products/update": {
+    "/v1/mcenter/company/sub-accounts/list": {
         parameters: {
             query?: never;
             header?: never;
@@ -1281,12 +1577,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Update or soft-delete a product (body with `"status":2` triggers deletion)
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/company-contents/update 或 /delete（body.kind=product）
-         */
-        post: operations["post_v1_mcenter_company_products_update"];
+        post: operations["post_v1_mcenter_company_sub_accounts_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/company/sub-accounts/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_company_sub_accounts_update"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1319,6 +1626,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_company_yqms_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/company/yqms/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_company_yqms_detail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1418,30 +1741,6 @@ export interface paths {
         put?: never;
         /** Jobseeker first-screen bundle: dashboard counts + sign + resume completion + unread. */
         post: operations["post_v1_mcenter_dashboard_full"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/dashboard/year-report": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * HR-side yearly report data — counterpart of PHP `wap/ajax::lastYearReport_action`.
-         *     PHP returns a rendered PNG poster; the Rust port returns just the
-         *     underlying numbers and lets the frontend assemble the artwork. Restricted
-         *     to employers (`usertype=2`).
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/com-dashboard/full
-         */
-        post: operations["post_v1_mcenter_dashboard_year_report"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1810,69 +2109,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/follows": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Toggle follow — followed ↔ unfollowed.
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/favorites。映射：target_kind=2(企业)→kind=2，target_kind=1(用户)→kind=3，target_uid→target_id
-         */
-        post: operations["post_v1_mcenter_follows"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/follows/exists": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Cheap probe used by frontend to render the follow-button state.
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/favorites/exists。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3，target_uid→target_id
-         */
-        post: operations["post_v1_mcenter_follows_exists"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/follows/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Targets I am following (filtered by kind).
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/favorites/list。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3
-         */
-        post: operations["post_v1_mcenter_follows_list"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/mcenter/galleries/create": {
         parameters: {
             query?: never;
@@ -2073,6 +2309,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/interview-templates/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_interview_templates_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/interview-templates/list": {
         parameters: {
             query?: never;
@@ -2152,6 +2404,40 @@ export interface paths {
         put?: never;
         /** Reject interview */
         post: operations["post_v1_mcenter_interviews_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/interviews/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read my review for a `userid_msg` invite. Empty when not submitted. */
+        post: operations["post_v1_mcenter_interviews_review"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/interviews/review/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Write dimensions (`professional` / `communication` / `punctuality` or extra keys). */
+        post: operations["post_v1_mcenter_interviews_review_submit"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2966,6 +3252,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/once-jobs/paylogs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** `type=25` paylogs. `/once-jobs/orders` still lists pending (`order_state=1`) only. */
+        post: operations["post_v1_mcenter_once_jobs_paylogs"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/orders/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_orders_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/orders/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_orders_pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/packs/list": {
         parameters: {
             query?: never;
@@ -2992,6 +3327,23 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_packs_orders"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/packs/orders/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** `company_order.type=5` list. Shape matches `/vip/orders/list`. Create stays at `/packs/orders`. */
+        post: operations["post_v1_mcenter_packs_orders_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3079,6 +3431,23 @@ export interface paths {
          *     - `kind=3`: jobseeker sees "who has viewed my resume" (usertype=1)
          */
         post: operations["post_v1_mcenter_profile_views"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/profile-views/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Alias of `/look-resumes/delete` (PHP `phpyun_look_resume`). List on this module is `phpyun_rs_views`. */
+        post: operations["post_v1_mcenter_profile_views_delete"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3788,26 +4157,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/resume/certs/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_certs_list"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/mcenter/resume/certs/update": {
         parameters: {
             query?: never;
@@ -3841,6 +4190,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/resume/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `delResume`: `{ id }` is `phpyun_resume_expect.id`. Refuses the last remaining expect. */
+        post: operations["post_v1_mcenter_resume_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/resume/edus": {
         parameters: {
             query?: never;
@@ -3852,27 +4218,6 @@ export interface paths {
         put?: never;
         /** Create an education history entry */
         post: operations["post_v1_mcenter_resume_edus"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/resume/edus/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Education history list
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_edus_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3913,27 +4258,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/resume/expects/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * List job expectations
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_expects_list"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/mcenter/resume/expects/update": {
         parameters: {
             query?: never;
@@ -3961,26 +4285,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_resume_languages"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/resume/languages/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_languages_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4029,27 +4333,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Extra named blocks (`phpyun_resume_other`). Not works (`/galleries*`) and not bio (`/resume.description`). */
         post: operations["post_v1_mcenter_resume_others"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/resume/others/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_others_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4082,26 +4367,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_resume_projects"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/resume/projects/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_projects_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4154,26 +4419,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_resume_skills"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/resume/skills/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_skills_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4262,26 +4507,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/mcenter/resume/trainings/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_trainings_list"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/mcenter/resume/trainings/update": {
         parameters: {
             query?: never;
@@ -4308,26 +4533,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_resume_works"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/resume/works/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/resume/bundle
-         */
-        post: operations["post_v1_mcenter_resume_works_list"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4670,6 +4875,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/vip/card": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_vip_card"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/vip/current": {
         parameters: {
             query?: never;
@@ -4681,6 +4902,22 @@ export interface paths {
         put?: never;
         /** My current VIP status */
         post: operations["post_v1_mcenter_vip_current"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/vip/integral-classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_vip_integral_classes"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4749,7 +4986,6 @@ export interface paths {
         put?: never;
         /**
          * **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
-         *     **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
          *     Only compiled in debug builds — this function does not exist in the release binary.
          */
         post: operations["mock_paid"];
@@ -4809,6 +5045,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/vip/recharge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_vip_recharge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/warnings": {
         parameters: {
             query?: never;
@@ -4837,27 +5089,6 @@ export interface paths {
         put?: never;
         /** Mark as read */
         post: operations["post_v1_mcenter_warnings_read"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/mcenter/warnings/unread-count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Unread warning count
-         * @deprecated
-         * @description 即将失效：请改用 POST /v1/mcenter/messages/unread-summary
-         */
-        post: operations["post_v1_mcenter_warnings_unread_count"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4913,6 +5144,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/yqms/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_yqms_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/yqms/list": {
         parameters: {
             query?: never;
@@ -4940,6 +5187,23 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_mcenter_yqms_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/zph/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel own job-fair sign-up (PHP `delZphCom` + pending-price refund). */
+        post: operations["post_v1_mcenter_zph_cancel"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4980,6 +5244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/zph/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_zph_order"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/zph/reserve": {
         parameters: {
             query?: never;
@@ -4991,27 +5271,6 @@ export interface paths {
         put?: never;
         /** Reserve a job-fair slot */
         post: operations["post_v1_mcenter_zph_reserve"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/ads": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * List active ads for a slot
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initads（`slots=3:5`）
-         */
-        post: operations["post_v1_wap_ads"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5825,27 +6084,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/wap/descriptions/classes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Class list
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.footer_classes）
-         */
-        post: operations["post_v1_wap_descriptions_classes"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/wap/descriptions/get": {
         parameters: {
             query?: never;
@@ -5857,320 +6095,6 @@ export interface paths {
         put?: never;
         /** Single-page detail */
         post: operations["post_v1_wap_descriptions_get"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/cities": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Province dictionary — PHP `$city_index` / `$city_name` from city.cache.php
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/regions
-         */
-        post: operations["post_v1_wap_dict_cities"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/cities/by-province": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/regions/children
-         */
-        post: operations["post_v1_wap_dict_cities_by_province"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/company-natures": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Company nature — PHP `$comclass_name` `job_pr` (国企/民营/…).
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.company_natures）
-         */
-        post: operations["post_v1_wap_dict_company_natures"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/company-sizes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Company size — PHP `job_mun`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.company_sizes）
-         */
-        post: operations["post_v1_wap_dict_company_sizes"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/educations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Education levels — `source=user` uses resume userclass; default is job comclass `job_edu`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.educations；source=user → data.educations_user）
-         */
-        post: operations["post_v1_wap_dict_educations"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/experiences": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Work experience — `source=user` uses resume `user_word`; default job `job_exp`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.experiences；source=user → data.experiences_user）
-         */
-        post: operations["post_v1_wap_dict_experiences"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/industries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Industry categories from `phpyun_industry` (PHP `$industry_name`)
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.industries）
-         */
-        post: operations["post_v1_wap_dict_industries"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/job-categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Top-level job categories
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.job_categories）
-         */
-        post: operations["post_v1_wap_dict_job_categories"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/job-types": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Job types (full-time / part-time / internship / temporary / remote).
-         *     `source=user` uses resume `user_type`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.job_types；source=user → data.job_types_user）
-         */
-        post: operations["post_v1_wap_dict_job_types"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/langs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Language requirement — PHP `$comdata.job_lang`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.langs）
-         */
-        post: operations["post_v1_wap_dict_langs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/marriages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Marital requirement — PHP `$comdata.job_marriage`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.marriages）
-         */
-        post: operations["post_v1_wap_dict_marriages"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/reports": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Salary cycle / report-time. `source=user` uses resume `user_report`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.reports；source=user → data.reports_user）
-         */
-        post: operations["post_v1_wap_dict_reports"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/salaries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Salary ranges
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.salaries）
-         */
-        post: operations["post_v1_wap_dict_salaries"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/tags": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Resume person tags — PHP `$userdata.user_tag`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.tags）
-         */
-        post: operations["post_v1_wap_dict_tags"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/dict/welfares": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.welfares）
-         */
-        post: operations["post_v1_wap_dict_welfares"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6424,26 +6348,6 @@ export interface paths {
         put?: never;
         /** Home page */
         post: operations["post_v1_wap_home"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/home/aggregate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/home/full
-         */
-        post: operations["post_v1_wap_home_aggregate"];
         delete?: never;
         options?: never;
         head?: never;
@@ -7734,6 +7638,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/qa/answers/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** App alias of `/v1/wap/answers/comments/list`. Body `answer_id` or `aid`. */
+        post: operations["post_v1_wap_qa_answers_comments"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wap/qa/topics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** App alias of `/v1/wap/qna/categories`. */
+        post: operations["post_v1_wap_qa_topics"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/qna/categories": {
         parameters: {
             query?: never;
@@ -7743,7 +7681,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Q&A category list (aligned with PHP `wap/ask::qclass_action`) */
+        /** Q&A category list (aligned with PHP `wap/ask::qclass_action`). Alias: `/v1/wap/qa/topics`. */
         post: operations["post_v1_wap_qna_categories"];
         delete?: never;
         options?: never;
@@ -8111,27 +8049,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/wap/register/config": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Registration rules config: clients can use this for instant validation and display copy.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.register）
-         */
-        post: operations["post_v1_wap_register_config"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/wap/register/written-off": {
         parameters: {
             query?: never;
@@ -8318,29 +8235,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/wap/site/map-config": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Front-end map widget configuration. Counterpart of PHP
-         *     `ajax::mapconfig_action` — bundles every `map_*` site setting into one
-         *     JSON payload so the client doesn't have to issue 8 setting requests.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.map）
-         */
-        post: operations["post_v1_wap_site_map_config"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/wap/site/pages": {
         parameters: {
             query?: never;
@@ -8352,28 +8246,6 @@ export interface paths {
         put?: never;
         /** Site page */
         post: operations["post_v1_wap_site_pages"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/site/settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * List public settings, or return selectable report reasons when
-         *     `key=report_reasons`.
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.settings / data.report_reasons）
-         */
-        post: operations["post_v1_wap_site_settings"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8562,27 +8434,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/wap/stats/overview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Site overview statistics
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.stats）
-         */
-        post: operations["post_v1_wap_stats_overview"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/wap/subscribe": {
         parameters: {
             query?: never;
@@ -8593,26 +8444,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_wap_subscribe"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/wap/subscribe/meta": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description 即将失效：请改用 GET/POST /v1/wap/initjobs（data.subscribe）
-         */
-        post: operations["post_v1_wap_subscribe_meta"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8825,6 +8656,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wap/upload/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rich-text image for news / product body (2MB, jpeg/png/webp) */
+        post: operations["post_v1_wap_upload_content"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/wap/upload/resume-photo": {
         parameters: {
             query?: never;
@@ -8910,7 +8758,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Participating-company list */
+        /** Participating companies. Item already has `uid` / `com_name` / `com_logo` / `com_logo_n`. */
         post: operations["post_v1_wap_zph_companies"];
         delete?: never;
         options?: never;
@@ -9013,29 +8861,6 @@ export interface components {
              */
             target_url: string;
         };
-        AdItem: {
-            /** Format: int64 */
-            end_at: number;
-            /** Format: int64 */
-            id: number;
-            image: string;
-            /** @description Full URL after normalizing `image` (with site / CDN prefix) */
-            image_n: string;
-            link: string;
-            pic_content: string;
-            pic_height: string;
-            pic_width: string;
-            /** Format: int64 */
-            start_at: number;
-            /**
-             * Format: int32
-             * @description 1 = current window / 2 = new window
-             */
-            target: number;
-            title: string;
-            /** Format: int32 */
-            weight: number;
-        };
         AdQuery: {
             /** Format: int64 */
             limit?: number;
@@ -9125,13 +8950,6 @@ export interface components {
             moblie?: string;
             moblie_code?: string;
             username?: string;
-        };
-        AggregateData: {
-            ads: components["schemas"]["AdItem"][];
-            announcements: components["schemas"]["AnnouncementSummary"][];
-            friend_links: components["schemas"]["FriendLinkItem"][];
-            hot_keywords: components["schemas"]["HotKeyword"][];
-            nav: components["schemas"]["NavItem"][];
         };
         /** @description Body carrying just `{ aid }` (Q&A answer id). */
         AidBody: {
@@ -9296,6 +9114,8 @@ export interface components {
         };
         /** @description Application record item — full 11 columns of phpyun_userid_job + formatted timestamps + derived unread/invited booleans. */
         ApplicantSummary: {
+            /** Format: int32 */
+            age?: number;
             apply_url?: string;
             /**
              * Format: int64
@@ -9305,11 +9125,13 @@ export interface components {
             /** Format: int64 */
             datetime: number;
             datetime_n: string;
+            edu_n?: string;
             /**
              * Format: int64
              * @description Resume id (in PHPYun, eid equals the job seeker's uid)
              */
             eid: number;
+            exp_n?: string;
             /** Format: int64 */
             id: number;
             /** Format: int64 */
@@ -9332,14 +9154,23 @@ export interface components {
              * @description 9 normal / 0 deleted (PHPYun `isdel`)
              */
             isdel: number;
+            /**
+             * Format: int32
+             * @description 1 = already downloaded (`down_resume` / `freedown_resume`).
+             */
+            islink?: number;
             /** Format: int64 */
             job_id: number;
             job_name: string;
+            photo?: string;
             /**
              * Format: int32
              * @description Whether the job seeker has withdrawn
              */
             quxiao: number;
+            salary?: string;
+            sex_n?: string;
+            telphone?: string;
             /**
              * Format: int64
              * @description Job seeker uid
@@ -9348,6 +9179,11 @@ export interface components {
             uname: string;
             /** @description Derived: is_browse == 1 */
             unread: boolean;
+        };
+        ApplicationDeleteBody: {
+            /** Format: int64 */
+            id?: number | null;
+            ids?: number[] | null;
         };
         ApplicationsOverview: {
             applications: Record<string, never>;
@@ -9719,6 +9555,40 @@ export interface components {
              */
             image: string;
         };
+        CardForm: {
+            card: string;
+            password: string;
+        };
+        CashierBankView: {
+            bank_address: string;
+            bank_name: string;
+            bank_number: string;
+            /** Format: int64 */
+            id: number;
+            name: string;
+        };
+        CashierDetailView: {
+            /** Format: double */
+            amount_yuan: number;
+            channel: string;
+            channels: string[];
+            created_at_n: string;
+            order_no: string;
+            payable: boolean;
+            /** Format: int32 */
+            status: number;
+            status_n: string;
+            subject: string;
+            /** Format: int32 */
+            type: number;
+            /** Format: int32 */
+            usertype: number;
+        };
+        CashierPayView: {
+            bank_accounts: components["schemas"]["CashierBankView"][];
+            channel: string;
+            pay_url?: string | null;
+        };
         CatNode: {
             /** Format: int64 */
             id: number;
@@ -9811,6 +9681,55 @@ export interface components {
         ChangePasswordForm: {
             new_password: string;
             old_password: string;
+        };
+        ChannelItem: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            keyid: number;
+            name: string;
+            subscribed: boolean;
+        };
+        ChannelList: {
+            ids: number[];
+            list: components["schemas"]["ChannelItem"][];
+        };
+        ChatConversation: {
+            /** Format: int64 */
+            last_at: number;
+            last_at_n: string;
+            last_body: string;
+            /** Format: int64 */
+            last_id: number;
+            /** Format: int64 */
+            last_sender_uid: number;
+            /** Format: int64 */
+            peer_uid: number;
+            peer_username: string;
+            /** Format: int32 */
+            peer_usertype: number;
+            /** Format: int64 */
+            unread: number;
+        };
+        ChatMsg: {
+            body: string;
+            /** Format: int64 */
+            created_at: number;
+            created_at_n: string;
+            /** Format: int64 */
+            id: number;
+            is_read: boolean;
+            /** Format: int32 */
+            is_read_int: number;
+            mine: boolean;
+            /** Format: int64 */
+            receiver_uid: number;
+            /** Format: int64 */
+            sender_uid: number;
+        };
+        ChatWithData: {
+            has_more: boolean;
+            list: components["schemas"]["ChatMsg"][];
         };
         CheckComNameData: {
             /** @description PHP `errcode == 1` when the name already exists. */
@@ -9972,6 +9891,11 @@ export interface components {
             /** Format: int64 */
             unread_messages: number;
         };
+        ComPartBatchStatusBody: {
+            ids: number[];
+            /** Format: int32 */
+            status: number;
+        };
         ComPartForm: {
             address?: string | null;
             /** Format: int32 */
@@ -10007,6 +9931,20 @@ export interface components {
             worktime?: string | null;
             x?: string | null;
             y?: string | null;
+        };
+        ComPartListData: {
+            counts: components["schemas"]["PartCountsView"];
+            list: components["schemas"]["PartSummary"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            page_size: number;
+            /** Format: int64 */
+            total: number;
+        };
+        ComPartListForm: {
+            /** Format: int32 */
+            w?: number | null;
         };
         ComPartStatusBody: {
             /** Format: int64 */
@@ -10082,6 +10020,10 @@ export interface components {
              */
             value: number;
         };
+        CompanyCheckForm: {
+            check_str: string;
+            type_str: string;
+        };
         CompanyContactQuery: {
             /** Format: int32 */
             isgetprv?: number | null;
@@ -10111,6 +10053,7 @@ export interface components {
             busstops?: string | null;
             /** Format: int32 */
             cityid: number;
+            comqcode?: string | null;
             content?: string | null;
             /** Format: int32 */
             email_status: number;
@@ -10674,6 +10617,7 @@ export interface components {
             active: boolean;
             /** Format: int32 */
             breakjob_num: number;
+            caps: components["schemas"]["VipCaps"];
             /** Format: int32 */
             down_resume: number;
             /** Format: int64 */
@@ -10690,8 +10634,18 @@ export interface components {
             rating_name: string;
             /** Format: int32 */
             rating_type: number;
+            /** Format: int32 */
+            rec_num: number;
+            /** Format: int32 */
+            sons_num: number;
             /** Format: int64 */
             started_at?: number | null;
+            /** Format: int32 */
+            top_num: number;
+            /** Format: int32 */
+            urgent_num: number;
+            /** Format: int32 */
+            zph_num: number;
         };
         DashboardFull: {
             /** Format: int64 */
@@ -10765,6 +10719,10 @@ export interface components {
             /** Format: int64 */
             uid: number;
         };
+        DeleteForm: {
+            /** Format: int64 */
+            uid: number;
+        };
         /** @description Single-page detail -- all 10 columns (including full content) + formatted timestamps. */
         DescDetail: {
             /** Format: int64 */
@@ -10793,6 +10751,11 @@ export interface components {
             /** Format: int32 */
             id: number;
             name: string;
+        };
+        DimIn: {
+            key: string;
+            /** Format: int32 */
+            score: number;
         };
         DownloadForm: {
             /** @description PHP second-step confirm for integral/cash single purchase. */
@@ -10911,6 +10874,11 @@ export interface components {
             job_name?: string | null;
             /** Format: int64 */
             jobid?: number | null;
+            /**
+             * Format: int64
+             * @description Alias of `id` (PHP member `mid`). No `eid` on this table.
+             */
+            mid: number;
             reply?: string | null;
             /** Format: int64 */
             reply_time: number;
@@ -11085,6 +11053,9 @@ export interface components {
             /** @description Username (PHP `phpyun_member.username`); blank if the row was deleted. */
             username: string;
         };
+        FansQuery: {
+            keyword?: string | null;
+        };
         FavoriteListForm: {
             /**
              * Format: int32
@@ -11154,15 +11125,6 @@ export interface components {
             /** Format: int32 */
             usertype?: number | null;
         };
-        FollowToggleForm: {
-            /**
-             * Format: int32
-             * @description 1 = user, 2 = company
-             */
-            target_kind: number;
-            /** Format: int64 */
-            target_uid: number;
-        };
         /** @description Footer link row (homepage descriptions page=1 size=80, without content excerpt). */
         FooterPageItem: {
             /** Format: int64 */
@@ -11176,13 +11138,6 @@ export interface components {
             link_url: string;
             name: string;
             title: string;
-        };
-        FriendLinkItem: {
-            /** Format: int64 */
-            id: number;
-            logo: string;
-            name: string;
-            url: string;
         };
         GalleryCreate: {
             /** @description `company` or `resume`. */
@@ -11454,6 +11409,29 @@ export interface components {
             id: number;
             password: string;
         };
+        IdcardSubmitForm: {
+            idcard: string;
+            /** @description Key returned by `POST /v1/wap/upload/cert` */
+            idcard_pic: string;
+            name?: string | null;
+        };
+        IdcardView: {
+            /** Format: int64 */
+            cert_time: number;
+            cert_time_n: string;
+            /** @description Masked id number */
+            idcard: string;
+            idcard_pic: string;
+            idcard_pic_n: string;
+            name: string;
+            /**
+             * Format: int32
+             * @description `-1` 未提交（无图） / `0` 审核中 / `1` 通过 / `2` 驳回
+             */
+            status: number;
+            status_n: string;
+            statusbody: string;
+        };
         /**
          * @description Body carrying `{ ids: Vec<u64> }`. Capped at 200 items, each id 1..=10^8.
          *     Used for batch-delete / batch-update endpoints.
@@ -11476,7 +11454,6 @@ export interface components {
         };
         /**
          * @description Combined public dictionaries + site chrome / config (PC/H5 first screen).
-         *     Individual `/v1/wap/dict/*` stay registered (most are deprecated).
          *     `/v1/wap/countries` is not deprecated: it still supports `continent` filter.
          *
          *     Always filled. Cached per language (no per-IP fields). Handler overlays
@@ -11520,6 +11497,25 @@ export interface components {
             sy_googlelogin: string;
             tags: components["schemas"]["DictItem"][];
             welfares: components["schemas"]["DictItem"][];
+        };
+        IntegralClassItem: {
+            /** Format: int32 */
+            discount: number;
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            integral: number;
+        };
+        IntegralClassPack: {
+            /** Format: int64 */
+            balance: number;
+            list: components["schemas"]["IntegralClassItem"][];
+            /** Format: int64 */
+            min_recharge: number;
+            pricename: string;
+            priceunit: string;
+            /** Format: int64 */
+            proportion: number;
         };
         IntegralItemView: {
             /** Format: int32 */
@@ -11745,10 +11741,20 @@ export interface components {
             job_post: number;
             job_three_n: string;
             job_two_n: string;
+            /**
+             * Format: int32
+             * @description PHP `jobexpoure` 曝光次数。
+             */
+            jobexpoure?: number;
             /** Format: int32 */
             jobhits: number;
             /** @description Three-level job category joined as "Frontend / Web Frontend / React Developer" (PHP `jobname`) */
             jobname: string;
+            /**
+             * Format: int32
+             * @description Employer list: applications (`userid_job isdel=9`). Public lists stay 0.
+             */
+            jobnum?: number;
             /** Format: int64 */
             lastupdate: number;
             /** @description `Y-m-d` of lastupdate. Additive. */
@@ -11791,6 +11797,8 @@ export interface components {
              * @description Listing: 0 recruiting / 1 unlisted (PHP `status`).
              */
             status: number;
+            /** @description Review note (`company_job.statusbody`). Empty on public cards. */
+            statusbody?: string;
             /** Format: int32 */
             three_city_id: number;
             /** Format: int64 */
@@ -11898,14 +11906,9 @@ export interface components {
         };
         ListCommentsBody: {
             /** Format: int64 */
-            aid: number;
-        };
-        ListQuery: {
-            /**
-             * Format: int32
-             * @description 1 = user, 2 = company
-             */
-            kind: number;
+            aid?: number;
+            /** Format: int64 */
+            answer_id?: number;
         };
         ListTemplatesBody: {
             kind: string;
@@ -11943,6 +11946,11 @@ export interface components {
         LogoutData: {
             revoked: boolean;
         };
+        LookJobDeleteBody: {
+            /** Format: int64 */
+            id?: number | null;
+            ids?: number[] | null;
+        };
         LookJobItem: {
             com_name: string;
             /** Format: int64 */
@@ -11962,6 +11970,9 @@ export interface components {
             /** Format: int64 */
             uid: number;
             uname: string;
+        };
+        LookJobsQuery: {
+            keyword?: string | null;
         };
         LookResumeItem: {
             /** Format: int64 */
@@ -11999,12 +12010,18 @@ export interface components {
             /** Format: int32 */
             did: number;
             email?: string | null;
+            is_sub: boolean;
             moblie?: string | null;
             /** Format: int64 */
             uid: number;
             username: string;
             /** Format: int32 */
             usertype: number;
+        };
+        MessageDeleteBody: {
+            /** Format: int64 */
+            id?: number | null;
+            ids?: number[] | null;
         };
         /**
          * @description Message item — backed by `phpyun_sysmsg`.
@@ -12164,6 +12181,8 @@ export interface components {
             role: string;
         };
         MyJobsQuery: {
+            /** @description PHP member job list `keyword` (job name). Empty = no filter. */
+            keyword?: string | null;
             /**
              * Format: int32
              * @description Legacy alias of `w` when the client still sends `state`.
@@ -12200,16 +12219,36 @@ export interface components {
             updated_at: number;
         };
         MyReservation: {
+            address: string;
+            /** Format: int32 */
+            bid: number;
+            booth_name: string;
+            /** Format: int32 */
+            cid: number;
             /** Format: int64 */
             created_at: number;
             datetime_n: string;
             /** Format: int64 */
+            end_at: number;
+            end_at_n: string;
+            /** Format: int64 */
             id: number;
             job_ids: string;
+            job_names: string;
             mobile: string;
             name: string;
             /** Format: int32 */
+            notstart: number;
+            /** Format: int32 */
+            price: number;
+            /** Format: int32 */
+            sid: number;
+            /** Format: int64 */
+            start_at: number;
+            start_at_n: string;
+            /** Format: int32 */
             status: number;
+            statusbody: string;
             title: string;
             /** Format: int64 */
             zid: number;
@@ -12234,16 +12273,47 @@ export interface components {
             /** Format: int32 */
             target_kind: number;
         };
+        /** @description Navigation item — all 9 columns of phpyun_navigation + CDN URL + formatted timestamp. */
         NavItem: {
             icon: string;
+            icon_n: string;
             /** Format: int64 */
             id: number;
             label: string;
             /** Format: int64 */
             parent_id: number;
+            position: string;
             /** Format: int32 */
             sort: number;
+            /** Format: int32 */
+            status: number;
+            /** Format: int64 */
+            updated_at: number;
+            updated_at_n: string;
             url: string;
+        };
+        NavItemForm: {
+            key: string;
+            label_key?: string;
+            show?: boolean;
+            /** Format: int32 */
+            sort?: number;
+            target?: string;
+            to: string;
+        };
+        NavItemView: {
+            key: string;
+            label_key: string;
+            show: boolean;
+            /** Format: int32 */
+            sort: number;
+            target: string;
+            to: string;
+        };
+        NavPackView: {
+            /** Format: int32 */
+            is_nav: number;
+            items: components["schemas"]["NavItemView"][];
         };
         /** @description Nearby company item -- phpyun_company projection + dict + CDN + derived distance. */
         NearCompany: {
@@ -12326,20 +12396,6 @@ export interface components {
             /** Format: int64 */
             updated_at: number;
             updated_at_n: string;
-        };
-        NewsForm: {
-            body: string;
-            summary?: string;
-            title: string;
-        };
-        NewsPatch: {
-            body?: string | null;
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            status?: number | null;
-            summary?: string | null;
-            title?: string | null;
         };
         /** @description Company news list item — all phpyun_company_news columns. */
         NewsSummary: {
@@ -12520,6 +12576,9 @@ export interface components {
         OrderNoBody: {
             order_no: string;
         };
+        OrderNoForm: {
+            order_no: string;
+        };
         OtherForm: {
             content?: string | null;
             /** Format: int64 */
@@ -12545,30 +12604,6 @@ export interface components {
             /** Format: int64 */
             id: number;
             name: string;
-        };
-        OwnNews: {
-            /** Format: int32 */
-            hits: number;
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            status: number;
-            summary: string;
-            title: string;
-            /** Format: int64 */
-            updated_at: number;
-        };
-        OwnProduct: {
-            cover: string;
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            sort: number;
-            /** Format: int32 */
-            status: number;
-            title: string;
-            /** Format: int64 */
-            updated_at: number;
         };
         PackDetailBody: {
             /** Format: int64 */
@@ -12699,6 +12734,18 @@ export interface components {
             status: number;
             /** Format: int32 */
             visits: number;
+        };
+        PartCountsView: {
+            /** Format: int64 */
+            w0: number;
+            /** Format: int64 */
+            w1: number;
+            /** Format: int64 */
+            w2: number;
+            /** Format: int64 */
+            w3: number;
+            /** Format: int64 */
+            w4: number;
         };
         /** @description Part-time detail -- aligned with the full field set of PHPYun `wap/part::show_action`. */
         PartDetail: {
@@ -12956,6 +13003,19 @@ export interface components {
             /** Format: int64 */
             order_time: number;
         };
+        PaylogsQuery: {
+            /**
+             * Format: int32
+             * @description Optional `company_order.order_state` 1/2/3. Omit = 1+2+3.
+             */
+            order_state?: number | null;
+        };
+        PeerBody: {
+            /** Format: int64 */
+            peer?: number;
+            /** Format: int64 */
+            peer_uid?: number;
+        };
         PriceQuoteView: {
             /** Format: int64 */
             id: number;
@@ -12996,27 +13056,6 @@ export interface components {
             updated_at: number;
             updated_at_n: string;
         };
-        ProductForm: {
-            body: string;
-            cover?: string;
-            /** Format: int32 */
-            sort?: number;
-            title: string;
-        };
-        ProductPatch: {
-            body?: string | null;
-            cover?: string | null;
-            /** Format: int64 */
-            id: number;
-            /** Format: int32 */
-            sort?: number | null;
-            /**
-             * Format: int32
-             * @description 0=offline 1=online
-             */
-            status?: number | null;
-            title?: string | null;
-        };
         /** @description Company product list item — all phpyun_company_product columns + CDN URL + formatted time. */
         ProductSummary: {
             /** @description Summary (first 100 chars of body, truncated) */
@@ -13043,6 +13082,7 @@ export interface components {
             /** Format: int32 */
             did: number;
             email?: string | null;
+            is_sub: boolean;
             moblie?: string | null;
             /** Format: int64 */
             uid: number;
@@ -13098,10 +13138,6 @@ export interface components {
         /** @description Body carrying a third-party `provider` slug (oauth bind/unbind). */
         ProviderBody: {
             provider: string;
-        };
-        ProvinceBody: {
-            /** Format: int32 */
-            province_id: number;
         };
         PublishCheckView: {
             /** Format: int32 */
@@ -13293,6 +13329,11 @@ export interface components {
             /** @description `pack` or `vip` — selects which price table to read. */
             kind: string;
         };
+        RangeForm: {
+            times?: unknown;
+            /** Format: int32 */
+            type?: number;
+        };
         RankKeyword: {
             /** Format: int32 */
             hits: number;
@@ -13418,6 +13459,25 @@ export interface components {
             sex: number;
             /** Format: int64 */
             uid: number;
+        };
+        RechargeCreated: {
+            /** Format: int32 */
+            amount_cents: number;
+            /** Format: double */
+            amount_yuan: number;
+            channel: string;
+            /** Format: int64 */
+            integral: number;
+            order_no: string;
+            pay_url?: string | null;
+        };
+        RechargeForm: {
+            channel: string;
+            /** Format: int64 */
+            integralid?: number;
+            /** Format: int64 */
+            price_int: number;
+            remark?: string;
         };
         RecommendedBody: {
             kind: string;
@@ -14155,6 +14215,28 @@ export interface components {
             /** Format: int64 */
             uid: number;
         };
+        ReviewOut: {
+            comment: string;
+            dimensions: components["schemas"]["DimIn"][];
+            submitted: boolean;
+            /** Format: int32 */
+            total: number;
+            /** Format: int64 */
+            yqms_id: number;
+        };
+        ReviewQuery: {
+            /** Format: int64 */
+            yqms_id?: number;
+        };
+        ReviewSubmitForm: {
+            comment?: string;
+            dimensions: components["schemas"]["DimIn"][];
+            /** Format: int64 */
+            yqms_id?: number;
+        };
+        SaveForm: {
+            ids?: number[];
+        };
         SavedItem: {
             /** Format: int64 */
             created_at: number;
@@ -14295,14 +14377,6 @@ export interface components {
             description: string;
             key: string;
             value: string;
-        };
-        /**
-         * @description List public settings, or return selectable report reasons when
-         *     `key=report_reasons`.
-         */
-        SettingsListBody: {
-            /** @description Empty = all public settings. `report_reasons` returns report-reason options. */
-            key?: string;
         };
         ShareTokenView: {
             /** @description Derived: not revoked and not expired */
@@ -14552,6 +14626,16 @@ export interface components {
             /** Format: int32 */
             status?: number | null;
         };
+        SubAccountView: {
+            /** Format: int64 */
+            login_date: number;
+            login_date_n: string;
+            /** Format: int32 */
+            status: number;
+            /** Format: int64 */
+            uid: number;
+            username: string;
+        };
         SubSiteView: {
             /** Format: int32 */
             city_id?: number | null;
@@ -14717,8 +14801,8 @@ export interface components {
             username: string;
         };
         ToggleResp: {
-            /** @description New state after toggle: true = now following, false = now unfollowed. */
-            following: boolean;
+            /** @description New state after toggle: true = saved/followed, false = removed. */
+            favorited: boolean;
         };
         Toggled: {
             on: boolean;
@@ -14726,6 +14810,20 @@ export interface components {
         /** @description Body carrying an opaque token (resume-share, password-reset, etc.). */
         TokenBody: {
             token: string;
+        };
+        TongjiPieForm: {
+            edate: string;
+            /** Format: int64 */
+            job_id?: number | null;
+            sdate: string;
+            /** Format: int32 */
+            type?: number;
+        };
+        TongjiTrendForm: {
+            edate: string;
+            /** Format: int64 */
+            job_id?: number | null;
+            sdate: string;
         };
         TopAnswererItem: {
             /** Format: int64 */
@@ -14839,6 +14937,14 @@ export interface components {
             /** Format: int64 */
             transfer_id: number;
         };
+        TrendForm: {
+            /** Format: int32 */
+            days?: number | null;
+            edate?: string | null;
+            sdate?: string | null;
+            /** Format: int32 */
+            type?: number;
+        };
         /**
          * @description Body carrying just `{ uid }`. Use for endpoints whose primary subject is a
          *     member uid (resume / company profile / favorited target).
@@ -14879,7 +14985,7 @@ export interface components {
             broadcasts: number;
             /**
              * Format: int64
-             * @description `phpyun_chat` private messages between users.
+             * @description `phpyun_rs_chat` private messages between users.
              */
             chat: number;
             /**
@@ -14903,6 +15009,7 @@ export interface components {
             busstops?: string | null;
             /** Format: int32 */
             cityid?: number | null;
+            comqcode?: string | null;
             content?: string | null;
             /** Format: int32 */
             hy?: number | null;
@@ -14914,6 +15021,7 @@ export interface components {
             linkphone?: string | null;
             linkqq?: string | null;
             linktel?: string | null;
+            /** @description Upload `key` from `/v1/wap/upload/*`. `logo_status` is admin-only, not set here. */
             logo?: string | null;
             /** Format: int32 */
             money?: number | null;
@@ -14935,6 +15043,13 @@ export interface components {
             welfare?: string | null;
             x?: string | null;
             y?: string | null;
+        };
+        UpdateForm: {
+            password?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            /** Format: int64 */
+            uid: number;
         };
         UpdateJobForm: {
             /** Format: int32 */
@@ -15176,11 +15291,45 @@ export interface components {
             /** @description Current logged-in user's avatar (returns default when not logged in) */
             pic_n: string;
         };
+        VipCaps: {
+            /** Format: int32 */
+            breakjob_num: number;
+            /** Format: int32 */
+            interview: number;
+            /** Format: int32 */
+            job_num: number;
+            /** Format: int32 */
+            rec_num: number;
+            /** Format: int32 */
+            resume: number;
+            /** Format: int32 */
+            sons_num: number;
+            /** Format: int32 */
+            top_num: number;
+            /** Format: int32 */
+            urgent_num: number;
+            /** Format: int32 */
+            zph_num: number;
+        };
         WechatCodeLoginForm: {
             /** @description Code returned by the WeChat callback */
             code: string;
             /** @description State returned by the WeChat callback -- must match the state returned by `authorize-url` (OAuth CSRF protection) */
             state: string;
+        };
+        WeekForm: {
+            /** Format: int32 */
+            times?: number;
+        };
+        WithForm: {
+            /** Format: int64 */
+            before_id?: number;
+            /** Format: int64 */
+            limit?: number;
+            /** Format: int64 */
+            peer?: number;
+            /** Format: int64 */
+            peer_uid?: number;
         };
         WorkForm: {
             content?: string | null;
@@ -15298,11 +15447,15 @@ export interface components {
             job_name: string;
             linkman: string;
             linktel: string;
+            mappic: string;
             remark: string;
             title: string;
             /** Format: int64 */
             uid: number;
             uname: string;
+            /** @description Map longitude (list omitted this; detail includes it) */
+            x: string;
+            y: string;
         };
         YqmsRejectForm: {
             /** Format: int64 */
@@ -15408,6 +15561,19 @@ export interface components {
             weburl: string;
             zwpic: string;
             zwpic_n: string;
+        };
+        ZphOrderCreated: {
+            order_no: string;
+            /** Format: double */
+            price: number;
+        };
+        ZphOrderForm: {
+            /** Format: int32 */
+            bid?: number;
+            jobid?: string;
+            name?: string;
+            /** Format: int64 */
+            zid: number;
         };
         /** @description Job-fair gallery item. */
         ZphPicView: {
@@ -15808,7 +15974,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description ok */
+            /** @description Mark read (is_browse 1→2 only) */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -15826,7 +15992,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IdBody"];
+                "application/json": components["schemas"]["ApplicationDeleteBody"];
             };
         };
         responses: {
@@ -16019,6 +16185,50 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_article_channels: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChannelList"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_article_channels_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChannelList"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_blacklist: {
         parameters: {
             query?: never;
@@ -16141,26 +16351,6 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_broadcasts_unread_count: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnreadCount"];
-                };
-            };
-        };
-    };
     post_v1_mcenter_cert_email_send: {
         parameters: {
             query?: never;
@@ -16181,6 +16371,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EmailSent"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_cert_idcard_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdcardView"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_cert_idcard_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdcardSubmitForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdcardView"];
                 };
             };
         };
@@ -16217,6 +16451,114 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["MobileVerifyForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_chat_conversations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_chat_send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedId"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_chat_unread_count: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnreadCount"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_chat_with: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WithForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatWithData"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_chat_with_read: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeerBody"];
             };
         };
         responses: {
@@ -16345,6 +16687,28 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_com_parts_batch_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ComPartBatchStatusBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_mcenter_com_parts_create: {
         parameters: {
             query?: never;
@@ -16369,14 +16733,18 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_com_parts_list: {
+    post_v1_mcenter_com_parts_detail: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -16384,6 +16752,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_parts_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ComPartListForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComPartListData"];
+                };
             };
         };
     };
@@ -16453,7 +16845,51 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_com_stats_today: {
+    post_v1_mcenter_com_stats_chart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RangeForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_stats_details: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RangeForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_stats_package: {
         parameters: {
             query?: never;
             header?: never;
@@ -16467,9 +16903,139 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["ComTodayView"];
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_stats_range: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RangeForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_stats_talent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RangeForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_stats_trend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrendForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_stats_week: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeekForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_tongji_pie: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TongjiPieForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_com_tongji_trend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TongjiTrendForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -16895,6 +17461,28 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_company_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompanyCheckForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_mcenter_company_hrs: {
         parameters: {
             query?: never;
@@ -16995,6 +17583,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_company_interviews_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterviewItem"];
                 };
             };
         };
@@ -17125,18 +17737,14 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_company_news: {
+    post_v1_mcenter_company_nav: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["NewsForm"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description ok */
             200: {
@@ -17144,12 +17752,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CreatedId"];
+                    "application/json": components["schemas"]["NavPackView"];
                 };
             };
         };
     };
-    post_v1_mcenter_company_news_list: {
+    post_v1_mcenter_company_nav_reset: {
         parameters: {
             query?: never;
             header?: never;
@@ -17167,7 +17775,7 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_company_news_update: {
+    post_v1_mcenter_company_nav_save: {
         parameters: {
             query?: never;
             header?: never;
@@ -17176,7 +17784,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NewsPatch"];
+                "application/json": components["schemas"]["SaveForm"];
             };
         };
         responses: {
@@ -17189,7 +17797,7 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_company_products: {
+    post_v1_mcenter_company_sub_accounts_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -17198,7 +17806,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ProductForm"];
+                "application/json": components["schemas"]["CreateForm"];
             };
         };
         responses: {
@@ -17213,7 +17821,29 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_company_products_list: {
+    post_v1_mcenter_company_sub_accounts_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_company_sub_accounts_list: {
         parameters: {
             query?: never;
             header?: never;
@@ -17227,11 +17857,13 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SubAccountView"][];
+                };
             };
         };
     };
-    post_v1_mcenter_company_products_update: {
+    post_v1_mcenter_company_sub_accounts_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -17240,7 +17872,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ProductPatch"];
+                "application/json": components["schemas"]["UpdateForm"];
             };
         };
         responses: {
@@ -17294,6 +17926,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_company_yqms_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YqmsItem"];
+                };
             };
         };
     };
@@ -17416,33 +18072,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DashboardFull"];
                 };
-            };
-        };
-    };
-    post_v1_mcenter_dashboard_year_report: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["YearReportView"];
-                };
-            };
-            /** @description Not a company account */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -17672,7 +18301,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FansQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -17899,88 +18532,6 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_mcenter_follows: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FollowToggleForm"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ToggleResp"];
-                };
-            };
-            /** @description Invalid kind / cannot follow yourself */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Only jobseekers may follow */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_mcenter_follows_exists: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["KindTargetUidBody"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_mcenter_follows_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ListQuery"];
-            };
-        };
         responses: {
             /** @description ok */
             200: {
@@ -18245,6 +18796,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_interview_templates_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TplItem"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_interview_templates_list: {
         parameters: {
             query?: never;
@@ -18344,6 +18919,54 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_interviews_review: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_interviews_review_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewSubmitForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"];
+                };
             };
         };
     };
@@ -18649,6 +19272,8 @@ export interface operations {
                 w: number | null;
                 /** @description Legacy alias of `w` when the client still sends `state`. */
                 state: number | null;
+                /** @description PHP member job list `keyword` (job name). Empty = no filter. */
+                keyword: string | null;
             };
             cookie?: never;
         };
@@ -18882,7 +19507,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IdBody"];
+                "application/json": components["schemas"]["LookJobDeleteBody"];
             };
         };
         responses: {
@@ -18902,7 +19527,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LookJobsQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -19019,7 +19648,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IdBody"];
+                "application/json": components["schemas"]["MessageDeleteBody"];
             };
         };
         responses: {
@@ -19428,6 +20057,76 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_once_jobs_paylogs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaylogsQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_orders_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderNoForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashierDetailView"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_orders_pay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashierPayView"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_packs_list: {
         parameters: {
             query?: never;
@@ -19467,6 +20166,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PackOrderCreated"];
                 };
+            };
+        };
+    };
+    post_v1_mcenter_packs_orders_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -19583,6 +20300,28 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_profile_views_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdsBody"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -20534,24 +21273,6 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_resume_certs_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     post_v1_mcenter_resume_certs_update: {
         parameters: {
             query?: never;
@@ -20594,6 +21315,28 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_resume_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_mcenter_resume_edus: {
         parameters: {
             query?: never;
@@ -20615,24 +21358,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
-            };
-        };
-    };
-    post_v1_mcenter_resume_edus_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -20682,24 +21407,6 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_resume_expects_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     post_v1_mcenter_resume_expects_update: {
         parameters: {
             query?: never;
@@ -20743,24 +21450,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
-            };
-        };
-    };
-    post_v1_mcenter_resume_languages_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -20830,24 +21519,6 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_resume_others_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     post_v1_mcenter_resume_others_update: {
         parameters: {
             query?: never;
@@ -20891,24 +21562,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
-            };
-        };
-    };
-    post_v1_mcenter_resume_projects_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -20980,24 +21633,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
-            };
-        };
-    };
-    post_v1_mcenter_resume_skills_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -21111,24 +21746,6 @@ export interface operations {
             };
         };
     };
-    post_v1_mcenter_resume_trainings_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     post_v1_mcenter_resume_trainings_update: {
         parameters: {
             query?: never;
@@ -21172,24 +21789,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
-            };
-        };
-    };
-    post_v1_mcenter_resume_works_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -21617,6 +22216,28 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_vip_card: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_mcenter_vip_current: {
         parameters: {
             query?: never;
@@ -21633,6 +22254,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CurrentVip"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_vip_integral_classes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegralClassPack"];
                 };
             };
         };
@@ -21808,6 +22449,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_vip_recharge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RechargeForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RechargeCreated"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_warnings: {
         parameters: {
             query?: never;
@@ -21845,26 +22510,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    post_v1_mcenter_warnings_unread_count: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnreadCount"];
-                };
             };
         };
     };
@@ -21932,6 +22577,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_yqms_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YqmsItem"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_yqms_list: {
         parameters: {
             query?: never;
@@ -21960,6 +22629,28 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["YqmsRejectForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_zph_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
             };
         };
         responses: {
@@ -22025,6 +22716,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_zph_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ZphOrderForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ZphOrderCreated"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_zph_reserve: {
         parameters: {
             query?: never;
@@ -22046,33 +22761,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
-            };
-        };
-    };
-    post_v1_wap_ads: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Slot key — alphanumeric / underscore / hyphen, 1..=64 chars. The
-                 *     string flows into `phpyun_ad.slot = ?`, so a stricter charset guard
-                 *     (vs. plain length) removes any chance of control characters / spaces
-                 *     reaching the DB and keeps slot keys URL-safe.
-                 */
-                slot: string;
-                limit: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -23227,24 +23915,6 @@ export interface operations {
             };
         };
     };
-    post_v1_wap_descriptions_classes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     post_v1_wap_descriptions_get: {
         parameters: {
             query?: never;
@@ -23257,280 +23927,6 @@ export interface operations {
                 "application/json": components["schemas"]["IdBody"];
             };
         };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_cities: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_cities_by_province: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProvinceBody"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_company_natures: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_company_sizes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_educations: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_experiences: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_industries: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_job_categories: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_job_types: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_langs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_marriages: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_reports: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_salaries: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_tags: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_dict_welfares: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
         responses: {
             /** @description ok */
             200: {
@@ -23895,37 +24291,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomeData"];
-                };
-            };
-        };
-    };
-    post_v1_wap_home_aggregate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Sub-site id */
-                did: number;
-                /** @description Ad slot (string corresponding to phpyun_ad.class_id) */
-                slot: string | null;
-                /** @description Nav position (corresponds to phpyun_navigation.`type`); defaults to 1 (top) when omitted */
-                nav: string;
-                /** @description Take top N hot keywords; default 10 */
-                hot_limit: number;
-                /** @description Hot search scope (string form of PHP `phpyun_hot_key.type`); default "0" (site-wide) */
-                hot_scope: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AggregateData"];
                 };
             };
         };
@@ -26066,6 +26431,46 @@ export interface operations {
             };
         };
     };
+    post_v1_wap_qa_answers_comments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListCommentsBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_wap_qa_topics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_wap_qna_categories: {
         parameters: {
             query?: never;
@@ -26601,26 +27006,6 @@ export interface operations {
             };
         };
     };
-    post_v1_wap_register_config: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RegisterConfig"];
-                };
-            };
-        };
-    };
     post_v1_wap_register_written_off: {
         parameters: {
             query?: never;
@@ -26925,26 +27310,6 @@ export interface operations {
             };
         };
     };
-    post_v1_wap_site_map_config: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MapConfigView"];
-                };
-            };
-        };
-    };
     post_v1_wap_site_pages: {
         parameters: {
             query?: never;
@@ -26968,28 +27333,6 @@ export interface operations {
                 };
             };
             404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_wap_site_settings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SettingsListBody"];
-            };
-        };
-        responses: {
-            /** @description Public settings, or report reason options for report_reasons */
-            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -27252,26 +27595,6 @@ export interface operations {
             };
         };
     };
-    post_v1_wap_stats_overview: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SiteOverviewView"];
-                };
-            };
-        };
-    };
     post_v1_wap_subscribe: {
         parameters: {
             query?: never;
@@ -27292,26 +27615,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
-                };
-            };
-        };
-    };
-    post_v1_wap_subscribe_meta: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SubscribeMetaView"];
                 };
             };
         };
@@ -27579,6 +27882,30 @@ export interface operations {
         };
     };
     post_v1_wap_upload_company_logo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "image/jpeg": number[];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadResult"];
+                };
+            };
+        };
+    };
+    post_v1_wap_upload_content: {
         parameters: {
             query?: never;
             header?: never;

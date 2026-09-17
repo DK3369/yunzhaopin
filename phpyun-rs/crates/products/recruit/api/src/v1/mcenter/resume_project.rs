@@ -10,11 +10,9 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/projects", post(create))
-        .route("/resume/projects/list", post(list))
         .route("/resume/projects/update", post(update))
 }
 
@@ -54,24 +52,6 @@ pub struct ProjectForm {
     pub status: Option<i32>,
 }
 
-#[deprecated(note = "use /v1/mcenter/resume/bundle")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/resume/projects/list",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    description = "即将失效：请改用 POST /v1/mcenter/resume/bundle",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<ProjectItem>>> {
-    let list = project_svc::list(&state, &user).await?;
-    Ok(ApiResponse::data(
-        list.into_iter().map(ProjectItem::from).collect(),
-    ))
-}
 
 #[utoipa::path(
     post,

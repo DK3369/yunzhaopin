@@ -1,21 +1,15 @@
 //! Public site settings (keys with is_public=1).
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::{
-    ApiError, ApiResponse, AppResult, AppState, ClientIp, Lang, ValidatedJson, ValidatedJsonOrQuery,
-};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_models::report::repo as report_repo;
 use phpyun_services::site_setting_service;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use utoipa::ToSchema;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
-    Router::new()
-        .route("/site/settings", post(list))
-        .route("/site/settings/get", post(get_one))
+    Router::new().route("/site/settings/get", post(get_one))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -33,16 +27,6 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingView {
             description: s.description,
         }
     }
-}
-
-/// List public settings, or return selectable report reasons when
-/// `key=report_reasons`.
-#[derive(Debug, Default, serde::Deserialize, utoipa::ToSchema, validator::Validate)]
-pub struct SettingsListBody {
-    /// Empty = all public settings. `report_reasons` returns report-reason options.
-    #[serde(default)]
-    #[validate(length(max = 64))]
-    pub key: String,
 }
 
 pub(crate) async fn public_settings_map(
@@ -81,41 +65,6 @@ pub(crate) async fn report_reasons(state: &AppState) -> AppResult<Vec<ReportReas
         .collect())
 }
 
-/// List public settings, or return selectable report reasons when
-/// `key=report_reasons`.
-#[deprecated(note = "use /v1/wap/initjobs")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/site/settings",
-    tag = "wap",
-    request_body = SettingsListBody,
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.settings / data.report_reasons）",
-    responses((status = 200, description = "Public settings, or report reason options for report_reasons"))
-)]
-pub async fn list(
-    State(state): State<AppState>,
-    _lang: Lang,
-    ClientIp(ip): ClientIp,
-    ValidatedJsonOrQuery(body): ValidatedJsonOrQuery<SettingsListBody>,
-) -> AppResult<ApiResponse<Value>> {
-    if body.key == "report_reasons" {
-        return Ok(ApiResponse::data(json!(report_reasons(&state).await?)));
-    }
-
-    let list = site_setting_service::list_public(&state).await?;
-    let mut data: Vec<SettingView> = list.into_iter().map(SettingView::from).collect();
-    if phpyun_services::site_gate_service::ensure_ip_allowed(&state, &ip)
-        .await
-        .is_err()
-    {
-        data.push(SettingView {
-            key: "sy_client_ip_banned".into(),
-            value: "1".into(),
-            description: String::new(),
-        });
-    }
-    Ok(ApiResponse::data(json!(data)))
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct ReportReasonView {

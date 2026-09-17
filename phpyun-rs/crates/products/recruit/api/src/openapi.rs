@@ -281,7 +281,6 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::packs::quote,
         v1::mcenter::packs::create_order,
         v1::mcenter::packs::list_orders,
-        v1::mcenter::dashboard::today,
         v1::mcenter::entrust_records::list_mine,
         v1::mcenter::entrust_records::delete_mine,
         v1::mcenter::crm_reports::submit,
@@ -309,25 +308,19 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::finder::create,
         v1::mcenter::finder::delete,
         // mcenter: resume children (jobseeker)
-        v1::mcenter::resume_expect::list,
         v1::mcenter::resume_expect::create,
         v1::mcenter::resume_expect::update,
         // v1::mcenter::resume_expect::remove, // removed
         v1::mcenter::resume_bundle::bundle,
-        v1::mcenter::resume_edu::list,
         v1::mcenter::resume_edu::create,
         v1::mcenter::resume_edu::update,
         // v1::mcenter::resume_edu::remove, // removed
-        v1::mcenter::resume_work::list,
         v1::mcenter::resume_work::create,
         v1::mcenter::resume_work::update,
-        v1::mcenter::resume_training::list,
         v1::mcenter::resume_training::create,
         v1::mcenter::resume_training::update,
-        v1::mcenter::resume_cert::list,
         v1::mcenter::resume_cert::create,
         v1::mcenter::resume_cert::update,
-        v1::mcenter::resume_other::list,
         v1::mcenter::resume_other::create,
         v1::mcenter::resume_other::update,
         // v1::mcenter::resume_work::remove, // removed
@@ -371,35 +364,17 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::resume_downloads::list_inbox,
         v1::mcenter::resume_downloads::export_outbox,
         // mcenter: resume sub-tables (project / skill / language)
-        v1::mcenter::resume_project::list,
         v1::mcenter::resume_project::create,
         v1::mcenter::resume_project::update,
         // v1::mcenter::resume_project::remove, // removed
-        v1::mcenter::resume_skill::list,
         v1::mcenter::resume_skill::create,
         v1::mcenter::resume_skill::update,
         // v1::mcenter::resume_skill::remove, // removed
-        v1::mcenter::resume_language::list,
         v1::mcenter::resume_language::create,
         v1::mcenter::resume_language::update,
         // v1::mcenter::resume_language::remove, // removed
         // wap: dict
         v1::wap::dict::initjobs,
-        v1::wap::dict::cities,
-        v1::wap::dict::cities_of_province,
-        v1::wap::dict::industries,
-        v1::wap::dict::job_categories,
-        v1::wap::dict::educations,
-        v1::wap::dict::experiences,
-        v1::wap::dict::salaries,
-        v1::wap::dict::job_types,
-        v1::wap::dict::tags,
-        v1::wap::dict::welfares,
-        v1::wap::dict::reports,
-        v1::wap::dict::marriages,
-        v1::wap::dict::langs,
-        v1::wap::dict::company_natures,
-        v1::wap::dict::company_sizes,
         // wap: articles
         v1::wap::articles::list_articles,
         v1::wap::articles::article_detail,
@@ -468,7 +443,6 @@ impl Modify for DeprecatedIndex {
         v1::wap::home::home,
         v1::wap::home::home_full,
         v1::wap::rankings::rankings,
-        v1::wap::subscribe::meta,
         v1::wap::subscribe::create,
         v1::wap::subscribe::send_email,
         v1::wap::links::list,
@@ -494,17 +468,6 @@ impl Modify for DeprecatedIndex {
         v1::wap::company_sub::product_detail,
         v1::wap::company_sub::list_news,
         v1::wap::company_sub::news_detail,
-        // wap: stats
-        v1::wap::stats::overview,
-        // mcenter: company sub CRUD
-        v1::mcenter::company_sub::list_products,
-        v1::mcenter::company_sub::create_product,
-        v1::mcenter::company_sub::update_product,
-        // delete_product merged into update_product (status:2 soft delete)
-        v1::mcenter::company_sub::list_news,
-        v1::mcenter::company_sub::create_news,
-        v1::mcenter::company_sub::update_news,
-        // delete_news merged into update_news (status:2 soft delete)
         // mcenter: interview templates
         v1::mcenter::interview_tpl::list,
         v1::mcenter::interview_tpl::create,
@@ -552,7 +515,6 @@ impl Modify for DeprecatedIndex {
         v1::wap::gongzhao::list,
         v1::wap::gongzhao::detail,
         // wap: ads public
-        v1::wap::ads::list,
         v1::wap::ads::initads,
         // mcenter: blacklist
         v1::mcenter::blacklist::list,
@@ -566,11 +528,9 @@ impl Modify for DeprecatedIndex {
         // remove merged into update (status:2 soft delete)
         // mcenter: my warnings
         v1::mcenter::warnings::list,
-        v1::mcenter::warnings::unread,
         v1::mcenter::warnings::mark_read,
         // mcenter: my broadcasts
         v1::mcenter::broadcasts::list,
-        v1::mcenter::broadcasts::unread,
         v1::mcenter::broadcasts::mark_read,
         // mcenter: entrust (jobseeker ↔ headhunter binding)
         v1::mcenter::entrust::list,
@@ -643,12 +603,10 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::redeem::list_mine,
         v1::mcenter::redeem::cancel_mine,
         // wap: descriptions (public cms pages)
-        v1::wap::descriptions::list_classes,
         v1::wap::descriptions::list,
         v1::wap::descriptions::get_one,
         // delete_class merged into update_class (status:2 soft delete)
         // wap: site settings (public)
-        v1::wap::site_settings::list,
         v1::wap::site_settings::get_one,
         // mcenter: resume share tokens
         v1::mcenter::resume_share::create,
@@ -673,17 +631,13 @@ impl Modify for DeprecatedIndex {
         v1::wap::specials::apply,
         v1::wap::once::pay,
         v1::wap::once::paylog,
-        v1::mcenter::atn::toggle,
-        v1::mcenter::atn::list_following,
         v1::mcenter::atn::list_followers,
-        v1::mcenter::atn::exists,
         v1::mcenter::messages::unread_summary,
         v1::mcenter::once_orders::list_pending,
         v1::mcenter::once_orders::cancel,
         v1::mcenter::once_orders::list_paylogs,
         v1::mcenter::article_channels::list,
         v1::mcenter::article_channels::save,
-        v1::mcenter::dashboard::year_report,
         // Round 3: job-page Q&A + non-id-token OAuth (QQ / Weibo)
         v1::wap::job_messages::list,
         v1::wap::job_messages::create,
@@ -725,7 +679,6 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::vip::quote_price,
         v1::wap::hr_docs::track_download,
         // Round 9: map config, eval paper messages
-        v1::wap::site::map_config,
         v1::wap::eval::list_messages,
         v1::mcenter::eval::post_message,
         // Round 10: ad click tracking
@@ -823,7 +776,6 @@ impl Modify for DeprecatedIndex {
         v1::wap::data_show::resume_exp,
         v1::wap::data_show::resume_sex,
         v1::wap::data_show::user_register_trend,
-        v1::wap::home::aggregate,
         v1::wap::jobs::job_detail_full,
         v1::wap::jobs::jobs_sidebar,
         v1::wap::jobs::log_tel_click,
@@ -850,7 +802,6 @@ impl Modify for DeprecatedIndex {
         v1::wap::regions::list,
         v1::wap::register::check_availability,
         v1::wap::register::check_com_name,
-        v1::wap::register::config,
         v1::wap::register::written_off,
         v1::wap::tiny::create,
         v1::wap::tiny::list,
@@ -1101,12 +1052,6 @@ impl Modify for DeprecatedIndex {
             v1::wap::company_sub::ProductDetail,
             v1::wap::company_sub::NewsSummary,
             v1::wap::company_sub::NewsDetail,
-            v1::mcenter::company_sub::OwnProduct,
-            v1::mcenter::company_sub::OwnNews,
-            v1::mcenter::company_sub::ProductForm,
-            v1::mcenter::company_sub::ProductPatch,
-            v1::mcenter::company_sub::NewsForm,
-            v1::mcenter::company_sub::NewsPatch,
             v1::mcenter::interview_tpl::TplItem,
             v1::mcenter::interview_tpl::TplForm,
             v1::mcenter::interview_tpl::TplPatchForm,
@@ -1219,8 +1164,6 @@ impl Modify for DeprecatedIndex {
             v1::wap::once::PaylogItem,
             v1::wap::once::OnceGear,
             v1::wap::once::OnceOwned,
-            v1::mcenter::atn::FollowToggleForm,
-            v1::mcenter::atn::ToggleResp,
             v1::mcenter::atn::FollowItem,
             v1::mcenter::messages::UnreadSummary,
             v1::mcenter::once_orders::OrderItem,

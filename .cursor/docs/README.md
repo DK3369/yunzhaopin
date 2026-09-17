@@ -10,7 +10,7 @@
 | 主题 | 文件 |
 |---|---|
 | Rust 进程 / 分层 / 契约 / 编译 | [rust/README.md](./rust/README.md) |
-| 已合并 / 即将失效接口（App OpenAPI `deprecated`） | [rust/api-merged.md](./rust/api-merged.md) |
+| 已合并 / 已摘除 deprecated 接口 | [rust/api-merged.md](./rust/api-merged.md) |
 | 后端 i18n（四层：Vue / Rust msg / dict_i18n / packed） | [rust/i18n.md](./rust/i18n.md) |
 | 横切（登录态 / locale 缓存 key / 媒体 URL / settings 缓存） | [rust/cross-cut.md](./rust/cross-cut.md) |
 | 公开只读两级缓存（L1 moka + Redis） | [rust/cache.md](./rust/cache.md) |

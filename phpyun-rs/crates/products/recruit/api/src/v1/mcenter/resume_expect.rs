@@ -10,11 +10,9 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/expects", post(create))
-        .route("/resume/expects/list", post(list))
         .route("/resume/expects/update", post(update))
 }
 
@@ -133,28 +131,6 @@ fn de_loose_i32_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<i32
     i32::try_from(n).map(Some).map_err(D::Error::custom)
 }
 
-/// List job expectations
-#[deprecated(note = "use /v1/mcenter/resume/bundle")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/resume/expects/list",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    description = "即将失效：请改用 POST /v1/mcenter/resume/bundle",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<ExpectItem>>> {
-    let list = expect_svc::list(&state, &user).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
-    let items = list
-        .into_iter()
-        .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
-        .collect::<AppResult<Vec<_>>>()?;
-    Ok(ApiResponse::data(items))
-}
 
 /// Create a new job expectation
 #[utoipa::path(

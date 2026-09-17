@@ -15,13 +15,11 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
         .route("/register/check", post(check_availability))
         .route("/register/check-com-name", post(check_com_name))
-        .route("/register/config", post(config))
         .route("/register/written-off", post(written_off))
 }
 
@@ -305,18 +303,6 @@ pub(crate) async fn build_config(state: &AppState) -> AppResult<RegisterConfig> 
     })
 }
 
-/// Registration rules config: clients can use this for instant validation and display copy.
-#[deprecated(note = "use /v1/wap/initjobs")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/register/config",
-    tag = "auth",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.register）",
-    responses((status = 200, description = "ok", body = RegisterConfig))
-)]
-pub async fn config(State(state): State<AppState>) -> AppResult<ApiResponse<RegisterConfig>> {
-    Ok(ApiResponse::data(build_config(&state).await?))
-}
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct WrittenOffForm {

@@ -10,11 +10,9 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/edus", post(create))
-        .route("/resume/edus/list", post(list))
         .route("/resume/edus/update", post(update))
 }
 
@@ -65,28 +63,6 @@ pub struct EduForm {
     pub status: Option<i32>,
 }
 
-/// Education history list
-#[deprecated(note = "use /v1/mcenter/resume/bundle")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/resume/edus/list",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    description = "即将失效：请改用 POST /v1/mcenter/resume/bundle",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<EduItem>>> {
-    let list = edu_svc::list(&state, &user).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|e| crate::v1::wap::resumes::resume_edu_item_from_dict(e, &dicts))
-            .collect(),
-    ))
-}
 
 /// Create an education history entry
 #[utoipa::path(

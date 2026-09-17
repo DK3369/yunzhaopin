@@ -1,14 +1,13 @@
 //! Site statistics (matching PHPYun `tongji` + `ajax::*Data`). Public viewing.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState};
+use axum::Router;
+use phpyun_core::{AppResult, AppState};
 use phpyun_services::stats_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/stats/overview", post(overview))
+    Router::new()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
@@ -31,15 +30,3 @@ pub(crate) async fn build_overview(state: &AppState) -> AppResult<SiteOverviewVi
     })
 }
 
-/// Site overview statistics
-#[deprecated(note = "use /v1/wap/initjobs")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/stats/overview",
-    tag = "wap",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.stats）",
-    responses((status = 200, description = "ok", body = SiteOverviewView))
-)]
-pub async fn overview(State(state): State<AppState>) -> AppResult<ApiResponse<SiteOverviewView>> {
-    Ok(ApiResponse::data(build_overview(&state).await?))
-}

@@ -17,10 +17,8 @@ use validator::Validate;
 
 pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/legal"];
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/descriptions/classes", post(list_classes))
         .route("/descriptions", post(list))
         .route("/descriptions/get", post(get_one))
         .route("/descriptions/by-name", post(get_by_name))
@@ -91,18 +89,6 @@ pub(crate) async fn footer_pages(state: &AppState) -> AppResult<Vec<FooterPageIt
     Ok(r.list.into_iter().map(FooterPageItem::from).collect())
 }
 
-/// Class list
-#[deprecated(note = "use /v1/wap/initjobs")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/descriptions/classes",
-    tag = "wap",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.footer_classes）",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list_classes(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<ClassItem>>> {
-    Ok(ApiResponse::data(footer_classes(&state).await?))
-}
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {

@@ -231,7 +231,6 @@ mod get_alias_tests {
             "/v1/wap/initjobs",
             "/v1/wap/initads",
             "/v1/wap/rankings",
-            "/v1/wap/subscribe/meta",
         ] {
             assert!(v.contains(&p), "missing GET alias {p}");
         }

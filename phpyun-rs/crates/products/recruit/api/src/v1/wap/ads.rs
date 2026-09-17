@@ -19,12 +19,10 @@ use std::fmt;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/ads", "/v1/wap/initads"];
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/initads"];
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/ads", get(list).post(list))
         .route("/initads", get(initads).post(initads))
         .route("/ads/click", post(track_click))
 }
@@ -117,28 +115,6 @@ fn to_view(state: &AppState, site_base: Option<&str>, a: Ad) -> AdView {
     }
 }
 
-/// List active ads for a slot
-#[deprecated(note = "use /v1/wap/initads")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/ads",
-    tag = "wap",
-    params(AdQuery),
-    description = "即将失效：请改用 GET/POST /v1/wap/initads（`slots=3:5`）",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list(
-    State(state): State<AppState>,
-    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<AdQuery>,
-) -> AppResult<ApiResponse<Vec<AdView>>> {
-    let list = ad_service::list_active(&state, &q.slot, q.limit).await?;
-    let site_base = state.config.web_base_url.as_deref();
-    let items = list
-        .into_iter()
-        .map(|a| to_view(&state, site_base, a))
-        .collect();
-    Ok(ApiResponse::data(items))
-}
 
 /// GET compact: `slots=3:5,50:5`. POST JSON: `{ "slots": [{ "slot": "3", "limit": 5 }] }`.
 #[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]

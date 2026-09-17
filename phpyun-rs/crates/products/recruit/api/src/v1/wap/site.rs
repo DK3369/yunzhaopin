@@ -12,10 +12,8 @@ pub const GET_ALLOWED_PATHS: &[&str] = &[
     "/v1/wap/site/pages",
     "/v1/wap/site/sub-sites",
     "/v1/wap/site/sub-sites/match",
-    "/v1/wap/site/map-config",
 ];
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/site/pages", get(get_page).post(get_page))
@@ -24,7 +22,6 @@ pub fn routes() -> Router<AppState> {
             "/site/sub-sites/match",
             get(match_sub_site).post(match_sub_site),
         )
-        .route("/site/map-config", get(map_config).post(map_config))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -311,20 +308,6 @@ pub(crate) async fn build_map_config(state: &AppState) -> AppResult<MapConfigVie
     })
 }
 
-/// Front-end map widget configuration. Counterpart of PHP
-/// `ajax::mapconfig_action` — bundles every `map_*` site setting into one
-/// JSON payload so the client doesn't have to issue 8 setting requests.
-#[deprecated(note = "use /v1/wap/initjobs")]
-#[utoipa::path(
-    post,
-    path = "/v1/wap/site/map-config",
-    tag = "wap",
-    description = "即将失效：请改用 GET/POST /v1/wap/initjobs（data.map）",
-    responses((status = 200, description = "ok", body = MapConfigView))
-)]
-pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<MapConfigView>> {
-    Ok(ApiResponse::data(build_map_config(&state).await?))
-}
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct GetPageBody {

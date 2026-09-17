@@ -734,6 +734,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/company-contents/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_company_contents_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/company-contents/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Company news / products list plus tab counts (`kind=news|product`). */
+        post: operations["post_v1_admin_company_contents_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/company-contents/statist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_company_contents_statist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/company-contents/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_company_contents_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/company-contents/status-body": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_company_contents_status_body"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/company-expire": {
         parameters: {
             query?: never;
@@ -978,86 +1059,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/admin/company-news": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_news"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-news/delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_news_delete"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-news/statist": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_news_statist"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-news/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_news_status"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-news/status-body": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_news_status_body"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/admin/company-photos": {
         parameters: {
             query?: never;
@@ -1148,86 +1149,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_admin_company_photos_status_body"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_products"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-products/delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_products_delete"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-products/statist": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_products_statist"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-products/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_products_status"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/company-products/status-body": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["post_v1_admin_company_products_status_body"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1588,6 +1509,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/dashboard/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Homepage bundle: home-data + ajax-statis + month-statis + ajax-right + chart(getweb). */
+        post: operations["post_v1_admin_dashboard_full"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/dashboard/home-data": {
         parameters: {
             query?: never;
@@ -1631,40 +1569,6 @@ export interface paths {
         put?: never;
         /** PHP `msgNum()` pending-review badges. */
         post: operations["post_v1_admin_dashboard_msg_num"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/dashboard/overview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Review queue + activity snapshot */
-        post: operations["post_v1_admin_dashboard_overview"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/admin/dashboard/recent-signups": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Recent signups */
-        post: operations["post_v1_admin_dashboard_recent_signups"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4660,6 +4564,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/third-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_third_data"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/third-data/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_third_data_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/third-data/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_third_data_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/tiny": {
         parameters: {
             query?: never;
@@ -5775,6 +5727,7 @@ export interface components {
             rating_name: string;
             /** Format: int64 */
             rec_time: number;
+            rec_time_n: string;
             /** Format: int64 */
             sdate: number;
             sdate_n: string;
@@ -5787,12 +5740,16 @@ export interface components {
             /** Format: int32 */
             status: number;
             statusbody: string;
+            /** @description PHP Vue `company_job.vue` `top_time_n`. */
+            top_time_n: string;
             /** Format: int64 */
             uid: number;
             /** Format: int64 */
             urgent_time: number;
+            urgent_time_n: string;
             /** Format: int64 */
             xsdate: number;
+            xsdate_n: string;
         };
         AdminLoginData: {
             access_token: string;
@@ -6053,6 +6010,24 @@ export interface components {
              */
             status?: number | null;
         };
+        CompanyContentListData: Record<string, never> & {
+            statist: Record<string, never>;
+        };
+        ContentDeleteForm: components["schemas"]["IdsBody"] & {
+            kind: string;
+        };
+        ContentKindBody: {
+            kind: string;
+        };
+        ContentKindQuery: components["schemas"]["KwQuery"] & {
+            kind: string;
+        };
+        ContentStatusBodyForm: components["schemas"]["UidOrIdForm"] & {
+            kind: string;
+        };
+        ContentStatusForm: components["schemas"]["IdsStatusForm"] & {
+            kind: string;
+        };
         CreateForm: {
             /** @description Stable identifier. ISO 3166-2 form: `CN-BJ` / `US-CA`. Lower levels add a custom suffix: `CN-BJ-CY`. */
             code: string;
@@ -6112,6 +6087,21 @@ export interface components {
             sdate: string | null;
             /** @default null */
             type: string | null;
+        };
+        DashboardFullBody: {
+            /**
+             * Format: int32
+             * @default null
+             */
+            with_msg_num: number | null;
+        };
+        DashboardFullView: {
+            ajax_right: Record<string, never>;
+            ajax_statis: Record<string, never>;
+            chart: Record<string, never>;
+            home: Record<string, never>;
+            month_statis: Record<string, never>;
+            msg_num?: Record<string, never>;
         };
         DataCallForm: {
             code?: string;
@@ -6402,10 +6392,20 @@ export interface components {
             job_post: number;
             job_three_n: string;
             job_two_n: string;
+            /**
+             * Format: int32
+             * @description PHP `jobexpoure` 曝光次数。
+             */
+            jobexpoure?: number;
             /** Format: int32 */
             jobhits: number;
             /** @description Three-level job category joined as "Frontend / Web Frontend / React Developer" (PHP `jobname`) */
             jobname: string;
+            /**
+             * Format: int32
+             * @description Employer list: applications (`userid_job isdel=9`). Public lists stay 0.
+             */
+            jobnum?: number;
             /** Format: int64 */
             lastupdate: number;
             /** @description `Y-m-d` of lastupdate. Additive. */
@@ -6448,6 +6448,8 @@ export interface components {
              * @description Listing: 0 recruiting / 1 unlisted (PHP `status`).
              */
             status: number;
+            /** @description Review note (`company_job.statusbody`). Empty on public cards. */
+            statusbody?: string;
             /** Format: int32 */
             three_city_id: number;
             /** Format: int64 */
@@ -6502,6 +6504,17 @@ export interface components {
                 [key: string]: string;
             };
         };
+        KwQuery: {
+            keyword?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            /** Format: int32 */
+            time?: number | null;
+            /** Format: int32 */
+            type?: number | null;
+            /** Format: int64 */
+            uid?: number | null;
+        };
         ListQuery: {
             keyword?: string | null;
             /** Format: int32 */
@@ -6512,6 +6525,12 @@ export interface components {
             uid?: number | null;
             /** Format: int32 */
             usertype?: number | null;
+        };
+        LogoStatusForm: {
+            /** Format: int32 */
+            status: number;
+            statusbody?: string;
+            uid?: number[];
         };
         MergeDone: {
             /** Format: int64 */
@@ -6619,6 +6638,10 @@ export interface components {
             created_at_n: string;
             /** Format: int64 */
             id: number;
+            /** Format: int32 */
+            integral: number;
+            /** Format: int32 */
+            order_kind: number;
             order_no: string;
             package_code: string;
             /** Format: int64 */
@@ -6633,28 +6656,6 @@ export interface components {
             status_n: string;
             /** Format: int64 */
             uid: number;
-        };
-        OverviewView: {
-            /** Format: int64 */
-            active_companies: number;
-            /** Format: int64 */
-            active_jobs: number;
-            /** Format: int64 */
-            active_resumes: number;
-            /** Format: int64 */
-            pending_company_certs: number;
-            /** Format: int64 */
-            pending_feedback: number;
-            /** Format: int64 */
-            pending_jobs: number;
-            /** Format: int64 */
-            pending_reports: number;
-            /** Format: int64 */
-            today_new_jobs: number;
-            /** Format: int64 */
-            today_new_resumes: number;
-            /** Format: int64 */
-            total_users: number;
         };
         PaperDetailForm: {
             /** Format: int64 */
@@ -6819,27 +6820,6 @@ export interface components {
             name: string;
             /** Format: int32 */
             sort?: number;
-        };
-        RecentUser: {
-            /** Format: int64 */
-            did: number;
-            email?: string | null;
-            /** Format: int64 */
-            login_date?: number | null;
-            login_date_n: string;
-            moblie?: string | null;
-            /** Format: int64 */
-            reg_date: number;
-            reg_date_n: string;
-            /** Format: int32 */
-            status: number;
-            status_n: string;
-            /** Format: int64 */
-            uid: number;
-            username: string;
-            /** Format: int32 */
-            usertype: number;
-            usertype_n: string;
         };
         RechargeForm: {
             /** Format: int64 */
@@ -7023,6 +7003,18 @@ export interface components {
             userarr?: string[];
             /** Format: int32 */
             utype: number;
+        };
+        ThirdDataForm: {
+            api_url?: string;
+            /** Format: int32 */
+            enabled?: number;
+            /** Format: int64 */
+            id?: number | null;
+            name: string;
+            provider?: string;
+            /** Format: int32 */
+            sort?: number;
+            url: string;
         };
         /** @description PHP `tuncateRecycle_action` guards on this literal (their spelling). */
         TruncateBody: {
@@ -8105,6 +8097,118 @@ export interface operations {
             };
         };
     };
+    post_v1_admin_company_contents_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentDeleteForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_company_contents_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentKindQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanyContentListData"];
+                };
+            };
+        };
+    };
+    post_v1_admin_company_contents_statist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentKindBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_company_contents_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentStatusForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_company_contents_status_body: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentStatusBodyForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_admin_company_expire: {
         parameters: {
             query?: never;
@@ -8397,108 +8501,6 @@ export interface operations {
             };
         };
     };
-    post_v1_admin_company_news: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_news_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IdsBody"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_news_statist: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_news_status: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IdsStatusForm"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_news_status_body: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UidOrIdForm"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     post_v1_admin_company_photos: {
         parameters: {
             query?: never;
@@ -8588,7 +8590,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UidStatusForm"];
+                "application/json": components["schemas"]["LogoStatusForm"];
             };
         };
         responses: {
@@ -8602,108 +8604,6 @@ export interface operations {
         };
     };
     post_v1_admin_company_photos_status_body: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UidOrIdForm"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_products: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_products_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IdsBody"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_products_statist: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_products_status: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IdsStatusForm"];
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_company_products_status_body: {
         parameters: {
             query?: never;
             header?: never;
@@ -9214,6 +9114,30 @@ export interface operations {
             };
         };
     };
+    post_v1_admin_dashboard_full: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DashboardFullBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardFullView"];
+                };
+            };
+        };
+    };
     post_v1_admin_dashboard_home_data: {
         parameters: {
             query?: never;
@@ -9259,46 +9183,6 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    post_v1_admin_dashboard_overview: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OverviewView"];
-                };
-            };
-        };
-    };
-    post_v1_admin_dashboard_recent_signups: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                limit: number;
-            };
             cookie?: never;
         };
         requestBody?: never;
@@ -13225,6 +13109,70 @@ export interface operations {
                 "application/json": components["schemas"]["SysSendForm"];
             };
         };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_third_data: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThirdDataForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedId"];
+                };
+            };
+        };
+    };
+    post_v1_admin_third_data_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdsBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_third_data_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description ok */
             200: {

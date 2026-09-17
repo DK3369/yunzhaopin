@@ -10,11 +10,9 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/skills", post(create))
-        .route("/resume/skills/list", post(list))
         .route("/resume/skills/update", post(update))
 }
 
@@ -38,27 +36,6 @@ pub struct SkillForm {
     pub status: Option<i32>,
 }
 
-#[deprecated(note = "use /v1/mcenter/resume/bundle")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/resume/skills/list",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    description = "即将失效：请改用 POST /v1/mcenter/resume/bundle",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<Vec<SkillItem>>> {
-    let list = skill_svc::list(&state, &user).await?;
-    let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|s| crate::v1::wap::resumes::resume_skill_item_from_dict(s, &dicts))
-            .collect(),
-    ))
-}
 
 #[utoipa::path(
     post,

@@ -11,15 +11,12 @@ use super::messages::{load_unread_summary, UnreadSummary};
 use super::resume_score::Completion;
 use super::sign::StatusResp;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/dashboard", post(counts))
         .route("/dashboard/full", post(dashboard_full))
         .route("/com-dashboard", post(com_counts))
         .route("/com-dashboard/full", post(com_dashboard_full))
-        .route("/dashboard/year-report", post(year_report))
-        .route("/com-stats/today", post(today))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -125,41 +122,6 @@ pub struct YearReportView {
     pub linkman: String,
 }
 
-/// HR-side yearly report data — counterpart of PHP `wap/ajax::lastYearReport_action`.
-/// PHP returns a rendered PNG poster; the Rust port returns just the
-/// underlying numbers and lets the frontend assemble the artwork. Restricted
-/// to employers (`usertype=2`).
-#[deprecated(note = "use /v1/mcenter/com-dashboard/full")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/dashboard/year-report",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    description = "即将失效：请改用 POST /v1/mcenter/com-dashboard/full",
-    responses(
-        (status = 200, description = "ok", body = YearReportView),
-        (status = 403, description = "Not a company account"),
-    )
-)]
-pub async fn year_report(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<YearReportView>> {
-    let d = dashboard_service::year_report(&state, &user).await?;
-    Ok(ApiResponse::data(YearReportView {
-        login_days: d.login_days,
-        job_count: d.job_count,
-        view_count: d.view_count,
-        received_resumes: d.received_resumes,
-        viewed_resumes: d.viewed_resumes,
-        invited_count: d.invited_count,
-        night_work_count: d.night_work_count,
-        last_night_work_at: d.last_night_work_at,
-        company_name: d.company_name,
-        linkman: d.linkman,
-    }))
-}
-
 #[derive(Debug, Serialize, ToSchema)]
 pub struct DayMetricView {
     pub num: u64,
@@ -179,23 +141,6 @@ fn metric(m: dashboard_service::DayMetric) -> DayMetricView {
     DayMetricView { num: m.num, jzr: m.jzr }
 }
 
-/// PHP `zhaopin::getTodayData` — 今日五项及较昨日。
-#[deprecated(note = "use /v1/mcenter/com-dashboard/full")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/com-stats/today",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    description = "即将失效：请改用 POST /v1/mcenter/com-dashboard/full",
-    responses((status = 200, description = "ok", body = ComTodayView))
-)]
-pub async fn today(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-) -> AppResult<ApiResponse<ComTodayView>> {
-    let d = dashboard_service::com_today(&state, &user).await?;
-    Ok(ApiResponse::data(today_view(d)))
-}
 
 fn dashboard_view(d: dashboard_service::DashboardCounts) -> DashboardView {
     DashboardView {

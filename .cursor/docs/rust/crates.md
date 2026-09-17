@@ -26,7 +26,7 @@ phpyun-auth                  密码 / 旧 md5
 
 ## App 契约（`/v1/wap` + `/v1/mcenter`）
 
-只允许加法。禁止改字段名/类型/语义、删字段、可选改必填、改稳定 `key`。破坏性走已有 `/v2`。
+只允许加法。禁止改字段名/类型/语义、删字段、可选改必填、改稳定 `key`。破坏性走已有 `/v2`。本批已批准摘除 deprecated HTTP 操作（见 [api-merged.md](./api-merged.md)）；其它字段仍只加法。
 
 JWT `usertype`：`1` 求职者、`2` 企业、`3` 校园（**进不了** `/v1/admin/*`）、`9` 后台。见 [security.md](./security.md)。线上是较长 access + 滑动 refresh；Web BFF 把 token 放 HttpOnly cookie，JSON 不回 JWT。
 

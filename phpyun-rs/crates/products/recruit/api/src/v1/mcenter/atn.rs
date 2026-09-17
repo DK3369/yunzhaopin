@@ -1,76 +1,16 @@
-//! Follow / unfollow — aligned with PHP `wap/ajax::atn_action` &
-//! `wap/ajax::atncompany_action`.
-//!
-//! Toggle semantics: `POST /v1/mcenter/follows` flips between followed and
-//! unfollowed; `data.following` is the authoritative new state.
+//! Followers of the current member (`POST /v1/mcenter/followers`).
+//! Follow / unfollow of companies and users is `/v1/mcenter/favorites*`.
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{
-    dto::{ExistsResp, KindTargetUidBody},
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::apply::repo as apply_repo;
 use phpyun_services::atn_service;
-use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
-use validator::Validate;
+use serde::Serialize;
+use utoipa::ToSchema;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
-    Router::new()
-        .route("/follows", post(toggle))
-        .route("/follows/list", post(list_following))
-        .route("/follows/exists", post(exists))
-        .route("/followers", post(list_followers))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct FollowToggleForm {
-    /// 1 = user, 2 = company
-    #[validate(range(min = 1, max = 2))]
-    pub target_kind: i32,
-    #[validate(range(min = 1, max = 99_999_999))]
-    pub target_uid: u64,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ToggleResp {
-    /// New state after toggle: true = now following, false = now unfollowed.
-    pub following: bool,
-}
-
-/// Toggle follow — followed ↔ unfollowed.
-#[deprecated(note = "use /v1/mcenter/favorites")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/follows",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    request_body = FollowToggleForm,
-    description = "即将失效：请改用 POST /v1/mcenter/favorites。映射：target_kind=2(企业)→kind=2，target_kind=1(用户)→kind=3，target_uid→target_id",
-    responses(
-        (status = 200, description = "ok", body = ToggleResp),
-        (status = 400, description = "Invalid kind / cannot follow yourself"),
-        (status = 403, description = "Only jobseekers may follow"),
-    )
-)]
-pub async fn toggle(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<FollowToggleForm>,
-) -> AppResult<ApiResponse<ToggleResp>> {
-    let r = atn_service::toggle(&state, &user, f.target_kind, f.target_uid).await?;
-    Ok(ApiResponse::message_data(
-        if r.following {
-            "follow_added"
-        } else {
-            "follow_removed"
-        },
-        ToggleResp {
-            following: r.following,
-        },
-    ))
+    Router::new().route("/followers", post(list_followers))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -100,36 +40,6 @@ impl From<phpyun_models::atn::entity::Atn> for FollowItem {
     }
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
-pub struct ListQuery {
-    /// 1 = user, 2 = company
-    #[validate(range(min = 0, max = 99))]
-    pub kind: i32,
-}
-
-/// Targets I am following (filtered by kind).
-#[deprecated(note = "use /v1/mcenter/favorites/list")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/follows/list",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    request_body = ListQuery,
-    description = "即将失效：请改用 POST /v1/mcenter/favorites/list。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list_following(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    page: Pagination,
-    ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiResponse<Paged<FollowItem>>> {
-    let r = atn_service::list_following(&state, &user, q.kind, page).await?;
-    Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
-    )))
-}
-
 /// Followers of the current user (employers see who follows their company,
 /// jobseekers see who follows them as a teacher/contact).
 #[utoipa::path(
@@ -154,24 +64,4 @@ pub async fn list_followers(
         }
     }
     Ok(ApiResponse::data(Paged::from_listing(list, r.total, page)))
-}
-
-/// Cheap probe used by frontend to render the follow-button state.
-#[deprecated(note = "use /v1/mcenter/favorites/exists")]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/follows/exists",
-    tag = "mcenter",
-    security(("bearer" = [])),
-    request_body = KindTargetUidBody,
-    description = "即将失效：请改用 POST /v1/mcenter/favorites/exists。映射：kind=2(企业)→kind=2，kind=1(用户)→kind=3，target_uid→target_id",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn exists(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
-) -> AppResult<ApiResponse<ExistsResp>> {
-    let ok = atn_service::exists(&state, &user, b.kind, b.target_uid).await?;
-    Ok(ApiResponse::data(ExistsResp { exists: ok }))
 }
