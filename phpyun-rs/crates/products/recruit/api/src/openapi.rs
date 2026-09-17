@@ -992,6 +992,7 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::company_content::GalleryUpdate,
             phpyun_core::dto::UnreadCount,
             v1::mcenter::vip::PackageItem,
+            v1::mcenter::vip::ListPackagesForm,
             v1::mcenter::vip::CurrentVip,
             v1::mcenter::vip::CreateOrderForm,
             v1::mcenter::vip::OrderCreated,

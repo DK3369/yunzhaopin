@@ -46,7 +46,7 @@ pub async fn get_profile(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiResponse<ProfileData>> {
-    let p = user_service::get_profile(&state, user.uid).await?;
+    let p = user_service::get_profile(&state, user.self_uid()).await?;
     Ok(ApiResponse::data(ProfileData {
         uid: p.uid,
         username: p.username.clone(),
@@ -88,6 +88,6 @@ pub async fn update_profile(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateProfileForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    mcenter_service::update_email(&state, user.uid, &f.email, &f.password, &ip).await?;
+    mcenter_service::update_email(&state, user.self_uid(), &f.email, &f.password, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

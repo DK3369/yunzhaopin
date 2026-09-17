@@ -259,16 +259,27 @@ async fn list_atn(
     };
 
     let mut items = Vec::with_capacity(r.list.len());
+    let companies = if kind == KIND_COMPANY {
+        let uids: Vec<u64> = r.list.iter().map(|x| x.sc_uid).collect();
+        let rows =
+            phpyun_models::company::repo::list_by_uids(state.db.reader(), &uids).await?;
+        rows.into_iter()
+            .filter(|c| c.r_status == 1)
+            .map(|c| (c.uid, c))
+            .collect::<std::collections::HashMap<_, _>>()
+    } else {
+        std::collections::HashMap::new()
+    };
     for relation in r.list {
         let target_id = relation.sc_uid;
         let detail = match kind {
             KIND_COMPANY => {
-                let company =
-                    phpyun_models::company::repo::find_by_uid(state.db.reader(), target_id).await?;
-                match (company.filter(|c| c.r_status == 1), dicts.as_ref()) {
+                match (companies.get(&target_id), dicts.as_ref()) {
                     (Some(company), Some(dicts)) => {
-                        let summary =
-                            crate::v1::wap::companies::company_summary_from_dict(company, dicts);
+                        let summary = crate::v1::wap::companies::company_summary_from_dict(
+                            company.clone(),
+                            dicts,
+                        );
                         json::to_value(&summary)?
                     }
                     _ => empty_detail(),

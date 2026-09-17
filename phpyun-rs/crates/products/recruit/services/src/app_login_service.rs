@@ -8,10 +8,10 @@
 //! parses. The already-logged-in APP calls `confirm`; the PC polls `status`
 //! and receives a web session only when the APP role matches the ticket.
 
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
-use phpyun_models::site_setting::repo as setting_repo;
+use phpyun_core::{rate_limit, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user::repo as user_repo;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 
 use crate::user_service::{self, LoginContext};
 
@@ -79,19 +79,16 @@ async fn site_base(state: &AppState) -> String {
             return t.to_string();
         }
     }
-    setting_repo::find(state.db.reader(), "sy_weburl")
+    crate::site_gate_service::config_str(state, "sy_weburl")
         .await
-        .ok()
-        .flatten()
-        .map(|s| s.value.trim().trim_end_matches('/').to_string())
-        .filter(|s| !s.is_empty())
-        .unwrap_or_default()
+        .trim()
+        .trim_end_matches('/')
+        .to_string()
 }
 
 pub async fn create_qr(state: &AppState, usertype: u8) -> AppResult<AppQr> {
     let usertype = require_role(usertype)?;
-    let suffix = uuid::Uuid::now_v7().as_u128() % 10_000;
-    let login_id = format!("{}{suffix:04}", clock::now_ts());
+    let login_id = uuid::Uuid::now_v7().simple().to_string();
     let slot = Slot {
         status: "pending".into(),
         usertype,
@@ -154,6 +151,15 @@ pub async fn poll_status(
     login_id: &str,
     ctx: LoginContext<'_>,
 ) -> AppResult<AppStatus> {
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:qrpoll:ip:{}", ctx.ip),
+        rate_limit::LimitRule {
+            max: 120,
+            window: Duration::from_secs(60),
+        },
+    )
+    .await?;
     let login_id = parse_login_id(login_id)?;
     let slot: Slot = match state.redis.get_json(&redis_key(login_id)).await? {
         Some(s) => s,

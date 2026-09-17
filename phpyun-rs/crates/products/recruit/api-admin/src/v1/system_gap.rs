@@ -466,7 +466,7 @@ pub async fn php_unbind_wx(
 pub struct PassForm {
     #[validate(length(min = 1, max = 128))]
     pub old_pwd: String,
-    #[validate(length(min = 6, max = 128))]
+    #[validate(custom(function = "phpyun_core::validators::strong_password"))]
     pub new_pwd: String,
     #[validate(length(min = 6, max = 128))]
     pub re_pwd: String,

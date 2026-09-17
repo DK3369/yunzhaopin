@@ -23,7 +23,7 @@ pub struct ClaimForm {
     pub code: String,
     #[validate(length(min = 3, max = 32))]
     pub username: String,
-    #[validate(length(min = 6, max = 64))]
+    #[validate(custom(function = "phpyun_core::validators::strong_password"))]
     pub password: String,
 }
 
@@ -76,8 +76,9 @@ pub struct ClaimCheckView {
 )]
 pub async fn check(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ClaimCheckQuery>,
 ) -> AppResult<ApiResponse<ClaimCheckView>> {
-    let r = claim_service::check(&state, q.uid, &q.code).await?;
+    let r = claim_service::check(&state, q.uid, &q.code, &ip).await?;
     Ok(ApiResponse::data(ClaimCheckView { ok: r.ok }))
 }

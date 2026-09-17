@@ -1355,6 +1355,38 @@ pub async fn count_expire(
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct VipExpiringRow {
+    pub uid: u64,
+    pub name: String,
+    pub linkmail: String,
+    pub vip_etime: i64,
+}
+
+pub async fn list_vip_expiring(
+    pool: &MySqlPool,
+    now: i64,
+    end: i64,
+    limit: u64,
+) -> Result<Vec<VipExpiringRow>, sqlx::Error> {
+    sqlx::query_as(
+        r#"SELECT CAST(c.uid AS UNSIGNED) AS uid,
+                  COALESCE(c.name, '') AS name,
+                  COALESCE(c.linkmail, '') AS linkmail,
+                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime
+           FROM phpyun_company c
+           INNER JOIN phpyun_company_statis s ON s.uid = c.uid
+           WHERE s.vip_etime > ? AND s.vip_etime <= ?
+           ORDER BY s.vip_etime ASC
+           LIMIT ?"#,
+    )
+    .bind(now)
+    .bind(end)
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}
+
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
 pub struct AdminCompanyRow {
     pub uid: u64,

@@ -6,7 +6,7 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::IdsBody;
 use phpyun_core::json;
-use phpyun_core::utils::fmt_dt;
+use phpyun_core::utils::{csv_safe_cell, fmt_dt};
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
@@ -182,8 +182,8 @@ pub async fn export_outbox(
             it.id,
             it.uid,
             it.eid,
-            csv_cell(&it.uname),
-            csv_cell(&it.datetime_n)
+            csv_safe_cell(&it.uname),
+            csv_safe_cell(&it.datetime_n)
         ));
     }
     Ok(ApiResponse::data(CsvExportView {
@@ -208,14 +208,6 @@ pub async fn delete_outbox(
 ) -> AppResult<ApiResponse<json::Value>> {
     let n = resume_download_service::delete_mine(&state, &user, &b.ids).await?;
     Ok(ApiResponse::data(json::json!({ "deleted": n })))
-}
-
-fn csv_cell(s: &str) -> String {
-    if s.contains([',', '"', '\n', '\r']) {
-        format!("\"{}\"", s.replace('"', "\"\""))
-    } else {
-        s.to_string()
-    }
 }
 
 async fn with_names(

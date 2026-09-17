@@ -599,6 +599,9 @@ pub struct RefreshJobForm {
     pub id: u64,
     #[serde(default)]
     pub confirm: bool,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub channel: Option<String>,
 }
 
 #[utoipa::path(
@@ -615,12 +618,14 @@ pub async fn refresh(
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<RefreshJobForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    let r = job_mgmt_service::refresh(&state, &user, b.id, b.confirm, &ip).await?;
+    let r = job_mgmt_service::refresh(&state, &user, b.id, b.confirm, b.channel.as_deref(), &ip)
+        .await?;
     Ok(ApiResponse::data(json::json!({
         "ok": r.status == 1,
         "status": r.status,
         "integral": r.integral,
         "price": r.price,
+        "order_no": r.order_no,
     })))
 }
 
@@ -778,6 +783,11 @@ pub struct BatchIdsForm {
     /// Up to 100 ids
     #[validate(length(min = 1, max = 100))]
     pub ids: Vec<u64>,
+    #[serde(default)]
+    pub confirm: bool,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub channel: Option<String>,
 }
 
 fn batch_result(r: phpyun_services::job_mgmt_service::BatchReport) -> BatchResult {
@@ -801,9 +811,25 @@ pub async fn batch_refresh(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
-) -> AppResult<ApiResponse<BatchResult>> {
-    let r = job_mgmt_service::batch_refresh(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiResponse::data(batch_result(r)))
+) -> AppResult<ApiResponse<json::Value>> {
+    let r = job_mgmt_service::batch_refresh(
+        &state,
+        &user,
+        &f.ids,
+        f.confirm,
+        f.channel.as_deref(),
+        &ip,
+    )
+    .await?;
+    Ok(ApiResponse::data(json::json!({
+        "requested": r.requested,
+        "affected": r.affected,
+        "ok": r.status == 1,
+        "status": r.status,
+        "integral": r.integral,
+        "price": r.price,
+        "order_no": r.order_no,
+    })))
 }
 
 /// Batch close
@@ -858,6 +884,12 @@ pub struct PromoteQuoteView {
     pub remain: i32,
     pub expire_at: i64,
     pub active: bool,
+    pub single: bool,
+    pub status: i32,
+    pub price: f64,
+    pub integral: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order_no: Option<String>,
 }
 
 /// 套餐推广报价：剩余次数 + 当前到期时间
@@ -880,6 +912,11 @@ pub async fn promote_quote(
         remain: q.remain,
         expire_at: q.expire_at,
         active: q.active,
+        single: q.single,
+        status: q.status,
+        price: q.price,
+        integral: q.integral,
+        order_no: q.order_no,
     }))
 }
 
@@ -891,6 +928,11 @@ pub struct PromoteForm {
     pub kind: String,
     #[validate(range(min = 1, max = 365))]
     pub days: i32,
+    #[serde(default)]
+    pub confirm: bool,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub channel: Option<String>,
 }
 
 /// 职位置顶 / 推荐 / 紧急（扣套餐次数）
@@ -908,12 +950,27 @@ pub async fn promote(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<PromoteForm>,
 ) -> AppResult<ApiResponse<PromoteQuoteView>> {
-    let q = job_mgmt_service::promote(&state, &user, f.job_id, &f.kind, f.days, &ip).await?;
+    let q = job_mgmt_service::promote(
+        &state,
+        &user,
+        f.job_id,
+        &f.kind,
+        f.days,
+        f.confirm,
+        f.channel.as_deref(),
+        &ip,
+    )
+    .await?;
     Ok(ApiResponse::data(PromoteQuoteView {
         kind: q.kind,
         remain: q.remain,
         expire_at: q.expire_at,
         active: q.active,
+        single: q.single,
+        status: q.status,
+        price: q.price,
+        integral: q.integral,
+        order_no: q.order_no,
     }))
 }
 

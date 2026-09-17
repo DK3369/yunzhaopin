@@ -133,6 +133,16 @@ pub async fn emit(state: &AppState, event: AuditEvent) -> AppResult<()> {
     Ok(())
 }
 
+/// Fire-and-forget audit write for hot member paths. Admin writes stay on [`emit`].
+pub fn emit_bg(state: &AppState, event: AuditEvent) {
+    let state = state.clone();
+    background::spawn_best_effort("audit.emit", async move {
+        if let Err(e) = emit(&state, event).await {
+            tracing::warn!(error = %e, "audit emit_bg failed");
+        }
+    });
+}
+
 async fn insert_db(pool: &MySqlPool, e: &AuditEvent, created_at: i64) -> AppResult<()> {
     let meta_s = e.meta.as_ref().map(json::to_string).transpose()?;
     let res = sqlx::query(

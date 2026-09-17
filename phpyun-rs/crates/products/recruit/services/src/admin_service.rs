@@ -9,8 +9,37 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged
 use phpyun_models::feedback::{entity::Feedback, repo as feedback_repo};
 use phpyun_models::job::{entity::Job, repo as job_repo};
 use phpyun_models::job::repo::AdminJobFilter;
+use phpyun_models::message::repo as message_repo;
 use phpyun_models::report::{entity::Report, repo as report_repo};
 use phpyun_models::user::{entity::Member, repo as user_repo};
+
+async fn notify_job_audit_sysmsg(state: &AppState, ids: &[u64], status: i32, statusbody: &str) {
+    if ids.is_empty() {
+        return;
+    }
+    let jobs = match job_repo::list_by_ids(state.db.reader(), ids).await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::warn!(error = %e, "job audit sysmsg list failed");
+            return;
+        }
+    };
+    let now = clock::now_ts();
+    let body = phpyun_core::html::esc(statusbody);
+    for j in jobs {
+        let name = phpyun_core::html::esc(&j.name);
+        let content = if status == 1 {
+            format!("您的职位「{name}」审核已通过")
+        } else {
+            format!("您的职位「{name}」审核未通过：{body}")
+        };
+        if let Err(e) =
+            message_repo::insert_simple(state.db.pool(), j.uid, 2, &content, now).await
+        {
+            tracing::warn!(uid = j.uid, error = %e, "job audit sysmsg failed");
+        }
+    }
+}
 
 // ---------- Users ----------
 
@@ -251,6 +280,7 @@ pub async fn set_job_state(
 ) -> AppResult<()> {
     job_repo::admin_set_state(state.db.pool(), job_id, state_val).await?;
     crate::job_service::invalidate_job(state, job_id).await;
+    notify_job_audit_sysmsg(state, &[job_id], state_val, "").await;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.job.set_state", Actor::uid(actor.uid))
@@ -280,10 +310,8 @@ pub async fn batch_set_job_state(
             affected: 0,
         });
     }
-    let mut total: u64 = 0;
-    for id in ids {
-        total += job_repo::admin_set_state(state.db.pool(), *id, state_val).await?;
-    }
+    let total = job_repo::admin_set_state_ids(state.db.pool(), ids, state_val).await?;
+    notify_job_audit_sysmsg(state, ids, state_val, "").await;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.job.batch_set_state", Actor::uid(actor.uid)).meta(
@@ -309,10 +337,7 @@ pub async fn batch_set_report_status(
             affected: 0,
         });
     }
-    let mut total: u64 = 0;
-    for id in ids {
-        total += report_repo::set_status(state.db.pool(), *id, status).await?;
-    }
+    let total = report_repo::set_status_ids(state.db.pool(), ids, status).await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.report.batch_set_status", Actor::uid(actor.uid)).meta(
@@ -338,10 +363,7 @@ pub async fn batch_set_feedback_status(
             affected: 0,
         });
     }
-    let mut total: u64 = 0;
-    for id in ids {
-        total += feedback_repo::set_status(state.db.pool(), *id, status).await?;
-    }
+    let total = feedback_repo::set_status_ids(state.db.pool(), ids, status).await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.feedback.batch_set_status", Actor::uid(actor.uid)).meta(

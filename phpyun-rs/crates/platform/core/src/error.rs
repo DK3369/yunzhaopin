@@ -98,7 +98,7 @@ impl ApiErrorKind {
             Self::RateLimit => Cow::Borrowed("rate_limit"),
             Self::Captcha => Cow::Borrowed("captcha"),
             Self::Business(key) => Cow::Owned(key.clone()),
-            Self::Upstream(msg) => Cow::Owned(format!("upstream: {msg}")),
+            Self::Upstream(_) => Cow::Borrowed("upstream"),
             Self::ParamInvalid(msg) => Cow::Owned(format!("param_invalid: {msg}")),
             Self::ParamMissing(name) => Cow::Owned(format!("param_missing: {name}")),
             Self::Internal => Cow::Borrowed("internal"),
@@ -164,7 +164,9 @@ impl ApiError {
     }
 
     pub fn upstream(msg: impl Into<String>) -> Self {
-        Self::tagged(ApiErrorKind::Upstream(msg.into()))
+        let msg = msg.into();
+        tracing::warn!(detail = %msg, "upstream");
+        Self::tagged(ApiErrorKind::Upstream(msg))
     }
 
     pub fn param_invalid(msg: impl Into<String>) -> Self {
@@ -412,10 +414,8 @@ mod tests {
             "param_invalid: email_code"
         );
         assert_eq!(ApiError::business("job_not_found").tag(), "job_not_found");
-        assert_eq!(
-            ApiError::upstream("mail unavailable").tag(),
-            "upstream: mail unavailable"
-        );
+        assert_eq!(ApiError::upstream("mail unavailable").tag(), "upstream");
+        assert_eq!(ApiError::upstream("mail unavailable").key(), "upstream");
     }
 
     #[test]

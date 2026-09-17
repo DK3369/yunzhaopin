@@ -4,7 +4,7 @@
 //! / `isWxlogin`: issue a temporary QR whose `scene_str` is the login id, remember the
 //! pending id in Redis, and complete login when the OA `SCAN`/`subscribe` event arrives.
 
-use phpyun_core::{clock, ApiError, AppResult, AppState};
+use phpyun_core::{rate_limit, ApiError, AppResult, AppState};
 use phpyun_models::admin_gap::extra as gap_extra;
 use phpyun_models::admin_rbac::repo as admin_user_repo;
 use phpyun_models::user::repo as user_repo;
@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use crate::user_service::{self, LoginContext};
 use crate::wechat_api_service;
 use crate::wechat_service::IncomingMessage;
+use std::time::Duration;
 
 const KEY_PREFIX: &str = "wxlogin:";
 const TTL_SECS: u64 = 86_000;
@@ -57,8 +58,7 @@ pub async fn create_qr(state: &AppState) -> AppResult<WxQr> {
     {
         return Err(ApiError::business("wechat_not_configured"));
     }
-    let suffix = uuid::Uuid::now_v7().as_u128() % 10_000;
-    let login_id = format!("{}{suffix:04}", clock::now_ts());
+    let login_id = uuid::Uuid::now_v7().simple().to_string();
     let qr = wechat_api_service::create_qr_scene(state, &login_id, QR_EXPIRE_SECS).await?;
     let slot = Slot {
         status: "pending".into(),
@@ -80,6 +80,15 @@ pub async fn poll_status(
     login_id: &str,
     ctx: LoginContext<'_>,
 ) -> AppResult<WxStatus> {
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:qrpoll:ip:{}", ctx.ip),
+        rate_limit::LimitRule {
+            max: 120,
+            window: Duration::from_secs(60),
+        },
+    )
+    .await?;
     let login_id = login_id.trim();
     if login_id.is_empty() || login_id.len() > 32 {
         return Err(ApiError::param_invalid("login_id"));

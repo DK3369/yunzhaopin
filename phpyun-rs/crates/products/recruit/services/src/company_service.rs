@@ -6,9 +6,7 @@ use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_models::company::{entity::Company, repo as company_repo};
-use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::job::repo as job_repo;
-use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::user::repo as user_repo;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, OnceLock};
@@ -449,15 +447,7 @@ pub async fn update_mine(
 }
 
 async fn award_integral(state: &AppState, uid: u64, key: &str) {
-    let pts = setting_repo::find(state.db.reader(), key)
-        .await
-        .ok()
-        .flatten()
-        .and_then(|r| r.value.trim().parse::<i64>().ok())
-        .unwrap_or(0);
-    if pts > 0 {
-        let _ = statis_repo::add_integral(state.db.pool(), uid, pts).await;
-    }
+    let _ = crate::integral_grant_service::grant_once(state, uid, 2, key, key, 0).await;
 }
 
 /// PHP `map.class::setMap`.

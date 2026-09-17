@@ -9,7 +9,7 @@ use phpyun_models::company::repo as company_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::recycle_bin::repo as recycle_repo;
 use phpyun_models::resume_share::repo as share_repo;
-use phpyun_models::site_setting::repo as setting_repo;
+use futures::StreamExt;
 
 use crate::rating_info_service;
 
@@ -53,12 +53,23 @@ pub async fn expire_vip(state: &AppState) {
             break;
         }
         let n = rows.len() as u64;
-        for row in rows {
-            match rating_info_service::vip_over(state, row.uid).await {
-                Ok(()) => ok += 1,
-                Err(e) => tracing::warn!(uid = row.uid, error = %e, "expire_vip vip_over failed"),
-            }
-        }
+        let ok_n = std::sync::atomic::AtomicU32::new(0);
+        futures::stream::iter(rows)
+            .for_each_concurrent(8, |row| {
+                let ok_n = &ok_n;
+                async move {
+                    match rating_info_service::vip_over(state, row.uid).await {
+                        Ok(()) => {
+                            ok_n.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        }
+                        Err(e) => {
+                            tracing::warn!(uid = row.uid, error = %e, "expire_vip vip_over failed")
+                        }
+                    }
+                }
+            })
+            .await;
+        ok += ok_n.load(std::sync::atomic::Ordering::Relaxed);
         offset = offset.saturating_add(n);
         if n < BATCH {
             break;
@@ -67,12 +78,17 @@ pub async fn expire_vip(state: &AppState) {
     if ok > 0 {
         tracing::info!(rows = ok, "cron: expired vip packages processed");
     }
-    let cfg = setting_repo::find_many(state.db.reader(), &["jobunder", "job_under_delay"])
+    let cfg = crate::site_gate_service::config_map(state)
         .await
-        .unwrap_or_default();
-    let jobunder = cfg.get("jobunder").map(|s| s.trim() == "1").unwrap_or(false);
+        .ok();
+    let jobunder = cfg
+        .as_ref()
+        .and_then(|m| m.get("jobunder"))
+        .map(|s| s.trim() == "1")
+        .unwrap_or(false);
     let delay = cfg
-        .get("job_under_delay")
+        .as_ref()
+        .and_then(|m| m.get("job_under_delay"))
         .and_then(|s| s.trim().parse::<i64>().ok())
         .unwrap_or(0);
     if jobunder && delay > 0 {
@@ -85,6 +101,75 @@ pub async fn expire_vip(state: &AppState) {
             Err(e) => tracing::warn!(error = %e, "expire_vip delayed unshelf failed"),
         }
     }
+}
+
+/// PHP `cron/vipedtoadmin.php`: remind admins + companies whose VIP ends within `sy_maturityday`.
+pub async fn vip_maturity_remind(state: &AppState) {
+    let days: i64 = crate::site_gate_service::config_str(state, "sy_maturityday")
+        .await
+        .trim()
+        .parse()
+        .unwrap_or(7)
+        .clamp(0, 365);
+    if days <= 0 {
+        return;
+    }
+    let now = clock::now_ts();
+    let end = now.saturating_add(days.saturating_mul(86_400));
+    let rows = match company_repo::list_vip_expiring(state.db.reader(), now, end, 500).await {
+        Ok(r) => r,
+        Err(e) => {
+            tracing::warn!(error = %e, "vip_maturity_remind list failed");
+            return;
+        }
+    };
+    if rows.is_empty() {
+        return;
+    }
+    let ymd = phpyun_core::utils::fmt_date(now).replace('-', "");
+    let mut lines = Vec::new();
+    for row in &rows {
+        let lock_key = format!("vipremind:{}:{ymd}", row.uid);
+        match state.redis.acquire_lock(&lock_key, "1", 86_400_000).await {
+            Ok(true) => {}
+            Ok(false) => continue,
+            Err(e) => {
+                tracing::warn!(uid = row.uid, error = %e, "vip_maturity_remind lock failed");
+                continue;
+            }
+        }
+        lines.push(format!(
+            "{} (uid:{}) 到期 {}",
+            row.name,
+            row.uid,
+            phpyun_core::utils::fmt_date(row.vip_etime)
+        ));
+        let mail = row.linkmail.trim();
+        if mail.contains('@') {
+            let subject = "会员即将到期提醒";
+            let body = format!(
+                "您好，企业「{}」的会员将于 {} 到期，请及时续费。",
+                row.name,
+                phpyun_core::utils::fmt_date(row.vip_etime)
+            );
+            if let Err(e) = crate::mail_service::send_text(state, mail, subject, &body).await {
+                tracing::warn!(uid = row.uid, error = %e, "vip_maturity_remind company mail failed");
+            }
+        }
+    }
+    if lines.is_empty() {
+        return;
+    }
+    let admin_mail = crate::site_gate_service::config_str(state, "sy_webemail").await;
+    let admin_mail = admin_mail.trim();
+    if admin_mail.contains('@') {
+        let subject = format!("会员到期提醒（{} 家）", lines.len());
+        let body = lines.join("\n");
+        if let Err(e) = crate::mail_service::send_text(state, admin_mail, &subject, &body).await {
+            tracing::warn!(error = %e, "vip_maturity_remind admin mail failed");
+        }
+    }
+    tracing::info!(n = lines.len(), "cron: vip maturity remind sent");
 }
 
 /// Purges share-tokens that have been revoked or have been expired for more than 7 days.

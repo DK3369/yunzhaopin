@@ -23,7 +23,6 @@ use phpyun_models::resume::repo::AdminResumeRow;
 use phpyun_models::resume::skill::{self as skill_repo, Skill};
 use phpyun_models::resume::training::{self as training_repo, Training};
 use phpyun_models::resume::work::{self as work_repo, Work};
-use phpyun_models::site_setting::repo as site_setting_repo;
 use phpyun_models::user::entity::Member;
 use phpyun_models::user::repo as user_repo;
 use serde::Serialize;
@@ -46,11 +45,7 @@ async fn audit_write(
 }
 
 fn csv_cell(s: &str) -> String {
-    if s.contains([',', '"', '\n', '\r']) {
-        format!("\"{}\"", s.replace('"', "\"\""))
-    } else {
-        s.to_string()
-    }
+    phpyun_core::utils::csv_safe_cell(s)
 }
 
 #[derive(Debug, Serialize)]

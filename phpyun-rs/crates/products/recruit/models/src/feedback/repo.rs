@@ -158,6 +158,25 @@ pub async fn set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, s
     Ok(res.rows_affected())
 }
 
+pub async fn set_status_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_advice_question SET status = ");
+    qb.push_bind(status);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
+
 #[derive(Debug, Default, Clone)]
 pub struct AdviceAdminFilter<'a> {
     pub keyword: &'a str,

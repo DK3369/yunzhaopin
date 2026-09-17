@@ -226,7 +226,9 @@ async fn do_insert(
     )
     .await;
     let content_line = format!(
-        "您收到来自 {company_name} 的面试邀请，职位：{jobname}"
+        "您收到来自 {company_name} 的面试邀请，职位：{jobname}",
+        company_name = phpyun_core::html::esc(company_name),
+        jobname = phpyun_core::html::esc(jobname)
     );
     if let Err(e) = message_repo::insert_simple(
         state.db.pool(),
@@ -256,12 +258,11 @@ async fn do_insert(
             Err(e) => tracing::warn!(?e, uid = input.seeker_uid, "yqms email lookup failed"),
         }
     }
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("yqms.create", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("uid:{}", input.seeker_uid)),
-    )
-    .await;
+    );
     Ok(id)
 }
 
@@ -492,11 +493,13 @@ pub async fn respond(
     if n == 0 {
         return Err(ApiError::business("not_found"));
     }
-    let uname = resume_repo::find_by_uid(state.db.reader(), user.uid)
-        .await?
-        .and_then(|r| r.name)
-        .filter(|s| !s.trim().is_empty())
-        .unwrap_or_else(|| format!("{}", user.uid));
+    let uname = phpyun_core::html::esc(
+        &resume_repo::find_by_uid(state.db.reader(), user.uid)
+            .await?
+            .and_then(|r| r.name)
+            .filter(|s| !s.trim().is_empty())
+            .unwrap_or_else(|| format!("{}", user.uid)),
+    );
     let content = if browse == 3 {
         format!(
             "用户 <a href=\"usertpl,{uid}\">{name}</a> 同意了您的邀请面试！",

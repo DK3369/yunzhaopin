@@ -6,7 +6,6 @@ use phpyun_core::i18n::{current_lang, t, t_args};
 use phpyun_core::{clock, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::category::repo as cat_repo;
 use phpyun_models::saved_search::repo as ss_repo;
-use phpyun_models::site_setting::repo as setting_repo;
 use phpyun_models::user::repo as user_repo;
 use std::time::Duration;
 use uuid::Uuid;
@@ -185,18 +184,12 @@ pub async fn send_notice(
     if !looks_like_email(email) {
         return Err(ApiError::param_invalid("subscribe_email"));
     }
-    let email_on = setting_repo::find(state.db.reader(), "sy_email_set")
-        .await?
-        .map(|s| s.value.trim().to_string())
-        .unwrap_or_default();
-    if !email_on.is_empty() && email_on != "1" {
+    let email_on = crate::site_gate_service::config_str(state, "sy_email_set").await;
+    if !email_on.is_empty() && email_on.trim() != "1" {
         return Err(ApiError::business("subscribe_mail_fail"));
     }
     let lang = current_lang();
-    let name = setting_repo::find(state.db.reader(), "sy_webname")
-        .await?
-        .map(|s| s.value)
-        .unwrap_or_default();
+    let name = crate::site_gate_service::config_str(state, "sy_webname").await;
     mail_service::send_text(
         state,
         email,

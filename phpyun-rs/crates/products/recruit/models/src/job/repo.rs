@@ -1873,7 +1873,24 @@ pub async fn admin_set_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u6
     Ok(res.rows_affected())
 }
 
-/// PHP `company_job::depower_action`: `is_depower` 1 降权 / 2 取消降权.
+pub async fn admin_set_state_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    state: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET state = ");
+    qb.push_bind(state);
+    qb.push(" WHERE id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    Ok(qb.build().execute(pool).await?.rows_affected())
+}
 /// The list query already hides depowered jobs, this is the write side.
 pub async fn admin_set_depower(
     pool: &MySqlPool,

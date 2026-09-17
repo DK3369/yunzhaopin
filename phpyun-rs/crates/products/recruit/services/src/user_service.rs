@@ -168,17 +168,27 @@ async fn record_member_login_log(
     let content = login_log_content(ctx.ua, continued);
     let usertype = i32::from(ident.usertype);
     if !continued {
-        if let Err(e) = crate::integral_grant_service::grant(
-            state,
+        let already = phpyun_models::integral_transfer::repo::count_remark_today(
+            state.db.reader(),
             user.uid,
             usertype,
-            "integral_login",
             "wap_00555",
-            0,
         )
         .await
-        {
-            tracing::warn!(?e, uid = user.uid, "login integral grant failed");
+        .unwrap_or(1);
+        if already == 0 {
+            if let Err(e) = crate::integral_grant_service::grant(
+                state,
+                user.uid,
+                usertype,
+                "integral_login",
+                "wap_00555",
+                0,
+            )
+            .await
+            {
+                tracing::warn!(?e, uid = user.uid, "login integral grant failed");
+            }
         }
     }
     let did = i32::try_from(ident.did).unwrap_or(0);
@@ -609,7 +619,7 @@ pub async fn refresh_access(
     // access_token, not a refresh_token). If the row is gone or revoked,
     // `rotate_on_access_refresh` returns `session_expired` and we refuse
     // to mint a new token — server-side session is the source of truth.
-    user_session_service::rotate_on_access_refresh(
+    if let Err(e) = user_session_service::rotate_on_access_refresh(
         state,
         &user.jti,
         &jti_access,
@@ -617,7 +627,13 @@ pub async fn refresh_access(
         access_exp,
         refresh_exp,
     )
-    .await?;
+    .await
+    {
+        if e.key() == "session_expired" {
+            let _ = user_session_service::revoke_all_sessions(state, user.uid).await;
+        }
+        return Err(e);
+    }
 
     // Revoke the old access jti immediately (replay protection).
     let _ = jwt_blacklist::revoke(&state.redis, &user.jti, user.exp).await;

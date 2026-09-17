@@ -365,7 +365,7 @@ pub async fn create_single_order(
     Ok(order_no)
 }
 
-/// Mark type 19/23 paid only while still pending (`order_state=0`).
+/// Mark type 10/11/12/16/17/19/23 paid only while still pending (`order_state=0`).
 pub async fn mark_single_paid(
     pool: &MySqlPool,
     order_no: &str,
@@ -375,7 +375,7 @@ pub async fn mark_single_paid(
     let res = sqlx::query(
         r#"UPDATE phpyun_company_order
            SET order_state = 1, order_bank = ?, bank_time = ?
-           WHERE order_id = ? AND type IN (19, 23) AND order_state = 0"#,
+           WHERE order_id = ? AND type IN (10, 11, 12, 16, 17, 19, 23) AND order_state = 0"#,
     )
     .bind(pay_tx_id)
     .bind(now)

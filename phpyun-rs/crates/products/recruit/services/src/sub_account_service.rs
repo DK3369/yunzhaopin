@@ -1,7 +1,7 @@
 //! Classic company sub-accounts (`phpyun_member.pid`).
 
 use phpyun_auth::argon2_hash_async;
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, validators, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::sub_account::{entity::SubAccountRow, repo as sub_repo};
 use phpyun_models::user::repo as user_repo;
@@ -38,6 +38,9 @@ pub async fn create(
     if user_repo::exists_username(state.db.reader(), name).await? {
         return Err(ApiError::param_invalid("username_taken"));
     }
+    if validators::strong_password(password).is_err() {
+        return Err(ApiError::param_invalid("password_weak"));
+    }
     let st = statis_repo::find_admin(state.db.reader(), uid)
         .await?
         .ok_or_else(|| ApiError::param_invalid("statis_not_found"))?;
@@ -68,8 +71,8 @@ pub async fn update(
         .await?
         .ok_or_else(|| ApiError::business("sub_account_not_found"))?;
     if let Some(pw) = password.map(str::trim).filter(|s| !s.is_empty()) {
-        if pw.len() < 6 {
-            return Err(ApiError::param_invalid("validation.password.length"));
+        if validators::strong_password(pw).is_err() {
+            return Err(ApiError::param_invalid("password_weak"));
         }
         let salt = gen_salt();
         let hash = argon2_hash_async(format!("{pw}{salt}")).await?;

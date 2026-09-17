@@ -369,6 +369,21 @@ pub fn review_status_name(s: i32) -> &'static str {
     }
 }
 
+/// Formula-injection-safe CSV cell: prefix `'` when the value starts with
+/// `= + - @ \\t \\r`, then quote-escape `, " newline`.
+pub fn csv_safe_cell(s: &str) -> String {
+    let prefixed = if s.starts_with(['=', '+', '-', '@', '\t', '\r']) {
+        format!("'{s}")
+    } else {
+        s.to_string()
+    };
+    if prefixed.contains([',', '"', '\n', '\r']) {
+        format!("\"{}\"", prefixed.replace('"', "\"\""))
+    } else {
+        prefixed
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -514,5 +529,16 @@ mod tests {
             ))
         );
         assert!(sniff_document(b"<html>").is_none());
+    }
+
+    #[test]
+    fn csv_safe_cell_prefixes_formulas() {
+        assert_eq!(csv_safe_cell("ok"), "ok");
+        assert_eq!(csv_safe_cell("=1+1"), "'=1+1");
+        assert_eq!(csv_safe_cell("+cmd"), "'+cmd");
+        assert_eq!(csv_safe_cell("-1"), "'-1");
+        assert_eq!(csv_safe_cell("@sum"), "'@sum");
+        assert_eq!(csv_safe_cell("a,b"), "\"a,b\"");
+        assert_eq!(csv_safe_cell("a\"b"), "\"a\"\"b\"");
     }
 }

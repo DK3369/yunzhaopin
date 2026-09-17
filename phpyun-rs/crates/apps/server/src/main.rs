@@ -123,6 +123,16 @@ fn start_scheduler(state: &AppState) {
     }
 
     let s = state.clone();
+    if let Err(e) = sch.cron("vip_maturity_remind", "0 0 9 * * *", move || {
+        let s = s.clone();
+        async move {
+            phpyun_services::maintenance::vip_maturity_remind(&s).await;
+        }
+    }) {
+        tracing::warn!(error = %e, "register vip_maturity_remind cron failed");
+    }
+
+    let s = state.clone();
     if let Err(e) = sch.cron("purge_share_tokens", "0 15 3 * * *", move || {
         let s = s.clone();
         async move {

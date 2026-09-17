@@ -7,6 +7,7 @@ use phpyun_core::ApiError;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
+use phpyun_models::sql::ident_ok;
 use phpyun_services::{payment_notify_service, vip_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -71,19 +72,42 @@ impl From<phpyun_models::vip::entity::VipPackage> for PackageItem {
     }
 }
 
+#[derive(Debug, Default, Deserialize, Validate, ToSchema)]
+pub struct ListPackagesForm {
+    /// `package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub kind: Option<String>,
+}
+
 /// List of purchasable packages (filtered by current user's usertype)
 #[utoipa::path(
     post,
     path = "/v1/mcenter/vip/packages",
     tag = "mcenter",
     security(("bearer" = [])),
+    request_body = ListPackagesForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_packages(
     State(state): State<AppState>,
     user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<ListPackagesForm>,
 ) -> AppResult<ApiResponse<Vec<PackageItem>>> {
-    let list = vip_service::list_packages(&state, &user).await?;
+    let kind = match f.kind.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        None => None,
+        Some(raw) => {
+            if !ident_ok(raw) {
+                return Err(ApiError::param_invalid("kind"));
+            }
+            match raw {
+                "package" => Some("package"),
+                "time" => Some("time"),
+                _ => return Err(ApiError::param_invalid("kind")),
+            }
+        }
+    };
+    let list = vip_service::list_packages(&state, &user, kind).await?;
     Ok(ApiResponse::data(
         list.into_iter().map(PackageItem::from).collect(),
     ))
@@ -122,6 +146,8 @@ pub struct CurrentVip {
     pub integral: i64,
     pub sons_num: i32,
     pub caps: VipCaps,
+    /// 站点 `com_vip_type`：0 套餐+时间 / 1 仅时间 / 2 仅套餐。
+    pub com_vip_type: i32,
 }
 
 /// My current VIP status
@@ -162,6 +188,14 @@ pub async fn get_current(
     } else {
         VipCaps::default()
     };
+    let com_vip_type = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &["com_vip_type"],
+    )
+    .await
+    .ok()
+    .and_then(|m| m.get("com_vip_type").and_then(|s| s.trim().parse::<i32>().ok()))
+    .unwrap_or(0);
     let empty = || CurrentVip {
         active: false,
         package_code: None,
@@ -181,6 +215,7 @@ pub async fn get_current(
         integral: 0,
         sons_num: 0,
         caps: VipCaps::default(),
+        com_vip_type,
     };
     Ok(ApiResponse::data(match (v, st) {
         (Some(v), Some(s)) => CurrentVip {
@@ -202,6 +237,7 @@ pub async fn get_current(
             integral: s.integral.parse().unwrap_or(0),
             sons_num: s.sons_num,
             caps,
+            com_vip_type,
         },
         (Some(v), None) => CurrentVip {
             active: v.expires_at == 0 || v.expires_at >= now,

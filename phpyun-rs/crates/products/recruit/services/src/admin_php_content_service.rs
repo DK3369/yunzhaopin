@@ -79,6 +79,7 @@ use crate::redeem_service;
 use crate::job_scrape_service;
 use crate::job_service;
 use crate::site_page_service;
+use phpyun_models::message::repo as message_repo;
 use crate::site_setting_service;
 use crate::special_service;
 use crate::wechat_api_service;
@@ -780,13 +781,15 @@ fn ids_of(body: &Value) -> Vec<u64> {
             .iter()
             .map(json_u64_val)
             .filter(|n| *n > 0)
+            .take(200)
             .collect(),
         Some(Value::String(s)) => s
             .split([',', ';'])
             .filter_map(|x| x.trim().parse().ok())
             .filter(|n: &u64| *n > 0)
+            .take(200)
             .collect(),
-        Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
+        Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().take(200).collect(),
         _ => Vec::new(),
     }
 }
@@ -797,14 +800,92 @@ fn ids_named(body: &Value, key: &str) -> Vec<u64> {
             .iter()
             .map(json_u64_val)
             .filter(|n| *n > 0)
+            .take(200)
             .collect(),
         Some(Value::String(s)) => s
             .split([',', ';'])
             .filter_map(|x| x.trim().parse().ok())
             .filter(|n: &u64| *n > 0)
+            .take(200)
             .collect(),
-        Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().collect(),
+        Some(Value::Number(n)) => n.as_u64().filter(|n| *n > 0).into_iter().take(200).collect(),
         _ => Vec::new(),
+    }
+}
+
+async fn notify_job_audit(state: &AppState, ids: &[u64], status: i32, statusbody: &str) {
+    if ids.is_empty() {
+        return;
+    }
+    let jobs = match job_repo::list_by_ids(state.db.reader(), ids).await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::warn!(error = %e, "php job audit sysmsg list failed");
+            return;
+        }
+    };
+    let now = clock::now_ts();
+    let body = phpyun_core::html::esc(statusbody);
+    for j in jobs {
+        let name = phpyun_core::html::esc(&j.name);
+        let content = if status == 1 {
+            format!("您的职位「{name}」审核已通过")
+        } else {
+            format!("您的职位「{name}」审核未通过：{body}")
+        };
+        if let Err(e) =
+            message_repo::insert_simple(state.db.pool(), j.uid, 2, &content, now).await
+        {
+            tracing::warn!(uid = j.uid, error = %e, "php job audit sysmsg failed");
+        }
+    }
+}
+
+async fn notify_resume_audit(state: &AppState, ids: &[u64], status: i32, statusbody: &str) {
+    if ids.is_empty() {
+        return;
+    }
+    let rows = match expect_repo::list_by_ids(state.db.reader(), ids).await {
+        Ok(r) => r,
+        Err(e) => {
+            tracing::warn!(error = %e, "php resume audit sysmsg list failed");
+            return;
+        }
+    };
+    let now = clock::now_ts();
+    let body = phpyun_core::html::esc(statusbody);
+    for e in rows {
+        let name = phpyun_core::html::esc(e.name.as_deref().unwrap_or("简历"));
+        let content = if status == 1 {
+            format!("您的简历「{name}」审核已通过")
+        } else {
+            format!("您的简历「{name}」审核未通过：{body}")
+        };
+        if let Err(err) =
+            message_repo::insert_simple(state.db.pool(), e.uid, 1, &content, now).await
+        {
+            tracing::warn!(uid = e.uid, error = %err, "php resume audit sysmsg failed");
+        }
+    }
+}
+
+async fn notify_company_audit(state: &AppState, uids: &[u64], status: i32, statusbody: &str) {
+    let now = clock::now_ts();
+    let body = phpyun_core::html::esc(statusbody);
+    for uid in uids {
+        if *uid == 0 {
+            continue;
+        }
+        let content = if status == 1 {
+            "您的企业资料审核已通过".to_string()
+        } else {
+            format!("您的企业资料审核未通过：{body}")
+        };
+        if let Err(e) =
+            message_repo::insert_simple(state.db.pool(), *uid, 2, &content, now).await
+        {
+            tracing::warn!(uid, error = %e, "php company audit sysmsg failed");
+        }
     }
 }
 
@@ -2712,8 +2793,7 @@ async fn special_muti_add_com(state: &AppState, body: &Value) -> AppResult<PhpOu
 }
 
 fn csv_cell(s: &str) -> String {
-    let t = s.replace('"', "\"\"");
-    format!("\"{t}\"")
+    phpyun_core::utils::csv_safe_cell(s)
 }
 
 /// CSV export of special participants (no Excel/GD, no uploads write).
@@ -7064,6 +7144,7 @@ async fn company_job_status(state: &AppState, body: &Value) -> AppResult<PhpOut>
         return Err(ApiError::business("model_00115"));
     }
     job_service::invalidate_jobs(state, &ids).await;
+    notify_job_audit(state, &ids, status, &json_str(body, "statusbody")).await;
     let single = has_flag(body, "single");
     let next = if single && json_i32(body, "atype") != 1 {
         gap_extra::php_next_pending_job(state.db.reader()).await?
@@ -7227,6 +7308,7 @@ async fn resume_php_status(state: &AppState, body: &Value) -> AppResult<PhpOut> 
     if n == 0 {
         return Err(ApiError::business("model_00115"));
     }
+    notify_resume_audit(state, &ids, status, &json_str(body, "statusbody")).await;
     let single = has_flag(body, "single");
     let next = if single && json_i32(body, "atype") != 1 {
         gap_extra::php_next_pending_resume(state.db.reader()).await?
@@ -17601,6 +17683,7 @@ async fn user_gap_company_status(state: &AppState, body: &Value) -> AppResult<Ph
         let _ = user_repo::update_lock_info_only(pool, *uid, &lock_info).await?;
         user_repo::lock_related_r_status(pool, *uid, status).await?;
     }
+    notify_company_audit(state, &ids, status, &lock_info).await;
     let single = json_i32(body, "single") == 1 || json_str(body, "single") == "1";
     let atype = json_i32(body, "atype");
     if single && atype != 1 {

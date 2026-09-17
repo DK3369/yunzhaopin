@@ -317,10 +317,33 @@ pub fn browse_resume_async(
         if let Ok(Some(id)) = resume_repo::find_look_resume(&pool, com_id, eid, usertype).await {
             let _ = resume_repo::touch_look_resume(&pool, id, now).await;
         } else {
-            let _ = resume_repo::insert_look_resume(
+            let com_name = phpyun_models::company::repo::find_by_uid(&pool, com_id)
+                .await
+                .ok()
+                .flatten()
+                .and_then(|c| c.name)
+                .unwrap_or_default();
+            match resume_repo::insert_look_resume(
                 &pool, resume_uid, eid, com_id, did, usertype, now, &ip,
             )
-            .await;
+            .await
+            {
+                Ok(()) if usertype == 2 && !com_name.trim().is_empty() => {
+                    let content = format!(
+                        "企业「{}」查看了您的简历",
+                        phpyun_core::html::esc(&com_name)
+                    );
+                    if let Err(e) = phpyun_models::message::repo::insert_simple(
+                        &pool, resume_uid, 1, &content, now,
+                    )
+                    .await
+                    {
+                        tracing::warn!(?e, resume_uid, "look_resume sysmsg failed");
+                    }
+                }
+                Ok(()) => {}
+                Err(e) => tracing::warn!(?e, resume_uid, "look_resume insert failed"),
+            }
         }
         let _ = resume_repo::mark_userid_job_browsed(&pool, com_id, eid).await;
     });

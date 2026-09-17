@@ -362,11 +362,9 @@ pub async fn redeem(
     {
         Ok(id) => id,
         Err(e) => {
+            let _ = redeem_repo::tx_return_stock(&mut tx, reward_id, f.num).await;
             let _ = tx.rollback().await;
-            // Refund stock + points together
             let _ = integral_repo::add_balance(pool, user.uid, refund_delta(total_cost), now).await;
-            // Stock rollback would need a separate UPDATE (the tx is already rolled back,
-            // and the deduction is already refunded above; skip here)
             return Err(e.into());
         }
     };

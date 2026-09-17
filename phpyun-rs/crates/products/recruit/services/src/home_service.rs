@@ -96,11 +96,10 @@ async fn load_home(st: &AppState, did: u32) -> AppResult<HomePayload> {
                 ..Default::default()
             };
 
-            let sort_mode = phpyun_models::site_setting::repo::find(st.db.reader(), "hotcom_top")
+            let sort_mode = crate::site_gate_service::config_str(st, "hotcom_top")
                 .await
-                .ok()
-                .flatten()
-                .and_then(|s| s.value.trim().parse().ok())
+                .trim()
+                .parse()
                 .unwrap_or(0);
             let site = if did > 0 {
                 phpyun_models::domain::repo::find_by_id(db, u64::from(did))

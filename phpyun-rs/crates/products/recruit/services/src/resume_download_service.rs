@@ -139,8 +139,8 @@ pub(crate) async fn resume_day_price(state: &AppState, eid: u64, integral: bool)
 }
 
 fn build_contact_html(state: &AppState, r: &Resume, site_name: &str) -> (String, String) {
-    let tel = r.telphone.as_deref().unwrap_or("").trim();
-    let email = r.email.as_deref().unwrap_or("").trim();
+    let tel = phpyun_core::html::esc(r.telphone.as_deref().unwrap_or("").trim());
+    let email = phpyun_core::html::esc(r.email.as_deref().unwrap_or("").trim());
     let lang = current_lang();
     let tip = t_args("resume_contact_tip", lang, &[("site", site_name)]);
     let mobile_l = t("resume_contact_mobile", lang);
@@ -166,7 +166,7 @@ fn build_contact_html(state: &AppState, r: &Resume, site_name: &str) -> (String,
         if !wap.is_empty() {
             wap.push_str("<br/>");
         }
-        wap.push_str(email);
+        wap.push_str(&email);
     }
     let _ = state;
     (pc, wap)
@@ -266,20 +266,18 @@ async fn record_and_finish(
 ) -> AppResult<DownloadResult> {
     if free {
         let _ = download_repo::record_freedown(state.db.pool(), user.uid, r.uid, eid, now).await?;
-        let _ = audit::emit(
+        audit::emit_bg(
             state,
             AuditEvent::new("resume.freedown", Actor::uid(user.uid).with_ip(client_ip))
                 .target(format!("uid:{}", r.uid)),
-        )
-        .await;
+        );
     } else {
         let _ = download_repo::record(state.db.pool(), user.uid, r.uid, eid, now).await?;
-        let _ = audit::emit(
+        audit::emit_bg(
             state,
             AuditEvent::new("resume.download", Actor::uid(user.uid).with_ip(client_ip))
                 .target(format!("uid:{}", r.uid)),
-        )
-        .await;
+        );
     }
     notify_first(state, user.uid, r.uid, now, true).await?;
     success_result(state, r, Some(f)).await

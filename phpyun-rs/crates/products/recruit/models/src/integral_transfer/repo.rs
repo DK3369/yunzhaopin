@@ -501,6 +501,39 @@ pub async fn php_insert_pay(
     Ok(res.last_insert_id())
 }
 
+/// Insert a once-only ledger row: skip if `(com_id, pay_remark)` already exists.
+pub async fn php_insert_pay_once(
+    pool: &MySqlPool,
+    order_id: &str,
+    price: &str,
+    now: i64,
+    uid: u64,
+    remark: &str,
+    kind: i32,
+    usertype: i32,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_company_pay \
+         (order_id, order_price, pay_time, pay_state, com_id, pay_remark, `type`, pay_type, did, eid, usertype, coupon_id) \
+         SELECT ?, ?, ?, 2, ?, ?, ?, 0, 0, 0, ?, 0 FROM DUAL \
+         WHERE NOT EXISTS ( \
+             SELECT 1 FROM phpyun_company_pay WHERE com_id = ? AND pay_remark = ? \
+         )",
+    )
+    .bind(order_id)
+    .bind(price)
+    .bind(now)
+    .bind(uid)
+    .bind(remark)
+    .bind(kind)
+    .bind(usertype)
+    .bind(uid)
+    .bind(remark)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 /// PHP `integral.model::max_time` — same `pay_remark` on this uid today.
 pub async fn count_remark_today(
     pool: &MySqlPool,

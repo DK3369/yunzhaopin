@@ -16,9 +16,10 @@ const SECS_PER_DAY: i64 = 86_400;
 pub async fn list_packages(
     state: &AppState,
     user: &AuthenticatedUser,
+    kind: Option<&str>,
 ) -> AppResult<Vec<VipPackage>> {
     user.require_employer()?;
-    crate::rating_info_service::list_buyable_packages(state, user.uid).await
+    crate::rating_info_service::list_buyable_packages(state, user.uid, kind).await
 }
 
 /// Create an order -- returns order_no, the client uses it to call the payment gateway.

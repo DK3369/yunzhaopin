@@ -3,7 +3,7 @@
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, validators, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::admin_gap::entity::*;
 use phpyun_models::admin_gap::extra as gap2;
 use phpyun_models::admin_gap::repo as gap;
@@ -401,6 +401,9 @@ pub async fn save_password(
     new_pwd: &str,
     re_pwd: &str,
 ) -> AppResult<()> {
+    if validators::strong_password(new_pwd).is_err() {
+        return Err(ApiError::param_invalid("password_weak"));
+    }
     if new_pwd.is_empty() || new_pwd != re_pwd {
         return Err(ApiError::param_invalid("password_mismatch"));
     }
@@ -413,6 +416,12 @@ pub async fn save_password(
     }
     let next = md5_hex(&md5_hex(new_pwd));
     rbac_repo::update_password(state.db.pool(), actor.uid, &next).await?;
+    let _ = phpyun_core::jwt_blacklist::bump_pw_epoch(
+        &state.redis,
+        actor.uid,
+        state.config.pw_epoch_ttl_secs(),
+    )
+    .await;
     audit_write(state, actor, "admin.me.password", format!("uid:{}", actor.uid)).await;
     Ok(())
 }
@@ -715,6 +724,7 @@ fn cron_task_key(row: &CronRow) -> &'static str {
         "expire_jobs" => "expire_jobs",
         "upjob" | "autojob" => "unknown",
         "expire_vip" | "viped" => "expire_vip",
+        "vipedtoadmin" => "vip_maturity_remind",
         "purge_share_tokens" => "purge_share_tokens",
         "rotate_audit_log" => "rotate_audit_log",
         "purge_recycle_bin" => "purge_recycle_bin",
@@ -732,6 +742,7 @@ pub async fn run_cron(state: &AppState, actor: &AuthenticatedUser, id: u64) -> A
     match cron_task_key(&row) {
         "expire_jobs" => crate::maintenance::expire_jobs(state).await,
         "expire_vip" => crate::maintenance::expire_vip(state).await,
+        "vip_maturity_remind" => crate::maintenance::vip_maturity_remind(state).await,
         "purge_share_tokens" => crate::maintenance::purge_expired_share_tokens(state).await,
         "rotate_audit_log" => crate::maintenance::rotate_audit_log(state).await,
         "purge_recycle_bin" => crate::maintenance::purge_recycle_bin(state).await,

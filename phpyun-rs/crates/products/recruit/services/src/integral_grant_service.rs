@@ -50,13 +50,41 @@ pub async fn grant_once(
     usertype: i32,
     cfg_key: &str,
     remark: &str,
-    pay_type: i32,
+    _pay_type: i32,
 ) -> AppResult<()> {
     if uid == 0 {
         return Ok(());
     }
-    if pay_repo::exists_pay_remark(state.db.reader(), uid, remark).await? {
+    let raw = crate::site_gate_service::config_str(state, cfg_key).await;
+    let pts: i64 = raw.trim().parse().unwrap_or(0);
+    if pts <= 0 {
         return Ok(());
     }
-    grant(state, uid, usertype, cfg_key, remark, pay_type).await
+    let lock_key = format!("grant:{uid}:{remark}");
+    if !state.redis.acquire_lock(&lock_key, "1", 10_000).await? {
+        return Ok(());
+    }
+    let now = clock::now_ts();
+    let db = state.db.pool();
+    let order_id = format!("{cfg_key}{now}{uid}");
+    let n = pay_repo::php_insert_pay_once(
+        db,
+        &order_id,
+        &pts.to_string(),
+        now,
+        uid,
+        remark,
+        pay_repo::LEDGER_KIND_INTEGRAL,
+        usertype,
+    )
+    .await?;
+    if n != 1 {
+        return Ok(());
+    }
+    if usertype == 1 {
+        integral_repo::add_balance(db, uid, pts, now).await?;
+    } else {
+        company_statis_repo::add_integral(db, uid, pts).await?;
+    }
+    Ok(())
 }

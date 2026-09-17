@@ -432,22 +432,47 @@ pub async fn com_update_part(
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct IdConfirmBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[serde(default)]
+    pub confirm: bool,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub channel: Option<String>,
+}
+
 #[utoipa::path(
     post,
     path = "/v1/mcenter/com-parts/refresh",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = IdBody,
+    request_body = IdConfirmBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn com_refresh_part(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJson(b): ValidatedJson<IdConfirmBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    part_service::refresh_com_part(&state, &user, b.id, &ip).await?;
-    Ok(ApiResponse::data(json::json!({ "ok": true })))
+    let r = part_service::refresh_com_part(
+        &state,
+        &user,
+        b.id,
+        b.confirm,
+        b.channel.as_deref(),
+        &ip,
+    )
+    .await?;
+    Ok(ApiResponse::data(json::json!({
+        "ok": r.status == 1,
+        "status": r.status,
+        "integral": r.integral,
+        "price": r.price,
+        "order_no": r.order_no,
+    })))
 }
 
 #[utoipa::path(

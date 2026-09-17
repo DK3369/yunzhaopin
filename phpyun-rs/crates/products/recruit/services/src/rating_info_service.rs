@@ -258,14 +258,39 @@ pub async fn vip_over(state: &AppState, uid: u64) -> AppResult<()> {
 }
 
 /// PHP `right::index` 套餐列表：`com_vip_type` + `company.package` + `com_package_open`.
+///
+/// `kind`: `None` 跟现网一样（`com_vip_type==1` → `type=2`，否则 `type=1`）；
+/// `Some("package")` → `type=1`；`Some("time")` → `type=2`。站点关了对应档则空列表。
 pub async fn list_buyable_packages(
     state: &AppState,
     uid: u64,
+    kind: Option<&str>,
 ) -> AppResult<Vec<VipPackage>> {
     let db = state.db.reader();
     let cfg = setting_repo::find_many(db, &["com_vip_type", "com_package_open"]).await?;
     let vip_type = parse_i32(cfg.get("com_vip_type").map(String::as_str), 0);
-    let rating_type = if vip_type == 1 { 2 } else { 1 };
+    let rating_type = match kind {
+        None => {
+            if vip_type == 1 {
+                2
+            } else {
+                1
+            }
+        }
+        Some("package") => {
+            if vip_type == 1 {
+                return Ok(Vec::new());
+            }
+            1
+        }
+        Some("time") => {
+            if vip_type == 2 {
+                return Ok(Vec::new());
+            }
+            2
+        }
+        _ => return Err(ApiError::param_invalid("kind")),
+    };
     let whitelist = parse_id_list(&gap_extra::company_package(db, uid).await?);
     let st = statis_repo::find_admin(db, uid).await?;
     let now = clock::now_ts();

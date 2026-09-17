@@ -6,7 +6,7 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{background, clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::apply::{entity::Apply, repo as apply_repo};
 use phpyun_models::category::repo as category_repo;
 use phpyun_models::job::repo as job_repo;
@@ -160,7 +160,7 @@ async fn notify_employer_apply(
         return;
     }
     if job.is_message == 1 {
-        let body = format!("{} 收到新简历投递", job.name);
+        let body = format!("{} 收到新简历投递", phpyun_core::html::esc(&job.name));
         let _ = message_repo::create(
             state.db.pool(),
             message_repo::MessageCreate {
@@ -324,13 +324,12 @@ pub async fn apply_to_job(
     };
 
     // 5. Audit + event bus (paves the way for future email notifications)
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("resume.apply", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("job:{job_id}"))
             .meta(&serde_json::json!({ "apply_id": id, "com_id": job.uid })),
-    )
-    .await;
+    );
 
     let _ = state
         .events
@@ -345,7 +344,16 @@ pub async fn apply_to_job(
         )
         .await;
 
-    notify_employer_apply(state, &job, user.uid, id, is_browse).await;
+    let _ = phpyun_models::admin_gap::extra::php_inc_company_sq_job(state.db.pool(), job.uid).await;
+    let _ = phpyun_models::admin_gap::extra::php_inc_member_sq_jobnum(state.db.pool(), user.uid)
+        .await;
+
+    let st = state.clone();
+    let job_n = job.clone();
+    let uid = user.uid;
+    background::spawn_best_effort("apply.notify", async move {
+        notify_employer_apply(&st, &job_n, uid, id, is_browse).await;
+    });
 
     Ok(ApplyResult {
         id,

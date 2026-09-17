@@ -9,7 +9,15 @@ use phpyun_core::{
 use phpyun_services::sub_account_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use validator::Validate;
+use validator::{Validate, ValidationError};
+
+fn optional_strong_password(v: &str) -> Result<(), ValidationError> {
+    if v.trim().is_empty() {
+        Ok(())
+    } else {
+        phpyun_core::validators::strong_password(v)
+    }
+}
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -59,7 +67,7 @@ pub async fn list(
 pub struct CreateForm {
     #[validate(length(min = 3, max = 20))]
     pub username: String,
-    #[validate(length(min = 6, max = 128))]
+    #[validate(custom(function = "phpyun_core::validators::strong_password"))]
     pub password: String,
 }
 
@@ -85,7 +93,7 @@ pub struct UpdateForm {
     #[validate(range(min = 1, max = 99_999_999))]
     pub uid: u64,
     #[serde(default)]
-    #[validate(length(min = 6, max = 128))]
+    #[validate(custom(function = "optional_strong_password"))]
     pub password: Option<String>,
     #[serde(default)]
     #[validate(range(min = 0, max = 2))]

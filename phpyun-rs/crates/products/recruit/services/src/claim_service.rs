@@ -4,7 +4,7 @@
 //! Duplicate protection: `phpyun_member.claim==1` (and `source==6` eligibility).
 
 use phpyun_auth::argon2_hash_async;
-use phpyun_core::{audit, clock, rate_limit, ApiError, AppResult, AppState};
+use phpyun_core::{audit, clock, rate_limit, validators, ApiError, AppResult, AppState};
 use phpyun_models::company_cert::repo as cert_repo;
 use phpyun_models::user::repo as user_repo;
 use std::time::Duration;
@@ -31,7 +31,16 @@ pub struct ClaimCheck {
     pub ok: bool,
 }
 
-pub async fn check(state: &AppState, uid: u64, code: &str) -> AppResult<ClaimCheck> {
+pub async fn check(state: &AppState, uid: u64, code: &str, client_ip: &str) -> AppResult<ClaimCheck> {
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:claim:ip:{client_ip}"),
+        rate_limit::LimitRule {
+            max: 20,
+            window: Duration::from_secs(3600),
+        },
+    )
+    .await?;
     verify_eligibility_and_code(state, uid, code).await?;
     Ok(ClaimCheck { ok: true })
 }
@@ -50,13 +59,29 @@ async fn verify_eligibility_and_code(state: &AppState, uid: u64, code: &str) -> 
     let stored = cert_repo::find_claim_code(reader, uid)
         .await?
         .unwrap_or_default();
-    if stored.is_empty() || stored != code {
+    if stored.is_empty() || !constant_time_eq(&stored, code) {
         return Err(ApiError::param_invalid("invalid_claim_code"));
     }
     Ok(())
 }
 
+fn constant_time_eq(a: &str, b: &str) -> bool {
+    let aa = a.as_bytes();
+    let bb = b.as_bytes();
+    if aa.len() != bb.len() {
+        return false;
+    }
+    let mut diff = 0u8;
+    for (x, y) in aa.iter().zip(bb.iter()) {
+        diff |= x ^ y;
+    }
+    diff == 0
+}
+
 pub async fn claim(state: &AppState, input: ClaimInput<'_>) -> AppResult<()> {
+    if validators::strong_password(input.password).is_err() {
+        return Err(ApiError::param_invalid("password_weak"));
+    }
     rate_limit::check_and_incr(
         &state.redis,
         &format!("rl:claim:uid:{}", input.uid),

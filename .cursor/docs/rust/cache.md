@@ -44,7 +44,9 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 | 首页聚合 | `home:{did}` | 60s（L1+L2） |
 | 排行榜 | `ranking:{did}` | 60s（L1+L2） |
 
-职位/企业/简历列表：**page=1 且无关键词** 进 `TieredCache`；带关键词或 page>1 直打 MySQL。兼职 / once / 公招公开列表按筛选参数缓存 20s。详情缓存**不含**登录态：已投递 / 收藏 / 联系方式解锁在命中后由 handler 叠加。`site_gate_service::config_str` 读 `site_settings:all`，不再逐 key 查表。热路径 `yqms` 设置、签到 `integral_signin`、登录验证码 `code_web`、简历访客 `sy_resume_visitors` 同样走 `config_str`。
+职位/企业/简历列表：**page=1 且无关键词** 进 `TieredCache`；带关键词或 page>1 直打 MySQL。兼职 / once / 公招公开列表按筛选参数缓存 20s。详情缓存**不含**登录态：已投递 / 收藏 / 联系方式解锁在命中后由 handler 叠加。`site_gate_service::config_str` 读 `site_settings:all`，不再逐 key 查表。热路径 `yqms` 设置、签到 `integral_signin`、登录验证码 `code_web`、简历访客 `sy_resume_visitors`、首页 `hotcom_top`、兼职审核 `com_partjob_status`、职位提醒 `sy_email_set`/`sy_webname`、扫码登录 `sy_weburl`、`job_mgmt` 的 `setting_raw` 同样走 `config_str`。`expire_vip` 后段用 `config_map` 读 `jobunder` / `job_under_delay`。
+
+热路径审计用 `audit::emit_bg`（DB insert 也 `spawn_best_effort`）：投递、职位刷新/批量刷新/置顶、简历下载、面试邀请 `do_insert`、兼职投递/刷新。admin 路径仍同步 `emit`。投递成功后雇主邮件/站内信 `spawn_best_effort("apply.notify")`。会员关注企业列表一次 `list_by_uids`。`expire_vip` 每批 8 并发 `vip_over`。VIP 到期提醒 cron `vip_maturity_remind`（每日 09:00，`vipedtoadmin` 映射）用 Redis `SET NX vipremind:{uid}:{ymd}` 去重。
 
 ## 不要缓存
 
@@ -73,5 +75,5 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 
 - systemd 切 `--release`（现网仍是 `target/debug`）
 - 现网手工执行 `migrations/sqlx/20260916000002_public_list_indexes.sql`
-- admin `Json<Value>` typed 化、admin 其余 LIKE 转义、缩短 access JWT TTL
+- admin `Json<Value>` typed 化、admin 其余 LIKE 转义
 

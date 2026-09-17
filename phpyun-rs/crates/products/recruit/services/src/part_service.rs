@@ -21,7 +21,6 @@ use phpyun_models::company::repo as company_repo;
 use phpyun_models::company_statis::repo as statis_repo;
 use phpyun_models::part::entity::{PartApply, PartCollect, PartJob};
 use phpyun_models::part::repo as part_repo;
-use phpyun_models::site_setting::repo as setting_repo;
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 use std::time::Duration;
@@ -347,13 +346,12 @@ pub async fn apply(
 
     let id = part_repo::create_apply(state.db.pool(), user.uid, job_id, job.uid, now).await?;
 
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("part.apply", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("partjob:{job_id}"))
             .meta(&serde_json::json!({ "apply_id": id, "com_id": job.uid })),
-    )
-    .await;
+    );
 
     let _ = state
         .events
@@ -580,7 +578,7 @@ fn is_vip(vip_etime: i64, now: i64) -> bool {
     vip_etime == 0 || vip_etime >= now
 }
 
-async fn consume_part_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppResult<()> {
+async fn consume_part_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppResult<bool> {
     let now = clock::now_ts();
     let st = phpyun_models::company_statis::repo::find_admin(state.db.reader(), uid)
         .await?
@@ -589,17 +587,17 @@ async fn consume_part_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppRe
         return Err(ApiError::business("zph_need_vip"));
     }
     if st.rating_type == 2 {
-        return Ok(());
+        return Ok(true);
     }
     if st.rating_type == 1 {
         if !phpyun_models::company_statis::repo::try_consume_breakpart(state.db.pool(), uid, n)
             .await?
         {
-            return Err(ApiError::business("part_refresh_quota"));
+            return Ok(false);
         }
-        return Ok(());
+        return Ok(true);
     }
-    Err(ApiError::business("part_refresh_quota"))
+    Ok(false)
 }
 
 fn write_from_input<'a>(input: &'a MemberPartInput<'a>, content: &'a str) -> part_repo::MemberPartWrite<'a> {
@@ -635,10 +633,7 @@ async fn resolve_part_audit_state(state: &AppState, uid: u64) -> AppResult<i32> 
     if r_status != 1 {
         return Ok(0);
     }
-    let raw = setting_repo::find(state.db.reader(), "com_partjob_status")
-        .await?
-        .map(|r| r.value)
-        .unwrap_or_default();
+    let raw = crate::site_gate_service::config_str(state, "com_partjob_status").await;
     Ok(raw.trim().parse::<i32>().unwrap_or(0).clamp(0, 3))
 }
 
@@ -823,29 +818,85 @@ pub async fn batch_set_com_part_status(
     Ok(n)
 }
 
+pub struct PartRefreshResult {
+    pub status: i32,
+    pub integral: i64,
+    pub price: f64,
+    pub order_no: Option<String>,
+}
+
 pub async fn refresh_com_part(
     state: &AppState,
     user: &AuthenticatedUser,
     id: u64,
+    confirm: bool,
+    channel: Option<&str>,
     client_ip: &str,
-) -> AppResult<()> {
+) -> AppResult<PartRefreshResult> {
     user.require_employer()?;
     let _job = part_repo::find_by_id(state.db.reader(), id)
         .await?
         .filter(|j| j.uid == user.uid)
         .ok_or_else(|| ApiError::business("job_not_found"))?;
-    consume_part_refresh_quota(state, user.uid, 1).await?;
+    let ok = consume_part_refresh_quota(state, user.uid, 1).await?;
+    if !ok {
+        let price = crate::single_order_service::unit_price(state, "integral_jobefresh").await;
+        let ctx = crate::single_order_service::load_ctx(state).await;
+        match ctx.decide("sxjob", price, confirm, "part_refresh_quota")? {
+            crate::single_order_service::SinglePurchase::Free => {}
+            crate::single_order_service::SinglePurchase::NeedConfirm { price, integral } => {
+                return Ok(PartRefreshResult {
+                    status: 2,
+                    integral,
+                    price,
+                    order_no: None,
+                });
+            }
+            crate::single_order_service::SinglePurchase::Integral { integral } => {
+                if statis_repo::try_deduct_integral(state.db.pool(), user.uid, integral).await? == 0
+                {
+                    return Err(ApiError::business("integral_insufficient"));
+                }
+            }
+            crate::single_order_service::SinglePurchase::Cash => {
+                let ch = crate::single_order_service::pay_channel(channel)?;
+                let info = serde_json::json!({ "ids": [id] }).to_string();
+                let order_no = crate::single_order_service::create_kind_order(
+                    state,
+                    user,
+                    17,
+                    id,
+                    "part_refresh",
+                    price,
+                    ch,
+                    &info,
+                )
+                .await?;
+                let integral = (price * ctx.proportion).round() as i64;
+                return Ok(PartRefreshResult {
+                    status: 2,
+                    integral,
+                    price,
+                    order_no: Some(order_no),
+                });
+            }
+        }
+    }
     let now = clock::now_ts();
     let n = part_repo::refresh_for_com(state.db.pool(), id, user.uid, now).await?;
     if n == 0 {
         return Err(ApiError::business("job_not_found"));
     }
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("part.refresh", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("part:{id}")),
-    )
-    .await;
+    );
     invalidate_list();
-    Ok(())
+    Ok(PartRefreshResult {
+        status: 1,
+        integral: 0,
+        price: 0.0,
+        order_no: None,
+    })
 }

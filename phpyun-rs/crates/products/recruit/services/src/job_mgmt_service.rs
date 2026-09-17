@@ -15,6 +15,8 @@ use phpyun_models::job::{entity::Job, repo as job_repo};
 use phpyun_models::part::repo as part_repo;
 use phpyun_models::site_setting::repo as setting_repo;
 
+use crate::single_order_service::{self, SinglePurchase};
+
 fn store_is_email(v: i32) -> i32 {
     if v == 2 || v == 3 {
         3
@@ -1040,20 +1042,16 @@ pub struct RefreshResult {
     pub status: i32,
     pub integral: i64,
     pub price: f64,
+    pub order_no: Option<String>,
 }
 
-async fn refresh_pay_quote(state: &AppState, n: i32) -> AppResult<(i64, f64)> {
-    let unit = setting_raw(state, "integral_jobefresh")
-        .await
-        .parse::<f64>()
-        .unwrap_or(0.0);
-    let pro = setting_raw(state, "integral_proportion")
-        .await
-        .parse::<f64>()
-        .unwrap_or(1.0);
-    let price = unit * f64::from(n.max(0));
-    let integral = (price * pro).round() as i64;
-    Ok((integral, price))
+fn refresh_need_pay(integral: i64, price: f64, order_no: Option<String>) -> RefreshResult {
+    RefreshResult {
+        status: 2,
+        integral,
+        price,
+        order_no,
+    }
 }
 
 // ==================== Refresh ====================
@@ -1063,6 +1061,7 @@ pub async fn refresh(
     user: &AuthenticatedUser,
     id: u64,
     confirm: bool,
+    channel: Option<&str>,
     client_ip: &str,
 ) -> AppResult<RefreshResult> {
     user.require_employer()?;
@@ -1072,36 +1071,53 @@ pub async fn refresh(
         .ok_or_else(|| ApiError::business("job_not_found"))?;
     let ok = consume_refresh_quota(state, user.uid, 1, &[id]).await?;
     if !ok {
-        let (integral, price) = refresh_pay_quote(state, 1).await?;
-        if price <= 0.0 {
-            // PHP: integral_jobefresh==0 且开单项购买时直接刷新
-        } else if !confirm {
-            return Ok(RefreshResult {
-                status: 2,
-                integral,
-                price,
-            });
-        } else if integral > 0
-            && statis_repo::try_deduct_integral(state.db.pool(), user.uid, integral).await? == 0
-        {
-            return Err(ApiError::business("integral_insufficient"));
+        let price = single_order_service::unit_price(state, "integral_jobefresh").await;
+        let ctx = single_order_service::load_ctx(state).await;
+        match ctx.decide("sxjob", price, confirm, "need_buy")? {
+            SinglePurchase::Free => {}
+            SinglePurchase::NeedConfirm { price, integral } => {
+                return Ok(refresh_need_pay(integral, price, None));
+            }
+            SinglePurchase::Integral { integral } => {
+                if statis_repo::try_deduct_integral(state.db.pool(), user.uid, integral).await? == 0
+                {
+                    return Err(ApiError::business("integral_insufficient"));
+                }
+            }
+            SinglePurchase::Cash => {
+                let ch = single_order_service::pay_channel(channel)?;
+                let info = serde_json::json!({ "job_ids": [id] }).to_string();
+                let order_no = single_order_service::create_kind_order(
+                    state,
+                    user,
+                    16,
+                    id,
+                    "job_refresh",
+                    price,
+                    ch,
+                    &info,
+                )
+                .await?;
+                let integral = (price * ctx.proportion).round() as i64;
+                return Ok(refresh_need_pay(integral, price, Some(order_no)));
+            }
         }
     }
     let affected = job_repo::refresh(state.db.pool(), id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::business("job_not_found"));
     }
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("job.refresh", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("job:{id}")),
-    )
-    .await;
+    );
     crate::job_service::invalidate_job(state, id).await;
     Ok(RefreshResult {
         status: 1,
         integral: 0,
         price: 0.0,
+        order_no: None,
     })
 }
 
@@ -1133,6 +1149,21 @@ pub async fn delete(
 pub struct BatchReport {
     pub requested: usize,
     pub affected: u64,
+    pub status: i32,
+    pub integral: i64,
+    pub price: f64,
+    pub order_no: Option<String>,
+}
+
+fn batch_ok(requested: usize, affected: u64) -> BatchReport {
+    BatchReport {
+        requested,
+        affected,
+        status: 1,
+        integral: 0,
+        price: 0.0,
+        order_no: None,
+    }
 }
 
 /// Batch refresh: bump `lastupdate` for several jobs owned by the caller.
@@ -1140,38 +1171,74 @@ pub async fn batch_refresh(
     state: &AppState,
     user: &AuthenticatedUser,
     ids: &[u64],
+    confirm: bool,
+    channel: Option<&str>,
     client_ip: &str,
 ) -> AppResult<BatchReport> {
     user.require_employer()?;
     if ids.is_empty() {
-        return Ok(BatchReport {
-            requested: 0,
-            affected: 0,
-        });
+        return Ok(batch_ok(0, 0));
     }
-    let ok = consume_refresh_quota(
-        state,
-        user.uid,
-        i32::try_from(ids.len()).unwrap_or(i32::MAX),
-        ids,
-    )
-    .await?;
+    let n = i32::try_from(ids.len()).unwrap_or(i32::MAX);
+    let ok = consume_refresh_quota(state, user.uid, n, ids).await?;
     if !ok {
-        return Err(ApiError::business("job_refresh_quota"));
+        let unit = single_order_service::unit_price(state, "integral_jobefresh").await;
+        let price = unit * f64::from(n.max(0));
+        let ctx = single_order_service::load_ctx(state).await;
+        match ctx.decide("sxjob", price, confirm, "need_buy")? {
+            SinglePurchase::Free => {}
+            SinglePurchase::NeedConfirm { price, integral } => {
+                return Ok(BatchReport {
+                    requested: ids.len(),
+                    affected: 0,
+                    status: 2,
+                    integral,
+                    price,
+                    order_no: None,
+                });
+            }
+            SinglePurchase::Integral { integral } => {
+                if statis_repo::try_deduct_integral(state.db.pool(), user.uid, integral).await? == 0
+                {
+                    return Err(ApiError::business("integral_insufficient"));
+                }
+            }
+            SinglePurchase::Cash => {
+                let ch = single_order_service::pay_channel(channel)?;
+                let sid = ids.first().copied().unwrap_or(0);
+                let info = serde_json::json!({ "job_ids": ids }).to_string();
+                let order_no = single_order_service::create_kind_order(
+                    state,
+                    user,
+                    16,
+                    sid,
+                    "job_refresh",
+                    price,
+                    ch,
+                    &info,
+                )
+                .await?;
+                let integral = (price * ctx.proportion).round() as i64;
+                return Ok(BatchReport {
+                    requested: ids.len(),
+                    affected: 0,
+                    status: 2,
+                    integral,
+                    price,
+                    order_no: Some(order_no),
+                });
+            }
+        }
     }
     let now = clock::now_ts();
     let total = job_repo::refresh_ids(state.db.pool(), ids, user.uid, now).await?;
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("job.batch_refresh", Actor::uid(user.uid).with_ip(client_ip))
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
-    )
-    .await;
+    );
     crate::job_service::invalidate_jobs(state, ids).await;
-    Ok(BatchReport {
-        requested: ids.len(),
-        affected: total,
-    })
+    Ok(batch_ok(ids.len(), total))
 }
 
 /// Batch unlist.
@@ -1183,10 +1250,7 @@ pub async fn batch_close(
 ) -> AppResult<BatchReport> {
     user.require_employer()?;
     if ids.is_empty() {
-        return Ok(BatchReport {
-            requested: 0,
-            affected: 0,
-        });
+        return Ok(batch_ok(0, 0));
     }
     let total = job_repo::set_status_ids(state.db.pool(), ids, user.uid, 1).await?;
     let _ = audit::emit(
@@ -1196,10 +1260,7 @@ pub async fn batch_close(
     )
     .await;
     crate::job_service::invalidate_jobs(state, ids).await;
-    Ok(BatchReport {
-        requested: ids.len(),
-        affected: total,
-    })
+    Ok(batch_ok(ids.len(), total))
 }
 
 /// Batch delete (hard delete; only the caller's own rows).
@@ -1211,10 +1272,7 @@ pub async fn batch_delete(
 ) -> AppResult<BatchReport> {
     user.require_employer()?;
     if ids.is_empty() {
-        return Ok(BatchReport {
-            requested: 0,
-            affected: 0,
-        });
+        return Ok(batch_ok(0, 0));
     }
     let total = job_repo::delete_ids(state.db.pool(), ids, user.uid).await?;
     let _ = audit::emit(
@@ -1224,10 +1282,7 @@ pub async fn batch_delete(
     )
     .await;
     crate::job_service::invalidate_jobs(state, ids).await;
-    Ok(BatchReport {
-        requested: ids.len(),
-        affected: total,
-    })
+    Ok(batch_ok(ids.len(), total))
 }
 
 // ==================== List ====================
@@ -1376,6 +1431,11 @@ pub struct PromoteQuote {
     pub remain: i32,
     pub expire_at: i64,
     pub active: bool,
+    pub single: bool,
+    pub status: i32,
+    pub price: f64,
+    pub integral: i64,
+    pub order_no: Option<String>,
 }
 
 pub async fn quote_promote(
@@ -1392,11 +1452,20 @@ pub async fn quote_promote(
         .ok_or_else(|| ApiError::business("job_not_found"))?;
     let now = clock::now_ts();
     let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
+    let ctx = single_order_service::load_ctx(state).await;
+    let (_, can_key, price_key) = single_order_service::promote_meta(kind)?;
+    let price = single_order_service::unit_price(state, price_key).await;
+    let integral = (price * ctx.proportion).round() as i64;
     Ok(PromoteQuote {
         kind: kind.to_string(),
         remain: st.as_ref().map(|s| remain_for(s, kind)).unwrap_or(0),
         expire_at: job_expire_at(&job, kind),
         active: job_promote_active(&job, kind, now),
+        single: ctx.allows(can_key),
+        status: 1,
+        price,
+        integral,
+        order_no: None,
     })
 }
 
@@ -1406,6 +1475,8 @@ pub async fn promote(
     job_id: u64,
     kind: &str,
     days: i32,
+    confirm: bool,
+    channel: Option<&str>,
     client_ip: &str,
 ) -> AppResult<PromoteQuote> {
     user.require_employer()?;
@@ -1417,29 +1488,101 @@ pub async fn promote(
         .await?
         .filter(|j| j.uid == user.uid)
         .ok_or_else(|| ApiError::business("job_not_found"))?;
-    let st = statis_repo::find_admin(state.db.reader(), user.uid)
-        .await?
-        .ok_or_else(|| ApiError::business(insufficient_key(kind)))?;
-    if remain_for(&st, kind) < days {
-        return Err(ApiError::business(insufficient_key(kind)));
+    let st = statis_repo::find_admin(state.db.reader(), user.uid).await?;
+    let remain = st.as_ref().map(|s| remain_for(s, kind)).unwrap_or(0);
+    if remain >= days {
+        if !statis_repo::try_consume_promote(state.db.pool(), user.uid, kind, days).await? {
+            return Err(ApiError::business(insufficient_key(kind)));
+        }
+        let now = clock::now_ts();
+        let affected =
+            job_repo::apply_member_promote(state.db.pool(), job.id, user.uid, kind, days, now)
+                .await?;
+        if affected == 0 {
+            let _ = statis_repo::add_promote_num(state.db.pool(), user.uid, kind, days).await;
+            return Err(ApiError::business("job_not_found"));
+        }
+    } else {
+        let (order_kind, can_key, price_key) = single_order_service::promote_meta(kind)?;
+        let unit = single_order_service::unit_price(state, price_key).await;
+        let price = unit * f64::from(days);
+        let ctx = single_order_service::load_ctx(state).await;
+        match ctx.decide(can_key, price, confirm, insufficient_key(kind))? {
+            SinglePurchase::Free => {
+                let now = clock::now_ts();
+                let affected = job_repo::apply_member_promote(
+                    state.db.pool(),
+                    job.id,
+                    user.uid,
+                    kind,
+                    days,
+                    now,
+                )
+                .await?;
+                if affected == 0 {
+                    return Err(ApiError::business("job_not_found"));
+                }
+            }
+            SinglePurchase::NeedConfirm { price, integral } => {
+                let mut q = quote_promote(state, user, job_id, kind).await?;
+                q.status = 2;
+                q.price = price;
+                q.integral = integral;
+                return Ok(q);
+            }
+            SinglePurchase::Integral { integral } => {
+                if statis_repo::try_deduct_integral(state.db.pool(), user.uid, integral).await? == 0
+                {
+                    return Err(ApiError::business("integral_insufficient"));
+                }
+                let now = clock::now_ts();
+                let affected = job_repo::apply_member_promote(
+                    state.db.pool(),
+                    job.id,
+                    user.uid,
+                    kind,
+                    days,
+                    now,
+                )
+                .await?;
+                if affected == 0 {
+                    return Err(ApiError::business("job_not_found"));
+                }
+            }
+            SinglePurchase::Cash => {
+                let ch = single_order_service::pay_channel(channel)?;
+                let info = serde_json::json!({
+                    "jobid": job_id,
+                    "days": days,
+                    "kind": kind,
+                })
+                .to_string();
+                let order_no = single_order_service::create_kind_order(
+                    state,
+                    user,
+                    order_kind,
+                    job_id,
+                    kind,
+                    price,
+                    ch,
+                    &info,
+                )
+                .await?;
+                let mut q = quote_promote(state, user, job_id, kind).await?;
+                q.status = 2;
+                q.price = price;
+                q.integral = (price * ctx.proportion).round() as i64;
+                q.order_no = Some(order_no);
+                return Ok(q);
+            }
+        }
     }
-    if !statis_repo::try_consume_promote(state.db.pool(), user.uid, kind, days).await? {
-        return Err(ApiError::business(insufficient_key(kind)));
-    }
-    let now = clock::now_ts();
-    let affected =
-        job_repo::apply_member_promote(state.db.pool(), job.id, user.uid, kind, days, now).await?;
-    if affected == 0 {
-        let _ = statis_repo::add_promote_num(state.db.pool(), user.uid, kind, days).await;
-        return Err(ApiError::business("job_not_found"));
-    }
-    let _ = audit::emit(
+    audit::emit_bg(
         state,
         AuditEvent::new("job.promote", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("job:{job_id}"))
             .meta(&serde_json::json!({ "kind": kind, "days": days })),
-    )
-    .await;
+    );
     quote_promote(state, user, job_id, kind).await
 }
 
