@@ -40,7 +40,9 @@
 /v1/mcenter/com-part-applications
 /v1/mcenter/com-part-applications/status
 /v1/mcenter/com-parts
+/v1/mcenter/com-parts/batch/status
 /v1/mcenter/com-parts/create
+/v1/mcenter/com-parts/detail
 /v1/mcenter/com-parts/list
 /v1/mcenter/com-parts/refresh
 /v1/mcenter/com-parts/status
@@ -87,12 +89,19 @@
 /v1/mcenter/company/join
 /v1/mcenter/company/list
 /v1/mcenter/company/my-companies
+/v1/mcenter/company/nav
+/v1/mcenter/company/nav/reset
+/v1/mcenter/company/nav/save
 /v1/mcenter/company/news
 /v1/mcenter/company/news/list
 /v1/mcenter/company/news/update
 /v1/mcenter/company/products
 /v1/mcenter/company/products/list
 /v1/mcenter/company/products/update
+/v1/mcenter/company/sub-accounts/create
+/v1/mcenter/company/sub-accounts/delete
+/v1/mcenter/company/sub-accounts/list
+/v1/mcenter/company/sub-accounts/update
 /v1/mcenter/company/yqms/cancel
 /v1/mcenter/company/yqms/create
 /v1/mcenter/company/yqms/detail
@@ -196,6 +205,8 @@
 /v1/mcenter/once-jobs/orders
 /v1/mcenter/once-jobs/orders/cancel
 /v1/mcenter/once-jobs/paylogs
+/v1/mcenter/orders/detail
+/v1/mcenter/orders/pay
 /v1/mcenter/packs/list
 /v1/mcenter/packs/orders
 /v1/mcenter/packs/orders/list
@@ -321,6 +332,7 @@
 /v1/mcenter/zph/cancel
 /v1/mcenter/zph/com-status
 /v1/mcenter/zph/my-reservation
+/v1/mcenter/zph/order
 /v1/mcenter/zph/reserve
 /v1/wap/ads
 /v1/wap/ads/click

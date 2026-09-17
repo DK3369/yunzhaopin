@@ -43,7 +43,7 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 ## 顶栏
 
-登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/integral` `/user/rewards` `/user/integral-rules` 与 `/com/pay` `/com/integral` `/com/orders` `/com/record` `/com/rewards` `/com/integral-rules` `/com/services` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
+登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/cashier` `/user/integral` `/user/rewards` `/user/integral-rules` 与 `/com/pay` `/com/cashier` `/com/integral` `/com/orders` `/com/record` `/com/rewards` `/com/integral-rules` `/com/services` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
 
 会员页 **不要**顺手渲染前台导航/页脚/热搜。公开 chrome 走 [`useSiteBoot`](../../web/layers/ui/app/composables/useSiteBoot.ts) 一次 `GET /v1/wap/initjobs`（`nav` / `footer_classes` / `footer_pages` / `settings`），不要再打 `/v1/wap/nav` 或 `descriptions/classes`。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 读同一份 boot。左栏角标、顶栏、首页、消息页的 dashboard 共用 `useAsyncData` key `user-dash` / `com-dash`，fetcher 必须是 `POST /v1/mcenter/dashboard/full` 与 `/com-dashboard/full`，不要再打瘦 `/dashboard`、`/com-dashboard`。求职意向列表（`/user/expects`、外发）与首页共用 `user-home-bundle`（`POST /v1/mcenter/resume/bundle`），create/update 仍走 `/resume/expects*`。公开企业关注开关走 `POST /v1/mcenter/favorites`（`kind=2`，`target_id`，读 `favorited`），不要 `follows`。积分余额等下拉才用的接口，悬停再请求。
 
@@ -108,7 +108,6 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 把密码/隐私/消息等塞回求职 PC 左栏
 - 招聘左栏第 9 项指到 `/com/set`
 - `/com/set` 链到 `/user/account`（串皮）
-- 新开 PHP 企业导航自定义 `customize`
 - 把简历拆成十几条 WAP 子路由（仍在 `/user/resume` 同页编辑，点小节再展开表单）
 - H5 `/user/resume` 把小节漂在 `wap_member` 灰底外（应对齐 PHP `resume.htm`：灰底 `Edit_your_resume_min_body` 里一张 `resume_min_body_cord`）
 - H5 简历表单继续用 PC `verification_formname`（应对 `yun_createlist` / `Create_resume_btn`）
@@ -174,9 +173,9 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 兼职 | `/user/parts` 报名 | `/com/parts` 发布 | `partapply.htm` / `partlist.htm` | 求职「更多」 |
 | 意见反馈 | `/advice` | `/advice` | `member/user/message.htm`（PC `resume_fk_box` / `message_box`；H5 `verification_form`）。**登录后进会员壳** | 否 |
 
-招聘多出来：职位管理/发布、应聘/下载/谁看过职位/粉丝/看过的简历/人才库（`MemberHrTabs`）、面试模板、企业资料/环境/新闻/产品/横幅/地图/模板、会员套餐/增值、招聘会、专题、消费记录、统计、预警、群发、HR 账号。
+招聘多出来：职位管理/发布、应聘/下载/谁看过职位/粉丝/看过的简历/人才库（`MemberHrTabs`）、面试模板、企业资料/环境/新闻/产品/横幅/地图/模板、会员套餐/增值、招聘会、专题、消费记录、统计、预警、群发、HR 邀请码、经典子账号、左栏自定义。
 
-PHP 有、Vue 暂无：企业导航自定义 `customize`（不新开）。
+企业左栏自定义走 [`/com/customize`](../../../web/apps/site/app/pages/com/customize.vue)：`POST /v1/mcenter/company/nav` 读写 `phpyun_company_nav.nav_info` **JSON**（不做 PHP serialize）+ `company.is_nav`（1 默认 / 2 自定义）。`useMemberNav` 的 `comMain` 在 `is_nav==2` 时按返回顺序/显隐重排，首页 `/com` 固定第一；模块开关 `on()` 仍生效。只允许改 sort/show/target，`to` 白名单。H5 只提示去 PC 设置。邀请码协作 `/com/hrs` 保留，不与经典 `member.pid` 子账号混用。
 
 ## H5 / PC 对齐分期
 
@@ -290,5 +289,21 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 求职充值 [`user/pay.vue`](../../../web/apps/site/app/pages/user/pay.vue) 走积分档（不要 `vip/packages`）；`list_integral_classes` / `recharge` / `card` 按 `usertype` 分路 `member_statis` / `company_statis`。
 - 面试评价弹层：已面试项 `POST /interviews/review/submit`（`desscore`/`comscore`/`hrscore`）。简历优化 `/user/resume/optimize`、发布成功 `/user/resume/success`。
 - 兑换记录 `/user/rewards` `/com/rewards`；积分规则 `/user/integral-rules` `/com/integral-rules`（只读 `initjobs.settings`）。
+- 经典子账号 [`sub-accounts.vue`](../../../web/apps/site/app/pages/com/sub-accounts.vue)：`member.pid` 指向父企业；JWT `sub=父 uid`、可选 `hr_uid=自己`。`/com/*` 用父 uid；改密/绑定/注销/会话用 `self_uid()`。配额 `rating_type==1` 扣 `company_statis.sons_num`。`profile.is_sub`。子账号不能管子账号。
+- 兼职完整版 [`parts/index.vue`](../../../web/apps/site/app/pages/com/parts/index.vue) + [`parts/new.vue`](../../../web/apps/site/app/pages/com/parts/new.vue)：`com-parts/list` 可选 `w` 分桶+`counts`；`create` 的 `state` 对齐 `com_partjob_status` 与套餐超限下架；`batch/status`。Nuxt 列表必须放 `parts/index.vue`，不要 `parts.vue` 当父页（否则 `/com/parts/new` 渲不出表单）。
+- 收银台 [`MemberCashier`](../../../web/layers/ui/app/components/MemberCashier.vue) `/com/cashier/[order_no]` `/user/cashier/[order_no]`：`POST /orders/detail` `/orders/pay`。套餐/增值/充值下单后跳收银台，不再整页跳支付宝。待付订单「去支付」。
+- 付费展位：`POST /zph/order` 建 `company_order.type=28`（`order_info` JSON）；`settle_paid` 插 `zhaopinhui_com(status=0,price)`。公开 `/fairs/[id]` 捕获 `zph_need_pay` 去收银台。
 
-本轮仍不做：HR 子账号/工具箱、兼职 `partok/partadd` 完整版、企业导航 `customize`、现金收银台独立页、付费展位现金链（仍 `zph_need_pay`）。顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。
+## 子账号
+
+登录时 `usertype=2 && pid>0`：token 的 `sub` 是父企业 uid，`hr_uid` 是子账号自己。旧 token 无 `hr_uid` 仍可解码。`pw_epoch` 同时查父与 `hr_uid`。不要把邀请码 `phpyun_rs_company_hrs` 当成这套机制。
+
+## 收银台 / 付费展位
+
+`POST /v1/mcenter/orders/detail|{pay}` 按 `order_id` 查任意 `company_order`（VIP/充值/增值/once/置顶/type=28）。待付 `order_state=0`；已付=1；取消=2；银行待审=3。支付宝出 `pay_url`，银行返回汇款账户；`wxpay` 仅当 `sy_wxpayid` 有值，只改渠道不给下单 URL。展位现金链不走套餐扣次：`zph/reserve` 仍可能 `zph_need_pay`，前端再 `zph/order`。
+
+本轮仍不做：邀请码协作工具箱（`/com/hrs` 保留但不做成 PHP 工具箱）、顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。微信支付商户下单 URL。
+
+## 登录走查（2026-09-17）
+
+Playwright + Chrome for Testing 装在 `/var/tmp/pw`（不进仓库）。公网 Cloudflare 对 Headless UA 返回 1010；Rust `BOT_UA_DENYLIST` 含 `headlesschrome`。走查走 `http://127.0.0.1:3001` 并设普通 Chrome UA + `lang=zh`。duncan2 `/com/*`、duncan1 `/user/*`，PC 1366 / H5 390。本轮五项页（子账号、兼职列表/发布、customize、收银台）已过。仍需人工：绑定页未配微信/Google 的 400；`/com/record` 500；`/com/follows` `/com/gallery` `/com/news` `/com/products` 请求缺 `kind`。公网真登录截图需过 Cloudflare。

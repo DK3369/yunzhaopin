@@ -28,6 +28,11 @@
 | `/v1/wap/upload/content` | 富文本图片（jpeg/png/webp，2MB）。 |
 | `/v1/mcenter/vip/current` | 加 `zph_num/top_num/urgent_num/rec_num` 与 `caps`。 |
 | `/v1/mcenter/vip/integral-classes` · `/recharge` · `/card` | 求职/招聘都可用；积分按订单 `usertype` 分路。 |
+| `/v1/mcenter/company/sub-accounts/*` | 经典 `member.pid` 子账号。配额 `sons_num`。 |
+| `/v1/mcenter/company/nav` · `/save` · `/reset` | 企业左栏 JSON。 |
+| `/v1/mcenter/orders/detail` · `/pay` | 收银台再支付。 |
+| `/v1/mcenter/zph/order` | 付费展位 `type=28`。 |
+| `/v1/mcenter/com-parts/detail` · `/batch/status` | 兼职详情与批量上下架。 |
 
 ## 薄别名 / 详情
 

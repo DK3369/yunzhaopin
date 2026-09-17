@@ -8,11 +8,13 @@ pub mod article_channels;
 pub mod atn;
 pub mod blacklist;
 pub mod broadcasts;
+pub mod cashier;
 pub mod chat;
 pub mod company;
 pub mod company_cert;
 pub mod company_content;
 pub mod company_hr;
+pub mod company_nav;
 pub mod company_skin;
 pub mod company_sub;
 pub mod com_stats;
@@ -73,6 +75,7 @@ pub mod search_history;
 pub mod sessions;
 pub mod sign;
 pub mod specials;
+pub mod sub_account;
 pub mod talent_pool;
 pub mod transfer;
 pub mod username;
@@ -153,6 +156,9 @@ pub fn router() -> Router<AppState> {
         .merge(saved_searches::routes())
         .merge(ratings::routes())
         .merge(company_hr::routes())
+        .merge(company_nav::routes())
+        .merge(cashier::routes())
+        .merge(sub_account::routes())
         .merge(resume_timeline::routes())
         .merge(referrals::routes())
         .merge(search_history::routes())

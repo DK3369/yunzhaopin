@@ -13,7 +13,7 @@
 
 - `uid` / `usertype` **只来自**已校验 JWT，禁止再信 body / query / header 里的身份字段。
 - 会员路径 Redis/DB 出错时鉴权仍可能放行（保持可用性）；**admin 路径 fail-closed**（出错 → 401）。
-- JWT：`Validation::new(HS256)` + 固定 `iss=phpyun-rs`。`pw_epoch` TTL = `max(access, refresh) + 1d`。
+- JWT：`Validation::new(HS256)` + 固定 `iss=phpyun-rs`。`pw_epoch` TTL = `max(access, refresh) + 1d`。经典子账号 token 可选 `hr_uid`（自己的 member.uid），`sub` 仍是父企业；`self_uid()` 只用于改密/绑定/注销/用户名/会话。
 
 ## IP 与 CORS
 
