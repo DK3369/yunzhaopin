@@ -37,6 +37,9 @@
 | `GET/POST /v1/wap/companies/sidebar` | `rec` 10 | 企业列表侧栏 |
 | `POST /v1/admin/dashboard/full` | `home` + `ajax_statis` + `month_statis` + `ajax_right` + `chart`(getweb)；可选 `msg_num` | `/dashboard/overview`、`/recent-signups`；`ajax_statis` 等瘦接口仍在 |
 | `POST /v1/admin/company-contents/{list,status,statist,status-body,delete}` | body `kind=news\|product`；`list` 附带 `statist` | 10 条 `company-news/*`、`company-products/*` |
+| `POST /v1/admin/jobs/state`、`/feedback/status`、`/reports/status` | `{code,key,msg}`；body `id` 或 `ids`（字符串数组也可） | 3 条 `.../batch/state`、`.../batch/status` |
+| `POST /v1/admin/logs/user`、`/logs/company`（+ `/delete`） | 列表 body 分页/关键词 + `kind`（可空）；删除 `{kind, ids}`（kind 必填）。未知 kind → 400 `param_invalid` | 25 条 `user-logs*` / `company-logs*`（**保留** `company-logs/job-tellog/search-list`） |
+| 8 个 archive list 内嵌 `data.statist` | 形状同独立 `/statist`（`numAll` / `numAudited` / `numUnaudited` / `numFailed`；委托简历是 `resumeAllNum` 等） | 首屏不必再打 `/statist`；独立 `/statist` 仍在，切 tab 可继续打 |
 
 既有聚合（未改语义）：`/v1/wap/rankings`、`/v1/mcenter/messages/unread-summary`、`/v1/mcenter/company-contents`、`/v1/wap/regions`。
 
@@ -64,6 +67,11 @@
 | `GET/POST /v1/wap/subscribe/meta` | `/v1/wap/initjobs`（`data.subscribe`） |
 | `POST /v1/wap/stats/overview` | `/v1/wap/initjobs`（`data.stats`） |
 | `GET/POST /v1/wap/ads`（单槽位） | `/v1/wap/initads`（`slots=3:5`） |
+| `POST /v1/admin/jobs/batch/state` | `POST /v1/admin/jobs/state`（`id` 或 `ids`） |
+| `POST /v1/admin/feedback/batch/status` | `POST /v1/admin/feedback/status`（`id` 或 `ids`，`status` 目前只允许 1） |
+| `POST /v1/admin/reports/batch/status` | `POST /v1/admin/reports/status`（`id` 或 `ids`） |
+| 13 条 `POST /v1/admin/user-logs`（含 `/down` `/freedown` `/look-resume` `/refresh` `/talent-pool` `/trust` 及对应 `/delete`） | `POST /v1/admin/logs/user`、`/logs/user/delete`，body `kind` |
+| 12 条 `POST /v1/admin/company-logs`（含 `/fav-job` `/job-tellog` `/look-job` `/part-apply` `/userid-job` `/userid-msg` 及对应 `/delete`；**不含** `job-tellog/search-list`） | `POST /v1/admin/logs/company`、`/logs/company/delete`，body `kind`。`userid_job` 删除仍走 php-content `deluseridjob`；`company_comlog/index` 仍 php-content |
 
 `/v1/wap/countries` 仍在：全量在 `initjobs.countries`，但本接口仍支持 `continent` 过滤；`/countries/get`、`/by-code` 是单条查询。
 
@@ -99,12 +107,6 @@
 - company-certs 双轨。
 - 不要并 look/views/banners，不要恢复本批已摘路由。
 - HTTP `Cache-Control`（BFF 需 `Vary` 语言与登录态）。
-
-## 本轮已做（Admin 收口，不删路径）
-
-- jobs / feedback / reports 单条 `status`/`state` 吃 `id` 或 `ids`；对应 `batch/*` 标 deprecated。
-- 8 个 archive list 内嵌 `statist`（`user-photos`、`user-certs`、`user-msgs`、`company-photos`、`company-shows`、`resume-shows`、`company-banners`、`user-entrusts`）。独立 `/statist` 仍在。
-- 新路径 `POST /v1/admin/logs/user|company`（+ `/delete`），`kind` 为 snake_case；旧 `user-logs*` / `company-logs*` 标 deprecated。`company_comlog/index` 仍走 php-content。
 
 ## 不算合并
 

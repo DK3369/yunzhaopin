@@ -20,7 +20,6 @@ use validator::Validate;
 
 use crate::dto::{AdminPaged, ListWithStat};
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/user-photos", post(list_user_photos))
@@ -41,19 +40,6 @@ pub fn routes() -> Router<AppState> {
         .route("/user-msgs/status-body", post(user_msg_lockinfo))
         .route("/user-msgs/show", post(user_msg_show))
         .route("/user-msgs/edit", post(edit_user_msg))
-        .route("/user-logs", post(list_user_logs))
-        .route("/user-logs/down", post(list_down_logs))
-        .route("/user-logs/freedown", post(list_freedown_logs))
-        .route("/user-logs/look-resume", post(list_look_resume_logs))
-        .route("/user-logs/talent-pool", post(list_talent_logs))
-        .route("/user-logs/trust", post(list_trust_logs))
-        .route("/user-logs/refresh", post(list_refresh_resume_logs))
-        .route("/user-logs/down/delete", post(delete_down_logs))
-        .route("/user-logs/freedown/delete", post(delete_freedown_logs))
-        .route("/user-logs/look-resume/delete", post(delete_look_resume_logs))
-        .route("/user-logs/talent-pool/delete", post(delete_talent_logs))
-        .route("/user-logs/trust/delete", post(delete_trust_logs))
-        .route("/user-logs/refresh/delete", post(delete_refresh_resume_logs))
         .route("/logs/user", post(list_logs_user))
         .route("/logs/user/delete", post(delete_logs_user))
         .route("/logs/company", post(list_logs_company))
@@ -88,18 +74,6 @@ pub fn routes() -> Router<AppState> {
         )
         .route("/company-contents/delete", post(company_contents_delete))
         .route("/company-interviews", post(list_interviews))
-        .route("/company-logs", post(list_company_logs))
-        .route("/company-logs/userid-job", post(list_userid_job_logs))
-        .route("/company-logs/userid-msg", post(list_userid_msg_logs))
-        .route("/company-logs/look-job", post(list_look_job_logs))
-        .route("/company-logs/part-apply", post(list_part_apply_logs))
-        .route("/company-logs/fav-job", post(list_fav_job_logs))
-        .route("/company-logs/job-tellog", post(list_job_tellog_logs))
-        .route("/company-logs/userid-msg/delete", post(delete_userid_msg_logs))
-        .route("/company-logs/look-job/delete", post(delete_look_job_logs))
-        .route("/company-logs/part-apply/delete", post(delete_part_apply_logs))
-        .route("/company-logs/fav-job/delete", post(delete_fav_job_logs))
-        .route("/company-logs/job-tellog/delete", post(delete_job_tellog_logs))
         .route(
             "/company-logs/job-tellog/search-list",
             post(job_tellog_search_list),
@@ -375,27 +349,6 @@ pub async fn delete_user_certs(
     Ok(ApiMessage::new("admin_user_00187", msg))
 }
 
-#[deprecated]
-#[utoipa::path(
-    post,
-    path = "/v1/admin/user-logs",
-    tag = "admin",
-    security(("bearer" = [])),
-    description = "改用 POST /v1/admin/logs/user（无 kind 时仍为 member_log）",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list_user_logs(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    page: Pagination,
-    ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<MemberLogRow>>> {
-    user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_member_logs(&state, Some(1), q.uid, page).await?,
-    )))
-}
-
 #[utoipa::path(post, path = "/v1/admin/company-photos", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok", body = Object)))]
 pub async fn list_company_photos(
     State(state): State<AppState>,
@@ -513,27 +466,6 @@ pub async fn list_interviews(
     user.require_admin()?;
     Ok(ApiResponse::data(AdminPaged::from(
         admin_archive_service::list_interviews(&state, q.keyword.as_deref(), page).await?,
-    )))
-}
-
-#[deprecated]
-#[utoipa::path(
-    post,
-    path = "/v1/admin/company-logs",
-    tag = "admin",
-    security(("bearer" = [])),
-    description = "改用 POST /v1/admin/logs/company（无 kind 时仍为 member_log）",
-    responses((status = 200, description = "ok"))
-)]
-pub async fn list_company_logs(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    page: Pagination,
-    ValidatedJson(q): ValidatedJson<KwQuery>,
-) -> AppResult<ApiResponse<AdminPaged<MemberLogRow>>> {
-    user.require_admin()?;
-    Ok(ApiResponse::data(AdminPaged::from(
-        admin_archive_service::list_member_logs(&state, Some(2), q.uid, page).await?,
     )))
 }
 
@@ -1368,87 +1300,6 @@ pub async fn save_banner(
         }
     }
 }
-
-macro_rules! biz_handler {
-    ($fn:ident, $path:expr, $svc:path) => {
-        #[deprecated]
-        #[utoipa::path(
-            post,
-            path = $path,
-            tag = "admin",
-            security(("bearer" = [])),
-            description = "改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举",
-            request_body = KwQuery,
-            responses((status = 200, description = "ok"))
-        )]
-        pub async fn $fn(
-            State(state): State<AppState>,
-            user: AuthenticatedUser,
-            page: Pagination,
-            ValidatedJson(q): ValidatedJson<KwQuery>,
-        ) -> AppResult<ApiResponse<AdminPaged<BizLogRow>>> {
-            user.require_admin()?;
-            Ok(ApiResponse::data(AdminPaged::from(
-                $svc(&state, q.keyword.as_deref(), page).await?,
-            )))
-        }
-    };
-}
-
-biz_handler!(list_down_logs, "/v1/admin/user-logs/down", admin_archive_service::list_down_logs);
-biz_handler!(list_freedown_logs, "/v1/admin/user-logs/freedown", admin_archive_service::list_freedown_logs);
-biz_handler!(list_look_resume_logs, "/v1/admin/user-logs/look-resume", admin_archive_service::list_look_resume_logs);
-biz_handler!(list_talent_logs, "/v1/admin/user-logs/talent-pool", admin_archive_service::list_talent_logs);
-biz_handler!(list_trust_logs, "/v1/admin/user-logs/trust", admin_archive_service::list_trust_logs);
-biz_handler!(list_refresh_resume_logs, "/v1/admin/user-logs/refresh", admin_archive_service::list_refresh_resume_logs);
-biz_handler!(list_userid_job_logs, "/v1/admin/company-logs/userid-job", admin_archive_service::list_userid_job_logs);
-biz_handler!(list_userid_msg_logs, "/v1/admin/company-logs/userid-msg", admin_archive_service::list_userid_msg_logs);
-biz_handler!(list_look_job_logs, "/v1/admin/company-logs/look-job", admin_archive_service::list_look_job_logs);
-biz_handler!(list_part_apply_logs, "/v1/admin/company-logs/part-apply", admin_archive_service::list_part_apply_logs);
-biz_handler!(list_fav_job_logs, "/v1/admin/company-logs/fav-job", admin_archive_service::list_fav_job_logs);
-biz_handler!(list_job_tellog_logs, "/v1/admin/company-logs/job-tellog", admin_archive_service::list_job_tellog_logs);
-
-/// The grids post `{id}` for one row and `{del: [...]}` for a selection; the
-/// web adapter normalises both onto `ids`. The request path is forwarded
-/// because PHP stamps the recycle-bin snapshot with the page that caused the
-/// delete — `OriginalUri`, since `Uri` inside a nested router has lost the
-/// `/v1/admin` prefix.
-macro_rules! biz_delete_handler {
-    ($fn:ident, $path:expr, $svc:path) => {
-        #[deprecated]
-        #[utoipa::path(
-            post,
-            path = $path,
-            tag = "admin",
-            security(("bearer" = [])),
-            description = "改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids",
-            request_body = IdsBody,
-            responses((status = 200, description = "ok"))
-        )]
-        pub async fn $fn(
-            State(state): State<AppState>,
-            user: AuthenticatedUser,
-            OriginalUri(uri): OriginalUri,
-            ValidatedJson(f): ValidatedJson<IdsBody>,
-        ) -> AppResult<ApiMessage> {
-            user.require_admin()?;
-            let msg = $svc(&state, &user, &f.ids, uri.path()).await?;
-            Ok(ApiMessage::new("admin_user_00187", msg))
-        }
-    };
-}
-
-biz_delete_handler!(delete_down_logs, "/v1/admin/user-logs/down/delete", admin_archive_service::delete_down_logs);
-biz_delete_handler!(delete_freedown_logs, "/v1/admin/user-logs/freedown/delete", admin_archive_service::delete_freedown_logs);
-biz_delete_handler!(delete_look_resume_logs, "/v1/admin/user-logs/look-resume/delete", admin_archive_service::delete_look_resume_logs);
-biz_delete_handler!(delete_talent_logs, "/v1/admin/user-logs/talent-pool/delete", admin_archive_service::delete_talent_logs);
-biz_delete_handler!(delete_trust_logs, "/v1/admin/user-logs/trust/delete", admin_archive_service::delete_trust_logs);
-biz_delete_handler!(delete_refresh_resume_logs, "/v1/admin/user-logs/refresh/delete", admin_archive_service::delete_refresh_resume_logs);
-biz_delete_handler!(delete_userid_msg_logs, "/v1/admin/company-logs/userid-msg/delete", admin_archive_service::delete_userid_msg_logs);
-biz_delete_handler!(delete_look_job_logs, "/v1/admin/company-logs/look-job/delete", admin_archive_service::delete_look_job_logs);
-biz_delete_handler!(delete_part_apply_logs, "/v1/admin/company-logs/part-apply/delete", admin_archive_service::delete_part_apply_logs);
-biz_delete_handler!(delete_fav_job_logs, "/v1/admin/company-logs/fav-job/delete", admin_archive_service::delete_fav_job_logs);
-biz_delete_handler!(delete_job_tellog_logs, "/v1/admin/company-logs/job-tellog/delete", admin_archive_service::delete_job_tellog_logs);
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct LogQuery {

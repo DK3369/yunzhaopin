@@ -3,7 +3,7 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 use phpyun_core::{
-    dto::{merge_id_and_ids, BatchResult, StatusFilterBody},
+    dto::{merge_id_and_ids, StatusFilterBody},
     ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
     ValidatedJson,
 };
@@ -14,13 +14,11 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/reports", post(list))
         .route("/reports/status", post(set_status))
-        .route("/reports/batch/status", post(batch_set_status))
-        // PHP-shaped admin queues (yunying/report_*). Separate from the three
+        // PHP-shaped admin queues (yunying/report_*). Separate from the two
         // routes above, which keep the older generic report shape.
         .route("/reports/job", post(php_list_job))
         .route("/reports/resume", post(php_list_resume))
@@ -368,36 +366,4 @@ pub async fn set_status(
     let ids = merge_id_and_ids(f.id, f.ids)?;
     let _ = admin_service::batch_set_report_status(&state, &user, &ids, f.status).await?;
     Ok(ApiResponse::message("ok"))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct BatchStatusForm {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
-    #[validate(range(min = 1, max = 2))]
-    pub status: i32,
-}
-
-/// Batch process reports
-#[deprecated]
-#[utoipa::path(
-    post,
-    path = "/v1/admin/reports/batch/status",
-    tag = "admin",
-    security(("bearer" = [])),
-    description = "改用 POST /v1/admin/reports/status（body 可传 ids）",
-    request_body = BatchStatusForm,
-    responses((status = 200, description = "ok", body = BatchResult))
-)]
-pub async fn batch_set_status(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<BatchStatusForm>,
-) -> AppResult<ApiResponse<BatchResult>> {
-    user.require_admin()?;
-    let r = admin_service::batch_set_report_status(&state, &user, &f.ids, f.status).await?;
-    Ok(ApiResponse::data(BatchResult {
-        requested: r.requested,
-        affected: r.affected,
-    }))
 }

@@ -2,7 +2,7 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    dto::{merge_id_and_ids, BatchResult},
+    dto::merge_id_and_ids,
     utils::fmt_dt,
     ApiResponse, AppResult, AppState, AuthenticatedUser, Pagination, ValidatedJson,
 };
@@ -17,12 +17,10 @@ use validator::Validate;
 
 use crate::dto::{AdminPaged, PhpLooseBody};
 
-#[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/jobs", post(list))
         .route("/jobs/state", post(set_state))
-        .route("/jobs/batch/state", post(batch_set_state))
         .route("/jobs/stats", post(stats))
         .route("/jobs/publish", post(set_publish))
         .route("/jobs/promote", post(promote))
@@ -236,37 +234,6 @@ pub async fn set_state(
     let ids = merge_id_and_ids(f.id, f.ids)?;
     let _ = admin_service::batch_set_job_state(&state, &user, &ids, f.state).await?;
     Ok(ApiResponse::message("ok"))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct BatchStateForm {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
-    #[validate(range(min = 1, max = 3))]
-    pub state: i32,
-}
-
-#[deprecated]
-#[utoipa::path(
-    post,
-    path = "/v1/admin/jobs/batch/state",
-    tag = "admin",
-    security(("bearer" = [])),
-    description = "改用 POST /v1/admin/jobs/state（body 可传 ids）",
-    request_body = BatchStateForm,
-    responses((status = 200, description = "ok", body = BatchResult))
-)]
-pub async fn batch_set_state(
-    State(state): State<AppState>,
-    user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<BatchStateForm>,
-) -> AppResult<ApiResponse<BatchResult>> {
-    user.require_admin()?;
-    let r = admin_service::batch_set_job_state(&state, &user, &f.ids, f.state).await?;
-    Ok(ApiResponse::data(BatchResult {
-        requested: r.requested,
-        affected: r.affected,
-    }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/jobs/stats", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
