@@ -4391,6 +4391,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/resume/paste": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `addDocInfo` — create/update a pasted HTML resume (`resume_expect.doc=1`). */
+        post: operations["post_v1_mcenter_resume_paste"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/resume/paste/get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Own pasted resume HTML (no unlock). */
+        post: operations["post_v1_mcenter_resume_paste_get"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/resume/projects": {
         parameters: {
             query?: never;
@@ -11017,6 +11051,8 @@ export interface components {
             /** Format: int64 */
             city_classid?: number;
             city_classname?: string | null;
+            /** @description Pasted HTML resume body (paste endpoints only). */
+            doc?: string | null;
             /**
              * Format: int32
              * @description Industry: dict id (large id space, share the dict-id cap).
@@ -12973,6 +13009,10 @@ export interface components {
             x?: string | null;
             y?: string | null;
         };
+        PasteGetData: {
+            doc: string;
+            expect: components["schemas"]["ResumeExpectItem"];
+        };
         PayBankForm: {
             bank_name: string;
             bank_number: string;
@@ -14034,6 +14074,11 @@ export interface components {
              * @description 1 = default resume copy
              */
             defaults: number;
+            /**
+             * Format: int32
+             * @description 1 = pasted HTML resume
+             */
+            doc: number;
             /** Format: int32 */
             hy: number;
             hy_n: string;
@@ -21630,6 +21675,54 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    post_v1_mcenter_resume_paste: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpectForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedId"];
+                };
+            };
+        };
+    };
+    post_v1_mcenter_resume_paste_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasteGetData"];
+                };
             };
         };
     };

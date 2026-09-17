@@ -174,9 +174,11 @@ pub async fn exists(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AddFavoriteForm>,
 ) -> AppResult<ApiResponse<ExistsResp>> {
-    user.require_jobseeker()?;
     let exists = match f.kind {
-        KIND_JOB => collect_service::exists(&state, &user, KIND_JOB, f.target_id).await?,
+        KIND_JOB => {
+            user.require_jobseeker()?;
+            collect_service::exists(&state, &user, KIND_JOB, f.target_id).await?
+        }
         KIND_COMPANY => atn_service::exists(&state, &user, ATN_KIND_COMPANY, f.target_id).await?,
         KIND_USER => atn_service::exists(&state, &user, ATN_KIND_USER, f.target_id).await?,
         _ => return Err(ApiError::param_invalid("kind")),
@@ -248,7 +250,6 @@ async fn list_atn(
     page: Pagination,
     kind: i32,
 ) -> AppResult<ApiResponse<Paged<FavoriteListItem>>> {
-    user.require_jobseeker()?;
     let target_kind = atn_kind_for_favorite(kind).ok_or_else(|| ApiError::param_invalid("kind"))?;
     let r = atn_service::list_following(state, user, target_kind, page).await?;
     let dicts = if kind == KIND_COMPANY {

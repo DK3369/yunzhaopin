@@ -1,7 +1,36 @@
 use super::entity::{CompanyContent, ContentKind};
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, uid, title, body, file, status, statusbody, ctime, did, usertype";
+/// Live `phpyun_company_news` has no `file` / `usertype`; products store the
+/// image in `pic`. SELECT aliases keep the entity's `file` / `usertype` fields.
+fn select_fields(kind: ContentKind) -> &'static str {
+    match kind {
+        ContentKind::News => {
+            "CAST(id AS UNSIGNED) AS id, \
+             CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
+             COALESCE(title,'') AS title, \
+             body, \
+             CAST('' AS CHAR) AS file, \
+             CAST(COALESCE(status,0) AS SIGNED) AS status, \
+             statusbody, \
+             CAST(COALESCE(ctime,0) AS SIGNED) AS ctime, \
+             CAST(COALESCE(did,0) AS UNSIGNED) AS did, \
+             CAST(2 AS SIGNED) AS usertype"
+        }
+        ContentKind::Product => {
+            "CAST(id AS UNSIGNED) AS id, \
+             CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
+             COALESCE(title,'') AS title, \
+             body, \
+             pic AS file, \
+             CAST(COALESCE(status,0) AS SIGNED) AS status, \
+             statusbody, \
+             CAST(COALESCE(ctime,0) AS SIGNED) AS ctime, \
+             CAST(COALESCE(did,0) AS UNSIGNED) AS did, \
+             CAST(2 AS SIGNED) AS usertype"
+        }
+    }
+}
 
 // Soft-delete convention: status=2 means deleted. list/count/find always
 // filter with `AND status != 2`.
@@ -17,9 +46,9 @@ pub async fn list(
     limit: u64,
 ) -> Result<Vec<CompanyContent>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
-    qb.push(FIELDS);
+    qb.push(select_fields(kind));
     qb.push(" FROM ");
-    qb.push(kind.table()); // enum-whitelisted, not injectable
+    qb.push(kind.table());
     qb.push(" WHERE uid = ");
     qb.push_bind(uid);
     qb.push(" AND status != 2");
@@ -69,8 +98,9 @@ pub async fn find_by_id(
     id: u64,
     uid: u64,
 ) -> Result<Option<CompanyContent>, sqlx::Error> {
+    let fields = select_fields(kind);
     let sql = format!(
-        "SELECT {FIELDS} FROM {} WHERE id = ? AND uid = ? AND status != 2 LIMIT 1",
+        "SELECT {fields} FROM {} WHERE id = ? AND uid = ? AND status != 2 LIMIT 1",
         kind.table()
     );
     sqlx::query_as::<_, CompanyContent>(&sql)
@@ -95,21 +125,36 @@ pub async fn create(
     kind: ContentKind,
     input: CreateInput<'_>,
 ) -> Result<u64, sqlx::Error> {
-    let sql = format!(
-        "INSERT INTO {} (uid, title, body, file, status, ctime, did, usertype)
-         VALUES (?, ?, ?, ?, 0, ?, ?, ?)",
-        kind.table()
-    );
-    let res = sqlx::query(&sql)
-        .bind(input.uid)
-        .bind(input.title)
-        .bind(input.body)
-        .bind(input.file.unwrap_or(""))
-        .bind(input.now)
-        .bind(input.did)
-        .bind(input.usertype)
-        .execute(pool)
-        .await?;
+    let _ = input.usertype;
+    let res = match kind {
+        ContentKind::News => {
+            sqlx::query(
+                "INSERT INTO phpyun_company_news (uid, title, body, status, ctime, did)
+                 VALUES (?, ?, ?, 0, ?, ?)",
+            )
+            .bind(input.uid)
+            .bind(input.title)
+            .bind(input.body)
+            .bind(input.now)
+            .bind(input.did)
+            .execute(pool)
+            .await?
+        }
+        ContentKind::Product => {
+            sqlx::query(
+                "INSERT INTO phpyun_company_product (uid, title, body, pic, status, ctime, did)
+                 VALUES (?, ?, ?, ?, 0, ?, ?)",
+            )
+            .bind(input.uid)
+            .bind(input.title)
+            .bind(input.body)
+            .bind(input.file.unwrap_or(""))
+            .bind(input.now)
+            .bind(input.did)
+            .execute(pool)
+            .await?
+        }
+    };
     Ok(res.last_insert_id())
 }
 
@@ -128,30 +173,51 @@ pub async fn update(
     input: UpdateInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     // After update, reset status = 0 to re-submit for review (matching PHP behavior).
-    let sql = if input.file.is_some() {
-        format!(
-            "UPDATE {} SET title = ?, body = ?, file = ?, status = 0, ctime = ? WHERE id = ? AND uid = ?",
-            kind.table()
-        )
-    } else {
-        format!(
-            "UPDATE {} SET title = ?, body = ?, status = 0, ctime = ? WHERE id = ? AND uid = ?",
-            kind.table()
-        )
+    let res = match (kind, input.file) {
+        (ContentKind::Product, Some(pic)) => {
+            sqlx::query(
+                "UPDATE phpyun_company_product
+                 SET title = ?, body = ?, pic = ?, status = 0, ctime = ?
+                 WHERE id = ? AND uid = ?",
+            )
+            .bind(input.title)
+            .bind(input.body)
+            .bind(pic)
+            .bind(input.now)
+            .bind(input.id)
+            .bind(input.uid)
+            .execute(pool)
+            .await?
+        }
+        (ContentKind::Product, None) => {
+            sqlx::query(
+                "UPDATE phpyun_company_product
+                 SET title = ?, body = ?, status = 0, ctime = ?
+                 WHERE id = ? AND uid = ?",
+            )
+            .bind(input.title)
+            .bind(input.body)
+            .bind(input.now)
+            .bind(input.id)
+            .bind(input.uid)
+            .execute(pool)
+            .await?
+        }
+        (ContentKind::News, _) => {
+            sqlx::query(
+                "UPDATE phpyun_company_news
+                 SET title = ?, body = ?, status = 0, ctime = ?
+                 WHERE id = ? AND uid = ?",
+            )
+            .bind(input.title)
+            .bind(input.body)
+            .bind(input.now)
+            .bind(input.id)
+            .bind(input.uid)
+            .execute(pool)
+            .await?
+        }
     };
-
-    let q = sqlx::query(&sql).bind(input.title).bind(input.body);
-    let q = if let Some(file) = input.file {
-        q.bind(file)
-    } else {
-        q
-    };
-    let res = q
-        .bind(input.now)
-        .bind(input.id)
-        .bind(input.uid)
-        .execute(pool)
-        .await?;
     Ok(res.rows_affected())
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatUnixDate, isUnauthErr } from '~/utils/site'
 import { ApiError } from '~/utils/envelope'
+import { qrSvgDataUri } from '~/utils/qr'
 
 type JobRow = {
   id: number
@@ -346,6 +347,25 @@ useSeoMeta({ title: t('wap_com_00106') })
 const jobTotal = computed(() => inferTotal(data.value, list.value))
 const h5Menu = ref(0)
 const h5MenuKind = ref<'promote' | 'more' | ''>('')
+const qrOpen = ref(false)
+const qrSrc = ref('')
+async function showQr(id: number) {
+  msg.value = ''
+  const fallback = import.meta.client ? `${window.location.origin}/jobs/${id}` : `/jobs/${id}`
+  try {
+    const r = await api.get<{ share_url?: string }>('/v1/wap/jobs/share-text', { id })
+    const url = String(r.share_url || fallback)
+    qrSrc.value = qrSvgDataUri(url)
+    qrOpen.value = true
+  } catch (e: unknown) {
+    try {
+      qrSrc.value = qrSvgDataUri(fallback)
+      qrOpen.value = true
+    } catch {
+      msg.value = e instanceof Error ? e.message : t('ui.load_failed')
+    }
+  }
+}
 function toggleH5Menu(id: number, kind: 'promote' | 'more') {
   if (h5Menu.value === id && h5MenuKind.value === kind) {
     h5Menu.value = 0
@@ -489,6 +509,7 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
           <td align="center">{{ job.lastupdate_n || '—' }}</td>
           <td align="center">
             <a href="javascript:;" class="job_looklist_fx" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00246') }}</a>
+            <a href="javascript:;" class="job_looklist_fx" @click="showQr(job.id)">{{ $t('ui.job_qr') }}</a>
             <NuxtLink :to="`/poster/job/${job.id}`" class="job_looklist_hb">{{ $t('member_com_00270') }}</NuxtLink>
           </td>
           <td align="center">
@@ -591,6 +612,7 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
                 <span v-else class="job_czmore_a job_czmore_gb" @click="setStatus(job.id, 1)">{{ $t('wap_com_00245') }}</span>
                 <span class="job_czmore_a job_czmore_sc" @click="picked = [job.id]; batch('delete')">{{ $t('wap_js_00077') }}</span>
                 <span class="job_czmore_a" @click="copyShare(job.id, 'text')">{{ $t('wap_com_00246') }}</span>
+                <span class="job_czmore_a" @click="showQr(job.id)">{{ $t('ui.job_qr') }}</span>
               </div>
             </li>
           </ul>
@@ -608,6 +630,18 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
       <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>
     </p>
     <p v-if="msg">{{ msg }}</p>
+    <div v-if="qrOpen" class="yun_wxbd_box" style="position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center;" @click.self="qrOpen = false">
+      <div style="background: #fff; padding: 20px; text-align: center;">
+        <div class="yun_wxbd_img_c">
+          <div id="wx_share_qrcode" class="yun_wxbd_img" style="border: 1px solid #eee; line-height: 180px;">
+            <img v-if="qrSrc" :src="qrSrc" width="180" height="180" alt="" />
+            <template v-else>{{ $t('wap_00031') }}</template>
+          </div>
+        </div>
+        <div class="yun_wxbd_p">{{ $t('member_com_00256') }}</div>
+        <a href="javascript:;" @click="qrOpen = false">{{ $t('common.close') }}</a>
+      </div>
+    </div>
     <div class="com_tip_bottom">
       <div class="yun_tip_tit">{{ $t('wap_user_00205') }}</div>
       <div class="yun_prompt_cont">

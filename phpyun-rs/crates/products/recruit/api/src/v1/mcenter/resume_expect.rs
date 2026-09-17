@@ -6,7 +6,7 @@ use phpyun_core::json;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::expect::ExpectInput;
 use phpyun_services::resume_children_service::expect_svc;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
@@ -15,6 +15,8 @@ pub fn routes() -> Router<AppState> {
         .route("/resume/expects", post(create))
         .route("/resume/expects/update", post(update))
         .route("/resume/expects/set-default", post(set_default))
+        .route("/resume/paste", post(paste))
+        .route("/resume/paste/get", post(paste_get))
 }
 
 /// Job expectation item — **reuses** `wap::resumes::ResumeExpectItem` (14 fields, including 3 dictionary translations + time formatting).
@@ -80,6 +82,11 @@ pub struct ExpectForm {
     #[serde(default)]
     #[validate(range(min = 0, max = 99))]
     pub status: Option<i32>,
+
+    /// Pasted HTML resume body (paste endpoints only).
+    #[serde(default)]
+    #[validate(length(max = 60_000))]
+    pub doc: Option<String>,
 }
 
 // ---- Loose deserializers: accept string-encoded numbers ("57"), real
@@ -255,4 +262,72 @@ pub async fn set_default(
 ) -> AppResult<ApiResponse<json::Value>> {
     expect_svc::set_default(&state, &user, b.id, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PasteGetData {
+    pub expect: ExpectItem,
+    pub doc: String,
+}
+
+/// PHP `addDocInfo` — create/update a pasted HTML resume (`resume_expect.doc=1`).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume/paste",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = ExpectForm,
+    responses((status = 200, description = "ok", body = CreatedId))
+)]
+pub async fn paste(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(f): ValidatedJson<ExpectForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
+    let (job_id, city_id) = resolve_classids(&state, &f).await?;
+    let html = f.doc.as_deref().unwrap_or("");
+    let id = expect_svc::paste(
+        &state,
+        &user,
+        phpyun_core::numeric::checked_param(f.id, "resume_expect.id")?,
+        ExpectInput {
+            name: f.name.as_deref(),
+            job_classid: job_id,
+            city_classid: city_id,
+            salary: f.salary,
+            minsalary: f.salary,
+            maxsalary: f.maxsalary,
+            r#type: f.r#type,
+            report: f.report,
+            jobstatus: f.jobstatus,
+            hy: f.hy,
+        },
+        html,
+        &ip,
+    )
+    .await?;
+    Ok(ApiResponse::data(CreatedId { id }))
+}
+
+/// Own pasted resume HTML (no unlock).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume/paste/get",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok", body = PasteGetData))
+)]
+pub async fn paste_get(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<PasteGetData>> {
+    let (row, html) = expect_svc::paste_get(&state, &user, b.id).await?;
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    Ok(ApiResponse::data(PasteGetData {
+        expect: crate::v1::wap::resumes::resume_expect_item_from_dict(row, &dicts)?,
+        doc: html,
+    }))
 }

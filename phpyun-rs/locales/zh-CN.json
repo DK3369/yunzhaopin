@@ -142,6 +142,8 @@
     "resume_bad_status": "简历状态不允许此操作",
     "resume_hidden": "简历已隐藏",
     "resume_not_found": "简历不存在",
+    "resume_profile_incomplete": "请先完善个人资料",
+    "resume_quota_exceeded": "你的简历数已经超过系统设置的简历数了",
     "tiny_ip_limit": "今日 IP 次数已达上限",
     "tiny_not_found": "公开简历不存在",
     "tiny_pwd_mismatch": "简历密码错误",

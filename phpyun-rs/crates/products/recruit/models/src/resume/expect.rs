@@ -41,6 +41,9 @@ pub struct Expect {
     /// 1 = default resume copy (`phpyun_resume_expect.defaults`).
     #[sqlx(default)]
     pub defaults: i32,
+    /// 1 = pasted HTML resume (`phpyun_resume_expect.doc`).
+    #[sqlx(default)]
+    pub doc: i32,
     pub lastupdate: i64,
 }
 
@@ -54,7 +57,8 @@ const FIELDS: &str = "\
     COALESCE(`type`, 0) AS `type`, \
     COALESCE(report, 0) AS report, \
     COALESCE(jobstatus, 0) AS jobstatus, \
-    status, r_status, state, CAST(COALESCE(defaults,0) AS SIGNED) AS defaults, lastupdate";
+    status, r_status, state, CAST(COALESCE(defaults,0) AS SIGNED) AS defaults, \
+    CAST(COALESCE(doc,0) AS SIGNED) AS doc, lastupdate";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx::Error> {
     let sql = format!(
@@ -434,6 +438,101 @@ pub async fn create(
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
+}
+
+/// Paste-resume INSERT: extra `doc=1` / `integrity=100` and denormalized profile fields.
+pub async fn create_paste(
+    pool: &MySqlPool,
+    uid: u64,
+    input: &ExpectInput<'_>,
+    defaults: i32,
+    r_status: i32,
+    state: i32,
+    uname: &str,
+    edu: i32,
+    exp: i32,
+    sex: i32,
+    birthday: &str,
+    photo: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_resume_expect
+           (uid, name, hy, job_classid, city_classid, salary, minsalary, maxsalary,
+            `type`, report, jobstatus, status, r_status, state, defaults, lastupdate,
+            uname, edu, exp, sex, birthday, photo, integrity, ctime, doc)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?, 1)"#,
+    )
+    .bind(uid)
+    .bind(input.name.unwrap_or(""))
+    .bind(input.hy)
+    .bind(input.job_classid)
+    .bind(input.city_classid)
+    .bind(input.salary)
+    .bind(input.minsalary)
+    .bind(input.maxsalary)
+    .bind(input.r#type)
+    .bind(input.report)
+    .bind(input.jobstatus)
+    .bind(r_status)
+    .bind(state)
+    .bind(defaults)
+    .bind(now)
+    .bind(uname)
+    .bind(edu)
+    .bind(exp)
+    .bind(sex)
+    .bind(birthday)
+    .bind(photo)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn update_paste(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+    input: &ExpectInput<'_>,
+    state: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"UPDATE phpyun_resume_expect SET
+            name         = COALESCE(?, name),
+            hy           = ?,
+            job_classid  = ?,
+            city_classid = ?,
+            salary       = ?,
+            minsalary    = ?,
+            maxsalary    = ?,
+            `type`       = ?,
+            report       = ?,
+            jobstatus    = ?,
+            state        = ?,
+            doc          = 1,
+            integrity    = 100,
+            lastupdate   = ?
+           WHERE id = ? AND uid = ?"#,
+    )
+    .bind(input.name)
+    .bind(input.hy)
+    .bind(input.job_classid)
+    .bind(input.city_classid)
+    .bind(input.salary)
+    .bind(input.minsalary)
+    .bind(input.maxsalary)
+    .bind(input.r#type)
+    .bind(input.report)
+    .bind(input.jobstatus)
+    .bind(state)
+    .bind(now)
+    .bind(id)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -821,6 +920,23 @@ pub async fn recompute_whour(
         .execute(pool)
         .await?;
     Ok(())
+}
+
+/// PHP `resume.model::upUserResume`: 55 + work/edu/skill 10 each + project 8 + training 7.
+pub async fn recompute_integrity(pool: &MySqlPool, eid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_resume_expect e SET e.integrity = 55 \
+         + IF((SELECT COUNT(*) FROM phpyun_resume_work w WHERE w.eid = e.id) > 0, 10, 0) \
+         + IF((SELECT COUNT(*) FROM phpyun_resume_edu d WHERE d.eid = e.id) > 0, 10, 0) \
+         + IF((SELECT COUNT(*) FROM phpyun_resume_skill k WHERE k.eid = e.id) > 0, 10, 0) \
+         + IF((SELECT COUNT(*) FROM phpyun_resume_project p WHERE p.eid = e.id) > 0, 8, 0) \
+         + IF((SELECT COUNT(*) FROM phpyun_resume_training t WHERE t.eid = e.id) > 0, 7, 0) \
+         WHERE e.id = ?",
+    )
+    .bind(eid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
 }
 
 async fn count_expect(pool: &MySqlPool, extra: &str) -> Result<u64, sqlx::Error> {

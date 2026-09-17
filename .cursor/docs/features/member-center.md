@@ -61,7 +61,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 |---|---|---|
 | `user_new_tit` | `resume_box_list` | 申请、面试、谁看过、收藏、足迹、速配 |
 | `member_right_index_h1` | **仍要** `resume_box_list`（对照 PHP 实际有包层） | 关注、消息、咨询、兼职、被下载、举报、测评、隐私、绑定、充值、财务、搜索器、外发、注销、意见反馈 |
-| `member_right_index_h1` | **不要** `resume_box_list` | 积分、密码、认证、账户设置入口、邀请注册、简历模板 |
+| `member_right_index_h1` | **不要** `resume_box_list` | 积分、密码、认证、账户设置入口、邀请注册、简历模板、**粘贴简历** `/user/resume/paste` |
 | `user_new_tit` | `user_resume_list` | `/user/resume`、`/user/expects`（H5 编辑是一张 `resume_min_body_cord`；空简历用 `create_resume` + `yun_createlist`，不要 PC `MemberField`） |
 | 招聘 `/com/*` | `com_body` + `newmember_tit` | 空态 PC `com_msg_no*`，H5 `none_position_body*`；**不要**求职 `msg_no` / `uesr_submit` |
 
@@ -156,6 +156,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 被下载简历 | `/user/inbox` | `/com/downloads` 企业下载 | 求职按谁看过同类皮：`user_new_listtit` + `jobnotice_list` / H5 `Posted_*`，**不要** `sysynews_*` | **求职否** |
 | 我的举报 | `/user/reports` | `/com/report` 投诉记录 | 求职无对等列表皮：`job_list_tit` + `job_search_box`，**不要** `sysynews_*` | **求职否** |
 | 求职意向 | `/user/expects` | 无 | 简历小节皮 | 否 |
+| 粘贴简历 | `/user/resume/paste` | 无 | PHP `expectq.htm`（`member_right_index_h1` + UEditor；无 `resume_box_list`）。写 `POST /v1/mcenter/resume/paste`（`doc=1` + `phpyun_resume_doc`），入口在 `/user/resume` 顶部 `user_czbth_zt`；`doc==1` 的意向「修改简历」回本页 | 否 |
 | 职位搜索器 | `/user/searches` | `/com/finder` | `finder.htm`（`job_search_box*`）；订阅开关走 `/v1/mcenter/saved-searches/notify`（按名称对齐，没有则建一条） | 求职「更多」 |
 | 简历模板 | `/user/resume-tpls` | `/com/tpls` 企业模板 | `resumetpl.htm` / `comtpl.htm` | 求职「更多」 |
 | 修改密码 | `/user/password` | `/com/password` | 求职 `passwd.htm`（`account_settings` + `Binding_pop_box`）；招聘 `vs.htm`（`admin_password` + `btn_01`） | 否 |
@@ -280,7 +281,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 ## 会员等级
 
-**招聘端有等级，求职端没有。** 招聘：`phpyun_company_rating`（`type` 1=套餐 / 2=时间会员）付款后 `ratingInfo` 写 `company_statis`（真相源）并镜像 `company.rating*`、在招 `company_job.rating`。`job_num` 赋值不累加；其它配额同档有效期内可累加；过期 `vipOver` 按 `com_vip_done` 清零或降档。增值包走 `company_order.type=5`。`phpyun_rs_user_vip` 只是影子表。求职：`phpyun_member_statis` 只有积分经济（充值 `type=2 usertype=1`、简历置顶 `type=14`、刷新/兑换/买模板）。两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。
+**招聘端有等级，求职端没有。** 招聘：`phpyun_company_rating`（`type` 1=套餐 / 2=时间会员）付款后 `ratingInfo` 写 `company_statis`（真相源）并镜像 `company.rating*`、在招 `company_job.rating`。`job_num` 赋值不累加；其它配额同档有效期内可累加；过期 `vipOver` 按 `com_vip_done` 清零或降档。增值包走 `company_order.type=5`。`phpyun_rs_user_vip` 只是影子表。求职：没有 `company_rating` 对等表，`phpyun_member_statis` 只有积分经济（充值 `type=2 usertype=1`、简历置顶 `type=14`、刷新/兑换/买模板）。两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。
 
 ## 本轮补上的会员页
 
@@ -298,6 +299,8 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 付费展位：`POST /zph/order` 建 `company_order.type=28`（`order_info` JSON）；`settle_paid` 插 `zhaopinhui_com(status=0,price)`。公开 `/fairs/[id]` 捕获 `zph_need_pay` 去收银台。
 - 私信 [`user/chat.vue`](../../../web/apps/site/app/pages/user/chat.vue) / [`com/chat.vue`](../../../web/apps/site/app/pages/com/chat.vue)：`MemberChat` 轮询 `chat/conversations|with|send`。
 - 搜索器订阅：[`user/searches.vue`](../../../web/apps/site/app/pages/user/searches.vue)、[`com/finder.vue`](../../../web/apps/site/app/pages/com/finder.vue) 接 `saved-searches/notify`。
+- 粘贴简历 [`user/resume/paste.vue`](../../../web/apps/site/app/pages/user/resume/paste.vue)：`POST /v1/mcenter/resume/paste` + `/paste/get`；`resume_expect.doc=1` + `phpyun_resume_doc`；正文 `sanitize_html`。
+- 企业新闻/产品列映射：news 无 `file`/`usertype`，产品图 `pic AS file`。`/com/follows` 的 `favorites/list|exists` `kind=2/3` 不限 usertype。职位列表二维码用 `qrSvgDataUri` + `/v1/wap/jobs/share-text` 的 `share_url`。绑定页按 `initjobs.settings` 的 fastlogin 开关渲染 provider，oauth-bindings 400 只提示不白屏。
 
 ## 子账号
 
@@ -311,4 +314,4 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 ## 登录走查（2026-09-17）
 
-Playwright + Chrome for Testing 装在 `/var/tmp/pw`（不进仓库）。公网 Cloudflare 对 Headless UA 返回 1010；Rust `BOT_UA_DENYLIST` 含 `headlesschrome`。走查走 `http://127.0.0.1:3001` 并设普通 Chrome UA + `lang=zh`。duncan2 `/com/*`、duncan1 `/user/*`，PC 1366 / H5 390。本轮五项页（子账号、兼职列表/发布、customize、收银台）已过。仍需人工：绑定页未配微信/Google 的 400；`/com/record` 500；`/com/follows` `/com/gallery` `/com/news` `/com/products` 请求缺 `kind`。公网真登录截图需过 Cloudflare。
+Playwright + Chrome for Testing 装在 `/var/tmp/pw`（不进仓库）。公网 Cloudflare 对 Headless UA 返回 1010；Rust `BOT_UA_DENYLIST` 含 `headlesschrome`。走查走 `http://127.0.0.1:3001` 并设普通 Chrome UA + `lang=zh`。duncan2 `/com/*`、duncan1 `/user/*`，PC 1366 / H5 390。本轮已修：绑定页未配三方只提示不白屏；`/com/follows` 企业 `kind=2/3` 不再 403；`/com/news` `/com/products` 列映射恢复。仍需人工：`/com/record` 500；`/com/gallery` 若仍缺 `kind`。公网真登录截图需过 Cloudflare。

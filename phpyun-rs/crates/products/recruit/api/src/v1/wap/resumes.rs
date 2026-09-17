@@ -715,6 +715,7 @@ pub fn resume_expect_item_from_dict(
         r_status: e.r_status,
         state: e.state,
         defaults: e.defaults,
+        doc: e.doc,
         lastupdate_n: fmt_dt(e.lastupdate),
         lastupdate: e.lastupdate,
     })

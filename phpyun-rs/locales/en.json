@@ -142,6 +142,8 @@
     "resume_bad_status": "Resume status does not allow this operation",
     "resume_hidden": "Resume is hidden",
     "resume_not_found": "Resume not found",
+    "resume_profile_incomplete": "Please complete your profile first",
+    "resume_quota_exceeded": "You already have the maximum number of resumes",
     "tiny_ip_limit": "Daily IP limit reached",
     "tiny_not_found": "Public resume not found",
     "tiny_pwd_mismatch": "Resume password is incorrect",

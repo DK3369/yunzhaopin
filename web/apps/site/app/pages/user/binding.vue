@@ -5,8 +5,13 @@ const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
 const { data: dicts } = await usePublicDicts()
+const bindLoadErr = ref('')
 const { data, error, refresh } = await useAsyncData('oauth-bindings', () =>
-  api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
+  api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}).catch((e: unknown) => {
+    if (isUnauthErr(e)) throw e
+    bindLoadErr.value = e instanceof Error ? e.message : t('ui.load_failed')
+    return { providers: [] as string[] }
+  }),
 )
 const { data: me, refresh: refreshMe } = await useAuthMe()
 const mobile = ref(String(me.value?.moblie || ''))
@@ -105,6 +110,7 @@ useSeoMeta({ title: t('wap_00389') })
 <template>
   <MemberPanel :title="$t('wap_00389')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
+    <p v-else-if="bindLoadErr" class="muted">{{ bindLoadErr }}</p>
     <MemberUserSetTabs />
     <div class="resume_Prompt_box">
       <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('member_user_00474') }}</div>

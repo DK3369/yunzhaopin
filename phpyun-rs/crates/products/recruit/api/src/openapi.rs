@@ -319,6 +319,8 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::resume_expect::create,
         v1::mcenter::resume_expect::update,
         v1::mcenter::resume_expect::set_default,
+        v1::mcenter::resume_expect::paste,
+        v1::mcenter::resume_expect::paste_get,
         // v1::mcenter::resume_expect::remove, // removed
         v1::mcenter::resume_bundle::bundle,
         v1::mcenter::resume_edu::create,
@@ -928,6 +930,7 @@ impl Modify for DeprecatedIndex {
             v1::wap::resumes::ResumeWorkItem,
             v1::mcenter::resume_expect::ExpectItem,
             v1::mcenter::resume_expect::ExpectForm,
+            v1::mcenter::resume_expect::PasteGetData,
             v1::mcenter::resume_edu::EduItem,
             v1::mcenter::resume_edu::EduForm,
             v1::mcenter::resume_work::WorkItem,

@@ -21,6 +21,7 @@ type ChildRow = {
   salary_n?: string
   job_class_n?: string
   city_class_n?: string
+  doc?: number
 }
 
 const api = useApi()
@@ -475,7 +476,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       <div class="user_czbth_r" style="float: right; background-color: #fff; padding-top: 8px">
         <NuxtLink to="/user/privacy" class="user_czbth_ys user_czbth_line">{{ $t('wap_user_00215') }}</NuxtLink>
         <NuxtLink to="/user/recommend" class="user_czbth_pp user_czbth_line">{{ $t('wap_user_00211') }}</NuxtLink>
-        <NuxtLink to="/user/expects" class="user_czbth_zt">{{ $t('member_user_00273') }}</NuxtLink>
+        <NuxtLink to="/user/resume/paste" class="user_czbth_zt">{{ $t('ui.paste_resume_online') }}</NuxtLink>
       </div>
     </template>
     <div v-if="!hasResume" class="site-h5">
@@ -658,7 +659,14 @@ useSeoMeta({ title: t('wap_user_00204') })
     <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" h5-kind="none" :open="openSec === 'expect'" @toggle="openAdd('expect')">
       <template #pc>
         <ul v-if="expectRows.length" class="yun_resume_job_intention_list">
-          <li v-for="row in expectRows" :key="row.id">{{ row.name || row.id }}</li>
+          <li v-for="row in expectRows" :key="row.id">
+            {{ row.name || row.id }}
+            <NuxtLink
+              v-if="Number(row.doc) === 1"
+              :to="`/user/resume/paste?id=${row.id}`"
+              class="user_resume_cz_a"
+            >{{ $t('wap_00269') }}</NuxtLink>
+          </li>
         </ul>
         <p v-else class="muted">{{ $t('ui.no_expect') }}</p>
       </template>

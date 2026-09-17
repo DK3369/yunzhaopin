@@ -5,8 +5,13 @@ const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
 const { data: dicts } = await usePublicDicts()
+const bindLoadErr = ref('')
 const { data, error, refresh } = await useAsyncData('com-oauth-bindings', () =>
-  api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
+  api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}).catch((e: unknown) => {
+    if (isUnauthErr(e)) throw e
+    bindLoadErr.value = e instanceof Error ? e.message : t('ui.load_failed')
+    return { providers: [] as string[] }
+  }),
 )
 const { data: me, refresh: refreshMe } = await useAuthMe()
 const mobile = ref(String(me.value?.moblie || ''))
@@ -113,6 +118,7 @@ const pop = ref<'mobile' | 'email' | ''>('')
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
+    <p v-else-if="bindLoadErr" class="muted">{{ bindLoadErr }}</p>
     <template v-else>
       <nav class="job_list_tit">
         <ul>

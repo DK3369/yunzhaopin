@@ -79,6 +79,7 @@ type HomeExpect = {
   jobstatus_n?: string
   report_n?: string
   hits?: number
+  doc?: number
 }
 const expectList = computed((): HomeExpect[] => {
   const raw = expects.value
@@ -269,7 +270,7 @@ function labelOf(to: string, key: string) {
               <NuxtLink to="/user/resume" class="user_resume_cz_a user_resume_cz_icon1">{{ $t('wap_user_00207') }} <span class="user_resume_cz_yzd">{{ $t('wap_user_00335') }}</span></NuxtLink>
             </div>
             <div class="user_resume_cz_p">
-              <NuxtLink to="/user/resume" class="user_resume_cz_a user_resume_cz_icon3">{{ $t('wap_00269') }}</NuxtLink>
+              <NuxtLink :to="Number(defExpect?.doc) === 1 ? `/user/resume/paste?id=${defExpect?.id}` : '/user/resume'" class="user_resume_cz_a user_resume_cz_icon3">{{ $t('wap_00269') }}</NuxtLink>
             </div>
           </div>
         </div>
@@ -303,7 +304,7 @@ function labelOf(to: string, key: string) {
             </div>
             <div class="member_index_resume_t_cz fltR">
               <div class="member_index_resume_t_cz_b">
-                <NuxtLink to="/user/resume" class="member_index_resume_t_cz_bth">{{ $t('wap_00269') }}</NuxtLink>
+                <NuxtLink :to="Number(row.doc) === 1 ? `/user/resume/paste?id=${row.id}` : '/user/resume'" class="member_index_resume_t_cz_bth">{{ $t('wap_00269') }}</NuxtLink>
                 <NuxtLink :to="`/resumes/${resume?.uid || data?.uid}`" class="member_index_resume_t_cz_bth mt15">{{ $t('wap_user_00217') }}</NuxtLink>
               </div>
             </div>

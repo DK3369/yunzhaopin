@@ -142,6 +142,8 @@
     "resume_bad_status": "履歷狀態不允許此操作",
     "resume_hidden": "履歷已隱藏",
     "resume_not_found": "履歷不存在",
+    "resume_profile_incomplete": "請先完善個人資料",
+    "resume_quota_exceeded": "履歷數量已超過系統上限",
     "tiny_ip_limit": "今日 IP 次數已達上限",
     "tiny_not_found": "公開履歷不存在",
     "tiny_pwd_mismatch": "履歷密碼錯誤",

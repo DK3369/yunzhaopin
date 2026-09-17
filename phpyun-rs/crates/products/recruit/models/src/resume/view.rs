@@ -49,6 +49,8 @@ pub struct ResumeExpectItem {
     pub state: i32,
     /// 1 = default resume copy
     pub defaults: i32,
+    /// 1 = pasted HTML resume
+    pub doc: i32,
     pub lastupdate: i64,
     pub lastupdate_n: String,
 }
@@ -259,6 +261,7 @@ impl From<Expect> for ResumeExpectItem {
             r_status: e.r_status,
             state: e.state,
             defaults: e.defaults,
+            doc: e.doc,
             lastupdate_n: fmt_dt(e.lastupdate),
             lastupdate: e.lastupdate,
         }

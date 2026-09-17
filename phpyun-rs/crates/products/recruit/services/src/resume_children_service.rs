@@ -10,9 +10,10 @@ use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::resume::{
-    cert, edu, expect, language, other, project, repo as resume_repo, skill, training, user_resume,
-    work,
+    cert, doc, edu, expect, language, other, project, repo as resume_repo, skill, training,
+    user_resume, work,
 };
+use phpyun_models::site_setting::repo as setting_repo;
 
 /// Which kind of child-row write happened — drives the side-effect mix.
 #[derive(Debug, Clone, Copy)]
@@ -60,6 +61,7 @@ async fn after_child(
     {
         let _ = expect::recompute_whour(pool, eid, uid, now).await;
     }
+    let _ = expect::recompute_integrity(pool, eid).await;
 }
 
 fn sanitize_html_opt(s: Option<&str>) -> Option<String> {
@@ -198,6 +200,142 @@ pub mod expect_svc {
         .await;
         crate::resume_service::invalidate_list(state).await;
         Ok(())
+    }
+
+    fn cfg_i32(map: &std::collections::HashMap<String, String>, key: &str) -> i32 {
+        map.get(key)
+            .map(|s| s.trim().parse::<i32>().unwrap_or(0))
+            .unwrap_or(0)
+    }
+
+    fn paste_state(resume_r_status: i32, cfg: i32, old_state: Option<i32>) -> i32 {
+        if resume_r_status != 1 {
+            return 0;
+        }
+        if old_state == Some(3) {
+            return 0;
+        }
+        if cfg == 0 { 0 } else { 1 }
+    }
+
+    /// PHP `addDocInfo`: extra expect row with `doc=1` + `phpyun_resume_doc`.
+    /// Not the wizard upsert — a user may own several expects up to `user_number`.
+    pub async fn paste(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+        input: expect::ExpectInput<'_>,
+        html: &str,
+        client_ip: &str,
+    ) -> AppResult<u64> {
+        user.require_jobseeker()?;
+        let pool = state.db.pool();
+        let resume = resume_repo::find_by_uid(state.db.reader(), user.uid)
+            .await?
+            .ok_or_else(|| ApiError::business("resume_not_found"))?;
+        let name_ok = resume
+            .name
+            .as_deref()
+            .map(|s| !s.trim().is_empty())
+            .unwrap_or(false);
+        if !name_ok || resume.education == 0 {
+            return Err(ApiError::business("resume_profile_incomplete"));
+        }
+        let body = phpyun_core::html::sanitize_html(html);
+        if body.trim().is_empty() {
+            return Err(ApiError::param_invalid("doc"));
+        }
+        let cfg = setting_repo::find_many(
+            state.db.reader(),
+            &["user_number", "resume_status", "user_revise_state"],
+        )
+        .await?;
+        let now = clock::now_ts();
+        let uname = resume.name.clone().unwrap_or_default();
+        let birthday = resume.birthday.clone().unwrap_or_default();
+        let photo = resume.photo.clone().unwrap_or_default();
+
+        let eid = if id > 0 {
+            let row = expect::find_by_id(state.db.reader(), id)
+                .await?
+                .ok_or_else(|| ApiError::business("resume_not_found"))?;
+            if row.uid != user.uid {
+                return Err(ApiError::forbidden());
+            }
+            let state_n = paste_state(
+                resume.r_status,
+                cfg_i32(&cfg, "user_revise_state"),
+                Some(row.state),
+            );
+            let affected = expect::update_paste(pool, id, user.uid, &input, state_n, now).await?;
+            if affected == 0 {
+                return Err(ApiError::business("resume_not_found"));
+            }
+            id
+        } else {
+            let n = expect::count_by_uid(state.db.reader(), user.uid).await?;
+            let cap = cfg_i32(&cfg, "user_number");
+            if cap > 0 && n >= u64::try_from(cap).unwrap_or(0) {
+                return Err(ApiError::business("resume_quota_exceeded"));
+            }
+            let defaults = if n == 0 { 1 } else { 0 };
+            let state_n = paste_state(resume.r_status, cfg_i32(&cfg, "resume_status"), None);
+            let eid = expect::create_paste(
+                pool,
+                user.uid,
+                &input,
+                defaults,
+                resume.r_status,
+                state_n,
+                &uname,
+                resume.education,
+                resume.exp,
+                resume.sex,
+                &birthday,
+                &photo,
+                now,
+            )
+            .await?;
+            let _ = sqlx::query(
+                "INSERT IGNORE INTO phpyun_user_resume (uid, eid, info, expect) VALUES (?, ?, 1, 1)",
+            )
+            .bind(user.uid)
+            .bind(eid)
+            .execute(pool)
+            .await;
+            if defaults == 1 {
+                let _ = resume_repo::set_def_job(pool, user.uid, eid).await;
+            }
+            eid
+        };
+        doc::upsert(pool, user.uid, eid, &body).await?;
+        let _ = audit::emit(
+            state,
+            AuditEvent::new("resume.paste", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("expect:{eid}")),
+        )
+        .await;
+        crate::resume_service::invalidate_list(state).await;
+        Ok(eid)
+    }
+
+    pub async fn paste_get(
+        state: &AppState,
+        user: &AuthenticatedUser,
+        id: u64,
+    ) -> AppResult<(expect::Expect, String)> {
+        user.require_jobseeker()?;
+        let row = expect::find_by_id(state.db.reader(), id)
+            .await?
+            .ok_or_else(|| ApiError::business("resume_not_found"))?;
+        if row.uid != user.uid {
+            return Err(ApiError::forbidden());
+        }
+        let html = doc::find_by_eid(state.db.reader(), user.uid, id)
+            .await?
+            .and_then(|d| d.doc)
+            .unwrap_or_default();
+        Ok((row, html))
     }
 
     pub async fn delete(
