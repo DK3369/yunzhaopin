@@ -67,7 +67,7 @@ pub struct CreateForm {
     #[validate(length(min = 1, max = 32))]
     pub version: String,
     #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u32")]
-    #[validate(range(min = 0, max = 99_999_999))]
+    #[validate(range(min = 0, max = 2_147_483_647))]
     pub version_code: u32,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
     pub is_force: bool,
@@ -92,7 +92,7 @@ pub struct UpdateForm {
     #[validate(length(min = 1, max = 32))]
     pub version: String,
     #[serde(deserialize_with = "phpyun_core::date_parse::de_loose_u32")]
-    #[validate(range(min = 0, max = 99_999_999))]
+    #[validate(range(min = 0, max = 2_147_483_647))]
     pub version_code: u32,
     #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_bool")]
     pub is_force: bool,
