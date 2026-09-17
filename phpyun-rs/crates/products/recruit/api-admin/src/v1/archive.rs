@@ -1378,6 +1378,7 @@ macro_rules! biz_handler {
             tag = "admin",
             security(("bearer" = [])),
             description = "改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举",
+            request_body = KwQuery,
             responses((status = 200, description = "ok"))
         )]
         pub async fn $fn(

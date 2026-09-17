@@ -33,15 +33,15 @@ fn apply_filter(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &Filter<'_>) {
         qb.push_bind(s);
     }
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if f.name_kind == 2 {
             qb.push(" AND ex.name LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(qb, like);
         } else {
             qb.push(" AND (r.name LIKE ");
-            qb.push_bind(like.clone());
+            crate::sql::push_escaped(qb, like.clone());
             qb.push(" OR m.username LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(qb, like);
             qb.push(")");
         }
     }

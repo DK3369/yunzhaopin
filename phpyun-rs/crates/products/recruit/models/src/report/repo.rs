@@ -334,10 +334,10 @@ fn admin_where(queue: ReportQueue, f: &AdminReportFilter<'_>) -> String {
         sql.push_str(" AND status = ?");
     }
     if f.r_name.is_some() {
-        sql.push_str(" AND r_name LIKE ?");
+        sql.push_str(" AND r_name LIKE ? ESCAPE '\\\\'");
     }
     if f.username.is_some() {
-        sql.push_str(" AND username LIKE ?");
+        sql.push_str(" AND username LIKE ? ESCAPE '\\\\'");
     }
     if let Some(eids) = &f.eids {
         push_in_clause(&mut sql, "eid", eids);
@@ -356,10 +356,10 @@ fn bind_admin_filter<'q, O>(
         q = q.bind(s);
     }
     if let Some(v) = f.r_name {
-        q = q.bind(format!("%{v}%"));
+        q = q.bind(crate::sql::like_contains(v));
     }
     if let Some(v) = f.username {
-        q = q.bind(format!("%{v}%"));
+        q = q.bind(crate::sql::like_contains(v));
     }
     for ids in [f.eids.as_ref(), f.p_uids.as_ref()].into_iter().flatten() {
         for id in ids {
@@ -651,8 +651,8 @@ pub async fn job_ids_matching(
     }
     let ph = vec!["?"; eids.len()].join(",");
     let sql =
-        format!("SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job WHERE name LIKE ? AND id IN ({ph})");
-    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(format!("%{keyword}%"));
+        format!("SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job WHERE name LIKE ? ESCAPE '\\\\' AND id IN ({ph})");
+    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(crate::sql::like_contains(keyword));
     for id in eids {
         q = q.bind(*id);
     }
@@ -670,9 +670,9 @@ pub async fn expect_ids_matching(
     }
     let ph = vec!["?"; eids.len()].join(",");
     let sql = format!(
-        "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_expect WHERE name LIKE ? AND id IN ({ph})"
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_resume_expect WHERE name LIKE ? ESCAPE '\\\\' AND id IN ({ph})"
     );
-    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(format!("%{keyword}%"));
+    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(crate::sql::like_contains(keyword));
     for id in eids {
         q = q.bind(*id);
     }
@@ -690,9 +690,9 @@ pub async fn company_uids_matching(
     }
     let ph = vec!["?"; uids.len()].join(",");
     let sql = format!(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? AND uid IN ({ph})"
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? ESCAPE '\\\\' AND uid IN ({ph})"
     );
-    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(format!("%{keyword}%"));
+    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(crate::sql::like_contains(keyword));
     for id in uids {
         q = q.bind(*id);
     }
@@ -710,8 +710,8 @@ pub async fn resume_uids_matching(
     }
     let ph = vec!["?"; uids.len()].join(",");
     let sql =
-        format!("SELECT CAST(uid AS UNSIGNED) FROM phpyun_resume WHERE name LIKE ? AND uid IN ({ph})");
-    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(format!("%{keyword}%"));
+        format!("SELECT CAST(uid AS UNSIGNED) FROM phpyun_resume WHERE name LIKE ? ESCAPE '\\\\' AND uid IN ({ph})");
+    let mut q = sqlx::query_as::<_, (u64,)>(&sql).bind(crate::sql::like_contains(keyword));
     for id in uids {
         q = q.bind(*id);
     }

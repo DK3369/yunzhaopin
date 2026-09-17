@@ -10,6 +10,11 @@ const { data: logoutSt, error } = await useAsyncData('com-logout-st', () =>
 const rename = reactive({ old_password: '', new_username: '' })
 const logoutPw = ref('')
 const msg = ref('')
+const applyUt = ref(1)
+const applyBody = ref('')
+const { data: utSt, refresh: refreshUt } = await useAsyncData('com-usertype-st', () =>
+  api.post<{ pending?: boolean }>('/v1/mcenter/account/usertype/status', {}).catch(() => null),
+)
 async function doRename() {
   msg.value = ''
   try {
@@ -24,6 +29,19 @@ async function applyLogout() {
   try {
     await api.post('/v1/mcenter/account/logout/apply', { password: logoutPw.value })
     msg.value = t('common.success')
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+async function applyUsertype() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/account/usertype/apply', {
+      apply_usertype: applyUt.value,
+      apply_body: applyBody.value,
+    })
+    msg.value = t('common.success')
+    await refreshUt()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -73,5 +91,18 @@ useSeoMeta({ title: t('wap_user_00338') })
       </div>
     </template>
     <p v-if="msg">{{ msg }}</p>
+    <form class="com_release_box site-pc" @submit.prevent="applyUsertype">
+      <ul>
+        <MemberReleaseRow :label="$t('admin_user_00162')">
+          <select v-model.number="applyUt">
+            <option :value="1">{{ $t('common.resume') }}</option>
+            <option :value="2">{{ $t('common.company') }}</option>
+          </select>
+        </MemberReleaseRow>
+        <MemberReleaseRow :label="$t('wap_user_00203')"><input v-model="applyBody" class="com_release_textnew_text" /></MemberReleaseRow>
+      </ul>
+      <button type="submit" class="btn_01">{{ $t('common.submit') }}</button>
+    </form>
+    <p v-if="utSt?.pending" class="muted">{{ $t('common.yes') }}</p>
   </MemberPanel>
 </template>

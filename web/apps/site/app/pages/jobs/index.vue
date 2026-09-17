@@ -364,7 +364,7 @@ function goPage(p: number) {
           <div class="searchmorelist">
             <div class="Search_jobs_form_list search_more">
               <div class="Search_jobs_name">{{ $t('common.more') }}：</div>
-              <div class="Search_jobs_sub" style="width: 1090px">
+              <div class="Search_jobs_sub" style="max-width: 1090px; width: 100%">
                 <MoreFilterSelect
                   v-if="(welfares || []).length"
                   :label="$t('wap_com_00167')"

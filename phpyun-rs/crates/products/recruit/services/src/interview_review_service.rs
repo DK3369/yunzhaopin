@@ -1,7 +1,7 @@
 //! Multi-dimension interview review (`phpyun_rs_interview_review`).
 //! Bound to `phpyun_userid_msg.id` (true yqms invite), not generic ratings.
 
-use phpyun_core::{clock, db, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, db, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::interview_review::repo as review_repo;
 use phpyun_models::userid_msg::repo as msg_repo;
 use serde::{Deserialize, Serialize};
@@ -19,6 +19,16 @@ pub struct ReviewView {
     pub dimensions: Vec<Dim>,
     pub total: u32,
     pub comment: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ReceivedView {
+    pub yqms_id: u64,
+    pub rater_uid: u64,
+    pub dimensions: Vec<Dim>,
+    pub total: u32,
+    pub comment: String,
+    pub created_at: i64,
 }
 
 fn empty(yqms_id: u64) -> ReviewView {
@@ -147,4 +157,34 @@ pub async fn submit(
         return Err(e.into());
     }
     get_mine(state, user, yqms_id).await
+}
+
+pub async fn list_received(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<Paged<ReceivedView>> {
+    user.require_employer()?;
+    let (rows, total) = match tokio::try_join!(
+        review_repo::list_received(state.db.reader(), user.uid, page.offset, page.limit),
+        review_repo::count_received(state.db.reader(), user.uid),
+    ) {
+        Ok(v) => v,
+        Err(e) if db::is_missing_table(&e) => {
+            return Err(ApiError::business("interview_review_unavailable"));
+        }
+        Err(e) => return Err(e.into()),
+    };
+    let list = rows
+        .into_iter()
+        .map(|r| ReceivedView {
+            yqms_id: r.yqms_id,
+            rater_uid: r.rater_uid,
+            dimensions: parse_dims(&r.dimensions),
+            total: r.total,
+            comment: r.comment,
+            created_at: r.created_at,
+        })
+        .collect();
+    Ok(Paged::new(list, total, page.page, page.page_size))
 }

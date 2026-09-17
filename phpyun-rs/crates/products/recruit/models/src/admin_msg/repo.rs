@@ -267,12 +267,12 @@ fn push_php_login_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpLog
     }
     if let Some(kw) = f.username_like.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND l.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
         qb.push(")");
     }
     if let Some(kw) = f.content_like.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND l.content LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(t0) = f.time_from {
         qb.push(" AND l.ctime >= ");
@@ -453,11 +453,11 @@ fn push_admin_log_where(qb: &mut sqlx::QueryBuilder<'_, sqlx::MySql>, f: &PhpAdm
     qb.push(" FROM phpyun_admin_log WHERE 1=1");
     if let Some(kw) = f.ukeyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND content LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(v) = f.ctime_from {
         qb.push(" AND ctime >= ");

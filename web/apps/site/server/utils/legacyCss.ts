@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url'
 import { transform } from 'esbuild'
 
 export type CssPack = 'pc' | 'h5' | 'pc-user' | 'pc-com' | 'h5-user' | 'h5-com'
+export type CssEnd = 'pc' | 'h5'
+export type CssMember = 'none' | 'user' | 'com'
 type CssFile = { disk: string; href: string; note: string }
 
 const PC_PUBLIC: CssFile[] = [
@@ -126,7 +128,55 @@ export async function bundledLegacyCss(kind: CssPack, ver: string): Promise<stri
   if (hit) return hit
   const body = await build(kind)
   mem.set(key, body)
-  if (mem.size > 16) {
+  if (mem.size > 48) {
+    const first = mem.keys().next().value
+    if (first) mem.delete(first)
+  }
+  return body
+}
+
+export function cssMember(raw: unknown): CssMember {
+  const s = String(raw || 'none').trim().toLowerCase()
+  if (s === 'user' || s === 'com') return s
+  return 'none'
+}
+
+export function cssSkin(raw: unknown): string {
+  const s = String(raw || '').trim()
+  return /^[a-zA-Z0-9_]{1,64}$/.test(s) ? s : ''
+}
+
+async function loadSkin(name: string): Promise<string> {
+  const disk = join(repoRoot(), 'web/apps/site/public/skins', name, 'skin.css')
+  try {
+    let css = await readFile(disk, 'utf8')
+    css = css.replace(/@charset\s+[^;]+;/gi, '')
+    return `/* ==== skin ${name} ==== */\n${await minifyCss(rewriteUrls(css, `/skins/${name}/skin.css`))}`
+  } catch {
+    return ''
+  }
+}
+
+export async function bundledSiteCss(
+  end: CssEnd,
+  member: CssMember,
+  skin: string,
+  ver: string,
+): Promise<string> {
+  const key = `site:${end}:${member}:${skin || '_'}:${ver || '0'}`
+  const hit = mem.get(key)
+  if (hit) return hit
+  const parts = [await bundledLegacyCss(end, ver)]
+  if (member === 'user' || member === 'com') {
+    parts.push(await bundledLegacyCss(`${end}-${member}`, ver))
+  }
+  if (skin) {
+    const skinCss = await loadSkin(skin)
+    if (skinCss) parts.push(skinCss)
+  }
+  const body = parts.filter(Boolean).join('\n\n')
+  mem.set(key, body)
+  if (mem.size > 48) {
     const first = mem.keys().next().value
     if (first) mem.delete(first)
   }

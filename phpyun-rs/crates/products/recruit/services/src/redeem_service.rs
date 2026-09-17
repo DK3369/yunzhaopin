@@ -139,9 +139,11 @@ pub async fn list_rewards(
 }
 
 pub async fn get_reward(state: &AppState, id: u64) -> AppResult<Reward> {
-    redeem_repo::get_reward(state.db.reader(), id)
+    let mut r = redeem_repo::get_reward(state.db.reader(), id)
         .await?
-        .ok_or_else(|| ApiError::param_invalid("reward_not_found"))
+        .ok_or_else(|| ApiError::param_invalid("reward_not_found"))?;
+    r.content = phpyun_core::html::sanitize_html(&r.content);
+    Ok(r)
 }
 
 pub struct NewRewardForm<'a> {
@@ -160,12 +162,13 @@ pub async fn create_reward(
     admin: &AuthenticatedUser,
     f: &NewRewardForm<'_>,
 ) -> AppResult<u64> {
+    let content = phpyun_core::html::sanitize_html(f.content);
     let id = redeem_repo::insert_reward(
         state.db.pool(),
         &redeem_repo::NewReward {
             name: f.name,
             pic: f.pic,
-            content: f.content,
+            content: &content,
             integral: f.integral,
             stock: f.stock,
             restriction: f.restriction,

@@ -28,6 +28,9 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3001',
     },
   },
+  features: {
+    inlineStyles: true,
+  },
   routeRules: {
     '/user/**': { ssr: false },
     '/com/**': { ssr: false },

@@ -861,7 +861,7 @@ pub async fn list_kh_by_name(
     keyword: &str,
     limit: u64,
 ) -> Result<Vec<KhCompany>, sqlx::Error> {
-    let pattern = format!("%{keyword}%");
+    let pattern = crate::sql::like_contains(keyword);
     sqlx::query_as::<_, KhCompany>(
         "SELECT \
             COALESCE(c.name, '') AS name, \
@@ -869,7 +869,7 @@ pub async fn list_kh_by_name(
             COALESCE(NULLIF(a.name, ''), a.username, '') AS crm_name \
          FROM phpyun_company c \
          LEFT JOIN phpyun_admin_user a ON a.uid = c.crm_uid \
-         WHERE c.name LIKE ? \
+         WHERE c.name LIKE ? ESCAPE '\\\\' \
          ORDER BY c.uid DESC \
          LIMIT ?",
     )
@@ -889,9 +889,9 @@ pub async fn search_admin_brief(
 ) -> Result<Vec<(u64, String)>, sqlx::Error> {
     sqlx::query_as(
         "SELECT CAST(uid AS UNSIGNED), COALESCE(name,'') \
-         FROM phpyun_company WHERE name LIKE ? ORDER BY uid DESC LIMIT ?",
+         FROM phpyun_company WHERE name LIKE ? ESCAPE '\\\\' ORDER BY uid DESC LIMIT ?",
     )
-    .bind(format!("%{keyword}%"))
+    .bind(crate::sql::like_contains(keyword))
     .bind(limit)
     .fetch_all(pool)
     .await
@@ -1080,13 +1080,13 @@ pub struct PhpHotJobFilter<'a> {
 fn push_hotjob_where(qb: &mut sqlx::QueryBuilder<'_, sqlx::MySql>, f: &PhpHotJobFilter<'_>) {
     qb.push(" FROM phpyun_hotjob WHERE COALESCE(deleted,0)=0");
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if f.ctype == 2 {
             qb.push(" AND beizhu LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(qb, like);
         } else {
             qb.push(" AND username LIKE ");
-            qb.push_bind(like);
+            crate::sql::push_escaped(qb, like);
         }
     }
     if let Some(r) = f.rating.filter(|n| *n > 0) {
@@ -1422,7 +1422,7 @@ fn push_admin_company_filters<'a>(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             qb.push(" AND name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
 }
@@ -1743,19 +1743,19 @@ fn push_php_company_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpC
         match f.kw_type {
             2 => {
                 qb.push(" AND m.username LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             3 => {
                 qb.push(" AND c.linkman LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             4 => {
                 qb.push(" AND c.linktel LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             5 => {
                 qb.push(" AND c.linkmail LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             6 => {
                 let uid: u64 = kw.parse().unwrap_or(0);
@@ -1764,17 +1764,17 @@ fn push_php_company_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpC
             }
             7 => {
                 qb.push(" AND m.login_ip LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             8 => {
                 qb.push(" AND c.address LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             _ => {
                 qb.push(" AND (c.name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR c.shortname LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
         }

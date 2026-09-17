@@ -385,7 +385,7 @@ fn push_ad_admin_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &AdAdminFilter
     }
     if let Some(name) = f.name.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND a.ad_name LIKE ");
-        qb.push_bind(format!("%{name}%"));
+        crate::sql::push_contains(qb, name);
     }
     if let Some(ty) = f.ad_type.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND a.ad_type = ");
@@ -617,7 +617,7 @@ pub async fn list_classes_admin(
             }
         } else {
             qb.push(" AND class_name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
         }
     }
     qb.push(" ORDER BY id DESC LIMIT ");
@@ -641,7 +641,7 @@ pub async fn count_classes_admin(
             }
         } else {
             qb.push(" AND class_name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
         }
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;

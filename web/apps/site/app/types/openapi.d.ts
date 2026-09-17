@@ -2427,6 +2427,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/interviews/review/received": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reviews written about this company (jobseeker → employer). */
+        post: operations["post_v1_mcenter_interviews_review_received"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/interviews/review/submit": {
         parameters: {
             query?: never;
@@ -4252,6 +4269,23 @@ export interface paths {
         put?: never;
         /** Create a new job expectation */
         post: operations["post_v1_mcenter_resume_expects"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mcenter/resume/expects/set-default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark one job-intent as the default resume (`phpyun_resume_expect.defaults` + `resume.def_job`). */
+        post: operations["post_v1_mcenter_resume_expects_set_default"];
         delete?: never;
         options?: never;
         head?: never;
@@ -13460,6 +13494,19 @@ export interface components {
             /** Format: int64 */
             uid: number;
         };
+        ReceivedOut: {
+            comment: string;
+            /** Format: int64 */
+            created_at: number;
+            created_at_n: string;
+            dimensions: components["schemas"]["DimIn"][];
+            /** Format: int64 */
+            rater_uid: number;
+            /** Format: int32 */
+            total: number;
+            /** Format: int64 */
+            yqms_id: number;
+        };
         RechargeCreated: {
             /** Format: int32 */
             amount_cents: number;
@@ -13982,6 +14029,11 @@ export interface components {
             city_class_n: string;
             /** Format: int64 */
             city_classid: number;
+            /**
+             * Format: int32
+             * @description 1 = default resume copy
+             */
+            defaults: number;
             /** Format: int32 */
             hy: number;
             hy_n: string;
@@ -18946,6 +18998,24 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_interviews_review_received: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_mcenter_interviews_review_submit: {
         parameters: {
             query?: never;
@@ -21404,6 +21474,28 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
+            };
+        };
+    };
+    post_v1_mcenter_resume_expects_set_default: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

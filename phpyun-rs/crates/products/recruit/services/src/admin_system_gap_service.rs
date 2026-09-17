@@ -707,9 +707,40 @@ pub async fn cron_info(state: &AppState, id: Option<u64>) -> AppResult<Value> {
     }))
 }
 
+fn cron_task_key(row: &CronRow) -> &'static str {
+    let dir = row.dir.trim().trim_end_matches(".php").to_ascii_lowercase();
+    let name = row.name.trim().to_ascii_lowercase();
+    let token = if !dir.is_empty() { dir.as_str() } else { name.as_str() };
+    match token {
+        "expire_jobs" | "upjob" | "autojob" => "expire_jobs",
+        "expire_vip" | "viped" => "expire_vip",
+        "purge_share_tokens" => "purge_share_tokens",
+        "rotate_audit_log" => "rotate_audit_log",
+        "purge_recycle_bin" => "purge_recycle_bin",
+        _ => "unknown",
+    }
+}
+
 pub async fn run_cron(state: &AppState, actor: &AuthenticatedUser, id: u64) -> AppResult<()> {
     if id == 0 {
         return Err(ApiError::param_invalid("id"));
+    }
+    let row = gap2::find_cron(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("cron_not_found"))?;
+    match cron_task_key(&row) {
+        "expire_jobs" => crate::maintenance::expire_jobs(state).await,
+        "expire_vip" => crate::maintenance::expire_vip(state).await,
+        "purge_share_tokens" => crate::maintenance::purge_expired_share_tokens(state).await,
+        "rotate_audit_log" => crate::maintenance::rotate_audit_log(state).await,
+        "purge_recycle_bin" => crate::maintenance::purge_recycle_bin(state).await,
+        other => tracing::warn!(
+            id,
+            name = %row.name,
+            dir = %row.dir,
+            task = other,
+            "cron has no rust task body"
+        ),
     }
     let now = clock::now_ts();
     let n = gap2::touch_cron(state.db.pool(), id, now).await?;

@@ -77,7 +77,7 @@ pub async fn list_questions(
 ) -> Result<Vec<Question>, sqlx::Error> {
     let mut sql = format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE state = 1 AND {PREDICATE}");
     if f.keyword.is_some() {
-        sql.push_str(" AND title LIKE ?");
+        sql.push_str(" AND title LIKE ? ESCAPE '\\\\'");
     }
     if f.category_id.is_some() {
         sql.push_str(" AND cid = ?");
@@ -89,7 +89,7 @@ pub async fn list_questions(
     sql.push_str(" LIMIT ? OFFSET ?");
     let mut q = sqlx::query_as::<_, Question>(&sql);
     if let Some(kw) = f.keyword {
-        q = q.bind(format!("%{kw}%"));
+        q = q.bind(crate::sql::like_contains(kw));
     }
     if let Some(c) = f.category_id {
         q = q.bind(c);
@@ -100,14 +100,14 @@ pub async fn list_questions(
 pub async fn count_questions(pool: &MySqlPool, f: &QuestionFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut sql = format!("SELECT COUNT(*) FROM phpyun_question WHERE state = 1 AND {PREDICATE}");
     if f.keyword.is_some() {
-        sql.push_str(" AND title LIKE ?");
+        sql.push_str(" AND title LIKE ? ESCAPE '\\\\'");
     }
     if f.category_id.is_some() {
         sql.push_str(" AND cid = ?");
     }
     let mut q = sqlx::query_as::<_, (i64,)>(&sql);
     if let Some(kw) = f.keyword {
-        q = q.bind(format!("%{kw}%"));
+        q = q.bind(crate::sql::like_contains(kw));
     }
     if let Some(c) = f.category_id {
         q = q.bind(c);
@@ -200,7 +200,7 @@ pub async fn admin_list_questions(
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND title LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
         }
     }
     qb.push(" ORDER BY add_time DESC LIMIT ");
@@ -227,7 +227,7 @@ pub async fn admin_count_questions(
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND title LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
         }
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
@@ -769,7 +769,7 @@ pub async fn list_qclasses_admin(
     qb.push_bind(pid.unwrap_or(0));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY sort DESC, id ASC LIMIT ");
     qb.push_bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?);
@@ -793,7 +793,7 @@ pub async fn count_qclasses_admin(
     qb.push_bind(pid.unwrap_or(0));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))

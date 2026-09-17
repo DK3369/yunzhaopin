@@ -54,7 +54,10 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Option<Announcem
             let _ = ann_repo::incr_view(&pool, id).await;
         });
     }
-    Ok(row)
+    Ok(row.map(|mut a| {
+        a.content = phpyun_core::html::sanitize_html(&a.content);
+        a
+    }))
 }
 
 pub async fn neighbors(

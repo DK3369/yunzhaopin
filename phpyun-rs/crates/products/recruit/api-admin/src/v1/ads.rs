@@ -80,7 +80,7 @@ pub struct AdForm {
     pub title: String,
     #[validate(length(min = 1, max = 500))]
     pub image: String,
-    #[validate(length(min = 1, max = 500))]
+    #[validate(length(min = 1, max = 500), custom(function = "phpyun_core::validators::http_or_site_url"))]
     pub link: String,
     #[serde(default)]
     #[validate(range(min = 0, max = 9_999))]
@@ -104,7 +104,7 @@ pub struct AdPatchForm {
     pub title: Option<String>,
     #[validate(length(min = 1, max = 500))]
     pub image: Option<String>,
-    #[validate(length(min = 1, max = 500))]
+    #[validate(length(min = 1, max = 500), custom(function = "phpyun_core::validators::http_or_site_url"))]
     pub link: Option<String>,
     #[validate(range(min = 0, max = 9_999))]
     pub weight: Option<i32>,

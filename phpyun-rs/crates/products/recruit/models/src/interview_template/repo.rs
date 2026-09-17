@@ -184,7 +184,7 @@ fn push_admin_yqmb_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &Admin
             }
             _ => {
                 qb.push(" AND c.name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
         }
     }

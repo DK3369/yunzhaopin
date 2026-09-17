@@ -129,14 +129,14 @@ useSeoMeta({ title: t('wap_user_00270') })
       </div>
     </div>
     <div v-if="list.length" class="user_new_listtit site-pc">
-      <div class="user_new_job" style="width: 260px">{{ $t('member_user_00105') }}</div>
+      <div class="user_new_job">{{ $t('member_user_00105') }}</div>
       <div class="user_new_time">{{ $t('member_user_00106') }}</div>
       <div class="user_new_tdzt">{{ $t('member_user_00104') }}</div>
       <div class="user_new_yqh">{{ $t('member_user_00107') }}</div>
       <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
     </div>
     <div v-for="row in list" :key="row.id" class="jobnotice_list site-pc">
-      <div class="user_new_job" style="width: 260px">
+      <div class="user_new_job">
         <NuxtLink :to="`/jobs/${row.job_id}`" class="user_new_jobname">{{ row.job_name || $t('common.job') }}</NuxtLink>
         <div v-if="row.job_salary" class="user_new_jobxz">{{ row.job_salary }}</div>
         <div class="user_new_comname">

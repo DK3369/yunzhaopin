@@ -35,7 +35,7 @@ useHead({ link: [{ rel: 'canonical', href: `/redeem/${id}` }] })
 </script>
 
 <template>
-  <article>
+  <article class="site-pc">
     <h1>{{ data?.name || $t('wap_00611') }}</h1>
     <p v-if="data?.integral" class="muted">{{ data.integral }} {{ $t('wap_user_00008') }} · {{ $t('admin_yunying_00118') }} {{ data.remaining }}</p>
     <div v-if="data?.content" v-html="data.content" />
@@ -55,4 +55,16 @@ useHead({ link: [{ rel: 'canonical', href: `/redeem/${id}` }] })
     </form>
     <p v-if="msg">{{ msg }}</p>
   </article>
+  <div class="site-h5 news_cont_box">
+    <div class="news_cont_box_tit"><h1>{{ data?.name || $t('wap_00611') }}</h1></div>
+    <div class="wap_news_cont">
+      <div v-if="data?.content" class="wap_txt" v-html="data.content" />
+      <form v-if="data?.name" class="yun_createbox" @submit.prevent="submit">
+        <input v-model="form.password" type="password" required :placeholder="$t('wap_01273')" />
+        <input v-model="form.linkman" required :placeholder="$t('wap_01619')" />
+        <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
+      </form>
+      <p v-if="msg">{{ msg }}</p>
+    </div>
+  </div>
 </template>

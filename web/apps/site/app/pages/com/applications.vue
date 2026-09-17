@@ -338,7 +338,7 @@ useSeoMeta({ title: t('member_com_00454') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('member_com_00454')" :error="error && !isUnauthErr(error) ? error : undefined">
+  <MemberPanel :title="$t('member_com_00454')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !(data?.list || []).length">
     <template #pcTabs><MemberHrTabs /></template>
     <template #h5Tabs><MemberHrTabs /></template>
 

@@ -47,7 +47,7 @@ fn push_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpFilter) {
     ] {
         if let Some(v) = val.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
             qb.push(format!(" AND {col} LIKE "));
-            qb.push_bind(format!("%{v}%"));
+            crate::sql::push_contains(qb, v);
         }
     }
     if let Some(v) = f.ident.as_deref().map(str::trim).filter(|s| !s.is_empty()) {

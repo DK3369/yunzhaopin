@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ApiError } from '~/utils/envelope'
 import { qrSvgDataUri } from '~/utils/qr'
-import { OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin } from '~/utils/site'
+import { OAUTH_FRONT_PROVIDERS, oauthEnabledByAdmin, safeLoginNext } from '~/utils/site'
 
 const { siteName, logoPc, settings, me, worktime, phone, refreshMe } = useSiteChrome()
 const { data: dicts } = await usePublicDicts()
@@ -11,14 +11,18 @@ const smsLoginOn = computed(
   () => String(settings.value.sy_msg_isopen) === '1' && String(settings.value.sy_msg_login) === '1',
 )
 const needImageCaptcha = computed(() => {
-  const web = String(settings.value.code_web || '')
-  return web.includes('前台登录') || web.includes('wap_js_00062')
+  const parts = String(settings.value.code_web || '')
+    .split(/[,，]/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+  return parts.includes('wap_js_00062') || parts.includes('前台登录')
 })
 const panel = ref<'sms' | 'qr' | 'pass'>(smsLoginOn.value ? 'sms' : 'pass')
 const role = ref<1 | 2>(1)
 const username = ref('')
 const password = ref('')
 const agreed = ref(false)
+const remember = ref(false)
 const mobile = ref('')
 const smsCode = ref('')
 const smsWait = ref(0)
@@ -28,6 +32,7 @@ const { data: captcha } = await useAsyncData('login-captcha', () =>
 )
 const authcode = ref('')
 const err = ref('')
+const submitting = ref(false)
 const oauth = ref<Array<{ name: string; path: string; provider: string }>>([])
 let smsTimer: ReturnType<typeof setInterval> | null = null
 const siteUrl = String(useRuntimeConfig().public.siteUrl || '').replace(/\/$/, '')
@@ -40,8 +45,7 @@ let appWatchReady = false
 function loginNext(): string {
   const raw = useRoute().query.next
   const q = Array.isArray(raw) ? String(raw[0] || '') : String(raw || nextFrom.value || '')
-  if (q.startsWith('/') && !q.startsWith('//')) return q
-  return ''
+  return safeLoginNext(q)
 }
 
 function homeOf(usertype: number) {
@@ -210,10 +214,12 @@ function startOauth(o: { path: string; provider: string }) {
 
 async function submitPass() {
   err.value = ''
+  if (submitting.value) return
   if (!agreed.value) {
     err.value = t('wap_00309')
     return
   }
+  submitting.value = true
   try {
     if (needImageCaptcha.value && !captcha.value) await loadCaptcha()
     const user = await $fetch<{ uid: number; usertype: number }>('/api/auth/login', {
@@ -223,12 +229,15 @@ async function submitPass() {
         password: password.value,
         authcode: needImageCaptcha.value ? authcode.value : undefined,
         captcha_cid: needImageCaptcha.value ? captcha.value?.cid : undefined,
+        remember: remember.value,
       },
     })
     await afterLogin(user)
   } catch (e: unknown) {
     await handleAuthFail(e)
     if (needImageCaptcha.value) loadCaptcha()
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -251,18 +260,22 @@ async function sendSms() {
 
 async function submitSms() {
   err.value = ''
+  if (submitting.value) return
   if (!agreed.value) {
     err.value = t('wap_00309')
     return
   }
+  submitting.value = true
   try {
     const logged = await $fetch<{ uid: number; usertype: number }>('/api/auth/login-sms', {
       method: 'POST',
-      body: { moblie: mobile.value, dynamiccode: smsCode.value },
+      body: { moblie: mobile.value, dynamiccode: smsCode.value, remember: remember.value },
     })
     await afterLogin(logged)
   } catch (e: unknown) {
     await handleAuthFail(e)
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -444,33 +457,33 @@ onUnmounted(() => {
           <form v-if="panel === 'sms'" @submit.prevent="submitSms">
             <div class="lgp-field">
               <span class="lgp-cc">+86 <i /></span>
-              <input v-model="mobile" type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('loginPage.mobile_ph')" />
+              <input v-model="mobile" required type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('loginPage.mobile_ph')" />
             </div>
             <div v-if="needImageCaptcha && captcha?.image" class="lgp-field">
               <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
               <img :src="captcha.image" alt="" class="lgp-captcha" @click="loadCaptcha" />
             </div>
             <div class="lgp-field">
-              <input v-model="smsCode" maxlength="6" autocomplete="one-time-code" :placeholder="$t('loginPage.sms_code')" />
+              <input v-model="smsCode" required maxlength="6" autocomplete="one-time-code" :placeholder="$t('loginPage.sms_code')" />
               <button type="button" class="lgp-send" :disabled="smsWait > 0" @click="sendSms">
                 {{ smsWait > 0 ? `${smsWait}s` : $t('loginPage.send_code') }}
               </button>
             </div>
-            <button type="submit" class="lgp-submit">{{ $t('loginPage.submit') }}</button>
+            <button type="submit" class="lgp-submit" :disabled="submitting">{{ $t('loginPage.submit') }}</button>
           </form>
 
           <form v-else @submit.prevent="submitPass">
             <div class="lgp-field">
-              <input v-model="username" autocomplete="username" :placeholder="$t('admin_user_00140')" />
+              <input v-model="username" required autocomplete="username" :placeholder="$t('admin_user_00140')" />
             </div>
             <div class="lgp-field">
-              <input v-model="password" type="password" autocomplete="current-password" :placeholder="$t('wap_user_00371')" />
+              <input v-model="password" required type="password" autocomplete="current-password" :placeholder="$t('wap_user_00371')" />
             </div>
             <div v-if="needImageCaptcha && captcha?.image" class="lgp-field">
               <input v-model="authcode" maxlength="8" autocomplete="off" :placeholder="$t('wap_00262')" />
               <img :src="captcha.image" alt="" class="lgp-captcha" @click="loadCaptcha" />
             </div>
-            <button type="submit" class="lgp-submit">{{ $t('common.login') }}</button>
+            <button type="submit" class="lgp-submit" :disabled="submitting">{{ $t('common.login') }}</button>
             <p class="lgp-extra">
               <NuxtLink to="/forgetpw">{{ $t('wap_00680') }}</NuxtLink>
               <NuxtLink to="/register">{{ $t('common.register') }}</NuxtLink>
@@ -496,6 +509,11 @@ onUnmounted(() => {
               }}
             </a>
           </div>
+          <label class="lgp-agree">
+            <input v-model="remember" class="lgp-agree-box" type="checkbox" />
+            <span class="lgp-agree-ui" aria-hidden="true" />
+            <span>{{ $t('loginPage.remember') }}</span>
+          </label>
           <label class="lgp-agree">
             <input v-model="agreed" class="lgp-agree-box" type="checkbox" />
             <span class="lgp-agree-ui" aria-hidden="true" />

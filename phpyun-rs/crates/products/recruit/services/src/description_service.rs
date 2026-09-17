@@ -150,10 +150,13 @@ pub async fn public_list(
 }
 
 pub async fn get(state: &AppState, id: u64) -> AppResult<Description> {
-    if let Some(d) = cms_page_files::load_page(current_lang(), id).await {
-        return Ok(d);
-    }
-    load_page(state, id).await
+    let mut d = if let Some(d) = cms_page_files::load_page(current_lang(), id).await {
+        d
+    } else {
+        load_page(state, id).await?
+    };
+    d.content = phpyun_core::html::sanitize_html(&d.content);
+    Ok(d)
 }
 
 pub async fn public_get_by_name(state: &AppState, name: &str) -> AppResult<Description> {
@@ -164,8 +167,12 @@ pub async fn public_get_by_name(state: &AppState, name: &str) -> AppResult<Descr
         .await?
         .ok_or_else(|| ApiError::param_invalid("description_not_found"))?;
     if let Some(d) = cms_page_files::load_page(current_lang(), row.id).await {
+        let mut d = d;
+        d.content = phpyun_core::html::sanitize_html(&d.content);
         return Ok(d);
     }
+    let mut row = row;
+    row.content = phpyun_core::html::sanitize_html(&row.content);
     Ok(row)
 }
 
@@ -207,13 +214,15 @@ pub async fn upsert(
     admin: &AuthenticatedUser,
     f: &UpsertForm<'_>,
 ) -> AppResult<u64> {
+    phpyun_core::validators::ensure_http_or_site_url(f.link_url)?;
+    let content = phpyun_core::html::sanitize_html(f.content);
     let id = desc_repo::upsert(
         state.db.pool(),
         &desc_repo::UpsertDesc {
             id: f.id,
             class_id: f.class_id,
             title: f.title,
-            content: f.content,
+            content: &content,
             is_type: f.is_type,
             link_url: f.link_url,
             sort: f.sort,

@@ -206,7 +206,7 @@ pub struct UpsertForm {
     #[validate(range(min = 1, max = 3))]
     pub is_type: i32,
     #[serde(default)]
-    #[validate(length(max = 1024))]
+    #[validate(length(max = 1024), custom(function = "phpyun_core::validators::http_or_site_url"))]
     pub link_url: String,
     #[serde(default)]
     #[validate(range(min = 0, max = 9_999))]

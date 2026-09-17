@@ -22,6 +22,7 @@ type ExpectRow = {
   report?: number
   jobstatus?: number
   hy?: number
+  defaults?: number
 }
 function childList(v: unknown): ExpectRow[] {
   if (!v) return []
@@ -105,6 +106,16 @@ async function remove(id: number) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+async function makeDefault(id: number) {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume/expects/set-default', { id })
+    msg.value = t('common.success')
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 useSeoMeta({ title: t('home.intention') })
 </script>
 
@@ -120,6 +131,8 @@ useSeoMeta({ title: t('home.intention') })
           </div>
           <div class="user_resume_cz">
             <a href="javascript:;" class="user_resume_cz_a" @click="save(row)">{{ $t('common.save') }}</a>
+            <a v-if="!row.defaults" href="javascript:;" class="user_resume_cz_a" @click="makeDefault(row.id)">{{ $t('common.yes') }}</a>
+            <span v-else class="user_resume_cz_a">{{ $t('common.yes') }}</span>
             <a href="javascript:;" class="user_resume_cz_a" @click="remove(row.id)">{{ $t('common.delete') }}</a>
           </div>
         </div>

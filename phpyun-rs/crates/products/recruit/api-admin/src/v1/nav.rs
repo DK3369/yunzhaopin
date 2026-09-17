@@ -31,7 +31,7 @@ pub struct NavForm {
     pub position: String,
     #[validate(length(min = 1, max = 120))]
     pub label: String,
-    #[validate(length(min = 1, max = 500))]
+    #[validate(length(min = 1, max = 500), custom(function = "phpyun_core::validators::http_or_site_url"))]
     pub url: String,
     #[validate(length(max = 120))]
     #[serde(default)]
@@ -51,7 +51,7 @@ pub struct NavPatchForm {
 
     #[validate(length(min = 1, max = 120))]
     pub label: Option<String>,
-    #[validate(length(min = 1, max = 500))]
+    #[validate(length(min = 1, max = 500), custom(function = "phpyun_core::validators::http_or_site_url"))]
     pub url: Option<String>,
     #[validate(length(max = 120))]
     pub icon: Option<String>,

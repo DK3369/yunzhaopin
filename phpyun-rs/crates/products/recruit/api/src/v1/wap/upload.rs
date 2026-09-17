@@ -250,9 +250,17 @@ pub async fn upload_attachment(
     headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<UploadResult>> {
-    let ct = ct_of(&headers);
-    check_type(ct, DOC_TYPES)?;
+    let declared = ct_of(&headers);
+    check_type(declared, DOC_TYPES)?;
     check_size(&body, MAX_ATTACH_BYTES)?;
+    let Some((ct, _)) = phpyun_core::utils::sniff_document(&body) else {
+        return Err(ApiError::param_invalid("unsupported attachment"));
+    };
+    if !DOC_TYPES.iter().any(|t| ct.starts_with(t)) {
+        return Err(ApiError::param_invalid(format!(
+            "unsupported content-type: {ct}"
+        )));
+    }
     Ok(ApiResponse::data(
         store(&state, user.uid, "attachments", ct, body).await?,
     ))

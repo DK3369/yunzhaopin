@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { catTree, formatSalary, goLogin, isLoggedIn, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, resumeBrowseGate, resumeListBlocked, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
+import { catTree, formatSalary, goLogin, isLoggedIn, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, resumeBrowseGate, resumeListBlocked, safeHref, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
 
 type Banner = { image_n?: string; image?: string; link?: string; title?: string; pic_content?: string }
 type ArticleLike = {
@@ -285,7 +285,7 @@ onBeforeUnmount(() => {
 })
 
 function adHref(ad: Banner) {
-  return ad.link || undefined
+  return safeHref(ad.link)
 }
 
 onMounted(() => {
@@ -394,7 +394,7 @@ useHead({
                   v-for="(b, i) in pcBanners"
                   :key="i"
                   :class="{ 'is-on': i === pcSlide }"
-                  :href="b.link || '/jobs'"
+                  :href="safeHref(b.link) || '/jobs'"
                 >
                   <img :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" />
                 </a>
@@ -629,13 +629,13 @@ useHead({
           </div>
           <div>
             <div v-if="linkPics.length" class="index_link_box_banner">
-              <a v-for="l in linkPics" :key="'img' + l.id" :href="l.url" target="_blank" rel="nofollow noopener">
+              <a v-for="l in linkPics" :key="'img' + l.id" :href="safeHref(l.url)" target="_blank" rel="nofollow noopener">
                 <img :src="mediaUrl(l.logo)" :alt="l.name" width="160" height="50" />
               </a>
             </div>
             <div v-if="linkTexts.length" class="index_link_box_p">
               <span v-for="l in linkTexts" :key="'txt' + l.id" class="index_link_box_p_name">
-                <a :href="l.url" target="_blank" rel="nofollow noopener">{{ l.name }}</a>
+                <a :href="safeHref(l.url)" target="_blank" rel="nofollow noopener">{{ l.name }}</a>
               </span>
             </div>
           </div>
@@ -672,7 +672,7 @@ useHead({
             v-for="(b, i) in h5Banners"
             :key="i"
             :class="{ 'is-on': i === h5Slide }"
-            :href="b.link || '/jobs'"
+            :href="safeHref(b.link) || '/jobs'"
           >
             <img class="h5-banner" :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" />
           </a>

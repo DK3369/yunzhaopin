@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { formatUnixDate, isUnauthErr } from '~/utils/site'
 
 type Mission = {
   base_info?: boolean
@@ -137,7 +137,7 @@ useSeoMeta({ title: t('wap_user_00008') })
       <div v-for="(row, i) in hist?.list || []" :key="row.id || i" class="site-pc paylist_list">
         <span class="paylist_span paylist_dh">{{ row.item_id || row.id }}</span>
         <span class="paylist_span paylist_money">{{ row.cost ?? row.delta ?? '' }}</span>
-        <span class="paylist_span paylist_time">{{ row.created_at || row.ctime }}</span>
+        <span class="paylist_span paylist_time">{{ row.created_at_n || formatUnixDate(row.created_at || row.ctime) }}</span>
       </div>
       <div class="site-h5 detail_body">
         <div v-if="(hist?.list || []).length" class="detail_body_card">
@@ -145,7 +145,7 @@ useSeoMeta({ title: t('wap_user_00008') })
             <li v-for="(row, i) in hist?.list || []" :key="'h-' + (row.id || i)">
               <div class="detail_box">
                 <div class="detail_box_title">{{ row.item_id || row.id }}</div>
-                <div class="detail_box_time">{{ row.created_at || row.ctime }}</div>
+                <div class="detail_box_time">{{ row.created_at_n || formatUnixDate(row.created_at || row.ctime) }}</div>
               </div>
               <div class="detail_integral">{{ row.cost ?? row.delta ?? '' }}</div>
             </li>

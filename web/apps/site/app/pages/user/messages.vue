@@ -52,7 +52,7 @@ const total = computed(() => inferTotal(data.value))
 </script>
 
 <template>
-  <MemberPanel :title="$t('common.message')" :error="error" :empty="false">
+  <MemberPanel :title="$t('common.message')" :error="error" :empty="!error && !(data?.list || []).length" :empty-text="$t('wap_00129')">
     <div class="site-pc job_list_tit">
       <ul>
         <li class="job_list_tit_cur">
@@ -91,7 +91,7 @@ const total = computed(() => inferTotal(data.value))
               </div>
               <i class="card_word">{{ $t('wap_user_00364') }}</i>
             </li>
-            <li>
+            <li @click="navigateTo('/user/chat')">
               <div class="card_logo">
                 <img src="/legacy/h5/images/sixin.png" alt="" width="100%" height="100%" />
                 <div v-if="dash?.sxnum" class="card_logo_circle">{{ dash.sxnum }}</div>

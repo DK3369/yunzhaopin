@@ -40,5 +40,5 @@
 
 - systemd 切 `--release`
 - 现网执行公开列表 `CREATE INDEX`（SQL 已落 `20260916000002_public_list_indexes.sql`）
-- admin `Json<Value>` typed 化（常用三文件本轮会先改）
+- 其余 admin `Json<Value>` typed 化（`reports.rs` / `users.rs` / `jobs.rs` 已改 `PhpLooseBody` + `Validate`）
 - 缩短 access JWT TTL

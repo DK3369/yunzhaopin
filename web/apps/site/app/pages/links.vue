@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mediaUrl } from '~/utils/site'
+import { mediaUrl, safeHref } from '~/utils/site'
 
 type LinkRow = { id: number; name: string; url: string; logo?: string; category?: string }
 
@@ -68,7 +68,7 @@ useHead({ link: [{ rel: 'canonical', href: '/links' }] })
       <p v-if="!list.length" class="muted">{{ $t('ui.no_links') }}</p>
       <ul v-else class="yun_link_content_list">
         <li v-for="row in logoLinks" :key="`logo-${row.id}`">
-          <a :href="row.url" rel="nofollow noopener" target="_blank">
+          <a :href="safeHref(row.url)" rel="nofollow noopener" target="_blank">
             <img
               v-if="row.logo"
               :src="mediaUrl(row.logo)"
@@ -80,7 +80,7 @@ useHead({ link: [{ rel: 'canonical', href: '/links' }] })
         </li>
       </ul>
       <div class="yun_link_content_linkp">
-        <a v-for="row in textLinks" :key="`txt-${row.id}`" :href="row.url" rel="nofollow noopener" target="_blank">
+        <a v-for="row in textLinks" :key="`txt-${row.id}`" :href="safeHref(row.url)" rel="nofollow noopener" target="_blank">
           {{ row.name }}
         </a>
       </div>
@@ -98,7 +98,7 @@ useHead({ link: [{ rel: 'canonical', href: '/links' }] })
           {{ $t('common_02357') }}<br />
           {{ $t('admin_user_company_00160') }}：
           <span style="color: #006697">
-            <a :href="weburl">{{ weburl }}</a>
+            <a :href="safeHref(weburl)">{{ weburl }}</a>
           </span>
           <br />
           {{ $t('member_com_00021') }}：{{ siteName }}<br />

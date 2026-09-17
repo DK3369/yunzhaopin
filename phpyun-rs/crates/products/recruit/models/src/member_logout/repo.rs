@@ -142,7 +142,7 @@ fn push_logout_filters<'a>(
         match kw_type {
             2 => {
                 qb.push(" AND l.tel LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             3 => {
                 let uid: u64 = kw.parse().unwrap_or(0);
@@ -151,7 +151,7 @@ fn push_logout_filters<'a>(
             }
             _ => {
                 qb.push(" AND l.username LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
         }
     }

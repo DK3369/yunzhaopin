@@ -20,4 +20,4 @@ App 走 **HTTP 轮询**，没有 websocket。
 
 ## 入口
 
-`models/chat/repo.rs` → `chat_service.rs` → `api/v1/mcenter/chat.rs`。
+`models/chat/repo.rs` → `chat_service.rs` → `api/v1/mcenter/chat.rs`。前台页 `/user/chat`、`/com/chat`（`MemberChat.vue`）。

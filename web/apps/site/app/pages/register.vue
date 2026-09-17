@@ -64,6 +64,7 @@ onMounted(async () => {
   await loadCaptcha()
 })
 const err = ref('')
+const submitting = ref(false)
 const comNameHint = ref('')
 async function sendSms() {
   err.value = ''
@@ -92,6 +93,7 @@ async function checkComName() {
 }
 async function submit() {
   err.value = ''
+  if (submitting.value) return
   if (alreadyIn.value) {
     err.value = t('wap_00416')
     return
@@ -101,6 +103,7 @@ async function submit() {
     return
   }
   if (form.usertype === 2 && form.c_name.trim() && comNameHint.value) return
+  submitting.value = true
   try {
     const logged = await $fetch<{ uid: number; usertype: number }>('/api/auth/register', {
       method: 'POST',
@@ -122,21 +125,9 @@ async function submit() {
       e instanceof ApiError
         ? e.key
         : String((e as { data?: { key?: string } }).data?.key || '')
-    const text =
-      e instanceof ApiError
-        ? e.message
-        : String(
-            (e as { data?: { statusMessage?: string; msg?: string }; statusMessage?: string }).data
-              ?.msg ||
-              (e as { data?: { statusMessage?: string } }).data?.statusMessage ||
-              (e as { statusMessage?: string }).statusMessage ||
-              '',
-          )
     if (
       (form.regway === 2 || form.regway === 3) &&
-      (key.includes('mobile_taken') ||
-        key.includes('email_taken') ||
-        /占用|taken/i.test(`${key} ${text}`))
+      (key.includes('mobile_taken') || key.includes('email_taken'))
     ) {
       showWritten.value = true
     }
@@ -146,6 +137,8 @@ async function submit() {
       err.value = ex.data?.statusMessage || ex.statusMessage || t('common_06630')
     }
     loadCaptcha()
+  } finally {
+    submitting.value = false
   }
 }
 async function writtenOff() {
@@ -195,16 +188,16 @@ useSeoMeta({ title: t('common.register') })
               </select>
             </div>
             <div v-if="form.regway === 1" class="login_box_list">
-              <input v-model="form.username" class="login_box_bth" :placeholder="$t('admin_user_00140')" />
+              <input v-model="form.username" required class="login_box_bth" :placeholder="$t('admin_user_00140')" />
             </div>
             <div v-if="form.regway === 2" class="login_box_list">
-              <input v-model="form.moblie" class="login_box_bth" :placeholder="$t('wap_01619')" />
+              <input v-model="form.moblie" required class="login_box_bth" :placeholder="$t('wap_01619')" />
             </div>
             <div v-if="form.regway === 3" class="login_box_list">
-              <input v-model="form.email" class="login_box_bth" :placeholder="$t('member_user_00282')" />
+              <input v-model="form.email" required class="login_box_bth" :placeholder="$t('member_user_00282')" />
             </div>
             <div class="login_box_list">
-              <input v-model="form.password" type="password" class="login_box_bth" :placeholder="$t('wap_user_00371')" />
+              <input v-model="form.password" required type="password" class="login_box_bth" :placeholder="$t('wap_user_00371')" />
             </div>
             <div class="login_box_list">
               <select v-model.number="form.usertype" class="login_box_bth">
@@ -243,7 +236,7 @@ useSeoMeta({ title: t('common.register') })
               <button type="button" @click="writtenOff">{{ $t('common.confirm') }}</button>
             </div>
             <div class="login_box_cz">
-              <input type="submit" :value="$t('common.register')" class="login_box_bth2" />
+              <input type="submit" :value="$t('common.register')" class="login_box_bth2" :disabled="submitting" />
             </div>
             <p v-if="err" class="muted">{{ err }}</p>
             <div class="login_box_fw">
@@ -278,16 +271,16 @@ useSeoMeta({ title: t('common.register') })
             </select>
           </div>
           <div v-if="form.regway === 1" class="login_textbox">
-            <input v-model="form.username" :placeholder="$t('admin_user_00140')" />
+            <input v-model="form.username" required :placeholder="$t('admin_user_00140')" />
           </div>
           <div v-if="form.regway === 2" class="login_textbox">
-            <input v-model="form.moblie" :placeholder="$t('wap_01619')" />
+            <input v-model="form.moblie" required :placeholder="$t('wap_01619')" />
           </div>
           <div v-if="form.regway === 3" class="login_textbox">
-            <input v-model="form.email" :placeholder="$t('member_user_00282')" />
+            <input v-model="form.email" required :placeholder="$t('member_user_00282')" />
           </div>
           <div class="login_textbox">
-            <input v-model="form.password" type="password" :placeholder="$t('wap_user_00371')" />
+            <input v-model="form.password" required type="password" :placeholder="$t('wap_user_00371')" />
           </div>
           <div class="login_textbox">
             <select v-model.number="form.usertype">
@@ -325,7 +318,7 @@ useSeoMeta({ title: t('common.register') })
         </div>
         <p v-if="err" class="muted">{{ err }}</p>
         <div class="login_bthbox">
-          <button type="submit" class="login_bth" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0; border-radius: 0.12rem">
+          <button type="submit" class="login_bth" :disabled="submitting" style="width: 100%; height: 1.1rem; background: #2778f8; color: #fff; border: 0; border-radius: 0.12rem">
             {{ $t('common.register') }}
           </button>
         </div>

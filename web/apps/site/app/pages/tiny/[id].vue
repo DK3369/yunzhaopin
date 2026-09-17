@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ensurePublicFound } from '~/utils/site'
+
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(`tiny-${id}`, () => api.get('/v1/wap/tiny-resumes/show', { id }))
+const { data, error } = await useAsyncData(`tiny-${id}`, () => api.get('/v1/wap/tiny-resumes/show', { id }))
 const password = ref('')
 const msg = ref('')
 const owned = ref<Record<string, unknown> | null>(null)
@@ -58,6 +60,7 @@ async function remove() {
     msg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
+ensurePublicFound(Boolean(data.value?.username || data.value?.id), error.value)
 useSeoMeta({ title: () => String(data.value?.username || t('wap_js_00066')) })
 useHead({ link: [{ rel: 'canonical', href: `/tiny/${id}` }] })
 </script>

@@ -29,7 +29,7 @@ const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
-  <section>
+  <section class="site-pc">
     <p><NuxtLink to="/redeem/orders">{{ $t('common.more') }}</NuxtLink></p>
     <FilterRow
       v-if="classItems.length"
@@ -52,4 +52,9 @@ const list = computed(() => data.value?.list || [])
       </template>
     </NewsListShell>
   </section>
+  <div class="site-h5">
+    <NewsListShell :title="$t('common_06524')" :error="error" :error-text="failMsg" :count="list.length">
+      <SimpleCard v-for="row in list" :key="'h5-' + row.id" :to="`/redeem/${row.id}`" :title="row.name" :meta="String(row.integral || '')" />
+    </NewsListShell>
+  </div>
 </template>

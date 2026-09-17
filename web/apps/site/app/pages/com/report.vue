@@ -12,8 +12,10 @@ type Row = {
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-crm-reports', () =>
-  api.post('/v1/mcenter/crm-reports/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-crm-reports-${page.value}`,
+  () => api.post('/v1/mcenter/crm-reports/list', { page: page.value, page_size: pageSize }),
 )
 const list = computed(() => (data.value?.list || []) as Row[])
 const reason = ref('')
@@ -87,5 +89,6 @@ useSeoMeta({ title: t('member_com_00148') })
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <MemberPager :page="page" :page-size="pageSize" :total="inferTotal(data, list)" @update:page="go" />
   </MemberPanel>
 </template>

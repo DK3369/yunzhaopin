@@ -7,8 +7,8 @@ async function pick(usertype: 1 | 2) {
   err.value = ''
   try {
     await api.post('/v1/wap/usertype/select', { usertype })
-    const next = String(useRoute().query.next || '')
-    if (next.startsWith('/') && !next.startsWith('//')) {
+    const next = safeLoginNext(String(useRoute().query.next || ''))
+    if (next) {
       await navigateTo(next)
       return
     }

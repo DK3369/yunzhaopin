@@ -27,5 +27,7 @@ pub async fn get(state: &AppState, id: u64) -> AppResult<HrDoc> {
     background::spawn_best_effort("hr_doc.hit", async move {
         let _ = hr_repo::incr_hit(&pool, id).await;
     });
+    let mut d = d;
+    d.body = phpyun_core::html::sanitize_html(&d.body);
     Ok(d)
 }

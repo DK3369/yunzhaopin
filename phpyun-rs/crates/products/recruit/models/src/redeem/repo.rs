@@ -160,7 +160,7 @@ fn push_reward_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpRewardFilter
     qb.push(format!(" FROM phpyun_reward WHERE {PREDICATE}"));
     if let Some(kw) = f.name_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(n) = f.integral {
         qb.push(" AND integral = ");
@@ -748,11 +748,11 @@ fn push_change_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpChangeFilter
     qb.push(" FROM phpyun_change WHERE 1=1");
     if let Some(kw) = f.name_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(kw) = f.username_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(s) = f.status {
         qb.push(" AND COALESCE(status,0) = ");

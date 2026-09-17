@@ -165,7 +165,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, 
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
     if let Some(ids) = f.city_ids {
@@ -721,9 +721,9 @@ pub async fn admin_list(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             qb.push(" AND (name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
             qb.push(" OR com_name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
             qb.push(")");
         }
     }
@@ -748,9 +748,9 @@ pub async fn admin_count(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             qb.push(" AND (name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
             qb.push(" OR com_name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
             qb.push(")");
         }
     }

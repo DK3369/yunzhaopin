@@ -158,6 +158,7 @@
 /v1/admin/jobs
 /v1/admin/jobs/batch/state
 /v1/admin/jobs/delete
+/v1/admin/jobs/php-add-form
 /v1/admin/jobs/promote
 /v1/admin/jobs/publish
 /v1/admin/jobs/refresh

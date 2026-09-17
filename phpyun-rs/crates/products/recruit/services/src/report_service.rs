@@ -108,7 +108,7 @@ async fn submit_resume_report(
         return Err(ApiError::business("resume_not_open"));
     }
     if report_repo::exists_resume_report(state.db.reader(), user.uid, c_uid, eid).await? {
-        return Err(ApiError::business("report_duplicate"));
+        return Err(ApiError::business("job_00004"));
     }
 
     let reason = report_repo::resolve_reason(state.db.reader(), input.reason_code)

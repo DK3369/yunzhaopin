@@ -1,6 +1,6 @@
 //! Job review (admin) — PHP `user/company_job`.
 
-use axum::{extract::State, routing::post, Json, Router};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
     dto::{merge_id_and_ids, BatchResult},
     utils::fmt_dt,
@@ -15,7 +15,7 @@ use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-use crate::dto::AdminPaged;
+use crate::dto::{AdminPaged, PhpLooseBody};
 
 #[allow(deprecated)]
 pub fn routes() -> Router<AppState> {
@@ -347,11 +347,13 @@ pub async fn delete_jobs(
 }
 
 /// PHP `company_job::add_action` GET 表单 / POST `save` 写职位。
+#[utoipa::path(post, path = "/v1/admin/jobs/php-add-form", tag = "admin", security(("bearer" = [])), request_body = PhpLooseBody, responses((status = 200, description = "ok")))]
 pub async fn php_add_form(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    let body = body.as_value();
     if body.get("save").is_some() {
         let (msg_key, id) =
             admin_php_page_service::save_admin_job(&state, &user, &body).await?;

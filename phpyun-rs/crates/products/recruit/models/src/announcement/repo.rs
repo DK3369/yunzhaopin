@@ -231,7 +231,7 @@ fn push_announce_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpAnnounceFi
     qb.push(format!(" FROM phpyun_admin_announcement WHERE {PREDICATE}"));
     if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(since) = f.since {
         qb.push(" AND datetime >= ");

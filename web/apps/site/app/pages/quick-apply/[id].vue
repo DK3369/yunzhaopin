@@ -54,7 +54,7 @@ useSeoMeta({ title: t('ui.quick_apply') })
 </script>
 
 <template>
-  <section>
+  <section class="site-pc">
     <h1>{{ $t('ui.quick_apply') }}</h1>
     <form class="form" @submit.prevent="submit">
       <input v-model="form.uname" :placeholder="$t('admin_user_00140')" required />
@@ -73,4 +73,17 @@ useSeoMeta({ title: t('ui.quick_apply') })
     </form>
     <p v-if="err" class="muted">{{ err }}</p>
   </section>
+  <div class="site-h5">
+    <div class="login_welcome"><div>{{ $t('ui.quick_apply') }}</div></div>
+    <form @submit.prevent="submit">
+      <div class="The_login_subject">
+        <div class="login_textbox"><input v-model="form.uname" required :placeholder="$t('admin_user_00140')" /></div>
+        <div class="login_textbox"><input v-model="form.telphone" required :placeholder="$t('wap_01619')" /></div>
+        <div class="login_textbox"><input v-model="form.password" type="password" required :placeholder="$t('wap_user_00371')" /></div>
+        <div class="login_textbox"><input v-model="form.checkcode" :placeholder="$t('wap_00110')" /></div>
+        <button type="submit" class="login_bth">{{ $t('common.submit') }}</button>
+      </div>
+    </form>
+    <p v-if="err" class="muted">{{ err }}</p>
+  </div>
 </template>

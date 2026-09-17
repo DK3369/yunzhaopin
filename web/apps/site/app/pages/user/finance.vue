@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr } from '~/utils/site'
+import { formatUnixDate, isUnauthErr } from '~/utils/site'
 import { runPackedTranslate } from '../../../../../layers/base/app/utils/packedText'
 
 const api = useApi()
@@ -85,7 +85,7 @@ const payTotal = computed(() => inferTotal(pays.value))
       <div v-for="row in pays?.list || []" :key="row.id" class="paylist_list site-pc">
         <span class="paylist_span paylist_dh">{{ packed(row.detail) }}</span>
         <span class="paylist_span paylist_money">{{ row.delta }}</span>
-        <span class="paylist_span paylist_time">{{ row.ctime_n || row.ctime }}</span>
+        <span class="paylist_span paylist_time">{{ row.ctime_n || formatUnixDate(row.ctime) }}</span>
       </div>
       <div class="site-h5 detail_body">
         <div v-if="(pays?.list || []).length" class="detail_body_card">
@@ -93,7 +93,7 @@ const payTotal = computed(() => inferTotal(pays.value))
             <li v-for="row in pays?.list || []" :key="row.id">
               <div class="detail_box">
                 <div class="detail_box_title">{{ packed(row.detail) || row.delta }}</div>
-                <div class="detail_box_time">{{ row.ctime_n || row.ctime }}</div>
+                <div class="detail_box_time">{{ row.ctime_n || formatUnixDate(row.ctime) }}</div>
               </div>
               <div class="detail_integral">{{ row.delta }}</div>
             </li>

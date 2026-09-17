@@ -2,7 +2,10 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::date_parse::de_loose_u64;
-use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
+use phpyun_core::utils::fmt_dt;
 use phpyun_services::interview_review_service::{self, Dim, ReviewView};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -12,6 +15,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/interviews/review", post(get_mine))
         .route("/interviews/review/submit", post(submit))
+        .route("/interviews/review/received", post(list_received))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -109,4 +113,52 @@ pub async fn submit(
         .collect();
     let v = interview_review_service::submit(&state, &user, f.yqms_id, &dims, &f.comment).await?;
     Ok(ApiResponse::data(ReviewOut::from(v)))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReceivedOut {
+    pub yqms_id: u64,
+    pub rater_uid: u64,
+    pub dimensions: Vec<DimIn>,
+    pub total: u32,
+    pub comment: String,
+    pub created_at: i64,
+    pub created_at_n: String,
+}
+
+/// Reviews written about this company (jobseeker → employer).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/interviews/review/received",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_received(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<ApiResponse<Paged<ReceivedOut>>> {
+    let r = interview_review_service::list_received(&state, &user, page).await?;
+    let list = r
+        .list
+        .into_iter()
+        .map(|v| ReceivedOut {
+            yqms_id: v.yqms_id,
+            rater_uid: v.rater_uid,
+            dimensions: v
+                .dimensions
+                .into_iter()
+                .map(|d| DimIn {
+                    key: d.key,
+                    score: d.score,
+                })
+                .collect(),
+            total: v.total,
+            comment: v.comment,
+            created_at_n: fmt_dt(v.created_at),
+            created_at: v.created_at,
+        })
+        .collect();
+    Ok(ApiResponse::data(Paged::from_listing(list, r.total, page)))
 }

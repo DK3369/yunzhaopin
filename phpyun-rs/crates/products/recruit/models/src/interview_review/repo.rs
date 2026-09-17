@@ -67,3 +67,40 @@ pub async fn upsert(
     .await?;
     Ok(res.last_insert_id())
 }
+
+pub async fn list_received(
+    pool: &MySqlPool,
+    ratee_uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<InterviewReview>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_rs_interview_review \
+         WHERE ratee_uid = ? ORDER BY id DESC LIMIT ? OFFSET ?"
+    );
+    let r = sqlx::query_as::<_, InterviewReview>(&sql)
+        .bind(ratee_uid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await;
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(Vec::new()),
+        Err(e) => Err(e),
+    }
+}
+
+pub async fn count_received(pool: &MySqlPool, ratee_uid: u64) -> Result<u64, sqlx::Error> {
+    let r = sqlx::query_as::<_, (i64,)>(
+        "SELECT COUNT(*) FROM phpyun_rs_interview_review WHERE ratee_uid = ?",
+    )
+    .bind(ratee_uid)
+    .fetch_one(pool)
+    .await;
+    match r {
+        Ok((n,)) => Ok(n.max(0) as u64),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(0),
+        Err(e) => Err(e),
+    }
+}

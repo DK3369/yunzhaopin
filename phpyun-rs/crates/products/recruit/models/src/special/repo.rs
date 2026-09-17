@@ -391,7 +391,7 @@ pub async fn list_admin_kw(
     ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY sort DESC, ctime DESC, id DESC LIMIT ");
     qb.push_bind(limit);
@@ -406,7 +406,7 @@ pub async fn count_admin_kw(pool: &MySqlPool, keyword: Option<&str>) -> Result<u
     ));
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -566,24 +566,24 @@ pub async fn list_add_companies(
     qb.push_bind(sid);
     qb.push(" AND COALESCE(deleted,0)=0)");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         match kw_type {
             2 => {
                 qb.push(" AND c.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
                 qb.push(")");
             }
             3 => {
                 qb.push(" AND c.linkman LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
             }
             4 => {
                 qb.push(" AND c.linktel LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
             }
             5 => {
                 qb.push(" AND c.linkmail LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
             }
             6 => {
                 if let Ok(uid) = kw.parse::<u64>() {
@@ -593,9 +593,9 @@ pub async fn list_add_companies(
             }
             _ => {
                 qb.push(" AND (c.name LIKE ");
-                qb.push_bind(like.clone());
+                crate::sql::push_escaped(&mut qb, like.clone());
                 qb.push(" OR c.shortname LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
                 qb.push(")");
             }
         }
@@ -620,24 +620,24 @@ pub async fn count_add_companies(
     qb.push_bind(sid);
     qb.push(" AND COALESCE(deleted,0)=0)");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         match kw_type {
             2 => {
                 qb.push(" AND c.uid IN (SELECT uid FROM phpyun_member WHERE username LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
                 qb.push(")");
             }
             3 => {
                 qb.push(" AND c.linkman LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
             }
             4 => {
                 qb.push(" AND c.linktel LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
             }
             5 => {
                 qb.push(" AND c.linkmail LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
             }
             6 => {
                 if let Ok(uid) = kw.parse::<u64>() {
@@ -647,9 +647,9 @@ pub async fn count_add_companies(
             }
             _ => {
                 qb.push(" AND (c.name LIKE ");
-                qb.push_bind(like.clone());
+                crate::sql::push_escaped(&mut qb, like.clone());
                 qb.push(" OR c.shortname LIKE ");
-                qb.push_bind(like);
+                crate::sql::push_escaped(&mut qb, like);
                 qb.push(")");
             }
         }

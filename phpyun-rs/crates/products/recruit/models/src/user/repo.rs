@@ -509,7 +509,7 @@ pub async fn admin_list(
 ) -> Result<Vec<Member>, sqlx::Error> {
     let mut sql = format!("SELECT {FIELDS} FROM phpyun_member WHERE 1=1");
     if f.keyword.is_some() {
-        sql.push_str(" AND (username LIKE ? OR moblie LIKE ? OR email LIKE ?)");
+        sql.push_str(" AND (username LIKE ? ESCAPE '\\\\' OR moblie LIKE ? ESCAPE '\\\\' OR email LIKE ? ESCAPE '\\\\')");
     }
     if f.usertype.is_some() {
         sql.push_str(" AND usertype = ?");
@@ -521,7 +521,7 @@ pub async fn admin_list(
 
     let mut q = sqlx::query_as::<_, Member>(&sql);
     if let Some(kw) = f.keyword {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         q = q.bind(like.clone()).bind(like.clone()).bind(like);
     }
     if let Some(u) = f.usertype {
@@ -536,7 +536,7 @@ pub async fn admin_list(
 pub async fn admin_count(pool: &MySqlPool, f: &AdminUserFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut sql = String::from("SELECT COUNT(*) FROM phpyun_member WHERE 1=1");
     if f.keyword.is_some() {
-        sql.push_str(" AND (username LIKE ? OR moblie LIKE ? OR email LIKE ?)");
+        sql.push_str(" AND (username LIKE ? ESCAPE '\\\\' OR moblie LIKE ? ESCAPE '\\\\' OR email LIKE ? ESCAPE '\\\\')");
     }
     if f.usertype.is_some() {
         sql.push_str(" AND usertype = ?");
@@ -547,7 +547,7 @@ pub async fn admin_count(pool: &MySqlPool, f: &AdminUserFilter<'_>) -> Result<u6
 
     let mut q = sqlx::query_as::<_, (i64,)>(&sql);
     if let Some(kw) = f.keyword {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         q = q.bind(like.clone()).bind(like.clone()).bind(like);
     }
     if let Some(u) = f.usertype {
@@ -615,7 +615,7 @@ fn push_php_member_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpMe
         match f.kw_type {
             2 => {
                 qb.push(" AND moblie LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             3 => {
                 let uid: u64 = kw.parse().unwrap_or(0);
@@ -624,14 +624,14 @@ fn push_php_member_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpMe
             }
             4 => {
                 qb.push(" AND (reg_ip LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR login_ip LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             _ => {
                 qb.push(" AND username LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
         }
     }
@@ -698,7 +698,7 @@ pub async fn list_php_appeals(
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     if let Some(st) = appealstate {
         qb.push(" AND appealstate = ");
@@ -721,7 +721,7 @@ pub async fn count_php_appeals(
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     if let Some(st) = appealstate {
         qb.push(" AND appealstate = ");

@@ -72,9 +72,9 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &TinyFilter<'a>) 
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND (job LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR production LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(")");
         }
     }
@@ -437,7 +437,7 @@ fn push_admin_php_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &AdminT
             qb.push(" AND ");
             qb.push(col);
             qb.push(" LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
     if let Some(s) = f.status {

@@ -20,8 +20,10 @@ type Row = {
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-zph', () =>
-  api.post<{ list: Row[]; total: number }>('/v1/mcenter/zph/my-reservation', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-zph-${page.value}`,
+  () => api.post<{ list: Row[]; total: number }>('/v1/mcenter/zph/my-reservation', { page: page.value, page_size: pageSize }),
 )
 const list = computed(() => data.value?.list || [])
 const msg = ref('')
@@ -153,5 +155,6 @@ useSeoMeta({ title: t('wap_00558') })
     </div>
     <p v-if="statusTip" class="mt10">{{ statusTip }}</p>
     <p v-if="msg">{{ msg }}</p>
+    <MemberPager :page="page" :page-size="pageSize" :total="inferTotal(data, list)" @update:page="go" />
   </MemberPanel>
 </template>

@@ -1,3 +1,5 @@
+import { createError } from 'h3'
+
 export type NavItem = {
   id?: number
   label: string
@@ -264,8 +266,8 @@ export function oauthEnabledByAdmin(
 
 export function errKey(err: unknown): string {
   if (!err || typeof err !== 'object') return ''
-  const e = err as { key?: string; data?: { key?: string } }
-  return String(e.key || e.data?.key || '')
+  const e = err as { key?: string; data?: { key?: string }; cause?: { key?: string } }
+  return String(e.key || e.data?.key || e.cause?.key || '')
 }
 
 export function isUnauthErr(err: unknown): boolean {
@@ -598,3 +600,40 @@ export function catTree(list: CatNode[], limit = 11): CatNode[] {
 
 export const PLACEHOLDER_LOGO = '/legacy/pc/images/lay-loding.png'
 export const PLACEHOLDER_BANNER = '/legacy/pc/images/banner.png'
+
+/** Block `javascript:` / protocol-relative / backslash open-redirects on `:href`. */
+export function safeHref(raw?: string | null): string | undefined {
+  const v = String(raw || '').trim()
+  if (!v || v.length > 2048) return undefined
+  if (v.includes('\\') || v.includes('\0') || /\s/.test(v)) return undefined
+  const lower = v.toLowerCase()
+  if (lower.startsWith('https://') || lower.startsWith('http://')) return v
+  if (v.startsWith('/') && !v.startsWith('//')) return v
+  return undefined
+}
+
+/** Login `?next=` — same-site path only. */
+export function safeLoginNext(raw?: string | null): string {
+  const v = String(raw || '')
+  if (/^\/(?![/\\])[^\s\\]*$/.test(v) && !v.includes('@')) return v
+  return ''
+}
+
+function errStatus(e: unknown): number {
+  if (!e || typeof e !== 'object') return 0
+  const o = e as { statusCode?: number; status?: number; data?: { statusCode?: number } }
+  return Number(o.statusCode || o.status || o.data?.statusCode || 0)
+}
+
+/** Public detail: missing resource → Nuxt 404. Other errors stay on the page. */
+export function ensurePublicFound(found: boolean, err?: unknown) {
+  const key = errKey(err)
+  const missing =
+    errStatus(err) === 404 ||
+    key.includes('not_found') ||
+    key.includes('notfound') ||
+    key === 'job_pending' ||
+    (!err && !found)
+  if (!missing) return
+  throw createError({ statusCode: 404, statusMessage: 'Not Found', fatal: true })
+}

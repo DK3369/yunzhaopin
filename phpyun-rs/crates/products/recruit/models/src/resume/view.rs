@@ -47,6 +47,8 @@ pub struct ResumeExpectItem {
     pub r_status: i32,
     /// 0 pending / 1 approved / 3 rejected
     pub state: i32,
+    /// 1 = default resume copy
+    pub defaults: i32,
     pub lastupdate: i64,
     pub lastupdate_n: String,
 }
@@ -100,7 +102,7 @@ impl From<Work> for ResumeWorkItem {
             edate: w.edate,
             department: w.department,
             title: w.title,
-            content: w.content,
+            content: phpyun_core::html::sanitize_opt(w.content),
         }
     }
 }
@@ -133,7 +135,7 @@ impl From<Project> for ResumeProjectItem {
             edate_n: fmt_date(p.edate),
             edate: p.edate,
             role: p.role,
-            content: p.content,
+            content: phpyun_core::html::sanitize_opt(p.content),
         }
     }
 }
@@ -181,7 +183,7 @@ impl From<Training> for ResumeTrainingItem {
             edate_n: fmt_date(t.edate),
             edate: t.edate,
             title: t.title,
-            content: t.content,
+            content: phpyun_core::html::sanitize_opt(t.content),
         }
     }
 }
@@ -214,7 +216,7 @@ impl From<Cert> for ResumeCertItem {
             edate_n: fmt_date(c.edate),
             edate: c.edate,
             title: c.title,
-            content: c.content,
+            content: phpyun_core::html::sanitize_opt(c.content),
         }
     }
 }
@@ -256,6 +258,7 @@ impl From<Expect> for ResumeExpectItem {
             status: e.status,
             r_status: e.r_status,
             state: e.state,
+            defaults: e.defaults,
             lastupdate_n: fmt_dt(e.lastupdate),
             lastupdate: e.lastupdate,
         }

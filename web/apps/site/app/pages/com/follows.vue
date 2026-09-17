@@ -4,8 +4,10 @@ type FavRow = { target_id: number; name: string }
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-follows', () =>
-  api.post<{ list?: FavItem[] }>('/v1/mcenter/favorites/list', { kind: 3, page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-follows-${page.value}`,
+  () => api.post<{ list?: FavItem[]; total?: number }>('/v1/mcenter/favorites/list', { kind: 3, page: page.value, page_size: pageSize }),
 )
 const rows = computed((): FavRow[] =>
   (data.value?.list || []).map((row) => {
@@ -41,5 +43,6 @@ useSeoMeta({ title: t('wap_01142') })
         </div>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="inferTotal(data, rows)" @update:page="go" />
   </MemberPanel>
 </template>

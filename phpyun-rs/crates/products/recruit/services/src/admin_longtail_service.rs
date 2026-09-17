@@ -793,6 +793,7 @@ pub async fn company_php_edit(
                 rating_type: 0,
                 suspend_num: 0,
                 max_time: 0,
+                sons_num: 0,
             }),
     )
     .unwrap_or(json!({}));
@@ -1117,6 +1118,7 @@ pub async fn company_getrating(
             rating_type: 0,
             suspend_num: 0,
             max_time: 0,
+            sons_num: 0,
         });
     let now = clock::now_ts();
     let add_on = st.rating_type == pkg.r#type && pkg.r#type == 1 && is_vip(st.vip_etime, now);
@@ -1277,6 +1279,7 @@ pub async fn company_uprating(
         rating_type: pkg.r#type,
         suspend_num: json_i32(body, "suspend_num"),
         max_time,
+        sons_num: json_i32(body, "sons_num"),
     };
     statis_repo::update_admin_quotas(state.db.pool(), uid, &row).await?;
     company_repo::set_rating(state.db.pool(), uid, rid, &pkg.name).await?;
@@ -1443,49 +1446,7 @@ pub async fn company_setupcom(
 /// PHP's inner `r_status == 4` branch can never fire and the condition reduces
 /// to "has a VIP end date that has passed".
 async fn vip_over(state: &AppState, uid: u64) -> AppResult<()> {
-    let pool = state.db.pool();
-    let Some(quota) = gap_extra::company_quota(pool, uid).await? else {
-        return Ok(());
-    };
-    let today = clock::start_of_today();
-    let expired = quota.vip_etime != 0 && quota.vip_etime < today;
-    if !expired {
-        return Ok(());
-    }
-    let cfg = site_setting_repo::find_many(pool, &["com_vip_done", "jobunder", "job_under_delay"])
-        .await?;
-    let vip_done = cfg.get("com_vip_done").map(String::as_str).unwrap_or("0");
-    if vip_done != "0" {
-        // The "keep a downgraded tier" branch runs through PHP
-        // `rating.model::ratingInfo`, which is not ported yet. Bail out rather
-        // than half-applying a tier change.
-        tracing::warn!(
-            uid,
-            com_vip_done = vip_done,
-            "vipOver: com_vip_done tier downgrade not migrated; skipping"
-        );
-        return Ok(());
-    }
-    // `rating > 0` keeps repeat calls idempotent — an already-expired company
-    // has been zeroed and must not have `oldrating_name` overwritten.
-    if quota.rating > 0 {
-        // PHP unpublishes jobs only when `jobunder = 1` and no delay window is
-        // configured.
-        let jobunder = cfg.get("jobunder").map(String::as_str).unwrap_or("0") == "1";
-        let delay = cfg
-            .get("job_under_delay")
-            .map(|s| !s.is_empty() && s != "0")
-            .unwrap_or(false);
-        gap_extra::expire_company_rating(
-            pool,
-            uid,
-            &quota.rating_name,
-            EXPIRED_RATING_NAME,
-            jobunder && !delay,
-        )
-        .await?;
-    }
-    Ok(())
+    crate::rating_info_service::vip_over(state, uid).await
 }
 
 /// PHP stores the raw auto-key in `rating_name`; display code runs it back

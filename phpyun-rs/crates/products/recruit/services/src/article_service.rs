@@ -40,6 +40,8 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<Article> {
     background::spawn_best_effort("article.hits", async move {
         let _ = article_repo::incr_hits(&pool, id).await;
     });
+    let mut a = a;
+    a.content = phpyun_core::html::sanitize_opt(a.content);
     Ok(a)
 }
 

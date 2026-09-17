@@ -41,11 +41,11 @@ fn push_sms_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpSmsFilter<'_>) 
     qb.push(" FROM phpyun_moblie_msg WHERE COALESCE(del,0) <> 1");
     if let Some(kw) = f.moblie_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND moblie LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(kw) = f.content_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND content LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if f.cuid_zero {
         qb.push(" AND COALESCE(cuid,0) = 0");
@@ -242,7 +242,7 @@ pub async fn latest_ctime_content_likes(
         }
         first = false;
         qb.push("content LIKE ");
-        qb.push_bind(format!("%{n}%"));
+        crate::sql::push_contains(&mut qb, n);
     }
     qb.push(") ORDER BY id DESC LIMIT 1");
     Ok(qb.build_query_as::<(String, i64)>().fetch_optional(pool).await?)

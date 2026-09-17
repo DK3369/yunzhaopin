@@ -748,6 +748,15 @@ fn json_u64_val(v: &Value) -> u64 {
     }
 }
 
+fn json_map_push(map: &mut serde_json::Map<String, Value>, key: &str, item: Value) {
+    match map.get_mut(key) {
+        Some(Value::Array(arr)) => arr.push(item),
+        _ => {
+            map.insert(key.to_string(), Value::Array(vec![item]));
+        }
+    }
+}
+
 fn has_flag(body: &Value, key: &str) -> bool {
     match body.get(key) {
         None | Some(Value::Null) => false,
@@ -11575,18 +11584,13 @@ async fn role_ugroup_info(state: &AppState, body: &Value) -> AppResult<Value> {
         .collect();
     for r in &rows {
         if top.contains(&r.keyid) {
-            one_menu
-                .entry(r.keyid.to_string())
-                .or_insert_with(|| json!([]))
-                .as_array_mut()
-                .unwrap()
-                .push(json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}));
-            one_children
-                .entry(r.keyid.to_string())
-                .or_insert_with(|| json!([]))
-                .as_array_mut()
-                .unwrap()
-                .push(json!(r.id));
+            let k = r.keyid.to_string();
+            json_map_push(
+                &mut one_menu,
+                &k,
+                json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}),
+            );
+            json_map_push(&mut one_children, &k, json!(r.id));
         }
     }
     let two_ids: Vec<i64> = rows
@@ -11596,26 +11600,20 @@ async fn role_ugroup_info(state: &AppState, body: &Value) -> AppResult<Value> {
         .collect();
     for r in &rows {
         if one_ids.contains(&r.keyid) {
-            two_menu
-                .entry(r.keyid.to_string())
-                .or_insert_with(|| json!([]))
-                .as_array_mut()
-                .unwrap()
-                .push(json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}));
-            two_children
-                .entry(r.keyid.to_string())
-                .or_insert_with(|| json!([]))
-                .as_array_mut()
-                .unwrap()
-                .push(json!(r.id));
+            let k = r.keyid.to_string();
+            json_map_push(
+                &mut two_menu,
+                &k,
+                json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}),
+            );
+            json_map_push(&mut two_children, &k, json!(r.id));
         }
         if two_ids.contains(&r.keyid) {
-            three_menu
-                .entry(r.keyid.to_string())
-                .or_insert_with(|| json!([]))
-                .as_array_mut()
-                .unwrap()
-                .push(json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}));
+            json_map_push(
+                &mut three_menu,
+                &r.keyid.to_string(),
+                json!({"id": r.id, "keyid": r.keyid, "name": r.name, "url": r.url, "path": r.path}),
+            );
         }
     }
     let mut power = Vec::new();

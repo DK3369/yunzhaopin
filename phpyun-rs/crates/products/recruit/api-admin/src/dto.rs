@@ -1,8 +1,24 @@
 //! PHP admin list envelope extras: `perPage` / `pageSizes` plus snake aliases.
 
 use phpyun_core::Paged;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
+
+/// PHP Vue posts mixed string/number keys. Wrapper runs `Validate` without
+/// dropping extra fields (they stay in `fields` for the service).
+#[derive(Debug, Clone, Default, Deserialize, Validate, ToSchema)]
+pub struct PhpLooseBody {
+    #[serde(flatten)]
+    #[schema(value_type = Object)]
+    pub fields: serde_json::Map<String, serde_json::Value>,
+}
+
+impl PhpLooseBody {
+    pub fn as_value(&self) -> serde_json::Value {
+        serde_json::Value::Object(self.fields.clone())
+    }
+}
 
 #[derive(Debug, Serialize)]
 pub struct AdminPaged<T: Serialize> {

@@ -208,11 +208,13 @@ fn order_clause(col: &str, dir: &str) -> &'static str {
 fn push_advice_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &AdviceAdminFilter<'_>) {
     qb.push(" WHERE 1=1");
     if !f.keyword.is_empty() {
-        let like = format!("%{}%", f.keyword);
+        let like = crate::sql::like_contains(f.keyword);
         if f.keyword_type == "1" || f.keyword_type.is_empty() {
-            qb.push(" AND username LIKE ").push_bind(like);
+            qb.push(" AND username LIKE ");
+            crate::sql::push_escaped(qb, like);
         } else {
-            qb.push(" AND content LIKE ").push_bind(like);
+            qb.push(" AND content LIKE ");
+            crate::sql::push_escaped(qb, like);
         }
     }
     if let Some(t) = f.infotype {

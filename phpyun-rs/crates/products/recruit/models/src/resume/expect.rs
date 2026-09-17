@@ -38,6 +38,9 @@ pub struct Expect {
     pub r_status: i32,
     /// Review state: 0 = unreviewed / 1 = approved / 3 = rejected.
     pub state: i32,
+    /// 1 = default resume copy (`phpyun_resume_expect.defaults`).
+    #[sqlx(default)]
+    pub defaults: i32,
     pub lastupdate: i64,
 }
 
@@ -51,7 +54,7 @@ const FIELDS: &str = "\
     COALESCE(`type`, 0) AS `type`, \
     COALESCE(report, 0) AS report, \
     COALESCE(jobstatus, 0) AS jobstatus, \
-    status, r_status, state, lastupdate";
+    status, r_status, state, CAST(COALESCE(defaults,0) AS SIGNED) AS defaults, lastupdate";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx::Error> {
     let sql = format!(
@@ -325,7 +328,7 @@ pub async fn list_match_admin(
         .fetch_all(pool)
         .await
     } else {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         sqlx::query_as::<_, MatchExpectRow>(
             "SELECT CAST(e.id AS SIGNED) AS id, CAST(e.uid AS SIGNED) AS uid, \
                     COALESCE(e.name,'') AS name, COALESCE(e.uname,'') AS uname, \
@@ -341,7 +344,7 @@ pub async fn list_match_admin(
              FROM phpyun_resume_expect e \
              LEFT JOIN phpyun_member m ON m.uid = e.uid \
              WHERE e.state = 1 AND e.status = 1 AND e.r_status = 1 AND COALESCE(e.defaults,0) = 1 \
-               AND e.name LIKE ? \
+               AND e.name LIKE ? ESCAPE '\\\\' \
              ORDER BY e.lastupdate DESC LIMIT ? OFFSET ?",
         )
         .bind(like)
@@ -362,11 +365,11 @@ pub async fn count_match_admin(pool: &MySqlPool, keyword: Option<&str>) -> Resul
         .fetch_one(pool)
         .await?
     } else {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         sqlx::query_as(
             "SELECT COUNT(*) FROM phpyun_resume_expect e \
              WHERE e.state = 1 AND e.status = 1 AND e.r_status = 1 AND COALESCE(e.defaults,0) = 1 \
-               AND e.name LIKE ?",
+               AND e.name LIKE ? ESCAPE '\\\\'",
         )
         .bind(like)
         .fetch_one(pool)
@@ -1060,7 +1063,7 @@ fn push_php_resume_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpRe
         match f.keytype {
             2 => {
                 qb.push(" AND e.uname LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             3 => {
                 let id: u64 = kw.parse().unwrap_or(0);
@@ -1069,63 +1072,63 @@ fn push_php_resume_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PhpRe
             }
             4 => {
                 qb.push(" AND m.username LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             5 => {
                 qb.push(" AND (m.moblie LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR r.telphone LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             6 => {
                 qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_edu WHERE name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR title LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR specialty LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             7 => {
                 qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_work WHERE name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR title LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR content LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             8 => {
                 qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_project WHERE name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR title LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR content LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             9 => {
                 qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_training WHERE name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR title LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(" OR content LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             10 => {
                 qb.push(" AND e.id IN (SELECT eid FROM phpyun_resume_skill WHERE name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
                 qb.push(")");
             }
             11 => {
                 qb.push(" AND e.add_ip LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
             _ => {
                 qb.push(" AND e.name LIKE ");
-                qb.push_bind(format!("%{kw}%"));
+                crate::sql::push_contains(qb, kw);
             }
         }
     }

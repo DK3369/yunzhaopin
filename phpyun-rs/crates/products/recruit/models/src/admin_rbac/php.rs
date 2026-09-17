@@ -73,11 +73,11 @@ fn push_user_where_ext(
 ) {
     qb.push(" FROM phpyun_admin_user u LEFT JOIN phpyun_admin_user_group g ON g.id = u.m_id WHERE 1=1");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         qb.push(" AND (u.username LIKE ");
-        qb.push_bind(like.clone());
+        crate::sql::push_escaped(qb, like.clone());
         qb.push(" OR u.name LIKE ");
-        qb.push_bind(like);
+        crate::sql::push_escaped(qb, like);
         qb.push(")");
     }
     if let Some(mid) = m_id.filter(|n| *n > 0) {
@@ -332,7 +332,7 @@ pub async fn php_list_groups_of_type(
     qb.push_bind(group_type);
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND g.group_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY g.id ASC LIMIT ");
     qb.push_bind(limit as i64);
@@ -350,7 +350,7 @@ pub async fn php_count_groups_of_type(
     qb.push_bind(group_type);
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND g.group_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))

@@ -170,7 +170,7 @@ fn push_link_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpLinkFilter<'_>
     qb.push(format!(" FROM phpyun_admin_link WHERE {PREDICATE}"));
     if let Some(kw) = f.name_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND link_name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(t) = f.link_type.filter(|s| !s.is_empty()) {
         qb.push(" AND link_type = ");

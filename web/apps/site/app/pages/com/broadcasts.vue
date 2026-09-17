@@ -5,10 +5,13 @@ type Row = { id: number; title: string; body?: string; created_at_n?: string }
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-broadcasts', () =>
-  api.post<{ list: Row[]; total: number }>('/v1/mcenter/broadcasts', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-broadcasts-${page.value}`,
+  () => api.post<{ list: Row[]; total: number }>('/v1/mcenter/broadcasts', { page: page.value, page_size: pageSize }),
 )
 const list = computed(() => data.value?.list || [])
+const total = computed(() => inferTotal(data.value, list.value))
 
 async function mark(id: number) {
   try {
@@ -45,5 +48,6 @@ useSeoMeta({ title: t('common.message') })
         <p>{{ row.body }}</p>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="total" @update:page="go" />
   </MemberPanel>
 </template>

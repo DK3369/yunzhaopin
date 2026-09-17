@@ -143,6 +143,7 @@
 /v1/mcenter/interviews/accept
 /v1/mcenter/interviews/reject
 /v1/mcenter/interviews/review
+/v1/mcenter/interviews/review/received
 /v1/mcenter/interviews/review/submit
 /v1/mcenter/invite-reg
 /v1/mcenter/job-messages
@@ -251,6 +252,7 @@
 /v1/mcenter/resume/edus
 /v1/mcenter/resume/edus/update
 /v1/mcenter/resume/expects
+/v1/mcenter/resume/expects/set-default
 /v1/mcenter/resume/expects/update
 /v1/mcenter/resume/languages
 /v1/mcenter/resume/languages/update

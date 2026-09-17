@@ -621,13 +621,13 @@ pub async fn list_properties(
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name,'') AS name, COALESCE(value,'') AS value FROM phpyun_property WHERE 1=1",
     );
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if kw_type == 2 {
             qb.push(" AND value LIKE ");
         } else {
             qb.push(" AND name LIKE ");
         }
-        qb.push_bind(like);
+        crate::sql::push_escaped(&mut qb, like);
     }
     qb.push(" ORDER BY id DESC LIMIT ");
     qb.push_bind(limit);
@@ -639,13 +639,13 @@ pub async fn list_properties(
 pub async fn count_properties(pool: &MySqlPool, keyword: Option<&str>, kw_type: i32) -> Result<u64, sqlx::Error> {
     let mut qb = QueryBuilder::new("SELECT COUNT(*) FROM phpyun_property WHERE 1=1");
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
-        let like = format!("%{kw}%");
+        let like = crate::sql::like_contains(kw);
         if kw_type == 2 {
             qb.push(" AND value LIKE ");
         } else {
             qb.push(" AND name LIKE ");
         }
-        qb.push_bind(like);
+        crate::sql::push_escaped(&mut qb, like);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))

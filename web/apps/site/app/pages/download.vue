@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mediaUrl } from '~/utils/site'
+import { mediaUrl, safeHref } from '~/utils/site'
 
 const { t } = useI18n()
 const { settings } = useSiteChrome()
@@ -28,10 +28,10 @@ useSeoMeta({ title: t('ui.app_download') })
       <img :src="qr" alt="qr" width="180" height="180" />
     </p>
     <p v-else-if="android?.download_url">
-      <a :href="android.download_url">Android {{ android.version }}</a>
+      <a :href="safeHref(android.download_url)">Android {{ android.version }}</a>
     </p>
     <p v-if="!inWeixin && ios?.download_url">
-      <a :href="ios.download_url">iOS {{ ios.version }}</a>
+      <a :href="safeHref(ios.download_url)">iOS {{ ios.version }}</a>
     </p>
     <p v-if="!qr && !android?.download_url && !ios?.download_url" class="muted">{{ $t('common_02409') }}</p>
   </section>

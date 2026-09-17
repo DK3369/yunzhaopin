@@ -458,15 +458,17 @@ pub async fn list_jobs(
 )]
 pub async fn job_detail(
     State(state): State<AppState>,
-    user: AuthenticatedUser,
+    MaybeUser(user): MaybeUser,
     headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
+    if let Some(u) = user.as_ref() {
+        phpyun_services::site_gate_service::ensure_public_detail_rate(&state, u.uid).await?;
+    }
     Ok(ApiResponse::data(
         build_job_detail_value(
             &state,
-            Some(&user),
+            user.as_ref(),
             b.id,
             &crate::v1::wap::client_ip(&headers),
         )
@@ -498,21 +500,23 @@ pub struct JobDetailFull {
 )]
 pub async fn job_detail_full(
     State(state): State<AppState>,
-    user: AuthenticatedUser,
+    MaybeUser(user): MaybeUser,
     headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<JobDetailFull>> {
-    phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
+    if let Some(u) = user.as_ref() {
+        phpyun_services::site_gate_service::ensure_public_detail_rate(&state, u.uid).await?;
+    }
     let id = b.id;
     let ip = crate::v1::wap::client_ip(&headers);
-    let detail_fut = build_job_detail_value(&state, Some(&user), id, &ip);
+    let detail_fut = build_job_detail_value(&state, user.as_ref(), id, &ip);
     let similar_fut = job_service::list_similar(&state, id, 8);
     let same_fut = job_service::list_same_company(&state, id, 6);
     let ads_fut = super::ads::load_map(&state, &[("509", 1), ("512", 1)]);
     let (detail, similar, same, ads) = tokio::join!(detail_fut, similar_fut, same_fut, ads_fut);
-    let similar = map_job_summaries(&state, Some(&user), similar.unwrap_or_else(|_| Vec::new())).await;
+    let similar = map_job_summaries(&state, user.as_ref(), similar.unwrap_or_else(|_| Vec::new())).await;
     let same_company =
-        map_job_summaries(&state, Some(&user), same.unwrap_or_else(|_| Vec::new())).await;
+        map_job_summaries(&state, user.as_ref(), same.unwrap_or_else(|_| Vec::new())).await;
     Ok(ApiResponse::data(JobDetailFull {
         detail: detail?,
         similar,
@@ -1327,8 +1331,12 @@ pub async fn temporary_apply(
         exp: r.access_exp,
         hr_uid: None,
     };
-    let job_cid: i64 = job_classid.parse().unwrap_or(0);
-    let city_cid: i64 = city_classid.parse().unwrap_or(0);
+    let job_cid: i64 = job_classid
+        .parse()
+        .map_err(|_| phpyun_core::ApiError::param_invalid("job_classid"))?;
+    let city_cid: i64 = city_classid
+        .parse()
+        .map_err(|_| phpyun_core::ApiError::param_invalid("city_classid"))?;
     if let Err(e) = phpyun_services::temporary_resume_service::after_register(
         &state,
         r.uid,

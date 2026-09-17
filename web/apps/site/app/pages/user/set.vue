@@ -17,6 +17,7 @@ const items = computed(() =>
     { to: '/user/inbox', label: t('admin_user_00263') },
     { to: '/user/reports', label: t('ui.my_reports') },
     { to: '/user/messages', label: t('common.message') },
+    { to: '/user/chat', label: t('wap_user_00363') },
   ].filter((item) => isMemberModuleOn(settings.value, item.to)),
 )
 </script>

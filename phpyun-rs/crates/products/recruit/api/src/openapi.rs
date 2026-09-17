@@ -318,6 +318,7 @@ impl Modify for DeprecatedIndex {
         // mcenter: resume children (jobseeker)
         v1::mcenter::resume_expect::create,
         v1::mcenter::resume_expect::update,
+        v1::mcenter::resume_expect::set_default,
         // v1::mcenter::resume_expect::remove, // removed
         v1::mcenter::resume_bundle::bundle,
         v1::mcenter::resume_edu::create,
@@ -346,6 +347,7 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::interviews::detail_company,
         v1::mcenter::interview_review::get_mine,
         v1::mcenter::interview_review::submit,
+        v1::mcenter::interview_review::list_received,
         v1::mcenter::yqms::create,
         v1::mcenter::yqms::list_mine,
         v1::mcenter::yqms::list_company,
@@ -1081,6 +1083,7 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::interview_review::ReviewQuery,
             v1::mcenter::interview_review::ReviewSubmitForm,
             v1::mcenter::interview_review::ReviewOut,
+            v1::mcenter::interview_review::ReceivedOut,
             v1::mcenter::article_channels::ChannelItem,
             v1::mcenter::article_channels::ChannelList,
             v1::mcenter::article_channels::SaveForm,

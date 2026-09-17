@@ -41,6 +41,12 @@ pub fn push_contains(qb: &mut QueryBuilder<'_, sqlx::MySql>, raw: &str) {
     qb.push(" ESCAPE '\\\\'");
 }
 
+/// Bind an already-escaped `%…%` pattern (from [`like_contains`]) plus `ESCAPE`.
+pub fn push_escaped(qb: &mut QueryBuilder<'_, sqlx::MySql>, pattern: String) {
+    qb.push_bind(pattern);
+    qb.push(" ESCAPE '\\\\'");
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

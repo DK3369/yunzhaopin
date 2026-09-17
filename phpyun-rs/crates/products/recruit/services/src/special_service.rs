@@ -62,6 +62,8 @@ pub async fn get(state: &AppState, id: u64) -> AppResult<Special> {
     background::spawn_best_effort("special.view", async move {
         let _ = special_repo::incr_view(&pool, id).await;
     });
+    let mut s = s;
+    s.body = phpyun_core::html::sanitize_html(&s.body);
     Ok(s)
 }
 

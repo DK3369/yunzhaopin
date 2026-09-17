@@ -872,6 +872,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/company（无 kind 时仍为 member_log）
+         */
         post: operations["post_v1_admin_company_logs"];
         delete?: never;
         options?: never;
@@ -888,6 +892,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_company_logs_fav_job"];
         delete?: never;
         options?: never;
@@ -904,6 +912,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_company_logs_fav_job_delete"];
         delete?: never;
         options?: never;
@@ -920,6 +932,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_company_logs_job_tellog"];
         delete?: never;
         options?: never;
@@ -936,6 +952,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_company_logs_job_tellog_delete"];
         delete?: never;
         options?: never;
@@ -972,6 +992,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_company_logs_look_job"];
         delete?: never;
         options?: never;
@@ -988,6 +1012,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_company_logs_look_job_delete"];
         delete?: never;
         options?: never;
@@ -1004,6 +1032,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_company_logs_part_apply"];
         delete?: never;
         options?: never;
@@ -1020,6 +1052,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_company_logs_part_apply_delete"];
         delete?: never;
         options?: never;
@@ -1036,6 +1072,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_company_logs_userid_job"];
         delete?: never;
         options?: never;
@@ -1052,6 +1092,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_company_logs_userid_msg"];
         delete?: never;
         options?: never;
@@ -1068,6 +1112,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_company_logs_userid_msg_delete"];
         delete?: never;
         options?: never;
@@ -2291,7 +2339,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Batch mark as resolved */
+        /**
+         * Batch mark as resolved
+         * @deprecated
+         * @description 改用 POST /v1/admin/feedback/status（body 可传 ids）
+         */
         post: operations["post_v1_admin_feedback_batch_status"];
         delete?: never;
         options?: never;
@@ -2565,6 +2617,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/jobs/state（body 可传 ids）
+         */
         post: operations["post_v1_admin_jobs_batch_state"];
         delete?: never;
         options?: never;
@@ -2582,6 +2638,23 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_admin_jobs_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/jobs/php-add-form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PHP `company_job::add_action` GET 表单 / POST `save` 写职位。 */
+        post: operations["post_v1_admin_jobs_php_add_form"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2792,6 +2865,72 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["post_v1_admin_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/logs/company": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** `POST /v1/admin/logs/company` — no kind: member_log usertype=2; kind: fav_job|job_tellog|look_job|part_apply|userid_job|userid_msg. */
+        post: operations["post_v1_admin_logs_company"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/logs/company/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_logs_company_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/logs/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** `POST /v1/admin/logs/user` — no kind: member_log usertype=1; kind: down|freedown|look_resume|refresh|talent_pool|trust. */
+        post: operations["post_v1_admin_logs_user"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/logs/user/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_logs_user_delete"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3995,7 +4134,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Batch process reports */
+        /**
+         * Batch process reports
+         * @deprecated
+         * @description 改用 POST /v1/admin/reports/status（body 可传 ids）
+         */
         post: operations["post_v1_admin_reports_batch_status"];
         delete?: never;
         options?: never;
@@ -4989,6 +5132,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user（无 kind 时仍为 member_log）
+         */
         post: operations["post_v1_admin_user_logs"];
         delete?: never;
         options?: never;
@@ -5005,6 +5152,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_user_logs_down"];
         delete?: never;
         options?: never;
@@ -5021,6 +5172,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_user_logs_down_delete"];
         delete?: never;
         options?: never;
@@ -5037,6 +5192,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_user_logs_freedown"];
         delete?: never;
         options?: never;
@@ -5053,6 +5212,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_user_logs_freedown_delete"];
         delete?: never;
         options?: never;
@@ -5069,6 +5232,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_user_logs_look_resume"];
         delete?: never;
         options?: never;
@@ -5085,6 +5252,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_user_logs_look_resume_delete"];
         delete?: never;
         options?: never;
@@ -5101,6 +5272,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_user_logs_refresh"];
         delete?: never;
         options?: never;
@@ -5117,6 +5292,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_user_logs_refresh_delete"];
         delete?: never;
         options?: never;
@@ -5133,6 +5312,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_user_logs_talent_pool"];
         delete?: never;
         options?: never;
@@ -5149,6 +5332,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_user_logs_talent_pool_delete"];
         delete?: never;
         options?: never;
@@ -5165,6 +5352,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user 或 /v1/admin/logs/company，body.kind 为 snake_case 枚举
+         */
         post: operations["post_v1_admin_user_logs_trust"];
         delete?: never;
         options?: never;
@@ -5181,6 +5372,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @deprecated
+         * @description 改用 POST /v1/admin/logs/user/delete 或 /v1/admin/logs/company/delete，body.kind + ids
+         */
         post: operations["post_v1_admin_user_logs_trust_delete"];
         delete?: never;
         options?: never;
@@ -6536,6 +6731,13 @@ export interface components {
             /** Format: int32 */
             r_status?: number | null;
         };
+        LogDeleteForm: {
+            ids?: number[];
+            kind: string;
+        };
+        LogQuery: components["schemas"]["KwQuery"] & {
+            kind?: string | null;
+        };
         LoginLogQuery: {
             /** Format: int64 */
             uid?: number | null;
@@ -6726,6 +6928,11 @@ export interface components {
             time?: number[] | null;
             username?: string | null;
         };
+        /**
+         * @description PHP Vue posts mixed string/number keys. Wrapper runs `Validate` without
+         *     dropping extra fields (they stay in `fields` for the service).
+         */
+        PhpLooseBody: Record<string, never>;
         PjItem: {
             content?: string;
             from?: string;
@@ -6898,16 +7105,18 @@ export interface components {
         };
         SetFeedbackStatusForm: {
             /** Format: int64 */
-            id: number;
+            id?: number | null;
+            ids?: number[];
             /**
              * Format: int32
-             * @description 1=resolved
+             * @description 1=resolved（与 batch 同范围）
              */
             status: number;
         };
         SetJobStateForm: {
             /** Format: int64 */
-            id: number;
+            id?: number | null;
+            ids?: number[];
             /** Format: int32 */
             state: number;
         };
@@ -6926,7 +7135,8 @@ export interface components {
         };
         SetReportStatusForm: {
             /** Format: int64 */
-            id: number;
+            id?: number | null;
+            ids?: number[];
             /**
              * Format: int32
              * @description 1=approved / 2=rejected
@@ -7958,7 +8168,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -8323,7 +8535,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -8363,7 +8579,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -8421,7 +8641,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -8461,7 +8685,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -8501,7 +8729,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -8519,7 +8751,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -8566,7 +8802,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -8690,7 +8928,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -10560,6 +10800,28 @@ export interface operations {
             };
         };
     };
+    post_v1_admin_jobs_php_add_form: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhpLooseBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_admin_jobs_promote: {
         parameters: {
             query?: never;
@@ -10828,6 +11090,94 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_logs_company: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_logs_company_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogDeleteForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_logs_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogQuery"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_logs_user_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogDeleteForm"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -12465,7 +12815,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -13520,7 +13872,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -13622,7 +13976,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -13713,7 +14069,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -13753,7 +14113,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -13793,7 +14157,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -13833,7 +14201,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -13873,7 +14245,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -13913,7 +14289,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KwQuery"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {
@@ -13960,7 +14340,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };
@@ -14106,7 +14488,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
         };
     };

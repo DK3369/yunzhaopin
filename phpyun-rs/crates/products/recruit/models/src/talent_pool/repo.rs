@@ -82,12 +82,12 @@ pub async fn list_by_com(
         let sql = format!(
             "SELECT {FIELDS_T} FROM phpyun_talent_pool t \
              LEFT JOIN phpyun_resume r ON r.uid = t.uid \
-             WHERE t.cuid = ? AND t.status != 2 AND r.name LIKE ? \
+             WHERE t.cuid = ? AND t.status != 2 AND r.name LIKE ? ESCAPE '\\\\' \
              ORDER BY t.ctime DESC LIMIT ? OFFSET ?"
         );
         sqlx::query_as::<_, TalentPoolItem>(&sql)
             .bind(cuid)
-            .bind(format!("%{k}%"))
+            .bind(crate::sql::like_contains(k))
             .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
             .bind(phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?)
             .fetch_all(pool)
@@ -121,10 +121,10 @@ pub async fn count_by_com_kw(
         sqlx::query_as(
             "SELECT COUNT(*) FROM phpyun_talent_pool t \
              LEFT JOIN phpyun_resume r ON r.uid = t.uid \
-             WHERE t.cuid = ? AND t.status != 2 AND r.name LIKE ?",
+             WHERE t.cuid = ? AND t.status != 2 AND r.name LIKE ? ESCAPE '\\\\'",
         )
         .bind(cuid)
-        .bind(format!("%{k}%"))
+        .bind(crate::sql::like_contains(k))
         .fetch_one(pool)
         .await?
     } else {

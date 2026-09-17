@@ -11,6 +11,7 @@ function skipCloudflareRocketLoader(html: { head: string[]; bodyPrepend: string[
 // 后台 120+ 页 + i18n 会在登录时整包求值，Nuxt 直接进 500。
 const clientChunkGroups = {
   codeSplitting: {
+    minSize: 20_000,
     groups: [{ name: 'vendor', test: /[\\/]node_modules[\\/]/ }],
   },
 }

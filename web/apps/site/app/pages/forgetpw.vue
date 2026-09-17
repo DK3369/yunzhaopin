@@ -18,6 +18,7 @@ const form = reactive({
 })
 const captcha = ref<{ cid: string; image: string } | null>(null)
 const msg = ref('')
+const submitting = ref(false)
 async function loadCaptcha() {
   captcha.value = await api.post('/v1/wap/captcha')
   form.captcha_cid = captcha.value?.cid || ''
@@ -53,6 +54,8 @@ async function sendEmail() {
 }
 async function resetPw() {
   msg.value = ''
+  if (submitting.value) return
+  submitting.value = true
   try {
     if (channel.value === 'appeal') {
       await api.post('/v1/wap/forgetpw/appeal', {
@@ -81,6 +84,8 @@ async function resetPw() {
     await navigateTo('/login')
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.reset_failed')
+  } finally {
+    submitting.value = false
   }
 }
 useSeoMeta({ title: t('wap_js_00123') })
@@ -168,7 +173,7 @@ useSeoMeta({ title: t('wap_js_00123') })
               </div>
             </template>
             <div class="login_box_cz">
-              <input type="submit" :value="$t('common_01878')" class="login_box_bth2" />
+              <input type="submit" :value="$t('common_01878')" class="login_box_bth2" :disabled="submitting" />
             </div>
             <p v-if="msg" class="muted">{{ msg }}</p>
           </form>
@@ -229,7 +234,7 @@ useSeoMeta({ title: t('wap_js_00123') })
             </div>
           </template>
           <p v-if="msg" class="muted">{{ msg }}</p>
-          <button type="submit" class="login_bth">{{ $t('common_01878') }}</button>
+          <button type="submit" class="login_bth" :disabled="submitting">{{ $t('common_01878') }}</button>
         </div>
       </form>
     </div>

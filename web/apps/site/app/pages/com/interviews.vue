@@ -8,6 +8,14 @@ const { data, error, refresh } = await useAsyncData(
   () => `com-yqms-${page.value}`,
   () => api.post('/v1/mcenter/company/yqms/list', { page: page.value, page_size: pageSize }),
 )
+const { data: received } = await useAsyncData('com-iv-received', () =>
+  api
+    .post<{ list?: Array<{ yqms_id: number; rater_uid: number; total?: number; comment?: string; created_at_n?: string }> }>(
+      '/v1/mcenter/interviews/review/received',
+      { page: 1, page_size: 20 },
+    )
+    .catch(() => ({ list: [] })),
+)
 const { data: tpls, refresh: refreshTpls } = await useAsyncData('com-iv-tpls', () =>
   api.post('/v1/mcenter/interview-templates/list', {}).catch(() => []),
 )
@@ -219,6 +227,18 @@ useSeoMeta({ title: t('wap_user_00216') })
         <p>{{ $t('member_user_00423') }} {{ preview.content }}</p>
         <p>{{ $t('common_02051') }} {{ preview.linkman }} {{ preview.linktel }}</p>
         <button type="button" class="issue_post_body_btn" @click="preview = null">{{ $t('common.close') }}</button>
+      </div>
+    </div>
+    <MemberResumeH1 :title="$t('common.like')" />
+    <div v-for="row in received?.list || []" :key="row.yqms_id" class="site-pc paylist_list">
+      <span class="paylist_span paylist_dh">{{ row.rater_uid }}</span>
+      <span class="paylist_span paylist_money">{{ row.total }}</span>
+      <span class="paylist_span paylist_time">{{ row.comment }} · {{ row.created_at_n }}</span>
+    </div>
+    <div class="site-h5">
+      <div v-for="row in received?.list || []" :key="'h5r-' + row.yqms_id" class="com_cardlist">
+        <div class="com_cardlist_tit">{{ row.rater_uid }} · {{ row.total }}</div>
+        <div class="com_cardlist_p">{{ row.comment }}</div>
       </div>
     </div>
   </MemberPanel>

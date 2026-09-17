@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ensureLogin, goLogin, isLoginRequiredErr, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { ensureLogin, ensurePublicFound, formatUnixDate, goLogin, isLoginRequiredErr, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -53,6 +53,39 @@ async function loadMoreJobs() {
 const failMsg = computed(() => listFailMsg(error.value, t('ui.rate_limit'), t('ui.load_failed')))
 const following = ref(false)
 const followMsg = ref('')
+const rateStars = ref(5)
+const rateComment = ref('')
+const rateMsg = ref('')
+const { data: ratingSum, refresh: refreshRatingSum } = await useAsyncData(
+  () => `com-rating-sum-${uid}`,
+  () => api.post<{ avg?: number; count?: number }>('/v1/wap/ratings/summary', { kind: 1, uid }).catch(() => null),
+)
+const { data: ratingList, refresh: refreshRatingList } = await useAsyncData(
+  () => `com-rating-list-${uid}`,
+  () =>
+    api
+      .post<{ list?: Array<{ id: number; stars: number; comment?: string; created_at_n?: string }> }>(
+        '/v1/wap/ratings/list',
+        { kind: 1, uid, page: 1, page_size: 10 },
+      )
+      .catch(() => ({ list: [] })),
+)
+async function submitRating() {
+  rateMsg.value = ''
+  if (!(await ensureLogin(me.value, route.fullPath))) return
+  try {
+    await api.post('/v1/mcenter/ratings', {
+      target_uid: uid,
+      target_kind: 1,
+      stars: rateStars.value,
+      comment: rateComment.value,
+    })
+    rateMsg.value = t('common.success')
+    await Promise.all([refreshRatingSum(), refreshRatingList()])
+  } catch (e: unknown) {
+    rateMsg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 const revealed = ref<{ linktel?: string; linkphone?: string; linkman?: string } | null>(null)
 const telQr = ref('')
 const contact = computed(
@@ -70,6 +103,16 @@ const moneyLabel = computed(() => {
   if (!n) return ''
   const unit = Number(company.value.moneytype) === 1 ? t('wap_js_00004') : t('wap_js_00002')
   return `${t('company_00023')}${n}${unit}`
+})
+const sdateLabel = computed(() => {
+  const v = company.value.sdate
+  if (v == null || v === '' || v === 0) return ''
+  const s = String(v)
+  if (/[^\d]/.test(s)) return s
+  const n = Number(s)
+  if (!n) return ''
+  if (n > 0 && n < 3000) return s
+  return formatUnixDate(n)
 })
 const telDisplay = computed(
   () =>
@@ -227,9 +270,12 @@ async function toggleFollow() {
     followMsg.value = e instanceof Error ? e.message : t('common.no')
   }
 }
+ensurePublicFound(Boolean(company.value.name || company.value.uid), error.value)
 useSeoMeta({
   title: () => String(company.value.name || t('common.company')),
+  ogTitle: () => String(company.value.name || t('common.company')),
   description: () => stripHtml(company.value.content || company.value.hy_n || company.value.name),
+  ogDescription: () => stripHtml(company.value.content || company.value.hy_n || company.value.name),
   keywords: () =>
     [company.value.name, company.value.hy_n, company.value.city_one, company.value.city_two]
       .filter(Boolean)
@@ -288,8 +334,8 @@ useHead({
                 <span v-if="company.hy_n" class="com_details_line">|</span>{{ company.hy_n }}
                 <span v-if="company.pr_n" class="com_details_line">|</span>{{ company.pr_n }}
                 <span v-if="company.mun_n" class="com_details_line">|</span>{{ company.mun_n }}
-                <span v-if="company.sdate" class="com_details_line">|</span>
-                <template v-if="company.sdate">{{ company.sdate }}</template>
+                <span v-if="sdateLabel" class="com_details_line">|</span>
+                <template v-if="sdateLabel">{{ sdateLabel }}</template>
                 <span v-if="moneyLabel" class="com_details_line">|</span>
                 <template v-if="moneyLabel">{{ moneyLabel }}</template>
                 <span v-if="company.pre != null" class="com_details_line">|</span>
@@ -488,6 +534,25 @@ useHead({
               >{{ $t('common.more') }}</a>
             </div>
           </div>
+          <div class="com_show_leftbox">
+            <div class="com_details_tit">
+              <span class="com_details_tit_s">{{ $t('common.like') }}</span>
+              <i class="com_details_tit_line yun_bg_color" />
+            </div>
+            <p class="muted">{{ ratingSum?.avg ?? 0 }} / {{ ratingSum?.count ?? 0 }}</p>
+            <div v-for="r in ratingList?.list || []" :key="r.id" class="yun_newedition_asklist">
+              <div class="yun_newedition_showask">{{ r.stars }} ★</div>
+              <div class="yun_newedition_showand">{{ r.comment }} · {{ r.created_at_n }}</div>
+            </div>
+            <form class="job_hr_ly_box" @submit.prevent="submitRating">
+              <select v-model.number="rateStars">
+                <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+              </select>
+              <textarea v-model="rateComment" class="comapply_Leave_fb_text" maxlength="1000" />
+              <button type="submit" class="comapply_Leave_fb_sub">{{ $t('common.submit') }}</button>
+              <p v-if="rateMsg" class="muted">{{ rateMsg }}</p>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -642,6 +707,22 @@ useHead({
         </div>
         <div class="job_describe_cengter_header">{{ $t('wap_com_00168') }}</div>
         <div class="phpyunabout" v-html="String(company.content || '')" />
+        <div class="job_describe_bottom">
+          <div class="job_describe_cengter_header">{{ $t('common.like') }}</div>
+          <p class="muted">{{ ratingSum?.avg ?? 0 }} / {{ ratingSum?.count ?? 0 }}</p>
+          <div v-for="r in ratingList?.list || []" :key="'h5r-' + r.id">
+            <p>{{ r.stars }} ★ {{ r.comment }}</p>
+            <p class="muted">{{ r.created_at_n }}</p>
+          </div>
+          <form @submit.prevent="submitRating">
+            <select v-model.number="rateStars">
+              <option v-for="n in 5" :key="'hs-' + n" :value="n">{{ n }}</option>
+            </select>
+            <textarea v-model="rateComment" maxlength="1000" />
+            <button type="submit" class="job_tckbth">{{ $t('common.submit') }}</button>
+          </form>
+          <p v-if="rateMsg" class="muted">{{ rateMsg }}</p>
+        </div>
       </div>
       <div v-else id="company_job_list">
         <JobCard v-for="job in jobList" :key="job.id" :job="job" variant="com" />

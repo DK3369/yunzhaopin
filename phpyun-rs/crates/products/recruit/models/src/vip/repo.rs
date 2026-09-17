@@ -751,7 +751,7 @@ fn push_php_order_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpOrderFilt
     }
     if let Some(kw) = f.order_id_kw.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND o.order_id LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(ids) = f.uid_in.filter(|s| !s.is_empty()) {
         qb.push(" AND o.uid IN (");
@@ -962,11 +962,11 @@ pub async fn search_member_companies(
     );
     if let Some(kw) = username_like.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND m.username LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     if let Some(kw) = comname_like.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND c.name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY m.uid DESC LIMIT 10");
     qb.build_query_as().fetch_all(pool).await
@@ -977,9 +977,9 @@ pub async fn find_member_uids_like(
     username_like: &str,
 ) -> Result<Vec<u64>, sqlx::Error> {
     let rows: Vec<(u64,)> = sqlx::query_as(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE username LIKE ? LIMIT 200",
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE username LIKE ? ESCAPE '\\\\' LIMIT 200",
     )
-    .bind(format!("%{username_like}%"))
+    .bind(crate::sql::like_contains(username_like))
     .fetch_all(pool)
     .await?;
     Ok(rows.into_iter().map(|(id,)| id).collect())
@@ -990,9 +990,9 @@ pub async fn find_company_uids_like(
     name_like: &str,
 ) -> Result<Vec<u64>, sqlx::Error> {
     let rows: Vec<(u64,)> = sqlx::query_as(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? LIMIT 200",
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name LIKE ? ESCAPE '\\\\' LIMIT 200",
     )
-    .bind(format!("%{name_like}%"))
+    .bind(crate::sql::like_contains(name_like))
     .fetch_all(pool)
     .await?;
     Ok(rows.into_iter().map(|(id,)| id).collect())

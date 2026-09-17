@@ -33,9 +33,11 @@ pub async fn get_product(
     viewer_uid: Option<u64>,
 ) -> AppResult<CompanyProduct> {
     let owner = viewer_uid == Some(com_uid);
-    sub_repo::find_product(state.db.reader(), com_uid, id, owner)
+    let mut p = sub_repo::find_product(state.db.reader(), com_uid, id, owner)
         .await?
-        .ok_or_else(|| ApiError::param_invalid("product_not_found"))
+        .ok_or_else(|| ApiError::param_invalid("product_not_found"))?;
+    p.body = phpyun_core::html::sanitize_html(&p.body);
+    Ok(p)
 }
 
 pub async fn list_own_products(
@@ -63,13 +65,14 @@ pub async fn create_product(
     user: &AuthenticatedUser,
     input: ProductInput<'_>,
 ) -> AppResult<u64> {
+    let body = phpyun_core::html::sanitize_html(input.body);
     let id = sub_repo::create_product(
         state.db.pool(),
         sub_repo::ProductCreate {
             uid: user.uid,
             title: input.title,
             cover: input.cover,
-            body: input.body,
+            body: &body,
             sort: input.sort,
         },
         clock::now_ts(),
@@ -92,6 +95,7 @@ pub async fn update_product(
     id: u64,
     input: ProductUpdateInput<'_>,
 ) -> AppResult<()> {
+    let body = input.body.map(phpyun_core::html::sanitize_html);
     let affected = sub_repo::update_product(
         state.db.pool(),
         id,
@@ -99,7 +103,7 @@ pub async fn update_product(
         sub_repo::ProductUpdate {
             title: input.title,
             cover: input.cover,
-            body: input.body,
+            body: body.as_deref(),
             sort: input.sort,
             status: input.status,
         },
@@ -145,12 +149,13 @@ pub async fn get_news(
     let n = sub_repo::find_news(state.db.reader(), com_uid, id, owner)
         .await?
         .ok_or_else(|| ApiError::param_invalid("news_not_found"))?;
-    // hits +1 asynchronously
     let pool = state.db.pool().clone();
     let id_bg = id;
     background::spawn_best_effort("company_news.hit", async move {
         let _ = sub_repo::incr_news_hit(&pool, id_bg).await;
     });
+    let mut n = n;
+    n.body = phpyun_core::html::sanitize_html(&n.body);
     Ok(n)
 }
 
@@ -178,13 +183,14 @@ pub async fn create_news(
     user: &AuthenticatedUser,
     input: NewsInput<'_>,
 ) -> AppResult<u64> {
+    let body = phpyun_core::html::sanitize_html(input.body);
     let id = sub_repo::create_news(
         state.db.pool(),
         sub_repo::NewsCreate {
             uid: user.uid,
             title: input.title,
             summary: input.summary,
-            body: input.body,
+            body: &body,
         },
         clock::now_ts(),
     )
@@ -205,6 +211,7 @@ pub async fn update_news(
     id: u64,
     input: NewsUpdateInput<'_>,
 ) -> AppResult<()> {
+    let body = input.body.map(phpyun_core::html::sanitize_html);
     let affected = sub_repo::update_news(
         state.db.pool(),
         id,
@@ -212,7 +219,7 @@ pub async fn update_news(
         sub_repo::NewsUpdate {
             title: input.title,
             summary: input.summary,
-            body: input.body,
+            body: body.as_deref(),
             status: input.status,
         },
         clock::now_ts(),

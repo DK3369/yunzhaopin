@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ensureLogin, goLogin, isLoggedIn, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
+import { ensureLogin, ensurePublicFound, goLogin, isLoggedIn, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO } from '~/utils/site'
 import { pushRecentResume } from '~/utils/recentViews'
 
 const route = useRoute()
@@ -140,9 +140,12 @@ async function shareResume() {
     actionMsg.value = e instanceof Error ? e.message : t('ui.load_failed')
   }
 }
+ensurePublicFound(Boolean(row.value.visitor_blocked || name.value || row.value.uid || row.value.id), error.value)
 useSeoMeta({
   title: () => name.value || t('common.resume'),
+  ogTitle: () => name.value || t('common.resume'),
   description: () => String(expectTitle.value || name.value || t('common.resume')),
+  ogDescription: () => String(expectTitle.value || name.value || t('common.resume')),
   keywords: () => [name.value, expectTitle.value, expectCity.value].filter(Boolean).join(','),
 })
 onMounted(async () => {

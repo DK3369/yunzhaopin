@@ -36,11 +36,11 @@ fn push_email_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpEmailFilter<'
     qb.push(" FROM phpyun_email_msg WHERE COALESCE(del,0) <> 1");
     if let Some(kw) = f.email_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND email LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(kw) = f.smtp_kw.filter(|s| !s.is_empty()) {
         qb.push(" AND smtpserver LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if f.cuid_zero {
         qb.push(" AND COALESCE(cuid,0) = 0");
@@ -230,7 +230,7 @@ pub async fn latest_ctime_title_likes(
         }
         first = false;
         qb.push("title LIKE ");
-        qb.push_bind(format!("%{n}%"));
+        crate::sql::push_contains(&mut qb, n);
     }
     qb.push(") ORDER BY id DESC LIMIT 1");
     Ok(qb.build_query_as::<(String, i64)>().fetch_optional(pool).await?)

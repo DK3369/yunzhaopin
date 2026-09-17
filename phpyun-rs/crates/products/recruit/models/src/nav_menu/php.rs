@@ -70,7 +70,7 @@ fn push_nav_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpNavFilter) {
     }
     if let Some(kw) = f.keyword.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
 }
 

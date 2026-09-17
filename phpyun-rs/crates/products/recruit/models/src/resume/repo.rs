@@ -954,7 +954,7 @@ fn push_admin_resume_filters<'a>(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             qb.push(" AND name LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
 }

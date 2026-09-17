@@ -98,6 +98,8 @@ async fn load_many(db: &MySqlPool, needs: &[(String, u64)]) -> AppResult<BTreeMa
         };
         let bucket = grouped.entry(key).or_default();
         if bucket.len() < cap {
+            let mut ad = ad;
+            ad.pic_content = phpyun_core::html::sanitize_html(&ad.pic_content);
             bucket.push(ad);
         }
     }
@@ -137,6 +139,7 @@ pub async fn admin_create(
     input: AdInput<'_>,
 ) -> AppResult<u64> {
     user.require_admin()?;
+    phpyun_core::validators::ensure_http_or_site_url(input.link)?;
     let id = ad_repo::create(
         state.db.pool(),
         ad_repo::AdCreate {
@@ -179,6 +182,9 @@ pub async fn admin_update(
     patch: AdPatch<'_>,
 ) -> AppResult<()> {
     user.require_admin()?;
+    if let Some(link) = patch.link {
+        phpyun_core::validators::ensure_http_or_site_url(link)?;
+    }
     let affected = ad_repo::update(
         state.db.pool(),
         id,

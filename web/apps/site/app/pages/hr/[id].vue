@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ensurePublicFound } from '~/utils/site'
+
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(`hr-${id}`, () => api.get('/v1/wap/hr-docs/detail', { id }))
+const { data, error } = await useAsyncData(`hr-${id}`, () => api.get('/v1/wap/hr-docs/detail', { id }))
 const msg = ref('')
 async function download() {
   msg.value = ''
@@ -18,6 +20,7 @@ async function download() {
     msg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
+ensurePublicFound(Boolean(data.value?.name || data.value?.id), error.value)
 useSeoMeta({ title: () => String(data.value?.name || t('ui.hr')) })
 useHead({ link: [{ rel: 'canonical', href: `/hr/${id}` }] })
 </script>

@@ -26,7 +26,7 @@ pub async fn list(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             qb.push(" AND title LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
         }
     }
     qb.push(" ORDER BY ctime DESC LIMIT ");
@@ -56,7 +56,7 @@ pub async fn count(
     if let Some(kw) = keyword {
         if !kw.is_empty() {
             qb.push(" AND title LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
         }
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;

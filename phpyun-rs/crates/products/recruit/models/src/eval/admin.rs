@@ -140,7 +140,7 @@ pub async fn list_papers(
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY id DESC LIMIT ");
     qb.push_bind(lim);
@@ -164,7 +164,7 @@ pub async fn count_papers(
     }
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -444,7 +444,7 @@ pub async fn list_messages(
         } else {
             qb.push(" AND m.message LIKE ");
         }
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     qb.push(" ORDER BY m.id DESC LIMIT ");
     qb.push_bind(lim);
@@ -468,7 +468,7 @@ pub async fn count_messages(
         } else {
             qb.push(" AND m.message LIKE ");
         }
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n))
@@ -505,7 +505,7 @@ pub async fn list_logs(
             qb.push(
                 " AND l.examid IN (SELECT id FROM phpyun_evaluate_group WHERE COALESCE(deleted,0)=0 AND name LIKE ",
             );
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
             qb.push(")");
         } else if let Ok(uid) = kw.parse::<u64>() {
             qb.push(" AND l.uid = ");
@@ -533,7 +533,7 @@ pub async fn count_logs(
             qb.push(
                 " AND l.examid IN (SELECT id FROM phpyun_evaluate_group WHERE COALESCE(deleted,0)=0 AND name LIKE ",
             );
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(&mut qb, kw);
             qb.push(")");
         } else if let Ok(uid) = kw.parse::<u64>() {
             qb.push(" AND l.uid = ");

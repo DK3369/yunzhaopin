@@ -19,6 +19,7 @@ const items = computed(() =>
     { to: '/com/customize', label: t('member_com_00397') },
     { to: '/com/otherservice', label: t('wap_user_00196') },
     { to: '/advice', label: t('wap_user_00203') },
+    { to: '/com/chat', label: t('wap_user_00363') },
   ].filter((item) => isMemberModuleOn(settings.value, item.to) && !(me.value?.is_sub && item.to === '/com/sub-accounts')),
 )
 </script>

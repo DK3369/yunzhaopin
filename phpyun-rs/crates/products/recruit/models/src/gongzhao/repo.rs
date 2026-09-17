@@ -255,7 +255,7 @@ fn push_gongzhao_admin_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &Gongzha
     qb.push(format!(" FROM phpyun_gongzhao WHERE {PREDICATE}"));
     if let Some(kw) = f.keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND title LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(min) = f.datetime_min.filter(|n| *n > 0) {
         qb.push(" AND datetime >= ");

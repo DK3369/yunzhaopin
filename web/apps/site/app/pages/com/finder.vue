@@ -3,8 +3,10 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-finder-list', () =>
-  api.post('/v1/mcenter/finder/list', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-finder-list-${page.value}`,
+  () => api.post('/v1/mcenter/finder/list', { page: page.value, page_size: pageSize }),
 )
 const form = reactive({
   name: '',
@@ -32,6 +34,31 @@ async function remove(id: number) {
   try {
     await api.post('/v1/mcenter/finder/delete', { id })
     await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
+const { data: saved, refresh: refreshSaved } = await useAsyncData('com-saved-searches', () =>
+  api.post<{ list?: Array<{ id: number; name: string; notify?: number }> }>('/v1/mcenter/saved-searches/list', { page: 1, page_size: 50 }).catch(() => ({ list: [] })),
+)
+function savedOf(name: string) {
+  return (saved.value?.list || []).find((s) => s.name === name)
+}
+async function toggleNotify(row: { name?: string; para?: string }) {
+  msg.value = ''
+  try {
+    const s = savedOf(String(row.name || ''))
+    if (s) {
+      await api.post('/v1/mcenter/saved-searches/notify', { id: s.id, notify: !s.notify })
+    } else {
+      await api.post('/v1/mcenter/saved-searches', {
+        name: row.name,
+        kind: 'resume',
+        params: { para: row.para || '' },
+        notify: true,
+      })
+    }
+    await refreshSaved()
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
@@ -72,6 +99,7 @@ useSeoMeta({ title: t('member_com_00086') })
         <div class="job_search_box_bth">
           <NuxtLink v-if="row.search_to" :to="row.search_to" class="job_search_box_bth_a">{{ $t('common.search') }}</NuxtLink>
         </div>
+        <a href="javascript:;" class="cblue" @click="toggleNotify(row)">{{ savedOf(row.name)?.notify ? $t('common.yes') : $t('common.no') }}</a>
         <a href="javascript:;" class="cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>
@@ -89,5 +117,6 @@ useSeoMeta({ title: t('member_com_00086') })
         </div>
       </div>
     </div>
+    <MemberPager :page="page" :page-size="pageSize" :total="inferTotal(data)" @update:page="go" />
   </MemberPanel>
 </template>

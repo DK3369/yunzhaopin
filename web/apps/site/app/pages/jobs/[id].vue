@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dictReqLabel, ensureLogin, formatSalary, formatUnixDate, goLogin, isLoggedIn, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
+import { dictReqLabel, ensureLogin, ensurePublicFound, formatSalary, formatUnixDate, goLogin, isLoggedIn, isLoginRequiredErr, mediaUrl, PLACEHOLDER_LOGO, type JobLike } from '~/utils/site'
 import { seoJoin } from '~/utils/seo'
 import { pushRecentJob, removeRecentJob } from '~/utils/recentViews'
 import { ApiError } from '~/utils/envelope'
@@ -364,6 +364,7 @@ async function toggleFav() {
     fav.value = Boolean(r.favorited)
   } catch (e: unknown) {
     if (isLoginRequiredErr(e)) await goLogin(route.fullPath)
+    else applyMsg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
 async function report() {
@@ -406,9 +407,20 @@ const employmentType = computed(() => {
   if (n === 60) return 'TEMPORARY'
   return 'FULL_TIME'
 })
+ensurePublicFound(Boolean(job.value.id || job.value.name), error.value)
 useSeoMeta({
   title: () => String(job.value.name || t('common.job')),
+  ogTitle: () => String(job.value.name || t('common.job')),
   description: () =>
+    seoJoin([
+      job.value.name,
+      job.value.com_name,
+      hyLabel.value,
+      cityLabel.value,
+      salary.value,
+      job.value.description,
+    ]),
+  ogDescription: () =>
     seoJoin([
       job.value.name,
       job.value.com_name,
@@ -562,6 +574,7 @@ useHead({
                     $t('wap_com_00350')
                   }}</a>
                   <NuxtLink :to="`/poster/job/${id}`">{{ $t('ui.poster') }}</NuxtLink>
+                  <EmailRecommendForm kind="job" :id="id" />
                   <NuxtLink
                     v-if="String(settings.sy_h5_share || '1') !== '2'"
                     :to="`/share/job/${id}`"

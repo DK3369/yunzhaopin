@@ -38,12 +38,13 @@ pub async fn list_questions(
 }
 
 pub async fn get_question(state: &AppState, id: u64) -> AppResult<Question> {
-    let q = qna_repo::find_question(state.db.reader(), id)
+    let mut q = qna_repo::find_question(state.db.reader(), id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("question_not_found"))?;
     if q.status != 1 {
         return Err(ApiError::param_invalid("question_unavailable"));
     }
+    q.content = phpyun_core::html::sanitize_html(&q.content);
     let pool = state.db.pool().clone();
     background::spawn_best_effort("qna.question.hit", async move {
         let _ = qna_repo::incr_question_hit(&pool, id).await;
@@ -62,12 +63,14 @@ pub async fn create_question(
     user: &AuthenticatedUser,
     input: CreateQuestionInput<'_>,
 ) -> AppResult<u64> {
+    let title = phpyun_core::html::strip_nul(input.title);
+    let content = phpyun_core::html::sanitize_html(input.content);
     let id = qna_repo::create_question(
         state.db.pool(),
         qna_repo::QuestionCreate {
             uid: user.uid,
-            title: input.title,
-            content: input.content,
+            title: &title,
+            content: &content,
             category_id: input.category_id,
         },
         clock::now_ts(),
@@ -91,7 +94,10 @@ pub async fn list_answers(
     order_support: bool,
 ) -> AppResult<Paged<Answer>> {
     let db = state.db.reader();
-    let list = qna_repo::list_answers(db, question_id, page.offset, page.limit, order_support).await?;
+    let mut list = qna_repo::list_answers(db, question_id, page.offset, page.limit, order_support).await?;
+    for a in &mut list {
+        a.content = phpyun_core::html::sanitize_html(&a.content);
+    }
     let total = qna_repo::count_answers(db, question_id).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -109,12 +115,13 @@ pub async fn answer(
     if q.status != 1 {
         return Err(ApiError::param_invalid("question_unavailable"));
     }
+    let content = phpyun_core::html::sanitize_html(content);
     let id = qna_repo::create_answer(
         state.db.pool(),
         qna_repo::AnswerCreate {
             question_id,
             uid: user.uid,
-            content,
+            content: &content,
         },
         clock::now_ts(),
     )
@@ -213,7 +220,10 @@ pub async fn list_reviews(
     page: Pagination,
 ) -> AppResult<Paged<AnswerReview>> {
     let db = state.db.reader();
-    let list = qna_repo::list_reviews_by_answer(db, aid, page.offset, page.limit).await?;
+    let mut list = qna_repo::list_reviews_by_answer(db, aid, page.offset, page.limit).await?;
+    for r in &mut list {
+        r.content = phpyun_core::html::sanitize_html(&r.content);
+    }
     let total = qna_repo::count_reviews_by_answer(db, aid).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -224,6 +234,7 @@ pub async fn add_review(
     aid: u64,
     content: &str,
 ) -> AppResult<u64> {
+    let content = phpyun_core::html::sanitize_html(content);
     let trimmed = content.trim();
     if trimmed.is_empty() {
         // detail is an i18n key; IntoResponse will translate it to the correct language

@@ -37,7 +37,7 @@ pub struct FriendLinkForm {
     #[validate(length(min = 1, max = 200))]
     pub link_name: String,
     #[serde(alias = "url")]
-    #[validate(length(min = 1, max = 500))]
+    #[validate(length(min = 1, max = 500), custom(function = "phpyun_core::validators::http_or_site_url"))]
     pub link_url: String,
     #[serde(default, alias = "logo")]
     pub pic: String,

@@ -153,6 +153,25 @@ pub fn sniff_image(bytes: &[u8]) -> Option<(&'static str, &'static str)> {
     None
 }
 
+/// PDF / OLE doc / zip-based docx. Declared `Content-Type` is not trusted.
+pub fn sniff_document(bytes: &[u8]) -> Option<(&'static str, &'static str)> {
+    if bytes.starts_with(b"%PDF") {
+        return Some(("application/pdf", "pdf"));
+    }
+    if bytes.len() >= 8
+        && bytes[..8] == [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]
+    {
+        return Some(("application/msword", "doc"));
+    }
+    if bytes.starts_with(b"PK") {
+        return Some((
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "docx",
+        ));
+    }
+    None
+}
+
 /// Display-name mask: first char + `**`. Used for resume detail when the
 /// jobseeker hasn't agreed to publish their full name.
 pub fn mask_name_short(s: &str) -> String {
@@ -471,5 +490,26 @@ mod tests {
             resume_photo_shown(Some("a.jpg"), 0, 0, 1, 1, 1, "m.png", "f.png"),
             "a.jpg"
         );
+    }
+
+    #[test]
+    fn sniff_document_pdf_ole_zip() {
+        assert_eq!(
+            sniff_document(b"%PDF-1.4 rest"),
+            Some(("application/pdf", "pdf"))
+        );
+        let ole = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
+        assert_eq!(
+            sniff_document(&ole),
+            Some(("application/msword", "doc"))
+        );
+        assert_eq!(
+            sniff_document(b"PK\x03\x04xxxx"),
+            Some((
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "docx"
+            ))
+        );
+        assert!(sniff_document(b"<html>").is_none());
     }
 }

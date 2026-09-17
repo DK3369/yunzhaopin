@@ -97,12 +97,12 @@ pub async fn already_freedown_eid(
                       COALESCE(d.eid, 0) AS eid, d.downtime AS datetime
                FROM phpyun_down_resume d
                LEFT JOIN phpyun_resume r ON r.uid = d.uid
-               WHERE d.comid = ? AND COALESCE(d.isdel, 9) = 9 AND r.name LIKE ?
+               WHERE d.comid = ? AND COALESCE(d.isdel, 9) = 9 AND r.name LIKE ? ESCAPE '\\\\'
                ORDER BY d.downtime DESC
                LIMIT ? OFFSET ?"#,
         )
         .bind(com_id)
-        .bind(format!("%{k}%"))
+        .bind(crate::sql::like_contains(k))
         .bind(limit)
         .bind(offset)
         .fetch_all(pool)
@@ -134,10 +134,10 @@ pub async fn count_for_company_kw(
         sqlx::query_as(
             "SELECT COUNT(*) FROM phpyun_down_resume d \
              LEFT JOIN phpyun_resume r ON r.uid = d.uid \
-             WHERE d.comid = ? AND COALESCE(d.isdel, 9) = 9 AND r.name LIKE ?",
+             WHERE d.comid = ? AND COALESCE(d.isdel, 9) = 9 AND r.name LIKE ? ESCAPE '\\\\'",
         )
         .bind(com_id)
-        .bind(format!("%{k}%"))
+        .bind(crate::sql::like_contains(k))
         .fetch_one(pool)
         .await?
     } else {

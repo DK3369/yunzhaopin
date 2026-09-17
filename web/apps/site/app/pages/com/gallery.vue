@@ -3,8 +3,10 @@ import { isUnauthErr } from '~/utils/site'
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-gallery', () =>
-  api.post('/v1/mcenter/galleries/list', { kind: 'company', page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-gallery-${page.value}`,
+  () => api.post('/v1/mcenter/galleries/list', { kind: 'company', page: page.value, page_size: pageSize }),
 )
 const title = ref('')
 const msg = ref('')
@@ -78,5 +80,6 @@ useSeoMeta({ title: t('wap_user_00157') })
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <MemberPager :page="page" :page-size="pageSize" :total="inferTotal(data)" @update:page="go" />
   </MemberPanel>
 </template>

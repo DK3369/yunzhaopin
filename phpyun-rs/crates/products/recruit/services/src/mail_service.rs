@@ -34,11 +34,10 @@ pub async fn send_text(state: &AppState, to: &str, subject: &str, body: &str) ->
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()?;
-        child
-            .stdin
-            .take()
-            .expect("sendmail stdin")
-            .write_all(message.as_bytes())?;
+        let mut stdin = child.stdin.take().ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::BrokenPipe, "sendmail stdin")
+        })?;
+        stdin.write_all(message.as_bytes())?;
         child.wait_with_output()
     })
     .await

@@ -74,6 +74,7 @@ pub async fn admin_create(
     input: NavInput<'_>,
 ) -> AppResult<u64> {
     admin.require_admin()?;
+    phpyun_core::validators::ensure_http_or_site_url(input.url)?;
     let id = nav_repo::create(
         state.db.pool(),
         nav_repo::NavCreate {
@@ -113,6 +114,9 @@ pub async fn admin_update(
     patch: NavPatch<'_>,
 ) -> AppResult<()> {
     admin.require_admin()?;
+    if let Some(url) = patch.url {
+        phpyun_core::validators::ensure_http_or_site_url(url)?;
+    }
     let affected = nav_repo::update(
         state.db.pool(),
         id,

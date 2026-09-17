@@ -1,12 +1,13 @@
 //! Report queue (admin).
 
-use axum::{extract::State, routing::post, Json, Router};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 use phpyun_core::{
     dto::{merge_id_and_ids, BatchResult, StatusFilterBody},
     ApiMessage, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
     ValidatedJson,
 };
+use crate::dto::PhpLooseBody;
 use phpyun_models::report::repo::ReportQueue;
 use phpyun_services::{admin_report_service, admin_service};
 use serde::{Deserialize, Serialize};
@@ -114,9 +115,10 @@ async fn php_list(
     state: AppState,
     user: AuthenticatedUser,
     page: Pagination,
-    body: serde_json::Value,
+    body: PhpLooseBody,
     queue: ReportQueue,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    let body = body.as_value();
     let q = list_query(&body);
     let data = admin_report_service::list(&state, &user, queue, &q, page).await?;
     Ok(ApiResponse::data(data))
@@ -126,7 +128,7 @@ pub async fn php_list_job(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
     php_list(state, user, page, body, ReportQueue::Job).await
 }
@@ -135,7 +137,7 @@ pub async fn php_list_resume(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
     php_list(state, user, page, body, ReportQueue::Resume).await
 }
@@ -144,7 +146,7 @@ pub async fn php_list_ask(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
     php_list(state, user, page, body, ReportQueue::Ask).await
 }
@@ -153,7 +155,7 @@ pub async fn php_list_advise(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
     php_list(state, user, page, body, ReportQueue::Advise).await
 }
@@ -162,8 +164,9 @@ pub async fn php_list_advise(
 pub async fn php_saveresult(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse> {
+    let body = body.as_value();
     admin_report_service::save_result(
         &state,
         &user,
@@ -177,8 +180,9 @@ pub async fn php_saveresult(
 pub async fn php_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiMessage> {
+    let body = body.as_value();
     // `type = pldel` on the resume queue means "and every other report about
     // this same resume".
     let widen = body_str(&body, "type") == "pldel";
@@ -189,8 +193,9 @@ pub async fn php_delete(
 pub async fn php_resume_saveresult(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse> {
+    let body = body.as_value();
     let f = admin_report_service::ResumeResultForm {
         pid: body_u64(&body, "pid"),
         result: body_str(&body, "result"),
@@ -204,8 +209,9 @@ pub async fn php_resume_saveresult(
 pub async fn php_resume_saveresult_all(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse> {
+    let body = body.as_value();
     admin_report_service::save_result_resume_all(
         &state,
         &user,
@@ -220,8 +226,9 @@ pub async fn php_resume_saveresult_all(
 pub async fn php_ask_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    let body = body.as_value();
     Ok(ApiResponse::data(
         admin_report_service::ask_classes(&state, &user, body_i32(&body, "pid")).await?,
     ))
@@ -230,8 +237,9 @@ pub async fn php_ask_classes(
 pub async fn php_ask_edit(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    let body = body.as_value();
     Ok(ApiResponse::data(
         admin_report_service::ask_edit(&state, &user, body_u64(&body, "id")).await?,
     ))
@@ -240,8 +248,9 @@ pub async fn php_ask_edit(
 pub async fn php_ask_save(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse> {
+    let body = body.as_value();
     let f = admin_report_service::AskSaveForm {
         id: body_u64(&body, "id"),
         title: body_str(&body, "title"),
@@ -257,8 +266,9 @@ pub async fn php_ask_save(
 pub async fn php_ask_delete_question(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiMessage> {
+    let body = body.as_value();
     let msg =
         admin_report_service::delete_questions(&state, &user, &body_ids(&body, "del")).await?;
     Ok(ApiMessage::new("admin_model_00009", msg))

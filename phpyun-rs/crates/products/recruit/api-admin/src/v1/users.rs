@@ -1,12 +1,12 @@
 //! User management (admin only).
 
-use axum::{extract::State, routing::post, Json, Router};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Pagination, ValidatedJson,
 };
 
-use crate::dto::AdminPaged;
+use crate::dto::{AdminPaged, PhpLooseBody};
 use phpyun_services::admin_service::{self, UserFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -201,8 +201,9 @@ pub async fn impersonate(
 pub async fn php_add(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    let body = body.as_value();
     let username = body.get("username").and_then(|v| v.as_str()).unwrap_or("");
     let add_on = match body.get("add") {
         None | Some(serde_json::Value::Null) => false,
@@ -227,8 +228,9 @@ pub async fn php_add(
 pub async fn php_edit(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse<serde_json::Value>> {
+    let body = body.as_value();
     let uid = body
         .get("uid")
         .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
@@ -243,8 +245,9 @@ pub async fn php_edit(
 pub async fn php_editsave(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse> {
+    let body = body.as_value();
     phpyun_services::admin_longtail_service::member_edit_save(&state, &user, &body).await?;
     Ok(ApiResponse::message("admin_user_00083"))
 }
@@ -254,8 +257,9 @@ pub async fn php_editsave(
 pub async fn php_save_user(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Json(body): Json<serde_json::Value>,
+    ValidatedJson(body): ValidatedJson<PhpLooseBody>,
 ) -> AppResult<ApiResponse> {
+    let body = body.as_value();
     phpyun_services::admin_longtail_service::company_save_user(&state, &user, &body).await?;
     Ok(ApiResponse::message("admin_user_00083"))
 }

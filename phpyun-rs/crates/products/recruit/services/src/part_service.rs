@@ -94,7 +94,7 @@ pub async fn list_public(
 
 /// Detail — equivalent to PHPYun `wap/part::show_action`: returns the job and bumps hits.
 pub async fn get_public(state: &AppState, id: u64) -> AppResult<PartJob> {
-    let job = part_repo::find_by_id(state.db.reader(), id)
+    let mut job = part_repo::find_by_id(state.db.reader(), id)
         .await?
         .ok_or(ApiError::business("part_not_found"))?;
 
@@ -117,6 +117,7 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<PartJob> {
         let _ = part_repo::incr_hits(&pool, job_id).await;
     });
 
+    job.content = phpyun_core::html::sanitize_opt(job.content);
     Ok(job)
 }
 
@@ -537,7 +538,7 @@ async fn consume_part_refresh_quota(state: &AppState, uid: u64, n: i32) -> AppRe
     Err(ApiError::business("part_refresh_quota"))
 }
 
-fn write_from_input<'a>(input: &'a MemberPartInput<'a>) -> part_repo::MemberPartWrite<'a> {
+fn write_from_input<'a>(input: &'a MemberPartInput<'a>, content: &'a str) -> part_repo::MemberPartWrite<'a> {
     part_repo::MemberPartWrite {
         name: input.name,
         r#type: input.r#type,
@@ -553,7 +554,7 @@ fn write_from_input<'a>(input: &'a MemberPartInput<'a>) -> part_repo::MemberPart
         worktime: input.worktime,
         sdate: input.sdate,
         edate: input.edate,
-        content: input.content,
+        content,
         linkman: input.linkman,
         linktel: input.linktel,
         x: input.x,
@@ -605,6 +606,7 @@ pub async fn create_com_part(
 ) -> AppResult<u64> {
     user.require_employer()?;
     let now = clock::now_ts();
+    let content = phpyun_core::html::sanitize_html(input.content);
     let looked_up = company_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
         .and_then(|c| c.name)
@@ -630,7 +632,7 @@ pub async fn create_com_part(
             worktime: input.worktime,
             sdate: input.sdate,
             edate: input.edate,
-            content: input.content,
+            content: &content,
             linkman: input.linkman,
             linktel: input.linktel,
             state: audit_state,
@@ -661,12 +663,13 @@ pub async fn update_com_part(
 ) -> AppResult<()> {
     user.require_employer()?;
     let now = clock::now_ts();
+    let content = phpyun_core::html::sanitize_html(input.content);
     let audit_state = resolve_part_audit_state(state, user.uid).await?;
     let n = part_repo::update_for_com(
         state.db.pool(),
         id,
         user.uid,
-        &write_from_input(&input),
+        &write_from_input(&input, &content),
         now,
         audit_state,
     )

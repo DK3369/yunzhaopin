@@ -40,7 +40,7 @@ const total = computed(() => inferTotal(data.value))
     </div>
     <div v-if="(data?.list || []).length" class="user_new_listtit site-pc">
       <div class="user_new_job">{{ $t('common.company') }}</div>
-      <div class="user_new_job" style="width: 280px">{{ $t('wap_01536') }}</div>
+      <div class="user_new_job">{{ $t('wap_01536') }}</div>
       <div class="user_new_zt">{{ $t('member_user_00197') }}</div>
       <div class="user_new_cz">{{ $t('member_user_00048') }}</div>
     </div>
@@ -50,7 +50,7 @@ const total = computed(() => inferTotal(data.value))
         <span v-else class="user_new_jobname">{{ row.com_name || row.id }}</span>
         <div class="look_myresume_comxz">{{ row.com_pr || row.pr_n }} <span v-if="row.com_mun || row.mun_n" class="look_myresume_comline">|</span> {{ row.com_mun || row.mun_n }}</div>
       </div>
-      <div class="user_new_job" style="width: 280px">
+      <div class="user_new_job">
         <div v-if="row.com_job" class="user_new_joball">{{ row.com_job }}</div>
         <span v-if="row.com_job_num" class="user_new_joball_n">{{ row.com_job_num }}</span>
         <NuxtLink v-if="row.com_name" to="/jobs" class="user_new_joball_more">{{ $t('common.more') }}</NuxtLink>

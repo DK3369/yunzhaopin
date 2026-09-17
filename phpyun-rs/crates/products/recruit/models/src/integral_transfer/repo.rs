@@ -331,11 +331,11 @@ fn push_php_pay_where(qb: &mut QueryBuilder<'_, sqlx::MySql>, f: &PhpPayFilter<'
     }
     if let Some(kw) = f.order_id_kw.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND p.order_id LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(kw) = f.remark_kw.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND p.pay_remark LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(qb, kw);
     }
     if let Some(ids) = f.uid_in.filter(|s| !s.is_empty()) {
         qb.push(" AND p.com_id IN (");

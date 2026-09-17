@@ -1,7 +1,7 @@
 //! Job expectation CRUD (usertype=1).
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::CreatedId;
+use phpyun_core::dto::{CreatedId, IdBody};
 use phpyun_core::json;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::expect::ExpectInput;
@@ -14,6 +14,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume/expects", post(create))
         .route("/resume/expects/update", post(update))
+        .route("/resume/expects/set-default", post(set_default))
 }
 
 /// Job expectation item — **reuses** `wap::resumes::ResumeExpectItem` (14 fields, including 3 dictionary translations + time formatting).
@@ -234,5 +235,24 @@ pub async fn update(
         &ip,
     )
     .await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+/// Mark one job-intent as the default resume (`phpyun_resume_expect.defaults` + `resume.def_job`).
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/resume/expects/set-default",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn set_default(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
+    expect_svc::set_default(&state, &user, b.id, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { seoJoin, unixToIso } from '~/utils/seo'
+import { ensurePublicFound } from '~/utils/site'
 
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(`article-${id}`, () =>
+const { data, error } = await useAsyncData(`article-${id}`, () =>
   api.get('/v1/wap/articles/detail', { id }),
 )
 onMounted(() => {
@@ -16,9 +17,12 @@ const next = computed(() => (article.value.next || null) as { id?: number; title
 const related = computed(
   () => (Array.isArray(article.value.related) ? article.value.related : []) as Array<{ id: number; title: string }>,
 )
+ensurePublicFound(Boolean(article.value.title || article.value.id), error.value)
 useSeoMeta({
   title: () => String(article.value.title || t('common.article')),
+  ogTitle: () => String(article.value.title || t('common.article')),
   description: () => seoJoin([article.value.summary, article.value.content, article.value.body, article.value.title]),
+  ogDescription: () => seoJoin([article.value.summary, article.value.content, article.value.body, article.value.title]),
   keywords: () => String(article.value.keyword || article.value.title || ''),
 })
 useHead({

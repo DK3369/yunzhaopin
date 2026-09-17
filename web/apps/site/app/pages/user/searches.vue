@@ -34,6 +34,31 @@ async function remove(id: number) {
   await api.post('/v1/mcenter/finder/delete', { id })
   refresh()
 }
+const { data: saved, refresh: refreshSaved } = await useAsyncData('user-saved-searches', () =>
+  api.post<{ list?: Array<{ id: number; name: string; notify?: number }> }>('/v1/mcenter/saved-searches/list', { page: 1, page_size: 50 }).catch(() => ({ list: [] })),
+)
+function savedOf(name: string) {
+  return (saved.value?.list || []).find((s) => s.name === name)
+}
+async function toggleNotify(row: { name?: string; para?: string }) {
+  msg.value = ''
+  try {
+    const s = savedOf(String(row.name || ''))
+    if (s) {
+      await api.post('/v1/mcenter/saved-searches/notify', { id: s.id, notify: !s.notify })
+    } else {
+      await api.post('/v1/mcenter/saved-searches', {
+        name: row.name,
+        kind: 'job',
+        params: { para: row.para || '' },
+        notify: true,
+      })
+    }
+    await refreshSaved()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+}
 const total = computed(() => inferTotal(data.value))
 useSeoMeta({ title: t('member_user_00108') })
 </script>
@@ -74,6 +99,7 @@ useSeoMeta({ title: t('member_user_00108') })
             <i class="job_search_box_bth_a_icon" />{{ $t('common.search') }}
           </NuxtLink>
         </div>
+        <a href="javascript:;" class="cblue" @click="toggleNotify(row)">{{ savedOf(row.name)?.notify ? $t('common.yes') : $t('common.no') }}</a>
         <a href="javascript:;" class="cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
     </div>

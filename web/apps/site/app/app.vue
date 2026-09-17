@@ -63,51 +63,22 @@ useHead({
   },
   link: () => {
     const v = cacheVer.value
-    const links: Array<{ rel: string; href: string; media?: string }> = [
+    const m = memberCssKind.value || 'none'
+    const skin = siteStyle.value || ''
+    const qs = `m=${m}&skin=${encodeURIComponent(skin)}&v=${v}`
+    return [
       { rel: 'canonical', href: `${siteUrl}${route.path}` },
       {
         rel: 'stylesheet',
-        href: `/legacy/pc.css?v=${v}`,
+        href: `/legacy/site-pc.css?${qs}`,
         media: 'screen and (min-width: 1200px)',
       },
       {
         rel: 'stylesheet',
-        href: `/legacy/h5.css?v=${v}`,
+        href: `/legacy/site-h5.css?${qs}`,
         media: 'screen and (max-width: 1199px)',
       },
     ]
-    if (memberCssKind.value === 'user') {
-      links.push(
-        {
-          rel: 'stylesheet',
-          href: `/legacy/member-user.css?v=${v}`,
-          media: 'screen and (min-width: 1200px)',
-        },
-        {
-          rel: 'stylesheet',
-          href: `/legacy/member-user-h5.css?v=${v}`,
-          media: 'screen and (max-width: 1199px)',
-        },
-      )
-    }
-    if (memberCssKind.value === 'com') {
-      links.push(
-        {
-          rel: 'stylesheet',
-          href: `/legacy/member-com.css?v=${v}`,
-          media: 'screen and (min-width: 1200px)',
-        },
-        {
-          rel: 'stylesheet',
-          href: `/legacy/member-com-h5.css?v=${v}`,
-          media: 'screen and (max-width: 1199px)',
-        },
-      )
-    }
-    if (siteStyle.value) {
-      links.push({ rel: 'stylesheet', href: `/skins/${siteStyle.value}/skin.css?v=${v}` })
-    }
-    return links
   },
 })
 

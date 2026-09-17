@@ -164,7 +164,10 @@ async function saveResume() {
   try {
     await api.post('/v1/mcenter/resume', { ...form })
     if (!hasResume.value && expectForm.name) {
-      await api.post('/v1/mcenter/resume/expects', { ...expectForm }).catch(() => null)
+      await api.post('/v1/mcenter/resume/expects', { ...expectForm }).catch((e: unknown) => {
+        msg.value = fail(e)
+        return null
+      })
       await refreshExpects()
     }
     msg.value = t('common.success')

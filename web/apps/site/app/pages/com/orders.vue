@@ -16,6 +16,7 @@ type OrderRow = {
 
 const api = useApi()
 const { t } = useI18n()
+const { page, pageSize, inferTotal, go } = useMemberListPage()
 const { data: vip, error, refresh: refreshVip } = await useAsyncData('vip-orders', () =>
   api.post<{ list: OrderRow[] }>('/v1/mcenter/vip/orders/list', { page: 1, page_size: 50 }).catch(() => ({ list: [] })),
 )
@@ -45,6 +46,11 @@ const merged = computed<OrderRow[]>(() => {
   }))
   return [...a, ...b, ...c].sort((x, y) => Number(y.created_at || 0) - Number(x.created_at || 0))
 })
+const paged = computed(() => {
+  const start = (page.value - 1) * pageSize
+  return merged.value.slice(start, start + pageSize)
+})
+const orderTotal = computed(() => inferTotal({ total: merged.value.length }, paged.value))
 function kindLabel(o: OrderRow) {
   if (o.kind === 'pack') return t('wap_com_00393')
   if (o.kind === 'redeem') return t('wap_user_00170')
@@ -85,7 +91,7 @@ useSeoMeta({ title: t('common_02029') })
       <span class="paylist_span paylist_money">{{ $t('wap_00925') }}</span>
       <span class="paylist_span paylist_zt">{{ $t('member_user_00104') }}</span>
     </div>
-    <div v-for="o in merged" :key="(o.kind || '') + (o.order_no || o.id)" class="site-pc paylist_list">
+    <div v-for="o in paged" :key="(o.kind || '') + (o.order_no || o.id)" class="site-pc paylist_list">
       <span class="paylist_span paylist_dh">{{ o.name || o.order_no }} · {{ kindLabel(o) }}</span>
       <span class="paylist_span paylist_money">{{ o.amount_yuan }}</span>
       <span class="paylist_span paylist_zt">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</span>
@@ -97,7 +103,7 @@ useSeoMeta({ title: t('common_02029') })
     <div class="site-h5 detail_body">
       <div v-if="merged.length" class="detail_body_card">
         <ul>
-          <li v-for="o in merged" :key="'h5-' + (o.kind || '') + (o.order_no || o.id)">
+          <li v-for="o in paged" :key="'h5-' + (o.kind || '') + (o.order_no || o.id)">
             <div class="detail_box">
               <div class="detail_box_title">{{ o.name || o.order_no }} · {{ kindLabel(o) }}</div>
               <div class="detail_box_time">{{ o.status_n === 'awaiting_confirm' ? $t('admin_yunying_00086') : o.status_n }}</div>
@@ -112,5 +118,6 @@ useSeoMeta({ title: t('common_02029') })
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <MemberPager :page="page" :page-size="pageSize" :total="orderTotal" @update:page="go" />
   </MemberPanel>
 </template>

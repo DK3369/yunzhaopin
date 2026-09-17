@@ -5,8 +5,10 @@ type Row = { id: number; sid: number; title?: string; status: number; datetime_n
 
 const api = useApi()
 const { t } = useI18n()
-const { data, error, refresh } = await useAsyncData('com-specials-mine', () =>
-  api.post<{ list: Row[]; total: number }>('/v1/mcenter/specials/mine', { page: 1, page_size: 20 }),
+const { page, pageSize, inferTotal, go } = useMemberListPage()
+const { data, error, refresh } = await useAsyncData(
+  () => `com-specials-mine-${page.value}`,
+  () => api.post<{ list: Row[]; total: number }>('/v1/mcenter/specials/mine', { page: page.value, page_size: pageSize }),
 )
 const msg = ref('')
 const list = computed(() => data.value?.list || [])
@@ -78,5 +80,6 @@ useSeoMeta({ title: t('wap_com_00310') })
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <MemberPager :page="page" :page-size="pageSize" :total="inferTotal(data, list)" @update:page="go" />
   </MemberPanel>
 </template>

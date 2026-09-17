@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ensurePublicFound } from '~/utils/site'
+
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
@@ -74,6 +76,7 @@ onMounted(async () => {
     telQr.value = ''
   }
 })
+ensurePublicFound(Boolean(row.value.name || row.value.id), error.value)
 useSeoMeta({ title: () => String(row.value.name || t('wap_user_00220')) })
 useHead({ link: [{ rel: 'canonical', href: `/parts/${id}` }] })
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { seoJoin } from '~/utils/seo'
-import { ensureLogin, type CompanyLike, type JobLike } from '~/utils/site'
+import { ensureLogin, ensurePublicFound, type CompanyLike, type JobLike } from '~/utils/site'
 
 type SpecialCompany = CompanyLike & { com_name?: string }
 
@@ -10,7 +10,7 @@ const { t } = useI18n()
 const api = useApi()
 const { me } = useSiteChrome()
 const hy = computed(() => Number(route.query.hy || 0) || 0)
-const { data } = await useAsyncData(`special-${id}`, () => api.get('/v1/wap/specials/detail', { id }))
+const { data, error } = await useAsyncData(`special-${id}`, () => api.get('/v1/wap/specials/detail', { id }))
 const isGl = computed(() => {
   const tpl = String(data.value?.tpl || '').toLowerCase()
   return ['gl', 'famous', 'senior'].some((k) => tpl.includes(k))
@@ -51,6 +51,7 @@ async function apply() {
     applyMsg.value = e instanceof Error ? e.message : t('common_00888')
   }
 }
+ensurePublicFound(Boolean(data.value?.title || data.value?.id), error.value)
 useSeoMeta({
   title: () => String(data.value?.title || t('ui.specials')),
   description: () => seoJoin([data.value?.intro, data.value?.body, data.value?.title]),

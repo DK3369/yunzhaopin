@@ -25,7 +25,7 @@
 
 组里滤空后整组不渲染。职位模块关时招聘顶栏不显示发布职位；左栏「职位管理」仍在。
 
-打包 CSS：[`legacyCss.ts`](../../web/apps/site/server/utils/legacyCss.ts)。前台 `/legacy/pc.css` `/legacy/h5.css` **不要**再打会员皮。求职会员另载 `/legacy/member-user.css` + `member-user-h5.css`（`m_css` / `m_resume` / `memberuserwap`）；招聘会员另载 `/legacy/member-com.css` + `member-com-h5.css`（`m_style` / `two_style` / `combase`）。`app.vue` **路径优先**（`/user` `/com`），`/advice` 才看 `usertype`。**禁止**再把 `m_css` 和 `m_style` 打进同一份。左栏「更多」浮层 `.user_more` 两端同名：`main.css` 里仍用 `.member-shell-user` / `.member-shell-com` 拆开。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。招聘列表 PC 用 `com_table`、H5 用 `com_cardlist`，**不要**借求职 `sysynews_*`。财务 H5 用 `detail_body_card` / `financial_management_*`（包 `.site-h5`），不要 `MemberSxNewsCard`。
+打包 CSS：[`legacyCss.ts`](../../web/apps/site/server/utils/legacyCss.ts)。`app.vue` 每端只挂一条 `<link>`：`/legacy/site-pc.css` / `/legacy/site-h5.css`（query `m=none|user|com`、`skin=`、`v=`），服务端按顺序拼公共包 + 会员包 + 皮肤，gzip/br + `v=` 时 `immutable`。旧 `/legacy/pc.css` 等 6 条路由仍保留兼容。`m=user` 才拼求职会员（`m_css` / `m_resume` / `memberuserwap`），`m=com` 才拼招聘会员（`m_style` / `two_style` / `combase`）。`app.vue` **路径优先**（`/user` `/com`），`/advice` 才看 `usertype`。**禁止**再把 `m_css` 和 `m_style` 打进同一份。左栏「更多」浮层 `.user_more` 两端同名：`main.css` 里仍用 `.member-shell-user` / `.member-shell-com` 拆开。会员 CSS 里的 `url(../images/…)` 改写到 `/legacy/member/{user,com}/`。招聘列表 PC 用 `com_table`、H5 用 `com_cardlist`，**不要**借求职 `sysynews_*`。财务 H5 用 `detail_body_card` / `financial_management_*`（包 `.site-h5`），不要 `MemberSxNewsCard`。
 
 壳只 **render 一次 slot**。右栏宽度对齐 PHP：求职 210 + 980。PC 上 `.yun_m_rightsidebar > .wap_member` 用 `display: contents`，不占一层。
 
@@ -150,12 +150,13 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 我的关注 | `/user/follows` | `/com/follows` | `atn.htm`（必须 `attention_enterprises_*`） | 求职在「更多」外；招聘更多 |
 | 职位速配 | `/user/recommend` | `/com/recommend` 简历推荐 | `likejob.htm`（`pp*` / `com_member_matched_degree`） | 否（更多/服务） |
 | 消息 | `/user/messages` | `/com/messages` | `sysnews.htm` / WAP `chatnewcard` + `sxnews.htm`；企业 `msg.htm` | 否（顶栏） |
+| 私信 | `/user/chat` | `/com/chat` | HTTP 轮询 `/v1/mcenter/chat/conversations|with|send`（见 [chat.md](../rust/chat.md)）；H5 `chatnewcard` | 否（消息页入口） |
 | 企业回复咨询 | `/user/consults` | `/com/job-messages` | `commsg.htm`（PC `job_Consulting_*` / H5 `mag_show`） | 否 |
 | 职业测评 | `/user/eval-logs` | 无 | 无对等列表皮：`job_list_tit` + `job_search_box` / H5 `Posted_*`，**不要** `sysynews_*` | **否** |
 | 被下载简历 | `/user/inbox` | `/com/downloads` 企业下载 | 求职按谁看过同类皮：`user_new_listtit` + `jobnotice_list` / H5 `Posted_*`，**不要** `sysynews_*` | **求职否** |
 | 我的举报 | `/user/reports` | `/com/report` 投诉记录 | 求职无对等列表皮：`job_list_tit` + `job_search_box`，**不要** `sysynews_*` | **求职否** |
 | 求职意向 | `/user/expects` | 无 | 简历小节皮 | 否 |
-| 职位搜索器 | `/user/searches` | `/com/finder` | `finder.htm`（`job_search_box*`） | 求职「更多」 |
+| 职位搜索器 | `/user/searches` | `/com/finder` | `finder.htm`（`job_search_box*`）；订阅开关走 `/v1/mcenter/saved-searches/notify`（按名称对齐，没有则建一条） | 求职「更多」 |
 | 简历模板 | `/user/resume-tpls` | `/com/tpls` 企业模板 | `resumetpl.htm` / `comtpl.htm` | 求职「更多」 |
 | 修改密码 | `/user/password` | `/com/password` | 求职 `passwd.htm`（`account_settings` + `Binding_pop_box`）；招聘 `vs.htm`（`admin_password` + `btn_01`） | 否 |
 | 隐私设置 | `/user/privacy` | 无（企业认证/资料） | `privacy.htm`（PC `set-status*` + 公开时黑名单标签） | 否 |
@@ -270,6 +271,8 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 发岗自定义联系人 `is_link=2`；职位列表 URL `w`、推广天数、关闭推广；H5 推广菜单可改天数。
 - 应聘：更多筛选含性别/更新时间/简历审核；列表批查简历期望与 `down_resume.islink`；查看电话走 `resume-downloads`；底栏批量删。下载/人才库勾选批量删 + 人才库分页。
 - 谁看过/粉丝服务端 `keyword`；谁看过/消息勾选批量删，消息可批量已读（`remind_status==1` 未读加粗）。
+- 登录「记住我」：勾选后 BFF cookie `maxAge=7d`，不勾选为会话 cookie。
+- 私信页 `/user/chat` `/com/chat`；求职意向「设为默认」`/resume/expects/set-default`；企业收到的面试评价 `/interviews/review/received`。
 - 职位列表 PC 曝光列 `jobexpoure`；页底 `com_tip_bottom` 用 `com-vip-current.job_num`。
 - 资料福利为字典勾选 + 自定义名（提交逗号串）；免打扰写 `HH:MM-HH:MM`。地图 [`MapPick`](../../../web/layers/ui/app/components/MapPick.vue) 高德 `PlaceSearch` 搜地名。企微码 `comqcode` 读写 + 保存后认证/绑定/地图引导。
 - 面试列表客户端关键词 + 邀请函预览。简历详情「查看下一份」文案 `member_com_00415`，H5 底栏同样有。
@@ -293,6 +296,8 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 兼职完整版 [`parts/index.vue`](../../../web/apps/site/app/pages/com/parts/index.vue) + [`parts/new.vue`](../../../web/apps/site/app/pages/com/parts/new.vue)：`com-parts/list` 可选 `w` 分桶+`counts`；`create` 的 `state` 对齐 `com_partjob_status` 与套餐超限下架；`batch/status`。Nuxt 列表必须放 `parts/index.vue`，不要 `parts.vue` 当父页（否则 `/com/parts/new` 渲不出表单）。
 - 收银台 [`MemberCashier`](../../../web/layers/ui/app/components/MemberCashier.vue) `/com/cashier/[order_no]` `/user/cashier/[order_no]`：`POST /orders/detail` `/orders/pay`。套餐/增值/充值下单后跳收银台，不再整页跳支付宝。待付订单「去支付」。
 - 付费展位：`POST /zph/order` 建 `company_order.type=28`（`order_info` JSON）；`settle_paid` 插 `zhaopinhui_com(status=0,price)`。公开 `/fairs/[id]` 捕获 `zph_need_pay` 去收银台。
+- 私信 [`user/chat.vue`](../../../web/apps/site/app/pages/user/chat.vue) / [`com/chat.vue`](../../../web/apps/site/app/pages/com/chat.vue)：`MemberChat` 轮询 `chat/conversations|with|send`。
+- 搜索器订阅：[`user/searches.vue`](../../../web/apps/site/app/pages/user/searches.vue)、[`com/finder.vue`](../../../web/apps/site/app/pages/com/finder.vue) 接 `saved-searches/notify`。
 
 ## 子账号
 

@@ -28,6 +28,8 @@ pub async fn get(state: &AppState, id: u64) -> AppResult<Gongzhao> {
     background::spawn_best_effort("gongzhao.view", async move {
         let _ = gz_repo::incr_view(&pool, id).await;
     });
+    let mut g = g;
+    g.body = phpyun_core::html::sanitize_html(&g.body);
     Ok(g)
 }
 

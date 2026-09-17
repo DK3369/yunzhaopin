@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatUnixDate, isMemberModuleOn, mediaUrl } from '~/utils/site'
+import { formatUnixDate, isMemberModuleOn, mediaUrl, safeHref } from '~/utils/site'
 import { ApiError } from '~/utils/envelope'
 
 type Profile = {
@@ -407,8 +407,8 @@ function labelOf(to: string, key?: string) {
         <a
           v-for="(ad, i) in ads530"
           :key="'530-' + i"
-          :href="ad.link || undefined"
-          :target="ad.link ? '_blank' : undefined"
+          :href="safeHref(ad.link)"
+          :target="safeHref(ad.link) ? '_blank' : undefined"
         >
           <img :src="ad.image_n || ad.image" :alt="ad.title || ''" />
         </a>

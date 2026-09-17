@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { seoJoin } from '~/utils/seo'
+import { ensurePublicFound } from '~/utils/site'
 
 const id = Number(useRoute().params.id)
 const { t } = useI18n()
 const api = useApi()
-const { data } = await useAsyncData(`ann-${id}`, () =>
+const { data, error } = await useAsyncData(`ann-${id}`, () =>
   api.get('/v1/wap/announcements/detail', { id }),
 )
 const row = computed(() => (data.value || {}) as Record<string, unknown>)
 const prev = computed(() => (row.value.prev || null) as { id?: number; title?: string } | null)
 const next = computed(() => (row.value.next || null) as { id?: number; title?: string } | null)
+ensurePublicFound(Boolean(row.value.title || row.value.id), error.value)
 useSeoMeta({
   title: () => String(row.value.title || t('ui.announcements')),
   description: () => seoJoin([row.value.description, row.value.content, row.value.title]),

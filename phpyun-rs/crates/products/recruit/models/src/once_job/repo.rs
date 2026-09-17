@@ -95,11 +95,11 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &Filter<'a>) {
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND (title LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR companyname LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(" OR `require` LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
             qb.push(")");
         }
     }
@@ -948,7 +948,7 @@ fn push_admin_php_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &AdminO
             qb.push(" AND ");
             qb.push(col);
             qb.push(" LIKE ");
-            qb.push_bind(format!("%{kw}%"));
+            crate::sql::push_contains(qb, kw);
         }
     }
     match f.list_status {

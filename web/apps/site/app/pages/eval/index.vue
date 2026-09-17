@@ -12,7 +12,7 @@ useSeoMeta({ title: t('wap_00194') })
 </script>
 
 <template>
-  <section>
+  <section class="site-pc">
     <h1>{{ $t('wap_00194') }}</h1>
     <p v-if="me"><NuxtLink to="/user/eval-logs">{{ $t('common.more') }}</NuxtLink></p>
     <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
@@ -33,4 +33,17 @@ useSeoMeta({ title: t('wap_00194') })
       @update:page="(p) => navigateTo({ query: { page: p } })"
     />
   </section>
+  <div class="site-h5">
+    <h1>{{ $t('wap_00194') }}</h1>
+    <p v-if="me"><NuxtLink to="/user/eval-logs">{{ $t('common.more') }}</NuxtLink></p>
+    <p v-if="error" class="muted">{{ $t('ui.load_failed') }}</p>
+    <p v-else-if="!(data?.list || []).length" class="muted">{{ $t('wap_00192') }}</p>
+    <SimpleCard
+      v-for="row in data?.list || []"
+      :key="'h5-' + row.id"
+      :to="`/eval/${row.id}`"
+      :title="row.name"
+      :meta="row.description || ''"
+    />
+  </div>
 </template>

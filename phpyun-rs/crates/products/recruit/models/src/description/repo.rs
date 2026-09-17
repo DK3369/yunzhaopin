@@ -324,7 +324,7 @@ pub async fn php_list(
     qb.push(PREDICATE);
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     if let Some(t) = is_type {
         qb.push(" AND is_type = ");
@@ -346,7 +346,7 @@ pub async fn php_count(
     qb.push(PREDICATE);
     if let Some(kw) = keyword.map(str::trim).filter(|s| !s.is_empty()) {
         qb.push(" AND name LIKE ");
-        qb.push_bind(format!("%{kw}%"));
+        crate::sql::push_contains(&mut qb, kw);
     }
     if let Some(t) = is_type {
         qb.push(" AND is_type = ");
