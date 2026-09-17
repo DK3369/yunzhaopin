@@ -214,6 +214,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/app-versions/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_app_versions_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/articles": {
         parameters: {
             query?: never;
@@ -7041,6 +7057,19 @@ export interface components {
             /** Format: int64 */
             uid: number;
         };
+        UpdateForm: {
+            changelog?: string;
+            download_url?: string;
+            /** Format: int64 */
+            id: number;
+            is_force?: boolean;
+            platform: string;
+            /** Format: int64 */
+            released_at?: number;
+            version: string;
+            /** Format: int32 */
+            version_code: number;
+        };
         UpsertForm: {
             description?: string;
             is_public?: boolean;
@@ -7417,6 +7446,28 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_app_versions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateForm"];
+            };
+        };
         responses: {
             /** @description ok */
             200: {

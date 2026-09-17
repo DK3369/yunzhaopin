@@ -108,6 +108,12 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00737: '采集进行中',
     admin_tool_00738: '端口延续登录',
     admin_tool_00739: 'PC端口延续登录',
+    admin_tool_00740: 'App配置',
+    admin_tool_00741: '内部版本',
+    admin_tool_00742: '强制更新',
+    admin_tool_00743: '更新说明',
+    admin_tool_00744: '平台',
+    admin_tool_00745: '请填写平台、版本号和下载地址',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -170,6 +176,12 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00737: 'Scraping in progress',
     admin_tool_00738: 'Session continued',
     admin_tool_00739: 'PC session continued',
+    admin_tool_00740: 'App config',
+    admin_tool_00741: 'Build number',
+    admin_tool_00742: 'Force update',
+    admin_tool_00743: 'Release notes',
+    admin_tool_00744: 'Platform',
+    admin_tool_00745: 'Platform, version and download URL are required',
   },
 }
 
@@ -226,6 +238,7 @@ const NAME_ALIAS: Record<string, string> = {
   数据库: 'common_01919',
   邮件服务器: 'admin_tool_00728',
   第三方数据: 'admin_tool_00729',
+  App配置: 'admin_tool_00740',
   计划任务: 'admin_system_00273',
   国家: 'common_07065',
 }

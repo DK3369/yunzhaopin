@@ -11,6 +11,7 @@
 /v1/admin/app-versions
 /v1/admin/app-versions/delete
 /v1/admin/app-versions/list
+/v1/admin/app-versions/update
 /v1/admin/articles
 /v1/admin/articles/delete
 /v1/admin/articles/groups

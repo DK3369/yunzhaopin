@@ -61,6 +61,20 @@ pub async fn admin_list(
     }
 }
 
+pub async fn admin_count(pool: &MySqlPool, platform: Option<&str>) -> Result<u64, sqlx::Error> {
+    let sql = match platform {
+        Some(_) => format!(
+            "SELECT COUNT(*) FROM phpyun_app_version WHERE platform = ? AND {PREDICATE}"
+        ),
+        None => format!("SELECT COUNT(*) FROM phpyun_app_version WHERE {PREDICATE}"),
+    };
+    let n: (i64,) = match platform {
+        Some(p) => sqlx::query_as(&sql).bind(p).fetch_one(pool).await?,
+        None => sqlx::query_as(&sql).fetch_one(pool).await?,
+    };
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
+}
+
 pub struct VersionCreate<'a> {
     pub platform: &'a str,
     pub version: &'a str,
@@ -88,6 +102,35 @@ pub async fn create(pool: &MySqlPool, c: VersionCreate<'_>, now: i64) -> Result<
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
+}
+
+pub struct VersionUpdate<'a> {
+    pub platform: &'a str,
+    pub version: &'a str,
+    pub version_code: u32,
+    pub is_force: bool,
+    pub download_url: &'a str,
+    pub changelog: &'a str,
+    pub released_at: i64,
+}
+
+pub async fn update(pool: &MySqlPool, id: u64, u: VersionUpdate<'_>) -> Result<u64, sqlx::Error> {
+    let sql = format!(
+        "UPDATE phpyun_app_version SET platform=?, version=?, version_code=?, is_force=?, \
+         download_url=?, changelog=?, released_at=? WHERE id=? AND {PREDICATE}"
+    );
+    let res = sqlx::query(&sql)
+        .bind(u.platform)
+        .bind(u.version)
+        .bind(u.version_code)
+        .bind(if u.is_force { 1i32 } else { 0 })
+        .bind(u.download_url)
+        .bind(u.changelog)
+        .bind(u.released_at)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
