@@ -1,10 +1,15 @@
 use super::entity::{GalleryItem, GalleryKind};
 use sqlx::{MySqlPool, QueryBuilder};
 
-// Soft-delete convention: status=2 means deleted. Both tables
-// phpyun_company_show / phpyun_resume_show have a status column.
+// Soft-delete: PHP `status=2`. Live `phpyun_company_show` / `phpyun_resume_show`
+// have no `deleted` in the PHP dump (`title`/`picurl` are nullable; resume
+// `uid` is varchar). Do not filter `deleted`.
 
-const FIELDS: &str = "id, uid, title, picurl, sort";
+const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+    CAST(COALESCE(uid,0) AS UNSIGNED) AS uid, \
+    COALESCE(title,'') AS title, \
+    COALESCE(picurl,'') AS picurl, \
+    CAST(COALESCE(sort,0) AS SIGNED) AS sort";
 
 pub async fn list_by_uid(
     pool: &MySqlPool,
@@ -15,7 +20,7 @@ pub async fn list_by_uid(
 ) -> Result<Vec<GalleryItem>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM {} \
-         WHERE uid = ? AND status != 2 AND COALESCE(deleted,0)=0 \
+         WHERE uid = ? AND status != 2 \
          ORDER BY sort DESC, id DESC LIMIT ? OFFSET ?",
         kind.table()
     );
@@ -39,7 +44,7 @@ pub async fn count_by_uid(
     uid: u64,
 ) -> Result<u64, sqlx::Error> {
     let sql = format!(
-        "SELECT COUNT(*) FROM {} WHERE uid = ? AND status != 2 AND COALESCE(deleted,0)=0",
+        "SELECT COUNT(*) FROM {} WHERE uid = ? AND status != 2",
         kind.table()
     );
     let (n,): (i64,) = sqlx::query_as(&sql).bind(uid).fetch_one(pool).await?;
@@ -55,7 +60,7 @@ pub async fn list_public_by_uid(
 ) -> Result<Vec<GalleryItem>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM {} \
-         WHERE uid = ? AND status = 0 AND COALESCE(deleted,0)=0 \
+         WHERE uid = ? AND status = 0 \
          ORDER BY sort DESC, id DESC LIMIT ?",
         kind.table()
     );
@@ -73,7 +78,7 @@ pub async fn find_by_id(
     uid: u64,
 ) -> Result<Option<GalleryItem>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM {} WHERE id = ? AND uid = ? AND status != 2 AND COALESCE(deleted,0)=0 LIMIT 1",
+        "SELECT {FIELDS} FROM {} WHERE id = ? AND uid = ? AND status != 2 LIMIT 1",
         kind.table()
     );
     sqlx::query_as::<_, GalleryItem>(&sql)
@@ -147,7 +152,7 @@ pub async fn update(
     qb.push_bind(id);
     qb.push(" AND uid = ");
     qb.push_bind(uid);
-    qb.push(" AND status != 2 AND COALESCE(deleted,0)=0");
+    qb.push(" AND status != 2");
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }

@@ -22,8 +22,8 @@ const FIELDS: &str = "CAST(d.id AS UNSIGNED) AS id, \
     CAST(COALESCE(d.jobid,0) AS UNSIGNED) AS jobid, \
     CAST(COALESCE(d.comid,0) AS UNSIGNED) AS comid, \
     CAST(COALESCE(d.ctime,0) AS SIGNED) AS ctime, \
-    COALESCE(r.name,'') AS user_name, \
-    COALESCE(j.name,'') AS job_name";
+    CAST(COALESCE(r.name,'') AS CHAR) AS user_name, \
+    CAST(COALESCE(j.name,'') AS CHAR) AS job_name";
 
 pub async fn list_by_com(
     pool: &MySqlPool,
@@ -86,14 +86,19 @@ pub async fn exists_record(
     jobid: u64,
     comid: u64,
 ) -> Result<bool, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
+    let (n,): (i64,) = match sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_user_entrust_record WHERE eid = ? AND jobid = ? AND comid = ?",
     )
     .bind(eid)
     .bind(jobid)
     .bind(comid)
     .fetch_one(pool)
-    .await?;
+    .await
+    {
+        Ok(row) => row,
+        Err(e) if phpyun_core::db::is_missing_table(&e) => return Ok(false),
+        Err(e) => return Err(e),
+    };
     Ok(n > 0)
 }
 
@@ -105,17 +110,19 @@ pub async fn insert_record(
     comid: u64,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    Ok(
-        sqlx::query(
-            "INSERT INTO phpyun_user_entrust_record (uid, eid, jobid, comid, ctime) VALUES (?, ?, ?, ?, ?)",
-        )
-        .bind(uid)
-        .bind(eid)
-        .bind(jobid)
-        .bind(comid)
-        .bind(now)
-        .execute(pool)
-        .await?
-        .last_insert_id(),
+    match sqlx::query(
+        "INSERT INTO phpyun_user_entrust_record (uid, eid, jobid, comid, ctime) VALUES (?, ?, ?, ?, ?)",
     )
+    .bind(uid)
+    .bind(eid)
+    .bind(jobid)
+    .bind(comid)
+    .bind(now)
+    .execute(pool)
+    .await
+    {
+        Ok(r) => Ok(r.last_insert_id()),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(0),
+        Err(e) => Err(e),
+    }
 }

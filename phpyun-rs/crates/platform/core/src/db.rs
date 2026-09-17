@@ -227,13 +227,26 @@ async fn build_pool(url: &str, max: u32, min: u32, cfg: &Config) -> anyhow::Resu
 // translate the specific MySQL "object not found" errors into safe defaults.
 
 /// `true` for MySQL error 1146 / SQLSTATE `42S02` ("table doesn't exist").
+/// sqlx sometimes surfaces the numeric driver code instead of SQLSTATE.
 pub fn is_missing_table(err: &sqlx::Error) -> bool {
-    matches!(err, sqlx::Error::Database(d) if d.code().as_deref() == Some("42S02"))
+    match err {
+        sqlx::Error::Database(d) => {
+            matches!(d.code().as_deref(), Some("42S02") | Some("1146"))
+                || d.message().contains("doesn't exist")
+        }
+        _ => false,
+    }
 }
 
 /// `true` for MySQL error 1054 / SQLSTATE `42S22` ("unknown column").
 pub fn is_missing_column(err: &sqlx::Error) -> bool {
-    matches!(err, sqlx::Error::Database(d) if d.code().as_deref() == Some("42S22"))
+    match err {
+        sqlx::Error::Database(d) => {
+            matches!(d.code().as_deref(), Some("42S22") | Some("1054"))
+                || d.message().contains("Unknown column")
+        }
+        _ => false,
+    }
 }
 
 /// Treat `42S02 / 42S22` as a soft "object not provisioned yet" condition and

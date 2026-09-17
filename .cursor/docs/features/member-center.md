@@ -314,4 +314,4 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 ## 登录走查（2026-09-17）
 
-Playwright + Chrome for Testing 装在 `/var/tmp/pw`（不进仓库）。公网 Cloudflare 对 Headless UA 返回 1010；Rust `BOT_UA_DENYLIST` 含 `headlesschrome`。走查走 `http://127.0.0.1:3001` 并设普通 Chrome UA + `lang=zh`。duncan2 `/com/*`、duncan1 `/user/*`，PC 1366 / H5 390。本轮已修：绑定页未配三方只提示不白屏；`/com/follows` 企业 `kind=2/3` 不再 403；`/com/news` `/com/products` 列映射恢复。仍需人工：`/com/record` 500；`/com/gallery` 若仍缺 `kind`。公网真登录截图需过 Cloudflare。
+Playwright + Chrome for Testing 装在 `/var/tmp/pw`（不进仓库）。公网 Cloudflare 对 Headless UA 返回 1010；Rust `BOT_UA_DENYLIST` 含 `headlesschrome`。走查走 `http://127.0.0.1:3001` 并设普通 Chrome UA + `lang=zh`。duncan2 `/com/*`、duncan1 `/user/*`，PC 1366 / H5 390。本轮已修：绑定页未配三方只提示不白屏；`/com/follows` 企业 `kind=2/3` 不再 403；`/com/news` `/com/products` 列映射恢复；`/com/gallery` 相册 SQL 只用 `status!=2`（现网无 `deleted`，`title`/`picurl` 可空）；`/com/record` 顾问推送表缺表时返回空列表。公网真登录截图需过 Cloudflare。
