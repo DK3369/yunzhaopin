@@ -15,6 +15,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/zph/reserve", post(reserve))
         .route("/zph/my-reservation", post(my_reservation))
+        .route("/zph/cancel", post(cancel))
         .route("/zph/com-status", post(com_status))
 }
 
@@ -79,6 +80,19 @@ pub struct MyReservation {
     pub created_at: i64,
     pub datetime_n: String,
     pub title: String,
+    pub address: String,
+    pub start_at: i64,
+    pub start_at_n: String,
+    pub end_at: i64,
+    pub end_at_n: String,
+    pub statusbody: String,
+    pub sid: i32,
+    pub cid: i32,
+    pub bid: i32,
+    pub booth_name: String,
+    pub job_names: String,
+    pub price: i32,
+    pub notstart: i32,
 }
 
 impl From<phpyun_models::zph::entity::ZphReservation> for MyReservation {
@@ -93,6 +107,19 @@ impl From<phpyun_models::zph::entity::ZphReservation> for MyReservation {
             datetime_n: fmt_dt(r.created_at),
             created_at: r.created_at,
             title: r.name,
+            address: String::new(),
+            start_at: 0,
+            start_at_n: String::new(),
+            end_at: 0,
+            end_at_n: String::new(),
+            statusbody: String::new(),
+            sid: 0,
+            cid: 0,
+            bid: 0,
+            booth_name: String::new(),
+            job_names: String::new(),
+            price: 0,
+            notstart: if r.status != 1 { 1 } else { 0 },
         }
     }
 }
@@ -109,6 +136,19 @@ impl From<phpyun_models::zph::repo::ZphReservationListRow> for MyReservation {
             datetime_n: fmt_dt(r.created_at),
             created_at: r.created_at,
             title: r.title,
+            address: r.address,
+            start_at_n: fmt_dt(r.start_at),
+            start_at: r.start_at,
+            end_at_n: fmt_dt(r.end_at),
+            end_at: r.end_at,
+            statusbody: r.statusbody,
+            sid: r.sid,
+            cid: r.cid,
+            bid: r.bid,
+            booth_name: r.booth_name,
+            job_names: r.job_names,
+            price: r.price,
+            notstart: r.notstart,
         }
     }
 }
@@ -141,6 +181,23 @@ pub async fn my_reservation(
         r.total,
         page,
     )))
+}
+
+/// Cancel own job-fair sign-up (PHP `delZphCom` + pending-price refund).
+#[utoipa::path(post,
+    path = "/v1/mcenter/zph/cancel",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn cancel(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<()>> {
+    zph_service::cancel_reservation(&state, &user, b.id).await?;
+    Ok(ApiResponse::message("ok"))
 }
 
 // ==================== Pre-apply status (counterpart of `wap/ajax::ajaxComjob`) ====================

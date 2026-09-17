@@ -1,5 +1,6 @@
 //! Job fair service.
 
+use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::TieredCache;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::{
@@ -9,7 +10,7 @@ use phpyun_models::{
         repo as zph_repo,
     },
 };
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 use std::time::Duration;
 
@@ -266,10 +267,119 @@ pub async fn list_my_reservations(
         zph_repo::list_my_reservations(state.db.reader(), user.uid, filter, page.offset, page.limit),
         zph_repo::count_my_reservations(state.db.reader(), user.uid, filter),
     );
+    let mut list = list?;
+    enrich_reservations(state, &mut list).await?;
     Ok(MyReservationPage {
-        list: list?,
+        list,
         total: total?,
     })
+}
+
+fn parse_csv_ids(raw: &str) -> Vec<u64> {
+    raw.split(|c: char| c == ',' || c == '|' || c.is_whitespace())
+        .filter_map(|p| p.trim().parse::<u64>().ok())
+        .filter(|n| *n > 0)
+        .collect()
+}
+
+fn join_space_names(map: &HashMap<i32, String>, ids: [i32; 3]) -> String {
+    ids.into_iter()
+        .filter(|id| *id > 0)
+        .filter_map(|id| map.get(&id).cloned().filter(|s| !s.is_empty()))
+        .collect::<Vec<_>>()
+        .join("-")
+}
+
+async fn enrich_reservations(
+    state: &AppState,
+    list: &mut [zph_repo::ZphReservationListRow],
+) -> AppResult<()> {
+    if list.is_empty() {
+        return Ok(());
+    }
+    let now = clock::now_ts();
+    let mut space_ids: Vec<i32> = Vec::new();
+    let mut job_ids: Vec<u64> = Vec::new();
+    for row in list.iter() {
+        for id in [row.sid, row.cid, row.bid] {
+            if id > 0 {
+                space_ids.push(id);
+            }
+        }
+        job_ids.extend(parse_csv_ids(&row.job_ids));
+    }
+    space_ids.sort_unstable();
+    space_ids.dedup();
+    job_ids.sort_unstable();
+    job_ids.dedup();
+    let reader = state.db.reader();
+    let spaces = zph_repo::list_spaces_by_ids(reader, &space_ids).await?;
+    let space_map: HashMap<i32, String> = spaces
+        .into_iter()
+        .map(|s| (i32::try_from(s.id).unwrap_or(0), s.name))
+        .collect();
+    let jobs = if job_ids.is_empty() {
+        Vec::new()
+    } else {
+        job_repo::list_by_ids(reader, &job_ids).await?
+    };
+    let job_map: HashMap<u64, String> = jobs.into_iter().map(|j| (j.id, j.name)).collect();
+    for row in list.iter_mut() {
+        row.booth_name = join_space_names(&space_map, [row.sid, row.cid, row.bid]);
+        row.job_names = parse_csv_ids(&row.job_ids)
+            .into_iter()
+            .filter_map(|id| job_map.get(&id).cloned())
+            .collect::<Vec<_>>()
+            .join(",");
+        row.notstart = if row.start_at > now || row.status != 1 {
+            1
+        } else {
+            0
+        };
+    }
+    Ok(())
+}
+
+/// PHP `member/com/zhaopinhui::del_action`: delete own row; refund points when
+/// pending (`status==0`) and `price>0`. Never refund `zph_num`.
+pub async fn cancel_reservation(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    id: u64,
+) -> AppResult<()> {
+    user.require_employer()?;
+    let row = zph_repo::find_owned_com(state.db.reader(), id, user.uid)
+        .await?
+        .ok_or_else(|| ApiError::business("zph_reservation_not_found"))?;
+    let n = zph_repo::delete_owned_com(state.db.pool(), id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::business("zph_reservation_not_found"));
+    }
+    if row.status == 0 && row.price > 0 {
+        let pts = i64::from(row.price);
+        let now = clock::now_ts();
+        let _ = phpyun_models::company_statis::repo::add_integral(state.db.pool(), user.uid, pts)
+            .await;
+        let order_id = format!("{now}{id}");
+        let _ = phpyun_models::integral_transfer::repo::php_insert_pay_typed(
+            state.db.pool(),
+            &order_id,
+            &pts.to_string(),
+            now,
+            user.uid,
+            "member_com_00711",
+            phpyun_models::integral_transfer::repo::LEDGER_KIND_INTEGRAL,
+            2,
+            2,
+        )
+        .await;
+    }
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("zph.cancel", Actor::uid(user.uid)).target(format!("zph_com:{id}")),
+    )
+    .await;
+    Ok(())
 }
 
 // ==================== Pre-apply status check (PHP `wap/ajax::ajaxComjob`) ====================

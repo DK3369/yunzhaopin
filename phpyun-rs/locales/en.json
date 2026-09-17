@@ -114,6 +114,8 @@
     "zph_already_reserved": "You have already reserved this job fair",
     "zph_need_vip": "Your membership has expired",
     "zph_need_pay": "No remaining job-fair quota; please purchase or pay for the booth",
+    "zph_reservation_not_found": "Reservation not found",
+    "com_zpdata_closed": "Recruiter stats are disabled",
     "need_post_job": "Please post a job before downloading resumes",
     "report_duplicate": "You have already reported this",
     "resume_not_open": "You cannot view this resume yet",

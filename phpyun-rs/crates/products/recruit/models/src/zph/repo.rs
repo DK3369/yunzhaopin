@@ -336,6 +336,23 @@ pub struct ZphReservationListRow {
     pub status: i32,
     pub created_at: i64,
     pub title: String,
+    pub address: String,
+    pub start_at: i64,
+    pub end_at: i64,
+    pub statusbody: String,
+    pub sid: i32,
+    pub cid: i32,
+    pub bid: i32,
+    pub price: i32,
+    /// Filled in the service (space names joined).
+    #[sqlx(default)]
+    pub booth_name: String,
+    /// Filled in the service (job names joined).
+    #[sqlx(default)]
+    pub job_names: String,
+    /// 1 when the fair has not started or the row is not approved.
+    #[sqlx(default)]
+    pub notstart: i32,
 }
 
 const ZR_FIELDS_ZR: &str = "\
@@ -346,7 +363,15 @@ const ZR_FIELDS_ZR: &str = "\
     COALESCE(zr.com_name, '') AS name, \
     '' AS mobile, \
     CAST(COALESCE(zr.status, 0) AS SIGNED) AS status, \
-    CAST(COALESCE(zr.ctime, 0) AS SIGNED) AS created_at";
+    CAST(COALESCE(zr.ctime, 0) AS SIGNED) AS created_at, \
+    COALESCE(z.address, '') AS address, \
+    CAST(COALESCE(UNIX_TIMESTAMP(z.starttime), 0) AS SIGNED) AS start_at, \
+    CAST(COALESCE(UNIX_TIMESTAMP(z.endtime), 0) AS SIGNED) AS end_at, \
+    COALESCE(zr.statusbody, '') AS statusbody, \
+    CAST(COALESCE(zr.sid, 0) AS SIGNED) AS sid, \
+    CAST(COALESCE(zr.cid, 0) AS SIGNED) AS cid, \
+    CAST(COALESCE(zr.bid, 0) AS SIGNED) AS bid, \
+    CAST(COALESCE(zr.price, 0) AS SIGNED) AS price";
 
 pub async fn list_my_reservations(
     pool: &MySqlPool,
@@ -876,6 +901,48 @@ pub async fn insert_zph_com(
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct ZphComOwned {
+    pub id: u64,
+    pub uid: u64,
+    pub zid: u64,
+    pub status: i32,
+    pub price: i32,
+    pub start_at: i64,
+}
+
+/// Own sign-up row for cancel (`delZphCom` uid scoped).
+pub async fn find_owned_com(
+    pool: &MySqlPool,
+    id: u64,
+    uid: u64,
+) -> Result<Option<ZphComOwned>, sqlx::Error> {
+    sqlx::query_as::<_, ZphComOwned>(
+        "SELECT CAST(c.id AS UNSIGNED) AS id, \
+                CAST(COALESCE(c.uid, 0) AS UNSIGNED) AS uid, \
+                CAST(COALESCE(c.zid, 0) AS UNSIGNED) AS zid, \
+                CAST(COALESCE(c.status, 0) AS SIGNED) AS status, \
+                CAST(COALESCE(c.price, 0) AS SIGNED) AS price, \
+                CAST(COALESCE(UNIX_TIMESTAMP(z.starttime), 0) AS SIGNED) AS start_at \
+         FROM phpyun_zhaopinhui_com c \
+         LEFT JOIN phpyun_zhaopinhui z ON z.id = c.zid \
+         WHERE c.id = ? AND c.uid = ? LIMIT 1",
+    )
+    .bind(id)
+    .bind(uid)
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn delete_owned_com(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let r = sqlx::query("DELETE FROM phpyun_zhaopinhui_com WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(r.rows_affected())
 }
 
 pub async fn delete_coms(pool: &MySqlPool, ids: &[u64]) -> Result<u64, sqlx::Error> {

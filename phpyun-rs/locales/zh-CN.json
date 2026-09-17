@@ -114,6 +114,8 @@
     "zph_already_reserved": "已报名该招聘会",
     "zph_need_vip": "会员已过期，请先购买套餐",
     "zph_need_pay": "招聘会套餐次数不足，请购买或支付展位费用",
+    "zph_reservation_not_found": "报名记录不存在",
+    "com_zpdata_closed": "招聘数据未开放",
     "need_post_job": "请先发布职位后再下载简历",
     "report_duplicate": "您已举报过该内容",
     "resume_not_open": "暂无权限查看该简历",
