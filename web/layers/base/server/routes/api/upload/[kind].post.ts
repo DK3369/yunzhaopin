@@ -1,7 +1,7 @@
 import { ACCESS_COOKIE } from '../../../utils/auth-cookie'
 import { rustLangHeaders } from '../../../utils/lang'
 
-const KINDS = new Set(['cert', 'avatar', 'company-logo', 'resume-photo', 'attachment'])
+const KINDS = new Set(['cert', 'avatar', 'company-logo', 'resume-photo', 'attachment', 'content'])
 
 type Envelope = { code: number; key: string; msg: string; data: unknown }
 

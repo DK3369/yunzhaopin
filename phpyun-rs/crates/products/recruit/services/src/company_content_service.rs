@@ -77,13 +77,14 @@ pub async fn create(
 ) -> AppResult<u64> {
     user.require_employer()?;
     validate(input)?;
+    let body = crate::job_scrape_jd::sanitize_html(input.body);
     let id = content_repo::create(
         state.db.pool(),
         kind,
         content_repo::CreateInput {
             uid: user.uid,
             title: input.title,
-            body: input.body,
+            body: &body,
             file: input.file,
             usertype: i32::from(user.usertype),
             did: user.did,
@@ -112,6 +113,7 @@ pub async fn update(
 ) -> AppResult<u64> {
     user.require_employer()?;
     validate(input)?;
+    let body = crate::job_scrape_jd::sanitize_html(input.body);
     Ok(content_repo::update(
         state.db.pool(),
         kind,
@@ -119,7 +121,7 @@ pub async fn update(
             id,
             uid: user.uid,
             title: input.title,
-            body: input.body,
+            body: &body,
             file: input.file,
             now: clock::now_ts(),
         },

@@ -111,7 +111,9 @@ async function remove(row: Row) {
         <ul>
           <MemberReleaseRow :label="$t('wap_user_00103')" required><input v-model="form.title" required class="com_release_textnew_text" /></MemberReleaseRow>
           <MemberReleaseRow :label="$t('ui.image')"><input v-model="form.file" class="com_release_textnew_text" /></MemberReleaseRow>
-          <MemberReleaseRow :label="$t('ui.body')" area><textarea v-model="form.body" required rows="6" /></MemberReleaseRow>
+          <MemberReleaseRow :label="$t('ui.body')" area>
+            <RichEditor v-model="form.body" />
+          </MemberReleaseRow>
         </ul>
         <button type="submit" class="btn_01">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
         <button v-if="editing" type="button" class="btn_01" @click="reset">{{ $t('common.cancel') }}</button>
@@ -125,7 +127,7 @@ async function remove(row: Row) {
             <input v-model="form.file" />
           </MemberField>
           <MemberField wap area :label="$t('ui.body')">
-            <textarea v-model="form.body" required rows="6" />
+            <RichEditor v-model="form.body" />
           </MemberField>
           <button type="submit" class="issue_post_body_btn">{{ editing ? $t('common.save') : $t('common.publish') }}</button>
           <button v-if="editing" type="button" class="issue_post_body_btn" @click="reset">{{ $t('common.cancel') }}</button>
