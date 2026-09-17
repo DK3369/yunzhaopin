@@ -9,7 +9,6 @@ use phpyun_core::utils::mask_contact;
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 use phpyun_models::resume::repo as resume_repo;
-use phpyun_models::site_setting::repo as setting_repo;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, OnceLock};
 use std::time::Duration;
@@ -621,19 +620,10 @@ async fn resolve_public_contact(
     isgetprv: bool,
 ) -> AppResult<PublicJobContact> {
 
-    let cfg = setting_repo::find_many(
-        state.db.reader(),
-        &[
-            "com_login_link",
-            "com_link_look",
-            "com_link_no",
-            "sy_link_tips",
-            "sy_comprivacy_open",
-            "sy_privacy_rating",
-        ],
-    )
-    .await
-    .unwrap_or_default();
+    let cfg = crate::site_gate_service::config_map(state)
+        .await
+        .map(|m| (*m).clone())
+        .unwrap_or_default();
 
     let hidden_tip = {
         let custom = cfg.get("sy_link_tips").map(|s| s.trim()).unwrap_or("");

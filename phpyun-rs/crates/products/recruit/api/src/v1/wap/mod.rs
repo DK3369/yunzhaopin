@@ -53,12 +53,13 @@ pub mod upload;
 pub mod wechat;
 pub mod zph;
 
-use axum::extract::{Request, State};
+use axum::extract::{ConnectInfo, Request, State};
 use axum::http::{header, HeaderMap};
 use axum::middleware::Next;
 use axum::response::Response;
 use axum::Router;
 use phpyun_core::{ApiError, AppState};
+use std::net::SocketAddr;
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -126,27 +127,6 @@ pub fn request_user_agent(headers: &HeaderMap) -> String {
         .to_string()
 }
 
-pub(crate) fn client_ip(headers: &HeaderMap) -> String {
-    if let Some(xff) = headers
-        .get("x-forwarded-for")
-        .and_then(|v| v.to_str().ok())
-    {
-        if let Some(first) = xff.split(',').next() {
-            let ip = first.trim();
-            if !ip.is_empty() {
-                return ip.to_string();
-            }
-        }
-    }
-    if let Some(xri) = headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
-        let ip = xri.trim();
-        if !ip.is_empty() {
-            return ip.to_string();
-        }
-    }
-    "0.0.0.0".into()
-}
-
 fn skip_site_gate(path: &str) -> bool {
     path.contains("/site/settings")
         || path.contains("/health")
@@ -165,8 +145,12 @@ pub async fn site_gate_layer(
         return Ok(next.run(request).await);
     }
     phpyun_services::site_gate_service::ensure_site_online(&state).await?;
-    phpyun_services::site_gate_service::ensure_ip_allowed(&state, &client_ip(request.headers()))
-        .await?;
+    let peer = request
+        .extensions()
+        .get::<ConnectInfo<SocketAddr>>()
+        .map(|c| c.0.ip());
+    let ip = phpyun_core::extractors::resolve_client_ip(peer, request.headers());
+    phpyun_services::site_gate_service::ensure_ip_allowed(&state, &ip).await?;
     Ok(next.run(request).await)
 }
 

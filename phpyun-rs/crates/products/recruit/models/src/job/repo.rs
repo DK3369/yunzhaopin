@@ -1332,6 +1332,121 @@ pub async fn refresh(pool: &MySqlPool, id: u64, uid: u64, now: i64) -> Result<u6
     Ok(res.rows_affected())
 }
 
+pub async fn refresh_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    uid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET lastupdate = ");
+    qb.push_bind(now);
+    qb.push(", upstatus_time = ");
+    qb.push_bind(now);
+    qb.push(" WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_status_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    uid: u64,
+    status: i32,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let now = phpyun_core::clock::now_ts();
+    let mut qb = QueryBuilder::new("UPDATE phpyun_company_job SET status = ");
+    qb.push_bind(status);
+    qb.push(", upstatus_time = IF(");
+    qb.push_bind(status);
+    qb.push(" = 0, ");
+    qb.push_bind(now);
+    qb.push(", upstatus_time) WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+fn push_id_in(qb: &mut QueryBuilder<'_, sqlx::MySql>, ids: &[u64]) {
+    qb.push("(");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+}
+
+async fn owned_job_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    uid: u64,
+) -> Result<Vec<u64>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut qb = QueryBuilder::new(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_company_job WHERE uid = ",
+    );
+    qb.push_bind(uid);
+    qb.push(" AND id IN ");
+    push_id_in(&mut qb, ids);
+    let rows: Vec<(u64,)> = qb.build_query_as().fetch_all(pool).await?;
+    Ok(rows.into_iter().map(|(id,)| id).collect())
+}
+
+pub async fn delete_ids(pool: &MySqlPool, ids: &[u64], uid: u64) -> Result<u64, sqlx::Error> {
+    let owned = owned_job_ids(pool, ids, uid).await?;
+    if owned.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new("DELETE FROM phpyun_company_job WHERE uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND id IN ");
+    push_id_in(&mut qb, &owned);
+    let res = qb.build().execute(pool).await?;
+    let n = res.rows_affected();
+    if n == 0 {
+        return Ok(0);
+    }
+    let mut q = QueryBuilder::new("UPDATE phpyun_userid_job SET isdel = 2 WHERE job_id IN ");
+    push_id_in(&mut q, &owned);
+    let _ = q.build().execute(pool).await;
+    let mut q = QueryBuilder::new("UPDATE phpyun_userid_msg SET isdel = 2 WHERE jobid IN ");
+    push_id_in(&mut q, &owned);
+    let _ = q.build().execute(pool).await;
+    let mut q = QueryBuilder::new("DELETE FROM phpyun_fav_job WHERE job_id IN ");
+    push_id_in(&mut q, &owned);
+    let _ = q.build().execute(pool).await;
+    let mut q = QueryBuilder::new("DELETE FROM phpyun_look_job WHERE jobid IN ");
+    push_id_in(&mut q, &owned);
+    let _ = q.build().execute(pool).await;
+    let mut q = QueryBuilder::new("DELETE FROM phpyun_job_refresh_log WHERE jobid IN ");
+    push_id_in(&mut q, &owned);
+    let _ = q.build().execute(pool).await;
+    let mut q = QueryBuilder::new("DELETE FROM phpyun_reserve_refresh WHERE job_id IN ");
+    push_id_in(&mut q, &owned);
+    let _ = q.build().execute(pool).await;
+    Ok(n)
+}
+
 /// PHP `delJob` member path: physical delete, then mark related apply rows.
 pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("DELETE FROM phpyun_company_job WHERE id = ? AND uid = ?")
@@ -1412,6 +1527,35 @@ pub async fn insert_refresh_log(
     .bind(free_num)
     .execute(pool)
     .await?;
+    Ok(())
+}
+
+pub async fn insert_refresh_logs(
+    pool: &MySqlPool,
+    uid: u64,
+    now: i64,
+    rows: &[(u64, i32, i32)],
+) -> Result<(), sqlx::Error> {
+    if rows.is_empty() {
+        return Ok(());
+    }
+    let mut qb = QueryBuilder::new(
+        "INSERT INTO phpyun_job_refresh_log \
+         (uid, usertype, jobid, type, ip, r_time, port, remark, free, free_num) ",
+    );
+    qb.push_values(rows, |mut b, (job_id, free, free_num)| {
+        b.push_bind(uid)
+            .push_bind(2i32)
+            .push_bind(*job_id)
+            .push_bind(1i32)
+            .push_bind("")
+            .push_bind(now)
+            .push_bind(1i32)
+            .push_bind("")
+            .push_bind(*free)
+            .push_bind(*free_num);
+    });
+    qb.build().execute(pool).await?;
     Ok(())
 }
 
@@ -1681,6 +1825,28 @@ pub async fn expire_overdue(pool: &MySqlPool, now: i64) -> Result<u64, sqlx::Err
         "UPDATE phpyun_company_job SET state = 2
          WHERE state = 1 AND edate > 0 AND edate <= ?",
     )
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+/// PHP `statis.model::vip_etime + job_under_delay*86400`: pause jobs after the delay window.
+pub async fn unshelf_after_vip_delay(
+    pool: &MySqlPool,
+    delay_days: i64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_job j \
+         INNER JOIN phpyun_company_statis s ON s.uid = j.uid \
+         SET j.status = 1 \
+         WHERE COALESCE(s.rating_type, 0) = 0 \
+           AND COALESCE(s.vip_etime, 0) > 0 \
+           AND s.vip_etime + ? * 86400 < ? \
+           AND COALESCE(j.status, 0) = 0",
+    )
+    .bind(delay_days)
     .bind(now)
     .execute(pool)
     .await?;

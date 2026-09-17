@@ -1,7 +1,7 @@
 //! `phpyun_look_resume` — companies who viewed a jobseeker's resume (PHP `look`).
 
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, MySqlPool};
+use sqlx::{FromRow, MySqlPool, QueryBuilder};
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct LookResume {
@@ -83,6 +83,24 @@ pub async fn hide_by_uid(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sql
     Ok(res.rows_affected())
 }
 
+pub async fn hide_by_uid_ids(pool: &MySqlPool, ids: &[u64], uid: u64) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_look_resume SET status = 1 WHERE uid = ",
+    );
+    qb.push_bind(uid);
+    qb.push(" AND COALESCE(status,0) = 0 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
 /// PHP `member/com/look_resume` — resumes this company viewed (`com_id = me`).
 const MINE_FIELDS: &str = "d.id, COALESCE(d.uid,0) AS uid, COALESCE(d.com_id,0) AS com_id, \
     COALESCE(d.resume_id,0) AS resume_id, CAST(COALESCE(d.datetime,0) AS SIGNED) AS datetime, \
@@ -127,6 +145,28 @@ pub async fn hide_by_com(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64, 
     .bind(com_id)
     .execute(pool)
     .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn hide_by_com_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    com_id: u64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb = QueryBuilder::new(
+        "UPDATE phpyun_look_resume SET com_status = 1 WHERE com_id = ",
+    );
+    qb.push_bind(com_id);
+    qb.push(" AND COALESCE(com_status,0) = 0 AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }
 

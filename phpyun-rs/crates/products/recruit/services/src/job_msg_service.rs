@@ -274,6 +274,9 @@ pub async fn hide(state: &AppState, user: &AuthenticatedUser, msg_id: u64) -> Ap
         return Err(ApiError::forbidden());
     }
 
-    let _ = msg_repo::soft_hide(pool, msg_id).await?;
+    let n = msg_repo::soft_hide(pool, msg_id, user.uid).await?;
+    if n == 0 {
+        return Err(ApiError::forbidden());
+    }
     Ok(())
 }

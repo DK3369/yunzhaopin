@@ -1,7 +1,7 @@
 //! Contact info change verification (aligned with PHPYun `ajax::mobliecert` / `emailcert`).
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::contact_cert_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -33,9 +33,10 @@ pub struct MobileSendForm {
 pub async fn mobile_send(
     State(state): State<AppState>,
     user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<MobileSendForm>,
 ) -> AppResult<ApiResponse> {
-    contact_cert_service::send_mobile_code(&state, &user, &f.moblie).await?;
+    contact_cert_service::send_mobile_code(&state, &user, &f.moblie, &ip).await?;
     Ok(ApiResponse::message("sent"))
 }
 

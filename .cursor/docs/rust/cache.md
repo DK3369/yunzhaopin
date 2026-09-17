@@ -63,6 +63,7 @@ cache().invalidate_prefix_local();            // 整表 L1；Redis 靠 TTL，没
 - 会员发岗 / 改岗 / 刷新 / 上下架 / 删除：`job_service::invalidate_job(s)` — L1 列表立刻空 + Redis `DEL jobs:detail:{id}`，并清首页 / 排行 L1
 - 后台改岗（`save_admin_job` / `company_job_status` / 删除刷新）：同样走 `invalidate_job(s)`
 - `vip_over` 后 `invalidate_company(uid)`；`expire_jobs` 批处理后 `invalidate_sidebar` + 首页 / 排行 L1
+- `expire_vip` 在 `jobunder==1 && job_under_delay>0` 时延迟下架到期职位，随后 `invalidate_sidebar`
 - 企业资料 / 地图 / 后台 `company_comeditsave`：`company_service::invalidate_company` — L1 列表立刻空 + Redis `DEL companies:detail:{uid}`
 - 简历 `update_mine` / `refresh` / `set_status` / expect 可见性变化：`resume_service::invalidate_list`（L1；列表 Redis 靠 TTL）
 

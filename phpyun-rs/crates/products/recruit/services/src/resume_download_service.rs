@@ -16,7 +16,6 @@ use phpyun_models::message::{entity as msg_entity, repo as message_repo};
 use phpyun_models::resume::entity::Resume;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume_download::{entity::ResumeDownload, repo as download_repo};
-use phpyun_models::site_setting::repo as setting_repo;
 use serde::Serialize;
 
 use crate::company_vip_day_service::{self, VipDayAction};
@@ -76,19 +75,15 @@ fn parse_integral(raw: &str) -> i64 {
 }
 
 async fn read_setting_i64(state: &AppState, key: &str) -> i64 {
-    setting_repo::find_many(state.db.reader(), &[key])
+    crate::site_gate_service::config_str(state, key)
         .await
-        .ok()
-        .and_then(|m| m.get(key).and_then(|s| s.trim().parse().ok()))
+        .trim()
+        .parse()
         .unwrap_or(0)
 }
 
 async fn read_setting_str(state: &AppState, key: &str) -> String {
-    setting_repo::find_many(state.db.reader(), &[key])
-        .await
-        .ok()
-        .and_then(|m| m.get(key).cloned())
-        .unwrap_or_default()
+    crate::site_gate_service::config_str(state, key).await
 }
 
 /// PHP `resume.model.php::setDayprice`.

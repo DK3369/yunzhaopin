@@ -5,8 +5,10 @@
 //! View counters are fire-and-forget so they never block the main path.
 
 use phpyun_core::{
-    background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    background, clock, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser, Paged,
+    Pagination,
 };
+use std::time::Duration;
 use phpyun_models::qna::{
     entity::{Answer, AnswerReview, QClass, Question, SUPPORT_KIND_ANSWER, SUPPORT_KIND_QUESTION},
     repo as qna_repo,
@@ -58,11 +60,24 @@ pub struct CreateQuestionInput<'a> {
     pub category_id: i32,
 }
 
+async fn qna_write_rate(state: &AppState, uid: u64) -> AppResult<()> {
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:qna:{uid}"),
+        rate_limit::LimitRule {
+            max: 20,
+            window: Duration::from_secs(3600),
+        },
+    )
+    .await
+}
+
 pub async fn create_question(
     state: &AppState,
     user: &AuthenticatedUser,
     input: CreateQuestionInput<'_>,
 ) -> AppResult<u64> {
+    qna_write_rate(state, user.uid).await?;
     let title = phpyun_core::html::strip_nul(input.title);
     let content = phpyun_core::html::sanitize_html(input.content);
     let id = qna_repo::create_question(
@@ -108,6 +123,7 @@ pub async fn answer(
     question_id: u64,
     content: &str,
 ) -> AppResult<u64> {
+    qna_write_rate(state, user.uid).await?;
     // The question must exist and be published
     let q = qna_repo::find_question(state.db.reader(), question_id)
         .await?
@@ -234,6 +250,7 @@ pub async fn add_review(
     aid: u64,
     content: &str,
 ) -> AppResult<u64> {
+    qna_write_rate(state, user.uid).await?;
     let content = phpyun_core::html::sanitize_html(content);
     let trimmed = content.trim();
     if trimmed.is_empty() {

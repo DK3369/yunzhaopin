@@ -119,7 +119,7 @@ pub fn part_summary_from_dict(
         upstatus_count: j.upstatus_count,
         content: j.content,
         linkman: j.linkman,
-        linktel: j.linktel,
+        linktel: j.linktel.as_ref().map(|s| phpyun_core::utils::mask_tel(s)),
         state: j.state,
         status: j.status,
         r_status: j.r_status,
@@ -361,8 +361,16 @@ pub async fn part_detail(
             c.rating_name,
             c.address,
             c.website,
-            c.linkphone,
-            c.linkmail,
+            if link.link_tip == 0 {
+                c.linkphone
+            } else {
+                None
+            },
+            if link.link_tip == 0 {
+                c.linkmail
+            } else {
+                None
+            },
         )
     } else {
         (None, None, 0, 0, 0, None, None, None, None, None)

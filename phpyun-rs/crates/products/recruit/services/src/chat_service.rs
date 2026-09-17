@@ -68,8 +68,13 @@ pub async fn send(
         bl_repo::is_blocked(db, user.uid, peer),
         bl_repo::is_blocked(db, peer, user.uid),
     );
-    if peer_user?.is_none() {
+    let Some(peer_row) = peer_user? else {
         return Err(ApiError::business("chat_peer_missing"));
+    };
+    let me = i32::from(user.usertype);
+    let them = peer_row.usertype;
+    if !((me == 1 && them == 2) || (me == 2 && them == 1)) {
+        return Err(ApiError::business("chat_role"));
     }
     if blocked_me? || blocked_them? {
         return Err(ApiError::business("chat_blocked"));

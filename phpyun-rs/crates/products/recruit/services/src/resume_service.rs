@@ -611,22 +611,13 @@ pub async fn hide_look_resumes(
     user: &AuthenticatedUser,
     ids: &[u64],
 ) -> AppResult<u64> {
-    let mut n = 0u64;
-    if user.usertype == 2 {
+    let n = if user.usertype == 2 {
         user.require_employer()?;
-        for id in ids {
-            n += phpyun_models::look_resume::hide_by_com(state.db.pool(), *id, user.uid)
-                .await
-                .unwrap_or(0);
-        }
+        phpyun_models::look_resume::hide_by_com_ids(state.db.pool(), ids, user.uid).await?
     } else {
         user.require_jobseeker()?;
-        for id in ids {
-            n += phpyun_models::look_resume::hide_by_uid(state.db.pool(), *id, user.uid)
-                .await
-                .unwrap_or(0);
-        }
-    }
+        phpyun_models::look_resume::hide_by_uid_ids(state.db.pool(), ids, user.uid).await?
+    };
     if n == 0 {
         return Err(ApiError::business("not_found"));
     }

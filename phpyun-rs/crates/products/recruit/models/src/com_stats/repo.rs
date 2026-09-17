@@ -554,6 +554,48 @@ pub async fn count_expect_salary(
     Ok(ncount(n))
 }
 
+/// One-shot salary buckets: `(min, max, count)` using SUM(CASE WHEN).
+pub async fn count_expect_salary_buckets(
+    pool: &MySqlPool,
+    uids: &[u64],
+    buckets: &[(&str, i32, i32)],
+) -> Result<Vec<u64>, sqlx::Error> {
+    if uids.is_empty() || buckets.is_empty() {
+        return Ok(vec![0; buckets.len()]);
+    }
+    let mut qb = QueryBuilder::new("SELECT ");
+    for (i, (_, min, max)) in buckets.iter().enumerate() {
+        if i > 0 {
+            qb.push(", ");
+        }
+        qb.push("CAST(SUM(CASE WHEN minsalary >= ");
+        qb.push_bind(*min);
+        if *max > 0 {
+            qb.push(" AND minsalary < ");
+            qb.push_bind(*max);
+        }
+        qb.push(" THEN 1 ELSE 0 END) AS SIGNED)");
+    }
+    qb.push(" FROM phpyun_resume_expect WHERE defaults = 1 AND uid IN (");
+    let mut first = true;
+    for id in uids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    let row = qb.build().fetch_one(pool).await?;
+    use sqlx::Row;
+    let mut out = Vec::with_capacity(buckets.len());
+    for i in 0..buckets.len() {
+        let n: i64 = row.try_get(i).unwrap_or(0);
+        out.push(ncount(n));
+    }
+    Ok(out)
+}
+
 pub async fn group_expect_edu_by_ids(
     pool: &MySqlPool,
     eids: &[u64],
@@ -626,6 +668,47 @@ pub async fn count_expect_salary_by_ids(
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(ncount(n))
+}
+
+pub async fn count_expect_salary_buckets_by_ids(
+    pool: &MySqlPool,
+    eids: &[u64],
+    buckets: &[(&str, i32, i32)],
+) -> Result<Vec<u64>, sqlx::Error> {
+    if eids.is_empty() || buckets.is_empty() {
+        return Ok(vec![0; buckets.len()]);
+    }
+    let mut qb = QueryBuilder::new("SELECT ");
+    for (i, (_, min, max)) in buckets.iter().enumerate() {
+        if i > 0 {
+            qb.push(", ");
+        }
+        qb.push("CAST(SUM(CASE WHEN minsalary >= ");
+        qb.push_bind(*min);
+        if *max > 0 {
+            qb.push(" AND minsalary < ");
+            qb.push_bind(*max);
+        }
+        qb.push(" THEN 1 ELSE 0 END) AS SIGNED)");
+    }
+    qb.push(" FROM phpyun_resume_expect WHERE id IN (");
+    let mut first = true;
+    for id in eids {
+        if !first {
+            qb.push(",");
+        }
+        qb.push_bind(*id);
+        first = false;
+    }
+    qb.push(")");
+    let row = qb.build().fetch_one(pool).await?;
+    use sqlx::Row;
+    let mut out = Vec::with_capacity(buckets.len());
+    for i in 0..buckets.len() {
+        let n: i64 = row.try_get(i).unwrap_or(0);
+        out.push(ncount(n));
+    }
+    Ok(out)
 }
 
 pub async fn group_apply_province(

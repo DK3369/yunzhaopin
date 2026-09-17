@@ -5358,6 +5358,7 @@ async fn pages_save(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     let url = if is_type == 1 {
         validate_static_html_url(&raw_url)?
     } else {
+        phpyun_core::validators::ensure_http_or_site_url(&raw_url)?;
         raw_url
     };
     let name = json_str(body, "name");

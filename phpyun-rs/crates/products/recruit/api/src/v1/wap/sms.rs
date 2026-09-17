@@ -2,7 +2,7 @@
 
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{validators, ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
+use phpyun_core::{validators, ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::sms_service::{self, SmsScene};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -44,6 +44,7 @@ pub struct SmsSendForm {
 )]
 pub async fn send(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SmsSendForm>,
 ) -> AppResult<ApiResponse> {
     // 1. Mandatory image-captcha validation (anti SMS-bombing / mobile-enumeration)
@@ -72,6 +73,6 @@ pub async fn send(
         "advice" => SmsScene::Advice,
         _ => return Err(ApiError::param_invalid("scene")),
     };
-    sms_service::send_sms_code(&state, &f.moblie, scene).await?;
+    sms_service::send_sms_code(&state, &f.moblie, scene, &ip).await?;
     Ok(ApiResponse::message("sent"))
 }

@@ -79,6 +79,40 @@ pub async fn find_by_uid_job(
         .await
 }
 
+pub async fn count_today_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    since: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job WHERE uid = ? AND datetime >= ?",
+    )
+    .bind(uid)
+    .bind(since)
+    .fetch_one(pool)
+    .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn list_today_job1_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+    since: i64,
+) -> Result<Vec<i32>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(COALESCE(j.job1, 0) AS SIGNED) \
+         FROM phpyun_userid_job uj \
+         INNER JOIN phpyun_company_job j ON j.id = uj.job_id \
+         WHERE uj.uid = ? AND uj.datetime >= ? \
+         LIMIT 500",
+    )
+    .bind(uid)
+    .bind(since)
+    .fetch_all(pool)
+    .await
+    .map(|rows: Vec<(i32,)>| rows.into_iter().map(|(v,)| v).collect())
+}
+
 pub struct ApplyCreate<'a> {
     pub uid: u64,
     pub job_id: u64,

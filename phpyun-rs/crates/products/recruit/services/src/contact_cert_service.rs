@@ -19,6 +19,7 @@ pub async fn send_mobile_code(
     state: &AppState,
     _user: &AuthenticatedUser,
     new_mobile: &str,
+    ip: &str,
 ) -> AppResult<()> {
     if new_mobile.len() < 6 {
         return Err(ApiError::param_invalid("bad_mobile"));
@@ -26,7 +27,7 @@ pub async fn send_mobile_code(
     if user_repo::exists_mobile(state.db.reader(), new_mobile).await? {
         return Err(ApiError::param_invalid("mobile_taken"));
     }
-    send_sms_code(state, new_mobile, SmsScene::MobileChange).await
+    send_sms_code(state, new_mobile, SmsScene::MobileChange, ip).await
 }
 
 pub async fn verify_and_change_mobile(

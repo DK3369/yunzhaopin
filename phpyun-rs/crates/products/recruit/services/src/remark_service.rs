@@ -22,6 +22,7 @@ pub async fn upsert(
     eid: u64,
     status: i32,
 ) -> AppResult<()> {
+    user.require_employer()?;
     remark_repo::upsert(
         state.db.pool(),
         user.uid,
@@ -42,6 +43,7 @@ pub async fn delete(
     target_uid: u64,
     kind: i32,
 ) -> AppResult<()> {
+    user.require_employer()?;
     remark_repo::delete(state.db.pool(), user.uid, target_uid, kind).await?;
     Ok(())
 }

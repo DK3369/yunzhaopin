@@ -9,6 +9,7 @@ use phpyun_models::company::repo as company_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::recycle_bin::repo as recycle_repo;
 use phpyun_models::resume_share::repo as share_repo;
+use phpyun_models::site_setting::repo as setting_repo;
 
 use crate::rating_info_service;
 
@@ -65,6 +66,24 @@ pub async fn expire_vip(state: &AppState) {
     }
     if ok > 0 {
         tracing::info!(rows = ok, "cron: expired vip packages processed");
+    }
+    let cfg = setting_repo::find_many(state.db.reader(), &["jobunder", "job_under_delay"])
+        .await
+        .unwrap_or_default();
+    let jobunder = cfg.get("jobunder").map(|s| s.trim() == "1").unwrap_or(false);
+    let delay = cfg
+        .get("job_under_delay")
+        .and_then(|s| s.trim().parse::<i64>().ok())
+        .unwrap_or(0);
+    if jobunder && delay > 0 {
+        match job_repo::unshelf_after_vip_delay(state.db.pool(), delay, now).await {
+            Ok(n) if n > 0 => {
+                tracing::info!(rows = n, delay, "cron: delayed unshelf after vip expire");
+                crate::job_service::invalidate_sidebar(state).await;
+            }
+            Ok(_) => {}
+            Err(e) => tracing::warn!(error = %e, "expire_vip delayed unshelf failed"),
+        }
     }
 }
 

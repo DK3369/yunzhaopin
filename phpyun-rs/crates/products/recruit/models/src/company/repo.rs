@@ -691,17 +691,20 @@ pub struct OpenJobBrief {
 pub async fn list_open_job_briefs_by_uids(
     pool: &MySqlPool,
     uids: &[u64],
+    max_per: usize,
 ) -> Result<Vec<OpenJobBrief>, sqlx::Error> {
     if uids.is_empty() {
         return Ok(Vec::new());
     }
     let placeholders = vec!["?"; uids.len()].join(",");
+    let cap = (uids.len().saturating_mul(max_per.max(1)).saturating_mul(4)).min(400);
     let sql = format!(
         "SELECT CAST(id AS UNSIGNED) AS id, CAST(uid AS UNSIGNED) AS uid, COALESCE(name,'') AS name \
          FROM phpyun_company_job \
          WHERE uid IN ({placeholders}) AND state = 1 AND status = 0 AND r_status = 1 \
            AND (edate = 0 OR edate > UNIX_TIMESTAMP()) \
-         ORDER BY lastupdate DESC, id DESC"
+         ORDER BY lastupdate DESC, id DESC \
+         LIMIT {cap}"
     );
     let mut q = sqlx::query_as::<_, OpenJobBrief>(&sql);
     for uid in uids {

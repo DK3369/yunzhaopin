@@ -459,9 +459,12 @@ pub async fn login_or_register_with_email_code(
 ) -> AppResult<(LoginResult, bool)> {
     use phpyun_core::verify::{self, VerifyKind};
 
+    rate_limit::check_login_fail_ip(&state.redis, ctx.ip).await?;
+
     let email = email.trim().to_ascii_lowercase();
     if !verify::verify(&state.redis, VerifyKind::EmailLogin, &email, code).await? {
         auth_event("login_fail", Some("bad_email_code"));
+        rate_limit::record_login_fail_ip(&state.redis, ctx.ip).await;
         return Err(ApiError::param_invalid("email_code"));
     }
 

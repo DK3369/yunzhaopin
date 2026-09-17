@@ -424,12 +424,12 @@ async fn talent_for_uids(state: &AppState, uids: &[u64]) -> AppResult<TalentDims
     );
     let exp = map_class(state, exp?, false).await?;
     let edu = map_class(state, edu?, false).await?;
+    let counts = repo::count_expect_salary_buckets(db, uids, &SALARY).await?;
     let mut salary = Vec::new();
-    for (name, min, max) in SALARY {
-        let n = repo::count_expect_salary(db, uids, min, max).await?;
+    for ((name, _, _), n) in SALARY.iter().zip(counts) {
         if n > 0 {
             salary.push(KvNum {
-                name: name.into(),
+                name: (*name).into(),
                 value: n,
             });
         }
@@ -1003,12 +1003,12 @@ pub async fn tongji_pie(
         }
         3 => {
             let eids = repo::apply_eids(db, uid, start, end, jid).await?;
+            let counts = repo::count_expect_salary_buckets_by_ids(db, &eids, &SALARY).await?;
             let mut out = Vec::new();
-            for (name, min, max) in SALARY {
-                let n = repo::count_expect_salary_by_ids(db, &eids, min, max).await?;
+            for ((name, _, _), n) in SALARY.iter().zip(counts) {
                 if n > 0 {
                     out.push(PieSlice {
-                        fields: name.into(),
+                        fields: (*name).into(),
                         num: n,
                     });
                 }

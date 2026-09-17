@@ -189,7 +189,12 @@ pub async fn fill_job_nums(state: &AppState, list: &mut [CompanySummary]) {
 pub async fn fill_open_jobs(state: &AppState, list: &mut [CompanySummary], max_per: usize) {
     let uids: Vec<u64> = list.iter().map(|c| c.uid).collect();
     let Ok(rows) =
-        phpyun_models::company::repo::list_open_job_briefs_by_uids(state.db.reader(), &uids).await
+        phpyun_models::company::repo::list_open_job_briefs_by_uids(
+            state.db.reader(),
+            &uids,
+            max_per,
+        )
+        .await
     else {
         return;
     };

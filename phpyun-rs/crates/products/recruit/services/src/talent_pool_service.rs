@@ -30,6 +30,13 @@ pub async fn add(
     user.require_employer()
         .map_err(|_| ApiError::business("company_not_verified"))?;
 
+    let expect = phpyun_models::resume::expect::find_by_id(state.db.reader(), eid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("eid"))?;
+    if expect.uid != seeker_uid {
+        return Err(ApiError::param_invalid("eid"));
+    }
+
     // Deduplicate: the same company cannot add the same resume twice
     if let Some(existing) = tp_repo::find_by_com_and_eid(state.db.reader(), user.uid, eid).await? {
         return Ok(existing.id);
@@ -50,6 +57,25 @@ pub async fn add(
         AuditEvent::new("talent_pool.add", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("resume:{eid}"))
             .meta(&serde_json::json!({ "seeker_uid": seeker_uid })),
+    )
+    .await;
+
+    let com_name = phpyun_models::company::repo::find_by_uid(state.db.reader(), user.uid)
+        .await
+        .ok()
+        .flatten()
+        .and_then(|c| c.name)
+        .unwrap_or_default();
+    let content = format!(
+        "企业<a href=\"comtpl,{}\"> {}</a> 收藏您的简历",
+        user.uid, com_name
+    );
+    let _ = phpyun_models::message::repo::insert_simple(
+        state.db.pool(),
+        seeker_uid,
+        1,
+        &content,
+        clock::now_ts(),
     )
     .await;
 

@@ -194,6 +194,15 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
     if pwd_md5.is_empty() {
         return Err(ApiError::param_invalid("password_required"));
     }
+    phpyun_core::rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:once:ip:{}", input.login_ip),
+        phpyun_core::rate_limit::LimitRule {
+            max: 5,
+            window: std::time::Duration::from_secs(3600),
+        },
+    )
+    .await?;
     if input.oncepricegear <= 0 {
         return Err(ApiError::param_invalid("oncepricegear"));
     }

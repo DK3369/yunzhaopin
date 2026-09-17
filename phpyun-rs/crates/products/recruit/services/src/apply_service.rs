@@ -15,7 +15,6 @@ use phpyun_models::message::repo as message_repo;
 use phpyun_models::resume::expect as expect_repo;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume_download::repo as download_repo;
-use phpyun_models::site_setting::repo as setting_repo;
 use std::collections::HashMap;
 
 // ==================== Jobseeker submission ====================
@@ -73,6 +72,127 @@ fn gate_or_mark(strict: bool, key: &'static str, is_browse: &mut i32) -> AppResu
     }
 }
 
+async fn ensure_daily_apply_caps(state: &AppState, uid: u64) -> AppResult<()> {
+    let cfg = config_lookup(state).await;
+    let today = clock::start_of_today();
+    if cfg_i32(&cfg, "warning_sendresume_type") == 2 {
+        let cap = cfg_i32(&cfg, "warning_sendresume");
+        if cap > 0 {
+            let n = apply_repo::count_today_by_uid(state.db.reader(), uid, today).await?;
+            if n >= u64::try_from(cap).unwrap_or(u64::MAX) {
+                return Err(ApiError::business("common_00533"));
+            }
+        }
+    }
+    if cfg_i32(&cfg, "warning_sqjob_type") == 2 {
+        let cap = cfg_i32(&cfg, "warning_sqjob");
+        if cap > 0 {
+            let job1s = apply_repo::list_today_job1_by_uid(state.db.reader(), uid, today).await?;
+            let distinct = job1s.into_iter().filter(|v| *v > 0).collect::<std::collections::HashSet<_>>();
+            if distinct.len() > usize::try_from(cap).unwrap_or(usize::MAX) {
+                return Err(ApiError::business("common_00431"));
+            }
+        }
+    }
+    Ok(())
+}
+
+async fn cfg_on(state: &AppState, key: &str) -> bool {
+    crate::site_gate_service::config_str(state, key)
+        .await
+        .trim()
+        == "1"
+}
+
+async fn config_lookup(state: &AppState) -> std::collections::HashMap<String, String> {
+    crate::site_gate_service::config_map(state)
+        .await
+        .map(|m| (*m).clone())
+        .unwrap_or_default()
+}
+
+async fn warn_mail(state: &AppState, to: &str, subject: &str, body: &str) {
+    let to = to.trim();
+    if to.is_empty() {
+        return;
+    }
+    if let Err(e) = crate::mail_service::send_text(state, to, subject, body).await {
+        tracing::warn!(error = %e, to, "apply notify mail failed");
+    }
+}
+
+async fn resolve_employer_apply_email(
+    state: &AppState,
+    job: &phpyun_models::job::entity::Job,
+) -> Option<String> {
+    let use_link = job.is_link == 2 || (job.is_link == 3 && job.link_id > 0);
+    if use_link {
+        let lid = u64::try_from(job.link_id).unwrap_or(0);
+        if lid > 0 {
+            if let Ok(Some(addr)) =
+                phpyun_models::company_address::repo::find_by_id(state.db.reader(), lid, job.uid)
+                    .await
+            {
+                if let Some(e) = addr.email.filter(|s| !s.trim().is_empty()) {
+                    return Some(e);
+                }
+            }
+        }
+        if job.is_link == 3 {
+            return None;
+        }
+    }
+    phpyun_models::company::repo::find_by_uid(state.db.reader(), job.uid)
+        .await
+        .ok()
+        .flatten()
+        .and_then(|c| c.linkmail.filter(|s| !s.trim().is_empty()))
+}
+
+async fn notify_employer_apply(
+    state: &AppState,
+    job: &phpyun_models::job::entity::Job,
+    _seeker_uid: u64,
+    apply_id: u64,
+    is_browse: i32,
+) {
+    if is_browse == 4 {
+        return;
+    }
+    if job.is_message == 1 {
+        let body = format!("{} 收到新简历投递", job.name);
+        let _ = message_repo::create(
+            state.db.pool(),
+            message_repo::MessageCreate {
+                uid: job.uid,
+                recipient_usertype: 2,
+                title: "sqzw",
+                body: Some(&body),
+                category: "apply",
+                ref_kind: 0,
+                ref_id: apply_id,
+            },
+            clock::now_ts(),
+        )
+        .await;
+    }
+    if job.is_email != 1 {
+        return;
+    }
+    if !(cfg_on(state, "sy_email_set").await && cfg_on(state, "sy_email_sqzw").await) {
+        return;
+    }
+    let Some(email) = resolve_employer_apply_email(state, job).await else {
+        return;
+    };
+    let subject = format!("收到新简历投递：{}", job.name);
+    let body = format!(
+        "求职者向职位「{}」投递了简历，请登录后台查看。",
+        job.name
+    );
+    warn_mail(state, &email, &subject, &body).await;
+}
+
 pub async fn apply_to_job(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -108,6 +228,8 @@ pub async fn apply_to_job(
         return Err(ApiError::business("apply_duplicate"));
     }
 
+    ensure_daily_apply_caps(state, user.uid).await?;
+
     let source_url = scrape_repo::find_url_by_job_id(state.db.reader(), job_id)
         .await?
         .unwrap_or_default();
@@ -134,12 +256,7 @@ pub async fn apply_to_job(
         return Err(ApiError::business("common_00675"));
     }
 
-    let cfg = setting_repo::find_many(
-        state.db.reader(),
-        &["user_sqintegrity", "sy_shresume_applyjob", "sqjob_req"],
-    )
-    .await
-    .unwrap_or_default();
+    let cfg = config_lookup(state).await;
     let need_integrity = cfg_i32(&cfg, "user_sqintegrity");
     if need_integrity > 0 && expect.integrity < need_integrity {
         return Err(ApiError::business("common_01148"));
@@ -228,6 +345,8 @@ pub async fn apply_to_job(
         )
         .await;
 
+    notify_employer_apply(state, &job, user.uid, id, is_browse).await;
+
     Ok(ApplyResult {
         id,
         job_id,
@@ -296,6 +415,7 @@ async fn apply_scrape_job(
             })),
     )
     .await;
+    notify_employer_apply(state, job, user.uid, id, 1).await;
     Ok(ApplyResult {
         id,
         job_id: job.id,
@@ -628,21 +748,28 @@ pub async fn set_browse_state(
     if apply.job_id > 0 {
         let _ = job_repo::touch_operatime(state.db.pool(), apply.job_id, now).await;
     }
-    if new_state == 4 {
-        let _ = message_repo::create(
-            state.db.pool(),
-            message_repo::MessageCreate {
-                uid: apply.uid,
-                recipient_usertype: 1,
-                title: "sqzwhf",
-                body: Some("sqzwhf"),
-                category: "apply",
-                ref_kind: 0,
-                ref_id: apply_id,
-            },
-            now,
-        )
-        .await;
+    let body = format!("投递状态已更新：{}", new_state);
+    let _ = message_repo::create(
+        state.db.pool(),
+        message_repo::MessageCreate {
+            uid: apply.uid,
+            recipient_usertype: 1,
+            title: "sqzwhf",
+            body: Some(&body),
+            category: "apply",
+            ref_kind: 0,
+            ref_id: apply_id,
+        },
+        now,
+    )
+    .await;
+    if cfg_on(state, "sy_email_set").await && cfg_on(state, "sy_email_sqzwhf").await {
+        if let Ok(Some(r)) = resume_repo::find_by_uid(state.db.reader(), apply.uid).await {
+            if let Some(email) = r.email.filter(|s| !s.trim().is_empty()) {
+                let subject = "投递状态已更新";
+                warn_mail(state, &email, subject, &body).await;
+            }
+        }
     }
     let _ = audit::emit(
         state,

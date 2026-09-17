@@ -299,10 +299,14 @@ pub async fn employer_reply(
 
 /// Soft-hide the message — only the original author or job owner is allowed
 /// to call this (enforced in the service layer).
-pub async fn soft_hide(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("UPDATE phpyun_msg SET del_status = 1 WHERE id = ?")
-        .bind(id)
-        .execute(pool)
-        .await?;
+pub async fn soft_hide(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_msg SET del_status = 1 WHERE id = ? AND (uid = ? OR job_uid = ?)",
+    )
+    .bind(id)
+    .bind(uid)
+    .bind(uid)
+    .execute(pool)
+    .await?;
     Ok(res.rows_affected())
 }

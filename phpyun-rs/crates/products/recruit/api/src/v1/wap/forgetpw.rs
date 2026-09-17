@@ -4,7 +4,7 @@ use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
 use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{
-    validators, ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson,
+    dto::OkResp, validators, ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson,
 };
 use phpyun_services::password_reset_service;
 use serde::Deserialize;
@@ -48,6 +48,7 @@ pub struct SendSmsForm {
 )]
 pub async fn send_sms(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SendSmsForm>,
 ) -> AppResult<ApiResponse> {
     // Mandatory image captcha
@@ -63,7 +64,7 @@ pub async fn send_sms(
         return Err(ApiError::captcha());
     }
 
-    password_reset_service::send_sms_code(&state, &f.moblie).await?;
+    password_reset_service::send_sms_code(&state, &f.moblie, &ip).await?;
     Ok(ApiResponse::message("sent"))
 }
 
@@ -199,13 +200,6 @@ pub struct AppealForm {
     pub linkemail: String,
 }
 
-#[derive(Debug, serde::Serialize, ToSchema)]
-pub struct AppealResponse {
-    /// Submitted ticket id (the matched user's uid). Admin reviews via the admin
-    /// console; client should display "appeal submitted" and stop polling.
-    pub ticket_uid: u64,
-}
-
 /// Submit an account appeal — counterpart of PHP `forgetpw/index::checklink_action`.
 /// Used as a last resort when both SMS and email channels are unavailable.
 #[utoipa::path(
@@ -214,16 +208,16 @@ pub struct AppealResponse {
     tag = "auth",
     request_body = AppealForm,
     responses(
-        (status = 200, description = "Submitted", body = AppealResponse),
-        (status = 400, description = "Validation failed / account not found"),
+        (status = 200, description = "Submitted", body = OkResp),
+        (status = 400, description = "Validation failed"),
     )
 )]
 pub async fn submit_appeal(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AppealForm>,
-) -> AppResult<ApiResponse<AppealResponse>> {
-    let uid = password_reset_service::submit_appeal(
+) -> AppResult<ApiResponse<OkResp>> {
+    password_reset_service::submit_appeal(
         &state,
         password_reset_service::AppealInput {
             account: &f.account,
@@ -234,5 +228,5 @@ pub async fn submit_appeal(
         &ip,
     )
     .await?;
-    Ok(ApiResponse::data(AppealResponse { ticket_uid: uid }))
+    Ok(ApiResponse::data(OkResp { ok: true }))
 }

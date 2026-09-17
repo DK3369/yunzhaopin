@@ -4,9 +4,10 @@
 //! Duplicate protection: `phpyun_member.claim==1` (and `source==6` eligibility).
 
 use phpyun_auth::argon2_hash_async;
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState};
+use phpyun_core::{audit, clock, rate_limit, ApiError, AppResult, AppState};
 use phpyun_models::company_cert::repo as cert_repo;
 use phpyun_models::user::repo as user_repo;
+use std::time::Duration;
 use uuid::Uuid;
 
 fn gen_salt() -> String {
@@ -56,6 +57,15 @@ async fn verify_eligibility_and_code(state: &AppState, uid: u64, code: &str) -> 
 }
 
 pub async fn claim(state: &AppState, input: ClaimInput<'_>) -> AppResult<()> {
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:claim:uid:{}", input.uid),
+        rate_limit::LimitRule {
+            max: 10,
+            window: Duration::from_secs(3600),
+        },
+    )
+    .await?;
     verify_eligibility_and_code(state, input.uid, input.code).await?;
 
     let db = state.db.pool();

@@ -160,17 +160,17 @@ pub struct CreateJobInput<'a> {
 }
 
 async fn setting_on(state: &AppState, key: &str) -> bool {
-    match setting_repo::find(state.db.reader(), key).await {
-        Ok(Some(row)) => row.value.trim() == "1",
-        _ => false,
-    }
+    crate::site_gate_service::config_str(state, key)
+        .await
+        .trim()
+        == "1"
 }
 
 async fn setting_raw(state: &AppState, key: &str) -> String {
-    match setting_repo::find(state.db.reader(), key).await {
-        Ok(Some(row)) => row.value.trim().to_string(),
-        _ => String::new(),
-    }
+    crate::site_gate_service::config_str(state, key)
+        .await
+        .trim()
+        .to_string()
 }
 
 async fn setting_i32(state: &AppState, key: &str, default: i32) -> i32 {
@@ -1021,6 +1021,7 @@ async fn consume_refresh_quota(
         return Ok(false);
     }
     let mut remain_free = free_left;
+    let mut logs = Vec::with_capacity(job_ids.len());
     for id in job_ids.iter().take(n.max(0) as usize) {
         let free = if remain_free > 0 {
             remain_free -= 1;
@@ -1028,9 +1029,9 @@ async fn consume_refresh_quota(
         } else {
             2
         };
-        let _ = job_repo::insert_refresh_log(state.db.pool(), uid, *id, now, free, i32::from(free == 1))
-            .await;
+        logs.push((*id, free, i32::from(free == 1)));
     }
+    let _ = job_repo::insert_refresh_logs(state.db.pool(), uid, now, &logs).await;
     Ok(true)
 }
 
@@ -1159,10 +1160,7 @@ pub async fn batch_refresh(
         return Err(ApiError::business("job_refresh_quota"));
     }
     let now = clock::now_ts();
-    let mut total: u64 = 0;
-    for id in ids {
-        total += job_repo::refresh(state.db.pool(), *id, user.uid, now).await?;
-    }
+    let total = job_repo::refresh_ids(state.db.pool(), ids, user.uid, now).await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("job.batch_refresh", Actor::uid(user.uid).with_ip(client_ip))
@@ -1190,10 +1188,7 @@ pub async fn batch_close(
             affected: 0,
         });
     }
-    let mut total: u64 = 0;
-    for id in ids {
-        total += job_repo::set_status(state.db.pool(), *id, user.uid, 1).await?;
-    }
+    let total = job_repo::set_status_ids(state.db.pool(), ids, user.uid, 1).await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("job.batch_close", Actor::uid(user.uid).with_ip(client_ip))
@@ -1221,10 +1216,7 @@ pub async fn batch_delete(
             affected: 0,
         });
     }
-    let mut total: u64 = 0;
-    for id in ids {
-        total += job_repo::delete(state.db.pool(), *id, user.uid).await?;
-    }
+    let total = job_repo::delete_ids(state.db.pool(), ids, user.uid).await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("job.batch_delete", Actor::uid(user.uid).with_ip(client_ip))

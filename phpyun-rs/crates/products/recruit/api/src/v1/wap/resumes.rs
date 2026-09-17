@@ -1001,7 +1001,7 @@ async fn resume_m_status(
 pub async fn resume_detail(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    headers: HeaderMap,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<ResumeDetail>> {
     phpyun_services::site_gate_service::ensure_public_detail_rate(&state, user.uid).await?;
@@ -1019,13 +1019,7 @@ pub async fn resume_detail(
         } else {
             0
         };
-        resume_service::browse_resume_async(
-            &state,
-            &user,
-            uid,
-            eid,
-            crate::v1::wap::client_ip(&headers),
-        );
+        resume_service::browse_resume_async(&state, &user, uid, eid, ip);
     }
     let m_status = resume_m_status(&state, Some(&user), uid).await;
     let mut unlocked = m_status == 1;

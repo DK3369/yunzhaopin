@@ -493,6 +493,23 @@ pub async fn mock_paid(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<MockPaidBody>,
+) -> axum::response::Response {
+    use axum::http::StatusCode;
+    use axum::response::IntoResponse;
+    if !(state.config.dev_tokens && state.config.env.is_dev_or_test()) {
+        return StatusCode::NOT_FOUND.into_response();
+    }
+    match mock_paid_inner(state, user, b).await {
+        Ok(body) => body.into_response(),
+        Err(e) => e.into_response(),
+    }
+}
+
+#[cfg(debug_assertions)]
+async fn mock_paid_inner(
+    state: AppState,
+    user: AuthenticatedUser,
+    b: MockPaidBody,
 ) -> AppResult<ApiResponse<json::Value>> {
     let order_no = b.order_no;
     phpyun_core::validators::ensure_path_token(&order_no)?;

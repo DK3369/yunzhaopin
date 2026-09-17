@@ -262,8 +262,53 @@ pub async fn handle_alipay(
         .get("trade_no")
         .map(String::as_str)
         .unwrap_or(order_no);
-    settle_paid(state, order_no, tx).await?;
+    let paid_cents = yuan_to_cents(params.get("total_fee").map(String::as_str).unwrap_or(""))
+        .ok_or_else(|| ApiError::param_invalid("total_fee"))?;
+    settle_paid_checked(state, order_no, tx, paid_cents).await?;
     Ok("success")
+}
+
+fn yuan_to_cents(s: &str) -> Option<i32> {
+    let v: f64 = s.trim().parse().ok()?;
+    if !v.is_finite() || v < 0.0 {
+        return None;
+    }
+    let cents = (v * 100.0).round();
+    if cents > f64::from(i32::MAX) {
+        return None;
+    }
+    Some(cents as i32)
+}
+
+fn fen_to_cents(s: &str) -> Option<i32> {
+    s.trim().parse::<i32>().ok().filter(|n| *n >= 0)
+}
+
+/// Look up the order price in cents from `phpyun_company_order`.
+pub async fn expected_amount_cents(state: &AppState, order_no: &str) -> AppResult<i32> {
+    let o = vip_repo::find_any_order_by_no(state.db.reader(), order_no)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
+    Ok(o.amount_cents)
+}
+
+pub async fn settle_paid_checked(
+    state: &AppState,
+    order_no: &str,
+    pay_tx_id: &str,
+    paid_cents: i32,
+) -> AppResult<()> {
+    let expected = expected_amount_cents(state, order_no).await?;
+    if expected != paid_cents {
+        tracing::warn!(
+            order_no,
+            expected,
+            paid_cents,
+            "payment amount mismatch; refuse settle"
+        );
+        return Err(ApiError::param_invalid("amount_mismatch"));
+    }
+    settle_paid(state, order_no, pay_tx_id).await
 }
 
 /// Mark VIP or once-job order paid after the gateway signature has been verified.
@@ -317,6 +362,10 @@ pub async fn handle_wechat_pay(state: &AppState, xml: &str) -> AppResult<&'stati
     if !verify_wechat_pay_xml(xml, &key) {
         return Err(ApiError::unauth());
     }
+    let return_code = xml_tag(xml, "return_code").unwrap_or_default();
+    if return_code != "SUCCESS" {
+        return Ok("success");
+    }
     let result = xml_tag(xml, "result_code").unwrap_or_default();
     if result != "SUCCESS" {
         return Ok("success");
@@ -325,7 +374,9 @@ pub async fn handle_wechat_pay(state: &AppState, xml: &str) -> AppResult<&'stati
         .filter(|s| !s.is_empty())
         .ok_or_else(|| ApiError::param_invalid("out_trade_no"))?;
     let tx = xml_tag(xml, "transaction_id").unwrap_or_else(|| order_no.clone());
-    settle_paid(state, &order_no, &tx).await?;
+    let paid_cents = fen_to_cents(&xml_tag(xml, "total_fee").unwrap_or_default())
+        .ok_or_else(|| ApiError::param_invalid("total_fee"))?;
+    settle_paid_checked(state, &order_no, &tx, paid_cents).await?;
     Ok("success")
 }
 
@@ -346,6 +397,15 @@ mod tests {
         p.insert("sign".into(), sig.clone());
         assert!(verify_alipay_md5(&p, "secret"));
         assert!(!verify_alipay_md5(&p, "other"));
+    }
+
+    #[test]
+    fn yuan_and_fen_to_cents() {
+        assert_eq!(yuan_to_cents("1.00"), Some(100));
+        assert_eq!(yuan_to_cents("19.99"), Some(1999));
+        assert_eq!(yuan_to_cents(""), None);
+        assert_eq!(fen_to_cents("1999"), Some(1999));
+        assert_eq!(fen_to_cents("-1"), None);
     }
 
     #[test]

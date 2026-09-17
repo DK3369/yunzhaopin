@@ -27,9 +27,9 @@ const EMAIL_RESET_TTL_SECS: u64 = 600; // 10 min — emails take longer than SMS
 /// **Anti-account-enumeration**: regardless of whether the mobile number is registered, the
 /// external response is identical. Unregistered numbers silently no-op — no SMS is sent and no
 /// code is stored. This prevents attackers from sweeping the user base via differing responses.
-pub async fn send_sms_code(state: &AppState, mobile: &str) -> AppResult<()> {
+pub async fn send_sms_code(state: &AppState, mobile: &str, ip: &str) -> AppResult<()> {
     // Rate limit: 1/minute + 5/hour (always run first, otherwise "rate limited" leaks existence)
-    rate_limit::check_sms_rate(&state.redis, mobile).await?;
+    rate_limit::check_sms_rate(&state.redis, mobile, ip).await?;
 
     // Mobile not registered -> succeed silently (UI still shows "sent"; no real SMS leaves)
     if user_repo::find_by_mobile(state.db.reader(), mobile)
@@ -248,7 +248,16 @@ pub async fn submit_appeal(
     state: &AppState,
     input: AppealInput<'_>,
     client_ip: &str,
-) -> AppResult<u64> {
+) -> AppResult<()> {
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:appeal:ip:{client_ip}"),
+        rate_limit::LimitRule {
+            max: 5,
+            window: Duration::from_secs(3600),
+        },
+    )
+    .await?;
     let acc = input.account.trim();
     if acc.is_empty() {
         return Err(ApiError::param_invalid("account_empty"));
@@ -261,10 +270,10 @@ pub async fn submit_appeal(
     }
 
     let reader = state.db.reader();
-    // Try username → email → mobile (PHPYun matches only username; we relax this).
-    let uid = phpyun_models::user::repo::uid_by_account(reader, acc)
-        .await?
-        .ok_or_else(|| ApiError::param_invalid("account_not_found"))?;
+    // Try username → email → mobile. Unknown account still returns ok (no existence leak).
+    let Some(uid) = phpyun_models::user::repo::uid_by_account(reader, acc).await? else {
+        return Ok(());
+    };
 
     // PHP packs three contact fields into one column with a `-` separator.
     let shensu = format!(
@@ -286,10 +295,10 @@ pub async fn submit_appeal(
     auth_event("password_appeal_submitted", None);
     let _ = audit::emit(
         state,
-        AuditEvent::new("user.password_appeal", Actor::uid(uid).with_ip(client_ip))
+        AuditEvent::new("user.password_appeal",         Actor::uid(uid).with_ip(client_ip))
             .target(format!("uid:{uid}")),
     )
     .await;
 
-    Ok(uid)
+    Ok(())
 }

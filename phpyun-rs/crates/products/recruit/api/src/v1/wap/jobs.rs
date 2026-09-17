@@ -460,7 +460,6 @@ pub async fn job_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
-    headers: HeaderMap,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
     if let Some(u) = user.as_ref() {
@@ -469,13 +468,7 @@ pub async fn job_detail(
         phpyun_services::site_gate_service::ensure_public_list_rate(&state, &ip).await?;
     }
     Ok(ApiResponse::data(
-        build_job_detail_value(
-            &state,
-            user.as_ref(),
-            b.id,
-            &crate::v1::wap::client_ip(&headers),
-        )
-        .await?,
+        build_job_detail_value(&state, user.as_ref(), b.id, &ip).await?,
     ))
 }
 
@@ -504,14 +497,13 @@ pub struct JobDetailFull {
 pub async fn job_detail_full(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    headers: HeaderMap,
+    ClientIp(ip): ClientIp,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<JobDetailFull>> {
     if let Some(u) = user.as_ref() {
         phpyun_services::site_gate_service::ensure_public_detail_rate(&state, u.uid).await?;
     }
     let id = b.id;
-    let ip = crate::v1::wap::client_ip(&headers);
     let detail_fut = build_job_detail_value(&state, user.as_ref(), id, &ip);
     let similar_fut = job_service::list_similar(&state, id, 8);
     let same_fut = job_service::list_same_company(&state, id, 6);

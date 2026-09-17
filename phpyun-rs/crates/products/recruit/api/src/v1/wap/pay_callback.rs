@@ -27,10 +27,15 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CallbackForm {
-    #[validate(length(min = 1, max = 64))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub order_no: String,
     #[validate(length(min = 1, max = 128))]
     pub pay_tx_id: String,
+    #[validate(range(min = 0))]
+    pub amount_cents: i32,
 }
 
 /// Gateway callback: authenticate via the shared secret in the `X-Pay-Token` header -> mark-paid
@@ -71,8 +76,9 @@ pub async fn callback(
         return Err(ApiError::unauth());
     }
 
-    // 3. Mark as paid
-    payment_notify_service::settle_paid(&state, &f.order_no, &f.pay_tx_id).await?;
+    // 3. Mark as paid (amount must match the stored order price)
+    payment_notify_service::settle_paid_checked(&state, &f.order_no, &f.pay_tx_id, f.amount_cents)
+        .await?;
     Ok(ApiResponse::data(OkResp { ok: true }))
 }
 

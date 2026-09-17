@@ -61,7 +61,7 @@ impl SmsScene {
     }
 }
 
-pub async fn send_sms_code(state: &AppState, mobile: &str, scene: SmsScene) -> AppResult<()> {
+pub async fn send_sms_code(state: &AppState, mobile: &str, scene: SmsScene, ip: &str) -> AppResult<()> {
     // PHP `wap/login::sendmsg_action`: `sy_reg_type == 2` and unknown mobile → register first.
     if scene == SmsScene::Login && crate::site_gate_service::setting_i32(state, "sy_reg_type").await == 2 {
         if !user_repo::exists_mobile(state.db.reader(), mobile).await? {
@@ -70,7 +70,7 @@ pub async fn send_sms_code(state: &AppState, mobile: &str, scene: SmsScene) -> A
     }
 
     // 1. Rate limit (1 per minute + 5 per hour)
-    rate_limit::check_sms_rate(&state.redis, mobile).await?;
+    rate_limit::check_sms_rate(&state.redis, mobile, ip).await?;
 
     // 2. Generate a 6-digit code
     let code = verify::gen_digit_code(6);

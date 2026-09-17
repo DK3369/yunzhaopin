@@ -18,22 +18,33 @@
 
 ## IP 与 CORS
 
-- Governor 与 `ClientIp` 同一套：peer 可信才读 `X-Forwarded-For` 首跳（`resolve_client_ip`）。直连 `:3003` 伪造 XFF 无效。
+- Governor 与 `ClientIp` 同一套：peer 可信才读 `X-Forwarded-For` 首跳（`resolve_client_ip`）。`wap::site_gate_layer` 也从 `ConnectInfo` 走这套，直连 `:3003` 伪造 XFF 绕不过 `sy_bannedip`。
 - CORS `allow_headers`：`Authorization, Content-Type, Accept-Language, X-Request-Id`。
 
 ## 登录
 
-- IP 失败桶 `rl:login:ip:{ip}`（约 20 次 / 15 分）。同一账号连续失败 ≥3 次强制图形验证码（不看后台 `code_web`）。
+- IP 失败桶 `rl:login:ip:{ip}`（约 20 次 / 15 分）。同一账号连续失败 ≥3 次强制图形验证码（不看后台 `code_web`）。邮箱验证码登录失败也走该 IP 桶。
 - OTP 用 `Uuid::new_v4()`。
 - 管理员登录失败锁（约 5 次 / 15 分）**只在 `APP_ENV=test` 跳过**；现网 `APP_ENV=dev` 也锁。
+- 短信：号段 1/分 + 5/时，另加 `rl:sms:ip:{ip}` 10/时。once 创建 5/时/IP；问答写 20/时/uid；认领 10/时/uid；找回密码申诉 5/时/IP，响应不回 `ticket_uid`、不暴露账号是否存在。
+
+## 联系方式与角色
+
+- 兼职列表 `linktel` 脱敏；详情 `com_phone` / `com_mail` 与 `resolve_part_link` 的 `show`（`link_tip==0`）同开同关。
+- 备注 upsert/delete、人才库 add（`expect.uid == seeker_uid`）、私信只允许求职者↔雇主。`job_msg` 软删 SQL 带 `uid OR job_uid`。后台非静态单页 `url` 过 `ensure_http_or_site_url`。
 
 ## 调试后门（不要靠 `APP_ENV=prod`）
 
 现网是 debug 二进制 + `EVENTBUS_KIND=memory`，`validate_production_policy` 不允许 `APP_ENV=prod`。公网关掉万能 JWT / 固定邮箱码靠 **`DEV_TOKENS` 默认关**：
 
 - 只有 `APP_ENV=dev|test` **且** `DEV_TOKENS=1` 才 mint `/dev/token`（30 年 uid=1 JWT）和邮箱固定码 `111111`。
+- debug 二进制上的 `POST /v1/mcenter/vip/orders/mock-paid` 同一开关；未开则 **404**。
 - 现网 `.env` **不要**写 `DEV_TOKENS=1`。`GET /dev/token` 因此 404。`/docs` 仍可开。
 - 本机调试再显式 `DEV_TOKENS=1`。
+
+## 支付回调金额
+
+- `settle_paid` 前用 `phpyun_company_order.order_price`（分）比对。支付宝 `total_fee` 按元、微信 `total_fee` 按分；微信还要 `return_code==SUCCESS` 且 `result_code==SUCCESS`。`X-Pay-Token` 回调必填 `amount_cents`。不等则拒，只 warn。
 
 ## LIKE 与上传
 
@@ -45,6 +56,7 @@
 - 出站 HTTP：`Http::get_bytes` / `get_text` 拒绝 loopback / RFC1918 / 链路本地 / 未指定 / 组播，以及 `localhost`、`*.internal`、`metadata.google.internal`；hostname 解析到私网也拒。微信 `mmbiz.qpic.cn`（含子域）才拉图，写入前 `sniff_image`。
 - 上传：图片按魔数（jpeg/png/gif/webp）定扩展名；附件按 `%PDF` / `PK` / `D0CF11E0` 判 pdf/docx/doc，不匹配 400。admin 上传不接受 `application/octet-stream`。
 - datacall 简历列表脱敏（手机 / 邮箱 / 身份证）。投递唯一键 SQL 在 `migrations/sqlx/20260916000001_apply_unique.sql`，**不自动跑**；现网用 Redis `SET NX` 短锁 `apply:{uid}:{job_id}` / `part_apply:{uid}:{id}` 挡竞态。
+- 每日投递：`warning_sendresume_type==2` 计今日条数；`warning_sqjob_type==2` 计今日 `job1` 去重。简历子表写完重算 `integrity`（55+work/edu/skill 10+project 8+training 7）。
 - `OPTIMIZE`/`REPAIR` 拒 `phpyun_admin_user` / `phpyun_member` / `phpyun_user_session`。相册 `kind` 只认 `resume`|`company`，未知参数错误。
 
 ## 下一批（本轮不做）

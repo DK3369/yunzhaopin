@@ -125,8 +125,8 @@ pub async fn record_login_fail_ip(kv: &Kv, ip: &str) {
     .await;
 }
 
-/// Preset: SMS sending — 1 per minute + 5 per hour.
-pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
+/// Preset: SMS sending — 1 per minute + 5 per hour per mobile, 10 per hour per IP.
+pub async fn check_sms_rate(kv: &Kv, mobile: &str, ip: &str) -> Result<(), ApiError> {
     check_and_incr(
         kv,
         &format!("rl:sms:hour:{mobile}"),
@@ -142,6 +142,15 @@ pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
         LimitRule {
             max: 1,
             window: Duration::from_secs(60),
+        },
+    )
+    .await?;
+    check_and_incr(
+        kv,
+        &format!("rl:sms:ip:{ip}"),
+        LimitRule {
+            max: 10,
+            window: Duration::from_secs(3600),
         },
     )
     .await

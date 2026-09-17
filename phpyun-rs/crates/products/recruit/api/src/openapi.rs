@@ -1195,7 +1195,6 @@ impl Modify for DeprecatedIndex {
             v1::wap::forgetpw::SendEmailForm,
             v1::wap::forgetpw::ResetByEmailForm,
             v1::wap::forgetpw::AppealForm,
-            v1::wap::forgetpw::AppealResponse,
             v1::wap::companies::HotCompanyView,
             v1::wap::jobs::JobShareText,
             v1::mcenter::zph::ComStatusView,
