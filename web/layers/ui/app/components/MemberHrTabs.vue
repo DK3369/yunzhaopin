@@ -25,6 +25,7 @@
 const { t } = useI18n()
 const route = useRoute()
 const items = computed(() => [
+  { to: '/com/talent-search', label: t('default_00312') },
   { to: '/com/applications', label: t('member_com_00454') },
   { to: '/com/downloads', label: t('wap_00451') },
   { to: '/com/looks', label: t('member_com_00007') },

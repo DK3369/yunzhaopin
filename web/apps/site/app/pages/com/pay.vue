@@ -405,5 +405,6 @@ useSeoMeta({ title: t('common_01946') })
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
+    <p><NuxtLink to="/com/integral-rules">{{ $t('wap_user_00008') }}</NuxtLink></p>
   </MemberPanel>
 </template>

@@ -22,6 +22,12 @@
 | `/v1/mcenter/profile-views/delete` | `{ ids }`，**转调** `look-resumes/delete`（`phpyun_look_resume`）。列表 `/profile-views` 仍是 `phpyun_rs_views`。 |
 | `/v1/mcenter/once-jobs/paylogs` | `company_order.type=25`，可选 `order_state` 1/2/3；缺省 1+2+3。`/once-jobs/orders` 仍只待付。 |
 | `/v1/mcenter/packs/orders/list` | `type=5`，形状同 `/vip/orders/list`。创建仍是 `/packs/orders`。 |
+| `/v1/mcenter/zph/cancel` | 取消自己的招聘会报名；待审且 `price>0` 退积分，不退 `zph_num`。 |
+| `/v1/mcenter/com-stats/trend\|package\|range\|chart\|talent\|details\|week` | 招聘数据中心。`com_zpdata!=1` → `com_zpdata_closed`。今日五项仍用 `com-dashboard/full.today`。 |
+| `/v1/mcenter/com-tongji/trend\|pie` | 职位趋势折线 / 饼图。 |
+| `/v1/wap/upload/content` | 富文本图片（jpeg/png/webp，2MB）。 |
+| `/v1/mcenter/vip/current` | 加 `zph_num/top_num/urgent_num/rec_num` 与 `caps`。 |
+| `/v1/mcenter/vip/integral-classes` · `/recharge` · `/card` | 求职/招聘都可用；积分按订单 `usertype` 分路。 |
 
 ## 薄别名 / 详情
 

@@ -157,6 +157,8 @@ useSeoMeta({ title: t('wap_user_00008') })
         <ul class="yun_usermember_integral_nav">
           <li><NuxtLink to="/com/member-right"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconmx" />{{ $t('wap_com_00097') }}</NuxtLink></li>
           <li><NuxtLink to="/com/pay"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_icongz" />{{ $t('member_com_00041') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/rewards"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconsc" />{{ $t('wap_user_00170') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/integral-rules"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconmx" />{{ $t('wap_01016') }}</NuxtLink></li>
           <li><NuxtLink to="/com/orders"><i class="yun_usermember_integral_nav_icon yun_usermember_integral_nav_iconsc" />{{ $t('common_02029') }}</NuxtLink></li>
         </ul>
       </div>
@@ -164,6 +166,8 @@ useSeoMeta({ title: t('wap_user_00008') })
         <ul>
           <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('wap_user_00008') }}</a></li>
           <li><NuxtLink to="/com/pay">{{ $t('member_com_00041') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/rewards">{{ $t('wap_user_00170') }}</NuxtLink></li>
+          <li><NuxtLink to="/com/integral-rules">{{ $t('wap_01016') }}</NuxtLink></li>
           <li><NuxtLink to="/com/orders">{{ $t('common_02029') }}</NuxtLink></li>
         </ul>
       </div>

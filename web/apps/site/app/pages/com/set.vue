@@ -13,6 +13,7 @@ const items = computed(() =>
     { to: '/com/gallery', label: t('wap_com_00401') },
     { to: '/com/binding', label: t('member_user_00059') },
     { to: '/com/password', label: t('wap_00817') },
+    { to: '/com/account', label: t('wap_user_00338') },
     { to: '/com/otherservice', label: t('wap_user_00196') },
     { to: '/advice', label: t('wap_user_00203') },
   ].filter((item) => isMemberModuleOn(settings.value, item.to)),
