@@ -15,6 +15,7 @@ pub mod company_content;
 pub mod company_hr;
 pub mod company_skin;
 pub mod company_sub;
+pub mod com_stats;
 pub mod contact_cert;
 pub mod crm_reports;
 pub mod dashboard;
@@ -130,6 +131,7 @@ pub fn router() -> Router<AppState> {
         .merge(sign::routes())
         .merge(specials::routes())
         .merge(dashboard::routes())
+        .merge(com_stats::routes())
         .merge(company_sub::routes())
         .merge(interview_tpl::routes())
         .merge(resume_share::routes())

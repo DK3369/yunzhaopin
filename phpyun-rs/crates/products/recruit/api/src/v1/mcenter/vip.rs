@@ -89,6 +89,18 @@ pub async fn list_packages(
     ))
 }
 
+#[derive(Debug, Clone, Default, Serialize, ToSchema)]
+pub struct VipCaps {
+    pub job_num: i32,
+    pub resume: i32,
+    pub interview: i32,
+    pub breakjob_num: i32,
+    pub top_num: i32,
+    pub urgent_num: i32,
+    pub rec_num: i32,
+    pub zph_num: i32,
+}
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct CurrentVip {
     pub active: bool,
@@ -102,7 +114,12 @@ pub struct CurrentVip {
     pub breakjob_num: i32,
     pub down_resume: i32,
     pub invite_resume: i32,
+    pub zph_num: i32,
+    pub top_num: i32,
+    pub urgent_num: i32,
+    pub rec_num: i32,
     pub integral: i64,
+    pub caps: VipCaps,
 }
 
 /// My current VIP status
@@ -123,6 +140,25 @@ pub async fn get_current(
         .await
         .ok()
         .flatten();
+    let caps = if let Some(s) = &st {
+        phpyun_models::com_stats::repo::find_rating_caps(state.db.reader(), s.rating)
+            .await
+            .ok()
+            .flatten()
+            .map(|c| VipCaps {
+                job_num: c.job_num,
+                resume: c.resume,
+                interview: c.interview,
+                breakjob_num: c.breakjob_num,
+                top_num: c.top_num,
+                urgent_num: c.urgent_num,
+                rec_num: c.rec_num,
+                zph_num: c.zph_num,
+            })
+            .unwrap_or_default()
+    } else {
+        VipCaps::default()
+    };
     let empty = || CurrentVip {
         active: false,
         package_code: None,
@@ -135,7 +171,12 @@ pub async fn get_current(
         breakjob_num: 0,
         down_resume: 0,
         invite_resume: 0,
+        zph_num: 0,
+        top_num: 0,
+        urgent_num: 0,
+        rec_num: 0,
         integral: 0,
+        caps: VipCaps::default(),
     };
     Ok(ApiResponse::data(match (v, st) {
         (Some(v), Some(s)) => CurrentVip {
@@ -150,7 +191,12 @@ pub async fn get_current(
             breakjob_num: s.breakjob_num,
             down_resume: s.down_resume,
             invite_resume: s.invite_resume,
+            zph_num: s.zph_num,
+            top_num: s.top_num,
+            urgent_num: s.urgent_num,
+            rec_num: s.rec_num,
             integral: s.integral.parse().unwrap_or(0),
+            caps,
         },
         (Some(v), None) => CurrentVip {
             active: v.expires_at == 0 || v.expires_at >= now,

@@ -36,6 +36,7 @@ pub fn routes() -> Router<AppState> {
         .route("/upload/company-logo", post(upload_company_logo))
         .route("/upload/resume-photo", post(upload_resume_photo))
         .route("/upload/cert", post(upload_cert))
+        .route("/upload/content", post(upload_content))
         .route("/upload/attachment", post(upload_attachment))
 }
 
@@ -210,6 +211,27 @@ pub async fn upload_cert(
     let ct = image_ct_from_body(&body)?;
     Ok(ApiResponse::data(
         store(&state, user.uid, "certs", ct, body).await?,
+    ))
+}
+
+/// Rich-text image for news / product body (2MB, jpeg/png/webp)
+#[utoipa::path(
+    post,
+    path = "/v1/wap/upload/content",
+    tag = "upload",
+    security(("bearer" = [])),
+    request_body(content = Vec<u8>, content_type = "image/jpeg"),
+    responses((status = 200, description = "ok", body = UploadResult))
+)]
+pub async fn upload_content(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    body: Bytes,
+) -> AppResult<ApiResponse<UploadResult>> {
+    check_size(&body, MAX_PHOTO_BYTES)?;
+    let ct = image_ct_from_body(&body)?;
+    Ok(ApiResponse::data(
+        store(&state, user.uid, "content", ct, body).await?,
     ))
 }
 

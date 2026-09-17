@@ -45,7 +45,16 @@
 /v1/mcenter/com-parts/refresh
 /v1/mcenter/com-parts/status
 /v1/mcenter/com-parts/update
+/v1/mcenter/com-stats/chart
+/v1/mcenter/com-stats/details
+/v1/mcenter/com-stats/package
+/v1/mcenter/com-stats/range
+/v1/mcenter/com-stats/talent
 /v1/mcenter/com-stats/today
+/v1/mcenter/com-stats/trend
+/v1/mcenter/com-stats/week
+/v1/mcenter/com-tongji/pie
+/v1/mcenter/com-tongji/trend
 /v1/mcenter/comments/delete
 /v1/mcenter/company
 /v1/mcenter/company-addresses
@@ -309,6 +318,7 @@
 /v1/mcenter/yqms/detail
 /v1/mcenter/yqms/list
 /v1/mcenter/yqms/reject
+/v1/mcenter/zph/cancel
 /v1/mcenter/zph/com-status
 /v1/mcenter/zph/my-reservation
 /v1/mcenter/zph/reserve
@@ -525,6 +535,7 @@
 /v1/wap/upload/avatar
 /v1/wap/upload/cert
 /v1/wap/upload/company-logo
+/v1/wap/upload/content
 /v1/wap/upload/resume-photo
 /v1/wap/usertype/select
 /v1/wap/wechat/qr

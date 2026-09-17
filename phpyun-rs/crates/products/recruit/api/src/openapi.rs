@@ -226,6 +226,7 @@ impl Modify for DeprecatedIndex {
         v1::wap::upload::upload_company_logo,
         v1::wap::upload::upload_resume_photo,
         v1::wap::upload::upload_cert,
+        v1::wap::upload::upload_content,
         v1::wap::upload::upload_attachment,
         // wap public: jobs
         v1::wap::jobs::list_jobs,
@@ -453,6 +454,7 @@ impl Modify for DeprecatedIndex {
         // mcenter: zph
         v1::mcenter::zph::reserve,
         v1::mcenter::zph::my_reservation,
+        v1::mcenter::zph::cancel,
         v1::mcenter::specials::mine,
         v1::mcenter::specials::delete,
         // wap: integral mall
@@ -746,6 +748,15 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::company_skin::tpl_list,
         v1::mcenter::dashboard::com_counts,
         v1::mcenter::dashboard::com_dashboard_full,
+        v1::mcenter::com_stats::trend,
+        v1::mcenter::com_stats::package,
+        v1::mcenter::com_stats::range,
+        v1::mcenter::com_stats::chart,
+        v1::mcenter::com_stats::talent,
+        v1::mcenter::com_stats::details,
+        v1::mcenter::com_stats::week,
+        v1::mcenter::com_stats::tongji_trend,
+        v1::mcenter::com_stats::tongji_pie,
         v1::mcenter::integral::consumes,
         v1::mcenter::jobs::counts_by_state,
         v1::mcenter::part::com_applies,
