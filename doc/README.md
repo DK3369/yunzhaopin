@@ -6,7 +6,7 @@ Cursor / 改 Rust 时用 [`.cursor/docs/rust/README.md`](../.cursor/docs/rust/RE
 
 | 文件 | 是什么 | 怎么用 |
 |---|---|---|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | **现状**：进程、目录、调用链、契约、硬约束 | 改代码前读 |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | **现状**：进程、目录、调用链、契约、硬约束。Web TCP **`:3001`**（PC/H5 + `/admin`），admin Nitro **unix socket**，Rust **`:3003`** | 改代码前读 |
 | [RUST_DEPENDENCIES.md](./RUST_DEPENDENCIES.md) | Rust 直接依赖 + `Cargo.lock` 完整清单 | 数依赖、减虚胖时对照 |
 | [ADMIN_PHP_TO_NUXT.md](./ADMIN_PHP_TO_NUXT.md) | 后台工作约定（`uploads/` 只读、不造页、无万能 invoke） | 仍有效 |
 | [FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md) | 2026-08 前后端分离 **方案**（T0–T14） | 历史；文内「现状」段落已过时 |

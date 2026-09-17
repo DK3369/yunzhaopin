@@ -55,7 +55,7 @@ OpenAPI 约 45 个操作。Vue 新代码不要再打这些路径（PC/H5 与后�
 | `POST /v1/admin/dashboard/overview`、`/recent-signups` | `POST /v1/admin/dashboard/full` |
 | 10 条 `POST /v1/admin/company-news/*`、`/company-products/*` | `POST /v1/admin/company-contents/{list,status,statist,status-body,delete}`，body `kind=news\|product` |
 | 9 条 `POST /v1/mcenter/resume/{expects,edus,works,projects,skills,languages,trainings,certs,others}/list` | `POST /v1/mcenter/resume/bundle`（单条 create/update 仍走分子资源） |
-| `POST /v1/mcenter/com-stats/today`、`/v1/mcenter/dashboard/year-report` | `POST /v1/mcenter/com-dashboard/full` |
+| `POST /v1/mcenter/com-stats/today`、`/v1/mcenter/dashboard/year-report` | `POST /v1/mcenter/com-dashboard/full`（首页 `today`）。**不要**把 `com-stats/trend\|package\|range\|chart\|talent\|details\|week` 和 `com-tongji/*` 当废弃——招聘数据中心页在用，见 [member-center.md](../features/member-center.md) |
 | `POST /v1/mcenter/broadcasts/unread-count`、`/warnings/unread-count` | `POST /v1/mcenter/messages/unread-summary` |
 | `POST /v1/mcenter/follows`、`/follows/list`、`/follows/exists` | `favorites*`。映射：`target_kind=2(企业)→kind=2`，`target_kind=1(用户)→kind=3`，`target_uid→target_id`。**`followers`、`fans` 不动** |
 | `GET/POST /v1/wap/dict/{educations,experiences,salaries,industries,welfares,reports,job-types,company-natures,company-sizes,marriages,langs,tags,job-categories}` | `/v1/wap/initjobs` 对应字段；`source=user` 用 `*_user` |
@@ -89,6 +89,7 @@ OpenAPI 约 45 个操作。Vue 新代码不要再打这些路径（PC/H5 与后�
 | `/v1/mcenter/fans` vs `followers` | 语义不同：招聘「对我感兴趣」用 `fans`，**不要** `followers`。见 [member-center.md](../features/member-center.md)。 |
 | `sign/status`、`resume/completion`、`jobs/counts`、`applications/state-counts` | 各自页面仍单用，不打即将失效。 |
 | `look-jobs` / `look-resumes` / `my-views` / `profile-views` | **三套表**（`phpyun_look_job` / `phpyun_look_resume` / `phpyun_rs_views`），不要合成一个「浏览记录」接口。 |
+| `com-stats/today` vs `com-stats/trend|package|range|chart|talent|details|week` | `today` 即将失效（首页用 `com-dashboard/full`）。其余 `com-stats/*` 与 `com-tongji/*` 是数据中心页，**不**标即将失效。 |
 | `company-banners` vs `company-tpls` | 表不同；Admin 另有 `/v1/admin/company-banners`。结构未核前不并。 |
 | `nav`、`categories*`、`descriptions`、`hot-searches` | 带 position / kind / class_id / scope 参数，App 可能用非默认档；**不**标即将失效。默认档已进 `initjobs`。 |
 | `regions*`、`site/sub-sites`、`friend-links`、`legal` / `site/pages` / `descriptions/get` | 带参或单页；`friend-links` 已在 `home/full`。不要塞进 `initjobs`。 |

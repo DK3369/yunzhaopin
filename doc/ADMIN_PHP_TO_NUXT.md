@@ -14,7 +14,7 @@
 |---|---|
 | Crate | `phpyun-rs/crates/products/recruit/api-admin`（包名 `phpyun-api-admin`） |
 | URL | 一律 **`/v1/admin/*`** |
-| 登录 | `POST /v1/admin/login` 公开；其余走 `admin_guard`（JWT **`usertype=3`**） |
+| 登录 | `POST /v1/admin/login` 公开；其余走 `admin_guard`（JWT **`usertype=9`**）。校园仍是 `3`，进 `/v1/admin/*` 会 403；旧管理员 token（`usertype=3`）同样 403，需重新登录 |
 | OpenAPI | **`/api-docs/admin/openapi.json`**；`apps/admin` 只吃这份。App 用 `/api-docs/v1/openapi.json`（`/v1/wap` + `/v1/mcenter`） |
 | 装配 | `apps/server` merge `phpyun_api_admin::router`；路径快照 [snapshots/admin_paths.txt](./snapshots/admin_paths.txt) |
 | 业务 | 写在 `phpyun-services`；handler 禁止 sqlx/redis/moka/reqwest |

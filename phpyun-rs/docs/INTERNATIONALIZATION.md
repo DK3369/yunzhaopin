@@ -231,7 +231,7 @@ cargo test -p phpyun-core
 curl -H 'Accept-Language: en-US' \\
   -H 'Content-Type: application/json' \\
   -d '{"kind":"job"}' \\
-  http://127.0.0.1:3000/v1/wap/categories
+  http://127.0.0.1:3003/v1/wap/categories
 ```
 
 至少检查以下情况：

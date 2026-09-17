@@ -1,7 +1,7 @@
 # 招聘系统架构（现状）
 
 > 2026-08-31 · 分支 `feat/frontend-backend-split`  
-> 对照仓库实况，不是改造方案。方案原文见 [FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（文内「没有 main.rs / 没有 package.json / admin 72 条」等已作废）。
+> 对照仓库实况，不是改造方案。端口以本文「完成面」为准：**Web TCP 只有 `:3001`**（PC/H5 + `/admin`），admin Nitro **unix socket**，Rust **`:3003`**。不要再开 `:3002` / `:3004` / `:3005`。方案原文见 [FRONTEND_BACKEND_SPLIT.md](./FRONTEND_BACKEND_SPLIT.md)（文内「没有 main.rs / 没有 package.json / admin 72 条 / admin `:3002`」等已作废）。
 
 PHP 页面已切走。现在跑的是：
 
@@ -37,9 +37,9 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 |---|---|
 | 代码 | `web/apps/admin/`；页面 `app/pages/*.vue`（**121** 个，对齐 PHP `router.js`） |
 | UI / 映射 | `app/admin-php/`；`app/utils/phpMap.ts`；静态 `public/php-admin/` |
-| 进程 | **`:3002`** · `web/apps/admin/.output/server/index.mjs` · `ssr: false` · `baseURL=/admin/` |
-| 公网页面 | `https://job2.ov6.com/admin/`；切站样例 `https://test-jobs.ov6.com/admin/` |
-| 本机 | 直连 `http://127.0.0.1:3002/admin/`（经 nginx 则主机名 + `/admin/`） |
+| 进程 | systemd `test-jobs-phpyun-admin`：**unix socket** `/var/tmp/phpyun-admin.sock`，**不占 TCP**。`ssr: false` · `baseURL=/admin/` |
+| 公网页面 | `https://job1.ov6.com/admin/`；切站样例 `https://test-jobs.ov6.com/admin/`（nginx `/admin/` → **`:3001`**，site 再转 unix socket） |
+| 本机 | `http://127.0.0.1:3001/admin/`。不要绑 `:3002`，不要 start `test-jobs-phpyun-admin-edge` |
 | 浏览器 URL | `/admin/login`、`/admin/index`，以及 121 个 PHP path（如 `/admin/companyjob`、`/admin/resume`） |
 | 调 API | 浏览器 → **`/admin/api/proxy/v1/admin/...`** → Rust **`:3003`** |
 | 登录 | `POST /admin/api/auth/admin-login` → Rust `POST /v1/admin/login` |
@@ -76,20 +76,20 @@ PC / H5 不是两套应用：同一 Nuxt，CSS 用 `min-width:1200px` / `max-wid
 
 ## 1. 运行拓扑
 
-本机 **一份** Rust（`:3003`）+ site `:3001` + admin `:3002`。旧 systemd `:3000` 已 disable。
+本机 **一份** Rust（`:3003`）+ site `:3001`（PC/H5 **和** `/admin`）+ admin Nitro unix socket。旧 systemd `:3000` 已 disable。不要再开 `:3002` / `:3004` / `:3005`。
 
 | 进程 | HTTP | Metrics | 二进制 | MySQL | 谁在用 |
 |---|---|---|---|---|---|
 | systemd `test-jobs-phpyun-rs-3003` | **`:3003`** | **`:9091`** | `phpyun-rs/target/debug/phpyun-rs` | 库 **jobs** | Site / Admin / `/yapi/` / `/callback/` |
-| Nuxt site | **`:3001`** | — | `web/apps/site/.output/server/index.mjs` | 经 `:3003` | 公网页 |
-| Nuxt admin | **`:3002`** | — | `web/apps/admin/.output/server/index.mjs` | 经 `:3003` | `/admin/` |
+| Nuxt site | **`:3001`** | — | `web/apps/site/.output/server/index.mjs` | 经 `:3003` | 公网页 + 把 `/admin` 转到 unix socket |
+| Nuxt admin | **unix** `/var/tmp/phpyun-admin.sock` | — | `web/apps/admin/.output/server/index.mjs` | 经 `:3003` | `/admin/`（经 `:3001`，不占 TCP） |
 
-仓库里的切站样例是 `ops/nginx/zzzz.com.nuxt-cutover.conf`（`server_name test-jobs.ov6.com`）。job1 / job2 等 vhost 同一套三口：
+仓库里的切站样例是 `ops/nginx/zzzz.com.nuxt-cutover.conf`（`server_name test-jobs.ov6.com`）。公网 vhost 同一套两口 TCP：
 
 | location | 上游 |
 |---|---|
 | `/` | `:3001` site |
-| `/admin/` | `:3002` admin |
+| `/admin/` | `:3001` site（再转 admin unix socket；hashed `/admin/_n` 走磁盘） |
 | `/api/` | `:3001`（Site BFF，再转发 Rust） |
 | `/data/upload/` | `uploads/data/upload/` 静态 |
 | `/yapi/` `/v1/` `/v2/` `/health` `/ready` | **`:3003`** |
@@ -100,15 +100,15 @@ flowchart LR
   browser[Browser]
   nginx[Nginx]
   site[Nuxt_site_3001]
-  admin[Nuxt_admin_3002]
+  admin[Admin_unix_socket]
   rust[Rust_3003]
   jobs[(MySQL_jobs)]
 
   browser --> nginx
-  nginx -->|"/ /api"| site
-  nginx -->|"/admin"| admin
+  nginx -->|"/ /api /admin"| site
   nginx -->|"/yapi /callback /v1"| rust
   site -->|"BFF rustApi"| rust
+  site -->|"/admin SPA 与 api"| admin
   admin -->|"BFF /admin/api/proxy"| rust
   rust --> jobs
 ```
@@ -117,12 +117,12 @@ site 的 systemd 里 `NUXT_PUBLIC_SITE_URL=https://job1.ov6.com`。改代码只�
 
 ### 本仓库怎么起 / 怎么重启
 
-日常只调 [`ops/restart.sh`](../ops/restart.sh)。走 systemd（`:3003` / `:3001` / `:3002`），会清占用端口的孤儿 node，**不会**动旧 `:3000`。
+日常只调 [`ops/restart.sh`](../ops/restart.sh)。走 systemd（`:3003` / `:3001` / admin unix socket），会清占用 `:3001` 的孤儿 node，不会动旧 `:3000`，也不会再绑 `:3002`。
 
 ```bash
 /www/wwwroot/zzzz.com/ops/restart.sh                 # rust + site + admin，不编译
 /www/wwwroot/zzzz.com/ops/restart.sh rust --build    # cargo 后再重启 API
-/www/wwwroot/zzzz.com/ops/restart.sh admin --build   # 重建后台再重启 :3002
+/www/wwwroot/zzzz.com/ops/restart.sh admin --build   # 重建后台再重启 unix socket（TCP 仍 :3001）
 /www/wwwroot/zzzz.com/ops/restart.sh frontend --build
 /www/wwwroot/zzzz.com/ops/restart.sh status
 ```
@@ -184,7 +184,7 @@ Rust 统一：
 { "code": 200, "key": "ok", "msg": "ok", "data": { } }
 ```
 
-JWT `usertype`：`1` 求职者、`2` 企业、`3` 后台。Cookie 由 Nuxt BFF 写成 httpOnly，再以 `Authorization: Bearer` 转给 Rust。
+JWT `usertype`：`1` 求职者、`2` 企业、`3` 校园（进不了 `/v1/admin/*`）、`9` 后台。Cookie 由 Nuxt BFF 写成 httpOnly，再以 `Authorization: Bearer` 转给 Rust。旧管理员 token（`usertype=3`）进后台会 403。
 
 分页：query 上的 `page` / `page_size`。后台列表给 PHP Vue 时，还要有 `perPage`、`pageSizes`（`AdminPaged` 或 php-content 的 `paged()`）。Vue 常把筛选项做成 **字符串**（`"1"`、`""`）；`Option<i32>` 必须用宽松反序列化，否则 HTTP 400。
 
@@ -245,7 +245,7 @@ Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/pro
 
 ## 5. 数据与删除
 
-- **schema 不动**：表名仍是 `phpyun_*`，不改结构。8/30 起业务库换成独立库名 **`jobs`**（commit `852b7792`），不是继续写原库 `phpyun`。
+- **共享表结构不动**：表名仍是 `phpyun_*`。Rust 专用 `phpyun_rs_*` 另表，见 [`.cursor/docs/rust/crates.md`](../.cursor/docs/rust/crates.md)。8/30 起业务库换成独立库名 **`jobs`**（commit `852b7792`），不是继续写原库 `phpyun`。
 - **Site / Admin / `/yapi/` / `/callback/`（`:3003`）连 `jobs`**。`phpyun-rs/.env` 与 `.env.pro` 都是这个库。`.env.dev` 是测试库 `phpyun_test`。
 - 原库 **`phpyun`** 不再给 Rust 进程。不要再启动旧 `:3000`。
 - 后台一批表用 `deleted=1` 伪删除，列表加 `COALESCE(deleted,0)=0`。白名单在 models `soft_delete`。
@@ -257,7 +257,7 @@ Admin 的 `app.baseURL` 是 `/admin/`，所以浏览器打的是 `/admin/api/pro
 
 ## 6. 硬约束
 
-1. **不要再启动旧 `:3000`**（`test-jobs-phpyun-rs` 已 disable）。API 只走 `test-jobs-phpyun-rs-3003`。
+1. **不要再启动旧 `:3000`**（`test-jobs-phpyun-rs` 已 disable）。API 只走 `test-jobs-phpyun-rs-3003`。Web TCP 只有 `:3001`；admin Nitro unix socket。不要开 `:3002` / `:3004` / `:3005`，不要 start `test-jobs-phpyun-admin-edge`。
 2. **不要改 `uploads/`**（含 PHP 控制器和后台模板）。
 3. **不要**给 Admin 做万能 `invoke`。
 4. **不要**把 php-content 写进 AdminDoc 快照。

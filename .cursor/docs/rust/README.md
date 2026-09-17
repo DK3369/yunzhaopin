@@ -8,8 +8,8 @@
 
 | 主题 | 本目录精炼 | 原文（细节 / 数字以原文或代码为准） |
 |---|---|---|
-| 进程、端口、URL、信封 | [run.md](./run.md) | [doc/ARCHITECTURE.md](../../../doc/ARCHITECTURE.md) |
-| crate 分层、新接口放哪 | [crates.md](./crates.md) | [phpyun-rs/docs/CRATE_LAYERING.md](../../../phpyun-rs/docs/CRATE_LAYERING.md) |
+| 进程、端口、URL、信封 | [run.md](./run.md) | [doc/ARCHITECTURE.md](../../../doc/ARCHITECTURE.md)：Web TCP `:3001`（含 `/admin`）、admin unix socket、Rust `:3003`；不要 `:3002` |
+| crate 分层、新接口放哪、`phpyun_rs_*` 短表 | [crates.md](./crates.md) | [phpyun-rs/docs/CRATE_LAYERING.md](../../../phpyun-rs/docs/CRATE_LAYERING.md) |
 | 契约、快照、PHP 字符串 400 | [api.md](./api.md) | `doc/snapshots/`；Swagger `https://job1.ov6.com/docs/`（经 `:3001`） |
 | 已合并 / 即将失效 | [api-merged.md](./api-merged.md) | App OpenAPI `deprecated`；路径仍以 `v1_paths.txt` 为准 |
 | 后端 i18n | [i18n.md](./i18n.md) | [phpyun-rs/docs/INTERNATIONALIZATION.md](../../../phpyun-rs/docs/INTERNATIONALIZATION.md) |
@@ -17,7 +17,7 @@
 | 公开只读两级缓存（L1 moka + Redis） | [cache.md](./cache.md) | `TieredCache`；会员/后台计数不缓存 |
 | 鉴权信任链 | [security.md](./security.md) | 管理员 `usertype=9`；admin 回查库；不信 body 里的 uid |
 | 会员私信 HTTP | [chat.md](./chat.md) | `POST /v1/mcenter/chat/*`；表 `phpyun_rs_chat`；无 websocket |
-| App 缺口（身份证实名 / 面试评价 / 栏目订阅 / 简历删除） | [app-api-gaps.md](./app-api-gaps.md) | 两张 `phpyun_rs_*` 表；browse≠state；切站不写 Cookie |
+| Flutter 缺口（身份证实名 / 面试评价 / 栏目订阅 / 简历删除） | [app-api-gaps.md](./app-api-gaps.md) | 两张 `phpyun_rs_*` 表；browse≠state；切站不写 Cookie。招聘端后补见 [member-center.md](../features/member-center.md) |
 | 依赖怎么数、别乱砍 | [deps.md](./deps.md) | [doc/RUST_DEPENDENCIES.md](../../../doc/RUST_DEPENDENCIES.md) |
 | 本机怎么起 | [run.md](./run.md) | [`ops/restart.sh`](../../../ops/restart.sh)、[phpyun-rs/README.md](../../../phpyun-rs/README.md) |
 | 采集英文岗 / 官网申请 | [features/job-scrape.md](../features/job-scrape.md) | `job_scrape_service.rs`、`apply_service.rs`、site `jobs/[id].vue` |

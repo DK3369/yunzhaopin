@@ -44,7 +44,7 @@ Rust 拼图只走 [`media_url` / `media_url_from_cfg`](../../../phpyun-rs/crates
 - 不要嗅探 User-Agent 分 PC/H5。CSS `.site-pc` / `.site-h5`。
 - 旧 WAP 公开读 GET+POST 双挂不要删；新接口不要无故再双挂。
 - 后台 PhpOut / AdminPaged 别名不拆。
-- 上传仍走 `/api/upload`（multipart），不塞进 `useApi` 信封。
+- 会员上传走 `/api/upload`（multipart），不塞进 `useApi` 信封。富文本正文图另有 `POST /v1/wap/upload/content`（kind `content`，jpeg/png/webp，2MB；新闻/产品 wangEditor）。证书图仍 `/v1/wap/upload/cert`。
 
 ## 切站
 
@@ -52,4 +52,4 @@ Rust 拼图只走 [`media_url` / `media_url_from_cfg`](../../../phpyun-rs/crates
 
 ## 订单列表（无总表）
 
-没有 `/orders/overview`。会员订单由客户端合并：`/v1/mcenter/vip/orders/list` + `/v1/mcenter/redeem/orders` + `/v1/mcenter/packs/orders/list` + `/v1/mcenter/once-jobs/paylogs`。
+没有 `/orders/overview`。会员订单由客户端合并：`/v1/mcenter/vip/orders/list` + `/v1/mcenter/redeem/orders` + `/v1/mcenter/packs/orders/list` + `/v1/mcenter/once-jobs/paylogs`。收银台再支付：`POST /v1/mcenter/orders/detail` + `/orders/pay`（按 `order_id` 查任意 `company_order`）。见 [member-center.md](../features/member-center.md)。

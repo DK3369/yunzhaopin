@@ -1,5 +1,7 @@
 # Crate 分层与契约
 
+> 现网只绑 **`:3003`**（systemd `test-jobs-phpyun-rs-3003`）。文内「若 :3000 被占用」、GET 别名只在 debug binary、本机 `pnpm admin dev` 占 3002 是历史 / 本机开发。Web TCP 现网只有 `:3001`，admin Nitro unix socket。分层精炼见 [`.cursor/docs/rust/crates.md`](../../.cursor/docs/rust/crates.md)。
+
 ## 布局
 
 ```
