@@ -81,7 +81,7 @@ const total = computed(() => inferTotal(data.value))
               <div class="card_logo">
                 <img src="/legacy/h5/images/copy.png" alt="" width="100%" height="100%" />
               </div>
-              <i class="card_word">{{ $t('wap_01133') }}</i>
+              <i class="card_word">{{ $t('wap_user_00270') }}</i>
             </li>
             <li @click="navigateTo('/user/consults')">
               <div class="card_logo">

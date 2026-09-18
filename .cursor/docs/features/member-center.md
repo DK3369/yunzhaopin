@@ -150,7 +150,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 我的收藏 | `/user/favorites` | 无对等（有人才库） | `favorite.htm` | 求职是 |
 | 我的关注 | `/user/follows` | `/com/follows` | `atn.htm`（必须 `attention_enterprises_*`） | 求职在「更多」外；招聘更多 |
 | 职位速配 | `/user/recommend` | `/com/recommend` 简历推荐 | `likejob.htm`（`pp*` / `com_member_matched_degree`） | 否（更多/服务） |
-| 消息 | `/user/messages` | `/com/messages` | `sysnews.htm` / WAP `chatnewcard` + `sxnews.htm`；企业 `msg.htm` | 否（顶栏） |
+| 消息 | `/user/messages` | `/com/messages` | `sysnews.htm` / WAP `chatnewcard` + `sxnews.htm`；企业 `msg.htm`。H5 四宫格里 `wap_01133` 投递反馈进 `/user/applications`，英文用 Applied Jobs，**不要**译成 Feedback（意见反馈是 `/advice`） | 否（顶栏） |
 | 私信 | `/user/chat` | `/com/chat` | HTTP 轮询 `/v1/mcenter/chat/conversations|with|send`（见 [chat.md](../rust/chat.md)）；H5 `chatnewcard` | 否（消息页入口） |
 | 企业回复咨询 | `/user/consults` | `/com/job-messages` | `commsg.htm`（PC `job_Consulting_*` / H5 `mag_show`） | 否 |
 | 职业测评 | `/user/eval-logs` | 无 | 无对等列表皮：`job_list_tit` + `job_search_box` / H5 `Posted_*`，**不要** `sysynews_*` | **否** |
