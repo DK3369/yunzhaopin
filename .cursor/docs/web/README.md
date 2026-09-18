@@ -39,7 +39,7 @@ pnpm gen:types:admin
 - 职位卡标题最多 3 行：`JobCard` 共用 `.site-job-card__title`（首页 / `/jobs` / 企业在招都算）。写在 `main.css`。PC 首页卡仍 `150px`，空的地区/行业行不要占位，不要改 `legacy/pc/style/index.css`
 - H5 首页搜索条是 `input.index_newedition_search_p`；yunwap 按 PHP `span` 写死 `5.33rem`，不要让白底截成半截灰胶囊，在 `main.css` 铺满
 - H5 首页底不要 ViewMoreJob / Contact Us / Feedback / About Us（`yun_newedition_footer` + lookmore）；底栏五项仍要
-- H5 Country / Job function / Filter 点开列表用 `0.373333rem`（分组标签 `0.32rem`），写在 `main.css`，不要继承 `body 0.9em`
+- H5 Country / Job function / Filter 点开列表用 `0.373333rem`（分组标签 `0.32rem`），写在 `main.css`，不要继承 `body 0.9em`。顶栏标签不要用 yunwap `1.1rem` 宽，否则英文截成 Cou…
 - H5 `/jobs` 顶栏只要 Latest，**不要** Urgent Hiring / Nearby；PC 顶栏、H5 宫格、页脚也不出公开 `/map`（职位详情看地图、企业 `/com/map` 仍可）
 - 打包 CSS：`/legacy/site-pc.css` / `/legacy/site-h5.css`（见 `server/utils/legacyCss.ts`，磁盘在 `public/legacy/`）；皮肤与会员包按 `m=user|com` 拼
 - `sy_wap_web==2` 时 `html.force-pc` 强制 PC

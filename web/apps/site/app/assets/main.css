@@ -2966,7 +2966,13 @@ a.sys_a {
     align-items: stretch;
   }
   .site-h5 .job_header_nav .job_header_nav_left {
-    flex-shrink: 0;
+    flex: none;
+    width: auto;
+    padding-left: 0.32rem;
+  }
+  .site-h5 .job_header_nav .job_header_nav_left > ul > li {
+    flex: none;
+    padding-right: 0.16rem;
   }
   .site-h5 .job_header_nav .h5-filter {
     display: contents;
@@ -2987,14 +2993,28 @@ a.sys_a {
     font-size: 0.32rem;
     line-height: 0.48rem;
   }
-  .site-h5 .job_header_nav_right > ul > li {
-    font-size: 0.32rem;
-  }
   .site-h5 .job_header_nav .job_header_nav_right {
     flex: 1;
     min-width: 0;
     width: auto;
-    padding-left: 0.24rem;
+    padding: 0 0.24rem 0 0.12rem;
+  }
+  .site-h5 .job_header_nav_right > ul {
+    gap: 0.12rem;
+    justify-content: flex-end;
+  }
+  .site-h5 .job_header_nav_right > ul > li {
+    width: auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-right: 0;
+    padding: 0 0.32rem 0 0.04rem;
+    font-size: 0.346667rem;
+    line-height: 1.2rem;
+    text-align: left;
+  }
+  .site-h5 .job_header_nav_right > ul > li .nav_right_open {
+    right: 0.08rem;
   }
   .site-h5 .position_body_card_bom li {
     position: relative;

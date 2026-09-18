@@ -22,6 +22,8 @@ H5 `html { font-size: clamp(32px, 10vw, 75px) }`。legacy `body { font-size: 0.9
 
 `H5FilterBar` 点开后的列表（`.h5-filter-panel` / `.h5-filter-item`）必须带上述正文 rem。分组标签用说明尺寸。写在 `main.css` 的 `.site-h5` 下，不要给组件加 scoped 再写一套 px。`.job_header_nav` 固定 `height: 1.2rem` 会把面板裁掉，H5 应收成 `height: auto` + `flex-wrap`，面板单独一行、`z-index` 盖住职位卡。
 
+顶栏筛选项（Country / Job function / Filter）yunwap 写死 `width: 1.1rem` + nowrap，英文会被截成 `Cou…`。Latest 不要占 50%。筛选项 `width: auto`，字号用正文 `0.346667rem`，给三角留 `padding-right`。
+
 ## Nearby 先藏
 
 公开 `/map`（Nearby / Map Search）从 **PC 顶栏、H5 宫格、页脚、H5 `/jobs` 顶栏 tab** 拿掉。过滤用 `isPublicMapTo`（只认路径 `/map`，不要误伤 `/com/map`）。
