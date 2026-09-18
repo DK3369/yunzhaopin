@@ -77,7 +77,7 @@ pub async fn list_active_packages(
     .await
 }
 
-/// Employer monthly SKUs: time membership only (`type=2`), ignore site `com_vip_type`.
+/// Employer buyable SKUs: VIP 1–6 (`type=1`, priced). VIP 0 (free / unpaid) is not sold.
 pub async fn list_time_packages(pool: &MySqlPool) -> Result<Vec<VipPackage>, sqlx::Error> {
     sqlx::query_as::<_, VipPackage>(
         r#"SELECT
@@ -104,8 +104,9 @@ pub async fn list_time_packages(pool: &MySqlPool) -> Result<Vec<VipPackage>, sql
            FROM phpyun_company_rating
            WHERE COALESCE(display, 1) = 1
              AND COALESCE(deleted,0)=0
-             AND `type` = 2
-           ORDER BY sort ASC, service_price ASC"#,
+             AND `type` = 1
+             AND CAST(COALESCE(service_price, '0') AS DECIMAL(12,2)) > 0
+           ORDER BY sort ASC, CAST(COALESCE(service_price, '0') AS DECIMAL(12,2)) ASC"#,
     )
     .fetch_all(pool)
     .await

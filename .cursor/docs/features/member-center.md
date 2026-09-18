@@ -263,7 +263,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 - `mark_paid` 与积分全额 `/v1/mcenter/vip/orders/integral` 共用 `apply_rating`。
 - 列表：`com_vip_type`（0/2 套餐 `type=1`，1 时间会员 `type=2`）+ `company.package` 白名单 + `com_package_open`。
-- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 只卖**时间/包月**（`kind=time`，`company_rating.type=2`），不再出套餐次数 Tab。页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。`POST /v1/mcenter/vip/packages` 招聘端固定时间档；求职端返回 `phpyun_rs_seeker_vip_pack`。加法字段 `role=seeker|employer`。`vip/current` 加法 `can_chat`、求职 `seeker_caps`。顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)：**会员 / 礼品 / 订单**（`wap_com_00097` / `wap_00398` / `common_02029`）。增值 `/com/added` 不再当购买入口。充值只从礼品页积分不足链到 `/com/pay`。
+- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 卖 **VIP 1–6**（`company_rating.type=1` 且价格>0；VIP 0 免费不卖）。页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。`POST /v1/mcenter/vip/packages` 招聘端列出 VIP 1–6；求职端返回 `phpyun_rs_seeker_vip_pack`。加法字段 `role=seeker|employer`。`vip/current` 加法 `can_chat`、求职 `seeker_caps`。顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)：**会员 / 礼品 / 订单**（`wap_com_00097` / `wap_00398` / `common_02029`）。增值 `/com/added` 不再当购买入口。充值只从礼品页积分不足链到 `/com/pay`。
 - [`pay.vue`](../../../web/apps/site/app/pages/com/pay.vue) 是积分充值（给礼品用），不是买 VIP：`POST /v1/mcenter/vip/integral-classes` + `recharge` + `card`。渠道不要写死 `alipay`。包月购买只留 member-right。
 - 订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 客户端合并 `vip/orders/list` + `packs/orders/list` + `redeem/orders`。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。私聊是包月开关。
 - `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
@@ -284,7 +284,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 对外两样：**包月会员**（现金）和 **积分礼品**（实物或简历刷新，给自己或送给别人）。
 
-- **招聘包月**：仍走 `phpyun_company_rating` `type=2` 时间会员 → `apply_rating` → `company_statis`（真相源）。前台不卖次数套餐、不加量包。有效期内发岗/下载按时间会员规则；`vip_etime > now` 可**发起**私聊。`POST /v1/mcenter/vip/packages` 招聘端列出 `display=1` 的时间档（不因历史 `time_end` 销售窗过期而清空）。
+- **招聘 VIP 0–6**：`phpyun_company_rating` `type=1`。**VIP 0**（id=3，`com_rating`）是未购买/免费；VIP 1–6 前台可买（现金，价格不带 ¥）。付款走 `apply_rating` → `company_statis`。有效期内发岗/下载按档位配额；`vip_etime > now` 可**发起**私聊。旧 type=2 时间档 `display=0`，不再卖。`POST /v1/mcenter/vip/packages` 招聘端列出 VIP 1–6。
 - **求职包月**：表 `phpyun_rs_seeker_vip_pack`，状态 `phpyun_rs_user_vip`，订单 `company_order.type=31`（勿用 type=1；`order_id` 用 PHP 风格 15 位 `dingdan_id`，列只有 varchar(18)）。期内：置顶、模板、刷新不限流、发起私聊。不单卖置顶/模板。后台页 `/seekerVip`（`POST /v1/admin/seeker/vip/packages*`）。
 - **礼品**：公开 `/redeem`，扣购买人积分。`phpyun_reward.kind`=`goods`|`resume_refresh`。实物写 `phpyun_change`（加法 `to_uid`）；刷新即时 `touch_lastupdate`。不要用 `/integral/exchange` 当店。
 - 两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。企业付款**不要**再 upsert `phpyun_rs_user_vip`。

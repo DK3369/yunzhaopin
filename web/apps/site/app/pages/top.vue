@@ -49,7 +49,7 @@ const { data } = await useAsyncData(
 function jobPay(job: JobLike) {
   const s = formatSalary(job, t('common.negotiable'))
   if (!s || s === t('common.negotiable')) return s
-  return `￥${s}`
+  return s
 }
 
 useSeoMeta({ title: () => t('default_00156') })

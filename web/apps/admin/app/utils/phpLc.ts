@@ -50,6 +50,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
   zh: {
     admin_yunying_00201: '短信',
     admin_vue_00137: '确定移除 {0}？',
+    admin_currency_yuan: '{0}',
     admin_level1_category_value: '一级分类：{0}',
     admin_tool_00689: 'Google登录配置',
     admin_tool_00690: 'Facebook登录配置',
@@ -118,6 +119,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
   en: {
     admin_yunying_00201: 'SMS',
     admin_vue_00137: 'Remove {0}?',
+    admin_currency_yuan: '{0}',
     admin_level1_category_value: 'Level 1 Category: {0}',
     admin_tool_00689: 'Google Login',
     admin_tool_00690: 'Facebook Login',

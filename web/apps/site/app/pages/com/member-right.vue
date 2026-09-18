@@ -151,7 +151,7 @@ useSeoMeta({ title: t('wap_com_00097') })
                   {{ p.name }}<i class="vip_box_left_name_line" />
                 </div>
                 <div class="vip_box_left_money_n">
-                  <span>¥{{ p.price_yuan }} / {{ p.duration_days }}{{ $t('common_02067') }}</span>
+                  <span>{{ p.price_yuan }} / {{ p.duration_days }}{{ $t('common_02067') }}</span>
                 </div>
               </div>
               <ul v-if="descLines(p.desc).length">
@@ -172,7 +172,6 @@ useSeoMeta({ title: t('wap_com_00097') })
                   <div class="dredge_body_tab_body_left">
                     <div class="tab_body_left_number">
                       <div class="vip_box_left_money_price">
-                        <i>¥</i>
                         <i class="tab_body_left_number_monye">{{ p.price_yuan }}</i>
                       </div>
                     </div>
