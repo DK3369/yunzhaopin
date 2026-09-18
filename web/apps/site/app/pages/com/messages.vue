@@ -44,6 +44,13 @@ function rowTime(row: Record<string, unknown>) {
 function rowBody(row: Record<string, unknown>) {
   return String(row.body || row.content || row.title || row.id || '')
 }
+function rowParts(row: Record<string, unknown>) {
+  const parts = row.parts
+  if (Array.isArray(parts) && parts.length) {
+    return parts as Array<{ n?: string; to?: string }>
+  }
+  return [{ n: rowBody(row) }]
+}
 function togglePick(id: number) {
   picked.value = picked.value.includes(id) ? picked.value.filter((x) => x !== id) : [...picked.value, id]
 }
@@ -128,7 +135,12 @@ const total = computed(() => inferTotal(data.value))
         <td align="center">
           <input type="checkbox" class="com_job_list_check" :checked="picked.includes(Number(row.id))" @change="togglePick(Number(row.id))" />
         </td>
-        <td :style="isUnread(row) ? 'font-weight:bold' : ''">{{ rowBody(row) }}</td>
+        <td :style="isUnread(row) ? 'font-weight:bold' : ''">
+          <template v-for="(p, i) in rowParts(row)" :key="'pc-' + Number(row.id) + '-' + i">
+            <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
+            <span v-else>{{ p.n }}</span>
+          </template>
+        </td>
         <td>{{ rowTime(row) }}</td>
         <td>
           <a href="javascript:;" class="com_bth cblue" @click="read(Number(row.id))">{{ $t('member_user_00462') }}</a>
@@ -147,7 +159,12 @@ const total = computed(() => inferTotal(data.value))
         <label>
           <input type="checkbox" :checked="picked.includes(Number(row.id))" @change="togglePick(Number(row.id))" />
         </label>
-        <div class="com_cardlist_tit" :style="isUnread(row) ? 'font-weight:bold' : ''">{{ rowBody(row) }}</div>
+        <div class="com_cardlist_tit" :style="isUnread(row) ? 'font-weight:bold' : ''">
+          <template v-for="(p, i) in rowParts(row)" :key="'h5-' + Number(row.id) + '-' + i">
+            <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
+            <span v-else>{{ p.n }}</span>
+          </template>
+        </div>
         <div class="com_cardlist_p">
           <span class="com_cardlist_p_name">{{ $t('member_user_00104') }}</span>
           {{ rowTime(row) }}

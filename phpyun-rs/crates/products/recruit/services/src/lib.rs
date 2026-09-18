@@ -133,6 +133,8 @@ pub mod map_service;
 pub mod mcenter_service;
 pub mod member_logout_service;
 pub mod message_service;
+mod sysmsg_body;
+pub use sysmsg_body::{parse_sysmsg_parts, SysmsgPart};
 pub mod nav_menu_service;
 pub mod locoy_service;
 mod job_scrape_jd;

@@ -26290,6 +26290,7 @@
           "usertype",
           "category",
           "title",
+          "parts",
           "ref_kind",
           "ref_kind_n",
           "ref_id",
@@ -26305,7 +26306,14 @@
               "string",
               "null"
             ],
-            "description": "Message text (PHP `content`)."
+            "description": "Message text (PHP `content`), 库里可能带 `<a href=\"resumetpl,1\">`。"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessagePart"
+            },
+            "description": "对照 PHP `content_arr`：正文拆段，内部链已换成前台路径。"
           },
           "category": {
             "type": "string",
@@ -26369,6 +26377,23 @@
             "type": "integer",
             "format": "int32",
             "description": "1=jobseeker / 2=employer (PHP `usertype`)."
+          }
+        }
+      },
+      "MessagePart": {
+        "type": "object",
+        "required": [
+          "n"
+        ],
+        "properties": {
+          "n": {
+            "type": "string"
+          },
+          "to": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },

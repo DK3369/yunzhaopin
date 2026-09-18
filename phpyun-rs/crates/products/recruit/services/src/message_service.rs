@@ -2,9 +2,13 @@
 
 use phpyun_core::{AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::message::{entity::Message, repo as message_repo};
+use phpyun_models::resume::expect as expect_repo;
+
+pub use crate::sysmsg_body::{parse_sysmsg_parts, SysmsgPart};
 
 pub struct MessagePage {
     pub list: Vec<Message>,
+    pub parts: Vec<Vec<SysmsgPart>>,
     pub total: u64,
 }
 
@@ -26,9 +30,35 @@ pub async fn list(
             page.limit,
         ),
     );
+    let list = list?;
+    let mut ids = Vec::new();
+    for m in &list {
+        for id in crate::sysmsg_body::collect_resumetpl_ids(&m.body) {
+            if !ids.contains(&id) {
+                ids.push(id);
+            }
+        }
+    }
+    let resume_uid: Vec<(u64, u64)> = if ids.is_empty() {
+        Vec::new()
+    } else {
+        expect_repo::list_by_ids(state.db.reader(), &ids)
+            .await?
+            .into_iter()
+            .map(|e| (e.id, e.uid))
+            .collect()
+    };
+    let parts = list
+        .iter()
+        .map(|m| {
+            let owner = (m.usertype == 1).then_some(m.uid);
+            parse_sysmsg_parts(&m.body, &resume_uid, owner)
+        })
+        .collect();
     Ok(MessagePage {
         total: total?,
-        list: list?,
+        list,
+        parts,
     })
 }
 

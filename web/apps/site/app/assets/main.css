@@ -31,6 +31,13 @@ html.force-pc .site-h5 {
   display: none !important;
 }
 
+/* 系统消息正文内链（对照 PHP memberwap `.sys_a`）；PC 会员包没有这个类 */
+a.sys_a {
+  font-weight: 700;
+  color: var(--yun-blue);
+  text-decoration: none;
+}
+
 /* PC 暗色单行顶栏 + 首页搜索（挂在 .site-pc 内，H5 不显示） */
 .pc-topbar {
   background: #1b242c;

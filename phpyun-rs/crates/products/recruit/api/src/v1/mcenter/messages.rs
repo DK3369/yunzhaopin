@@ -51,8 +51,10 @@ pub struct MessageItem {
     pub category: String,
     /// Always empty — kept for response-shape stability.
     pub title: String,
-    /// Message text (PHP `content`).
+    /// Message text (PHP `content`), 库里可能带 `<a href="resumetpl,1">`。
     pub body: Option<String>,
+    /// 对照 PHP `content_arr`：正文拆段，内部链已换成前台路径。
+    pub parts: Vec<MessagePart>,
     /// Always 0 — kept for response-shape stability.
     pub ref_kind: i32,
     /// Always "none" — kept for response-shape stability.
@@ -68,8 +70,20 @@ pub struct MessageItem {
     pub username: Option<String>,
 }
 
-impl From<phpyun_models::message::entity::Message> for MessageItem {
-    fn from(m: phpyun_models::message::entity::Message) -> Self {
+#[derive(Debug, Serialize, ToSchema)]
+pub struct MessagePart {
+    pub n: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
+}
+
+impl From<(phpyun_models::message::entity::Message, Vec<phpyun_services::SysmsgPart>)> for MessageItem {
+    fn from(
+        (m, parts): (
+            phpyun_models::message::entity::Message,
+            Vec<phpyun_services::SysmsgPart>,
+        ),
+    ) -> Self {
         let is_read = m.remind_status == 0;
         Self {
             id: m.id,
@@ -78,6 +92,10 @@ impl From<phpyun_models::message::entity::Message> for MessageItem {
             category: "system".to_string(),
             title: String::new(),
             body: Some(m.body),
+            parts: parts
+                .into_iter()
+                .map(|p| MessagePart { n: p.n, to: p.to })
+                .collect(),
             ref_kind: 0,
             ref_kind_n: "none".to_string(),
             ref_id: 0,
@@ -114,9 +132,8 @@ pub async fn list(
         page,
     )
     .await?;
-    Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
-    )))
+    let list: Vec<MessageItem> = r.list.into_iter().zip(r.parts).map(MessageItem::from).collect();
+    Ok(ApiResponse::data(Paged::from_listing(list, r.total, page)))
 }
 
 /// Mark as read

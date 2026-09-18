@@ -80,7 +80,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - packed / i18n；列表不要用首页 `job-card`
 - 一套 `/user` `/com` 路由，用 `.site-pc` / `.site-h5` 切皮，不另开 wap
 - 分页：`MemberPager` 输出 PHP `page.class.php` 的 `div.diggg`
-- H5 **消息/咨询**才用 `MemberSxNewsCard`（`sx_new_*`）。谁看过/足迹/收藏/关注用 `MemberPostedCard`（对照 WAP `Posted_*` / `likejob.htm` 的 `com_member_hr`）。财务/订单流水 H5 用 `detail_body_card`（对照 `paylog.htm`），PC 继续 `paylist_*`。邀请/外发/会话用 `job_search_box` / `MemberPostedCard`，不要消息卡。招聘会/专题/HR/投诉/地址 PC `com_table`、H5 `com_cardlist`。不要用 `sysynews_*` 冒充测评/被下载/举报/财务/招聘会
+- H5 **消息/咨询**才用 `MemberSxNewsCard`（`sx_new_*`）。系统消息正文走接口 `parts`（对照 PHP `content_arr`），**不要**把 `<a href="resumetpl,1">` 当纯文本；`《移动开发》` 用 `.sys_a` 链到 `/resumes/{uid}?eid=`（按 `resume_expect.id` 查 uid；简历已删则求职者消息回退收件人 uid）。谁看过/足迹/收藏/关注用 `MemberPostedCard`（对照 WAP `Posted_*` / `likejob.htm` 的 `com_member_hr`）。财务/订单流水 H5 用 `detail_body_card`（对照 `paylog.htm`），PC 继续 `paylist_*`。邀请/外发/会话用 `job_search_box` / `MemberPostedCard`，不要消息卡。招聘会/专题/HR/投诉/地址 PC `com_table`、H5 `com_cardlist`。不要用 `sysynews_*` 冒充测评/被下载/举报/财务/招聘会
 - 退出登录都在 H5 `/user/set` `/com/set` 底栏 `logout_btn`，不在会员首页宫格最后一项
 - 禁止改 `uploads/` PHP 模板
 

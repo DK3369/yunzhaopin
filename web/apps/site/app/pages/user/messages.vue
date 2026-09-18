@@ -104,15 +104,15 @@ const total = computed(() => inferTotal(data.value))
         <div
           v-for="row in data?.list || []"
           :key="'h5-' + row.id"
-          @click="read(row.id); openId = openId === row.id ? 0 : row.id"
+          @click="read(row.id)"
         >
           <MemberSxNewsCard
             :kicker="$t('wap_user_00361')"
+            :parts="row.parts"
             :title="String(row.body || row.content || row.title || row.id)"
-            :time="row.datetime_n"
+            :time="row.created_at_n || row.datetime_n"
             :on-delete="() => remove(row.id)"
           />
-          <div v-if="openId === row.id" class="sx_tm">{{ row.body || row.content || row.title }}</div>
         </div>
       </div>
     </div>
@@ -129,19 +129,32 @@ const total = computed(() => inferTotal(data.value))
       <div class="sysynews_span">
         <input type="checkbox" :checked="picked.includes(row.id)" @change="picked = picked.includes(row.id) ? picked.filter((x) => x !== row.id) : [...picked, row.id]" />
       </div>
-      <div class="sysynews_span sysynews_name" :style="row.remind_status === 0 ? 'font-weight:bold' : ''" @click="openId = openId === row.id ? 0 : row.id">
-        {{ row.body || row.content || row.title || row.id }}
+      <div class="sysynews_span sysynews_name" :style="row.remind_status === 0 ? 'font-weight:bold' : ''">
+        <template v-for="(p, i) in (row.parts || [])" :key="'pc-' + row.id + '-' + i">
+          <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
+          <span v-else>{{ p.n }}</span>
+        </template>
+        <template v-if="!(row.parts || []).length">{{ row.body || row.content || row.title || row.id }}</template>
         <span v-if="row.remind_status === 0" class="sysynews_span_nolook">{{ $t('wap_user_00260') }}</span>
       </div>
-      <div class="sysynews_span sysynews_time">{{ row.datetime_n }}</div>
+      <div class="sysynews_span sysynews_time">{{ row.created_at_n || row.datetime_n }}</div>
       <div class="sysynews_span sysynews_cz">
         <a href="javascript:;" class="cblue" @click="read(row.id); openId = row.id">{{ $t('wap_00071') }}</a>
         <span class="jobnotice_cz_line">|</span>
         <a href="javascript:;" class="List_dete cblue" @click="remove(row.id)">{{ $t('common.delete') }}</a>
       </div>
       <div v-if="openId === row.id" class="sys_tm">
-        <p><i>{{ $t('member_user_00104') }}：</i><span>{{ row.datetime_n }}</span></p>
-        <p><i>{{ $t('common.message') }}：</i><span>{{ row.body || row.content || row.title }}</span></p>
+        <p><i>{{ $t('member_user_00104') }}：</i><span>{{ row.created_at_n || row.datetime_n }}</span></p>
+        <p>
+          <i>{{ $t('common.message') }}：</i>
+          <span>
+            <template v-for="(p, i) in (row.parts || [])" :key="'dt-' + row.id + '-' + i">
+              <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
+              <span v-else>{{ p.n }}</span>
+            </template>
+            <template v-if="!(row.parts || []).length">{{ row.body || row.content || row.title }}</template>
+          </span>
+        </p>
         <div class="sys_bot">
           <a href="javascript:;" class="sys_bot_del" @click="remove(row.id)">{{ $t('common.delete') }}</a>
           <a href="javascript:;" class="sys_bot_qx" @click="openId = 0">{{ $t('common.cancel') }}</a>
