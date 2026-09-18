@@ -27,7 +27,7 @@ const total = computed(() => inferTotal(data.value))
 <template>
   <MemberPanel :title="$t('ui.my_reports')" :error="error && !isUnauthErr(error) ? error : undefined">
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
-    <div class="resume_Prompt_box">
+    <div class="site-pc resume_Prompt_box">
       <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('wap_js_00125') }}</div>
     </div>
     <form class="form verification_form" @submit.prevent="submit">
@@ -46,7 +46,7 @@ const total = computed(() => inferTotal(data.value))
       </MemberField>
       <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
     </form>
-    <div class="job_list_tit">
+    <div class="site-pc job_list_tit">
       <ul>
         <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('ui.my_reports') }}</a></li>
       </ul>

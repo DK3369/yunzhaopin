@@ -2257,6 +2257,14 @@ html.force-pc .site-h5 {
   .member-shell select {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   }
+  /* 漏网 PC 字不要吃 html 10vw；PHP rem 组件仍相对 html */
+  .member-shell .member-page {
+    font-size: 0.373333rem;
+  }
+  .member-shell .job_list_tit,
+  .member-shell .resume_Prompt_box {
+    display: none;
+  }
   .member-shell .yun_m_rightsidebar,
   .yun_m_rightbox,
   .yun_m_rightbox.member-page-body,
@@ -2304,6 +2312,13 @@ html.force-pc .site-h5 {
   }
   .m_cardbox {
     padding: 0 0 0.4rem;
+  }
+  /* PHP 负 margin 是为了叠进 m_tab 蓝底；会员子页没有 m_tab 时会盖住上面的提交钮 */
+  .member-shell .m_cardbgbox {
+    margin-top: 0;
+  }
+  .member-shell .m_tab ~ .m_cardbox .m_cardbgbox {
+    margin-top: -1.466666rem;
   }
   .verification_form_code--area {
     height: auto;
@@ -2500,24 +2515,44 @@ html.force-pc .site-h5 {
   .member-page .verification_form {
     margin-top: 0;
   }
-  .member-shell .site-h5.verification_form {
+  .member-shell .verification_form {
     padding: 0;
   }
-  .member-shell .site-h5.verification_form .verification_formname {
+  .member-shell .verification_form .yun_createlist {
+    padding-left: 0;
+    padding-right: 0;
     position: static;
+    border: 0;
+    height: auto;
+    margin-bottom: 0.24rem;
+  }
+  .member-shell .verification_form .yun_create_name,
+  .member-shell .verification_form .verification_formname {
+    position: static;
+    left: auto;
     display: block;
     line-height: 1.4;
     padding: 0 0 0.133333rem;
     font-size: 0.32rem;
     color: #666;
   }
-  .member-shell .site-h5.verification_form .verification_form_code {
+  .member-shell .verification_form .verification_form_code,
+  .member-shell .verification_form .yun_create_text {
     position: relative;
     width: 100%;
     height: 1.2rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.16rem;
   }
-  .member-shell .site-h5.verification_form .verification_form_code > input {
+  .member-shell .verification_form .verification_form_code--area,
+  .member-shell .verification_form .member-field--area .verification_form_code,
+  .member-shell .verification_form .member-field--area .yun_create_text {
+    height: auto;
+    min-height: 2.4rem;
+  }
+  .member-shell .verification_form .verification_form_code > input,
+  .member-shell .verification_form .verification_form_code > select,
+  .member-shell .verification_form .yun_create_text > input,
+  .member-shell .verification_form .yun_create_text > select {
     display: block;
     width: 100%;
     height: 100%;
@@ -2529,8 +2564,25 @@ html.force-pc .site-h5 {
     font-size: 0.373333rem;
     font-weight: 500;
     box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
   }
-  .member-shell .site-h5.verification_form .verification_form_btn {
+  .member-shell .verification_form .verification_form_code > textarea,
+  .member-shell .verification_form .yun_create_text > textarea {
+    display: block;
+    width: 100%;
+    min-height: 2.4rem;
+    height: auto;
+    margin: 0;
+    border: 0;
+    background: #fff;
+    border-radius: 0.213333rem;
+    padding: 0.24rem 0.4rem;
+    font-size: 0.373333rem;
+    font-weight: 500;
+    box-sizing: border-box;
+  }
+  .member-shell .verification_form .verification_form_btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2544,6 +2596,76 @@ html.force-pc .site-h5 {
     font-size: 0.4rem;
     font-weight: 600;
     font-family: inherit;
+  }
+  /* 简历编辑：yun_createbox 继续 PHP 左右行，不要套 verification_form 标签在上 */
+  .member-shell-resume .yun_createbox .yun_createlist {
+    padding-left: 2.8rem;
+    padding-right: 0;
+    position: relative;
+    border-bottom: 1px solid #f8f8f8;
+    height: auto;
+    margin-bottom: 0;
+  }
+  .member-shell-resume .yun_createbox .yun_create_name {
+    position: absolute;
+    left: 0.4rem;
+    display: block;
+    line-height: 1.533333rem;
+    padding: 0;
+    font-size: 0.37333rem;
+    color: #666;
+  }
+  .member-shell .wxts_box {
+    float: none;
+    width: auto;
+    max-width: 100%;
+    padding: 0.16rem 0 0.32rem;
+    line-height: 1.4;
+    font-size: 0.32rem;
+  }
+  .member-shell .Binding_pop_box_list {
+    display: block;
+    height: auto;
+    margin: 0 0 0.24rem;
+  }
+  .member-shell .Binding_pop_box_list_left {
+    position: static;
+    display: block;
+    padding: 0 0 0.133333rem;
+    font-size: 0.32rem;
+    color: #666;
+    line-height: 1.4;
+  }
+  .member-shell .Binding_pop_box_list_text,
+  .member-shell .Binding_pop_box_list_textw200 {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    margin: 0;
+    border: 0;
+    background: #fff;
+    border-radius: 0.213333rem;
+    padding: 0 0.4rem;
+    font-size: 0.373333rem;
+    box-sizing: border-box;
+  }
+  .member-shell .msg_no_sq.uesr_submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 1.28rem;
+    margin-top: 0.48rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.213333rem;
+    background: #2778f8;
+    color: #fff;
+    font-size: 0.4rem;
+    font-weight: 600;
+    box-sizing: border-box;
   }
   .member-page .financial_management_header {
     height: auto;
