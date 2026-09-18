@@ -48,8 +48,10 @@
                 <el-table-column prop="id" :label="lc('member_com_00345')" width="80">
                 </el-table-column>
                 <el-table-column prop="name" :label="lc('member_com_00021')">
+                    <template #default="scope">{{ packedLog(scope.row.name) }}</template>
                 </el-table-column>
                 <el-table-column prop="typename" :label="lc('admin_00223')">
+                    <template #default="scope">{{ packedLog(scope.row.typename) }}</template>
                 </el-table-column>
                 <el-table-column prop="url" :label="lc('admin_00101')">
                 </el-table-column>

@@ -19,7 +19,7 @@
                                       v-model="scope.row.typename" @blur="editTypename(scope)"></el-input>
                         </div>
                         <div class="moduleProps moduleTrButn" v-else>
-                            <span>{{ scope.row.typename }}</span>
+                            <span>{{ packedLog(scope.row.typename) }}</span>
                             <el-button type="text" icon="el-icon-edit" @click="showTypename(scope)"></el-button>
                         </div>
                     </template>

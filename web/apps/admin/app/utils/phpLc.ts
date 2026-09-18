@@ -16,6 +16,33 @@ import {
   type WebLocale,
 } from '../../../../layers/base/app/utils/locale'
 import { isAutoKey, runPackedTranslate } from '../../../../layers/base/app/utils/packedText'
+import zhLocaleMessages from '../../i18n/locales/zh.json'
+
+function localeLeaf(v: unknown): string | undefined {
+  if (typeof v === 'string') return v
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined
+  const o = v as { s?: unknown; b?: { s?: unknown }; t?: unknown }
+  if (o.b && typeof o.b === 'object' && typeof o.b.s === 'string') return o.b.s
+  if (typeof o.s === 'string' && typeof o.t === 'number') return o.s
+  return undefined
+}
+
+/** Packed prefix table. Lazy i18n omits `messages.zh` on English; json import is vue-i18n AST. */
+function flattenZhPack(mod: unknown): Record<string, unknown> {
+  let root = (mod && typeof mod === 'object' ? mod : {}) as Record<string, unknown>
+  const inner = root.default
+  if (inner && typeof inner === 'object' && !Array.isArray(inner) && localeLeaf(inner) == null) {
+    root = inner as Record<string, unknown>
+  }
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(root)) {
+    const s = localeLeaf(v)
+    if (s) out[k] = s
+  }
+  return out
+}
+
+const ZH_PACK = flattenZhPack(zhLocaleMessages)
 
 export type AdminLocale = WebLocale
 
@@ -115,6 +142,14 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00743: '更新说明',
     admin_tool_00744: '平台',
     admin_tool_00745: '请填写平台、版本号和下载地址',
+    admin_tool_00746: '找人才',
+    admin_tool_00747: '企业库',
+    admin_tool_00748: '积分商城',
+    admin_tool_00749: '找企业',
+    admin_tool_00750: '找工作',
+    admin_tool_00751: '法律声明',
+    admin_tool_00752: '触屏版',
+    admin_tool_00753: '求职包月',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -184,6 +219,14 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00743: 'Release notes',
     admin_tool_00744: 'Platform',
     admin_tool_00745: 'Platform, version and download URL are required',
+    admin_tool_00746: 'Find Talent',
+    admin_tool_00747: 'Companies',
+    admin_tool_00748: 'Points Mall',
+    admin_tool_00749: 'Find Companies',
+    admin_tool_00750: 'Find Jobs',
+    admin_tool_00751: 'Legal Notice',
+    admin_tool_00752: 'Mobile Version',
+    admin_tool_00753: 'Seeker monthly',
   },
 }
 
@@ -243,6 +286,14 @@ const NAME_ALIAS: Record<string, string> = {
   App配置: 'admin_tool_00740',
   计划任务: 'admin_system_00273',
   国家: 'common_07065',
+  找人才: 'admin_tool_00746',
+  企业库: 'admin_tool_00747',
+  积分商城: 'admin_tool_00748',
+  找企业: 'admin_tool_00749',
+  找工作: 'admin_tool_00750',
+  法律声明: 'admin_tool_00751',
+  触屏版: 'admin_tool_00752',
+  求职包月: 'admin_tool_00753',
 }
 
 let mergedFixes = false
@@ -257,7 +308,7 @@ export function translatePackedText(text: unknown): string {
     locale: activeLocale(i18n),
     lc,
     extraZh: LC_FIRST_WINS.zh,
-    zhRoot: i18n?.messages?.value?.zh as Record<string, unknown> | undefined,
+    zhRoot: ZH_PACK,
   })
 }
 
