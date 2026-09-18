@@ -112,7 +112,7 @@ useSeoMeta({ title: t('wap_00389') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-else-if="bindLoadErr" class="muted">{{ bindLoadErr }}</p>
     <MemberUserSetTabs />
-    <div class="resume_Prompt_box">
+    <div class="site-pc resume_Prompt_box">
       <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('member_user_00474') }}</div>
     </div>
     <div class="site-pc">
@@ -217,7 +217,7 @@ useSeoMeta({ title: t('wap_00389') })
         <p class="muted"><NuxtLink to="/email-verify">{{ $t('wap_user_00179') }}</NuxtLink></p>
       </form>
     </div>
-    <p class="muted">{{ $t('ajax_00001') }}</p>
+    <p class="site-pc muted">{{ $t('ajax_00001') }}</p>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

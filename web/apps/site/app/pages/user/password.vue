@@ -89,15 +89,18 @@ useSeoMeta({ title: t('member_user_00226') })
       </form>
     </div>
     <form class="site-h5 verification_form" @submit.prevent="submit">
-      <MemberField :label="$t('wap_01096')">
+      <div class="verification_formname">{{ $t('wap_01096') }}</div>
+      <div class="verification_form_code">
         <input v-model="form.old_password" type="password" :placeholder="$t('wap_01097')" />
-      </MemberField>
-      <MemberField :label="$t('wap_user_00305')">
+      </div>
+      <div class="verification_formname">{{ $t('wap_user_00305') }}</div>
+      <div class="verification_form_code">
         <input v-model="form.new_password" type="password" :placeholder="$t('wap_01099')" />
-      </MemberField>
-      <MemberField :label="$t('wap_01098')">
+      </div>
+      <div class="verification_formname">{{ $t('wap_01098') }}</div>
+      <div class="verification_form_code">
         <input v-model="form.confirm" type="password" :placeholder="$t('wap_01099')" />
-      </MemberField>
+      </div>
       <button type="submit" class="verification_form_btn">{{ $t('wap_js_00094') }}</button>
     </form>
     <p v-if="msg" class="muted">{{ msg }}</p>

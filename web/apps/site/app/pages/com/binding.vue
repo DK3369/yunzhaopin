@@ -128,7 +128,7 @@ const pop = ref<'mobile' | 'email' | ''>('')
           <li class="job_list_tit_cur"><a href="javascript:;">{{ $t('member_user_00059') }}</a></li>
         </ul>
       </nav>
-      <div class="resume_Prompt_box">
+      <div class="site-pc resume_Prompt_box">
         <div class="resume_Prompt"><i class="resume_Prompt_icon" />{{ $t('member_user_00474') }}</div>
       </div>
       <div class="site-pc">

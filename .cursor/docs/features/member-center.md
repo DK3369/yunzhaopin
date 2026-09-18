@@ -65,7 +65,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | `user_new_tit` | `user_resume_list` | `/user/resume`、`/user/expects`（H5 编辑是一张 `resume_min_body_cord`；空简历用 `create_resume` + `yun_createlist`，不要 PC `MemberField`） |
 | 招聘 `/com/*` | `com_body` + `newmember_tit` | 空态 PC `com_msg_no*`，H5 `none_position_body*`；**不要**求职 `msg_no` / `uesr_submit` |
 
-求职表单：`MemberField` 给 input 打 `verification_text`。招聘发职位/资料：`MemberReleaseRow`（必须放在 `com_release_box > ul` 里的 `<li>`）给 input 打 `com_release_textnew_text`；提交用 `btn_01`，不要 `verification_form_btn`。
+求职表单：`MemberField` 给 input 打 `verification_text`。H5 改密 **不要** `MemberField` / `yun_create_name`（那是简历行内绝对定位，会叠在输入框上）；对照 PHP `password.htm` 用 `verification_formname` + `verification_form_code`。绑定页 `member_user_00474`（Bind Available Login Account Website）**只 PC**。招聘发职位/资料：`MemberReleaseRow`（必须放在 `com_release_box > ul` 里的 `<li>`）给 input 打 `com_release_textnew_text`；提交用 `btn_01`，不要 `verification_form_btn`。
 
 `MemberComScreen`：PC `newmember_screenbox`；H5 另出 `m_taball` / `m_taballactive` / `zp_num`。
 
