@@ -471,6 +471,40 @@ a.sys_a {
   .site-h5 {
     display: revert;
   }
+  /* H5 首页搜索：yunwap 按 span 写死 5.33rem，input 默认白底会截成半截灰胶囊 */
+  .site-h5 .index_newedition_search_c {
+    display: flex;
+    align-items: center;
+  }
+  .site-h5 .index_newedition_search_p {
+    flex: 1 1 auto;
+    width: auto !important;
+    min-width: 0;
+    height: 0.933333rem;
+    padding: 0 0.96rem 0 0.4rem;
+    border: 0;
+    background: transparent;
+    color: #757575;
+    font-size: 0.346667rem;
+    line-height: 0.933333rem;
+    outline: none;
+    appearance: none;
+    box-shadow: none;
+    box-sizing: border-box;
+  }
+  .site-h5 .index_newedition_searchbth {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+    width: 0.933333rem;
+    height: 0.933333rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+  }
   /* H5 职位卡标题最多 3 行；yunwap `.table-card-word` 是 nowrap 单行 */
   .site-h5 .card_post {
     height: auto;

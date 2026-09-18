@@ -42,10 +42,10 @@
         <div class="index_newedition_searchbg">
           <form class="index_newedition_search_c" action="/jobs" method="get">
             <input
-              class="index_newedition_search_p searchnew"
-              style="width: 95%"
+              class="index_newedition_search_p"
               name="keyword"
               :placeholder="$t('wap_user_00254')"
+              autocomplete="off"
             />
             <button class="index_newedition_searchbth" type="submit" :aria-label="$t('common.search')" />
           </form>
