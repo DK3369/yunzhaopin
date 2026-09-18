@@ -549,6 +549,18 @@ useHead({
                 :alt="$t('wap_com_00242')"
               />
               <template v-else>
+              <div class="job_details_top_extension">
+                <div class="job_details_top_extension_zl">
+                  <a href="javascript:;" class="job_details_top_extension_jb" @click.prevent="report">{{
+                    $t('wap_com_00350')
+                  }}</a>
+                  <NuxtLink :to="`/poster/job/${id}`">{{ $t('ui.poster') }}</NuxtLink>
+                  <NuxtLink
+                    v-if="String(settings.sy_h5_share || '1') !== '2'"
+                    :to="`/share/job/${id}`"
+                  >{{ $t('common.share') }}</NuxtLink>
+                </div>
+              </div>
               <div class="job_details_top_operation">
                 <a
                   href="javascript:;"
@@ -567,19 +579,6 @@ useHead({
                   class="job_details_top_operation_sq"
                   @click.prevent="apply"
                 >{{ applyCta.label }}</a>
-              </div>
-              <div class="job_details_top_extension">
-                <div class="job_details_top_extension_zl">
-                  <a href="javascript:;" class="job_details_top_extension_jb" @click.prevent="report">{{
-                    $t('wap_com_00350')
-                  }}</a>
-                  <NuxtLink :to="`/poster/job/${id}`">{{ $t('ui.poster') }}</NuxtLink>
-                  <EmailRecommendForm kind="job" :id="id" />
-                  <NuxtLink
-                    v-if="String(settings.sy_h5_share || '1') !== '2'"
-                    :to="`/share/job/${id}`"
-                  >{{ $t('common.share') }}</NuxtLink>
-                </div>
               </div>
               </template>
             </div>
@@ -945,31 +944,18 @@ useHead({
               <a href="javascript:;" class="yun_czfoot_s" @click.prevent="shareJob">
                 <div class="yun_czfoot_s_p yun_czfoot_scicon">{{ $t('common.share') }}</div>
               </a>
-              <NuxtLink :to="`/poster/job/${id}`" class="yun_czfoot_s">
-                <div class="yun_czfoot_s_p">{{ $t('ui.poster') }}</div>
-              </NuxtLink>
-              <NuxtLink
-                v-if="String(settings.sy_h5_share || '1') !== '2'"
-                :to="`/share/job/${id}`"
-                class="yun_czfoot_s"
-              >
-                <div class="yun_czfoot_s_p">{{ $t('common.share') }}</div>
-              </NuxtLink>
             </div>
-            <a
-              v-if="applyCta.kind !== 'apply'"
-              class="yun_czfoot_s"
-            >
-              <div class="yun_czfoot_s_p yun_czfoot_ytdicon">{{ applyCta.label }}</div>
-            </a>
-            <a
-              v-else
-              href="javascript:;"
-              class="yun_czfoot_s"
-              @click.prevent="apply"
-            >
-              <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{ applyCta.label }}</div>
-            </a>
+            <div class="yun_czfoot_r">
+              <div
+                v-if="applyCta.kind !== 'apply'"
+                class="yun_czfoot_lt yun_czfoot_lt_ytd"
+              >
+                <a href="javascript:;">{{ applyCta.label }}</a>
+              </div>
+              <div v-else class="yun_czfoot_lt yun_czfoot_lt_td">
+                <a href="javascript:;" @click.prevent="apply">{{ applyCta.label }}</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

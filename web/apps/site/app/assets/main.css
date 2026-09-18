@@ -2188,6 +2188,31 @@ a.sys_a {
   justify-content: flex-end;
   align-items: center;
   gap: 18px;
+  padding-top: 12px;
+}
+.site-pc .job_details_top_operation_sq,
+.site-pc .job_details_top_operation_ysq {
+  width: auto;
+  min-width: 200px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+.site-pc .job_details_top_extension {
+  position: static;
+  height: auto;
+  right: auto;
+  top: auto;
+  width: 100%;
+  text-align: right;
+}
+.site-pc .job_details_top_extension_zl {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  float: none;
+  margin-left: 0;
 }
 .site-pc .job_details_top_operation_sc,
 .site-pc .job_details_top_operation_sq,
@@ -2240,6 +2265,25 @@ a.sys_a {
 /* PHP job_show 有 3.2rem 蓝底，卡片用负 margin 叠上去；Vue 只有 AppHeader，负 margin 会把标题送进顶栏 */
 .site-h5 .job_describe {
   margin-top: 0.16rem;
+}
+/* 申请条不要被 H5 底栏 z-index:100 盖住；抬到 tab 上方 */
+.site-h5 .yun_czfootfixed {
+  bottom: 1.813333rem;
+  z-index: 90;
+}
+.site-h5 .yun_czfoot_lt {
+  font-size: 0.373333rem;
+  line-height: 1.066667rem;
+  margin-right: 0.16rem;
+  min-width: 0;
+}
+.site-h5 .yun_czfoot_lt a {
+  color: #fff;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.16rem;
 }
 
 /* 职位详情 JD：覆盖 style.css / H5 * 重置（p/ul/h2 边距清零、列表无圆点） */
