@@ -1,0 +1,160 @@
+/*简历详细*/
+.hr_resumebox{width:800px; float:left; padding:15px 0 80px 0}
+.hr_resume_pic{width:70px; float:left; padding-left: 20px; position: relative;;}
+.hr_resume_pic img{border-radius: 50%;;}
+.hr_resume_tr{width:600px; float: left; padding-left: 20px;;}
+.hr_resume_username{ font-size: 16px; font-weight: bold;}
+.hr_resume_tag{ display: inline-block; background-color: #ffefd5;color: #f60; margin-top: 5px;padding:3px 8px;border-radius:3px;}
+.hr_resume_time{color:#999; font-size: 12px; padding-top: 10px; padding-bottom: 20px;}
+.hr_resume_time_l{ display: inline-block;; margin-right: 15px;}
+.hr_resume_info{ color:#666; padding-top: 10px; padding-bottom: 10px;;}
+.hr_resume_pd{ padding-left: 30px;;}
+.hr_resume_tit_name{ font-size: 16px; font-weight: bold;}
+.hr_resume_list{width:100%; float:left}
+.hr_resume_list li{ line-height:36px;color: #666;margin-top:20px; padding-left:30px;border-left:1px solid #eee; position:relative}
+.hr_resume_listicon{width:11px;height:11px; background:#3588ff;border-radius:50%; position:absolute;left:-6px;top:13px; display:inline-block}
+/*右侧操作按钮*/
+
+.hr_look_cz{width:100%; position: fixed;left:0px;;right:0px;bottom:0px; text-align: center; z-index: 1000; background-color: #f60; }
+
+/*右侧操作按钮*/
+.hr_resumeboxbth{width:115px; position: fixed;right:30px;bottom:100px; text-align: center; z-index: 1000; 
+}
+.hr_resumeboxczname{color:#3588ff; font-weight:bold}
+.hrcz_bth{display: inline-block;width:80px;height:36px; line-height: 36px; text-align: left;margin-top: 10px; padding-left: 35px;border-radius:4px;; }
+.hr_resumeboxbth_ms{ background:#eaf3ff url(../images/hrcz_icon2.png) no-repeat 12px center;color:#3588ff;}
+.hr_resumeboxbth_xz{ background:#eaf3ff url(../images/hrcz_icon1.png) no-repeat 12px center;color:#3588ff;}
+.hr_resumeboxbth_chat{ background:#eaf3ff url(../images/hrcz_icon3.png) no-repeat 12px center;color:#3588ff;}
+.hr_resumeboxbth_bz{ background:#eaf3ff url(../images/hrcz_icon4.png) no-repeat 12px center;color:#3588ff;}
+.hr_resumeboxbth_yms{ background:#e8e8e8 url(../images/hrcz_icon2_h2.png) no-repeat 12px center;color:#a69f9f;}
+.hr_resumeboxbth_jb{ background:#eaf3ff url(../images/hrcz_icon6.png) no-repeat 12px center;color:#3588ff;}
+.hr_resumeboxbth_look{ background:#3588ff url(../images/hrcz_icon7_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_bj{ background:#eaf3ff url(../images/hrcz_icon5.png) no-repeat 12px center;color:#3588ff;}
+.hr_resumeboxbth_ms:hover{ background:#3588ff url(../images/hrcz_icon2_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_xz:hover{ background:#3588ff url(../images/hrcz_icon1_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_chat:hover{ background:#3588ff url(../images/hrcz_icon3_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_bz:hover{ background:#3588ff url(../images/hrcz_icon4_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_jb:hover{ background:#3588ff url(../images/hrcz_icon6_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_look:hover{ background:#1165dc url(../images/hrcz_icon7_h.png) no-repeat 12px center;color:#fff;}
+.hr_resumeboxbth_bj:hover{ background:#3588ff url(../images/hrcz_icon5_h.png) no-repeat 12px center;color:#fff;}
+.look_resume{ padding-top: 30px;width:100%; float: left;}
+.look_resume a{ display: inline-block; text-align: center; background-color: #e9f1fe;
+    color: #2778F8;border-radius:4px; }
+.hr_resumeboxbth_bz:hover{color:#fff; text-decoration: none;;}
+.hr_resumeboxbth_chat:hover{color:#fff; text-decoration: none;;}
+.hr_resumeboxbth a:hover{color:#fff; text-decoration: none;;}
+.resume_xbn{width:18px;height:18px; background:url(../images/n.png) no-repeat; position: absolute ;right:0px;bottom:0px;display: inline-block;border-radius:50%;}	
+.resume_xbnv{width:18px;height:18px; background:url(../images/nv.png) no-repeat; position: absolute ;right:0px;bottom:0px;display: inline-block;border-radius:50%;}
+.hr_tccz_box{background:#ffff ;color:#333;width:100px; position: absolute;left:0px;bottom:40px; display: none;border-radius:4px;box-shadow: 0 2px 20px 0 rgb(15 12 70 / 10%);}
+.com_received_username_bjboxcur .hr_tccz_box{ display:block}
+.com_received_username_bjboxcur  .com_received_username_bjbox_show_a {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 25px;
+    position: relative; text-align: left;
+}
+.com_received_username_bjboxcur  .com_received_username_bjbox_show_a:hover{color:#3588ff}
+.com_received_username_bjboxcur  .com_received_username_bjbox_show_a i {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    position: absolute;
+    left: 5px;
+    top: 10px;
+}
+
+
+.newbz_list{ padding-left: 100px; position: relative;}
+.newbz_list_name{ position: absolute;left:25px;top:0px; line-height: 38px;}
+.newbz_textarea{ padding-top: 15px;}
+.newbz_textarea textarea{width:270px;height:80px;}
+.newbz_bthbox{padding:15px 0 20px 0}
+.newbz_bth{width:275px;height:45px; background-color:#3d7dfd;color:#fff;border-radius:5px;border:none;  cursor: pointer; font-size: 16px;}
+
+.com_received_username_bjbox_show_a .com_received_username_yckicon {
+    background: url(../images/com_jl_zt.png) no-repeat 0 -15px;
+    top: 8px;
+}
+
+.com_received_username_bjbox_show_a .com_received_username_bhgicon {
+    background: url(../images/com_jl_zt.png) no-repeat 0 -35px;
+    top: 8px;
+}
+
+.com_received_username_bjbox_show_a .com_received_username_wjticon {
+    background: url(../images/Indu.png) no-repeat 0 0;
+    top: 8px;
+}
+
+.com_received_username_bjbox_show_a .com_received_username_dtzicon {
+    background: url(../images/com_jl_zt.png) no-repeat 0 -74px;
+    top: 8px;
+}
+.com_received_username_bjbox{
+    float: right;
+    width: 58px;
+    margin-left: 10px;
+}
+.com_received_username_bjbox_show {
+    width: 70px;
+    border-radius: 2px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background: #fff;
+    position: absolute;
+    right: 0px;
+    top: 29px;
+    font-size: 12px;
+    box-shadow: 0 2px 20px 0 rgba(15, 12, 70, .1);
+    display: none
+}
+.com_received_username_bjbox_show_a {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 25px;
+    position: relative
+}
+.com_received_username_bj {
+    width: 56px;
+    height: 28px;
+    line-height: 28px;
+    color: #666;
+    display: inline-block;
+    text-align: center;
+    background: #fff;
+    border-radius: 40px;
+    border: 1px solid #eee
+}
+.com_received_username_bjboxcur {
+    position: relative
+}
+.com_received_username_bjboxcur .com_received_username_bjbox_show {
+    display: block
+}
+
+		.hr_look_cz{width:100%;height:60px; position: fixed;left:0px;;right:0px;bottom:0px; text-align: center; z-index: 1000; background-color: #fff;border-top:1px solid #eee }
+		.hr_look_czbox{display: flex;}
+		.hr_look_cz_left{width:320px;display: flex;padding-right:20px;}
+		.hr_look_cz_bz{width:30%} 
+		.hr_look_cz_icon{color:#666;width:100%; display: block;padding-top:30px;color:#666}
+		.hr_look_cz_cont{width:380px;display: flex;flex-wrap:wrap;padding-top:10px; }
+		.hr_look_cz_bth{ flex:1; height:40px; background:#145dff;border:1px solid #145dff;color:#fff;border-radius:6px; line-height:40px;text-aglin:center; margin-right:10px;}
+	    .hr_look_cz_bthxz{background:#fff;border:1px solid #145dff;color:#145dff;}
+		.hr_look_cz_bth a{
+            color:#fff;
+            overflow: hidden;
+            position: relative;
+            display: block;
+            height: 100%;
+            height: 100%;
+        }
+		.hr_look_cz_bthxz a{color:#145dff;display: block;}
+		.hr_look_cz_net{width:110px;padding-top:10px; }
+		.hr_look_cz_net a{width:100%;height:40px;display:block; 
+    color: #145dff; text-decoration: underline; border-radius:6px; line-height:40px;text-aglin:center; margin-right:20px;}
+	    .hr_look_cz_i_bz{ background: url(../images/hrcz_icon4.png) no-repeat center 12px; }
+		.hr_look_cz_i_yq{ background: url(../images/hrcz_icon2.png) no-repeat  center 12px; }
+		.hr_look_cz_i_jb{ background: url(../images/hrcz_icon6.png) no-repeat  center 12px; }
+		.hr_look_cz_i_bj{ background: url(../images/hrcz_icon5.png) no-repeat  center 12px; }

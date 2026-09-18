@@ -45,7 +45,7 @@ pub async fn upload(
             "unsupported image (declared {declared})"
         )));
     };
-    let key = format!("admin/{}/{}.{}", user.uid, uuid::Uuid::now_v7(), ext);
+    let key = format!("upload/admin/{}/{}.{}", user.uid, uuid::Uuid::now_v7(), ext);
     let bytes_len = body.len();
     let url = state.storage.put(&key, ct, body).await?;
     Ok(ApiResponse::data(UploadResult {

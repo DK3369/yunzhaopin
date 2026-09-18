@@ -1,6 +1,6 @@
 # 整机地图（后续对话先读）
 
-招聘系统：**PHP 页面已切走**，现行是 Rust API + Nuxt 4（PC/H5 + admin）。`uploads/` 只作只读对照与用户上传静态，**不要改 PHP 业务代码**。
+招聘系统：**PHP 页面已切走**，现行是 Rust API + Nuxt 4（PC/H5 + admin）。`uploads/` 是冷备份 / 只读对照，**运行时禁止** `read_to_string` / `publicAssets` 指过去；用户文件在 `storage/upload/`。**不要改 PHP 业务代码**。
 
 长文拓扑与路径表见 [doc/ARCHITECTURE.md](../../doc/ARCHITECTURE.md)。编译 / 重启见 [rust/run.md](./rust/run.md)。加功能配方见 [dev-playbook.md](./dev-playbook.md)。
 
@@ -12,7 +12,8 @@
 | `web/apps/site` | Nuxt 4 SSR：PC + H5 + 会员中心；现网 Web TCP **`:3001`** |
 | `web/apps/admin` | Nuxt 4 SPA（`ssr: false`，`baseURL=/admin/`）；现网 **unix socket** |
 | `web/layers/{base,ui}` | 共享 BFF / auth / 组件 |
-| `uploads/` | 旧 PHP（只读对照 + `/data/upload/` 静态） |
+| `uploads/` | 旧 PHP 冷备份 / 只读对照；运行时不要打开 |
+| `storage/upload/` | 用户文件（头像/证照/新闻图）；gitignore，不进仓库 |
 | `ops/` | 现网 systemd / nginx 样例 / `restart.sh` |
 | `doc/` | 架构长文、契约快照、历史方案 |
 | `.cursor/docs/` | **给 Cursor / 后续对话的精炼口径**（本文所在） |
@@ -55,7 +56,7 @@ flowchart LR
 |---|---|
 | `/` `/api/` `/admin/` | `:3001` site（`/admin` 再转 unix socket） |
 | `/yapi/`（剥前缀）`/v1/` `/v2/` `/health` `/ready` `/callback/` | `:3003` |
-| `/data/upload/` | `uploads/data/upload/` 静态 |
+| `/data/upload/` | `storage/upload/`（nginx alias；job1 无 nginx 时由 site Nitro 运行时读盘） |
 
 浏览器**不**直连 `:3003` 调业务（除 Flutter `/yapi/`、支付回调）。PC/H5 走 `/api/proxy/...`，后台走 `/admin/api/proxy/...`。
 
@@ -100,6 +101,7 @@ ops/restart.sh status
 ## 禁做清单（硬边界）
 
 - 改接口只动 `phpyun-rs/`；改页面只动 `web/`；**不改** `uploads/` 控制器 / Smarty / 后台 Vue 源码
+- 运行时不要读 `uploads/`（皮肤在 `web/apps/site/public/legacy`，用户文件在 `storage/upload`）
 - 不起旧 `:3000`；现网 Web TCP 只有 `:3001`
 - `/v1/wap` + `/v1/mcenter` 只加法；后台不要塞进 App 契约；不要 `POST /v1/admin/invoke`
 - Handler 禁止 `sqlx` / `redis` / `moka` / `reqwest` / 业务规则（见 `rust-code.mdc`）

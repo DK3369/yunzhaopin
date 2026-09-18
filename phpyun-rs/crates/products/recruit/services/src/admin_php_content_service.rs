@@ -2,6 +2,7 @@
 //! SQL stays in repos. Routes are `php-*` and stay out of AdminDoc.
 
 use std::collections::{HashMap, HashSet};
+use std::sync::OnceLock;
 
 use chrono::{Datelike, TimeZone};
 use phpyun_core::i18n;
@@ -13631,7 +13632,7 @@ async fn domain_list_config_save(
 
 const SKIP_STYLE_DIRS: &[&str] = &[
     "admin", "ask", "chat", "company", "lietou", "member", "promoter", "resume", "school",
-    "shop", "siteadmin", "train", "im", "wap", "wapadmin", "com", "indextpl",
+    "shop", "siteadmin", "train", "im", "wap", "wapadmin", "com", "indextpl", "default",
 ];
 
 fn style_info_row(root: &std::path::Path, dir: &str) -> Value {
@@ -13672,27 +13673,12 @@ fn collect_style_dirs(root: &std::path::Path) -> Vec<String> {
 }
 
 fn domain_style_list() -> Vec<Value> {
-    let php = std::path::Path::new("/www/wwwroot/zzzz.com/uploads/app/template");
     let web = std::path::Path::new("/www/wwwroot/zzzz.com/web/apps/site/public/skins");
-    let mut seen = std::collections::HashSet::new();
-    let mut out = Vec::new();
-    for dir in collect_style_dirs(php) {
-        if SKIP_STYLE_DIRS.contains(&dir.as_str()) {
-            continue;
-        }
-        if seen.insert(dir.clone()) {
-            out.push(style_info_row(php, &dir));
-        }
-    }
-    for dir in collect_style_dirs(web) {
-        if SKIP_STYLE_DIRS.contains(&dir.as_str()) {
-            continue;
-        }
-        if seen.insert(dir.clone()) {
-            out.push(style_info_row(web, &dir));
-        }
-    }
-    out
+    collect_style_dirs(web)
+        .into_iter()
+        .filter(|dir| !SKIP_STYLE_DIRS.contains(&dir.as_str()))
+        .map(|dir| style_info_row(web, &dir))
+        .collect()
 }
 
 fn tpl_preview_url(cfg: &HashMap<String, String>, img: &str) -> String {
@@ -13742,6 +13728,7 @@ async fn domain_list_get_cache(state: &AppState) -> AppResult<Value> {
     }))
 }
 
+#[derive(Clone, serde::Deserialize)]
 struct PhpTplDef {
     key: String,
     name: String,
@@ -13751,106 +13738,17 @@ struct PhpTplDef {
     vars: serde_json::Map<String, Value>,
 }
 
-fn php_squote_after(block: &str, key: &str) -> String {
-    let needle = format!("'{key}'");
-    let Some(pos) = block.find(&needle) else {
-        return String::new();
-    };
-    let rest = block[pos + needle.len()..].trim_start();
-    let rest = rest.strip_prefix("=>").unwrap_or(rest).trim_start();
-    let rest = rest.strip_prefix('\'').unwrap_or(rest);
-    rest.find('\'').map(|i| rest[..i].to_string()).unwrap_or_default()
-}
-
-fn php_tpl_vars(block: &str) -> serde_json::Map<String, Value> {
-    let mut m = serde_json::Map::new();
-    let mut s = block;
-    while let Some(i) = s.find("'{") {
-        let s2 = &s[i + 1..];
-        let Some(endk) = s2.find('\'') else {
-            break;
-        };
-        let key = &s2[..endk];
-        let rest = s2[endk + 1..].trim_start();
-        let rest = rest.strip_prefix("=>").unwrap_or(rest).trim_start();
-        let rest = rest.strip_prefix('\'').unwrap_or(rest);
-        let Some(j) = rest.find('\'') else {
-            break;
-        };
-        m.insert(key.to_string(), json!(rest[..j]));
-        s = &rest[j + 1..];
-    }
-    m
-}
-
-fn last_php_ident_key(s: &str) -> String {
-    let mut i = s.len();
-    while i > 0 {
-        let Some(p) = s[..i].rfind('\'') else {
-            break;
-        };
-        let Some(p0) = s[..p].rfind('\'') else {
-            break;
-        };
-        let k = &s[p0 + 1..p];
-        if !k.is_empty() && k.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
-            return k.to_string();
-        }
-        i = p0;
-    }
-    String::new()
-}
-
-fn split_paren_block(s: &str) -> (&str, &str) {
-    let mut depth = 1i32;
-    for (i, c) in s.char_indices() {
-        match c {
-            '(' => depth += 1,
-            ')' => {
-                depth -= 1;
-                if depth == 0 {
-                    return (&s[..i], &s[i + 1..]);
-                }
-            }
-            _ => {}
-        }
-    }
-    (s, "")
-}
-
-fn parse_arr_tpl() -> Vec<PhpTplDef> {
-    let text = std::fs::read_to_string("/www/wwwroot/zzzz.com/uploads/config/db.tpl.php").unwrap_or_default();
-    let mut out = Vec::new();
-    let mut search = text.as_str();
-    while let Some(arr) = search.find("=> array") {
-        let key = last_php_ident_key(&search[..arr]);
-        let after = search[arr + "=> array".len()..].trim_start();
-        let after = after.strip_prefix('(').unwrap_or(after);
-        let (block, rest) = split_paren_block(after);
-        if !key.is_empty() {
-            let mut vars = php_tpl_vars(block);
-            vars.remove("name");
-            vars.remove("type");
-            vars.remove("config");
-            vars.remove("cate");
-            out.push(PhpTplDef {
-                key,
-                name: php_squote_after(block, "name"),
-                kind: php_squote_after(block, "type"),
-                config: php_squote_after(block, "config"),
-                cate: php_squote_after(block, "cate"),
-                vars,
-            });
-        }
-        search = rest;
-    }
-    out
+fn parse_arr_tpl() -> &'static [PhpTplDef] {
+    static TPLS: OnceLock<Vec<PhpTplDef>> = OnceLock::new();
+    TPLS.get_or_init(|| {
+        serde_json::from_str(include_str!("../data/db.tpl.json")).expect("bundled db.tpl.json")
+    })
 }
 
 fn tpl_meta_of(name: &str) -> (String, Value) {
     for t in parse_arr_tpl() {
         if t.key == name {
-            return (t.name, Value::Object(t.vars));
+            return (t.name.clone(), Value::Object(t.vars.clone()));
         }
     }
     (name.to_string(), json!({}))
@@ -13897,7 +13795,7 @@ async fn email_set_savetplconfig(
     let allowed: std::collections::HashSet<String> = parse_arr_tpl()
         .into_iter()
         .filter(|t| t.kind == "email")
-        .map(|t| t.config)
+        .map(|t| t.config.clone())
         .collect();
     if let Some(obj) = body.as_object() {
         for (k, v) in obj {
@@ -14896,8 +14794,7 @@ async fn fabutool_wx_pub_temp(state: &AppState, body: &Value) -> AppResult<Value
                 t.r#type.clone()
             };
             temptype = t.temptype.to_string();
-            let base = web_base(state);
-            let style = format!("{base}/app/template/admin");
+            let style = "/admin/php-admin".to_string();
             info = json!({
                 "id": t.id,
                 "title": t.title,
@@ -15033,7 +14930,8 @@ async fn fabutool_wx_pub_temp(state: &AppState, body: &Value) -> AppResult<Value
 
 fn replace_admin_style(s: &str, weburl: &str) -> String {
     let style = format!("{weburl}/app/template/admin");
-    s.replace(&style, "{admin_style}")
+    s.replace("/admin/php-admin", "{admin_style}")
+        .replace(&style, "{admin_style}")
         .replace("http://www.yunjob.com/app/template/admin", "{admin_style}")
 }
 
@@ -15065,7 +14963,7 @@ async fn rewrite_mmbiz(state: &AppState, html: &str) -> String {
                     tracing::warn!(url = %clean, "mmbiz image rejected: not an image");
                     continue;
                 };
-                let key = format!("wx/{}/{}", clock::now_ts(), Uuid::now_v7());
+                let key = format!("upload/wx/{}/{}", clock::now_ts(), Uuid::now_v7());
                 if let Ok(stored) = state.storage.put(&key, mime, bytes).await {
                     out = out.replace(&raw, &stored);
                 }
@@ -15494,7 +15392,7 @@ async fn render_wxpub_assembled(
     let web = web_base(state);
     let name = site_name(state).await;
     let today = fmt_ts(clock::now_ts(), "%Y-%m-%d");
-    let style = format!("{web}/app/template/admin");
+    let style = "/admin/php-admin".to_string();
     let globals = vec![
         ("{admin_style}", style),
         ("{网站名称}", name),
@@ -16123,7 +16021,7 @@ async fn tplset_index(state: &AppState) -> AppResult<Value> {
             .unwrap_or("")
             .to_string();
         let img = if img.is_empty() {
-            format!("../app/template/{dir}/images/preview.jpg")
+            format!("/skins/{dir}/preview.svg")
         } else {
             img
         };
@@ -17657,24 +17555,6 @@ fn locoy_php_defaults() -> std::collections::HashMap<String, String> {
         ("locoy_resume_status", "1"),
     ] {
         m.insert(k.into(), v.into());
-    }
-    if let Ok(text) =
-        std::fs::read_to_string("/www/wwwroot/zzzz.com/uploads/data/api/locoy/locoy_config.php")
-    {
-        for part in text.split(',') {
-            let Some((k, v)) = part.split_once("=>") else {
-                continue;
-            };
-            let k = k.trim().trim_matches(|c| c == '"' || c == '\'' || c == '{' || c == '(');
-            let k = k.trim_start_matches('$').trim();
-            if !k.starts_with("locoy_") {
-                continue;
-            }
-            let v = v
-                .trim()
-                .trim_matches(|c| c == '"' || c == '\'' || c == ')' || c == ';' || c == '}');
-            m.insert(k.to_string(), v.to_string());
-        }
     }
     m
 }

@@ -1,4 +1,5 @@
 uploads/data/templates_c/
+/storage/
 /target/
 web/**/node_modules/
 web/node_modules/

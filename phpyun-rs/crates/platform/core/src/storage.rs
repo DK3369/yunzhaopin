@@ -13,8 +13,8 @@
 //!
 //! ## Configuration (env)
 //! - `STORAGE_KIND`: `fs` | `s3` (default `fs`)
-//! - `STORAGE_FS_ROOT`: local storage root (default `./uploads`)
-//! - `STORAGE_BASE_URL`: external URL prefix (default `http://localhost:3000/files`)
+//! - `STORAGE_FS_ROOT`: local storage root (default `../storage`)
+//! - `STORAGE_BASE_URL`: external URL prefix (default `/data`)
 //!
 //! ## Business usage
 //! ```ignore
@@ -220,11 +220,11 @@ impl Storage {
                 let root = cfg
                     .storage_fs_root
                     .clone()
-                    .unwrap_or_else(|| "./uploads".into());
+                    .unwrap_or_else(|| "../storage".into());
                 let base = cfg
                     .storage_base_url
                     .clone()
-                    .unwrap_or_else(|| "http://localhost:3000/files".into());
+                    .unwrap_or_else(|| "/data".into());
                 Ok(Self::new(LocalFsStorage::new(root, base)))
             }
             "s3" => {

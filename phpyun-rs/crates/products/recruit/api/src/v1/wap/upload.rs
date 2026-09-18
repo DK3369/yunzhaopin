@@ -118,7 +118,7 @@ async fn store(
     body: Bytes,
 ) -> AppResult<UploadResult> {
     let ext = ext_of(ct);
-    let key = format!("{dir}/{}/{}.{}", uid, uuid::Uuid::now_v7(), ext);
+    let key = format!("upload/{dir}/{}/{}.{}", uid, uuid::Uuid::now_v7(), ext);
     let bytes_len = body.len();
     let url = state.storage.put(&key, ct, body).await?;
     Ok(UploadResult {

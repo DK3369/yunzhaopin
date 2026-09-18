@@ -38,8 +38,8 @@
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{AppResult, AppState, Lang};
 use phpyun_models::site_setting::repo as setting_repo;
+use serde::Deserialize;
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
@@ -152,7 +152,7 @@ pub struct Dicts {
     /// parent `keyid` → child ids
     comclass_children: HashMap<i32, Vec<i32>>,
     userclass_children: HashMap<i32, Vec<i32>>,
-    /// PHP `$city_index` province ids (from `data/plus/city.cache.php`)
+    /// China province ids (bundled `city-cn.json`; not `phpyun_city_class` world ids).
     city_index: Vec<i32>,
     /// PHP `$city_type[parent]` children
     city_children: HashMap<i32, Vec<i32>>,
@@ -774,7 +774,7 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
     let (userclass, userclass_var, userclass_children) = split_class_rows(user_rows?);
 
     let mut city_zh = city?;
-    let (city_index, city_children, plus_names) = load_php_city_cache(state);
+    let (city_index, city_children, plus_names) = load_bundled_city_cn();
     for (id, name) in plus_names {
         if !name.is_empty() {
             city_zh.insert(id, name);
@@ -839,176 +839,38 @@ async fn load_class_rows(
         .map_err(phpyun_core::ApiError::internal)
 }
 
-/// PHP `CacheM->GetCache('city')` reads `data/plus/city.cache.php`.
-/// `phpyun_city_class` in this database is the world-country tree (ids ≥ 4001),
-/// while jobs/resumes still store the legacy China ids (6=广东, 81=河源).
-fn load_php_city_cache(
-    state: &AppState,
-) -> (Vec<i32>, HashMap<i32, Vec<i32>>, HashMap<i32, String>) {
-    let Some(path) = city_cache_path(state) else {
-        return (Vec::new(), HashMap::new(), HashMap::new());
-    };
-    let Ok(text) = std::fs::read_to_string(&path) else {
-        tracing::warn!(path = %path.display(), "city.cache.php unreadable");
-        return (Vec::new(), HashMap::new(), HashMap::new());
-    };
-    let index = parse_city_index(&text);
-    let children = parse_city_type(&text);
-    let names = parse_city_name(&text);
-    tracing::info!(
-        path = %path.display(),
-        provinces = index.len(),
-        names = names.len(),
-        "loaded PHP city.cache.php"
-    );
-    (index, children, names)
+/// China job/resume city tree. `phpyun_city_class` is the world-country tree
+/// (ids ≥ 4001); jobs still store legacy China ids (6=广东, 81=河源).
+#[derive(Deserialize)]
+struct CityCnFile {
+    index: Vec<i32>,
+    children: HashMap<String, Vec<i32>>,
+    names: HashMap<String, String>,
 }
 
-fn city_cache_path(state: &AppState) -> Option<PathBuf> {
-    let mut cands: Vec<PathBuf> = Vec::new();
-    if let Some(root) = state.config.storage_fs_root.as_deref() {
-        cands.push(Path::new(root).join("data/plus/city.cache.php"));
-    }
-    cands.push(PathBuf::from("./uploads/data/plus/city.cache.php"));
-    cands.push(PathBuf::from(
-        "/www/wwwroot/zzzz.com/uploads/data/plus/city.cache.php",
-    ));
-    cands.into_iter().find(|p| p.is_file())
-}
-
-fn slice_after<'a>(src: &'a str, marker: &str) -> Option<&'a str> {
-    src.split_once(marker).map(|(_, rest)| rest)
-}
-
-fn parse_city_index(src: &str) -> Vec<i32> {
-    let Some(rest) = slice_after(src, "$city_index=array(") else {
-        return Vec::new();
-    };
-    let body = rest.split_once(')').map(|(b, _)| b).unwrap_or(rest);
-    parse_quoted_ints(body)
-}
-
-fn parse_city_name(src: &str) -> HashMap<i32, String> {
-    let Some(rest) = slice_after(src, "$city_name=array(") else {
-        return HashMap::new();
-    };
-    parse_int_string_pairs(rest)
-}
-
-fn parse_city_type(src: &str) -> HashMap<i32, Vec<i32>> {
-    let Some(rest) = slice_after(src, "$city_type=array(") else {
-        return HashMap::new();
-    };
-    let end = rest.find("$city_name=").unwrap_or(rest.len());
-    let body = &rest[..end];
-    let mut map = HashMap::new();
-    let bytes = body.as_bytes();
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b'\'' {
-            let key_start = i + 1;
-            let mut j = key_start;
-            while j < bytes.len() && bytes[j] != b'\'' {
-                j += 1;
-            }
-            let parent = std::str::from_utf8(&bytes[key_start..j])
-                .ok()
-                .and_then(|s| s.parse::<i32>().ok());
-            i = j + 1;
-            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
-                i += 1;
-            }
-            if i + 1 < bytes.len() && bytes[i] == b'=' && bytes[i + 1] == b'>' {
-                i += 2;
-                while i < bytes.len() && bytes[i].is_ascii_whitespace() {
-                    i += 1;
-                }
-                if body[i..].starts_with("array(") {
-                    i += 6;
-                    let inner_end = body[i..].find(')').map(|p| i + p).unwrap_or(body.len());
-                    let kids = parse_int_string_pairs(&body[i..inner_end])
-                        .into_iter()
-                        .filter_map(|(_, v)| v.parse::<i32>().ok())
-                        .collect::<Vec<_>>();
-                    if let Some(p) = parent {
-                        map.insert(p, kids);
-                    }
-                    i = inner_end;
-                    continue;
-                }
-            }
-        }
-        i += 1;
-    }
-    map
-}
-
-fn parse_quoted_ints(src: &str) -> Vec<i32> {
-    let mut out = Vec::new();
-    let bytes = src.as_bytes();
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b'\'' {
-            let s = i + 1;
-            let mut j = s;
-            while j < bytes.len() && bytes[j] != b'\'' {
-                j += 1;
-            }
-            if let Ok(n) = std::str::from_utf8(&bytes[s..j])
-                .unwrap_or("")
-                .parse::<i32>()
-            {
-                out.push(n);
-            }
-            i = j + 1;
-            continue;
-        }
-        i += 1;
-    }
-    out
-}
-
-fn parse_int_string_pairs(src: &str) -> HashMap<i32, String> {
-    let mut out = HashMap::new();
-    let bytes = src.as_bytes();
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b'\'' {
-            let ks = i + 1;
-            let mut j = ks;
-            while j < bytes.len() && bytes[j] != b'\'' {
-                j += 1;
-            }
-            let key = std::str::from_utf8(&bytes[ks..j])
-                .ok()
-                .and_then(|s| s.parse::<i32>().ok());
-            i = j + 1;
-            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
-                i += 1;
-            }
-            if i + 1 < bytes.len() && bytes[i] == b'=' && bytes[i + 1] == b'>' {
-                i += 2;
-                while i < bytes.len() && bytes[i].is_ascii_whitespace() {
-                    i += 1;
-                }
-                if i < bytes.len() && bytes[i] == b'\'' {
-                    i += 1;
-                    let vs = i;
-                    while i < bytes.len() && bytes[i] != b'\'' {
-                        i += 1;
-                    }
-                    if let (Some(k), Ok(v)) = (key, std::str::from_utf8(&bytes[vs..i])) {
-                        out.insert(k, v.to_string());
-                    }
-                    i += 1;
-                    continue;
-                }
-            }
-            continue;
-        }
-        i += 1;
-    }
-    out
+fn load_bundled_city_cn() -> (Vec<i32>, HashMap<i32, Vec<i32>>, HashMap<i32, String>) {
+    static CITY: OnceLock<(Vec<i32>, HashMap<i32, Vec<i32>>, HashMap<i32, String>)> = OnceLock::new();
+    CITY.get_or_init(|| {
+        let raw: CityCnFile = serde_json::from_str(include_str!("../data/city-cn.json"))
+            .expect("bundled city-cn.json");
+        let children: HashMap<i32, Vec<i32>> = raw
+            .children
+            .into_iter()
+            .filter_map(|(k, v)| k.parse::<i32>().ok().map(|id| (id, v)))
+            .collect();
+        let names: HashMap<i32, String> = raw
+            .names
+            .into_iter()
+            .filter_map(|(k, v)| k.parse::<i32>().ok().map(|id| (id, v)))
+            .collect();
+        tracing::info!(
+            provinces = raw.index.len(),
+            name_count = names.len(),
+            "loaded bundled city-cn.json"
+        );
+        (raw.index, children, names)
+    })
+    .clone()
 }
 
 fn build_table(

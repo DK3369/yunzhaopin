@@ -1,7 +1,6 @@
 //! PHP admin `getCache` / `index_base_data` / nested settings JSON.
 
 use std::collections::HashMap;
-use std::path::PathBuf;
 
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::ad::repo as ad_repo;
@@ -239,22 +238,14 @@ fn search_kv(param: &str, name: &str, value: Map<String, Value>) -> Value {
     json!({ "param": param, "name": name, "value": value })
 }
 
-fn special_tpl_files(style: &str) -> Vec<String> {
-    let dir = PathBuf::from("/www/wwwroot/zzzz.com/uploads/app/template")
-        .join(if style.is_empty() { "default" } else { style })
-        .join("special");
-    let Ok(rd) = std::fs::read_dir(&dir) else {
-        return Vec::new();
-    };
-    let mut out = Vec::new();
-    for ent in rd.flatten() {
-        let name = ent.file_name().to_string_lossy().into_owned();
-        if name.ends_with(".htm") && name != "index.htm" && name != "job.htm" {
-            out.push(name);
-        }
-    }
-    out.sort();
-    out
+fn special_tpl_files(_style: &str) -> Vec<String> {
+    vec![
+        "famous.htm".into(),
+        "gl.htm".into(),
+        "newhot.htm".into(),
+        "senior.htm".into(),
+        "special.htm".into(),
+    ]
 }
 
 async fn cat_nodes(state: &AppState, kind: &str) -> AppResult<Vec<(u64, u64, String)>> {

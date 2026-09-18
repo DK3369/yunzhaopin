@@ -36,7 +36,7 @@ pnpm gen:types:admin
 
 - 同一 file-based 路由：`apps/site/app/pages/`
 - 模板双写 `.site-pc` / `.site-h5`；`app/assets/main.css` 用 `min-width:1200px` 显隐
-- 打包 CSS：`/legacy/site-pc.css` / `/legacy/site-h5.css`（见 `server/utils/legacyCss.ts`）；皮肤与会员包按 `m=user|com` 拼
+- 打包 CSS：`/legacy/site-pc.css` / `/legacy/site-h5.css`（见 `server/utils/legacyCss.ts`，磁盘在 `public/legacy/`）；皮肤与会员包按 `m=user|com` 拼
 - `sy_wap_web==2` 时 `html.force-pc` 强制 PC
 
 ## 调 Rust：只走 BFF
@@ -127,3 +127,4 @@ apps/site/i18n/locales/
 - 把后台能力塞进 `/v1/wap` / `/v1/mcenter`
 - 改 `uploads/` 模板「顺便修皮」；只改 `web/`
 - 现网再绑 admin TCP 或 start `test-jobs-phpyun-admin-edge`
+- 运行时把 `legacyCss` 指回 `uploads/`；用户文件走仓库根 `storage/upload/`（`/data/upload` 运行时读盘，不要 `publicAssets` 构建拷贝）

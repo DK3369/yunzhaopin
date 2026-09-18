@@ -1,0 +1,981 @@
+[
+  {
+    "key": "emailupjob",
+    "name": "企业未更新职位",
+    "kind": "email",
+    "config": "sy_email_upjob",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "企业名",
+      "{date}": "上次刷新时间",
+      "{day}": "未发布天数"
+    }
+  },
+  {
+    "key": "emailaddjob",
+    "name": "企业未发布职位",
+    "kind": "email",
+    "config": "sy_email_addjob",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "企业名",
+      "{date}": "上次发布时间",
+      "{day}": "未发布天数"
+    }
+  },
+  {
+    "key": "emailwebbirthday",
+    "name": "网站周年庆",
+    "kind": "email",
+    "config": "sy_email_webbirthday",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "真实姓名",
+      "{year}": "年数",
+      "{date}": "创办日期"
+    }
+  },
+  {
+    "key": "emailuserwdl",
+    "name": "个人会员长期未登录",
+    "kind": "email",
+    "config": "sy_email_userwdl",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{date}": "上次登录时间"
+    }
+  },
+  {
+    "key": "emailcomwdl",
+    "name": "企业会员长期未登录",
+    "kind": "email",
+    "config": "sy_email_comwdl",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{name}": "企业名称",
+      "{date}": "上次登录时间"
+    }
+  },
+  {
+    "key": "emailuserup",
+    "name": "个人会员未更新简历",
+    "kind": "email",
+    "config": "sy_email_userup",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{date}": "上次更新时间",
+      "{day}": "未更新天数"
+    }
+  },
+  {
+    "key": "emailuseradd",
+    "name": "个人会员未发布简历",
+    "kind": "email",
+    "config": "sy_email_useradd",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{day}": "未发布简历天数",
+      "{date}": "注册时间"
+    }
+  },
+  {
+    "key": "emailreg",
+    "name": "注册会员",
+    "kind": "email",
+    "config": "sy_email_reg",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{password}": "密码",
+      "{email}": "邮箱"
+    }
+  },
+  {
+    "key": "emailyqms",
+    "name": "邀请面试",
+    "kind": "email",
+    "config": "sy_email_yqms",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{company}": "公司名称",
+      "{linkman}": "联系人",
+      "{comtel}": "联系电话",
+      "{username}": "求职者名称",
+      "{jobname}": "职位名称",
+      "{comemail}": "邮箱"
+    }
+  },
+  {
+    "key": "emailyqmshf",
+    "name": "回复邀请面试",
+    "kind": "email",
+    "config": "sy_email_yqmshf",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{cusername}": "回复人名称",
+      "{typemsg}": "回复内容：拒绝、同意"
+    }
+  },
+  {
+    "key": "emailgetpass",
+    "name": "找回密码",
+    "kind": "email",
+    "config": "sy_email_getpass",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{code}": "验证码"
+    }
+  },
+  {
+    "key": "emailfkcg",
+    "name": "付款成功",
+    "kind": "email",
+    "config": "sy_email_fkcg",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{order_id}": "交易单号",
+      "{price}": "金额",
+      "{date}": "时间"
+    }
+  },
+  {
+    "key": "emaillock",
+    "name": "会员锁定",
+    "kind": "email",
+    "config": "sy_email_lock",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{lock_info}": "锁定原因"
+    }
+  },
+  {
+    "key": "emailuserstatus",
+    "name": "会员审核",
+    "kind": "email",
+    "config": "sy_email_userstatus",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "审核时间",
+      "{auto_statis}": "审核说明"
+    }
+  },
+  {
+    "key": "emailzzshtg",
+    "name": "职位审核成功",
+    "kind": "email",
+    "config": "sy_email_zzshtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "emailzzshwtg",
+    "name": "职位审核未通过",
+    "kind": "email",
+    "config": "sy_email_zzshwtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称",
+      "{status_info}": "审核原因"
+    }
+  },
+  {
+    "key": "emailpartshtg",
+    "name": "兼职审核成功",
+    "kind": "email",
+    "config": "sy_email_partshtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "emailpartshwtg",
+    "name": "兼职审核未通过",
+    "kind": "email",
+    "config": "sy_email_partshwtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称",
+      "{status_info}": "审核原因"
+    }
+  },
+  {
+    "key": "emailsqzw",
+    "name": "申请职位",
+    "kind": "email",
+    "config": "sy_email_sqzw",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{jobname}": "职位名称",
+      "{date}": "申请时间"
+    }
+  },
+  {
+    "key": "emailsqzwhf",
+    "name": "申请职位回复",
+    "kind": "email",
+    "config": "sy_email_sqzwhf",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{company}": "公司名称",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "emailcert",
+    "name": "邮箱认证",
+    "kind": "email",
+    "config": "sy_email_cert",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{url}": "链接地址",
+      "{date}": "认证时间"
+    }
+  },
+  {
+    "key": "emailcomcert",
+    "name": "企业资质审核",
+    "kind": "email",
+    "config": "sy_email_comcert",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{comname}": "企业名称",
+      "{certinfo}": "审核说明"
+    }
+  },
+  {
+    "key": "emailusercert",
+    "name": "个人身份认证审核",
+    "kind": "email",
+    "config": "sy_email_usercert",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{certinfo}": "审核说明"
+    }
+  },
+  {
+    "key": "emailjobed",
+    "name": "职位过期提醒",
+    "kind": "email",
+    "config": "sy_email_jobed",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{com_name}": "公司名称",
+      "{job_name}": "职位名称"
+    }
+  },
+  {
+    "key": "emailremind",
+    "name": "会员提醒",
+    "kind": "email",
+    "config": "sy_email_remind",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话"
+    }
+  },
+  {
+    "key": "emailvipmr",
+    "name": "会员到期提醒",
+    "kind": "email",
+    "config": "sy_email_vipmr",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{name}": "用户名称",
+      "{ratingname}": "服务名称",
+      "{date}": "过期时间",
+      "{day}": "即将过期天数"
+    }
+  },
+  {
+    "key": "emailuserdy",
+    "name": "个人订阅",
+    "kind": "email",
+    "config": "sy_email_userdy",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "emailcomdy",
+    "name": "邮件订阅",
+    "kind": "email",
+    "config": "sy_email_comdy",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{resumename}": "简历名称"
+    }
+  },
+  {
+    "key": "emailnotice",
+    "name": "自动发送职位通知",
+    "kind": "email",
+    "config": "sy_email_notice",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "emailclaim",
+    "name": "认领会员",
+    "kind": "email",
+    "config": "sy_email_claim",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{url}": "认领地址"
+    }
+  },
+  {
+    "key": "emailrecharge",
+    "name": "充值提醒",
+    "kind": "email",
+    "config": "sy_email_recharge",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{name}": "姓名",
+      "{price}": "金额",
+      "{time}": "时间"
+    }
+  },
+  {
+    "key": "emailpartapply",
+    "name": "兼职报名",
+    "kind": "email",
+    "config": "sy_email_partapply",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{username}": "用户名",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "emailzphshtg",
+    "name": "招聘会审核通过",
+    "kind": "email",
+    "config": "sy_email_zphshtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{zphname}": "招聘会名称"
+    }
+  },
+  {
+    "key": "emailzphshwtg",
+    "name": "招聘会审核未通过",
+    "kind": "email",
+    "config": "sy_email_zphshwtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{zphname}": "招聘会名称",
+      "{status_info}": "审核原因"
+    }
+  },
+  {
+    "key": "emaillogouted",
+    "name": "注销账号成功通知",
+    "kind": "email",
+    "config": "sy_email_logouted",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{username}": "用户名"
+    }
+  },
+  {
+    "key": "msgdy",
+    "name": "订阅通知",
+    "kind": "msg",
+    "config": "sy_msg_dy",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话"
+    }
+  },
+  {
+    "key": "msguserchange",
+    "name": "申请切换身份审核通知",
+    "kind": "msg",
+    "config": "sy_msg_userchange",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{status}": "是否同意"
+    }
+  },
+  {
+    "key": "msgvipmr",
+    "name": "会员到期提醒",
+    "kind": "msg",
+    "config": "sy_msg_vipmr",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{name}": "用户名称",
+      "{ratingname}": "服务名称",
+      "{date}": "过期时间",
+      "{day}": "即将过期天数"
+    }
+  },
+  {
+    "key": "msgcert",
+    "name": "手机认证",
+    "kind": "msg",
+    "config": "sy_msg_cert",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{code}": "验证码",
+      "{date}": "认证时间"
+    }
+  },
+  {
+    "key": "msgreg",
+    "name": "注册会员",
+    "kind": "msg",
+    "config": "sy_msg_reg",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{password}": "密码",
+      "{email}": "邮箱"
+    }
+  },
+  {
+    "key": "msglogin",
+    "name": "短信验证码登录",
+    "kind": "msg",
+    "config": "sy_msg_login",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{code}": "验证码"
+    }
+  },
+  {
+    "key": "msgcode",
+    "name": "通用短信验证码",
+    "kind": "msg",
+    "config": "sy_msg_code",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{code}": "验证码"
+    }
+  },
+  {
+    "key": "msgyqms",
+    "name": "邀请面试",
+    "kind": "msg",
+    "config": "sy_msg_yqms",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{company}": "公司名称",
+      "{jobname}": "职位名称",
+      "{linkman}": "联系人",
+      "{comtel}": "联系电话",
+      "{username}": "求职者名称",
+      "{comemail}": "邮箱",
+      "{address}": "面试地址",
+      "{date}": "面试时间"
+    }
+  },
+  {
+    "key": "msgyqmshf",
+    "name": "回复面试邀请",
+    "kind": "msg",
+    "config": "sy_msg_yqmshf",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{cusername}": "回复人名称",
+      "{typemsg}": "回复内容：拒绝、同意"
+    }
+  },
+  {
+    "key": "msgfkcg",
+    "name": "付款成功",
+    "kind": "msg",
+    "config": "sy_msg_fkcg",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{order_id}": "交易单号",
+      "{price}": "金额",
+      "{date}": "时间"
+    }
+  },
+  {
+    "key": "msgzzshtg",
+    "name": "职位审核通过",
+    "kind": "msg",
+    "config": "sy_msg_zzshtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "msgzzshwtg",
+    "name": "职位审核未通过",
+    "kind": "msg",
+    "config": "sy_msg_zzshwtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称",
+      "{status_info}": "审核原因"
+    }
+  },
+  {
+    "key": "msgpartshtg",
+    "name": "兼职审核通过",
+    "kind": "msg",
+    "config": "sy_msg_partshtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "msgpartshwtg",
+    "name": "兼职审核未通过",
+    "kind": "msg",
+    "config": "sy_msg_partshwtg",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "通过时间",
+      "{jobname}": "职位名称",
+      "{status_info}": "审核原因"
+    }
+  },
+  {
+    "key": "msggetpass",
+    "name": "找回密码",
+    "kind": "msg",
+    "config": "sy_msg_getpass",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{code}": "验证码"
+    }
+  },
+  {
+    "key": "msgsqzw",
+    "name": "申请职位",
+    "kind": "msg",
+    "config": "sy_msg_sqzw",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{jobname}": "职位名称",
+      "{date}": "申请时间"
+    }
+  },
+  {
+    "key": "msgsqzwhf",
+    "name": "申请职位回复",
+    "kind": "msg",
+    "config": "sy_msg_sqzwhf",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{company}": "公司名称",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "msgremind",
+    "name": "会员提醒",
+    "kind": "msg",
+    "config": "sy_msg_remind",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话"
+    }
+  },
+  {
+    "key": "msgclaim",
+    "name": "认领会员",
+    "kind": "msg",
+    "config": "sy_msg_claim",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{url}": "认领地址"
+    }
+  },
+  {
+    "key": "msgcomdy",
+    "name": "企业订阅",
+    "kind": "msg",
+    "config": "sy_msg_comdy",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{resumename}": "简历名称"
+    }
+  },
+  {
+    "key": "msguserdy",
+    "name": "个人订阅",
+    "kind": "msg",
+    "config": "sy_msg_userdy",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "msgnotice",
+    "name": "自动发送职位通知",
+    "kind": "msg",
+    "config": "sy_msg_notice",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "msgregcode",
+    "name": "注册验证码",
+    "kind": "msg",
+    "config": "sy_msg_regcode",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{code}": "验证码"
+    }
+  },
+  {
+    "key": "msgrecharge",
+    "name": "充值提醒",
+    "kind": "msg",
+    "config": "sy_msg_recharge",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{name}": "姓名",
+      "{price}": "金额",
+      "{time}": "时间"
+    }
+  },
+  {
+    "key": "msgpartapply",
+    "name": "兼职报名",
+    "kind": "msg",
+    "config": "sy_msg_partapply",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{jobname}": "职位名称"
+    }
+  },
+  {
+    "key": "msgresumestate",
+    "name": "简历审核",
+    "kind": "msg",
+    "config": "sy_msg_resumestate",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{resumename}": "简历名称",
+      "{state_n}": "简历状态"
+    }
+  },
+  {
+    "key": "msgwebbirthday",
+    "name": "网站周年庆",
+    "kind": "msg",
+    "config": "sy_msg_webbirthday",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "真实姓名",
+      "{year}": "年数",
+      "{date}": "创办日期"
+    }
+  },
+  {
+    "key": "msguseradd",
+    "name": "个人会员未发布简历",
+    "kind": "msg",
+    "config": "sy_msg_useradd",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{day}": "未发布简历天数",
+      "{date}": "注册时间"
+    }
+  },
+  {
+    "key": "msguserup",
+    "name": "个人会员未更新简历",
+    "kind": "msg",
+    "config": "sy_msg_userup",
+    "cate": "user",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{date}": "上次更新时间",
+      "{day}": "未更新天数"
+    }
+  },
+  {
+    "key": "msgaddjob",
+    "name": "企业未发布职位提醒",
+    "kind": "msg",
+    "config": "sy_msg_addjob",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "企业名",
+      "{date}": "上次发布时间",
+      "{day}": "未发布天数"
+    }
+  },
+  {
+    "key": "msgupjob",
+    "name": "企业职位未刷新提醒",
+    "kind": "msg",
+    "config": "sy_msg_upjob",
+    "cate": "com",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "企业名",
+      "{date}": "上次刷新时间",
+      "{day}": "未发布天数"
+    }
+  },
+  {
+    "key": "msguserstatus",
+    "name": "会员审核",
+    "kind": "msg",
+    "config": "sy_msg_userstatus",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{date}": "审核时间",
+      "{auto_statis}": "审核说明"
+    }
+  },
+  {
+    "key": "msglock",
+    "name": "会员锁定",
+    "kind": "msg",
+    "config": "sy_msg_lock",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{weburl}": "网站域名",
+      "{webtel}": "网站电话",
+      "{username}": "用户名",
+      "{lock_info}": "锁定原因"
+    }
+  },
+  {
+    "key": "msglogouted",
+    "name": "注销账号成功通知",
+    "kind": "msg",
+    "config": "sy_msg_logouted",
+    "cate": "public",
+    "vars": {
+      "{webname}": "网站名称",
+      "{username}": "用户名"
+    }
+  }
+]

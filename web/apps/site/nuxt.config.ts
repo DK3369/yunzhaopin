@@ -1,9 +1,3 @@
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-const here = dirname(fileURLToPath(import.meta.url))
-const repoRoot = resolve(here, '../../..')
-
 export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   compatibilityDate: '2026-08-25',
@@ -52,51 +46,11 @@ export default defineNuxtConfig({
     externals: { external: ['esbuild'] },
     compressPublicAssets: true,
     prerender: { crawlLinks: false, routes: [] },
+    // 皮肤/站标在 public/legacy、public/data/logo。用户文件由
+    // server/routes/data/upload 运行时读 storage/upload，不在构建时拷贝。
     // 仅 `nuxt dev`：把 /admin 转到本机 admin 进程。现网由 site Nitro :3001 直接出 /admin，不再另开端口。
     devProxy: {
       '/admin': { target: 'http://127.0.0.1:3002', changeOrigin: true },
     },
-    publicAssets: [
-      {
-        baseURL: 'legacy/pc/style',
-        dir: resolve(repoRoot, 'uploads/app/template/default/style'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'legacy/pc/images',
-        dir: resolve(repoRoot, 'uploads/app/template/default/images'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'legacy/h5/css',
-        dir: resolve(repoRoot, 'uploads/app/template/wap/css'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'legacy/h5/images',
-        dir: resolve(repoRoot, 'uploads/app/template/wap/images'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'data/logo',
-        dir: resolve(repoRoot, 'uploads/data/logo'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'data/upload',
-        dir: resolve(repoRoot, 'uploads/data/upload'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'legacy/member/user',
-        dir: resolve(repoRoot, 'uploads/app/template/member/user/images'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-      {
-        baseURL: 'legacy/member/com',
-        dir: resolve(repoRoot, 'uploads/app/template/member/com/images'),
-        maxAge: 60 * 60 * 24 * 7,
-      },
-    ],
   },
 })

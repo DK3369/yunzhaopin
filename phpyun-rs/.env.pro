@@ -47,8 +47,8 @@ EVENTBUS_KIND=redis-stream
 
 # Storage and external services
 STORAGE_KIND=fs
-STORAGE_FS_ROOT=/www/wwwroot/zzzz.com/uploads
-STORAGE_BASE_URL=https://zzzz.com/files
+STORAGE_FS_ROOT=/www/wwwroot/zzzz.com/storage
+STORAGE_BASE_URL=/data
 STORAGE_S3_BUCKET=
 STORAGE_S3_REGION=
 SMS_KIND=noop
