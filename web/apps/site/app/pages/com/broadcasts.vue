@@ -22,19 +22,21 @@ async function mark(id: number) {
   }
 }
 
-useSeoMeta({ title: t('common.message') })
+useSeoMeta({ title: t('ui.broadcasts') })
 </script>
 
 <template>
-  <MemberPanel :title="$t('common.message')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
+  <MemberPanel :title="$t('ui.broadcasts')" :error="error && !isUnauthErr(error) ? error : undefined" :empty="!error && !list.length">
     <p v-if="error && isUnauthErr(error)" class="muted">{{ $t('common_01153') }}</p>
     <table v-if="list.length" class="com_table mt20 site-pc">
       <tr>
-        <th>{{ $t('common.message') }}</th>
+        <th>{{ $t('ui.broadcasts') }}</th>
+        <th>{{ $t('ui.body') }}</th>
         <th>{{ $t('member_user_00104') }}</th>
       </tr>
       <tr v-for="row in list" :key="row.id" @click="mark(row.id)">
         <td>{{ row.title }}</td>
+        <td>{{ row.body }}</td>
         <td>{{ row.created_at_n }}</td>
       </tr>
     </table>

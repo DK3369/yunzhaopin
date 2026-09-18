@@ -30,6 +30,12 @@ s.setDate(s.getDate() - 29)
 const sdate = ref(ymd(s))
 const jobId = ref(0)
 const pieType = ref(1)
+const pieTabs = [
+  { n: 1, key: 'common_02110' },
+  { n: 2, key: 'wap_com_00301' },
+  { n: 3, key: 'member_user_00106' },
+  { n: 4, key: 'wap_user_00240' },
+] as const
 
 const { data, error } = await useAsyncData(
   () => `com-tongji-${jobId.value}-${sdate.value}-${edate.value}`,
@@ -39,6 +45,7 @@ const { data, error } = await useAsyncData(
       sdate: sdate.value,
       edate: edate.value,
     }),
+  { watch: [jobId, sdate, edate] },
 )
 const { data: pie } = await useAsyncData(
   () => `com-tongji-pie-${pieType.value}-${jobId.value}-${sdate.value}-${edate.value}`,
@@ -51,6 +58,7 @@ const { data: pie } = await useAsyncData(
         edate: edate.value,
       })
       .catch(() => [] as Slice[]),
+  { watch: [pieType, jobId, sdate, edate] },
 )
 
 const lineOpt = computed(() => {
@@ -111,8 +119,8 @@ useSeoMeta({ title: t('admin_tool_00181') })
       </ClientOnly>
       <div class="job_list_tit">
         <ul>
-          <li v-for="n in 4" :key="n" :class="{ job_list_tit_cur: pieType === n }">
-            <a href="javascript:;" @click.prevent="pieType = n">{{ n }}</a>
+          <li v-for="tab in pieTabs" :key="tab.n" :class="{ job_list_tit_cur: pieType === tab.n }">
+            <a href="javascript:;" @click.prevent="pieType = tab.n">{{ $t(tab.key) }}</a>
           </li>
         </ul>
       </div>

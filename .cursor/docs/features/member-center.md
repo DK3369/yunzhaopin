@@ -284,10 +284,25 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 **招聘端有等级，求职端没有。** 招聘：`phpyun_company_rating`（`type` 1=套餐 / 2=时间会员）付款后 `ratingInfo` 写 `company_statis`（真相源）并镜像 `company.rating*`、在招 `company_job.rating`。`job_num` 赋值不累加；其它配额同档有效期内可累加；过期 `vipOver` 按 `com_vip_done` 清零或降档。增值包走 `company_order.type=5`。`phpyun_rs_user_vip` 只是影子表。求职：没有 `company_rating` 对等表，`phpyun_member_statis` 只有积分经济（充值 `type=2 usertype=1`、简历置顶 `type=14`、刷新/兑换/买模板）。两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。
 
+## 全量对照（2026-09-18）
+
+对照 PHP `member/{user,com}/model`、PC `left.htm`、WAP 会员模板与 `pages/user`（39）/`pages/com`（55）：**没有再缺的 PHP `c=` 业务页。** 左栏无「有导航无路由」孤儿。已并入的不当缺口：`setname`/`transfer`/`info`/`show`/`partcollect`/`alltask`/`idcard`/`comment`、发岗成功弹层、面试评价弹层、`payment`→收银台、WAP `jobcolumn`/`resumecolumn`。WAP `server` 单份购买 Tab 已在 `/com/jobs` 的 `jobs/promote*`，不另开会员服务 Tab。
+
+本轮只补不完整体验（不新开路由、不恢复 [api-merged.md](../rust/api-merged.md) 已 404 路径）：
+
+- [`tongji.vue`](../../../web/apps/site/app/pages/com/tongji.vue) 饼图 Tab 对齐 PHP `$tjtype`（`common_02110` / `wap_com_00301` / `member_user_00106` / `wap_user_00240`），`watch` 条件重拉 pie。
+- [`warnings.vue`](../../../web/apps/site/app/pages/com/warnings.vue) 标题 `ui.warnings`（不要 `member_com_00148` 投诉顾问）；PC 时间列 + 未读加粗。
+- [`broadcasts.vue`](../../../web/apps/site/app/pages/com/broadcasts.vue) 标题 `ui.broadcasts`；PC 表有正文。
+- [`messages.vue`](../../../web/apps/site/app/pages/com/messages.vue) Tab 链 `/com/broadcasts` `/com/warnings`，角标走现有 `messages/unread-summary`，不要 `*/unread-count`。
+- [`otherservice.vue`](../../../web/apps/site/app/pages/com/otherservice.vue) 宫格补 hrs / rewards / broadcasts / warnings / chat。
+- [`resume/optimize.vue`](../../../web/apps/site/app/pages/user/resume/optimize.vue) 完成度用 `member_user_00331`，不要积分规则 `wap_01016`。
+
+仍不算缺页、不要做：求职 VIP、协作切企业上下文、顾问 `crm_uid`、首页曝光运营块、`lock_info`、微信商户下单 URL、前台 `/data-show`、优惠券、`spview`/`xjhLive`/`rebates`、release 下 `vip/orders/mock-paid`、把 `/v1/mcenter/integral/exchange` 当礼品商城（公开商城是 `/redeem`）。不要恢复 `follows*`、`resume/*/list`、`company/news|products` 旧 CRUD、`com-stats/today`。
+
 ## 本轮补上的会员页
 
 - 招聘会 [`fairs.vue`](../../../web/apps/site/app/pages/com/fairs.vue)：`POST /v1/mcenter/zph/cancel`；`my-reservation` 含展位/时间/`notstart`。报名仍走公开 `/fairs/[id]`。
-- 数据中心 [`stats.vue`](../../../web/apps/site/app/pages/com/stats.vue) + [`tongji.vue`](../../../web/apps/site/app/pages/com/tongji.vue)：`/v1/mcenter/com-stats/*`、`/com-tongji/*`；今日五项仍用 `com-dashboard/full.today`。图表 `ChartBox` + `echarts`。
+- 数据中心 [`stats.vue`](../../../web/apps/site/app/pages/com/stats.vue) + [`tongji.vue`](../../../web/apps/site/app/pages/com/tongji.vue)：`/v1/mcenter/com-stats/*`、`/com-tongji/*`；今日五项仍用 `com-dashboard/full.today`。图表 `ChartBox` + `echarts`。饼图 Tab 是区域/学历/薪资/经验，不要显示 `1..4`。
 - 找人才 [`talent-search.vue`](../../../web/apps/site/app/pages/com/talent-search.vue)：`POST /v1/wap/resumes` + 解锁 `resume-downloads`。左栏「人才库」指本页；`MemberHrTabs` 另留人才库 `/com/talent`。
 - 我的服务 [`services.vue`](../../../web/apps/site/app/pages/com/services.vue)：`vip/current` 配额与 `caps`。企业账号 [`account.vue`](../../../web/apps/site/app/pages/com/account.vue) 改名/注销。
 - 新闻/产品正文 wangEditor [`RichEditor.vue`](../../../web/layers/ui/app/components/RichEditor.vue)，上传 kind `content`，入库 `sanitize_html`。

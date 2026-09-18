@@ -18,6 +18,13 @@ const { data: dash } = await useAsyncData(
       .catch(() => null),
   reuseAsyncCache(),
 )
+const { data: unread } = await useAsyncData(
+  'mcenter-unread-summary',
+  () =>
+    api
+      .post<{ broadcasts?: number; warnings?: number }>('/v1/mcenter/messages/unread-summary', {})
+      .catch(() => null),
+)
 const picked = ref<number[]>([])
 const list = computed(() => (data.value?.list || []) as Array<Record<string, unknown>>)
 const allPicked = computed({
@@ -82,7 +89,28 @@ const total = computed(() => inferTotal(data.value))
         <li>
           <NuxtLink to="/com/job-messages">{{ $t('wap_com_00408') }}<span v-if="dash?.job_msg_unanswered">({{ dash.job_msg_unanswered }})</span></NuxtLink>
         </li>
+        <li>
+          <NuxtLink to="/com/broadcasts">{{ $t('ui.broadcasts') }}<span v-if="unread?.broadcasts">({{ unread.broadcasts }})</span></NuxtLink>
+        </li>
+        <li>
+          <NuxtLink to="/com/warnings">{{ $t('ui.warnings') }}<span v-if="unread?.warnings">({{ unread.warnings }})</span></NuxtLink>
+        </li>
       </ul>
+    </div>
+    <div class="m_taball category site-h5">
+      <div class="m_taballbox">
+        <ul>
+          <li class="m_taballactive">{{ $t('common.message') }}</li>
+          <li @click="navigateTo('/com/broadcasts')">
+            {{ $t('ui.broadcasts') }}
+            <span v-if="unread?.broadcasts" class="zp_num">{{ unread.broadcasts }}</span>
+          </li>
+          <li @click="navigateTo('/com/warnings')">
+            {{ $t('ui.warnings') }}
+            <span v-if="unread?.warnings" class="zp_num">{{ unread.warnings }}</span>
+          </li>
+        </ul>
+      </div>
     </div>
     <p class="site-pc">
       <a href="javascript:;" class="com_bth cblue" @click="readAll">{{ $t('member_user_00463') }}</a>

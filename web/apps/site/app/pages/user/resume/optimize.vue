@@ -38,7 +38,7 @@ useSeoMeta({ title: t('member_user_00485') })
 
 <template>
   <MemberPanel :title="$t('member_user_00485')" :error="error && !isUnauthErr(error) ? error : undefined">
-    <p>{{ $t('wap_01016') }} {{ completion?.score || 0 }}%</p>
+    <p>{{ $t('member_user_00331') }} {{ completion?.score || 0 }}%</p>
     <ul class="stack">
       <li v-for="k in completion?.missing || []" :key="k">
         <NuxtLink :to="hrefOf(k)">{{ missingLabel(k) }}</NuxtLink>
