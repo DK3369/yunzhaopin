@@ -555,17 +555,12 @@ function goPage(p: number) {
         />
       </form>
     </div>
-    <div class="job_header_nav resumeAdeFlex">
+    <div class="job_header_nav" style="margin-top: 0">
       <div class="job_header_nav_left category">
         <ul>
           <li :class="{ active: !urgent }">
             <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined }) }">{{
               $t('common.latest')
-            }}</NuxtLink>
-          </li>
-          <li :class="{ active: urgent }">
-            <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: '1' }) }">{{
-              $t('wap_com_00250')
             }}</NuxtLink>
           </li>
           <li>
