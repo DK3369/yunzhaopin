@@ -164,7 +164,6 @@ const h5Links = computed(() =>
     { to: '/user/set', icon: '/legacy/h5/images/sz.png', key: 'wap_user_00214', hint: '' },
   ].filter((item) => isMemberModuleOn(settings.value, item.to)),
 )
-const adviceOn = computed(() => isMemberModuleOn(settings.value, '/advice'))
 function labelOf(to: string, key: string) {
   return userItems.value.find((i) => i.to === to)?.label || t(key)
 }
@@ -463,19 +462,6 @@ function labelOf(to: string, key: string) {
           </div>
           <div class="taskbar_nav">
             <div v-if="item.hint" class="taskbar_nav_word">{{ item.hint }}</div>
-            <div class="taskbar_nav_img">
-              <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
-            </div>
-          </div>
-        </NuxtLink>
-        <NuxtLink v-if="adviceOn" to="/advice" class="taskbar_enterprise_last">
-          <div class="taskbar_datum">
-            <div class="taskbar_datum_img">
-              <img src="/legacy/h5/images/fk.png" alt="" width="100%" height="100%" />
-            </div>
-            <div class="taskbar_datum_word">{{ $t('wap_user_00203') }}</div>
-          </div>
-          <div class="taskbar_nav">
             <div class="taskbar_nav_img">
               <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
             </div>
