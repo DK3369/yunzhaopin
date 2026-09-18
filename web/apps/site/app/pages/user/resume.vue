@@ -547,8 +547,8 @@ useSeoMeta({ title: t('wap_user_00204') })
       <div class="create_resume_box">
         <form class="yun_createbox" @submit.prevent="saveResume">
           <div class="yun_createlist yun_createlist_pr">
-            <div class="yun_create_name"><span class="m_bt">*</span>{{ $t('wap_00529') }}</div>
-            <div class="yun_create_text"><input v-model="form.name" required /></div>
+            <div class="yun_create_name">{{ $t('wap_00529') }}</div>
+            <div class="yun_create_text"><input v-model="form.name" /></div>
             <div class="yun_create_gender">
               <div :class="{ yun_create_genderselect: form.sex === 1 }" @click="form.sex = 1">{{ $t('common_02092') }}</div>
               <div :class="{ yun_create_genderselect: form.sex === 2 }" @click="form.sex = 2">{{ $t('common_02069') }}</div>
@@ -571,6 +571,7 @@ useSeoMeta({ title: t('wap_user_00204') })
             </select>
           </MemberField>
           <button type="submit" class="Create_resume_btn">{{ $t('ui.save_resume') }}</button>
+          <p v-if="msg">{{ msg }}</p>
         </form>
       </div>
     </div>
@@ -691,7 +692,99 @@ useSeoMeta({ title: t('wap_user_00204') })
     </div>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-if="topMsg" class="muted">{{ topMsg }}</p>
-    <form v-if="!error && openSec === 'basic'" class="verification_form yun_createbox" @submit.prevent="saveResume">
+    <p v-if="msg && openSec !== 'basic'" class="muted">{{ msg }}</p>
+    <form v-if="!error && openSec === 'basic'" class="site-pc yun_resume_popup_box" @submit.prevent="saveResume">
+      <ul>
+        <li>
+          <div class="yun_resume_popup_list" style="margin-top: 0">
+            <span class="yun_resume_popup_name">{{ $t('wap_00529') }}</span>
+            <input v-model="form.name" class="yun_resume_popup_infotext" />
+            <span class="yun_resume_popup_infoname">{{ $t('common_02092') }}</span>
+            <select v-model.number="form.sex" class="yun_resume_popup_infotext">
+              <option :value="1">{{ $t('common_02092') }}</option>
+              <option :value="2">{{ $t('common_02069') }}</option>
+            </select>
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">{{ $t('ui.birthday') }}</span>
+            <input v-model="form.birthday" class="yun_resume_popup_infotext" placeholder="YYYY-MM" />
+            <span class="yun_resume_popup_infoname">{{ $t('wap_user_00242') }}</span>
+            <input v-model="form.living" class="yun_resume_popup_infotext" />
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">{{ $t('wap_00459') }}</span>
+            <div class="yun_resume_popup_info_box">
+              <select v-model.number="form.education" class="yun_resume_popup_infotext">
+                <option :value="0">{{ $t('wap_00459') }}</option>
+                <option v-for="d in eduDict || []" :key="'pc-edu-' + d.id" :value="d.id">{{ d.name }}</option>
+              </select>
+            </div>
+            <span class="yun_resume_popup_infoname">{{ $t('wap_00457') }}</span>
+            <div class="yun_resume_popup_info_box">
+              <select v-model.number="form.exp" class="yun_resume_popup_infotext">
+                <option :value="0">{{ $t('wap_00457') }}</option>
+                <option v-for="d in expDict || []" :key="'pc-exp-' + d.id" :value="d.id">{{ d.name }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">{{ $t('common.phone') }}</span>
+            <input v-model="form.telphone" class="yun_resume_popup_infotext" />
+            <span class="yun_resume_popup_infoname">{{ $t('member_user_00282') }}</span>
+            <input v-model="form.email" class="yun_resume_popup_infotext" />
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">{{ $t('member_user_00158') }}</span>
+            <input v-model="form.domicile" class="yun_resume_popup_infotext" />
+            <span class="yun_resume_popup_infoname">{{ $t('wap_user_00243') }}</span>
+            <input v-model="form.address" class="yun_resume_popup_infotext" />
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">{{ $t('member_user_00165') }}</span>
+            <input v-model="form.height" class="yun_resume_popup_infotext" placeholder="CM" />
+            <span class="yun_resume_popup_infoname">{{ $t('member_user_00160') }}</span>
+            <input v-model="form.weight" class="yun_resume_popup_infotext" placeholder="KG" />
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">QQ</span>
+            <input v-model="form.qq" class="yun_resume_popup_infotext" />
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name">{{ $t('wap_user_00102') }}</span>
+            <textarea v-model="form.description" class="infor_textarea" rows="4" />
+          </div>
+          <div class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name" />
+            <div class="look_other_tit">
+              <a href="javascript:;" class="look_other_h" @click.prevent="toggleIntroduce">{{ $t('wap_user_00062') }}</a>
+            </div>
+          </div>
+          <div v-if="showIntroduce" class="yun_resume_popup_list">
+            <span class="yun_resume_popup_name" />
+            <div class="eva_ex_list_bx">
+              <i class="eva_ex_list_bx_img" />
+              <div class="eva_ex_list_ct">
+                <div class="ct_cs">
+                  <div class="look_other_tit">
+                    <span v-if="currentIntroduce" class="look_other_tit_n">{{ currentIntroduce.name }}</span>
+                    <a href="javascript:;" class="look_other_h" @click.prevent="nextIntroduce">{{ $t('wap_00955') }}</a>
+                  </div>
+                  <div v-if="currentIntroduce" v-html="currentIntroduce.content" />
+                  <div v-else>{{ $t('ui.no_data') }}</div>
+                  <a v-if="currentIntroduce" href="javascript:;" class="look_other_h" @click.prevent="applyIntroduce">{{ $t('ui.use_sample') }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="yun_resume_popup_infobot">
+        <button type="submit" class="expect_test_bth">{{ $t('ui.save_resume') }}</button>
+        <a href="javascript:;" class="expect_test_bth_qx" @click.prevent="openSec = ''">{{ $t('common.cancel') }}</a>
+        <span v-if="msg" class="yun_resume_popup_name" style="width: auto; float: none; margin-left: 12px">{{ msg }}</span>
+      </div>
+    </form>
+    <form v-if="!error && openSec === 'basic'" class="site-h5 yun_createbox" @submit.prevent="saveResume">
       <MemberField wap :label="$t('wap_00529')"><input v-model="form.name" /></MemberField>
       <MemberField wap :label="$t('common_02092')">
         <select v-model.number="form.sex">
@@ -740,7 +833,8 @@ useSeoMeta({ title: t('wap_user_00204') })
           </div>
         </div>
       </MemberField>
-      <button type="submit" class="verification_form_btn">{{ $t('ui.save_resume') }}</button>
+      <button type="submit" class="Create_resume_btn">{{ $t('ui.save_resume') }}</button>
+      <p v-if="msg">{{ msg }}</p>
     </form>
     <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" h5-kind="none" :open="openSec === 'expect'" @toggle="openAdd('expect')">
       <template #pc>
@@ -758,8 +852,8 @@ useSeoMeta({ title: t('wap_user_00204') })
       </template>
       <template #form>
         <form @submit.prevent="saveExpect">
-          <MemberField wap :label="$t('wap_00460')"><input v-model="expectForm.name" /></MemberField>
-          <MemberField wap :label="$t('ui.expect_salary')"><input v-model.number="expectForm.salary" type="number" /></MemberField>
+          <MemberField :label="$t('wap_00460')"><input v-model="expectForm.name" /></MemberField>
+          <MemberField :label="$t('ui.expect_salary')"><input v-model.number="expectForm.salary" type="number" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ $t('ui.add_expect') }}</button>
         </form>
       </template>
@@ -783,12 +877,12 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('works', { ...workForm }, refreshWorks)">
-          <MemberField wap :label="$t('common.company')"><input v-model="workForm.name" /></MemberField>
-          <MemberField wap :label="$t('wap_com_00288')"><input v-model="workForm.title" /></MemberField>
-          <MemberField wap :label="$t('default_00244')"><input v-model="workForm.department" /></MemberField>
-          <MemberField wap :label="$t('member_user_00106')"><input v-model="workForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('wap_00040')"><input v-model="workForm.edate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('ui.detail')" area><textarea v-model="workForm.content" rows="3" /></MemberField>
+          <MemberField :label="$t('common.company')"><input v-model="workForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="workForm.title" /></MemberField>
+          <MemberField :label="$t('default_00244')"><input v-model="workForm.department" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="workForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="workForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="workForm.content" rows="3" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ workForm.id ? $t('common.save') : $t('ui.add_work') }}</button>
         </form>
       </template>
@@ -822,10 +916,10 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('edus', { ...eduForm }, refreshEdus)">
-          <MemberField wap :label="$t('ui.edu')"><input v-model="eduForm.name" /></MemberField>
-          <MemberField wap :label="$t('admin_user_00224')"><input v-model="eduForm.specialty" /></MemberField>
-          <MemberField wap :label="$t('member_user_00106')"><input v-model="eduForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('wap_00040')"><input v-model="eduForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.edu')"><input v-model="eduForm.name" /></MemberField>
+          <MemberField :label="$t('admin_user_00224')"><input v-model="eduForm.specialty" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="eduForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="eduForm.edate_n" placeholder="YYYY-MM" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ eduForm.id ? $t('common.save') : $t('ui.add_edu') }}</button>
         </form>
       </template>
@@ -859,11 +953,11 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('projects', { ...projectForm }, refreshProjects)">
-          <MemberField wap :label="$t('wap_user_00099')"><input v-model="projectForm.name" /></MemberField>
-          <MemberField wap :label="$t('wap_com_00288')"><input v-model="projectForm.role" /></MemberField>
-          <MemberField wap :label="$t('member_user_00106')"><input v-model="projectForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('wap_00040')"><input v-model="projectForm.edate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('ui.detail')" area><textarea v-model="projectForm.content" rows="3" /></MemberField>
+          <MemberField :label="$t('wap_user_00099')"><input v-model="projectForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="projectForm.role" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="projectForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="projectForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="projectForm.content" rows="3" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ projectForm.id ? $t('common.save') : $t('common.submit') }}</button>
         </form>
       </template>
@@ -898,8 +992,8 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('skills', { ...skillForm }, refreshSkills)">
-          <MemberField wap :label="$t('wap_00461')"><input v-model="skillForm.name" required /></MemberField>
-          <MemberField wap :label="$t('common_02067')"><input v-model.number="skillForm.years" type="number" /></MemberField>
+          <MemberField :label="$t('wap_00461')"><input v-model="skillForm.name" required /></MemberField>
+          <MemberField :label="$t('common_02067')"><input v-model.number="skillForm.years" type="number" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ skillForm.id ? $t('common.save') : $t('common.submit') }}</button>
         </form>
       </template>
@@ -932,11 +1026,11 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('trainings', { ...trainingForm }, refreshTrainings)">
-          <MemberField wap :label="$t('member_user_00077')"><input v-model="trainingForm.name" /></MemberField>
-          <MemberField wap :label="$t('wap_com_00288')"><input v-model="trainingForm.title" /></MemberField>
-          <MemberField wap :label="$t('member_user_00106')"><input v-model="trainingForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('wap_00040')"><input v-model="trainingForm.edate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('ui.detail')" area><textarea v-model="trainingForm.content" rows="3" /></MemberField>
+          <MemberField :label="$t('member_user_00077')"><input v-model="trainingForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="trainingForm.title" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="trainingForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="trainingForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="trainingForm.content" rows="3" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ trainingForm.id ? $t('common.save') : $t('member_user_00077') }}</button>
         </form>
       </template>
@@ -971,11 +1065,11 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('certs', { ...certForm }, refreshCerts)">
-          <MemberField wap :label="$t('wap_user_00090')"><input v-model="certForm.name" /></MemberField>
-          <MemberField wap :label="$t('wap_com_00288')"><input v-model="certForm.title" /></MemberField>
-          <MemberField wap :label="$t('member_user_00106')"><input v-model="certForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('wap_00040')"><input v-model="certForm.edate_n" placeholder="YYYY-MM" /></MemberField>
-          <MemberField wap :label="$t('ui.detail')" area><textarea v-model="certForm.content" rows="3" /></MemberField>
+          <MemberField :label="$t('wap_user_00090')"><input v-model="certForm.name" /></MemberField>
+          <MemberField :label="$t('wap_com_00288')"><input v-model="certForm.title" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model="certForm.sdate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('wap_00040')"><input v-model="certForm.edate_n" placeholder="YYYY-MM" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="certForm.content" rows="3" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ certForm.id ? $t('common.save') : $t('common.submit') }}</button>
         </form>
       </template>
@@ -1008,8 +1102,8 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('others', { ...otherForm }, refreshOthers)">
-          <MemberField wap :label="$t('member_user_00076')"><input v-model="otherForm.name" /></MemberField>
-          <MemberField wap :label="$t('ui.detail')" area><textarea v-model="otherForm.content" rows="3" /></MemberField>
+          <MemberField :label="$t('member_user_00076')"><input v-model="otherForm.name" /></MemberField>
+          <MemberField :label="$t('ui.detail')" area><textarea v-model="otherForm.content" rows="3" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ otherForm.id ? $t('common.save') : $t('member_user_00076') }}</button>
         </form>
       </template>
@@ -1040,8 +1134,8 @@ useSeoMeta({ title: t('wap_user_00204') })
           </template>
           <template #form>
         <form @submit.prevent="saveChild('languages', { ...languageForm }, refreshLanguages)">
-          <MemberField wap :label="$t('wap_com_00292')"><input v-model="languageForm.name" required /></MemberField>
-          <MemberField wap :label="$t('wap_00459')"><input v-model.number="languageForm.level" type="number" /></MemberField>
+          <MemberField :label="$t('wap_com_00292')"><input v-model="languageForm.name" required /></MemberField>
+          <MemberField :label="$t('wap_00459')"><input v-model.number="languageForm.level" type="number" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ languageForm.id ? $t('common.save') : $t('common.submit') }}</button>
         </form>
       </template>
@@ -1077,7 +1171,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       </template>
       <template #form>
         <form @submit.prevent>
-          <MemberField wap :label="$t('wap_user_00103')"><input v-model="galleryTitle" /></MemberField>
+          <MemberField :label="$t('wap_user_00103')"><input v-model="galleryTitle" /></MemberField>
           <input type="file" accept="image/jpeg,image/png,image/webp" @change="onShow" />
         </form>
       </template>
@@ -1104,7 +1198,7 @@ useSeoMeta({ title: t('wap_user_00204') })
       </template>
       <template #form>
         <form @submit.prevent="createShare">
-          <MemberField wap :label="$t('member_user_00106')"><input v-model.number="shareTtl" type="number" min="60" max="2592000" /></MemberField>
+          <MemberField :label="$t('member_user_00106')"><input v-model.number="shareTtl" type="number" min="60" max="2592000" /></MemberField>
           <button type="submit" class="verification_form_btn">{{ $t('common.submit') }}</button>
         </form>
       </template>
@@ -1118,6 +1212,5 @@ useSeoMeta({ title: t('wap_user_00204') })
         </div>
       </div>
     </div>
-    <p v-if="msg">{{ msg }}</p>
   </MemberPanel>
 </template>

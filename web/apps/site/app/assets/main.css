@@ -1670,6 +1670,15 @@ html.force-pc .site-h5 {
     height: auto;
     min-height: 88px;
   }
+  .member-page .yun_resume_popup_box {
+    overflow: hidden;
+    background: #fff;
+    padding: 8px 20px 16px;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_infotext,
+  .member-page .yun_resume_popup_box select.yun_resume_popup_infotext {
+    box-sizing: border-box;
+  }
 }
 
 .job_bottomcont {
