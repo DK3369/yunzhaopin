@@ -9,6 +9,7 @@ html {
 
 @media (max-width: 1199px) {
   html {
+    --h5-gutter: 12px;
     font-size: clamp(32px, 10vw, 75px);
   }
 }
@@ -632,8 +633,20 @@ html.force-pc .site-h5 {
     width: 100%;
     margin-top: 0.32rem;
   }
-  .site-h5 .issue_post_body {
+  .site-h5 .issue_post_body,
+  .site-h5 .issue_post_body_new,
+  .site-h5.issue_post_body,
+  .site-h5.issue_post_body_new {
+    padding-top: 0;
+    padding-right: 0;
     padding-bottom: 0.48rem;
+    padding-left: 0;
+  }
+  .site-h5 .issue_post_body .issue_post_body_card:first-child,
+  .site-h5 .issue_post_body_new .issue_post_body_card:first-child,
+  .site-h5.issue_post_body > .issue_post_body_card:first-child,
+  .site-h5.issue_post_body_new > .issue_post_body_card:first-child {
+    margin-top: 0;
   }
   .site-h5 .company_photo_box ul {
     display: flex;
@@ -698,10 +711,10 @@ html.force-pc .site-h5 {
     background: #fff;
     min-height: 60vh;
     overflow: hidden;
-    padding: 0.32rem;
+    padding: var(--h5-gutter);
   }
   .aboyt_cont {
-    padding: 0.4rem;
+    padding: var(--h5-gutter);
     line-height: 0.666666rem;
     font-size: 0.373333rem;
     background: #fff;
@@ -2283,7 +2296,7 @@ html.force-pc .site-h5 {
     display: none;
   }
   .m_cardbox {
-    padding: 0 0.24rem 0.4rem;
+    padding: 0 0 0.4rem;
   }
   .verification_form_code--area {
     height: auto;
@@ -2297,7 +2310,7 @@ html.force-pc .site-h5 {
   }
   .member-page .form:not(.verification_form) {
     background: #fff;
-    margin: 0.16rem 0.24rem;
+    margin: 0.16rem 0;
     padding: 0.32rem 0.266667rem;
     border-radius: 0.213333rem;
   }
@@ -2322,11 +2335,18 @@ html.force-pc .site-h5 {
   .member-shell .yun_m_rightsidebar > .wap_member {
     display: block;
     width: 100%;
+    box-sizing: border-box;
+    padding: var(--h5-gutter) var(--h5-gutter) 0;
   }
-  /* PHP 首页 userheader 全宽；wap_member 的左右 padding 只给子页 */
-  .member-shell-home .yun_m_rightsidebar > .wap_member,
-  .member-shell-resume .yun_m_rightsidebar > .wap_member {
+  /* PHP 首页 userheader 全宽，不要再垫 wap_member */
+  .member-shell-home .yun_m_rightsidebar > .wap_member {
     padding: 0;
+  }
+  /* 招聘没有 wap_member，页边自己垫 12px */
+  .member-shell-com .issue_post_body,
+  .member-shell-com .issue_post_body_new,
+  .member-shell-com .m_cardbox {
+    padding: var(--h5-gutter);
   }
   .member-shell-resume .user_resume_list {
     display: contents;
@@ -2341,7 +2361,8 @@ html.force-pc .site-h5 {
     z-index: 90;
   }
   .member-shell-resume .Edit_your_resume_min_body {
-    padding-bottom: 3.2rem;
+    margin-top: 0;
+    padding: 0 0 3.2rem;
   }
   .member-shell-resume .resume_min_body_cord .yun_createbox {
     background: transparent;
@@ -2501,7 +2522,7 @@ html.force-pc .site-h5 {
   }
   .member-resume-section-form {
     background: #fff;
-    margin: 0.16rem 0.24rem 0.32rem;
+    margin: 0.16rem 0 0.32rem;
     padding: 0.24rem;
     border-radius: 0.213333rem;
   }
@@ -2513,7 +2534,7 @@ html.force-pc .site-h5 {
   }
   .com_release_box {
     background: #fff;
-    margin: 0.16rem 0.24rem;
+    margin: 0.16rem 0;
     padding: 0.24rem;
     border-radius: 0.213333rem;
   }
