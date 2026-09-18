@@ -3076,6 +3076,24 @@ a.sys_a {
 .site-job-card .search_job_Apply_fast_ysq {
   z-index: 2;
 }
+/* PC 职位列表标题最多 3 行，对齐 H5 tab_card_job_name */
+.site-pc .yunjoblist_newname {
+  overflow: hidden;
+}
+.site-pc .yunjoblist_newname_a {
+  float: none;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+  line-height: 1.4;
+}
+
 .site-job-card:hover .index_newjobname a,
 .site-job-card:hover .yunjoblist_newname_a,
 .site-job-card:hover .job_details_likejobname a,

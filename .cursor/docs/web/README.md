@@ -37,6 +37,7 @@ pnpm gen:types:admin
 - 同一 file-based 路由：`apps/site/app/pages/`
 - 模板双写 `.site-pc` / `.site-h5`；`app/assets/main.css` 用 `min-width:1200px` 显隐
 - H5 职位卡标题（`.table-card-word` / `.tab_card_job_name` / `.comnew_jobname`）最多 3 行，在 `main.css` 收口，不要改 yunwap 单行 nowrap
+- PC `/jobs` 列表标题（`.yunjoblist_newname_a`）同样最多 3 行，写在 `main.css`，不要改 `legacy/pc/style/job.css`
 - H5 首页搜索条是 `input.index_newedition_search_p`；yunwap 按 PHP `span` 写死 `5.33rem`，不要让白底截成半截灰胶囊，在 `main.css` 铺满
 - H5 首页底不要 ViewMoreJob / Contact Us / Feedback / About Us（`yun_newedition_footer` + lookmore）；底栏五项仍要
 - H5 Country / Job function / Filter 点开列表用 `0.373333rem`（分组标签 `0.32rem`），写在 `main.css`，不要继承 `body 0.9em`
