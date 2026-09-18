@@ -18,8 +18,8 @@
 //! English job names: `phpyun_dict_i18n` wins; remaining ids use bundled
 //! `data/job-en.json` then the legacy `e_name` column.
 //! City English uses `e_name` (country tree) then `dict_i18n`.
-//! `comclass` / `userclass` / remaining `industry` / `part` English: bundled
-//! `data/{comclass,userclass,industry,part}-en.json` then `dict_i18n`.
+//! `comclass` / `userclass` / remaining `industry` / `part` / `news` English: bundled
+//! `data/{comclass,userclass,industry,part,news}-en.json` then `dict_i18n`.
 //!
 //! ## Caching
 //!
@@ -33,6 +33,7 @@
 //! - `phpyun_city_class` — provinces / cities / districts
 //! - `phpyun_partclass`  — part-time categories
 //! - `phpyun_q_class`    — Q&A categories
+//! - `phpyun_news_group` — news categories
 
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{AppResult, AppState, Lang};
@@ -143,6 +144,8 @@ pub struct Dicts {
     pub city: DictTable,
     pub part: DictTable,
     pub question: DictTable,
+    /// `phpyun_news_group` (kind `news`)
+    pub news: DictTable,
     /// `variable` → parent id (`job_edu` → 38).
     comclass_var: HashMap<String, i32>,
     userclass_var: HashMap<String, i32>,
@@ -184,6 +187,9 @@ impl Dicts {
     pub fn resolve_question(&self, id: i32, lang: Lang) -> &str {
         self.question.resolve(id, lang)
     }
+    pub fn resolve_news(&self, id: i32, lang: Lang) -> &str {
+        self.news.resolve(id, lang)
+    }
 }
 
 // ============================================================================
@@ -219,7 +225,7 @@ impl LocalizedDicts {
     /// matches — caller decides whether that's a 400 or a silent 0.
     ///
     /// Supported kinds: `"job"`, `"industry"`, `"city"`, `"part"`,
-    /// `"question"`, `"comclass"`. Lookup is across all languages plus the
+    /// `"question"`, `"comclass"`, `"news"`. Lookup is across all languages plus the
     /// primary `default_zh` table — so a form that sends Chinese works even
     /// when the request language is `en`.
     pub fn find_id_by_name(&self, kind: &str, name: &str) -> Option<i32> {
@@ -231,6 +237,7 @@ impl LocalizedDicts {
             "question" | "qa" | "q" => &self.inner.question,
             "comclass" => &self.inner.comclass,
             "userclass" | "user" => &self.inner.userclass,
+            "news" | "news_group" => &self.inner.news,
             _ => return None,
         };
         table.find_id_by_name(name)
@@ -269,6 +276,9 @@ impl LocalizedDicts {
     }
     pub fn question(&self, id: i32) -> &str {
         self.inner.question.resolve(id, self.lang)
+    }
+    pub fn news(&self, id: i32) -> &str {
+        self.inner.news.resolve(id, self.lang)
     }
 
     /// PHP `welfarename`: job.welfare is a CSV of **names** (not ids).
@@ -699,6 +709,7 @@ fn empty_dicts() -> Dicts {
         city: DictTable::default(),
         part: DictTable::default(),
         question: DictTable::default(),
+        news: DictTable::default(),
         comclass_var: HashMap::new(),
         userclass_var: HashMap::new(),
         comclass_children: HashMap::new(),
@@ -711,7 +722,7 @@ fn empty_dicts() -> Dicts {
 async fn load_all(state: &AppState) -> AppResult<Dicts> {
     let db = state.db.reader();
 
-    let (job, ind, com_rows, city, part, q, user_rows) = tokio::join!(
+    let (job, ind, com_rows, city, part, q, user_rows, news_zh) = tokio::join!(
         load_default(db, "phpyun_job_class"),
         load_default(db, "phpyun_industry"),
         load_class_rows(db, "phpyun_comclass"),
@@ -719,6 +730,7 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
         load_default(db, "phpyun_partclass"),
         load_default(db, "phpyun_q_class"),
         load_class_rows(db, "phpyun_userclass"),
+        load_default(db, "phpyun_news_group"),
     );
 
     let mut i18n = load_i18n(db).await.unwrap_or_default();
@@ -746,6 +758,11 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
         i18n.entry("part".into()).or_default(),
         include_str!("../data/part-en.json"),
         "part-en.json",
+    );
+    merge_bundled_en(
+        i18n.entry("news".into()).or_default(),
+        include_str!("../data/news-en.json"),
+        "news-en.json",
     );
     let (job_ename, city_ename) = tokio::join!(
         load_ename(db, "phpyun_job_class"),
@@ -775,6 +792,7 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
         city: build_table(city_zh, i18n.remove("city").unwrap_or_default()),
         part: build_table(part?, i18n.get("part").cloned().unwrap_or_default()),
         question: build_table(q?, i18n.get("question").cloned().unwrap_or_default()),
+        news: build_table(news_zh?, i18n.remove("news").unwrap_or_default()),
         comclass_var,
         userclass_var,
         comclass_children,

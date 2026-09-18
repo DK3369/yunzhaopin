@@ -700,17 +700,29 @@ async fn shop_reward_base(state: &AppState) -> AppResult<Value> {
     }))
 }
 
+fn news_cache_label(dicts: &dict_service::LocalizedDicts, id: u64, zh: &str) -> String {
+    let n = dicts.news(id as i32);
+    if n.is_empty() {
+        zh.to_string()
+    } else {
+        n.to_string()
+    }
+}
+
 async fn news_get_cache(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
     let groups = article_repo::list_groups(state.db.reader()).await?;
     let mut one_class = Vec::new();
     let mut two_by_parent: HashMap<u64, Vec<Value>> = HashMap::new();
     for g in &groups {
+        let name_n = news_cache_label(&dicts, g.id, &g.name);
         if g.keyid == 0 {
-            one_class.push(json!({ "id": g.id, "name": g.name }));
+            one_class.push(json!({ "id": g.id, "name": g.name, "name_n": name_n }));
         } else {
             two_by_parent.entry(g.keyid as u64).or_default().push(json!({
                 "id": g.id,
                 "name": g.name,
+                "name_n": name_n,
             }));
         }
     }
@@ -726,15 +738,24 @@ async fn news_get_cache(state: &AppState) -> AppResult<Value> {
             for k in kids {
                 let kid_id = k.get("id").and_then(|v| v.as_u64()).unwrap_or(0);
                 let kid_name = k.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                let kid_n = k.get("name_n").and_then(|v| v.as_str()).unwrap_or(kid_name);
                 kid_map.insert(kid_id.to_string(), k.clone());
-                class_arr.push(json!({ "id": kid_id, "name": format!(" 　┗{kid_name}") }));
-                children.push(json!({ "value": kid_id, "label": kid_name }));
+                class_arr.push(json!({
+                    "id": kid_id,
+                    "name": format!(" 　┗{kid_name}"),
+                    "name_n": format!(" 　┗{kid_n}"),
+                }));
+                children.push(json!({ "value": kid_id, "label": kid_n, "name": kid_name, "name_n": kid_n }));
             }
             two_class.insert(id.to_string(), Value::Object(kid_map));
         }
+        let one_name = one.get("name").and_then(|v| v.as_str()).unwrap_or("");
+        let one_n = one.get("name_n").and_then(|v| v.as_str()).unwrap_or(one_name);
         class_cascader.push(json!({
             "value": id,
-            "label": one.get("name").and_then(|v| v.as_str()).unwrap_or(""),
+            "label": one_n,
+            "name": one_name,
+            "name_n": one_n,
             "children": children,
         }));
     }

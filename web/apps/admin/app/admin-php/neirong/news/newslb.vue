@@ -16,7 +16,7 @@
                 <el-table-column :label="lc('admin_00219')" property="name">
                     <template #default="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
-                        <span v-else>{{ scope.row.name }}
+                        <span v-else>{{ catLabel(scope.row) }}
                             <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 1)">
                         </span>
                     </template>
@@ -94,7 +94,7 @@
                     <el-table-column :label="lc('admin_00219')" property="name">
                         <template #default="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 2)"></el-input>
-                            <span v-else>{{ scope.row.name }}
+                            <span v-else>{{ catLabel(scope.row) }}
                                 <img src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 2)">
                             </span>
                         </template>
@@ -146,7 +146,7 @@
                         </div>
                         <div class="toolClasCont">
                             <el-select v-model="classid" filterable :placeholder="lc('admin_00159')" clearable>
-                                <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
+                                <el-option v-for="item in tableData" :key="item.id" :label="catLabel(item)" :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -176,7 +176,7 @@
                 <div class="wxsettip_small ">{{ lc('admin_00182') }}</div>
                  <div class="wxsettip_Sealect">
 				<el-select v-model="classid" filterable :placeholder="lc('admin_00159')" clearable>
-                    <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
+                    <el-option v-for="item in tableData" :key="item.id" :label="catLabel(item)" :value="item.id">
                     </el-option>
                 </el-select>
 				</div>

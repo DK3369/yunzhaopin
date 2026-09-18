@@ -51,7 +51,7 @@
                 <el-table-column :label="lc('admin_00170')" width="130">
                     <template #default="props">
                         <el-tag type=" " size="small">
-                            <el-link type="primary" :href="props.row.classurl" target="_blank">{{ props.row.name }}
+                            <el-link type="primary" :href="props.row.classurl" target="_blank">{{ catLabel(props.row) }}
                             </el-link>
                         </el-tag>
                     </template>
@@ -170,7 +170,7 @@
                         </div>
                         <div class="toolClasCont">
                             <el-select v-model="classid" filterable :placeholder="lc('admin_00159')">
-                                <el-option v-for="item in classarr" :key="item.id" :label="item.name" :value="item.id">
+                                <el-option v-for="item in classarr" :key="item.id" :label="catLabel(item)" :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -221,7 +221,7 @@
         </div>
         <!-- 新增、修改弹窗 -->
         <div class="modluDrawer">
-            <el-drawer :title="curr_data.id ? lc('admin_vue_00119') : lc('admin_vue_00120')" :close-on-press-escape="false" :wrapper-closable="false" v-model="draweradd" append-to-body :modal-append-to-body="false" :show-close="true" :with-header="true" size="880px">
+            <el-drawer :title="curr_data.id ? lc('admin_vue_00119') : lc('admin_vue_00120')" :close-on-press-escape="false" :wrapper-closable="false" v-model="draweradd" append-to-body :modal-append-to-body="false" :show-close="true" :with-header="true" size="880px" @closed="destroyEditor">
                 <div class="drawerModlue">
                     <div class="tableDome_tip tableDoAlert">
                         <div class="shiTopAllTips">
@@ -245,7 +245,7 @@
                                     <td>
                                         <div class="TableSelect">
                                             <el-select v-model="curr_data.nid" filterable :placeholder="lc('admin_00159')">
-                                                <el-option v-for="item in classarr" :key="item.id" :label="item.name" :value="item.id">
+                                                <el-option v-for="item in classarr" :key="item.id" :label="catLabel(item)" :value="item.id">
                                                 </el-option>
                                             </el-select>
                                         </div>
@@ -378,8 +378,10 @@
                                     </td>
                                     <td colspan="2">
                                         <div class="TableInpt">
-                                            <textarea type="textarea" id="projectBasis" class="editor" name="projectBasis" cols="150" rows="30">
-                                        </textarea>
+                                            <div id="newseditor-wrapper" style="border: 1px solid #ccc; width: 100%; z-index: 30;">
+                                                <div id="newstoolbar-container"></div>
+                                                <div id="newseditor-container" style="height: 420px;"></div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -459,7 +461,45 @@ const isArray = (...a) => window.isArray(...a)
 const $ = typeof window !== 'undefined' && window.$ ? window.$ : Object.assign(function(){ return { length: 0 } }, {})
 const echarts = typeof window !== 'undefined' && window.echarts ? window.echarts : { init(){ return { setOption(){}, resize(){} } }, graphic: { LinearGradient: function(){} } }
 
-var ue = null;
+var newsEditor = null;
+var newsToolbar = null;
+var newsEditorTimer = null;
+function recoverNewsHtml(raw) {
+    var s = String(raw || '');
+    if (!s) return '';
+    var html = s;
+    if (s.indexOf('text-wrap-mode: nowrap') >= 0 && typeof DOMParser !== 'undefined') {
+        try {
+            var doc = new DOMParser().parseFromString(s, 'text/html');
+            var paras = doc.querySelectorAll('body > p');
+            if (!paras.length) paras = doc.querySelectorAll('p');
+            var lines = [];
+            for (var i = 0; i < paras.length; i++) {
+                lines.push(paras[i].textContent || '');
+            }
+            var text = lines.join('\n');
+            if (text.trim()) html = text;
+        } catch (e) {}
+    }
+    if (/<!DOCTYPE|<html[\s>]/i.test(html) && typeof DOMParser !== 'undefined') {
+        try {
+            var inner = new DOMParser().parseFromString(html, 'text/html');
+            var body = inner.body ? String(inner.body.innerHTML || '').trim() : '';
+            if (body) return body;
+        } catch (e) {}
+    }
+    return html;
+}
+function destroyNewsEditor() {
+    if (newsEditorTimer) {
+        clearInterval(newsEditorTimer);
+        newsEditorTimer = null;
+    }
+    try { if (newsEditor && typeof newsEditor.destroy === 'function') newsEditor.destroy(); } catch (e) {}
+    try { if (newsToolbar && typeof newsToolbar.destroy === 'function') newsToolbar.destroy(); } catch (e) {}
+    newsEditor = null;
+    newsToolbar = null;
+}
 export default {
     data: function() {
         return {
@@ -525,6 +565,9 @@ export default {
 
         this.getList();
         this.getCacheInfo();
+    },
+    beforeUnmount() {
+        destroyNewsEditor();
     },
     methods: {
         fpClassAllBottom() {
@@ -658,26 +701,46 @@ export default {
                 that.submitLoading = false;
             });
         },
+        destroyEditor() {
+            destroyNewsEditor();
+        },
         initEditor() {
             var that = this;
-            ue = UE.getEditor('projectBasis', {
-                wordCount: false,           // 关闭字数统计
-                elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
-                autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
-                initialFrameHeight: 480,    //默认的编辑区域高度
-                initialFrameWidth: 600,     //初始化编辑器宽度,{{ lc('wap_js_00098') }}1000
-                zIndex: 2000
-            });
-
-            ue.ready(function() {
-                if (that.curr_data.content) {
-                    ue.setContent(that.curr_data.content);
-                } else {
-                    ue.setContent('');
+            var html = recoverNewsHtml(that.curr_data.content);
+            destroyNewsEditor();
+            var tries = 0;
+            newsEditorTimer = setInterval(function() {
+                tries++;
+                var we = window.wangEditor || {};
+                var el = document.getElementById('newseditor-container');
+                if (!el || typeof we.createEditor !== 'function' || typeof we.createToolbar !== 'function') {
+                    if (tries > 40) {
+                        clearInterval(newsEditorTimer);
+                        newsEditorTimer = null;
+                    }
+                    return;
                 }
-            });
-
-
+                clearInterval(newsEditorTimer);
+                newsEditorTimer = null;
+                newsEditor = we.createEditor({
+                    selector: '#newseditor-container',
+                    html: html || '',
+                    config: {
+                        MENU_CONF: {
+                            uploadImage: {
+                                server: (window.baseUrl || '') + 'm=index&c=uploadfile',
+                                fieldName: 'file'
+                            }
+                        }
+                    },
+                    mode: 'default'
+                });
+                newsToolbar = we.createToolbar({
+                    editor: newsEditor,
+                    selector: '#newstoolbar-container',
+                    mode: 'default'
+                });
+            }, 50);
         },
         add(row) {
             var that = this;
@@ -692,10 +755,17 @@ export default {
                     if (row.id) {
                         that.curr_data = deepClone(row);
                         that.curr_data.content = res.data.content;
+                        that.curr_data.title_all = that.curr_data.title_all || that.curr_data.title || '';
+                        if (!Array.isArray(that.curr_data.describe_arr)) {
+                            that.curr_data.describe_arr = that.curr_data.describe
+                                ? String(that.curr_data.describe).split(',').filter(Boolean)
+                                : [];
+                        }
                     } else {
                         that.curr_data = {
                             nid: '',
                             title: '',
+                            title_all: '',
                             did: '0',
                             starttime_n: '',
                             endtime_n: '',
@@ -708,10 +778,10 @@ export default {
                             sort: 0,
                         };
                     }
+                    that.draweradd = true;
                     setTimeout(function() {
                         that.initEditor();
-                    }, 100);
-                    that.draweradd = true;
+                    }, 150);
                 } else {
                     message.error(res.msg);
                 }
@@ -842,10 +912,12 @@ export default {
                 message.error(lc('admin_00809'));
                 return false;
             }
-            that.curr_data.content = ue.getContent();
+            that.curr_data.content = newsEditor && typeof newsEditor.getHtml === 'function'
+                ? newsEditor.getHtml()
+                : '';
             // 去除html标签后判断内容是否为空
             var regex = /(<([^>]+)>)/ig
-            var result = ue.getContent().replace(regex, "");
+            var result = String(that.curr_data.content || '').replace(regex, "");
             if (!result) {
                 message.error(lc('admin_vue_00061'));
                 return false;
@@ -865,7 +937,7 @@ export default {
             params.append('keyword', this.curr_data.keyword);
             params.append('description', this.curr_data.description);
             params.append('content', this.curr_data.content);
-            params.append('describe', this.curr_data.describe_arr.join(','));
+            params.append('describe', Array.isArray(this.curr_data.describe_arr) ? this.curr_data.describe_arr.join(',') : '');
             params.append('sort', this.curr_data.sort);
             that.submitLoading = true;
             httpPost('m=neirong&c=news&a=addnews', params).then(function(result) {

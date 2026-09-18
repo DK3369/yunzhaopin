@@ -1751,24 +1751,45 @@ async fn news_index(state: &AppState, body: &Value) -> AppResult<Value> {
         ..Default::default()
     };
     let db = state.db.reader();
+    let dicts = dict_service::get(state).await?;
     let rows = article_repo::list_admin(db, &f, offset, limit).await?;
     let total = article_repo::count_admin(db, &f).await?;
     let base = preview_base(state);
     let list: Vec<Value> = rows
         .into_iter()
         .map(|a| {
+            let describe_arr: Vec<String> = a
+                .describe
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect();
             json!({
                 "id": a.id,
                 "title": a.title,
+                "title_all": a.title,
                 "color": a.color,
                 "author": a.author,
                 "nid": a.nid,
-                "did": a.did,
+                "did": a.did as i64,
                 "hits": a.hits,
                 "datetime": a.published_at,
                 "datetime_n": fmt_dt(a.published_at),
+                "starttime": a.starttime,
+                "starttime_n": fmt_date(a.starttime),
+                "endtime": a.endtime,
+                "endtime_n": fmt_date(a.endtime),
                 "describe": a.describe,
+                "describe_arr": describe_arr,
+                "description": a.summary,
+                "source": a.source.clone().unwrap_or_default(),
+                "keyword": a.keyword,
+                "sort": a.sort,
+                "picurl": pic_url(&base, &a.cover),
+                "name": a.category,
+                "name_n": news_label(&dicts, a.nid, &a.category),
                 "url": format!("{base}/index.php?m=news&c=show&id={}", a.id),
+                "classurl": format!("{base}/index.php?m=news&c=list&nid={}", a.nid),
                 "titype": "",
             })
         })
@@ -1831,6 +1852,7 @@ async fn news_del(state: &AppState, user: &AuthenticatedUser, body: &Value) -> A
 }
 
 async fn news_group(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
     let groups = article_repo::list_groups_admin(state.db.reader()).await?;
     let counts: HashMap<i32, i64> = article_repo::news_count_by_nid(state.db.reader())
         .await?
@@ -1843,6 +1865,7 @@ async fn news_group(state: &AppState) -> AppResult<Value> {
             json!({
                 "id": g.id,
                 "name": g.name,
+                "name_n": news_label(&dicts, g.id as i32, &g.name),
                 "keyid": g.keyid,
                 "sort": g.sort,
                 "rec": g.rec == 1,
@@ -5848,6 +5871,15 @@ fn dash_names(s: &str) -> Vec<String> {
         .collect()
 }
 
+fn news_label(dicts: &dict_service::LocalizedDicts, id: i32, zh: &str) -> String {
+    let n = dicts.news(id);
+    if n.is_empty() {
+        zh.to_string()
+    } else {
+        n.to_string()
+    }
+}
+
 fn cat_name_n(dicts: &dict_service::LocalizedDicts, kind: &str, r: &cat_repo::CatPhpRow) -> String {
     let id = r.id as i32;
     let n = match kind {
@@ -5858,6 +5890,7 @@ fn cat_name_n(dicts: &dict_service::LocalizedDicts, kind: &str, r: &cat_repo::Ca
         "company" | "com" | "comclass" => dicts.comclass(id),
         "userclass" | "user" => dicts.userclass(id),
         "question" | "qa" | "q" | "q_class" => dicts.question(id),
+        "news" | "news_group" => dicts.news(id),
         "reason" => return enum_labels::report_reason_name(r.id, &r.name),
         _ => "",
     };
