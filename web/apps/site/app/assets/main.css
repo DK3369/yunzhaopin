@@ -129,9 +129,11 @@ a.sys_a {
   color: #00a6a7;
 }
 
-.pc-home-search {
+.site-pc .pc-home-search {
   background: transparent;
   padding: 16px 0;
+  position: relative;
+  z-index: 1000;
 }
 .pc-home-search__inner {
   width: 1200px;
@@ -165,23 +167,25 @@ a.sys_a {
   border-top-color: #999;
   transform: translateY(2px);
 }
-.pc-home-search__menu {
+.site-pc .pc-home-search__menu {
   position: absolute;
   left: 0;
   top: 56px;
-  z-index: 40;
+  z-index: 1001;
   min-width: 118px;
+  width: max-content;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 6px 0;
 }
-.pc-home-search__menu a {
+.site-pc .pc-home-search__menu a {
   display: block;
   padding: 8px 16px;
   color: #333;
   font-size: 14px;
   text-decoration: none;
+  white-space: nowrap;
 }
 .pc-home-search__menu a:hover {
   color: #00a6a7;

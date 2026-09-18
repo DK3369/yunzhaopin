@@ -37,6 +37,7 @@ pnpm gen:types:admin
 - 同一 file-based 路由：`apps/site/app/pages/`
 - 模板双写 `.site-pc` / `.site-h5`；`app/assets/main.css` 用 `min-width:1200px` 显隐。**改 CSS 必须带端前缀**，禁止无前缀改共用 class，否则改 H5 会弄坏 PC（分页叠卡片、筛选项截断）
 - PC `/jobs` 列表卡片 `float:left`，分页放 `.search_pages` 里清浮动；申请钮 / More 下拉 / 城市芯片宽度 `auto`，不要沿用中文像素宽
+- PC 首页搜索 Jobs 下拉 `.pc-home-search` 要 `z-index:1000`，盖住 `.leftNav`/banner；不要改 `legacy/pc/style/index.css`
 - 职位卡标题最多 3 行：`JobCard` 共用 `.site-job-card__title`（首页 / `/jobs` / 企业在招都算）。写在 `main.css`。PC 首页卡仍 `150px`，空的地区/行业行不要占位，不要改 `legacy/pc/style/index.css`
 - H5 首页搜索条是 `input.index_newedition_search_p`；yunwap 按 PHP `span` 写死 `5.33rem`，不要让白底截成半截灰胶囊，在 `main.css` 铺满
 - H5 首页底不要 ViewMoreJob / Contact Us / Feedback / About Us（`yun_newedition_footer` + lookmore）；底栏五项仍要
