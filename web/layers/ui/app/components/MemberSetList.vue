@@ -36,13 +36,6 @@
     <div class="site-h5">
       <div v-if="kind === 'com'" class="issue_post_body_new">
         <div class="issue_post_body_card member-set-list" style="padding-top: 0; margin-top: 0">
-          <div class="com_set_list member-set-lang" @click="langOpen = true">
-            <div class="com_set_listname">{{ $t('ui.language') }}</div>
-            <div class="com_set_listp">{{ langLabel }}</div>
-            <div class="com_set_listicon">
-              <img src="/legacy/h5/images/issue_add.png" alt="" width="100%" height="100%" />
-            </div>
-          </div>
           <NuxtLink v-for="item in items" :key="item.to" :to="item.to" class="com_set_list">
             <div class="com_set_listname">{{ item.label }}</div>
             <div v-if="item.hint" class="com_set_listp">{{ item.hint }}</div>
@@ -50,20 +43,18 @@
               <img src="/legacy/h5/images/issue_add.png" alt="" width="100%" height="100%" />
             </div>
           </NuxtLink>
+          <div class="com_set_list member-set-lang" @click="langOpen = true">
+            <div class="com_set_listname">{{ $t('ui.language') }}</div>
+            <div class="com_set_listp">{{ langLabel }}</div>
+            <div class="com_set_listicon">
+              <img src="/legacy/h5/images/issue_add.png" alt="" width="100%" height="100%" />
+            </div>
+          </div>
         </div>
         <div v-if="logoutable" class="logout_btn" @click="logout">{{ $t('wap_user_00342') }}</div>
       </div>
       <div v-else class="issue_post_body">
         <div class="issue_post_body_card member-set-list">
-          <div class="post_body_card_job member-set-lang" @click="langOpen = true">
-            <div class="body_card_job_box">
-              <div class="card_job_box_post">{{ $t('ui.language') }}</div>
-              <div class="card_job_box_name">{{ langLabel }}</div>
-            </div>
-            <div class="body_card_job_icon">
-              <img src="/legacy/h5/images/issue_add.png" alt="" width="100%" />
-            </div>
-          </div>
           <NuxtLink v-for="item in items" :key="item.to" :to="item.to" class="post_body_card_job">
             <div class="body_card_job_box">
               <div class="card_job_box_post">{{ item.label }}</div>
@@ -73,6 +64,15 @@
               <img src="/legacy/h5/images/issue_add.png" alt="" width="100%" />
             </div>
           </NuxtLink>
+          <div class="post_body_card_job member-set-lang" @click="langOpen = true">
+            <div class="body_card_job_box">
+              <div class="card_job_box_post">{{ $t('ui.language') }}</div>
+              <div class="card_job_box_name">{{ langLabel }}</div>
+            </div>
+            <div class="body_card_job_icon">
+              <img src="/legacy/h5/images/issue_add.png" alt="" width="100%" />
+            </div>
+          </div>
         </div>
         <div v-if="logoutable" class="logout_btn" @click="logout">{{ $t('wap_user_00342') }}</div>
       </div>

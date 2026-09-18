@@ -168,7 +168,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 注销账号 | `/user/account` | 企业 set 底栏退出 | `logout.htm` | 否 |
 | 绑定账号 | `/user/binding` | `/com/binding` | `binding.htm`（`Binding_list*` / 手机邮箱弹层） | 招聘 PC 左栏第 9 项 |
 | 认证与绑定 | `/user/ident` | `/com/cert` | WAP `ident.htm`（`issue_post_body_card`） / `comcert.htm` | 否 |
-| 账户设置 | `/user/set` | `/com/set` | H5 入口汇总（求职 `issue_post_body_card` / 招聘 `com_set_list`） | **否**（仅 H5） |
+| 账户设置 | `/user/set` | `/com/set` | H5 入口汇总（求职 `issue_post_body_card` / 招聘 `com_set_list`）。语言行在列表最底。求职 **不要**同时链 `/user/messages` 和 `/user/chat`（英文都叫 Messages；私信已在消息页 `chatnewcard`） | **否**（仅 H5） |
 | 积分 | `/user/integral` | `/com/integral` | `integral.htm` / WAP `mission_body`；标题 `member_right_index_h1` | 求职「更多」 |
 | 财务管理 | `/user/finance` | `/com/orders` 等 | `paylist.htm` / H5 `financial_management_*` | 求职「更多」 |
 | 充值 | `/user/pay` | `/com/pay` | `pay.htm`（`payment_list_*`） | 否 |
