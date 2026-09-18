@@ -31,3 +31,7 @@ H5 `html { font-size: clamp(32px, 10vw, 75px) }`。legacy `body { font-size: 0.9
 **保留**：路由 `pages/map.vue`、职位/兼职/企业详情「看地图」、招聘会员 `/com/map`。不要删接口 `/v1/wap/map/*`。
 
 H5 `/jobs` 顶栏只要 Latest，不要 Urgent Hiring，也不要 Nearby。
+
+## 会员 H5 标签行
+
+`.member_c9` 不要沿用绝对定位 + `.com_member_hr_p1` 的 `padding-left: 1.866667rem`（按中文四字留白）。英文 Inquiry Job / Company Reply 会叠到内容上。H5 改成 flex，标签 `position: static`。
