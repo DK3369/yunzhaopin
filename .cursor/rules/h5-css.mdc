@@ -8,6 +8,17 @@ alwaysApply: true
 
 改 PC/H5 前台只动 `web/`，收口写在 `web/apps/site/app/assets/main.css`，**不要**改 `public/legacy/h5/css/yunwap.css` / `base.css`。
 
+## PC / H5 隔离（禁止交叉污染）
+
+两端同一路由、同一 `main.css`，靠 class 显隐，不是两套源码。改样式必须带端前缀：
+
+- **H5**：`.site-h5` 或 `@media (max-width: 1199px)`
+- **PC**：`.site-pc` 或 `@media (min-width: 1200px)`
+
+禁止改无前缀的共用 class（`.pager`、`.search_job_list`、yunwap 原类）除非确认两端都该变。改 H5 前在 1366 看一眼对应 PC 页；改 PC 前在 390 看一眼对应 H5 页。
+
+PC `/jobs` 卡片 `float:left`。分页要用 `.search_pages`（或 `clear:both; width:100%`），不能让 `.pager` 的 flex 盒贴到第一张卡右侧。已申请钮不要写死 66px；More 下拉不要写死 100px、城市芯片不要写死 40px，英文会截成 `AlreadyA` / `Company Benefi` / `Unli…`。
+
 ## 根字号
 
 H5 `html { font-size: clamp(32px, 10vw, 75px) }`。legacy `body { font-size: 0.9em }` 会把没写 rem 的字放大到三十多像素。可见正文必须自己写 rem，不要靠继承 `em`。

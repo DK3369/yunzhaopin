@@ -469,7 +469,7 @@ function goPage(p: number) {
                   :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: urgent ? undefined : '1' }) }"
                   class="job_zt"
                 >
-                  {{ $t('member_com_00326') }} <i class="job_jp_chk" />
+                  {{ $t('admin_user_company_00156') }} <i class="job_jp_chk" />
                 </NuxtLink>
               </li>
               <li :class="{ search_h1_box_cur: rec }" class="job_tj_t">
@@ -511,7 +511,10 @@ function goPage(p: number) {
                 />
               </template>
             </template>
-            <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
+            <div class="clear" />
+            <div class="search_pages">
+              <Pager :page="page" :page-size="20" :total="data?.total || 0" @update:page="goPage" />
+            </div>
           </div>
         </div>
         <div v-if="(adsSide && adsSide.length) || recVisible.length" class="yun_job_list_right">
