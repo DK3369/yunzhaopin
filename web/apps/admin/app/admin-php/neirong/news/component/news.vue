@@ -70,7 +70,7 @@
                 </el-table-column>
                 <el-table-column prop="zd" :label="lc('admin_user_weipin_00050')" width="75">
                     <template #default="scope">
-                        <span>{{ dnamearr[scope.row.did] }}</span>
+                        <span>{{ siteName(scope.row.did) }}</span>
                         <el-link type="primary" @click="fp(scope.row)">{{ lc('admin_user_weipin_00048') }}</el-link>
                     </template>
                 </el-table-column>
@@ -579,6 +579,26 @@ export default {
             if (!n) return lc('admin_00147')
             return n + ' ' + lc('member_com_00289')
         },
+        siteDidKey(did) {
+            const s = did == null ? '' : String(did).trim()
+            if (s === '18446744073709551615') return '-1'
+            if (s === '' || s === 'null' || s === 'undefined') return '0'
+            return s
+        },
+        siteName(did) {
+            const k = this.siteDidKey(did)
+            const n = this.dnamearr && this.dnamearr[k]
+            if (n) return n
+            if (k === '-1') return lc('api_wxapp_00018')
+            if (k === '0') return lc('ajax_00021')
+            return ''
+        },
+        fillDname(raw) {
+            const o = Object.assign({}, raw && typeof raw === 'object' ? raw : {})
+            o['-1'] = lc('api_wxapp_00018')
+            o['0'] = lc('ajax_00021')
+            this.dnamearr = o
+        },
         fpClassAllBottom() {
             if (!this.selectedItem.length) {
                 message.error(lc('admin_user_weipin_00001'));
@@ -662,6 +682,7 @@ export default {
         },
         fp(data) {
             this.curr_data = deepClone(data);
+            this.curr_data.did = this.siteDidKey(this.curr_data.did)
             this.drawerfp = true
         },
         fpAllBottom() {
@@ -763,6 +784,7 @@ export default {
                 if (res.error == 0) {
                     if (row.id) {
                         that.curr_data = deepClone(row);
+                        that.curr_data.did = that.siteDidKey(that.curr_data.did);
                         that.curr_data.content = res.data.content;
                         that.curr_data.title_all = that.curr_data.title_all || that.curr_data.title || '';
                         if (!Array.isArray(that.curr_data.describe_arr)) {
@@ -897,7 +919,7 @@ export default {
             httpPost('m=neirong&c=news&a=getCache', {}, { hideloading: true }).then(function(result) {
                 var res = result.data
                 if (res.error == 0) {
-                    that.dnamearr = res.data.Dname
+                    that.fillDname(res.data.Dname)
                     that.oneclass = res.data.one_class
                     that.class_cascader = res.data.class_cascader
                     that.today = res.data.today
