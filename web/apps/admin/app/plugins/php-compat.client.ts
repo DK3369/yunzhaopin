@@ -577,9 +577,17 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       packedLog: translatePackedText,
       catLabel(row: { name?: unknown; name_n?: unknown } | null | undefined) {
         if (!row) return ''
-        const n = typeof row.name_n === 'string' ? row.name_n.trim() : ''
+        const n = String(row.name_n ?? '').trim()
         if (n) return n
-        return translatePackedText(row.name)
+        return String(row.name ?? '').trim()
+      },
+      catEName(row: { name?: unknown; name_n?: unknown; e_name?: unknown } | null | undefined) {
+        if (!row) return ''
+        const e = String(row.e_name ?? '').trim()
+        if (e) return e
+        const n = String(row.name_n ?? '').trim()
+        const raw = String(row.name ?? '').trim()
+        return n && n !== raw ? n : ''
       },
       $set(obj: Record<string, unknown>, key: string, val: unknown) {
         if (obj && typeof obj === 'object') obj[key] = val

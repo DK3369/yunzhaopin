@@ -170,20 +170,24 @@ export default {
             _this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=system&c=category_userclass&a=up', params).then(function (response) {
                 let res = response.data;
+                let payload = res.data || {};
                 let list = [];
-                if (res.data.class1) {
-                    list.push(res.data.class1);
+                if (payload.class1 && payload.class1.id) {
+                    list.push(payload.class1);
                 }
-                for (let item of res.data.class2) {
-                    list.push(item);
+                if (Array.isArray(payload.class2)) {
+                    for (let item of payload.class2) {
+                        list.push(item);
+                    }
                 }
                 _this.tableData = list;
-                _this.position = res.data.position;
+                _this.position = Array.isArray(payload.position) ? payload.position : [];
 				_this.loading = false;
                 if (_this.tableData.length === 0){
                     _this.emptytext = window.yunAdminT(lc('wap_js_00113'));
                 }
             }).catch(function (error) {
+                _this.loading = false;
                 console.log(error);
             });
         },

@@ -5651,7 +5651,6 @@ async fn job_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
     }
     let name = json_str(body, "name");
     let e_name = json_str(body, "e_name");
-    let s_name = json_str(body, "s_name");
     cat_repo::patch_job_class(
         state.db.pool(),
         id,
@@ -5666,11 +5665,7 @@ async fn job_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
         } else {
             Some(e_name.as_str())
         },
-        if s_name.is_empty() {
-            None
-        } else {
-            Some(s_name.as_str())
-        },
+        None,
         None,
     )
     .await?;
@@ -5897,6 +5892,7 @@ fn cat_row_json(
     }
     if kind == "job" {
         v["e_name"] = json!(r.e_name.clone());
+        v["s_name"] = json!("");
         v["rec"] = json!(r.rec);
         v["content"] = json!(r.content.clone());
     }

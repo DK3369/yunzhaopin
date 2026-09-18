@@ -799,10 +799,13 @@ fn split_class_rows(
         if keyid > 0 {
             children.entry(keyid).or_default().push(id);
         }
-        if let Some(v) = variable {
-            let v = v.trim();
-            if !v.is_empty() {
-                vars.insert(v.to_string(), id);
+        // PHP userdata/comdata keys live on parent rows (keyid=0) only.
+        if keyid == 0 {
+            if let Some(v) = variable {
+                let v = v.trim();
+                if !v.is_empty() {
+                    vars.insert(v.to_string(), id);
+                }
             }
         }
     }

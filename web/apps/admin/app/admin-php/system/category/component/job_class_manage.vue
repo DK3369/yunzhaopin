@@ -12,14 +12,12 @@
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                             v-model="scope.row.name" @blur="alterData(scope)"></el-input>
                         <span v-else>
-                            <template>
                                 <template v-if="scope.row.level == 'one'">{{ lc('admin_system_00111') }}</template>
                                 <template v-else-if="scope.row.level == 'two'">&emsp;{{ lc('admin_00291') }}：┗</template>
                                 <template v-else-if="scope.row.level == 'three'">&emsp;&emsp;┗</template>
                                 {{ catLabel(scope.row) }}<img @click="editData(scope)" class="editIcon"
                                 src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
                                 height="14">
-                            </template>
                         </span>
                     </template>
                 </el-table-column>
@@ -29,7 +27,7 @@
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                             v-model="scope.row.e_name" @blur="alterData(scope)"></el-input>
                         <span v-else>
-                            {{ scope.row.e_name }}<img @click="editData(scope)" class="editIcon"
+                            {{ catEName(scope.row) }}<img @click="editData(scope)" class="editIcon"
                             src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
                         </span>
                     </template>
@@ -208,18 +206,18 @@ export default {
             _this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=system&c=category_job_class&a=up', {id: this.id}).then(function (response) {
                 let res = response.data;
-                _this.position = res.data.position;
-                //{{ lc('admin_yunying_00145') }}
-                res.data.onejob.level = "one";
-                newlist.push(res.data.onejob);
-                if (Array.isArray(res.data.twojob)) {
-                    for (let twoitem of res.data.twojob) {
-                        //{{ lc('admin_yunying_00147') }}
+                let payload = res.data || {};
+                _this.position = Array.isArray(payload.position) ? payload.position : [];
+                if (payload.onejob && payload.onejob.id) {
+                    payload.onejob.level = "one";
+                    newlist.push(payload.onejob);
+                }
+                if (Array.isArray(payload.twojob)) {
+                    let threeMap = payload.threejob && typeof payload.threejob === 'object' ? payload.threejob : {};
+                    for (let twoitem of payload.twojob) {
                         twoitem.level = "two";
                         newlist.push(twoitem);
-                        //{{ lc('admin_yunying_00146') }}
-                        let tow_class_id = twoitem.id;
-                        let threeList = res.data.threejob[tow_class_id];
+                        let threeList = threeMap[twoitem.id];
                         if (Array.isArray(threeList)) {
                             for (let threeitem of threeList) {
                                 threeitem.level = 'three';
@@ -237,6 +235,7 @@ export default {
                     _this.emptytext = window.yunAdminT(lc('wap_js_00113'));
                 }
             }).catch(function (error) {
+                _this.loading = false;
                 console.log(error);
             });
         },

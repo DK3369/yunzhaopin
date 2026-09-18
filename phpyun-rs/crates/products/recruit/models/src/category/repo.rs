@@ -308,10 +308,11 @@ pub async fn patch_job_class(
     name: Option<&str>,
     sort: Option<i32>,
     e_name: Option<&str>,
-    s_name: Option<&str>,
+    _s_name: Option<&str>,
     rec: Option<i32>,
 ) -> Result<u64, sqlx::Error> {
-    if name.is_none() && sort.is_none() && e_name.is_none() && s_name.is_none() && rec.is_none() {
+    // This site's phpyun_job_class has no s_name column; never SET it.
+    if name.is_none() && sort.is_none() && e_name.is_none() && rec.is_none() {
         return Ok(0);
     }
     let mut qb = sqlx::QueryBuilder::new("UPDATE phpyun_job_class SET ");
@@ -337,14 +338,6 @@ pub async fn patch_job_class(
             qb.push(", ");
         }
         qb.push("e_name = ");
-        qb.push_bind(v);
-        first = false;
-    }
-    if let Some(v) = s_name {
-        if !first {
-            qb.push(", ");
-        }
-        qb.push("s_name = ");
         qb.push_bind(v);
         first = false;
     }
