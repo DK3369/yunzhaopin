@@ -1,5 +1,8 @@
 <template>
-  <div class="member-field yun_createlist" :class="pr ? 'yun_createlist_pr' : ''">
+  <div
+    class="member-field yun_createlist"
+    :class="[pr ? 'yun_createlist_pr' : '', area ? 'member-field--area' : '']"
+  >
     <template v-if="wap">
       <div v-if="label" class="yun_create_name">{{ label }}</div>
       <div

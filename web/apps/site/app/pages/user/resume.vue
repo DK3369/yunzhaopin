@@ -693,7 +693,7 @@ useSeoMeta({ title: t('wap_user_00204') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('wap_00376') : $t('ui.load_failed') }}</p>
     <p v-if="topMsg" class="muted">{{ topMsg }}</p>
     <p v-if="msg && openSec !== 'basic'" class="muted">{{ msg }}</p>
-    <form v-if="!error && openSec === 'basic'" class="site-pc yun_resume_popup_box" @submit.prevent="saveResume">
+    <form v-if="!error && openSec === 'basic'" class="site-pc yun_resume_popup_box member-resume-card member-resume-fields" @submit.prevent="saveResume">
       <div class="yun_resume_popup_list">
         <label class="yun_resume_popup_cell">
           <span class="yun_resume_popup_name">{{ $t('wap_00529') }}</span>
@@ -861,6 +861,17 @@ useSeoMeta({ title: t('wap_user_00204') })
     </MemberResumeSection>
         <MemberResumeSection :title="$t('wap_00457')" icon="yun_resume_h1_iconjl" :open="openSec === 'work'" @toggle="openAdd('work')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in workRows"
+              :key="'w-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.title"
+              :time="timeOf(row)"
+              :body="row.content"
+              @edit="fillWork(row)"
+              @remove="delChild('works', row, refreshWorks)"
+            />
             <p v-if="!workRows.length" class="muted">{{ $t('ui.no_work') }}</p>
           </template>
           <template #h5>
@@ -888,19 +899,18 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in workRows"
-          :key="'w-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.title"
-          :time="timeOf(row)"
-          :body="row.content"
-          @edit="fillWork(row)"
-          @remove="delChild('works', row, refreshWorks)"
-        />
         <MemberResumeSection :title="$t('wap_00459')" icon="yun_resume_h1_iconjy" h5-kind="edu" :open="openSec === 'edu'" @toggle="openAdd('edu')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in eduRows"
+              :key="'edu-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.specialty || row.education_n"
+              :time="timeOf(row)"
+              @edit="fillEdu(row)"
+              @remove="delChild('edus', row, refreshEdus)"
+            />
             <p v-if="!eduRows.length" class="muted">{{ $t('ui.no_edu') }}</p>
           </template>
           <template #h5>
@@ -925,18 +935,19 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in eduRows"
-          :key="'edu-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.specialty || row.education_n"
-          :time="timeOf(row)"
-          @edit="fillEdu(row)"
-          @remove="delChild('edus', row, refreshEdus)"
-        />
         <MemberResumeSection :title="$t('wap_00465')" icon="yun_resume_h1_iconxm" :open="openSec === 'project'" @toggle="openAdd('project')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in projectRows"
+              :key="'p-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.role"
+              :time="timeOf(row)"
+              :body="row.content"
+              @edit="fillProject(row)"
+              @remove="delChild('projects', row, refreshProjects)"
+            />
             <p v-if="!projectRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
@@ -963,19 +974,17 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in projectRows"
-          :key="'p-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.role"
-          :time="timeOf(row)"
-          :body="row.content"
-          @edit="fillProject(row)"
-          @remove="delChild('projects', row, refreshProjects)"
-        />
         <MemberResumeSection :title="$t('wap_00461')" icon="yun_resume_h1_iconjn" h5-kind="skill" :open="openSec === 'skill'" @toggle="openAdd('skill')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in skillRows"
+              :key="'sk-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.years ? String(row.years) : ''"
+              @edit="fillSkill(row)"
+              @remove="delChild('skills', row, refreshSkills)"
+            />
             <p v-if="!skillRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
@@ -999,17 +1008,19 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in skillRows"
-          :key="'sk-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.years ? String(row.years) : ''"
-          @edit="fillSkill(row)"
-          @remove="delChild('skills', row, refreshSkills)"
-        />
         <MemberResumeSection :title="$t('wap_00455')" icon="yun_resume_h1_iconpx" :open="openSec === 'training'" @toggle="openAdd('training')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in trainingRows"
+              :key="'tr-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.title"
+              :time="timeOf(row)"
+              :body="row.content"
+              @edit="fillTraining(row)"
+              @remove="delChild('trainings', row, refreshTrainings)"
+            />
             <p v-if="!trainingRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
@@ -1036,19 +1047,19 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in trainingRows"
-          :key="'tr-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.title"
-          :time="timeOf(row)"
-          :body="row.content"
-          @edit="fillTraining(row)"
-          @remove="delChild('trainings', row, refreshTrainings)"
-        />
         <MemberResumeSection :title="$t('wap_user_00090')" icon="yun_resume_h1_iconry" :open="openSec === 'cert'" @toggle="openAdd('cert')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in certRows"
+              :key="'c-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.title"
+              :time="timeOf(row)"
+              :body="row.content"
+              @edit="fillCert(row)"
+              @remove="delChild('certs', row, refreshCerts)"
+            />
             <p v-if="!certRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
@@ -1075,19 +1086,17 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in certRows"
-          :key="'c-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.title"
-          :time="timeOf(row)"
-          :body="row.content"
-          @edit="fillCert(row)"
-          @remove="delChild('certs', row, refreshCerts)"
-        />
         <MemberResumeSection :title="$t('wap_00493')" icon="yun_resume_h1_iconqt" :open="openSec === 'other'" @toggle="openAdd('other')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in otherRows"
+              :key="'o-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :body="row.content"
+              @edit="fillOther(row)"
+              @remove="delChild('others', row, refreshOthers)"
+            />
             <p v-if="!otherRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
@@ -1109,17 +1118,17 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in otherRows"
-          :key="'o-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :body="row.content"
-          @edit="fillOther(row)"
-          @remove="delChild('others', row, refreshOthers)"
-        />
         <MemberResumeSection :title="$t('wap_com_00292')" icon="yun_resume_h1_iconpj" :open="openSec === 'language'" @toggle="openAdd('language')">
           <template #pc>
+            <MemberResumeExpItem
+              v-for="row in languageRows"
+              :key="'lg-' + row.id"
+              surface="pc"
+              :title="String(row.name || '')"
+              :sub="row.level ? String(row.level) : ''"
+              @edit="fillLanguage(row)"
+              @remove="delChild('languages', row, refreshLanguages)"
+            />
             <p v-if="!languageRows.length" class="muted">{{ $t('ui.no_items') }}</p>
           </template>
           <template #h5>
@@ -1141,15 +1150,6 @@ useSeoMeta({ title: t('wap_user_00204') })
         </form>
       </template>
     </MemberResumeSection>
-        <MemberResumeExpItem
-          v-for="row in languageRows"
-          :key="'lg-' + row.id"
-          surface="pc"
-          :title="String(row.name || '')"
-          :sub="row.level ? String(row.level) : ''"
-          @edit="fillLanguage(row)"
-          @remove="delChild('languages', row, refreshLanguages)"
-        />
         <MemberResumeSection :title="$t('wap_00973')" icon="yun_resume_h1_iconzp" h5-kind="show" :open="openSec === 'show'" @toggle="openAdd('show')">
       <template #pc>
         <div v-for="row in shows?.list || []" :key="row.id" class="user_resume_box">

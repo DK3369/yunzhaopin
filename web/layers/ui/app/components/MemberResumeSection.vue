@@ -19,7 +19,7 @@
       </div>
       <slot name="h5" />
     </div>
-    <div v-if="open" class="yun_createbox member-resume-section-form verification_form">
+    <div v-if="open" class="yun_createbox member-resume-section-form member-resume-fields verification_form">
       <slot name="form" />
     </div>
   </div>
