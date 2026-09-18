@@ -1694,10 +1694,59 @@ html.force-pc .site-h5 {
   white-space: normal;
   word-break: break-word;
 }
+.site-pc .login_cont .login_xy {
+  clear: both;
+  float: left;
+  width: 100%;
+  padding: 8px 0 4px;
+  color: #999;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.site-pc .login_cont .login_xy label {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  cursor: pointer;
+}
+.site-pc .login_cont .login_box_fw {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  float: left;
+  width: 100%;
+  clear: both;
+}
+.site-pc .login_cont .login_remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  cursor: pointer;
+  color: #666;
+}
 .site-h5 .login_cont .login_welcome,
 .site-h5 .login_cont .login_xy,
 .site-h5 .login_cont .login_otherfs {
   word-break: break-word;
+}
+.site-h5 .login_cont .login_otherfs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.24rem 0.4rem;
+}
+.site-h5 .login_cont .login_remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.16rem;
+  cursor: pointer;
+  color: #999;
+}
+.site-h5 .login_cont .login_wjmm {
+  position: static;
+  margin-left: auto;
 }
 
 /* 职位详情吸顶条：PHP comapply.css 用 padding-top 假装居中，英文 CTA 一换行标题就被基线拉到底 */

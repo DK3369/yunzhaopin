@@ -445,8 +445,25 @@ onUnmounted(() => {
                     {{ smsWait > 0 ? `${smsWait}s` : $t('loginPage.send_code') }}
                   </button>
                 </div>
+                <div class="login_xy">
+                  <label>
+                    <input v-model="agreed" type="checkbox" />
+                    <span>
+                      <i class="policy">{{ $t('wap_00309') }}</i>
+                      <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+                      <i class="policy">{{ $t('wap_00679') }}</i>
+                      <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+                    </span>
+                  </label>
+                </div>
                 <div class="login_box_cz">
                   <input type="submit" class="login_box_bth2" :disabled="submitting" :value="$t('common.login')" />
+                </div>
+                <div class="login_box_fw">
+                  <label class="login_remember">
+                    <input v-model="remember" type="checkbox" />
+                    {{ $t('loginPage.remember') }}
+                  </label>
                 </div>
               </form>
               <form v-else @submit.prevent="submitPass">
@@ -475,10 +492,25 @@ onUnmounted(() => {
                   <input v-model="authcode" maxlength="8" class="login_box_bth" autocomplete="off" :placeholder="$t('wap_00262')" />
                   <img :src="captcha.image" alt="" @click="loadCaptcha" />
                 </div>
+                <div class="login_xy">
+                  <label>
+                    <input v-model="agreed" type="checkbox" />
+                    <span>
+                      <i class="policy">{{ $t('wap_00309') }}</i>
+                      <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
+                      <i class="policy">{{ $t('wap_00679') }}</i>
+                      <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
+                    </span>
+                  </label>
+                </div>
                 <div class="login_box_cz">
                   <input type="submit" class="login_box_bth2" :disabled="submitting" :value="$t('common.login')" />
                 </div>
                 <div class="login_box_fw">
+                  <label class="login_remember">
+                    <input v-model="remember" type="checkbox" />
+                    {{ $t('loginPage.remember') }}
+                  </label>
                   <NuxtLink to="/forgetpw">{{ $t('wap_00680') }}</NuxtLink>
                   <NuxtLink to="/register">{{ $t('common.register') }}</NuxtLink>
                 </div>
@@ -502,19 +534,6 @@ onUnmounted(() => {
                 }}
               </a>
             </div>
-            <div class="login_xy">
-              <label class="login_xy_zx">
-                <input v-model="remember" type="checkbox" />
-                <i class="policy">{{ $t('loginPage.remember') }}</i>
-              </label>
-              <label class="login_xy_zx">
-                <input v-model="agreed" type="checkbox" />
-                <i class="policy">{{ $t('wap_00309') }}</i>
-                <NuxtLink to="/pages/protocol" class="Privacy">{{ $t('wap_00678') }}</NuxtLink>
-                <i class="policy">{{ $t('wap_00679') }}</i>
-                <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
-              </label>
-            </div>
           </div>
         </div>
       </div>
@@ -536,20 +555,7 @@ onUnmounted(() => {
         <div>{{ $t('common.login') }}</div>
         <div>{{ siteName }}</div>
       </div>
-      <form v-if="panel === 'qr'" @submit.prevent>
-        <div class="The_login_subject">
-          <p>
-            <button type="button" :class="{ on: role === 1 }" @click="role = 1">{{ $t('loginPage.seek') }}</button>
-            <button type="button" :class="{ on: role === 2 }" @click="role = 2">{{ $t('loginPage.hire') }}</button>
-          </p>
-          <img v-if="appQrSrc" :src="appQrSrc" alt="" width="180" height="180" />
-          <p v-else class="muted">{{ $t('common_02409') }}</p>
-          <p v-if="appQrHint" class="muted">{{ appQrHint }}</p>
-          <button v-if="appQrHint" type="button" class="login_bth" @click="startAppQr">{{ $t('loginPage.qr_refresh') }}</button>
-          <p><NuxtLink to="/download">{{ $t('ui.app_download') }}</NuxtLink></p>
-        </div>
-      </form>
-      <form v-else-if="panel === 'sms'" @submit.prevent="submitSms">
+      <form v-if="panel === 'sms'" @submit.prevent="submitSms">
         <div class="The_login_subject">
           <div class="login_textbox">
             <input v-model="mobile" required type="tel" maxlength="11" autocomplete="tel" :placeholder="$t('loginPage.mobile_ph')" />
@@ -573,7 +579,6 @@ onUnmounted(() => {
               <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
             </div>
           </div>
-          <label class="login_xy_zx"><input v-model="remember" type="checkbox" /> {{ $t('loginPage.remember') }}</label>
         </div>
         <p v-if="err" class="muted">{{ err }}</p>
         <div class="login_bthbox">
@@ -601,7 +606,6 @@ onUnmounted(() => {
               <NuxtLink to="/pages/privacy" class="Privacy">{{ $t('wap_00313') }}</NuxtLink>
             </div>
           </div>
-          <label class="login_xy_zx"><input v-model="remember" type="checkbox" /> {{ $t('loginPage.remember') }}</label>
         </div>
         <p v-if="err" class="muted">{{ err }}</p>
         <div class="login_bthbox">
@@ -609,9 +613,12 @@ onUnmounted(() => {
         </div>
       </form>
       <div class="login_otherfs">
+        <label class="login_remember">
+          <input v-model="remember" type="checkbox" />
+          {{ $t('loginPage.remember') }}
+        </label>
         <div v-if="smsLoginOn && panel !== 'sms'" class="verification_code_word" @click="openPanel('sms')">{{ $t('wap_00648') }}</div>
         <div v-if="panel === 'sms'" class="verification_code_word" @click="openPanel('pass')">{{ $t('wap_00308') }}</div>
-        <div class="verification_code_word" @click="openPanel(panel === 'qr' ? 'pass' : 'qr')">{{ $t('loginPage.tab_qr') }}</div>
         <NuxtLink to="/forgetpw" class="login_wjmm">{{ $t('wap_00680') }}</NuxtLink>
       </div>
     </div>
