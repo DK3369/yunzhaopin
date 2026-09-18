@@ -1,17 +1,7 @@
 <template>
   <div class="m_cardbg">
     <div v-if="kicker" class="sx_new_tit">{{ kicker }}</div>
-    <div class="sx_new_cont">
-      <template v-if="segs.length">
-        <template v-for="(p, i) in segs" :key="i">
-          <NuxtLink v-if="p.to" :to="p.to" class="sys_a" @click.stop>{{ p.n }}</NuxtLink>
-          <span v-else>{{ p.n }}</span>
-        </template>
-      </template>
-      <NuxtLink v-else-if="to" :to="to" class="sys_a">{{ title }}</NuxtLink>
-      <template v-else>{{ title }}</template>
-      <slot />
-    </div>
+    <div class="sx_new_cont"><template v-if="segs.length"><template v-for="(p, i) in segs" :key="i"><NuxtLink v-if="p.to" :to="p.to" class="sys_a" @click.stop>{{ p.n }}</NuxtLink><span v-else>{{ p.n }}</span></template></template><NuxtLink v-else-if="to" :to="to" class="sys_a">{{ title }}</NuxtLink><template v-else>{{ title }}</template><slot /></div>
     <div class="sx_new_bot">
       <div class="sx_new_data">{{ meta }}</div>
       <div v-if="onDelete" class="sx_new_icon" @click.stop="onDelete">

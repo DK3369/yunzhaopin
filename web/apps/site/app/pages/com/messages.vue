@@ -136,10 +136,7 @@ const total = computed(() => inferTotal(data.value))
           <input type="checkbox" class="com_job_list_check" :checked="picked.includes(Number(row.id))" @change="togglePick(Number(row.id))" />
         </td>
         <td :style="isUnread(row) ? 'font-weight:bold' : ''">
-          <template v-for="(p, i) in rowParts(row)" :key="'pc-' + Number(row.id) + '-' + i">
-            <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
-            <span v-else>{{ p.n }}</span>
-          </template>
+          <template v-for="(p, i) in rowParts(row)" :key="'pc-' + Number(row.id) + '-' + i"><NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink><span v-else>{{ p.n }}</span></template>
         </td>
         <td>{{ rowTime(row) }}</td>
         <td>
@@ -160,10 +157,7 @@ const total = computed(() => inferTotal(data.value))
           <input type="checkbox" :checked="picked.includes(Number(row.id))" @change="togglePick(Number(row.id))" />
         </label>
         <div class="com_cardlist_tit" :style="isUnread(row) ? 'font-weight:bold' : ''">
-          <template v-for="(p, i) in rowParts(row)" :key="'h5-' + Number(row.id) + '-' + i">
-            <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
-            <span v-else>{{ p.n }}</span>
-          </template>
+          <template v-for="(p, i) in rowParts(row)" :key="'h5-' + Number(row.id) + '-' + i"><NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink><span v-else>{{ p.n }}</span></template>
         </div>
         <div class="com_cardlist_p">
           <span class="com_cardlist_p_name">{{ $t('member_user_00104') }}</span>

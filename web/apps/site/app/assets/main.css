@@ -2299,6 +2299,18 @@ a.sys_a {
   .member-shell .chatnewcardheader {
     display: none;
   }
+  /* 去掉 Messages 标题后，PHP min-height:140px 会在四宫格和消息卡之间留空 */
+  .member-shell .chatnewcardbg {
+    min-height: 0;
+  }
+  .member-shell .sx_new_cont {
+    font-size: 0;
+  }
+  .member-shell .sx_new_cont > a,
+  .member-shell .sx_new_cont > span {
+    display: inline;
+    font-size: 0.373333rem;
+  }
   .member-shell .yun_m_rightsidebar,
   .yun_m_rightbox,
   .yun_m_rightbox.member-page-body,

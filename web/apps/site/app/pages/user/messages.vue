@@ -101,19 +101,16 @@ const total = computed(() => inferTotal(data.value))
         </div>
       </div>
       <div class="m_cardbox">
-        <div
+        <MemberSxNewsCard
           v-for="row in data?.list || []"
           :key="'h5-' + row.id"
+          :kicker="$t('wap_user_00361')"
+          :parts="row.parts"
+          :title="String(row.body || row.content || row.title || row.id)"
+          :time="row.created_at_n || row.datetime_n"
+          :on-delete="() => remove(row.id)"
           @click="read(row.id)"
-        >
-          <MemberSxNewsCard
-            :kicker="$t('wap_user_00361')"
-            :parts="row.parts"
-            :title="String(row.body || row.content || row.title || row.id)"
-            :time="row.created_at_n || row.datetime_n"
-            :on-delete="() => remove(row.id)"
-          />
-        </div>
+        />
       </div>
     </div>
     <p class="user_czbth site-pc">
@@ -130,10 +127,7 @@ const total = computed(() => inferTotal(data.value))
         <input type="checkbox" :checked="picked.includes(row.id)" @change="picked = picked.includes(row.id) ? picked.filter((x) => x !== row.id) : [...picked, row.id]" />
       </div>
       <div class="sysynews_span sysynews_name" :style="row.remind_status === 0 ? 'font-weight:bold' : ''">
-        <template v-for="(p, i) in (row.parts || [])" :key="'pc-' + row.id + '-' + i">
-          <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
-          <span v-else>{{ p.n }}</span>
-        </template>
+        <template v-for="(p, i) in (row.parts || [])" :key="'pc-' + row.id + '-' + i"><NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink><span v-else>{{ p.n }}</span></template>
         <template v-if="!(row.parts || []).length">{{ row.body || row.content || row.title || row.id }}</template>
         <span v-if="row.remind_status === 0" class="sysynews_span_nolook">{{ $t('wap_user_00260') }}</span>
       </div>
@@ -148,10 +142,7 @@ const total = computed(() => inferTotal(data.value))
         <p>
           <i>{{ $t('common.message') }}：</i>
           <span>
-            <template v-for="(p, i) in (row.parts || [])" :key="'dt-' + row.id + '-' + i">
-              <NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink>
-              <span v-else>{{ p.n }}</span>
-            </template>
+            <template v-for="(p, i) in (row.parts || [])" :key="'dt-' + row.id + '-' + i"><NuxtLink v-if="p.to" :to="p.to" class="sys_a">{{ p.n }}</NuxtLink><span v-else>{{ p.n }}</span></template>
             <template v-if="!(row.parts || []).length">{{ row.body || row.content || row.title }}</template>
           </span>
         </p>
