@@ -472,16 +472,18 @@ pub async fn refresh_mine(
     client_ip: &str,
 ) -> AppResult<i64> {
     user.require_jobseeker()?;
-    // Rate limit
-    phpyun_core::rate_limit::check_and_incr(
-        &state.redis,
-        &format!("rl:resume_refresh:{}", user.uid),
-        phpyun_core::rate_limit::LimitRule {
-            max: 1,
-            window: std::time::Duration::from_secs(300),
-        },
-    )
-    .await?;
+    let caps = crate::seeker_vip_service::seeker_caps(state, user.uid).await?;
+    if !caps.refresh_free {
+        phpyun_core::rate_limit::check_and_incr(
+            &state.redis,
+            &format!("rl:resume_refresh:{}", user.uid),
+            phpyun_core::rate_limit::LimitRule {
+                max: 1,
+                window: std::time::Duration::from_secs(300),
+            },
+        )
+        .await?;
+    }
 
     let now = clock::now_ts();
     resume_repo::touch_lastupdate(state.db.pool(), user.uid, now).await?;
@@ -768,64 +770,39 @@ pub async fn buy_top(
     paytype: &str,
 ) -> AppResult<ResumeTopResult> {
     user.require_jobseeker()?;
-    if days <= 0 || days > 365 {
-        return Err(ApiError::param_invalid("days"));
+    let caps = crate::seeker_vip_service::seeker_caps(state, user.uid).await?;
+    if !caps.resume_top {
+        return Err(ApiError::business("need_vip"));
     }
+    let Some((vip, _)) = crate::seeker_vip_service::active_for(state, user.uid).await? else {
+        return Err(ApiError::business("need_vip"));
+    };
     let db = state.db.reader();
-    let topdate = phpyun_models::resume::expect::find_topdate(db, resume_id, user.uid)
+    let _topdate = phpyun_models::resume::expect::find_topdate(db, resume_id, user.uid)
         .await?
         .ok_or_else(|| ApiError::business("common_06645"))?;
-    let unit = phpyun_models::site_setting::repo::find(db, "integral_resume_top")
-        .await?
-        .and_then(|r| r.value.trim().parse::<f64>().ok())
-        .unwrap_or(0.0);
-    let price = (unit * f64::from(days) * 100.0).round() / 100.0;
+    let _ = (days, paytype);
     let now = clock::now_ts();
     let order_id = format!("{now}{:05}", (now % 90_000) + 10_000);
-    if price <= 0.0 {
-        let next = if topdate > now {
-            topdate.saturating_add(i64::from(days) * 86_400)
-        } else {
-            now.saturating_add(i64::from(days) * 86_400)
-        };
-        phpyun_models::resume::expect::set_member_top(state.db.pool(), user.uid, resume_id, next)
-            .await?;
-        let _ = phpyun_models::resume::expect::insert_top_order(
-            state.db.pool(),
-            user.uid,
-            &order_id,
-            paytype,
-            0.0,
-            resume_id,
-            days,
-            now,
-            2,
-        )
-        .await;
-        return Ok(ResumeTopResult {
-            status: 3,
-            order_id,
-            price: 0.0,
-            msg: None,
-        });
-    }
-    phpyun_models::resume::expect::insert_top_order(
+    phpyun_models::resume::expect::set_member_top(state.db.pool(), user.uid, resume_id, vip.expires_at)
+        .await?;
+    let _ = phpyun_models::resume::expect::insert_top_order(
         state.db.pool(),
         user.uid,
         &order_id,
-        paytype,
-        price,
+        "vip",
+        0.0,
         resume_id,
-        days,
+        0,
         now,
-        1,
+        2,
     )
-    .await?;
+    .await;
     Ok(ResumeTopResult {
-        status: 2,
+        status: 3,
         order_id,
-        price,
-        msg: Some("wap_user_00207".into()),
+        price: 0.0,
+        msg: None,
     })
 }
 

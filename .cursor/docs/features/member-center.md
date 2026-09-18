@@ -37,13 +37,13 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 `MemberShell` **仅** `kind=com` 且路径 `/com` 时，slot 直接落在 `memberSubCont`（不要 `memberSubRight--full`）；其它 `/com/*` 仍全宽右栏。[`index.vue`](../../../web/apps/site/app/pages/com/index.vue) 自己输出 PHP `memberSubRight` + `memberSubLeft`，左栏 [`MemberComHomeAside.vue`](../../../web/layers/ui/app/components/MemberComHomeAside.vue)。
 
-配额：`POST /v1/mcenter/vip/current` 的 `job_num` / `invite_resume` / `down_resume` / `zph_num` / `top_num` / `urgent_num` / `rec_num` 与套餐上限 `caps`；刷新 / 置顶 / 急聘 / 推荐也可用 `com-dash` 的 `job_counts.*`。**不要**把 `job_counts.online` 当剩余可发。购买资源点只在 `rating_type==1` 且 VIP 有效且 `com_integral_online != 4` 时链 `/com/added`。曝光量、专属顾问、优惠券、`lock_info` **首页不渲染**。
+配额：`POST /v1/mcenter/vip/current` 的 `job_num` / `invite_resume` / `down_resume` / `zph_num` / `top_num` / `urgent_num` / `rec_num` 与套餐上限 `caps`；刷新 / 置顶 / 急聘 / 推荐也可用 `com-dash` 的 `job_counts.*`。**不要**把 `job_counts.online` 当剩余可发。**不要**链 `/com/added` 当购买入口（加量不单卖）。曝光量、专属顾问、优惠券、`lock_info` **首页不渲染**。
 
 公告：`r_status` / 无公司名 / `yyzz_status!=1` / VIP 到期；`expires_at` 距今不足 7 天当续费 remind（不调新接口）。推荐 `POST /v1/mcenter/recommend/resumes` `{limit:8}`，字段只有 uid / 名 / 性别 / 学历 / 更新时间。广告 `useAdsBundle` slot `530`（右栏）/`511`（左栏）。发布先 `POST /v1/mcenter/jobs/check`；一键刷新拉 `jobs/overview` `w=1` 再 `jobs/batch/refresh`。年度报告用 `com-dash.year_report` 数字弹层，**不**做 PHP PNG。H5 第四个数是在招 `job_counts.online` + `wap_com_00243`；VIP 条有效时显示 `rating_name` + 到期日。
 
 ## 顶栏
 
-登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/cashier` `/user/integral` `/user/rewards` `/user/integral-rules` 与 `/com/pay` `/com/cashier` `/com/integral` `/com/orders` `/com/record` `/com/rewards` `/com/integral-rules` `/com/services` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
+登录后 **不要**再用前台深色 `pc-topbar`。求职 PC 用 PHP `user_header`（[`MemberPcHeader`](../../web/layers/ui/app/components/MemberPcHeader.vue) 对照 `member/user/headnav.htm`）；招聘 PC 用企业 `header` / `header_fixed`（对照 `member/com/headnav.htm`）。顶栏 Logo 用公开 `sy_logo`（`logoPc`，OV6），空才回退 `sy_member_logo` / `sy_unit_logo`。英文下 **不要**再靠 PHP 的 `float:right` + 70px 通知栏：`main.css` 里 `.member-pc-header` 改成 flex 单行。H5：会员首页 `/user` `/com` **不要**叠返回条（`userheader` / `commemberheader` 自带顶栏）；求职简历 `/user/resume` `/user/expects` 用 `m_whiteheader`；财务 `/user/finance` `/user/pay` `/user/cashier` `/user/integral` `/user/rewards` `/user/integral-rules` `/user/member-right` `/user/orders` 与 `/com/pay` `/com/cashier` `/com/integral` `/com/orders` `/com/record` `/com/rewards` `/com/integral-rules` `/com/services` 用 `m_backheader`；其余子页 `header_bg`。H5 求职首页 **不要**把缺项清单或公众号 QR 塞进 `userheader`（缺项只进一行 `heiseVipDao`；公众号用 `gzh_gzbox` 弹层）。会员 H5 **要**出五项底栏（`AppFooter` 的 `.wap_footer`）；PC 会员 **不要**再出前台 `hp_foot`。
 
 会员页 **不要**顺手渲染前台导航/页脚/热搜。公开 chrome 走 [`useSiteBoot`](../../web/layers/ui/app/composables/useSiteBoot.ts) 一次 `GET /v1/wap/initjobs`（`nav` / `footer_classes` / `footer_pages` / `settings`），不要再打 `/v1/wap/nav` 或 `descriptions/classes`。站点配置走 [`useSiteSettings`](../../web/layers/ui/app/composables/useSiteSettings.ts) 读同一份 boot。左栏角标、顶栏、首页、消息页的 dashboard 共用 `useAsyncData` key `user-dash` / `com-dash`，fetcher 必须是 `POST /v1/mcenter/dashboard/full` 与 `/com-dashboard/full`，不要再打瘦 `/dashboard`、`/com-dashboard`。求职意向列表（`/user/expects`、外发）与首页共用 `user-home-bundle`（`POST /v1/mcenter/resume/bundle`），create/update 仍走 `/resume/expects*`。公开企业关注开关走 `POST /v1/mcenter/favorites`（`kind=2`，`target_id`，读 `favorited`），不要 `follows`。积分余额等下拉才用的接口，悬停再请求。
 
@@ -60,7 +60,7 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 标题 | 包层 | 路由 |
 |---|---|---|
 | `user_new_tit` | `resume_box_list` | 申请、面试、谁看过、收藏、足迹、速配 |
-| `member_right_index_h1` | **仍要** `resume_box_list`（对照 PHP 实际有包层） | 关注、消息、咨询、兼职、被下载、举报、测评、隐私、绑定、充值、财务、搜索器、外发、注销、意见反馈 |
+| `member_right_index_h1` | **仍要** `resume_box_list`（对照 PHP 实际有包层） | 关注、消息、咨询、兼职、被下载、举报、测评、隐私、绑定、充值、财务、包月会员 `/user/member-right`、订单 `/user/orders`、搜索器、外发、注销、意见反馈 |
 | `member_right_index_h1` | **不要** `resume_box_list` | 积分、密码、认证、账户设置入口、邀请注册、简历模板、**粘贴简历** `/user/resume/paste` |
 | `user_new_tit` | `user_resume_list` | `/user/resume`、`/user/expects`（H5 编辑是一张 `resume_min_body_cord`；空简历用 `create_resume` + `yun_createlist`，不要 PC `MemberField`） |
 | 招聘 `/com/*` | `com_body` + `newmember_tit` | 空态 PC `com_msg_no*`，H5 `none_position_body*`；**不要**求职 `msg_no` / `uesr_submit` |
@@ -263,9 +263,9 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 - `mark_paid` 与积分全额 `/v1/mcenter/vip/orders/integral` 共用 `apply_rating`。
 - 列表：`com_vip_type`（0/2 套餐 `type=1`，1 时间会员 `type=2`）+ `company.package` 白名单 + `com_package_open`。
-- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 展示 `company_statis` 当前等级与额度，页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。`POST /v1/mcenter/vip/packages` 可选 body `kind=package|time`（`ident_ok` 后 match）；省略仍按站点 `com_vip_type`（0 双开默认套餐、1 仅时间、2 仅套餐）。显式 `kind` 仍受开关约束（关了对应档给空列表）。`vip/current` 带 `com_vip_type` 给前端出 Tab。PC 套餐 `vip_box` / 时间 `vip_timebox`，H5 `dredge_body*`，不要拿 `payment_list` 冒充套餐卡。`rating_type==2` 时 [`added.vue`](../../../web/apps/site/app/pages/com/added.vue) 拦购买（对齐 PHP `right::added` / `member_com_00705`），顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue) 藏增值入口。套餐/增值/充值/订单四页顶栏共用该组件（`wap_com_00380` / `wap_com_00393` / `common_01946` / `common_02029`）。
-- [`pay.vue`](../../../web/apps/site/app/pages/com/pay.vue) 是积分充值（PHP `pay.htm`），不是买 VIP：`POST /v1/mcenter/vip/integral-classes`（`phpyun_admin_integralclass` `state=1`）+ `recharge`（`price_int`/`integralid`，金额 = 积分/`integral_proportion`×折扣/100，写 `company_order.type=2`）+ `card`（`phpyun_company_card` 卡号密码）。渠道不要写死 `alipay`。套餐购买只留 member-right。
-- 增值包 VIP 未过期才可买；渠道不要写死 `alipay`。订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 客户端合并 `vip/orders/list` + `packs/orders/list` + `redeem/orders`（按类型标签）。购买走套餐/充值页。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。
+- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 只卖**时间/包月**（`kind=time`，`company_rating.type=2`），不再出套餐次数 Tab。页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。`POST /v1/mcenter/vip/packages` 招聘端固定时间档；求职端返回 `phpyun_rs_seeker_vip_pack`。加法字段 `role=seeker|employer`。`vip/current` 加法 `can_chat`、求职 `seeker_caps`。顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)：**会员 / 礼品 / 订单**（`wap_com_00097` / `wap_00398` / `common_02029`）。增值 `/com/added` 不再当购买入口。充值只从礼品页积分不足链到 `/com/pay`。
+- [`pay.vue`](../../../web/apps/site/app/pages/com/pay.vue) 是积分充值（给礼品用），不是买 VIP：`POST /v1/mcenter/vip/integral-classes` + `recharge` + `card`。渠道不要写死 `alipay`。包月购买只留 member-right。
+- 订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 客户端合并 `vip/orders/list` + `packs/orders/list` + `redeem/orders`。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。私聊是包月开关。
 - `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
 
 招聘 PC/H5 已对齐的交互：
@@ -282,7 +282,12 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 ## 会员等级
 
-**招聘端有等级，求职端没有。** 招聘：`phpyun_company_rating`（`type` 1=套餐 / 2=时间会员）付款后 `ratingInfo` 写 `company_statis`（真相源）并镜像 `company.rating*`、在招 `company_job.rating`。`job_num` 赋值不累加；其它配额同档有效期内可累加；过期 `vipOver` 按 `com_vip_done` 清零或降档。增值包走 `company_order.type=5`。`phpyun_rs_user_vip` 只是影子表。求职：没有 `company_rating` 对等表，`phpyun_member_statis` 只有积分经济（充值 `type=2 usertype=1`、简历置顶 `type=14`、刷新/兑换/买模板）。两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。
+对外两样：**包月会员**（现金）和 **积分礼品**（实物或简历刷新，给自己或送给别人）。
+
+- **招聘包月**：仍走 `phpyun_company_rating` `type=2` 时间会员 → `apply_rating` → `company_statis`（真相源）。前台不卖次数套餐、不加量包。有效期内发岗/下载按时间会员规则；`vip_etime > now` 可**发起**私聊。`POST /v1/mcenter/vip/packages` 招聘端列出 `display=1` 的时间档（不因历史 `time_end` 销售窗过期而清空）。
+- **求职包月**：表 `phpyun_rs_seeker_vip_pack`，状态 `phpyun_rs_user_vip`，订单 `company_order.type=31`（勿用 type=1；`order_id` 用 PHP 风格 15 位 `dingdan_id`，列只有 varchar(18)）。期内：置顶、模板、刷新不限流、发起私聊。不单卖置顶/模板。后台页 `/seekerVip`（`POST /v1/admin/seeker/vip/packages*`）。
+- **礼品**：公开 `/redeem`，扣购买人积分。`phpyun_reward.kind`=`goods`|`resume_refresh`。实物写 `phpyun_change`（加法 `to_uid`）；刷新即时 `touch_lastupdate`。不要用 `/integral/exchange` 当店。
+- 两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。企业付款**不要**再 upsert `phpyun_rs_user_vip`。
 
 ## 全量对照（2026-09-18）
 
@@ -297,7 +302,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - [`otherservice.vue`](../../../web/apps/site/app/pages/com/otherservice.vue) 宫格补 hrs / rewards / broadcasts / warnings / chat。
 - [`resume/optimize.vue`](../../../web/apps/site/app/pages/user/resume/optimize.vue) 完成度用 `member_user_00331`，不要积分规则 `wap_01016`。
 
-仍不算缺页、不要做：求职 VIP、协作切企业上下文、顾问 `crm_uid`、首页曝光运营块、`lock_info`、微信商户下单 URL、前台 `/data-show`、优惠券、`spview`/`xjhLive`/`rebates`、release 下 `vip/orders/mock-paid`、把 `/v1/mcenter/integral/exchange` 当礼品商城（公开商城是 `/redeem`）。不要恢复 `follows*`、`resume/*/list`、`company/news|products` 旧 CRUD、`com-stats/today`。
+仍不算缺页、不要做：协作切企业上下文、顾问 `crm_uid`、首页曝光运营块、`lock_info`、微信商户下单 URL、前台 `/data-show`、优惠券、`spview`/`xjhLive`/`rebates`、release 下 `vip/orders/mock-paid`、把 `/v1/mcenter/integral/exchange` 当礼品商城（公开商城是 `/redeem`）。不要恢复 `follows*`、`resume/*/list`、`company/news|products` 旧 CRUD、`com-stats/today`。置顶/加量/模板不作为可买商品（捆在包月里）。
 
 ## 本轮补上的会员页
 
@@ -327,7 +332,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 `POST /v1/mcenter/orders/detail|{pay}` 按 `order_id` 查任意 `company_order`（VIP/充值/增值/once/置顶/type=28）。待付 `order_state=0`；已付=1；取消=2；银行待审=3。支付宝出 `pay_url`，银行返回汇款账户；`wxpay` 仅当 `sy_wxpayid` 有值，只改渠道不给下单 URL。展位现金链不走套餐扣次：`zph/reserve` 仍可能 `zph_need_pay`，前端再 `zph/order`。
 
-本轮仍不做：协作「切换企业上下文」新鉴权（下游职位/应聘尚未读 `company_hrs`）、顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。微信支付商户下单 URL。不要给求职做 VIP 套餐页，也不要让 `/user/pay` 打 `/v1/mcenter/vip/packages`。
+本轮仍不做：协作「切换企业上下文」新鉴权（下游职位/应聘尚未读 `company_hrs`）、顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。微信支付商户下单 URL。`/user/pay` 只充积分换礼，不要拿它当买包月；包月走 `/user/member-right` → `/v1/mcenter/vip/packages`。
 
 ## 登录走查（2026-09-17）
 

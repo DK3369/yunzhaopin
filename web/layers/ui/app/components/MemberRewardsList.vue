@@ -3,6 +3,8 @@ import { isComMemberPath, isMemberModuleOn, isUnauthErr } from '~/utils/site'
 
 type Row = {
   id: number
+  uid?: number
+  to_uid?: number
   name: string
   integral: number
   num: number
@@ -14,31 +16,35 @@ type Row = {
 const api = useApi()
 const { t } = useI18n()
 const route = useRoute()
-const { settings } = useSiteChrome()
+const { settings, me } = useSiteChrome()
 const mallOn = computed(() => isMemberModuleOn(settings.value, '/redeem'))
 const isCom = computed(() => isComMemberPath(route.path))
 const { page, pageSize, inferTotal, go } = useMemberListPage()
 const msg = ref('')
-const status = ref<number | undefined>(undefined)
-watch(status, () => go(1))
+const tab = ref<'mine' | 'sent' | 'received'>('mine')
+watch(tab, () => go(1))
 const tabs = computed(() => [
-  { value: 'all', label: t('common.all'), on: status.value == null, select: () => { status.value = undefined } },
-  { value: 0, label: t('ui.pending'), on: status.value === 0, select: () => { status.value = 0 } },
-  { value: 1, label: t('common.success'), on: status.value === 1, select: () => { status.value = 1 } },
-  { value: 4, label: t('common.cancel'), on: status.value === 4, select: () => { status.value = 4 } },
+  { value: 'mine' as const, label: t('ui.gift_mine'), on: tab.value === 'mine', select: () => { tab.value = 'mine' } },
+  { value: 'sent' as const, label: t('ui.gift_sent'), on: tab.value === 'sent', select: () => { tab.value = 'sent' } },
+  { value: 'received' as const, label: t('ui.gift_received'), on: tab.value === 'received', select: () => { tab.value = 'received' } },
 ])
 const { data, error, refresh } = await useAsyncData(
-  () => `redeem-orders-${page.value}-${status.value ?? 'all'}`,
+  () => `redeem-orders-${page.value}-${tab.value}`,
   () =>
     api.post<{ list: Row[]; total: number }>('/v1/mcenter/redeem/orders', {
       page: page.value,
       page_size: pageSize,
-      ...(status.value == null ? {} : { status: status.value }),
+      tab: tab.value,
     }),
-  { watch: [status] },
+  { watch: [tab] },
 )
 const list = computed(() => data.value?.list || [])
 const total = computed(() => inferTotal(data.value))
+const myUid = computed(() => Number(me.value?.uid || 0))
+
+function canCancel(row: Row) {
+  return row.status === 0 && Number(row.uid || 0) === myUid.value
+}
 
 async function cancel(id: number) {
   msg.value = ''
@@ -56,11 +62,13 @@ useSeoMeta({ title: t('wap_user_00170') })
 
 <template>
   <MemberPanel :title="$t('wap_user_00170')" :error="error && !isUnauthErr(error) ? error : undefined">
+    <template #pcTabs><MemberComVipTabs :kind="isCom ? 'com' : 'user'" /></template>
+    <template #h5Tabs><MemberComVipTabs :kind="isCom ? 'com' : 'user'" /></template>
     <MemberComScreen v-if="isCom" :tabs="tabs" />
     <div v-else class="site-pc job_list_tit">
       <ul>
-        <li v-for="tab in tabs" :key="'pc-' + String(tab.value)" :class="{ job_list_tit_cur: tab.on }">
-          <a href="javascript:;" @click.prevent="tab.select()">{{ tab.label }}</a>
+        <li v-for="item in tabs" :key="'pc-' + item.value" :class="{ job_list_tit_cur: item.on }">
+          <a href="javascript:;" @click.prevent="item.select()">{{ item.label }}</a>
         </li>
       </ul>
     </div>
@@ -68,12 +76,12 @@ useSeoMeta({ title: t('wap_user_00170') })
       <div class="m_tabbox category">
         <ul>
           <li
-            v-for="tab in tabs"
-            :key="'h5-' + String(tab.value)"
-            :class="{ m_tabactive: tab.on }"
-            @click="tab.select()"
+            v-for="item in tabs"
+            :key="'h5-' + item.value"
+            :class="{ m_tabactive: item.on }"
+            @click="item.select()"
           >
-            {{ tab.label }}
+            {{ item.label }}
           </li>
         </ul>
       </div>
@@ -96,7 +104,7 @@ useSeoMeta({ title: t('wap_user_00170') })
       <span class="paylist_span paylist_money">{{ row.integral }}</span>
       <span class="paylist_span paylist_zt">{{ row.status_n }} · {{ row.created_at_n }}</span>
       <span class="paylist_span paylist_cz">
-        <a v-if="row.status === 0" href="javascript:;" class="cblue" @click="cancel(row.id)">{{ $t('common.cancel') }}</a>
+        <a v-if="canCancel(row)" href="javascript:;" class="cblue" @click="cancel(row.id)">{{ $t('common.cancel') }}</a>
       </span>
     </div>
     <div class="site-h5 detail_body">
@@ -109,7 +117,7 @@ useSeoMeta({ title: t('wap_user_00170') })
             </div>
             <div class="detail_integral">{{ row.integral }}</div>
             <div class="detail_box_cz">
-              <a v-if="row.status === 0" href="javascript:;" @click="cancel(row.id)">{{ $t('common.cancel') }}</a>
+              <a v-if="canCancel(row)" href="javascript:;" @click="cancel(row.id)">{{ $t('common.cancel') }}</a>
             </div>
           </li>
         </ul>

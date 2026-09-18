@@ -219,6 +219,7 @@
 /v1/mcenter/recommend/email/quota
 /v1/mcenter/recommend/jobs
 /v1/mcenter/recommend/resumes
+/v1/mcenter/redeem/gifts/lookup
 /v1/mcenter/redeem/orders
 /v1/mcenter/redeem/orders/cancel
 /v1/mcenter/redeem/rewards/redeem

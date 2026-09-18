@@ -3723,6 +3723,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/redeem/gifts/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Look up a site member before sending a gift. Masks the username. */
+        post: operations["post_v1_mcenter_redeem_gifts_lookup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/redeem/orders": {
         parameters: {
             query?: never;
@@ -9547,6 +9564,8 @@ export interface components {
             sort?: number | null;
         };
         BatchIdsForm: {
+            channel?: string | null;
+            confirm?: boolean;
             /** @description Up to 100 ids */
             ids: number[];
         };
@@ -10696,7 +10715,13 @@ export interface components {
             active: boolean;
             /** Format: int32 */
             breakjob_num: number;
+            can_chat: boolean;
             caps: components["schemas"]["VipCaps"];
+            /**
+             * Format: int32
+             * @description 站点 `com_vip_type`：0 套餐+时间 / 1 仅时间 / 2 仅套餐。
+             */
+            com_vip_type: number;
             /** Format: int32 */
             down_resume: number;
             /** Format: int64 */
@@ -10715,6 +10740,9 @@ export interface components {
             rating_type: number;
             /** Format: int32 */
             rec_num: number;
+            /** @description `seeker` | `employer` */
+            role: string;
+            seeker_caps?: null | components["schemas"]["SeekerCapsView"];
             /** Format: int32 */
             sons_num: number;
             /** Format: int64 */
@@ -10725,11 +10753,6 @@ export interface components {
             urgent_num: number;
             /** Format: int32 */
             zph_num: number;
-            /**
-             * Format: int32
-             * @description 站点 `com_vip_type`：0 套餐+时间 / 1 仅时间 / 2 仅套餐。
-             */
-            com_vip_type: number;
         };
         DashboardFull: {
             /** Format: int64 */
@@ -11283,6 +11306,18 @@ export interface components {
             /** Format: int64 */
             target_uid: number;
         };
+        GiftLookupForm: {
+            /** Format: int64 */
+            uid?: number;
+            username?: string;
+        };
+        GiftPeerView: {
+            /** Format: int64 */
+            uid: number;
+            username_mask: string;
+            /** Format: int32 */
+            usertype: number;
+        };
         /** @description Joint recruitment detail -- all Summary fields + body. */
         GzDetail: {
             body: string;
@@ -11485,6 +11520,12 @@ export interface components {
         };
         /** @description Body carrying just `{ id }`. Use for any "act on one resource by id" call. */
         IdBody: {
+            /** Format: int64 */
+            id: number;
+        };
+        IdConfirmBody: {
+            channel?: string | null;
+            confirm?: boolean;
             /** Format: int64 */
             id: number;
         };
@@ -12005,6 +12046,15 @@ export interface components {
             /** Format: int64 */
             answer_id?: number;
         };
+        ListOrdersForm: {
+            /** Format: int32 */
+            status?: number | null;
+            tab?: string | null;
+        };
+        ListPackagesForm: {
+            /** @description `package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。 */
+            kind?: string | null;
+        };
         ListTemplatesBody: {
             kind: string;
         };
@@ -12269,12 +12319,12 @@ export interface components {
             uid: number;
         };
         MyCompany: {
+            company_name: string;
             /** Format: int64 */
             company_uid: number;
             /** Format: int64 */
             joined_at: number;
             role: string;
-            company_name: string;
         };
         MyJobsQuery: {
             /** @description PHP member job list `keyword` (job name). Empty = no filter. */
@@ -12650,23 +12700,35 @@ export interface components {
             order_no: string;
             pay_url?: string | null;
         };
+        /** @description Redeem order item — full 11 columns of phpyun_redeem_order + formatted timestamp + status name + derived total_integral. */
         OrderItem: {
-            /** Format: int32 */
-            did?: number | null;
-            fast?: string | null;
+            address: string;
+            /** Format: int64 */
+            created_at: number;
+            created_at_n: string;
+            /** Format: int64 */
+            gid: number;
             /** Format: int64 */
             id: number;
             /** Format: int32 */
-            once_id?: number | null;
-            order_id: string;
-            /** Format: double */
-            order_price: number;
-            order_remark: string;
+            integral: number;
+            linkman: string;
+            linktel: string;
+            name: string;
             /** Format: int32 */
-            order_state: number;
+            num: number;
+            /** Format: int32 */
+            status: number;
+            status_n: string;
             /** Format: int64 */
-            order_time: number;
-            order_type: string;
+            to_uid: number;
+            /**
+             * Format: int64
+             * @description integral × num (total integral consumed by the order)
+             */
+            total_integral: number;
+            /** Format: int64 */
+            uid: number;
         };
         /** @description Body carrying an order_no string (vip / once payments). */
         OrderNoBody: {
@@ -12774,6 +12836,8 @@ export interface components {
              * @description price_cents / 100 (yuan, for direct rendering as ¥99.00)
              */
             price_yuan: number;
+            /** @description `seeker` | `employer` */
+            role: string;
             /** Format: int32 */
             sort_order: number;
             /** Format: int32 */
@@ -13216,6 +13280,8 @@ export interface components {
             refunded: number;
         };
         PromoteForm: {
+            channel?: string | null;
+            confirm?: boolean;
             /** Format: int32 */
             days: number;
             /** Format: int64 */
@@ -13231,9 +13297,17 @@ export interface components {
             active: boolean;
             /** Format: int64 */
             expire_at: number;
+            /** Format: int64 */
+            integral: number;
             kind: string;
+            order_no?: string | null;
+            /** Format: double */
+            price: number;
             /** Format: int32 */
             remain: number;
+            single: boolean;
+            /** Format: int32 */
+            status: number;
         };
         /** @description Body carrying a third-party `provider` slug (oauth bind/unbind). */
         ProviderBody: {
@@ -13607,15 +13681,17 @@ export interface components {
             cityid?: number;
             /** Format: int64 */
             id: number;
-            linkman: string;
-            linktel: string;
+            linkman?: string;
+            linktel?: string;
             /** Format: int32 */
-            num: number;
+            num?: number;
             password: string;
             /** Format: int32 */
             provinceid?: number;
             /** Format: int32 */
             three_cityid?: number;
+            /** Format: int64 */
+            to_uid?: number;
         };
         ReferralItem: {
             /** Format: int64 */
@@ -13634,6 +13710,7 @@ export interface components {
         };
         /** @description Refresh job (bumps `lastupdate` so it sorts to the top of the public list) */
         RefreshJobForm: {
+            channel?: string | null;
             confirm?: boolean;
             /** Format: int64 */
             id: number;
@@ -14390,6 +14467,12 @@ export interface components {
             /** @description Reuses wap::qna::QuestionSummary (19 fields) */
             questions: components["schemas"]["QuestionSummary"][];
         };
+        SeekerCapsView: {
+            chat: boolean;
+            refresh_free: boolean;
+            resume_top: boolean;
+            tpl_all: boolean;
+        };
         SeekerMsgItem: {
             com_name: string;
             content: string;
@@ -14720,16 +14803,6 @@ export interface components {
              * @description is_browse = 2
              */
             viewed: number;
-        };
-        /**
-         * @description `{ status: Option<i32> }` — admin list filter envelope. The 0..=99 bound is
-         *     permissive on purpose; handlers further interpret the value (0=pending,
-         *     1=approved, ...) via service logic.
-         *     PHP pages send `status: ""` or `"0"`; reject those as i32 → HTTP 400.
-         */
-        StatusFilterBody: {
-            /** Format: int32 */
-            status?: number | null;
         };
         StatusResp: {
             /** Format: int32 */
@@ -15770,10 +15843,6 @@ export interface components {
             user: string;
             weburl: string;
             zwpic: string;
-        };
-        ListPackagesForm: {
-            /** @description `package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。 */
-            kind?: string | null;
         };
     };
     responses: never;
@@ -16923,7 +16992,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IdBody"];
+                "application/json": components["schemas"]["IdConfirmBody"];
             };
         };
         responses: {
@@ -20837,6 +20906,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_redeem_gifts_lookup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GiftLookupForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GiftPeerView"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_redeem_orders: {
         parameters: {
             query?: never;
@@ -20846,7 +20939,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["StatusFilterBody"];
+                "application/json": components["schemas"]["ListOrdersForm"];
             };
         };
         responses: {

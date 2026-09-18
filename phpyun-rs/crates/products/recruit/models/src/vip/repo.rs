@@ -77,6 +77,40 @@ pub async fn list_active_packages(
     .await
 }
 
+/// Employer monthly SKUs: time membership only (`type=2`), ignore site `com_vip_type`.
+pub async fn list_time_packages(pool: &MySqlPool) -> Result<Vec<VipPackage>, sqlx::Error> {
+    sqlx::query_as::<_, VipPackage>(
+        r#"SELECT
+              CAST(id AS UNSIGNED) AS id,
+              CONCAT('pkg_', id) AS code,
+              COALESCE(name, '') AS name,
+              COALESCE(`type`, 0) AS target_usertype,
+              COALESCE(service_time, 0) AS duration_days,
+              CAST(COALESCE(service_price, 0) * 100 AS SIGNED) AS price_cents,
+              JSON_OBJECT(
+                'job_num', COALESCE(job_num, 0),
+                'breakjob_num', COALESCE(breakjob_num, 0),
+                'resume', COALESCE(resume, 0),
+                'interview', COALESCE(interview, 0),
+                'top_num', COALESCE(top_num, 0),
+                'rec_num', COALESCE(rec_num, 0),
+                'urgent_num', COALESCE(urgent_num, 0),
+                'zph_num', COALESCE(zph_num, 0),
+                'part_num', COALESCE(part_num, 0)
+              ) AS desc_json,
+              COALESCE(display, 1) AS is_active,
+              COALESCE(sort, 0) AS sort_order,
+              COALESCE(time_start, 0) AS created_at
+           FROM phpyun_company_rating
+           WHERE COALESCE(display, 1) = 1
+             AND COALESCE(deleted,0)=0
+             AND `type` = 2
+           ORDER BY sort ASC, service_price ASC"#,
+    )
+    .fetch_all(pool)
+    .await
+}
+
 /// PHP `ratingM->getList(array('category'=>1))` 后台职位筛选项套餐名。
 pub async fn list_admin_rating_names(
     pool: &MySqlPool,
@@ -222,7 +256,7 @@ pub async fn find_user_vip(pool: &MySqlPool, uid: u64) -> Result<Option<UserVip>
     // `phpyun_rs_user_vip` is Rust-port-only — when not provisioned, return
     // Ok(None) so the handler reports "no active VIP" instead of 5xx.
     let r = sqlx::query_as::<_, UserVip>(
-        "SELECT uid, package_code, started_at, expires_at, updated_at FROM phpyun_rs_user_vip WHERE uid = ? LIMIT 1",
+        "SELECT CAST(uid AS UNSIGNED) AS uid, package_code, CAST(started_at AS SIGNED) AS started_at, CAST(expires_at AS SIGNED) AS expires_at, CAST(updated_at AS SIGNED) AS updated_at FROM phpyun_rs_user_vip WHERE uid = ? LIMIT 1",
     )
     .bind(uid)
     .fetch_optional(pool)
@@ -298,11 +332,11 @@ pub async fn create_order(
               (order_id, uid, order_type, order_price, order_time, order_state,
                order_remark, `type`, rating, did, sid, usertype, status,
                order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
-               port, is_crm)
+               port, is_crm, order_bank, order_pic, order_info)
            VALUES (?, ?, ?, ?, ?, 0,
                    ?, 1, ?, 0, 0, 0, 1,
                    0, 0, 0, 0, 0, 0,
-                   1, 0)"#,
+                   1, 0, '', '', '')"#,
     )
     .bind(order_no)
     .bind(uid)
@@ -316,7 +350,43 @@ pub async fn create_order(
     Ok(res.last_insert_id())
 }
 
-fn dingdan_id(now: i64) -> String {
+/// Job-seeker monthly VIP. `company_order.type = 31`.
+pub const SEEKER_VIP_ORDER_TYPE: i32 = 31;
+
+pub async fn create_seeker_vip_order(
+    pool: &MySqlPool,
+    order_no: &str,
+    uid: u64,
+    package_code: &str,
+    amount_cents: i32,
+    channel: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let price_yuan = f64::from(amount_cents) / 100.0;
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_company_order
+              (order_id, uid, order_type, order_price, order_time, order_state,
+               order_remark, `type`, rating, did, sid, usertype, status,
+               order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
+               port, is_crm, order_bank, order_pic, order_info)
+           VALUES (?, ?, ?, ?, ?, 0,
+                   ?, ?, 0, 0, 0, 1, 1,
+                   0, 0, 0, 0, 0, 0,
+                   1, 0, '', '', '')"#,
+    )
+    .bind(order_no)
+    .bind(uid)
+    .bind(channel)
+    .bind(price_yuan)
+    .bind(now)
+    .bind(package_code)
+    .bind(SEEKER_VIP_ORDER_TYPE)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub fn dingdan_id(now: i64) -> String {
     use std::sync::atomic::{AtomicU32, Ordering};
     static SEQ: AtomicU32 = AtomicU32::new(10000);
     let r = SEQ.fetch_add(1, Ordering::Relaxed) % 90_000 + 10_000;
@@ -602,7 +672,7 @@ pub async fn submit_bank_pay(
                bank_time = ?,
                order_pic = COALESCE(?, order_pic),
                order_info = COALESCE(?, order_info)
-           WHERE order_id = ? AND uid = ? AND type IN (1, 2, 5, 28) AND order_state IN (0, 3)"#,
+           WHERE order_id = ? AND uid = ? AND type IN (1, 2, 5, 28, 31) AND order_state IN (0, 3)"#,
     )
     .bind(order_bank)
     .bind(bank_time)

@@ -327,6 +327,7 @@ pub async fn settle_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> A
             }
             19 => return crate::single_order_service::settle_download(state, &o, pay_tx_id).await,
             23 => return crate::single_order_service::settle_invite(state, &o, pay_tx_id).await,
+            31 => return crate::seeker_vip_service::mark_paid(state, order_no, pay_tx_id).await,
             _ => {}
         }
     }

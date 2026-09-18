@@ -253,6 +253,9 @@
 /v1/admin/rewards/flags
 /v1/admin/rewards/list
 /v1/admin/rewards/status
+/v1/admin/seeker/vip/packages
+/v1/admin/seeker/vip/packages/delete
+/v1/admin/seeker/vip/packages/list
 /v1/admin/site-settings
 /v1/admin/site-settings/batch
 /v1/admin/site-settings/delete

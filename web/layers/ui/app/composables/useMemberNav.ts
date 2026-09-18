@@ -34,21 +34,12 @@ export function useMemberNav() {
     },
     { watch: [() => me.value?.usertype] },
   )
-  const { data: vipNow } = useAsyncData(
-    'com-vip-current',
-    () => {
-      if (Number(me.value?.usertype) !== 2) return Promise.resolve(null)
-      return api.post<{ rating_type?: number }>('/v1/mcenter/vip/current', {}).catch(() => null)
-    },
-    { watch: [() => me.value?.usertype] },
-  )
-  const hideAdded = computed(
-    () => Number(vipNow.value?.rating_type) === 2 || String(settings.value.com_integral_online || '') === '4',
-  )
+  const hideAdded = computed(() => true)
 
   const userMain = computed<MemberNavLink[]>(() => [
     { to: '/user', label: t('member_user_00183'), icon: 'left_navicon_i1' },
     { to: '/user/resume', label: t('wap_user_00204'), icon: 'left_navicon_i2' },
+    { to: '/user/member-right', label: t('wap_com_00097'), icon: 'left_navicon_i3' },
     { to: '/user/interviews', label: t('wap_user_00216'), icon: 'left_navicon_i4', badge: 'interview' },
     { to: '/user/applications', label: t('wap_user_00270'), icon: 'left_navicon_i5' },
     { to: '/user/views', label: t('wap_com_00407'), icon: 'left_navicon_i6' },
@@ -78,6 +69,7 @@ export function useMemberNav() {
         items: [
           { to: '/user/integral', label: t('wap_user_00008') },
           { to: '/user/rewards', label: t('wap_user_00170') },
+          { to: '/user/orders', label: t('common_02029') },
           { to: '/user/integral-rules', label: t('wap_01016') },
           { to: '/user/invite', label: t('wap_user_00253') },
           { to: '/user/finance', label: t('member_user_00190') },

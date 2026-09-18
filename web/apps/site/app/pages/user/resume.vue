@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isUnauthErr, mediaUrl } from '~/utils/site'
+import { errKey, isUnauthErr, mediaUrl } from '~/utils/site'
 
 type ChildRow = {
   id: number
@@ -488,7 +488,6 @@ watch(
   },
   { immediate: true },
 )
-const topDays = ref(7)
 const topMsg = ref('')
 async function buyTop() {
   topMsg.value = ''
@@ -500,14 +499,14 @@ async function buyTop() {
   try {
     const r = await api.post<{ status?: number; pay_url?: string; msg?: string }>('/v1/mcenter/resume/top', {
       resumeid,
-      days: topDays.value,
+      days: 1,
     })
-    if (r.pay_url) {
-      window.location.assign(r.pay_url)
-      return
-    }
     topMsg.value = r.msg || t('common.success')
   } catch (e: unknown) {
+    if (errKey(e) === 'need_vip') {
+      await navigateTo('/user/member-right')
+      return
+    }
     topMsg.value = fail(e)
   }
 }

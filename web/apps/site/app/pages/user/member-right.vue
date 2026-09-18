@@ -6,15 +6,9 @@ type Current = {
   package_code?: string | null
   started_at?: number | null
   expires_at?: number | null
-  rating?: number
   rating_name?: string
-  rating_type?: number
-  job_num?: number
-  breakjob_num?: number
-  down_resume?: number
-  invite_resume?: number
   integral?: number
-  com_vip_type?: number
+  can_chat?: boolean
 }
 type Pack = {
   id: number
@@ -24,24 +18,17 @@ type Pack = {
   price_yuan: number
   desc?: unknown
 }
-type Quote = {
-  style: number
-  price: number
-  user_integral: number
-}
 
 const api = useApi()
 const { t } = useI18n()
 const { settings } = useSiteChrome()
 
-const { data: current, error, refresh: refreshCurrent } = await useAsyncData('com-vip-current', () =>
+const { data: current, error, refresh: refreshCurrent } = await useAsyncData('user-vip-current', () =>
   api.post<Current>('/v1/mcenter/vip/current', {}),
 )
-
-const { data: packs } = await useAsyncData('com-vip-packages-time', () =>
-  api.post<Pack[]>('/v1/mcenter/vip/packages', { kind: 'time' }).catch(() => [] as Pack[]),
+const { data: packs } = await useAsyncData('user-vip-packages', () =>
+  api.post<Pack[]>('/v1/mcenter/vip/packages', {}).catch(() => [] as Pack[]),
 )
-
 const packList = computed<Pack[]>(() => (Array.isArray(packs.value) ? packs.value : []))
 const channel = ref('alipay')
 const wxPayOn = computed(() =>
@@ -73,25 +60,12 @@ async function buy(p: Pack) {
   msg.value = ''
   picked.value = p.id
   try {
-    const q = await api.post<Quote>('/v1/mcenter/vip/quote', { kind: 'vip', id: p.id })
-    if (q.style === 2) {
-      const ok = window.confirm(`${t('common_00697')}${q.price}${t('common_01935')}?`)
-      if (!ok) return
-      await api.post('/v1/mcenter/vip/orders/integral', { package_code: p.code })
-      msg.value = t('common.success')
-      await refreshCurrent()
-      return
-    }
-    if (q.style === 3) {
-      const ok = window.confirm(`${t('common_00696')}${q.price}${t('common_00757')}?`)
-      if (!ok) return
-    }
     const created = await api.post<{ pay_url?: string; order_no?: string; msg?: string }>(
       '/v1/mcenter/vip/orders',
       { package_code: p.code, channel: payChannel() },
     )
     if (created?.order_no) {
-      await navigateTo(`/com/cashier/${created.order_no}`)
+      await navigateTo(`/user/cashier/${created.order_no}`)
       return
     }
     msg.value = created?.msg || t('common.success')
@@ -106,31 +80,18 @@ useSeoMeta({ title: t('wap_com_00097') })
 
 <template>
   <MemberPanel :title="$t('wap_com_00097')" :error="error && !isUnauthErr(error) ? error : undefined">
-    <template #pcTabs><MemberComVipTabs /></template>
-    <template #h5Tabs><MemberComVipTabs /></template>
+    <template #h5Tabs><MemberComVipTabs kind="user" /></template>
     <p v-if="error" class="muted">
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <MemberComScreen :tabs="[{ value: 'time', label: $t('ui.monthly_vip'), on: true, select: () => {} }]" />
-      <div class="com_new_tip site-pc">
-        <span class="com_new_tip_h">{{ $t('member_com_00040') }}</span>
+      <p class="muted">
         {{ current?.rating_name || current?.package_code || $t('ui.no_data') }}
-        <template v-if="current?.started_at || current?.expires_at">
-          {{ $t('member_com_00315') }}
-          {{ formatUnixDate(current?.started_at) }} ~
-          {{ current?.expires_at === 0 ? $t('api_wxapp_00019') : formatUnixDate(current?.expires_at) }}
+        <template v-if="current?.expires_at">
+          · {{ formatUnixDate(current.expires_at) }}
         </template>
-        <NuxtLink v-if="current?.expires_at && !current?.active" to="/com/member-right" class="cblue">{{
-          $t('wap_com_00066')
-        }}</NuxtLink>
-      </div>
-      <p class="muted site-pc">
-        {{ $t('wap_com_00106') }} {{ current?.job_num ?? 0 }} ·
-        {{ $t('wap_com_00029') }} {{ current?.breakjob_num ?? 0 }} ·
-        {{ $t('wap_00451') }} {{ current?.down_resume ?? 0 }} ·
-        {{ $t('wap_user_00216') }} {{ current?.invite_resume ?? 0 }} ·
-        {{ $t('wap_user_00008') }} {{ current?.integral ?? 0 }}
+        · {{ $t('wap_user_00008') }} {{ current?.integral ?? 0 }}
+        <span v-if="current?.can_chat"> · {{ $t('wap_user_00363') }}</span>
       </p>
       <div class="payment_list site-pc">
         <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
@@ -187,9 +148,6 @@ useSeoMeta({ title: t('wap_com_00097') })
                     <span v-if="picked === p.id">✓</span>
                   </div>
                 </div>
-                <ul v-if="descLines(p.desc).length">
-                  <li v-for="(line, i) in descLines(p.desc)" :key="i">{{ line }}</li>
-                </ul>
               </li>
             </ul>
           </div>

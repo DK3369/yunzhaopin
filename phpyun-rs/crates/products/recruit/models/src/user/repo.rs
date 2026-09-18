@@ -114,6 +114,17 @@ pub async fn submit_appeal(
     Ok(res.rows_affected())
 }
 
+pub async fn find_by_username_exact(
+    pool: &MySqlPool,
+    username: &str,
+) -> Result<Option<Member>, sqlx::Error> {
+    let sql = format!("SELECT {FIELDS} FROM phpyun_member WHERE username = ? LIMIT 1");
+    sqlx::query_as::<_, Member>(&sql)
+        .bind(username)
+        .fetch_optional(pool)
+        .await
+}
+
 pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Member>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_member WHERE uid = ? LIMIT 1");
     sqlx::query_as::<_, Member>(&sql)

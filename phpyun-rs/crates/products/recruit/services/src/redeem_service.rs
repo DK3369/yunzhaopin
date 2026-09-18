@@ -19,6 +19,7 @@ use phpyun_models::redeem::{
     entity::{RedeemClass, RedeemOrder, Reward},
     repo as redeem_repo,
 };
+use phpyun_models::user::repo as user_repo;
 
 fn total_cost(integral: u32, quantity: u32) -> AppResult<u32> {
     integral
@@ -270,6 +271,115 @@ pub struct RedeemForm<'a> {
     pub cityid: i32,
     pub three_cityid: i32,
     pub num: u32,
+    pub to_uid: u64,
+}
+
+fn reward_kind(raw: &str) -> &'static str {
+    if !phpyun_models::sql::ident_ok(raw) {
+        return "goods";
+    }
+    match raw {
+        "resume_refresh" => "resume_refresh",
+        "goods" => "goods",
+        _ => "goods",
+    }
+}
+
+pub fn parse_gift_tab(raw: Option<&str>) -> AppResult<Option<&'static str>> {
+    let Some(s) = raw.map(str::trim).filter(|s| !s.is_empty()) else {
+        return Ok(None);
+    };
+    if !phpyun_models::sql::ident_ok(s) {
+        return Err(ApiError::param_invalid("tab"));
+    }
+    match s {
+        "mine" => Ok(Some("mine")),
+        "sent" => Ok(Some("sent")),
+        "received" => Ok(Some("received")),
+        _ => Err(ApiError::param_invalid("tab")),
+    }
+}
+
+fn mask_username(s: &str) -> String {
+    let chars: Vec<char> = s.chars().collect();
+    match chars.len() {
+        0 => String::new(),
+        1 => format!("{}*", chars[0]),
+        2 => format!("{}*", chars[0]),
+        n => format!("{}***{}", chars[0], chars[n - 1]),
+    }
+}
+
+pub struct GiftPeer {
+    pub uid: u64,
+    pub username_mask: String,
+    pub usertype: i32,
+}
+
+pub async fn lookup_gift_peer(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    uid: u64,
+    username: &str,
+) -> AppResult<GiftPeer> {
+    user.require_uid()?;
+    let row = if uid > 0 {
+        user_repo::find_by_uid(state.db.reader(), uid)
+            .await?
+            .ok_or_else(|| ApiError::business("gift_peer_missing"))?
+    } else {
+        let name = username.trim();
+        if name.is_empty() || name.chars().count() > 32 {
+            return Err(ApiError::param_invalid("username"));
+        }
+        user_repo::find_by_username_exact(state.db.reader(), name)
+            .await?
+            .ok_or_else(|| ApiError::business("gift_peer_missing"))?
+    };
+    if row.uid == user.uid {
+        return Err(ApiError::business("gift_self"));
+    }
+    if row.usertype != 1 && row.usertype != 2 {
+        return Err(ApiError::business("gift_peer_invalid"));
+    }
+    Ok(GiftPeer {
+        uid: row.uid,
+        username_mask: mask_username(&row.username),
+        usertype: row.usertype,
+    })
+}
+
+async fn deduct_buyer(
+    pool: &sqlx::MySqlPool,
+    user: &AuthenticatedUser,
+    cost: u32,
+    now: i64,
+) -> AppResult<()> {
+    if user.usertype == 2 {
+        let n = phpyun_models::company_statis::repo::try_deduct_integral(
+            pool,
+            user.uid,
+            i64::from(cost),
+        )
+        .await?;
+        if n == 0 {
+            return Err(ApiError::param_invalid("insufficient_balance"));
+        }
+    } else {
+        let n = integral_repo::try_deduct(pool, user.uid, cost, now).await?;
+        if n == 0 {
+            return Err(ApiError::param_invalid("insufficient_balance"));
+        }
+    }
+    Ok(())
+}
+
+async fn credit_buyer(pool: &sqlx::MySqlPool, uid: u64, usertype: i32, cost: u32, now: i64) {
+    if usertype == 2 {
+        let _ = phpyun_models::company_statis::repo::add_integral(pool, uid, i64::from(cost)).await;
+    } else {
+        let _ = integral_repo::add_balance(pool, uid, refund_delta(cost), now).await;
+    }
 }
 
 pub async fn redeem(
@@ -278,6 +388,7 @@ pub async fn redeem(
     reward_id: u64,
     f: &RedeemForm<'_>,
 ) -> AppResult<u64> {
+    user.require_uid()?;
     if f.num == 0 {
         return Err(ApiError::param_invalid("bad_num"));
     }
@@ -300,6 +411,48 @@ pub async fn redeem(
     if reward.status != 1 {
         return Err(ApiError::param_invalid("reward_unavailable"));
     }
+    let kind = reward_kind(&reward.kind);
+    let mut to_uid = f.to_uid;
+    if to_uid == user.uid {
+        to_uid = 0;
+    }
+    let mut target_uid = user.uid;
+    if to_uid > 0 {
+        let peer = user_repo::find_by_uid(state.db.reader(), to_uid)
+            .await?
+            .ok_or_else(|| ApiError::business("gift_peer_missing"))?;
+        if peer.usertype != 1 && kind == "resume_refresh" {
+            return Err(ApiError::business("gift_peer_invalid"));
+        }
+        if kind == "resume_refresh" && peer.usertype != 1 {
+            return Err(ApiError::business("gift_peer_invalid"));
+        }
+        target_uid = peer.uid;
+    }
+    if kind == "resume_refresh" {
+        if user.usertype == 2 && to_uid == 0 {
+            return Err(ApiError::business("gift_employer_no_self"));
+        }
+        if to_uid == 0 {
+            user.require_jobseeker()?;
+        }
+        let has = phpyun_models::resume::repo::find_by_uid(state.db.reader(), target_uid)
+            .await?
+            .is_some();
+        if !has {
+            return Err(ApiError::business("gift_no_resume"));
+        }
+    } else {
+        if f.linkman.trim().is_empty() {
+            return Err(ApiError::param_invalid("linkman"));
+        }
+        if f.linktel.trim().len() < 6 {
+            return Err(ApiError::param_invalid("linktel"));
+        }
+        if to_uid > 0 && f.address.trim().is_empty() {
+            return Err(ApiError::param_invalid("address"));
+        }
+    }
     if reward.stock < f.num {
         return Err(ApiError::param_invalid("out_of_stock"));
     }
@@ -319,29 +472,38 @@ pub async fn redeem(
     let pool = state.db.pool();
     let now = clock::now_ts();
 
-    // 1) Deduct points (most stable, do first; on failure return directly, no compensation needed)
-    let deducted = integral_repo::try_deduct(pool, user.uid, total_cost, now).await?;
-    if deducted == 0 {
-        return Err(ApiError::param_invalid("insufficient_balance"));
-    }
+    deduct_buyer(pool, user, total_cost, now).await?;
 
-    // 2) Lock stock (CAS: stock>=num AND status=1)
     let mut tx = pool.begin().await?;
     let stock_affected = redeem_repo::tx_reserve_stock(&mut tx, reward_id, f.num).await?;
     if stock_affected == 0 {
         let _ = tx.rollback().await;
-        // Refund points
-        let _ = integral_repo::add_balance(pool, user.uid, refund_delta(total_cost), now).await;
+        credit_buyer(pool, user.uid, i32::from(user.usertype), total_cost, now).await;
         return Err(ApiError::param_invalid("out_of_stock"));
     }
 
-    // PHP body: provinceid cityid three_cityid + address
-    let body = format!(
-        "{} {} {} {}",
-        f.provinceid, f.cityid, f.three_cityid, f.address.trim()
-    );
+    let body = if kind == "resume_refresh" {
+        if to_uid > 0 {
+            format!("gift resume_refresh to_uid={to_uid}")
+        } else {
+            "resume_refresh self".to_string()
+        }
+    } else if to_uid > 0 {
+        format!(
+            "gift to_uid={to_uid}; {} {} {} {}",
+            f.provinceid,
+            f.cityid,
+            f.three_cityid,
+            f.address.trim()
+        )
+    } else {
+        format!(
+            "{} {} {} {}",
+            f.provinceid, f.cityid, f.three_cityid, f.address.trim()
+        )
+    };
+    let order_status = if kind == "resume_refresh" { 1 } else { 0 };
 
-    // 3) Write work order
     let order_id = match redeem_repo::tx_insert_order(
         &mut tx,
         &redeem_repo::NewOrder {
@@ -355,6 +517,8 @@ pub async fn redeem(
             address: &body,
             integral: total_cost,
             num: f.num,
+            to_uid,
+            status: order_status,
         },
         now,
     )
@@ -364,17 +528,31 @@ pub async fn redeem(
         Err(e) => {
             let _ = redeem_repo::tx_return_stock(&mut tx, reward_id, f.num).await;
             let _ = tx.rollback().await;
-            let _ = integral_repo::add_balance(pool, user.uid, refund_delta(total_cost), now).await;
+            credit_buyer(pool, user.uid, i32::from(user.usertype), total_cost, now).await;
             return Err(e.into());
         }
     };
     tx.commit().await?;
 
+    if kind == "resume_refresh" {
+        let _ = phpyun_models::resume::repo::touch_lastupdate(pool, target_uid, now).await;
+        if to_uid > 0 {
+            let note = format!("{} 赠送了一次简历刷新", member.username);
+            let _ = phpyun_models::message::repo::insert_simple(pool, to_uid, 1, &note, now).await;
+        }
+    }
+
     let _ = audit::emit(
         state,
         AuditEvent::new("redeem.create", Actor::uid(user.uid))
             .target(format!("reward:{reward_id}"))
-            .meta(&serde_json::json!({ "num": f.num, "cost": total_cost, "order_id": order_id })),
+            .meta(&serde_json::json!({
+                "num": f.num,
+                "cost": total_cost,
+                "order_id": order_id,
+                "to_uid": to_uid,
+                "kind": kind,
+            })),
     )
     .await;
     Ok(order_id)
@@ -384,12 +562,14 @@ pub async fn list_my_orders(
     state: &AppState,
     user: &AuthenticatedUser,
     status: Option<i32>,
+    tab: Option<&str>,
     page: Pagination,
 ) -> AppResult<Paged<RedeemOrder>> {
+    let tab = parse_gift_tab(tab)?;
     let db = state.db.reader();
     let (list, total) = tokio::join!(
-        redeem_repo::list_orders(db, Some(user.uid), status, page.offset, page.limit),
-        redeem_repo::count_orders(db, Some(user.uid), status),
+        redeem_repo::list_orders(db, Some(user.uid), status, tab, page.offset, page.limit),
+        redeem_repo::count_orders(db, Some(user.uid), status, tab),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
@@ -424,8 +604,8 @@ pub async fn list_orders_admin(
 ) -> AppResult<Paged<RedeemOrder>> {
     let db = state.db.reader();
     let (list, total) = tokio::join!(
-        redeem_repo::list_orders(db, None, status, page.offset, page.limit),
-        redeem_repo::count_orders(db, None, status),
+        redeem_repo::list_orders(db, None, status, None, page.offset, page.limit),
+        redeem_repo::count_orders(db, None, status, None),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
@@ -498,8 +678,7 @@ async fn refund_order(
     let _ = redeem_repo::tx_return_stock(&mut tx, order.gid, order.num).await?;
     tx.commit().await?;
 
-    // Refund points (ON DUPLICATE KEY UPDATE add-value on the pool)
-    integral_repo::add_balance(pool, order.uid, refund_delta(order.integral), now).await?;
+    credit_buyer(pool, order.uid, order.usertype, order.integral, now).await;
 
     let _ = audit::emit(
         state,

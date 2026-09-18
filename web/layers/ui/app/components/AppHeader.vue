@@ -99,7 +99,7 @@ const {
 const route = useRoute()
 const isCompany = computed(() => Number(me.value?.usertype) === 2)
 const showPublishJob = computed(() => isCompany.value && isMemberModuleOn(settings.value, '/com/jobs/new'))
-const H5_DARK = ['/user/finance', '/user/pay', '/user/cashier', '/user/integral', '/user/rewards', '/user/integral-rules', '/com/pay', '/com/cashier', '/com/integral', '/com/orders', '/com/record', '/com/rewards', '/com/integral-rules', '/com/services']
+const H5_DARK = ['/user/finance', '/user/pay', '/user/cashier', '/user/integral', '/user/rewards', '/user/integral-rules', '/user/member-right', '/user/orders', '/com/pay', '/com/cashier', '/com/integral', '/com/orders', '/com/record', '/com/rewards', '/com/integral-rules', '/com/services']
 const h5Bar = computed<'home' | 'none' | 'white' | 'dark' | 'blue'>(() => {
   if (isHome.value) return 'home'
   const p = route.path

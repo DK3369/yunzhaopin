@@ -26,7 +26,8 @@ const REWARD_FIELDS: &str = "\
     CAST(COALESCE(status, 0) AS SIGNED) AS status, \
     CAST(COALESCE(rec, 0) AS SIGNED) AS is_rec, \
     CAST(COALESCE(hot, 0) AS SIGNED) AS is_hot, \
-    CAST(COALESCE(sdate, 0) AS SIGNED) AS created_at";
+    CAST(COALESCE(sdate, 0) AS SIGNED) AS created_at, \
+    COALESCE(NULLIF(kind,''), 'goods') AS kind";
 
 const ORDER_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -39,7 +40,9 @@ const ORDER_FIELDS: &str = "\
     CAST(COALESCE(integral, 0) AS UNSIGNED) AS integral, \
     CAST(COALESCE(num, 0) AS UNSIGNED) AS num, \
     CAST(COALESCE(status, 0) AS SIGNED) AS status, \
-    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at";
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS created_at, \
+    CAST(COALESCE(to_uid, 0) AS UNSIGNED) AS to_uid, \
+    CAST(COALESCE(usertype, 0) AS SIGNED) AS usertype";
 
 const CLASS_FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
@@ -342,8 +345,8 @@ pub async fn insert_reward(
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_reward \
-         (name, pic, content, integral, stock, num, restriction, nid, tnid, status, rec, hot, sdate) \
-         VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, 1, 0, 0, ?)",
+         (name, kind, pic, content, integral, stock, num, restriction, nid, tnid, status, rec, hot, sdate) \
+         VALUES (?, 'goods', ?, ?, ?, ?, 0, ?, ?, ?, 1, 0, 0, ?)",
     )
     .bind(r.name)
     .bind(r.pic)
@@ -468,10 +471,11 @@ pub async fn tx_insert_order(
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_change \
-         (uid, username, usertype, name, gid, linkman, linktel, body, integral, num, ctime, status) \
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
+         (uid, to_uid, username, usertype, name, gid, linkman, linktel, body, integral, num, ctime, status) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(o.uid)
+    .bind(o.to_uid)
     .bind(o.username)
     .bind(o.usertype)
     .bind(o.name)
@@ -482,6 +486,7 @@ pub async fn tx_insert_order(
     .bind(o.integral)
     .bind(o.num)
     .bind(now)
+    .bind(o.status)
     .execute(&mut **tx)
     .await?;
     Ok(res.last_insert_id())
@@ -498,26 +503,38 @@ pub struct NewOrder<'a> {
     pub address: &'a str,
     pub integral: u32,
     pub num: u32,
+    pub to_uid: u64,
+    pub status: i32,
 }
 
 pub async fn list_orders(
     pool: &MySqlPool,
     uid: Option<u64>,
     status: Option<i32>,
+    tab: Option<&'static str>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<RedeemOrder>, sqlx::Error> {
     let mut sql = format!("SELECT {ORDER_FIELDS} FROM phpyun_change WHERE 1=1");
-    if uid.is_some() {
-        sql.push_str(" AND uid = ?");
+    match tab {
+        Some("sent") => sql.push_str(" AND uid = ? AND COALESCE(to_uid,0) > 0"),
+        Some("received") => sql.push_str(" AND to_uid = ?"),
+        Some("mine") => sql.push_str(" AND uid = ? AND COALESCE(to_uid,0) = 0"),
+        _ => {
+            if uid.is_some() {
+                sql.push_str(" AND uid = ?");
+            }
+        }
     }
     if status.is_some() {
         sql.push_str(" AND status = ?");
     }
     sql.push_str(" ORDER BY id DESC LIMIT ? OFFSET ?");
     let mut q = sqlx::query_as::<_, RedeemOrder>(&sql);
-    if let Some(u) = uid {
-        q = q.bind(u);
+    if tab.is_some() || uid.is_some() {
+        if let Some(u) = uid {
+            q = q.bind(u);
+        }
     }
     if let Some(s) = status {
         q = q.bind(s);
@@ -529,17 +546,27 @@ pub async fn count_orders(
     pool: &MySqlPool,
     uid: Option<u64>,
     status: Option<i32>,
+    tab: Option<&'static str>,
 ) -> Result<u64, sqlx::Error> {
     let mut sql = String::from("SELECT COUNT(*) FROM phpyun_change WHERE 1=1");
-    if uid.is_some() {
-        sql.push_str(" AND uid = ?");
+    match tab {
+        Some("sent") => sql.push_str(" AND uid = ? AND COALESCE(to_uid,0) > 0"),
+        Some("received") => sql.push_str(" AND to_uid = ?"),
+        Some("mine") => sql.push_str(" AND uid = ? AND COALESCE(to_uid,0) = 0"),
+        _ => {
+            if uid.is_some() {
+                sql.push_str(" AND uid = ?");
+            }
+        }
     }
     if status.is_some() {
         sql.push_str(" AND status = ?");
     }
     let mut q = sqlx::query_as::<_, (i64,)>(&sql);
-    if let Some(u) = uid {
-        q = q.bind(u);
+    if tab.is_some() || uid.is_some() {
+        if let Some(u) = uid {
+            q = q.bind(u);
+        }
     }
     if let Some(s) = status {
         q = q.bind(s);

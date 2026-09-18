@@ -613,6 +613,7 @@ impl Modify for DeprecatedIndex {
         v1::wap::redeem::get_reward,
         // mcenter: redeem orders
         v1::mcenter::redeem::redeem,
+        v1::mcenter::redeem::lookup_gift,
         v1::mcenter::redeem::list_mine,
         v1::mcenter::redeem::cancel_mine,
         // wap: descriptions (public cms pages)
@@ -994,6 +995,7 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::vip::PackageItem,
             v1::mcenter::vip::ListPackagesForm,
             v1::mcenter::vip::CurrentVip,
+            v1::mcenter::vip::SeekerCapsView,
             v1::mcenter::vip::CreateOrderForm,
             v1::mcenter::vip::OrderCreated,
             v1::mcenter::vip::OrderItem,
@@ -1213,6 +1215,12 @@ impl Modify for DeprecatedIndex {
             v1::wap::resumes::DefaultExpectResp,
             v1::wap::companies::CompanyAutoItem,
             v1::mcenter::vip::PriceQuoteView,
+            v1::mcenter::redeem::RedeemSubmit,
+            v1::mcenter::redeem::RedeemCreated,
+            v1::mcenter::redeem::OrderItem,
+            v1::mcenter::redeem::ListOrdersForm,
+            v1::mcenter::redeem::GiftLookupForm,
+            v1::mcenter::redeem::GiftPeerView,
             v1::wap::hr_docs::HrDownloadResp,
             v1::wap::site::MapConfigView,
             v1::wap::eval::PaperMessageItem,

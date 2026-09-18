@@ -51,10 +51,12 @@ pub struct PackageItem {
     pub sort_order: i32,
     pub created_at: i64,
     pub created_at_n: String,
+    /// `seeker` | `employer`
+    pub role: String,
 }
 
-impl From<phpyun_models::vip::entity::VipPackage> for PackageItem {
-    fn from(p: phpyun_models::vip::entity::VipPackage) -> Self {
+impl PackageItem {
+    fn from_pkg(p: phpyun_models::vip::entity::VipPackage, role: &str) -> Self {
         Self {
             id: p.id,
             code: p.code,
@@ -68,6 +70,7 @@ impl From<phpyun_models::vip::entity::VipPackage> for PackageItem {
             sort_order: p.sort_order,
             created_at_n: fmt_dt(p.created_at),
             created_at: p.created_at,
+            role: role.to_string(),
         }
     }
 }
@@ -108,8 +111,11 @@ pub async fn list_packages(
         }
     };
     let list = vip_service::list_packages(&state, &user, kind).await?;
+    let role = if user.usertype == 1 { "seeker" } else { "employer" };
     Ok(ApiResponse::data(
-        list.into_iter().map(PackageItem::from).collect(),
+        list.into_iter()
+            .map(|p| PackageItem::from_pkg(p, role))
+            .collect(),
     ))
 }
 
@@ -124,6 +130,14 @@ pub struct VipCaps {
     pub rec_num: i32,
     pub zph_num: i32,
     pub sons_num: i32,
+}
+
+#[derive(Debug, Clone, Default, Serialize, ToSchema)]
+pub struct SeekerCapsView {
+    pub chat: bool,
+    pub resume_top: bool,
+    pub tpl_all: bool,
+    pub refresh_free: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -148,6 +162,20 @@ pub struct CurrentVip {
     pub caps: VipCaps,
     /// 站点 `com_vip_type`：0 套餐+时间 / 1 仅时间 / 2 仅套餐。
     pub com_vip_type: i32,
+    pub can_chat: bool,
+    /// `seeker` | `employer`
+    pub role: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seeker_caps: Option<SeekerCapsView>,
+}
+
+fn seeker_caps_view(c: phpyun_services::seeker_vip_service::SeekerCaps) -> SeekerCapsView {
+    SeekerCapsView {
+        chat: c.chat,
+        resume_top: c.resume_top,
+        tpl_all: c.tpl_all,
+        refresh_free: c.refresh_free,
+    }
 }
 
 /// My current VIP status
@@ -164,6 +192,56 @@ pub async fn get_current(
 ) -> AppResult<ApiResponse<CurrentVip>> {
     let v = vip_service::get_current_vip(&state, &user).await?;
     let now = phpyun_core::clock::now_ts();
+    let can_chat = phpyun_services::seeker_vip_service::can_initiate_chat(&state, &user).await?;
+    let com_vip_type = phpyun_models::site_setting::repo::find_many(
+        state.db.reader(),
+        &["com_vip_type"],
+    )
+    .await
+    .ok()
+    .and_then(|m| m.get("com_vip_type").and_then(|s| s.trim().parse::<i32>().ok()))
+    .unwrap_or(0);
+    if user.usertype == 1 {
+        let caps = phpyun_services::seeker_vip_service::seeker_caps(&state, user.uid).await?;
+        let integral = phpyun_models::member_statis::repo::get_balance(state.db.reader(), user.uid)
+            .await
+            .map(|b| b.balance)
+            .unwrap_or(0);
+        let rating_name = if let Some(ref vv) = v {
+            phpyun_models::seeker_vip::repo::find_by_code(state.db.reader(), &vv.package_code)
+                .await
+                .ok()
+                .flatten()
+                .map(|p| p.name)
+                .unwrap_or_else(|| vv.package_code.clone())
+        } else {
+            String::new()
+        };
+        return Ok(ApiResponse::data(CurrentVip {
+            active: v.as_ref().map(|x| x.expires_at > now).unwrap_or(false),
+            package_code: v.as_ref().map(|x| x.package_code.clone()),
+            started_at: v.as_ref().map(|x| x.started_at),
+            expires_at: v.as_ref().map(|x| x.expires_at),
+            rating: 0,
+            rating_name,
+            rating_type: 2,
+            job_num: 0,
+            breakjob_num: 0,
+            down_resume: 0,
+            invite_resume: 0,
+            zph_num: 0,
+            top_num: 0,
+            urgent_num: 0,
+            rec_num: 0,
+            integral,
+            sons_num: 0,
+            caps: VipCaps::default(),
+            com_vip_type,
+            can_chat,
+            role: "seeker".into(),
+            seeker_caps: Some(seeker_caps_view(caps)),
+        }));
+    }
     let st = phpyun_models::company_statis::repo::find_admin(state.db.reader(), user.uid)
         .await
         .ok()
@@ -188,14 +266,6 @@ pub async fn get_current(
     } else {
         VipCaps::default()
     };
-    let com_vip_type = phpyun_models::site_setting::repo::find_many(
-        state.db.reader(),
-        &["com_vip_type"],
-    )
-    .await
-    .ok()
-    .and_then(|m| m.get("com_vip_type").and_then(|s| s.trim().parse::<i32>().ok()))
-    .unwrap_or(0);
     let empty = || CurrentVip {
         active: false,
         package_code: None,
@@ -216,6 +286,9 @@ pub async fn get_current(
         sons_num: 0,
         caps: VipCaps::default(),
         com_vip_type,
+        can_chat,
+        role: "employer".into(),
+        seeker_caps: None,
     };
     Ok(ApiResponse::data(match (v, st) {
         (Some(v), Some(s)) => CurrentVip {
@@ -238,6 +311,9 @@ pub async fn get_current(
             sons_num: s.sons_num,
             caps,
             com_vip_type,
+            can_chat,
+            role: "employer".into(),
+            seeker_caps: None,
         },
         (Some(v), None) => CurrentVip {
             active: v.expires_at == 0 || v.expires_at >= now,
@@ -567,7 +643,7 @@ async fn mock_paid_inner(
         if any.uid != user.uid {
             return Err(ApiError::param_invalid("order_not_owned"));
         }
-        if any.order_kind == 28 || any.order_kind == 19 || any.order_kind == 23 {
+        if any.order_kind == 28 || any.order_kind == 19 || any.order_kind == 23 || any.order_kind == 31 {
             phpyun_services::payment_notify_service::settle_paid(&state, &order_no, &fake_tx)
                 .await?;
             return Ok(ApiResponse::data(

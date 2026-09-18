@@ -86,6 +86,7 @@ pub mod resume_share;
 pub mod resume_tpl;
 pub mod saved_search;
 pub mod search_history;
+pub mod seeker_vip;
 pub mod sign_in;
 pub mod site_page;
 pub mod seo;

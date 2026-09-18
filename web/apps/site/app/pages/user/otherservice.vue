@@ -7,6 +7,7 @@ useSeoMeta({ title: t('wap_user_00196') })
 const items = computed(() =>
   [
     { to: '/user/parts', label: t('wap_user_00220'), icon: '/legacy/h5/images/jobhunter_top.png' },
+    { to: '/user/member-right', label: t('wap_com_00097'), icon: '/legacy/h5/images/financial_management.png' },
     { to: '/user/pay', label: t('common_01946'), icon: '/legacy/h5/images/financial_management.png' },
     { to: '/user/integral', label: t('wap_user_00008'), icon: '/legacy/h5/images/job_training.png' },
     { to: '/user/eval-logs', label: t('wap_00194'), icon: '/legacy/h5/images/job_training.png' },

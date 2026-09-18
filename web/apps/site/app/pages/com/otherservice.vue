@@ -12,6 +12,7 @@ const items = computed(() =>
     { to: '/questions', label: t('wap_01141'), icon: '/legacy/h5/images/fk.png' },
     { to: '/com/jobs', label: t('wap_com_00106'), icon: '/legacy/h5/images/yun_cy_icon6.png' },
     { to: '/com/jobs/new', label: t('wap_00322'), icon: '/legacy/h5/images/yun_cy_icon6.png' },
+    { to: '/com/member-right', label: t('wap_com_00097'), icon: '/legacy/h5/images/caiwuegl.png' },
     { to: '/com/pay', label: t('common_01946'), icon: '/legacy/h5/images/caiwuegl.png' },
     { to: '/com/cert', label: t('wap_com_00075'), icon: '/legacy/h5/images/sz.png' },
     { to: '/com/map', label: t('ui.map_addr'), icon: '/legacy/h5/images/yun_cy_icon3.png' },

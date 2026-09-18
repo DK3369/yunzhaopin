@@ -40,6 +40,7 @@ pub mod redeem;
 pub mod regions;
 pub mod reports;
 pub mod resumes;
+pub mod seeker_vip;
 pub mod site_settings;
 pub mod system_gap;
 pub mod tiny;
@@ -94,6 +95,7 @@ pub fn router() -> Router<AppState> {
         .merge(php_content::routes())
         .merge(companies::routes())
         .merge(resumes::routes())
+        .merge(seeker_vip::routes())
         .merge(finance::routes())
         .merge(rbac::routes())
         .merge(cron::routes())
