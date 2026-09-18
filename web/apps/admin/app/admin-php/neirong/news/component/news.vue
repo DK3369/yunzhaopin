@@ -43,7 +43,7 @@
                 </el-table-column>
                 <el-table-column :label="lc('member_com_00043')" min-width="180" max-width="300" show-overflow-tooltip>
                     <template #default="props">
-                        <el-link :href="props.row.url" target="_blank" class="admin_cz_sc" :style="props.row.color ? 'color:'+props.row.color : ''">{{props.row.title}}
+                        <el-link :href="articleHref(props.row)" target="_blank" class="admin_cz_sc" :style="props.row.color ? 'color:'+props.row.color : ''">{{props.row.title}}
                             <div class="admin_mb5" v-html="props.row.titype"></div>
                         </el-link>
                     </template>
@@ -51,7 +51,7 @@
                 <el-table-column :label="lc('admin_00170')" width="130">
                     <template #default="props">
                         <el-tag type=" " size="small">
-                            <el-link type="primary" :href="props.row.classurl" target="_blank">{{ catLabel(props.row) }}
+                            <el-link type="primary" :href="articleClassHref(props.row)" target="_blank">{{ catLabel(props.row) }}
                             </el-link>
                         </el-tag>
                     </template>
@@ -468,9 +468,7 @@ function recoverNewsHtml(raw) {
     var s = String(raw || '');
     if (!s) return '';
     var html = s;
-    var nowrap = s.indexOf('text-wrap-mode: nowrap') >= 0
-        || s.indexOf('white-space:nowrap') >= 0
-        || s.indexOf('white-space: nowrap') >= 0;
+    var nowrap = /text-wrap-mode:\s*nowrap|white-space:\s*nowrap/i.test(s);
     if (nowrap && typeof DOMParser !== 'undefined') {
         try {
             var doc = new DOMParser().parseFromString(s, 'text/html');
@@ -478,16 +476,19 @@ function recoverNewsHtml(raw) {
             if (!paras.length) paras = doc.querySelectorAll('p');
             var lines = [];
             for (var i = 0; i < paras.length; i++) {
-                var inner = paras[i].innerHTML || '';
+                var span = paras[i].querySelector && paras[i].querySelector('span');
+                var inner = ((span && span.innerHTML) || paras[i].innerHTML || '');
                 var ta = document.createElement('textarea');
                 ta.innerHTML = inner;
-                lines.push(ta.value);
+                var decoded = String(ta.value || '').trim();
+                if (!decoded || /^<br\s*\/?>$/i.test(decoded)) continue;
+                lines.push(decoded);
             }
             var joined = lines.join('\n');
             if (joined.trim()) html = joined;
         } catch (e) {}
     }
-    if (/<!DOCTYPE|<html[\s>]/i.test(html) && typeof DOMParser !== 'undefined') {
+    if (/<!DOCTYPE|<html[\s>]|<body[\s>]/i.test(html) && typeof DOMParser !== 'undefined') {
         try {
             var page = new DOMParser().parseFromString(html, 'text/html');
             var pick = page.querySelector('.news_con, .news_content, .wap_txt, .wap_news_cont, article');
@@ -498,6 +499,16 @@ function recoverNewsHtml(raw) {
         } catch (e) {}
     }
     return html;
+}
+function articleHref(row) {
+    var id = row && row.id;
+    if (id) return '/articles/' + id;
+    return (row && row.url) || '';
+}
+function articleClassHref(row) {
+    var nid = row && row.nid;
+    if (nid !== undefined && nid !== null && String(nid) !== '') return '/articles?nid=' + nid;
+    return (row && row.classurl) || '';
 }
 function destroyNewsEditor() {
     if (newsEditorTimer) {
@@ -579,6 +590,8 @@ export default {
         destroyNewsEditor();
     },
     methods: {
+        articleHref: articleHref,
+        articleClassHref: articleClassHref,
         newsShowEnd(row) {
             const e = row && row.endtime
             if (e === 0 || e === '0' || e == null || e === '') {

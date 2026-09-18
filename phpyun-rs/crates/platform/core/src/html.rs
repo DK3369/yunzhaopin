@@ -195,7 +195,7 @@ pub fn recover_legacy_html(raw: &str) -> String {
             .collect::<Vec<_>>()
             .join("");
     }
-    sanitize_html(&s)
+    split_flat_if_needed(&sanitize_html(&s))
 }
 
 fn has_nowrap(s: &str) -> bool {
@@ -205,7 +205,7 @@ fn has_nowrap(s: &str) -> bool {
 
 fn looks_like_full_page(s: &str) -> bool {
     let l = s.to_ascii_lowercase();
-    l.contains("<!doctype") || l.contains("<html")
+    l.contains("<!doctype") || l.contains("<html") || l.contains("<body")
 }
 
 fn unwrap_nowrap_lines(s: &str) -> String {
@@ -214,6 +214,11 @@ fn unwrap_nowrap_lines(s: &str) -> String {
     let mut i = 0;
     while let Some(rel) = lower[i..].find("<p") {
         let start = i + rel;
+        let after = lower.as_bytes().get(start + 2).copied().unwrap_or(b' ');
+        if !matches!(after, b' ' | b'>' | b'/' | b'\t' | b'\n' | b'\r') {
+            i = start + 2;
+            continue;
+        }
         let Some(gt_rel) = s.get(start..).and_then(|rest| rest.find('>')) else {
             break;
         };
@@ -226,8 +231,9 @@ fn unwrap_nowrap_lines(s: &str) -> String {
             break;
         }
         let inner = s[inner_start..inner_end].trim();
-        let decoded = unescape_basic(inner);
-        if !decoded.is_empty() {
+        let decoded = decode_nowrap_inner(inner);
+        let t = decoded.trim();
+        if !t.is_empty() && !is_break_only(t) {
             lines.push(decoded);
         }
         i = inner_end + 4;
@@ -240,6 +246,24 @@ fn unwrap_nowrap_lines(s: &str) -> String {
     } else {
         lines.join("\n")
     }
+}
+
+fn is_break_only(s: &str) -> bool {
+    let l = s.trim().to_ascii_lowercase();
+    l == "<br>" || l == "<br/>" || l == "<br />"
+}
+
+/// Each nowrap line is often `<span style="text-wrap-mode:nowrap">&lt;h2&gt;…</span>`.
+/// Take the span inner (the escaped source line), not the span tag itself.
+fn decode_nowrap_inner(inner: &str) -> String {
+    let t = inner.trim();
+    let lower = t.to_ascii_lowercase();
+    if lower.starts_with("<span") && lower.contains("nowrap") {
+        if let Some(span_inner) = extract_from_open_tag(t, 0) {
+            return unescape_basic(&span_inner);
+        }
+    }
+    unescape_basic(t)
 }
 
 fn extract_article_body(s: &str) -> String {
@@ -264,6 +288,122 @@ fn extract_article_body(s: &str) -> String {
         }
     }
     s.to_string()
+}
+
+/// Single `<p>…</p>` with `| Date:` / `I.` / `一、` was flattened chrome; restore blocks.
+fn split_flat_if_needed(html: &str) -> String {
+    let Some(inner) = single_plain_p(html) else {
+        return html.to_string();
+    };
+    if !should_split_flat(&inner) {
+        return html.to_string();
+    }
+    split_flat_text(&inner)
+}
+
+fn single_plain_p(html: &str) -> Option<String> {
+    let t = html.trim();
+    let lower = t.to_ascii_lowercase();
+    if !lower.starts_with("<p>") || !lower.ends_with("</p>") {
+        return None;
+    }
+    if lower.matches("<p>").count() != 1 {
+        return None;
+    }
+    if lower.contains("<h1") || lower.contains("<h2") || lower.contains("<h3") || lower.contains("<li")
+    {
+        return None;
+    }
+    let inner = &t[3..t.len() - 4];
+    if inner.contains('<') {
+        return None;
+    }
+    Some(unescape_basic(inner).trim().to_string())
+}
+
+fn should_split_flat(text: &str) -> bool {
+    text.contains("| Date:")
+        || text.contains("| Summary:")
+        || text.contains(" I. ")
+        || text.contains(" II. ")
+        || text.contains("摘要：")
+        || text.contains("一、")
+        || text.contains("二、")
+}
+
+fn split_flat_text(text: &str) -> String {
+    struct Hit {
+        pos: usize,
+        len: usize,
+        label: &'static str,
+        heading: bool,
+    }
+    const NEEDLES: &[(&str, &str, bool)] = &[
+        ("| Date:", "Date", false),
+        ("| Source:", "Source", false),
+        ("| Author:", "Author", false),
+        ("| Summary:", "Summary", true),
+        (" I. ", "I.", true),
+        (" II. ", "II.", true),
+        (" III. ", "III.", true),
+        (" IV. ", "IV.", true),
+        (" V. ", "V.", true),
+        (" Conclusion:", "Conclusion", true),
+        ("| Keywords:", "Keywords", false),
+        ("摘要：", "摘要", true),
+        ("一、", "一、", true),
+        ("二、", "二、", true),
+        ("三、", "三、", true),
+        ("四、", "四、", true),
+        ("五、", "五、", true),
+        ("结语", "结语", true),
+        ("关键词标签：", "关键词", false),
+        ("关键词：", "关键词", false),
+    ];
+    let mut hits: Vec<Hit> = Vec::new();
+    for (needle, label, heading) in NEEDLES {
+        if let Some(pos) = text.find(needle) {
+            hits.push(Hit {
+                pos,
+                len: needle.len(),
+                label: *label,
+                heading: *heading,
+            });
+        }
+    }
+    hits.sort_by_key(|h| h.pos);
+    hits.dedup_by_key(|h| h.pos);
+    if hits.is_empty() {
+        return format!("<p>{}</p>", esc(text));
+    }
+    let mut out = String::new();
+    let lead = text[..hits[0].pos].trim();
+    if !lead.is_empty() {
+        out.push_str("<p>");
+        out.push_str(&esc(lead));
+        out.push_str("</p>");
+    }
+    for (i, h) in hits.iter().enumerate() {
+        let end = hits.get(i + 1).map(|n| n.pos).unwrap_or(text.len());
+        let body = text[h.pos + h.len..end].trim();
+        if h.heading {
+            out.push_str("<h2>");
+            out.push_str(&esc(h.label));
+            out.push_str("</h2>");
+            if !body.is_empty() {
+                out.push_str("<p>");
+                out.push_str(&esc(body));
+                out.push_str("</p>");
+            }
+        } else {
+            out.push_str("<p>");
+            out.push_str(&esc(h.label));
+            out.push_str(": ");
+            out.push_str(&esc(body));
+            out.push_str("</p>");
+        }
+    }
+    out
 }
 
 fn extract_by_class(html: &str, class: &str) -> Option<String> {
@@ -452,5 +592,41 @@ mod tests {
         let out = recover_legacy_html(raw);
         assert!(out.contains("<p>First line</p>"), "{out}");
         assert!(out.contains("<p>Second line</p>"), "{out}");
+    }
+
+    #[test]
+    fn recover_span_nowrap_lines_rebuild_body_headings() {
+        let raw = concat!(
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;!DOCTYPE html&gt;</span></p>"#,
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;html&gt;</span></p>"#,
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;body&gt;</span></p>"#,
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;h1&gt;Title&lt;/h1&gt;</span></p>"#,
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;h2&gt;Section&lt;/h2&gt;</span></p>"#,
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;p&gt;Hello para&lt;/p&gt;</span></p>"#,
+            r#"<p><span style="text-wrap-mode: nowrap">&lt;/body&gt;&lt;/html&gt;</span></p>"#,
+        );
+        let out = recover_legacy_html(raw);
+        assert!(out.contains("<h1>Title</h1>"), "{out}");
+        assert!(out.contains("<h2>Section</h2>"), "{out}");
+        assert!(out.contains("<p>Hello para</p>"), "{out}");
+        assert!(!out.to_ascii_lowercase().contains("doctype"), "{out}");
+    }
+
+    #[test]
+    fn recover_splits_flat_pipe_and_numbered_blob() {
+        let raw = concat!(
+            "<p>Lead title | Date: April 24, 2026 | Source: Platform | Author: Ops | ",
+            "Summary: AI is changing hiring. I. Systems become standard: Auto screening. ",
+            "II. Precision matching: 60% better. Conclusion: Pick a stable system. | ",
+            "Keywords: Recruitment, AI</p>",
+        );
+        let out = recover_legacy_html(raw);
+        assert!(out.contains("<p>Lead title</p>"), "{out}");
+        assert!(out.contains("<p>Date: April 24, 2026</p>"), "{out}");
+        assert!(out.contains("<h2>Summary</h2>"), "{out}");
+        assert!(out.contains("<h2>I.</h2>"), "{out}");
+        assert!(out.contains("<h2>II.</h2>"), "{out}");
+        assert!(out.contains("<h2>Conclusion</h2>"), "{out}");
+        assert!(out.contains("<p>Keywords: Recruitment, AI</p>"), "{out}");
     }
 }

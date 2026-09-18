@@ -1788,8 +1788,8 @@ async fn news_index(state: &AppState, body: &Value) -> AppResult<Value> {
                 "picurl": pic_url(&base, &a.cover),
                 "name": a.category,
                 "name_n": news_label(&dicts, a.nid, &a.category),
-                "url": format!("{base}/articles/{}", a.id),
-                "classurl": format!("{base}/articles?nid={}", a.nid),
+                "url": format!("/articles/{}", a.id),
+                "classurl": format!("/articles?nid={}", a.nid),
                 "titype": "",
             })
         })
