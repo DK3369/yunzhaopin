@@ -13,7 +13,7 @@
                             </div>
                         </div>
                         <div class="homeTopLeMoney" @click="toOrder({order_state:'2'})">
-                            <div class="homeTopMonNum"><span>￥</span>{{ordertype=='day'?numdata.moneyTotal:numdata.monthMoneyTotal}}</div>
+                            <div class="homeTopMonNum">{{ordertype=='day'?numdata.moneyTotal:numdata.monthMoneyTotal}}</div>
                             <div class="homeTopMonTxt">
                                 <span>{{ ordertype=='day' ? lc('admin_00085') : lc('admin_00088') }}</span>
                             </div>

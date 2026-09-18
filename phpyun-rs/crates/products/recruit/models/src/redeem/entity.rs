@@ -26,6 +26,7 @@ pub struct Reward {
     pub is_rec: i32,
     pub is_hot: i32,
     pub created_at: i64,
+    pub kind: String,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
@@ -41,4 +42,6 @@ pub struct RedeemOrder {
     pub num: u32,
     pub status: i32,
     pub created_at: i64,
+    pub to_uid: u64,
+    pub usertype: i32,
 }

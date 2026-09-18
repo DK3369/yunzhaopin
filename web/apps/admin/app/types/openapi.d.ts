@@ -4141,6 +4141,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/seeker/vip/packages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_seeker_vip_packages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/seeker/vip/packages/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_seeker_vip_packages_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/seeker/vip/packages/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_seeker_vip_packages_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/site-settings": {
         parameters: {
             query?: never;
@@ -6302,6 +6350,52 @@ export interface components {
             status_n: string;
             /** Format: int64 */
             uid: number;
+        };
+        PackItem: {
+            /** Format: int32 */
+            chat: number;
+            code: string;
+            /** Format: int32 */
+            display: number;
+            /** Format: int32 */
+            id: number;
+            /** Format: int32 */
+            months: number;
+            name: string;
+            /** Format: int32 */
+            price_cents: number;
+            /** Format: double */
+            price_yuan: number;
+            /** Format: int32 */
+            refresh_free: number;
+            /** Format: int32 */
+            resume_top: number;
+            /** Format: int32 */
+            sort: number;
+            /** Format: int32 */
+            tpl_all: number;
+        };
+        PackSaveForm: {
+            /** Format: int32 */
+            chat?: number;
+            code: string;
+            /** Format: int32 */
+            display?: number;
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            months: number;
+            name: string;
+            /** Format: int32 */
+            price_cents: number;
+            /** Format: int32 */
+            refresh_free?: number;
+            /** Format: int32 */
+            resume_top?: number;
+            /** Format: int32 */
+            sort?: number;
+            /** Format: int32 */
+            tpl_all?: number;
         };
         PaperDetailForm: {
             /** Format: int64 */
@@ -12258,6 +12352,68 @@ export interface operations {
                 "application/json": components["schemas"]["StatusForm"];
             };
         };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_seeker_vip_packages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PackSaveForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_seeker_vip_packages_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_seeker_vip_packages_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description ok */
             200: {

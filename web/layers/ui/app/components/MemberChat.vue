@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { errKey } from '~/utils/site'
+
 const props = withDefaults(defineProps<{ kind?: 'user' | 'com' }>(), { kind: 'user' })
 const api = useApi()
 const route = useRoute()
@@ -47,6 +49,10 @@ async function send() {
     await api.post('/v1/mcenter/chat/with/read', { peer: peer.value }).catch(() => null)
     await Promise.all([refreshThread(), refreshConv()])
   } catch (e: unknown) {
+    if (errKey(e) === 'chat_need_vip') {
+      await navigateTo(props.kind === 'com' ? '/com/member-right' : '/user/member-right')
+      return
+    }
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }

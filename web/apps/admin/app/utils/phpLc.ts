@@ -16,6 +16,33 @@ import {
   type WebLocale,
 } from '../../../../layers/base/app/utils/locale'
 import { isAutoKey, runPackedTranslate } from '../../../../layers/base/app/utils/packedText'
+import zhLocaleMessages from '../../i18n/locales/zh.json'
+
+function localeLeaf(v: unknown): string | undefined {
+  if (typeof v === 'string') return v
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined
+  const o = v as { s?: unknown; b?: { s?: unknown }; t?: unknown }
+  if (o.b && typeof o.b === 'object' && typeof o.b.s === 'string') return o.b.s
+  if (typeof o.s === 'string' && typeof o.t === 'number') return o.s
+  return undefined
+}
+
+/** Packed prefix table. Lazy i18n omits `messages.zh` on English; json import is vue-i18n AST. */
+function flattenZhPack(mod: unknown): Record<string, unknown> {
+  let root = (mod && typeof mod === 'object' ? mod : {}) as Record<string, unknown>
+  const inner = root.default
+  if (inner && typeof inner === 'object' && !Array.isArray(inner) && localeLeaf(inner) == null) {
+    root = inner as Record<string, unknown>
+  }
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(root)) {
+    const s = localeLeaf(v)
+    if (s) out[k] = s
+  }
+  return out
+}
+
+const ZH_PACK = flattenZhPack(zhLocaleMessages)
 
 export type AdminLocale = WebLocale
 
@@ -50,6 +77,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
   zh: {
     admin_yunying_00201: '短信',
     admin_vue_00137: '确定移除 {0}？',
+    admin_currency_yuan: '{0}',
     admin_level1_category_value: '一级分类：{0}',
     admin_tool_00689: 'Google登录配置',
     admin_tool_00690: 'Facebook登录配置',
@@ -114,10 +142,24 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00743: '更新说明',
     admin_tool_00744: '平台',
     admin_tool_00745: '请填写平台、版本号和下载地址',
+    admin_tool_00746: '找人才',
+    admin_tool_00747: '企业库',
+    admin_tool_00748: '积分商城',
+    admin_tool_00749: '找企业',
+    admin_tool_00750: '找工作',
+    admin_tool_00751: '法律声明',
+    admin_tool_00752: '触屏版',
+    admin_tool_00753: '求职包月',
+    admin_tool_00754: 'HR工具箱',
+    admin_tool_00755: '普工专区',
+    admin_tool_00756: '职场问答',
+    admin_tool_00757: '兼职职位',
+    admin_tool_00758: '超级管理员',
   },
   en: {
     admin_yunying_00201: 'SMS',
     admin_vue_00137: 'Remove {0}?',
+    admin_currency_yuan: '{0}',
     admin_level1_category_value: 'Level 1 Category: {0}',
     admin_tool_00689: 'Google Login',
     admin_tool_00690: 'Facebook Login',
@@ -182,6 +224,19 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00743: 'Release notes',
     admin_tool_00744: 'Platform',
     admin_tool_00745: 'Platform, version and download URL are required',
+    admin_tool_00746: 'Find Talent',
+    admin_tool_00747: 'Companies',
+    admin_tool_00748: 'Points Mall',
+    admin_tool_00749: 'Find Companies',
+    admin_tool_00750: 'Find Jobs',
+    admin_tool_00751: 'Legal Notice',
+    admin_tool_00752: 'Mobile Version',
+    admin_tool_00753: 'Seeker monthly',
+    admin_tool_00754: 'HR Toolbox',
+    admin_tool_00755: 'Blue-collar zone',
+    admin_tool_00756: 'Workplace Q&A',
+    admin_tool_00757: 'Part-time jobs',
+    admin_tool_00758: 'Super Admin',
   },
 }
 
@@ -241,6 +296,19 @@ const NAME_ALIAS: Record<string, string> = {
   App配置: 'admin_tool_00740',
   计划任务: 'admin_system_00273',
   国家: 'common_07065',
+  找人才: 'admin_tool_00746',
+  企业库: 'admin_tool_00747',
+  积分商城: 'admin_tool_00748',
+  找企业: 'admin_tool_00749',
+  找工作: 'admin_tool_00750',
+  法律声明: 'admin_tool_00751',
+  触屏版: 'admin_tool_00752',
+  求职包月: 'admin_tool_00753',
+  HR工具箱: 'admin_tool_00754',
+  普工专区: 'admin_tool_00755',
+  职场问答: 'admin_tool_00756',
+  兼职职位: 'admin_tool_00757',
+  超级管理员: 'admin_tool_00758',
 }
 
 let mergedFixes = false
@@ -255,7 +323,7 @@ export function translatePackedText(text: unknown): string {
     locale: activeLocale(i18n),
     lc,
     extraZh: LC_FIRST_WINS.zh,
-    zhRoot: i18n?.messages?.value?.zh as Record<string, unknown> | undefined,
+    zhRoot: ZH_PACK,
   })
 }
 

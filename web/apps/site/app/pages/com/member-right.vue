@@ -32,31 +32,14 @@ type Quote = {
 
 const api = useApi()
 const { t } = useI18n()
-const route = useRoute()
 const { settings } = useSiteChrome()
 
 const { data: current, error, refresh: refreshCurrent } = await useAsyncData('com-vip-current', () =>
   api.post<Current>('/v1/mcenter/vip/current', {}),
 )
 
-const vipType = computed(() => Number(current.value?.com_vip_type ?? 0))
-const showPackage = computed(() => vipType.value !== 1)
-const showTime = computed(() => vipType.value !== 2)
-const showAdded = computed(
-  () => Number(current.value?.rating_type) !== 2 && String(settings.value.com_integral_online || '') !== '4',
-)
-const tab = computed<'package' | 'time'>(() => {
-  const q = String(route.query.kind || '')
-  if (q === 'time' && showTime.value) return 'time'
-  if (q === 'package' && showPackage.value) return 'package'
-  return showPackage.value ? 'package' : 'time'
-})
-const isTime = computed(() => tab.value === 'time')
-
-const { data: packs } = await useAsyncData(
-  () => `com-vip-packages-${tab.value}`,
-  () => api.post<Pack[]>('/v1/mcenter/vip/packages', { kind: tab.value }).catch(() => [] as Pack[]),
-  { watch: [tab] },
+const { data: packs } = await useAsyncData('com-vip-packages-time', () =>
+  api.post<Pack[]>('/v1/mcenter/vip/packages', { kind: 'time' }).catch(() => [] as Pack[]),
 )
 
 const packList = computed<Pack[]>(() => (Array.isArray(packs.value) ? packs.value : []))
@@ -84,10 +67,6 @@ function payChannel() {
   if (channel.value !== 'wxpay') return channel.value
   if (import.meta.client && /Android|iPhone|iPad|Mobile|MicroMessenger/i.test(navigator.userAgent)) return 'wxh5'
   return 'wxpay'
-}
-
-async function setTab(kind: 'package' | 'time') {
-  await navigateTo({ path: '/com/member-right', query: { kind } })
 }
 
 async function buy(p: Pack) {
@@ -133,19 +112,7 @@ useSeoMeta({ title: t('wap_com_00097') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <MemberComScreen
-        :tabs="[
-          ...(showPackage
-            ? [{ value: 'package', label: $t('wap_com_00380'), on: tab === 'package', select: () => setTab('package') }]
-            : []),
-          ...(showTime
-            ? [{ value: 'time', label: $t('wap_com_00384'), on: tab === 'time', select: () => setTab('time') }]
-            : []),
-          ...(showAdded
-            ? [{ value: 'added', label: $t('wap_com_00393'), on: false, select: () => navigateTo('/com/added') }]
-            : []),
-        ]"
-      />
+      <MemberComScreen :tabs="[{ value: 'time', label: $t('ui.monthly_vip'), on: true, select: () => {} }]" />
       <div class="com_new_tip site-pc">
         <span class="com_new_tip_h">{{ $t('member_com_00040') }}</span>
         {{ current?.rating_name || current?.package_code || $t('ui.no_data') }}
@@ -174,26 +141,8 @@ useSeoMeta({ title: t('wap_com_00097') })
         </div>
       </div>
       <div class="vip_box site-pc">
-        <div class="vip_box_db">{{ $t('member_com_00610') }}</div>
+        <div class="vip_box_db">{{ $t('ui.monthly_vip') }}</div>
         <p v-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
-        <ul v-else-if="!isTime">
-          <li v-for="p in packList" :key="p.id" class="vip_box_list">
-            <div class="vip_box_list_c">
-              <div class="vip_box_left">
-                <div class="vip_box_left_name">
-                  {{ p.name }}<i class="vip_box_left_name_line" />
-                </div>
-                <div class="vip_box_left_money_b">
-                  <span>¥{{ p.price_yuan }} / {{ p.duration_days }}{{ $t('common_02067') }}</span>
-                </div>
-              </div>
-              <ul v-if="descLines(p.desc).length">
-                <li v-for="(line, i) in descLines(p.desc)" :key="i">{{ line }}</li>
-              </ul>
-              <input type="button" class="btn_01" :value="$t('common.submit')" @click="buy(p)" />
-            </div>
-          </li>
-        </ul>
         <div v-else class="vip_timebox">
           <ul>
             <li v-for="p in packList" :key="'t-' + p.id" class="vip_time_list">
@@ -202,7 +151,7 @@ useSeoMeta({ title: t('wap_com_00097') })
                   {{ p.name }}<i class="vip_box_left_name_line" />
                 </div>
                 <div class="vip_box_left_money_n">
-                  <span>¥{{ p.price_yuan }} / {{ p.duration_days }}{{ $t('common_02067') }}</span>
+                  <span>{{ p.price_yuan }} / {{ p.duration_days }}{{ $t('common_02067') }}</span>
                 </div>
               </div>
               <ul v-if="descLines(p.desc).length">
@@ -215,13 +164,6 @@ useSeoMeta({ title: t('wap_com_00097') })
       </div>
       <div class="dredge_body site-h5">
         <div class="dredge_body_tab">
-          <div v-if="showPackage && showTime" class="dredge_body_tab_tetle">
-            <ul>
-              <li :class="{ pitch_on: tab === 'package' }" @click="setTab('package')">{{ $t('wap_com_00380') }}</li>
-              <li :class="{ pitch_on: tab === 'time' }" @click="setTab('time')">{{ $t('wap_com_00384') }}</li>
-              <li v-if="showAdded" @click="navigateTo('/com/added')">{{ $t('wap_com_00393') }}</li>
-            </ul>
-          </div>
           <div class="dredge_body_tab_body">
             <p v-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
             <ul v-else>
@@ -230,7 +172,6 @@ useSeoMeta({ title: t('wap_com_00097') })
                   <div class="dredge_body_tab_body_left">
                     <div class="tab_body_left_number">
                       <div class="vip_box_left_money_price">
-                        <i>¥</i>
                         <i class="tab_body_left_number_monye">{{ p.price_yuan }}</i>
                       </div>
                     </div>

@@ -102,6 +102,7 @@ pub struct RewardItem {
     pub remaining: i64,
     /// stock <= sold means sold out
     pub sold_out: bool,
+    pub kind: String,
 }
 
 impl RewardItem {
@@ -127,6 +128,7 @@ impl RewardItem {
             created_at: r.created_at,
             sold_out: remaining <= 0,
             remaining,
+            kind: r.kind,
         }
     }
 }
@@ -154,6 +156,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
             created_at: r.created_at,
             sold_out: remaining <= 0,
             remaining,
+            kind: r.kind,
         }
     }
 }
@@ -209,6 +212,7 @@ pub struct RewardDetail {
     pub created_at_n: String,
     pub remaining: i64,
     pub sold_out: bool,
+    pub kind: String,
 }
 
 impl RewardDetail {
@@ -233,6 +237,7 @@ impl RewardDetail {
             created_at: r.created_at,
             sold_out: remaining <= 0,
             remaining,
+            kind: r.kind,
         }
     }
 }
@@ -259,6 +264,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardDetail {
             created_at: r.created_at,
             sold_out: remaining <= 0,
             remaining,
+            kind: r.kind,
         }
     }
 }

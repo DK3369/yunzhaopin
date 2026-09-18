@@ -17,10 +17,10 @@
                             v-model="scope.row.name" @blur="alterData(scope)"></el-input>
                         <span v-else>
                             <template v-if="scope.$index == 0">
-                                {{ scope.row.name }}
+                                {{ catLabel(scope.row) }}
                             </template>
                             <template v-else>
-                                &emsp;&emsp;┗{{ scope.row.name }}<img @click="editData(scope)" class="editIcon" src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                                &emsp;&emsp;┗{{ catLabel(scope.row) }}<img @click="editData(scope)" class="editIcon" src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
                             </template>
                         </span>
                     </template>

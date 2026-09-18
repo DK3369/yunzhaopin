@@ -1508,21 +1508,114 @@ html.force-pc .site-h5 {
   .com_release_box .verification_form_btn {
     margin-top: 16px;
   }
+  .member-page .member-resume-card,
+  .member-page .member-resume-section {
+    float: none;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 8px 24px 16px;
+    margin: 0 0 16px;
+  }
   .yun_resume_joblist {
     position: relative;
-    background: #fff;
-    margin-bottom: 12px;
-    padding: 0 20px 16px;
+    float: none;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+  }
+  .yun_resume_joblist .yun_resume_h1 {
+    float: none;
+    width: auto;
   }
   .yun_resume_joblist .yun_resume_handle {
     position: absolute;
-    right: 20px;
+    right: 0;
+    top: 10px;
+    display: block;
+  }
+  .member-page .user_resume_list {
+    float: none;
+    width: auto;
+    box-sizing: border-box;
+  }
+  .member-resume-section .user_resume_box {
+    float: none;
+    width: auto;
+    padding: 8px 0 8px 30px;
+    border-top: 1px solid #f4f4f4;
+  }
+  .member-resume-section .muted {
+    color: #999;
+    font-size: 13px;
+    margin: 0;
+    padding: 4px 0 8px 30px;
+  }
+  .member-resume-section .yun_resume_exp_list {
+    position: relative;
+    float: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: auto;
+    margin: 0;
+    padding: 12px 88px 12px 0;
+    line-height: 1.5;
+    border-top: 1px solid #f4f4f4;
+  }
+  .member-resume-section .yun_resume_exp_timt {
+    position: static;
+    flex: 0 0 132px;
+    width: 132px;
+    color: #888;
+    font-size: 13px;
+  }
+  .member-resume-section .yun_resume_exp_r {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-left: 0;
+  }
+  .member-resume-section .compile_delete {
+    position: absolute;
+    right: 0;
     top: 12px;
+    display: flex;
+    gap: 12px;
+    color: #1787fb;
+  }
+  .member-resume-section .compile_delete a {
+    color: #1787fb;
+    text-decoration: none;
+  }
+  .yun_resume_job_intention_list {
+    display: flex;
+    flex-wrap: wrap;
+    float: none;
+    width: auto;
+    gap: 4px 32px;
+    padding: 4px 0 8px 30px;
+  }
+  .yun_resume_job_intention_list li {
+    float: none;
+    width: auto;
+    flex: 1 1 280px;
+    line-height: 28px;
+  }
+  .yun_resume_job_intention_list .yun_resume_job_intention_list_end {
+    flex: 1 1 100%;
   }
   .member-resume-section-form {
-    background: #fff;
-    padding: 8px 20px 20px;
-    margin-bottom: 12px;
+    background: transparent;
+    padding: 12px 0 4px;
+    margin: 0;
+    border-top: 1px solid #f2f2f2;
   }
   .newcom_user_pic img {
     width: 58px;
@@ -1670,6 +1763,211 @@ html.force-pc .site-h5 {
     height: auto;
     min-height: 88px;
   }
+  .member-page .yun_resume_popup_box,
+  .member-page .member-resume-card {
+    float: none;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 20px 24px 16px;
+    margin: 0 0 16px;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_list,
+  .member-page .member-resume-fields form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px 28px;
+    float: none;
+    width: auto;
+    margin: 0;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_cell,
+  .member-page .member-resume-fields .member-field {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 12px;
+    float: none;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    position: static;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_cell--full,
+  .member-page .member-resume-fields .member-field--area,
+  .member-page .member-resume-fields .verification_form_btn,
+  .member-page .member-resume-fields input[type='file'] {
+    grid-column: 1 / -1;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_cell--area,
+  .member-page .member-resume-fields .member-field--area {
+    align-items: flex-start;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_name,
+  .member-page .member-resume-fields .yun_resume_popup_infoname,
+  .member-page .member-resume-fields .verification_formname {
+    float: none;
+    flex: 0 0 196px;
+    width: 196px;
+    max-width: 196px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    line-height: 1.35;
+    font-size: 13px;
+    color: #555;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_cell--area .yun_resume_popup_name,
+  .member-page .member-resume-fields .member-field--area .verification_formname {
+    padding-top: 10px;
+  }
+  .member-page .member-resume-fields .yun_create_text,
+  .member-page .member-resume-fields .verification_form_code,
+  .member-page .member-resume-fields .yun_resume_popup_area {
+    float: none;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_infotext,
+  .member-page .member-resume-fields select.yun_resume_popup_infotext,
+  .member-page .member-resume-fields .yun_create_text input,
+  .member-page .member-resume-fields .yun_create_text select,
+  .member-page .member-resume-fields .verification_form_code input,
+  .member-page .member-resume-fields .verification_form_code select {
+    float: none;
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: 36px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 10px;
+    text-indent: 0;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    background: #fff;
+    font-size: 14px;
+    line-height: 34px;
+    color: #333;
+  }
+  .member-page .member-resume-fields select.yun_resume_popup_infotext,
+  .member-page .member-resume-fields .yun_create_text select,
+  .member-page .member-resume-fields .verification_form_code select {
+    padding-right: 28px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_infotext:focus,
+  .member-page .member-resume-fields select.yun_resume_popup_infotext:focus,
+  .member-page .member-resume-fields .infor_textarea:focus,
+  .member-page .member-resume-fields .yun_create_text input:focus,
+  .member-page .member-resume-fields .yun_create_text select:focus,
+  .member-page .member-resume-fields .yun_create_text textarea:focus,
+  .member-page .member-resume-fields .verification_form_code input:focus,
+  .member-page .member-resume-fields .verification_form_code select:focus,
+  .member-page .member-resume-fields .verification_form_code textarea:focus {
+    border-color: #1787fb;
+    box-shadow: 0 0 0 2px rgba(23, 135, 251, 0.15);
+    outline: none;
+  }
+  .member-page .member-resume-fields .infor_textarea,
+  .member-page .member-resume-fields .yun_create_text textarea,
+  .member-page .member-resume-fields .verification_form_code textarea {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-height: 96px;
+    height: auto;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .member-page .yun_resume_popup_box .look_other_h {
+    position: static;
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #1787fb;
+  }
+  .member-page .yun_resume_popup_box .look_other_tit {
+    position: relative;
+    width: auto;
+    padding-bottom: 8px;
+  }
+  .member-page .yun_resume_popup_box .look_other_tit .look_other_h {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 0;
+  }
+  .member-page .yun_resume_popup_box .eva_ex_list_bx {
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
+  .member-page .yun_resume_popup_box .eva_ex_list_ct,
+  .member-page .yun_resume_popup_box .ct_cs {
+    width: auto;
+    max-width: 100%;
+  }
+  .member-page .member-resume-fields .yun_resume_popup_infobot {
+    float: none;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 0 4px;
+    text-align: center;
+    grid-column: 1 / -1;
+  }
+  .member-page .member-resume-fields .expect_test_bth,
+  .member-page .member-resume-fields .expect_test_bth_qx,
+  .member-page .member-resume-fields .verification_form_btn {
+    width: auto;
+    min-width: 88px;
+    height: 34px;
+    padding: 0 18px;
+    box-sizing: border-box;
+    justify-self: center;
+    background: #1787fb;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .member-page .member-resume-fields .expect_test_bth_qx {
+    background: #fff;
+    color: #999;
+    border: 1px solid #eee;
+    line-height: 32px;
+    text-align: center;
+    text-decoration: none;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_msg {
+    color: #f60;
+    font-size: 13px;
+  }
 }
 
 .job_bottomcont {
@@ -1694,10 +1992,59 @@ html.force-pc .site-h5 {
   white-space: normal;
   word-break: break-word;
 }
+.site-pc .login_cont .login_xy {
+  clear: both;
+  float: left;
+  width: 100%;
+  padding: 8px 0 4px;
+  color: #999;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.site-pc .login_cont .login_xy label {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  cursor: pointer;
+}
+.site-pc .login_cont .login_box_fw {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  float: left;
+  width: 100%;
+  clear: both;
+}
+.site-pc .login_cont .login_remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  cursor: pointer;
+  color: #666;
+}
 .site-h5 .login_cont .login_welcome,
 .site-h5 .login_cont .login_xy,
 .site-h5 .login_cont .login_otherfs {
   word-break: break-word;
+}
+.site-h5 .login_cont .login_otherfs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.24rem 0.4rem;
+}
+.site-h5 .login_cont .login_remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.16rem;
+  cursor: pointer;
+  color: #999;
+}
+.site-h5 .login_cont .login_wjmm {
+  position: static;
+  margin-left: auto;
 }
 
 /* 职位详情吸顶条：PHP comapply.css 用 padding-top 假装居中，英文 CTA 一换行标题就被基线拉到底 */

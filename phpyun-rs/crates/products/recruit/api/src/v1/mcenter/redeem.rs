@@ -1,7 +1,8 @@
 //! User redeem orders: submit redemption / my list / cancel (pending only).
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::dto::{IdBody, StatusFilterBody};
+use phpyun_core::date_parse::de_loose_u64;
+use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_dt, redeem_order_status_name as order_status_name};
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
@@ -14,6 +15,7 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/redeem/rewards/redeem", post(redeem))
+        .route("/redeem/gifts/lookup", post(lookup_gift))
         .route("/redeem/orders", post(list_mine))
         .route("/redeem/orders/cancel", post(cancel_mine))
 }
@@ -24,9 +26,11 @@ pub struct RedeemSubmit {
     pub id: u64,
     #[validate(length(min = 6, max = 64))]
     pub password: String,
-    #[validate(length(min = 1, max = 64))]
+    #[serde(default)]
+    #[validate(length(max = 64))]
     pub linkman: String,
-    #[validate(length(min = 6, max = 32))]
+    #[serde(default)]
+    #[validate(length(max = 32))]
     pub linktel: String,
     #[validate(length(max = 500))]
     #[serde(default)]
@@ -40,8 +44,16 @@ pub struct RedeemSubmit {
     #[serde(default)]
     #[validate(range(min = 0, max = 99_999))]
     pub three_cityid: i32,
+    #[serde(default = "default_num")]
     #[validate(range(min = 1, max = 999))]
     pub num: u32,
+    #[serde(default, deserialize_with = "de_loose_u64")]
+    #[validate(range(max = 99_999_999))]
+    pub to_uid: u64,
+}
+
+fn default_num() -> u32 {
+    1
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -76,6 +88,7 @@ pub async fn redeem(
             cityid: f.cityid,
             three_cityid: f.three_cityid,
             num: f.num,
+            to_uid: f.to_uid,
         },
     )
     .await?;
@@ -100,6 +113,7 @@ pub struct OrderItem {
     pub status_n: String,
     pub created_at: i64,
     pub created_at_n: String,
+    pub to_uid: u64,
 }
 
 impl From<phpyun_models::redeem::entity::RedeemOrder> for OrderItem {
@@ -119,8 +133,58 @@ impl From<phpyun_models::redeem::entity::RedeemOrder> for OrderItem {
             status: o.status,
             created_at_n: fmt_dt(o.created_at),
             created_at: o.created_at,
+            to_uid: o.to_uid,
         }
     }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ListOrdersForm {
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    #[validate(range(min = 0, max = 99))]
+    pub status: Option<i32>,
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub tab: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct GiftLookupForm {
+    #[serde(default, deserialize_with = "de_loose_u64")]
+    #[validate(range(max = 99_999_999))]
+    pub uid: u64,
+    #[serde(default)]
+    #[validate(length(max = 32))]
+    pub username: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct GiftPeerView {
+    pub uid: u64,
+    pub username_mask: String,
+    pub usertype: i32,
+}
+
+/// Look up a site member before sending a gift. Masks the username.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/redeem/gifts/lookup",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = GiftLookupForm,
+    responses((status = 200, description = "ok", body = GiftPeerView))
+)]
+pub async fn lookup_gift(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<GiftLookupForm>,
+) -> AppResult<ApiResponse<GiftPeerView>> {
+    let p = redeem_service::lookup_gift_peer(&state, &user, f.uid, &f.username).await?;
+    Ok(ApiResponse::data(GiftPeerView {
+        uid: p.uid,
+        username_mask: p.username_mask,
+        usertype: p.usertype,
+    }))
 }
 
 /// My redeem orders
@@ -129,16 +193,16 @@ impl From<phpyun_models::redeem::entity::RedeemOrder> for OrderItem {
     path = "/v1/mcenter/redeem/orders",
     tag = "mcenter",
     security(("bearer" = [])),
-    request_body = StatusFilterBody,
+    request_body = ListOrdersForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<StatusFilterBody>,
+    ValidatedJson(q): ValidatedJson<ListOrdersForm>,
 ) -> AppResult<ApiResponse<Paged<OrderItem>>> {
-    let r = redeem_service::list_my_orders(&state, &user, q.status, page).await?;
+    let r = redeem_service::list_my_orders(&state, &user, q.status, q.tab.as_deref(), page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
         r.list, r.total, page,
     )))

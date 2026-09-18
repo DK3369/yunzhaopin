@@ -3,8 +3,7 @@
 //! Aligned with PHPYun `tpl.model::{payResumetpl, setResumetpl}` + `member/user/resumetpl`.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
-use phpyun_models::integral::repo as integral_repo;
+use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::resume_tpl::entity::ResumeTpl;
 use phpyun_models::resume_tpl::repo as tpl_repo;
 
@@ -25,6 +24,10 @@ pub async fn buy(
     client_ip: &str,
 ) -> AppResult<BuyResult> {
     user.require_jobseeker()?;
+    let caps = crate::seeker_vip_service::seeker_caps(state, user.uid).await?;
+    if !caps.tpl_all {
+        return Err(ApiError::business("need_vip"));
+    }
     let tpl = tpl_repo::find_by_id(state.db.reader(), tpl_id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("tpl_not_found"))?;
@@ -48,28 +51,20 @@ pub async fn buy(
         });
     }
 
-    if tpl.price > 0 {
-        let price = phpyun_core::numeric::checked_db(tpl.price, "resume_template.price")?;
-        let n =
-            integral_repo::try_deduct(state.db.pool(), user.uid, price, clock::now_ts()).await?;
-        if n == 0 {
-            return Err(ApiError::param_invalid("integral_insufficient"));
-        }
-    }
     tpl_repo::append_purchased_id(state.db.pool(), user.uid, tpl_id).await?;
 
     let _ = audit::emit(
         state,
         AuditEvent::new("resume.tpl_buy", Actor::uid(user.uid).with_ip(client_ip))
             .target(format!("tpl:{tpl_id}"))
-            .meta(&serde_json::json!({ "price": tpl.price })),
+            .meta(&serde_json::json!({ "price": 0 })),
     )
     .await;
 
     Ok(BuyResult {
         tpl_id,
         already_owned: false,
-        deducted_price: tpl.price,
+        deducted_price: 0,
     })
 }
 
@@ -81,20 +76,22 @@ pub async fn apply(
     client_ip: &str,
 ) -> AppResult<u64> {
     user.require_jobseeker()?;
+    let caps = crate::seeker_vip_service::seeker_caps(state, user.uid).await?;
     let owned = tpl_repo::fetch_purchased_ids(state.db.reader(), user.uid).await?;
-    let ok = owned
-        .as_deref()
-        .unwrap_or("")
-        .split(',')
-        .map(str::trim)
-        .any(|s| s == tpl_id.to_string());
+    let ok = caps.tpl_all
+        || owned
+            .as_deref()
+            .unwrap_or("")
+            .split(',')
+            .map(str::trim)
+            .any(|s| s == tpl_id.to_string());
     if !ok {
         // Allow one more case: template `price=0` means it is free
         let tpl = tpl_repo::find_by_id(state.db.reader(), tpl_id)
             .await?
             .ok_or_else(|| ApiError::param_invalid("tpl_not_found"))?;
         if tpl.price > 0 {
-            return Err(ApiError::param_invalid("tpl_not_owned"));
+            return Err(ApiError::business("need_vip"));
         }
     }
     let n = tpl_repo::set_applied_tpl(state.db.pool(), user.uid, tpl_id).await?;

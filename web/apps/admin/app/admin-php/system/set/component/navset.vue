@@ -7,7 +7,7 @@
                 </div>
                 <div class="drawerModInpt">
                     <el-select v-model="ruleForm.nid" :placeholder="lc('wap_user_00100')">
-                        <el-option v-for="item in type" :key="item.id" :label="item.typename" :value="item.id">
+                        <el-option v-for="item in type" :key="item.id" :label="packedLog(item.typename)" :value="item.id">
                         </el-option>
                     </el-select>
                 </div>

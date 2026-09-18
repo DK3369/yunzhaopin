@@ -14,6 +14,16 @@ App 走 **HTTP 轮询**，没有 websocket。
 
 未匹配路由时信封是 HTTP 404 `key=not_found`「Record not found」，**不是**「对方 uid 不存在」。对方不存在是 422 `chat_peer_missing`。
 
+## 包月门槛
+
+- **发起**（该 `peer` 尚无任何消息）：自己必须是有效包月，否则 422 `chat_need_vip`。招聘看 `company_statis.vip_etime > now`；求职看 `phpyun_rs_user_vip.expires_at > now`。
+- **回复**已有会话：不要求会员。
+- 拉会话 / 已读 / 未读：登录即可。
+- 不要双方都必须会员才能开口。不要 `company_statis.chat_num` 按条扣。
+- `vip/current` 的 `can_chat` 表示能不能**发起**。前端未开通去 `/user/member-right` 或 `/com/member-right`。
+
+仍只走 `phpyun_rs_chat`，不接 PHP `chat_log`，不和职位咨询 `phpyun_msg` 混。
+
 ## 存哪
 
 表 **`phpyun_rs_chat`**（`migrations/sqlx/20260428000001_rust_introduced_tables.sql`）。不要写 PHP `chat_log` / `chat_member`，也不要和职位咨询 `phpyun_msg` 混。

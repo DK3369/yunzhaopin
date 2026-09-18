@@ -80,6 +80,11 @@ pub async fn send(
         return Err(ApiError::business("chat_blocked"));
     }
 
+    let exists = chat_repo::conv_exists(db, user.uid, peer).await?;
+    if !exists && !crate::seeker_vip_service::can_initiate_chat(state, user).await? {
+        return Err(ApiError::business("chat_need_vip"));
+    }
+
     match chat_repo::insert(state.db.pool(), user.uid, peer, body, clock::now_ts()).await {
         Ok(id) => Ok(id),
         Err(e) if db::is_missing_table(&e) => Err(ApiError::business("chat_unavailable")),

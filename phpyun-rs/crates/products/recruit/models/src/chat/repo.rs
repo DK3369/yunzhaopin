@@ -43,6 +43,21 @@ pub async fn insert(
     Ok(res.last_insert_id())
 }
 
+pub async fn conv_exists(pool: &MySqlPool, a: u64, b: u64) -> Result<bool, sqlx::Error> {
+    let key = conv_key(a, b);
+    let r = sqlx::query_as::<_, (i64,)>(
+        "SELECT 1 FROM phpyun_rs_chat WHERE conv_key = ? LIMIT 1",
+    )
+    .bind(&key)
+    .fetch_optional(pool)
+    .await;
+    match r {
+        Ok(v) => Ok(v.is_some()),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(false),
+        Err(e) => Err(e),
+    }
+}
+
 /// Newest-first; caller reverses for chronological UI. `before_id=0` means no cursor.
 pub async fn list_with(
     pool: &MySqlPool,

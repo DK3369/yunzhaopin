@@ -721,8 +721,6 @@ useSeoMeta({ title: t('wap_00322') })
           <p v-if="buyHint" class="muted">
             {{ buyHint }}
             <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
-            ·
-            <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
           </p>
         </div>
       </div>

@@ -172,6 +172,7 @@ pub mod resume_tpl_service;
 pub mod saved_search_service;
 pub mod search_history_service;
 pub mod search_service;
+pub mod seeker_vip_service;
 pub mod sign_service;
 pub mod single_order_service;
 pub mod site_gate_service;

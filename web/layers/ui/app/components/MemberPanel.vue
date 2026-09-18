@@ -91,6 +91,8 @@ const H1_WITH_LIST = [
   '/user/binding',
   '/user/pay',
   '/user/finance',
+  '/user/member-right',
+  '/user/orders',
   '/user/searches',
   '/user/outbox',
   '/user/account',

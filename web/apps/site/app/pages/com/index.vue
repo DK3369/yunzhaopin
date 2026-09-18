@@ -117,10 +117,7 @@ const kfqq = computed(() => String(settings.value.sy_qq || ''))
 const guwenPic = computed(() => String(settings.value.sy_guwen || ''))
 const priceName = computed(() => String(settings.value.integral_pricename || t('wap_user_00008')))
 const posterOn = computed(() => String(settings.value.sy_haibao_isopen || '') === '1')
-const buyAddedOn = computed(() => {
-  if (Number(vip.value?.rating_type) !== 1 || !vipLive.value) return false
-  return String(settings.value.com_integral_online || '') !== '4'
-})
+const buyAddedOn = computed(() => false)
 const msg = ref('')
 const nowTs = Math.floor(Date.now() / 1000)
 const vipExpire = computed(() => Number(vip.value?.expires_at || 0))

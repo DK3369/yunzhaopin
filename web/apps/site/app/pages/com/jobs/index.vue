@@ -624,10 +624,6 @@ const emptySub = computed(() => (emptyAll.value ? t('member_com_00215') : ''))
     <p v-if="buyHint" class="muted">
       {{ buyHint }}
       <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
-      ·
-      <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
-      ·
-      <NuxtLink to="/com/pay">{{ $t('common_01946') }}</NuxtLink>
     </p>
     <p v-if="msg">{{ msg }}</p>
     <div v-if="qrOpen" class="yun_wxbd_box" style="position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center;" @click.self="qrOpen = false">

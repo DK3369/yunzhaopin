@@ -17,7 +17,7 @@
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
                             <el-select v-model="ruleForm.nid" :placeholder="lc('wap_user_00100')">
-                                <el-option v-for="titem in type" :key="titem.id" :label="titem.typename" :value="titem.id">
+                                <el-option v-for="titem in type" :key="titem.id" :label="packedLog(titem.typename)" :value="titem.id">
                                 </el-option>
                             </el-select>
 

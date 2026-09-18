@@ -251,7 +251,7 @@ useSeoMeta({ title: t('wap_user_00271') })
     </MemberHrResumeRows>
     <p v-if="buyHint" class="muted">
       {{ buyHint }}
-      <NuxtLink to="/com/added">{{ $t('wap_com_00048') }}</NuxtLink>
+      <NuxtLink to="/com/member-right">{{ $t('wap_com_00097') }}</NuxtLink>
     </p>
     <p v-if="msg">{{ msg }}</p>
   </MemberPanel>

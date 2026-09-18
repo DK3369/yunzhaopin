@@ -107,7 +107,9 @@ pub async fn get_mine(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpdateResumeForm {
-    #[validate(length(min = 2, max = 25))]
+    /// Optional. Blank is omitted so create/save without a name is not 400.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_blank_opt_string")]
+    #[validate(length(max = 25))]
     pub name: Option<String>,
     /// Loose deserializer accepts both `1` and `"1"` — PHPYun frontend
     /// serialises every numeric form field as a string. Same pattern for
@@ -125,10 +127,9 @@ pub struct UpdateResumeForm {
     #[validate(range(min = 0, max = 2))]
     pub sex: Option<i32>,
     /// PHPYun stores `birthday` as a `YYYY-MM` string (year-month), e.g.
-    /// `"1995-06"` — the legacy length-min=8 validator rejected that and
-    /// fired silent 400s on the H5 wizard. Min 7 covers `YYYY-MM`,
-    /// max 10 keeps `YYYY-MM-DD` working.
-    #[validate(length(min = 7, max = 10))]
+    /// `"1995-06"`. Blank is omitted; filled values keep `YYYY-MM` / `YYYY-MM-DD`.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_blank_opt_string")]
+    #[validate(length(max = 10))]
     pub birthday: Option<String>,
     #[serde(
         default,
@@ -142,8 +143,11 @@ pub struct UpdateResumeForm {
     )]
     #[validate(range(min = 0))]
     pub education: Option<i32>,
-    #[validate(length(min = 5, max = 20))]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_blank_opt_string")]
+    #[validate(length(max = 20))]
     pub telphone: Option<String>,
+    /// Optional. Create-resume posts `email: ""`; empty must not 400.
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_blank_opt_string")]
     #[validate(email)]
     pub email: Option<String>,
     #[validate(length(max = 255))]
@@ -387,4 +391,35 @@ pub async fn delete_expect(
 ) -> AppResult<ApiResponse<json::Value>> {
     resume_service::delete_expect(&state, &user, b.id, &ip).await?;
     Ok(ApiResponse::data(json::json!({ "ok": true })))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn blank_contact_fields_are_optional() {
+        let f: UpdateResumeForm =
+            serde_json::from_str(r#"{"name":"","email":"","telphone":"","birthday":""}"#).unwrap();
+        assert!(f.name.is_none());
+        assert!(f.email.is_none());
+        assert!(f.telphone.is_none());
+        assert!(f.birthday.is_none());
+        f.validate()
+            .expect("empty name/email/phone/birthday must be omitted");
+    }
+
+    #[test]
+    fn invalid_email_still_rejected() {
+        let f: UpdateResumeForm = serde_json::from_str(r#"{"email":"not-an-email"}"#).unwrap();
+        assert!(f.validate().is_err());
+    }
+
+    #[test]
+    fn filled_email_is_trimmed() {
+        let f: UpdateResumeForm =
+            serde_json::from_str(r#"{"email":"  user@example.com "}"#).unwrap();
+        assert_eq!(f.email.as_deref(), Some("user@example.com"));
+        f.validate().unwrap();
+    }
 }

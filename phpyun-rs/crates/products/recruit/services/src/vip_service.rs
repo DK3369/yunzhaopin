@@ -9,17 +9,19 @@ use phpyun_models::vip::{
     entity::{PayOrder, UserVip, VipPackage},
     repo as vip_repo,
 };
-use uuid::Uuid;
-
-const SECS_PER_DAY: i64 = 86_400;
 
 pub async fn list_packages(
     state: &AppState,
     user: &AuthenticatedUser,
     kind: Option<&str>,
 ) -> AppResult<Vec<VipPackage>> {
+    if user.usertype == 1 {
+        let _ = kind;
+        return crate::seeker_vip_service::list_buyable(state).await;
+    }
     user.require_employer()?;
-    crate::rating_info_service::list_buyable_packages(state, user.uid, kind).await
+    let _ = kind;
+    Ok(phpyun_models::vip::repo::list_time_packages(state.db.reader()).await?)
 }
 
 /// Create an order -- returns order_no, the client uses it to call the payment gateway.
@@ -30,6 +32,7 @@ pub async fn create_order(
     channel: &str,
     client_ip: &str,
 ) -> AppResult<String> {
+    user.require_employer()?;
     let pkg = vip_repo::find_package_by_code(state.db.reader(), package_code)
         .await?
         .ok_or_else(|| -> ApiError {
@@ -39,9 +42,12 @@ pub async fn create_order(
         return Err(ApiError::param_invalid("package_inactive"));
     }
     // `company_rating.type` is 1=套餐 / 2=时间会员, not member.usertype.
+    if pkg.target_usertype != 2 {
+        return Err(ApiError::param_invalid("kind"));
+    }
 
-    let order_no = format!("ON{}", Uuid::now_v7().simple());
     let now = clock::now_ts();
+    let order_no = vip_repo::dingdan_id(now);
     vip_repo::create_order(
         state.db.pool(),
         &order_no,
@@ -82,6 +88,11 @@ pub async fn create_order_ex(
     channel: &str,
     client_ip: &str,
 ) -> AppResult<CreatedVipOrder> {
+    if user.usertype == 1 {
+        return crate::seeker_vip_service::create_order(state, user, package_code, channel, client_ip)
+            .await;
+    }
+    user.require_employer()?;
     let pkg = vip_repo::find_package_by_code(state.db.reader(), package_code)
         .await?
         .ok_or_else(|| -> ApiError {
@@ -125,14 +136,6 @@ pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> App
     // 2. PHP ratingInfo → company_statis + company + company_job.rating
     let rating_id = i32::try_from(pkg.id).unwrap_or(0);
     crate::rating_info_service::apply_rating(state, order.uid, rating_id, None).await?;
-    let _ = vip_repo::upsert_user_vip(
-        state.db.pool(),
-        order.uid,
-        &order.package_code,
-        i64::from(pkg.duration_days) * SECS_PER_DAY,
-        now,
-    )
-    .await;
 
     // 3. Audit + event bus
     let _ = audit::emit(
@@ -190,13 +193,20 @@ pub async fn submit_bank_pay(
     if input.bank_time <= 0 {
         return Err(ApiError::business("wap_js_00127"));
     }
-    let order = match vip_repo::find_order_by_no_and_type(state.db.reader(), input.order_no, 2)
-        .await?
+    let order = if let Some(o) =
+        vip_repo::find_order_by_no_and_type(state.db.reader(), input.order_no, 2).await?
     {
-        Some(o) => o,
-        None => vip_repo::find_order_by_no(state.db.reader(), input.order_no)
-            .await?
-            .ok_or_else(|| ApiError::business("order_not_found"))?,
+        o
+    } else if let Some(o) = vip_repo::find_order_by_no(state.db.reader(), input.order_no).await? {
+        o
+    } else {
+        vip_repo::find_order_by_no_and_type(
+            state.db.reader(),
+            input.order_no,
+            vip_repo::SEEKER_VIP_ORDER_TYPE,
+        )
+        .await?
+        .ok_or_else(|| ApiError::business("order_not_found"))?
     };
     if order.uid != user.uid {
         return Err(ApiError::business("order_not_owned"));
@@ -288,6 +298,11 @@ pub async fn get_current_vip(
     state: &AppState,
     user: &AuthenticatedUser,
 ) -> AppResult<Option<UserVip>> {
+    if user.usertype == 1 {
+        return Ok(crate::seeker_vip_service::active_for(state, user.uid)
+            .await?
+            .map(|(v, _)| v));
+    }
     use phpyun_models::company_statis::repo as statis_repo;
     let now = clock::now_ts();
     let Some(st) = statis_repo::find_admin(state.db.reader(), user.uid).await? else {

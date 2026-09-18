@@ -89,7 +89,7 @@ useSeoMeta({ title: t('wap_com_00393') })
       <div class="payment_list_r">
         <span v-for="d in g.details || []" :key="d.id" class="payment_list_text">
           <div class="payment_list_text_n">
-            ¥{{ d.service_price }}
+            {{ d.service_price }}
             <em class="payment_list_text_dw">{{ $t('wap_00925') }}</em>
           </div>
           <p v-if="d.job_num" class="muted">{{ $t('wap_com_00106') }} {{ d.job_num }}</p>
@@ -115,7 +115,7 @@ useSeoMeta({ title: t('wap_com_00393') })
         <div class="comshowtip">{{ g.name }}</div>
         <div v-for="d in g.details || []" :key="'h5d-' + d.id" class="issue_post_body_card">
           <div class="Posted_card_top">
-            <div class="Posted_card_name">¥{{ d.service_price }}</div>
+            <div class="Posted_card_name">{{ d.service_price }}</div>
             <div class="Posted_card_pay">{{ $t('wap_00925') }}</div>
           </div>
           <p v-if="d.job_num" class="muted">{{ $t('wap_com_00106') }} {{ d.job_num }}</p>

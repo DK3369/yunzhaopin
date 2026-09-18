@@ -15,7 +15,11 @@
                 :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 48px)" v-loading="loading" :empty-text="emptytext">
                 <el-table-column prop="id" :label="lc('member_com_00345')" width="80">
                 </el-table-column>
-                <el-table-column prop="group_name" :label="lc('admin_system_00236')"> </el-table-column>
+                <el-table-column :label="lc('admin_system_00236')">
+                    <template #default="scope">
+                        {{ packedLog(scope.row.group_name) }}
+                    </template>
+                </el-table-column>
                 <el-table-column prop="group_type_n" :label="lc('admin_system_00233')"> </el-table-column>
                 <el-table-column prop="num" :label="lc('admin_system_00235')"> </el-table-column>
                 <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { errKey } from '~/utils/site'
+
 const api = useApi()
 const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('resume-tpls', () => api.post('/v1/mcenter/resume-tpls', {}))
@@ -19,16 +21,10 @@ async function apply(id: number) {
     msg.value = t('common.success')
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : t('ui.failed')
-  }
-}
-async function buy(id: number) {
-  msg.value = ''
-  try {
-    await api.post('/v1/mcenter/resume-tpls/buy', { id })
-    msg.value = t('common.success')
-    await refresh()
-  } catch (e: unknown) {
+    if (errKey(e) === 'need_vip') {
+      await navigateTo('/user/member-right')
+      return
+    }
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
@@ -52,12 +48,11 @@ useSeoMeta({ title: t('wap_00328') })
           <div class="resume_template_cz">
             <span v-if="row.using" class="resume_template_bth_sy">{{ $t('member_user_00573') }}</span>
             <a v-else href="javascript:;" class="resume_template_bth" @click="apply(row.id)">{{ $t('member_user_00284') }}</a>
-            <a
+            <NuxtLink
               v-if="Number(row.price || row.price_yuan || 0) > 0 && !row.bought"
-              href="javascript:;"
+              to="/user/member-right"
               class="resume_template_ylbth"
-              @click="buy(row.id)"
-            >{{ $t('member_user_00285') }}</a>
+            >{{ $t('ui.need_vip') }}</NuxtLink>
           </div>
         </dd>
       </dl>
@@ -73,12 +68,11 @@ useSeoMeta({ title: t('wap_00328') })
           <div class="Posted_card_bom">
             <span v-if="row.using" class="resume_template_bth_sy">{{ $t('member_user_00573') }}</span>
             <a v-else href="javascript:;" class="resume_template_bth" @click="apply(row.id)">{{ $t('member_user_00284') }}</a>
-            <a
+            <NuxtLink
               v-if="Number(row.price || row.price_yuan || 0) > 0 && !row.bought"
-              href="javascript:;"
+              to="/user/member-right"
               class="resume_template_ylbth"
-              @click="buy(row.id)"
-            >{{ $t('member_user_00285') }}</a>
+            >{{ $t('ui.need_vip') }}</NuxtLink>
           </div>
         </div>
       </div>

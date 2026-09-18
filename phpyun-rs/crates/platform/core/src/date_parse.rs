@@ -207,6 +207,14 @@ pub fn de_loose_bool<'de, D: Deserializer<'de>>(d: D) -> Result<bool, D::Error> 
     })
 }
 
+/// `Option<String>` — missing / null / blank (after trim) become `None`;
+/// otherwise the trimmed string. Optional `#[validate(email)]` /
+/// `length(min = …)` fields skip `None`, so Vue posting `""` is not a 400.
+pub fn de_blank_opt_string<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
+    let v = Option::<String>::deserialize(d)?;
+    Ok(v.map(|s| s.trim().to_string()).filter(|s| !s.is_empty()))
+}
+
 /// `Option<i32>` — `null` / missing / empty-string become `None`; otherwise
 /// same coercion as [`de_loose_i32`].
 pub fn de_loose_i32_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<i32>, D::Error> {
@@ -355,6 +363,26 @@ mod tests {
     struct LooseFlag {
         #[serde(default, deserialize_with = "de_loose_bool")]
         photo: bool,
+    }
+
+    #[derive(Deserialize)]
+    struct BlankStr {
+        #[serde(default, deserialize_with = "de_blank_opt_string")]
+        email: Option<String>,
+    }
+
+    #[test]
+    fn blank_opt_string_treats_empty_as_none() {
+        let missing: BlankStr = serde_json::from_str(r#"{}"#).unwrap();
+        assert_eq!(missing.email, None);
+        let empty: BlankStr = serde_json::from_str(r#"{"email":""}"#).unwrap();
+        assert_eq!(empty.email, None);
+        let spaces: BlankStr = serde_json::from_str(r#"{"email":"  "}"#).unwrap();
+        assert_eq!(spaces.email, None);
+        let null: BlankStr = serde_json::from_str(r#"{"email":null}"#).unwrap();
+        assert_eq!(null.email, None);
+        let filled: BlankStr = serde_json::from_str(r#"{"email":"  a@b.co "}"#).unwrap();
+        assert_eq!(filled.email.as_deref(), Some("a@b.co"));
     }
 
     #[test]

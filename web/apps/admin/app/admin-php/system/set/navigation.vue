@@ -4,7 +4,7 @@
             <div class="moduleSeachInpt moduleSeachwapsju">
                 <el-input :placeholder="lc('admin_user_00158')" v-model="keyword" class="input-with-select" size="small" clearable>
                     <template #prepend><el-select v-model="nid" :clearable="true" :placeholder="lc('wap_user_00100')">
-                        <el-option v-for="(citem, ckey) in nclass" :label="citem" :value="ckey" :key="ckey"></el-option>
+                        <el-option v-for="(citem, ckey) in nclass" :label="packedLog(citem)" :value="ckey" :key="ckey"></el-option>
                     </el-select></template>
                 </el-input>
                 <el-button type="primary" icon="el-icon-search" size="small" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
@@ -23,8 +23,10 @@
                 <el-table-column prop="id" :label="lc('admin_system_00470')" width="80">
                 </el-table-column>
                 <el-table-column prop="name" :label="lc('admin_00191')" width="100">
+                    <template #default="scope">{{ packedLog(scope.row.name) }}</template>
                 </el-table-column>
                 <el-table-column prop="typename" :label="lc('admin_00192')" width="120">
+                    <template #default="scope">{{ packedLog(scope.row.typename) }}</template>
                 </el-table-column>
                 <el-table-column prop="url" :label="lc('admin_system_00354')">
                 </el-table-column>

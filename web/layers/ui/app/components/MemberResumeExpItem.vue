@@ -1,6 +1,6 @@
 <template>
   <div v-if="surface !== 'h5'" class="yun_resume_exp_list site-pc">
-    <div class="yun_resume_exp_timt">{{ time || '—' }}</div>
+    <div v-if="time" class="yun_resume_exp_timt">{{ time }}</div>
     <div class="yun_resume_exp_r">
       <div class="yun_resume_exp_name">
         {{ title }}
@@ -8,8 +8,10 @@
       </div>
       <div v-if="body" class="yun_resume_exp_p">{{ body }}</div>
     </div>
-    <a href="javascript:;" class="compile_delete" @click.prevent="$emit('edit')">{{ $t('common.edit') }}</a>
-    <a href="javascript:;" class="compile_delete" @click.prevent="$emit('remove')">{{ $t('common.delete') }}</a>
+    <div class="compile_delete">
+      <a href="javascript:;" @click.prevent="$emit('edit')">{{ $t('common.edit') }}</a>
+      <a href="javascript:;" @click.prevent="$emit('remove')">{{ $t('common.delete') }}</a>
+    </div>
   </div>
   <div v-if="surface !== 'pc'" class="work_list site-h5" @click="$emit('edit')">
     <div class="cord_work_experience_two">

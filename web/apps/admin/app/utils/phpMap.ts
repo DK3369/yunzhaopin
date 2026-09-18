@@ -148,6 +148,13 @@ function usersetLogoShape(data: unknown): Record<string, unknown> {
   }
 }
 
+function pageQuery(body: Record<string, unknown>): Record<string, unknown> {
+  const page = Number(body.page || body.currentPage || 1) || 1
+  const page_size =
+    Number(body.page_size || body.pageSize || body.limit || body.perPage || 20) || 20
+  return { ...body, page, page_size }
+}
+
 function pageQueryKind(kind: string) {
   return (body: Record<string, unknown>): Record<string, unknown> => ({
     ...pageQuery(body),
