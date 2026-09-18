@@ -1,8 +1,8 @@
 # yunzhaopin / PHPYun
 
-招聘系统。现行方向是 **PHP 全量退役，Rust + Nuxt 4 接管**，方案与进度见 [doc/FRONTEND_BACKEND_SPLIT.md](doc/FRONTEND_BACKEND_SPLIT.md)。分层约定见 [phpyun-rs/docs/CRATE_LAYERING.md](phpyun-rs/docs/CRATE_LAYERING.md)。
+招聘系统。现行方向是 **PHP 全量退役，Rust + Nuxt 4 接管**。后续开发先读 **[`.cursor/docs/overview.md`](.cursor/docs/overview.md)**（整机地图）与 [`.cursor/docs/README.md`](.cursor/docs/README.md)（文档索引）；长文拓扑见 [doc/ARCHITECTURE.md](doc/ARCHITECTURE.md)。分层约定见 [phpyun-rs/docs/CRATE_LAYERING.md](phpyun-rs/docs/CRATE_LAYERING.md)。
 
-[PROJECT_PLAN.md](PROJECT_PLAN.md) 假设「保留 PHP 后台 + 灰度」，**已废弃**。
+[PROJECT_PLAN.md](PROJECT_PLAN.md) 与 [doc/FRONTEND_BACKEND_SPLIT.md](doc/FRONTEND_BACKEND_SPLIT.md) 文内「现状」已过时（后者仍可当历史方案）。
 
 ## 仓库结构
 

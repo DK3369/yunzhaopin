@@ -36,6 +36,10 @@
     <div class="site-h5">
       <div v-if="kind === 'com'" class="issue_post_body_new">
         <div class="issue_post_body_card" style="padding-top: 0; margin-top: 0">
+          <div class="com_set_list member-set-lang">
+            <div class="com_set_listname">{{ $t('ui.language') }}</div>
+            <div class="com_set_listp"><LangSwitch /></div>
+          </div>
           <NuxtLink v-for="item in items" :key="item.to" :to="item.to" class="com_set_list">
             <div class="com_set_listname">{{ item.label }}</div>
             <div v-if="item.hint" class="com_set_listp">{{ item.hint }}</div>
@@ -48,6 +52,14 @@
       </div>
       <div v-else class="issue_post_body">
         <div class="issue_post_body_card">
+          <div class="post_body_card_job member-set-lang">
+            <div class="body_card_job_box">
+              <div class="card_job_box_post">{{ $t('ui.language') }}</div>
+            </div>
+            <div class="body_card_job_icon" style="width: auto; padding-right: 0.2rem">
+              <LangSwitch />
+            </div>
+          </div>
           <NuxtLink v-for="item in items" :key="item.to" :to="item.to" class="post_body_card_job">
             <div class="body_card_job_box">
               <div class="card_job_box_post">{{ item.label }}</div>

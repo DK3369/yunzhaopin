@@ -108,7 +108,6 @@ const { data: signSt, refresh: refreshSign } = await useAsyncData('com-home-sign
   api.post<{ signed_today?: boolean }>('/v1/mcenter/sign/status', {}).catch(() => null),
 )
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
-const gzhOpen = ref(true)
 const yearOpen = ref(false)
 const kefuQrOpen = ref(false)
 const { wxQr, settings } = useSiteChrome()
@@ -481,14 +480,6 @@ function labelOf(to: string, key?: string) {
           <div v-else-if="webtel" class="comzhtip_p2">{{ webtel }}</div>
         </div>
       </div>
-      <div v-if="gzhNeed && gzhOpen" class="member-gzh-mask" @click="gzhOpen = false">
-        <div class="gzh_gzbox" @click.stop>
-          <div class="gzh_gzbox_n">{{ $t('wap_user_00191') }}</div>
-          <img v-if="wxQr" :src="wxQr" alt="" />
-          <div class="gzh_gzbox_p">{{ $t('wap_user_00188') }}</div>
-          <div class="gzh_gzbox_p">{{ $t('wap_user_00185') }}</div>
-        </div>
-      </div>
       <div class="commemberheaderbg">
         <div class="commemberheader commemberTops">
           <div class="compauNamImgs">
@@ -647,9 +638,6 @@ function labelOf(to: string, key?: string) {
             </div>
           </div>
         </NuxtLink>
-      </div>
-      <div class="companyDatapage">
-        <div v-if="webtel" class="companyDataTell">{{ webtel }}</div>
       </div>
     </div>
     <Teleport to="body">

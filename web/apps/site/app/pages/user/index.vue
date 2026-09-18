@@ -67,7 +67,7 @@ const recJobList = computed((): HomeRecJob[] => {
   return []
 })
 const gzhNeed = computed(() => Number(gzh.value?.subscribe || 0) !== 1)
-const { wxQr, settings, phone, worktime } = useSiteChrome()
+const { wxQr, settings } = useSiteChrome()
 const msg = ref('')
 useSeoMeta({ title: t('member_user_00183') })
 
@@ -98,7 +98,6 @@ const extraExpects = computed(() => {
 const integrity = computed(() => Number(completion.value?.score || 0))
 const missingBits = computed(() => completion.value?.missing || [])
 const missingHint = computed(() => (missingBits.value[0] ? missingLabel(missingBits.value[0]) : ''))
-const gzhOpen = ref(true)
 const h5ResumeMeta = computed(() => {
   const age = ageOf(resume.value?.birthday)
   const en = String(locale.value).toLowerCase().startsWith('en')
@@ -418,14 +417,6 @@ function labelOf(to: string, key: string) {
           <NuxtLink to="/user/resume" class="vip_nav_remind">{{ $t('common_01975') }}</NuxtLink>
         </div>
       </div>
-      <div v-if="gzhNeed && gzhOpen" class="member-gzh-mask" @click="gzhOpen = false">
-        <div class="gzh_gzbox" @click.stop>
-          <div class="gzh_gzbox_n">{{ $t('wap_user_00191') }}</div>
-          <img v-if="wxQr" :src="wxQr" alt="" />
-          <div class="gzh_gzbox_p">{{ $t('wap_user_00188') }}</div>
-          <div class="gzh_gzbox_p">{{ $t('wap_user_00185') }}</div>
-        </div>
-      </div>
       <div class="min_body">
       <div class="user_nav_fast mt10">
         <ul>
@@ -490,11 +481,6 @@ function labelOf(to: string, key: string) {
             </div>
           </div>
         </NuxtLink>
-      </div>
-      <div class="companyDatapage">
-        <div v-if="phone" class="companyDataTell">
-          <span>{{ $t('wap_user_00184') }} {{ phone }} <span v-if="worktime">({{ worktime }})</span></span>
-        </div>
       </div>
       </div>
     </div>
