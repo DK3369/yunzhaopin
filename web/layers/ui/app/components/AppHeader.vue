@@ -31,11 +31,11 @@
     </header>
   </div>
 
-  <!-- H5：首页 yunTop；会员首页无返回条；简历白顶 / 财务深顶 / 其余蓝条 -->
+  <!-- H5：v-show 保住站标，切页不要把 logo 卸掉再加载（会闪一张大图） -->
   <div class="site-h5">
-    <div v-if="h5Bar === 'home'" class="yunTop">
+    <div v-show="h5Bar === 'home'" class="yunTop">
       <div class="yunlogobox" style="display: flex; align-items: center; justify-content: space-between; gap: 0.16rem">
-        <img v-if="logoH5" :src="logoH5" alt="" class="yunlogo" />
+        <img v-if="logoH5" :src="logoH5" alt="" class="yunlogo" width="208" height="32" />
         <span v-else class="header_p_z">{{ siteName }}</span>
       </div>
       <div class="index_newedition_search_box">
@@ -52,21 +52,17 @@
         </div>
       </div>
     </div>
-    <template v-else-if="h5Bar === 'white'">
-      <div class="m_whiteheader">
-        <div class="m_whiteheaderfid">
-          <a class="header_back" href="javascript:;" @click.prevent="goBack" />
-          <div class="m_header_cont">{{ h5Title }}</div>
-        </div>
-      </div>
-    </template>
-    <template v-else-if="h5Bar === 'dark'">
-      <div class="m_backheader">
+    <div v-show="h5Bar === 'white'" class="m_whiteheader">
+      <div class="m_whiteheaderfid">
         <a class="header_back" href="javascript:;" @click.prevent="goBack" />
         <div class="m_header_cont">{{ h5Title }}</div>
       </div>
-    </template>
-    <template v-else-if="h5Bar === 'blue'">
+    </div>
+    <div v-show="h5Bar === 'dark'" class="m_backheader">
+      <a class="header_back" href="javascript:;" @click.prevent="goBack" />
+      <div class="m_header_cont">{{ h5Title }}</div>
+    </div>
+    <div v-show="h5Bar === 'blue'">
       <div class="header_fixed">
         <div class="header_bg">
           <a class="header_back" href="javascript:;" @click.prevent="goBack" />
@@ -74,7 +70,7 @@
         </div>
       </div>
       <div class="header_h" />
-    </template>
+    </div>
   </div>
 </template>
 

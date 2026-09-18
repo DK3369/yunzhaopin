@@ -2,6 +2,8 @@
 import { catTree, formatSalary, listFailMsg, type JobLike } from '~/utils/site'
 import type { DictItem } from '~/utils/query'
 
+definePageMeta({ keepalive: true })
+
 const route = useRoute()
 const { t, locale } = useI18n()
 const page = computed(() => Number(route.query.page || 1))

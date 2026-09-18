@@ -21,6 +21,10 @@ PC `/jobs` 卡片 `float:left`。分页要用 `.search_pages`（或 `clear:both;
 
 PC 首页 `.pc-home-search` 的 Jobs 下拉必须 `z-index` 高于 `.leftNav`（900），否则会钻到左侧分类和 banner 下面。
 
+## H5 切页
+
+不要让切页把 legacy CSS 或站标卸掉：stylesheet 用稳定 `key`，H5 顶栏 `v-show`，公开 `NuxtPage` `:keepalive="{ max: 5 }"`。隐藏的 `.site-pc` 在 H5 下 `content-visibility: hidden`，避免跟着解码一大堆 PC 图。
+
 ## 根字号
 
 H5 `html { font-size: clamp(32px, 10vw, 75px) }`。legacy `body { font-size: 0.9em }` 会把没写 rem 的字放大到三十多像素。可见正文必须自己写 rem，不要靠继承 `em`。

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { catTree, formatSalary, goLogin, isLoggedIn, listFailMsg, mediaUrl, PLACEHOLDER_LOGO, resumeBrowseGate, resumeListBlocked, safeHref, type CatNode, type CompanyLike, type JobLike } from '~/utils/site'
 
+definePageMeta({ keepalive: true })
+
 type Banner = { image_n?: string; image?: string; link?: string; title?: string; pic_content?: string }
 type ArticleLike = {
   id: number
@@ -396,7 +398,7 @@ useHead({
                   :class="{ 'is-on': i === pcSlide }"
                   :href="safeHref(b.link) || '/jobs'"
                 >
-                  <img :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" />
+                  <img :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" loading="lazy" decoding="async" />
                 </a>
               </div>
               <div v-if="pcBanners.length > 1" class="banner-dots">
@@ -674,7 +676,7 @@ useHead({
             :class="{ 'is-on': i === h5Slide }"
             :href="safeHref(b.link) || '/jobs'"
           >
-            <img class="h5-banner" :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" />
+            <img class="h5-banner" :src="mediaUrl(b.image_n || b.image)" :alt="b.title || ''" width="365" height="125" fetchpriority="high" />
           </a>
           <div v-if="h5Banners.length > 1" class="banner-dots h5-banner-dots">
             <span

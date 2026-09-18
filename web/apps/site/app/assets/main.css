@@ -471,9 +471,17 @@ a.sys_a {
 @media (max-width: 1199px) {
   .site-pc {
     display: none !important;
+    content-visibility: hidden;
   }
   .site-h5 {
     display: revert;
+  }
+  .site-h5 .yunlogo {
+    width: auto;
+    max-width: 5.333333rem;
+    max-height: 0.86rem;
+    height: auto;
+    object-fit: contain;
   }
   /* H5 首页搜索：yunwap 按 span 写死 5.33rem，input 默认白底会截成半截灰胶囊 */
   .site-h5 .index_newedition_search_c {

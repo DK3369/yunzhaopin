@@ -215,14 +215,27 @@ const mapHref = computed(() => {
   if (x && y) return `/map?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}&job_id=${id}`
   return ''
 })
+function onJobScroll() {
+  const s = window.scrollY || document.documentElement.scrollTop
+  ceilShow.value = s > 400
+}
+let scrollBound = false
+function bindJobScroll() {
+  if (scrollBound) return
+  window.addEventListener('scroll', onJobScroll, { passive: true })
+  scrollBound = true
+  onJobScroll()
+}
+function unbindJobScroll() {
+  if (!scrollBound) return
+  window.removeEventListener('scroll', onJobScroll)
+  scrollBound = false
+}
+onMounted(bindJobScroll)
+onActivated(bindJobScroll)
+onDeactivated(unbindJobScroll)
+onUnmounted(unbindJobScroll)
 onMounted(async () => {
-  const onScroll = () => {
-    const s = window.scrollY || document.documentElement.scrollTop
-    ceilShow.value = s > 400
-  }
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onScroll()
-  onUnmounted(() => window.removeEventListener('scroll', onScroll))
   const title = String(job.value.name || '')
   if (id && title) {
     pushRecentJob({

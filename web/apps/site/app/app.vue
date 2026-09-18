@@ -48,6 +48,13 @@ const memberCssKind = computed<'user' | 'com' | ''>(() => {
   return ''
 })
 
+function legacyCssHref() {
+  const v = cacheVer.value
+  const m = memberCssKind.value || 'none'
+  const skin = siteStyle.value || ''
+  return `m=${m}&skin=${encodeURIComponent(skin)}&v=${v}`
+}
+
 useHead({
   htmlAttrs: {
     lang: () => parseWebLocale(locale.value),
@@ -61,25 +68,25 @@ useHead({
   bodyAttrs: {
     class: () => (/^\/jobs\/\d+/.test(route.path) ? 'comapply_bg' : 'body_bg'),
   },
-  link: () => {
-    const v = cacheVer.value
-    const m = memberCssKind.value || 'none'
-    const skin = siteStyle.value || ''
-    const qs = `m=${m}&skin=${encodeURIComponent(skin)}&v=${v}`
-    return [
-      { rel: 'canonical', href: `${siteUrl}${route.path}` },
-      {
-        rel: 'stylesheet',
-        href: `/legacy/site-pc.css?${qs}`,
-        media: 'screen and (min-width: 1200px)',
-      },
-      {
-        rel: 'stylesheet',
-        href: `/legacy/site-h5.css?${qs}`,
-        media: 'screen and (max-width: 1199px)',
-      },
-    ]
-  },
+  link: [
+    {
+      key: 'canonical',
+      rel: 'canonical',
+      href: () => `${siteUrl}${route.path}`,
+    },
+    {
+      key: 'legacy-pc',
+      rel: 'stylesheet',
+      href: () => `/legacy/site-pc.css?${legacyCssHref()}`,
+      media: 'screen and (min-width: 1200px)',
+    },
+    {
+      key: 'legacy-h5',
+      rel: 'stylesheet',
+      href: () => `/legacy/site-h5.css?${legacyCssHref()}`,
+      media: 'screen and (max-width: 1199px)',
+    },
+  ],
 })
 
 const mainClass = computed(() => {
@@ -176,7 +183,7 @@ onMounted(() => {
       <MemberShell v-if="isMember" :kind="memberKind">
         <NuxtPage />
       </MemberShell>
-      <NuxtPage v-else />
+      <NuxtPage v-else :keepalive="{ max: 5 }" />
     </main>
     <AppFooter v-if="!isAuth" />
   </div>

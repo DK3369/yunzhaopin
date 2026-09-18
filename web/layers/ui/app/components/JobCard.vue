@@ -16,7 +16,7 @@
       </template>
     </div>
     <div class="index_newjob_com nowrap">
-      <img :src="logo" class="index_newjob_com_tx" alt="" />
+      <img :src="logo" class="index_newjob_com_tx" alt="" loading="lazy" decoding="async" />
       <div class="index_newjob_comname">
         <NuxtLink v-if="job.uid" class="site-job-card__nested" :to="`/companies/${job.uid}`">{{ job.com_name }}</NuxtLink>
         <span v-else>{{ job.com_name }}</span>
