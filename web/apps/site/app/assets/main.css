@@ -2250,6 +2250,13 @@ html.force-pc .site-h5 {
     margin: 0;
     gap: 0;
   }
+  .member-shell,
+  .member-shell button,
+  .member-shell input,
+  .member-shell textarea,
+  .member-shell select {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
   .member-shell .yun_m_rightsidebar,
   .yun_m_rightbox,
   .yun_m_rightbox.member-page-body,
@@ -2564,15 +2571,97 @@ html.force-pc .site-h5 {
     padding: 0.16rem 0.2rem;
     box-sizing: border-box;
   }
-  a.com_set_list {
-    display: block;
+  .member-shell .post_body_card_job,
+  a.post_body_card_job {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     text-decoration: none;
     color: inherit;
   }
-  a.post_body_card_job {
+  .member-shell .card_job_box_post {
+    width: auto;
+    max-width: none;
+    flex: 0 1 auto;
+    font-size: 0.4rem;
+    font-weight: 500;
+    color: #333;
+  }
+  .member-shell .card_job_box_name,
+  .member-shell .card_job_box_name_require {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.32rem;
+    font-weight: 400;
+    color: #999;
+    text-align: right;
+    padding-left: 0.16rem;
+  }
+  .member-shell .Binding_state,
+  .member-shell .Binding_state_no {
+    position: static;
+    right: auto;
+    top: auto;
+    flex-shrink: 0;
+    font-size: 0.32rem;
+  }
+  .member-shell .new_m_bth,
+  .member-shell button.new_m_bth,
+  .member-shell .issue_post_body_btn {
+    font-size: 0.4rem;
+    font-family: inherit;
+    font-weight: 600;
+  }
+  .member-shell .com_set_list,
+  a.com_set_list {
     display: flex;
+    align-items: center;
+    position: relative;
+    height: auto;
+    min-height: 1.2rem;
+    padding: 0.16rem 0;
+    box-sizing: border-box;
     text-decoration: none;
     color: inherit;
+  }
+  .member-shell .com_set_listname {
+    position: static;
+    flex: 0 1 auto;
+    font-size: 0.4rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #333;
+  }
+  .member-shell .com_set_listp {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 0.16rem;
+    font-size: 0.32rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #999;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .member-shell .com_set_listicon {
+    position: static;
+    flex: none;
+    width: 0.586667rem;
+    height: 0.586667rem;
+    margin-top: 0;
+  }
+  .member-ident-form .com_cardlist {
+    line-height: 1.4;
+    font-size: 0.373333rem;
+  }
+  .member-ident-form .idcard_box {
+    overflow: hidden;
+  }
+  .member-ident-form .sfyz_icon {
+    font-size: 0.32rem;
   }
   .site-h5 .member-set-lang {
     cursor: pointer;

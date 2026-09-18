@@ -49,7 +49,7 @@ PHP 的 `.yun_m_rightbox` 带 `fltR`（相对左栏 float）。Vue 右栏已经�
 
 前台 `pc-topbar` 右侧入口读 `/api/auth/me` 的 `usertype`：求职只有用户名 → `/user` + 退出，**不出现**「发布职位」「职位」；招聘才显示发布职位 → `/com/jobs/new`（`sy_job_web` 关则藏）。未登录只显示登录/注册。中间导航走 `useSiteBoot` 的 `initjobs.nav`，不要 `/v1/wap/nav`，不按身份藏「找人才」。`MemberShell` / `MemberPcHeader` 的 `kind` 以 `usertype` 为准。中间件 [`member-role.global.ts`](../../web/apps/site/app/middleware/member-role.global.ts) 拦住串端：`usertype=1` 进不了 `/com`，`usertype=2` 进不了 `/user`；未登录进会员路径 → `/login?next=`。判断必须用 `/com` 与 `/com/`（[`isComMemberPath`](../../web/layers/ui/app/utils/site.ts)），**不要** `startsWith('/com')`，否则公开「找企业」`/companies`（PHP `company/`）会被当成企业中心，求职账号会进 `/user`。PC 顶栏 Companies 应对齐 PHP `navmap` 的找企业，进企业列表。登录后访问 `/advice` 也走会员壳（求职/招聘按 `usertype`），未登录仍是前台反馈页。
 
-H5 求职首页 `userheader` 必须全宽：`MemberShell` 在 `/user` `/com` 加 `member-shell-home`，去掉 `wap_member` 左右 padding。H5 子页页边只一层 `--h5-gutter: 12px`（左/上/右）；简历 `Edit_your_resume_min_body` **不要**再用 yunwap 的 `margin-top: 1.97rem`（白顶已占文档流）。其他服务 H5 宫格把 PHP 的 `position_management_body{position:absolute}` 改回文档流（Vue 已有 `header_h`）。
+H5 求职首页 `userheader` 必须全宽：`MemberShell` 在 `/user` `/com` 加 `member-shell-home`，去掉 `wap_member` 左右 padding。H5 子页页边只一层 `--h5-gutter: 12px`（左/上/右）；简历 `Edit_your_resume_min_body` **不要**再用 yunwap 的 `margin-top: 1.97rem`（白顶已占文档流）。会员 H5 字族/列表字号只认 `main.css` 这一层（壳 + input/button 同一套 PingFang/雅黑）；**不要**再给 button 宋体、input Helvetica。列表标题 `0.4rem`、说明/角标 `0.32rem`，角标不要 `position:absolute`。其他服务 H5 宫格把 PHP 的 `position_management_body{position:absolute}` 改回文档流（Vue 已有 `header_h`）。
 
 `MemberPanel`：`user_new_tit` 在 `yun_m_rightbox` **外**（对照 `job.htm`）；`member_right_index_h1` 必须在 `yun_m_rightbox` **内**（对照 `atn.htm` / `passwd.htm` / `privacy.htm`），否则标题浮在灰底上看起来没皮。
 

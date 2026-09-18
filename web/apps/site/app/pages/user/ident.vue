@@ -67,12 +67,15 @@ useSeoMeta({ title: t('wap_user_00340') })
     <template v-else>
     <MemberUserSetTabs />
     <div class="site-h5 issue_post_body">
-      <div class="issue_post_body_card">
+      <div class="issue_post_body_card member-set-list">
         <div class="post_body_card_job">
           <div class="body_card_job_box">
             <div class="card_job_box_post">{{ $t('wap_01030') }}</div>
-            <div v-if="data?.idcard_status === 1" class="Binding_state">{{ $t('wap_user_00128') }}</div>
-            <span v-else class="Binding_state_no">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</span>
+            <div class="card_job_box_name_require">
+              <div :class="data?.idcard_status === 1 ? 'Binding_state' : 'Binding_state_no'">
+                {{ statusLabel(data?.idcard_status, data?.idcard_pic) }}
+              </div>
+            </div>
           </div>
           <div class="body_card_job_icon">
             <img src="/legacy/h5/images/issue_add.png" alt="" />
@@ -128,16 +131,16 @@ useSeoMeta({ title: t('wap_user_00340') })
         :value="$t('wap_user_00176')"
       />
     </form>
-    <form class="site-h5 wap_member_box" @submit.prevent="save">
+    <form class="site-h5 wap_member_box member-ident-form" @submit.prevent="save">
       <div class="com_cardlist">
         <span class="sfyz_icon">{{ statusLabel(data?.idcard_status, data?.idcard_pic) }}</span>
+        <div>{{ $t('wap_user_00173') }}</div>
         <div class="sfyz_box">
           <input v-model="idcard" :disabled="data?.idcard_status === 1" :placeholder="$t('wap_01087')" />
         </div>
         <div class="idcard_box">
           <img
-            v-if="idcardPic"
-            :src="mediaUrl(idcardPic)"
+            :src="idcardPic ? mediaUrl(idcardPic) : '/legacy/h5/images/add_newrenewal.png'"
             alt=""
             class="idcard_boximg"
           />
@@ -149,6 +152,8 @@ useSeoMeta({ title: t('wap_user_00340') })
             @change="onPic"
           />
         </div>
+        <div class="sfyz_tip">{{ $t('wap_01088') }}</div>
+        <div class="sfyz_tip">{{ $t('wap_01089') }}</div>
       </div>
       <button v-if="data?.idcard_status !== 1" type="submit" class="new_m_bth">{{ $t('wap_user_00176') }}</button>
     </form>
