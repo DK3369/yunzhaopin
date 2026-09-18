@@ -150,6 +150,11 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00751: '法律声明',
     admin_tool_00752: '触屏版',
     admin_tool_00753: '求职包月',
+    admin_tool_00754: 'HR工具箱',
+    admin_tool_00755: '普工专区',
+    admin_tool_00756: '职场问答',
+    admin_tool_00757: '兼职职位',
+    admin_tool_00758: '超级管理员',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -227,6 +232,11 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00751: 'Legal Notice',
     admin_tool_00752: 'Mobile Version',
     admin_tool_00753: 'Seeker monthly',
+    admin_tool_00754: 'HR Toolbox',
+    admin_tool_00755: 'Blue-collar zone',
+    admin_tool_00756: 'Workplace Q&A',
+    admin_tool_00757: 'Part-time jobs',
+    admin_tool_00758: 'Super Admin',
   },
 }
 
@@ -294,6 +304,11 @@ const NAME_ALIAS: Record<string, string> = {
   法律声明: 'admin_tool_00751',
   触屏版: 'admin_tool_00752',
   求职包月: 'admin_tool_00753',
+  HR工具箱: 'admin_tool_00754',
+  普工专区: 'admin_tool_00755',
+  职场问答: 'admin_tool_00756',
+  兼职职位: 'admin_tool_00757',
+  超级管理员: 'admin_tool_00758',
 }
 
 let mergedFixes = false

@@ -16,7 +16,7 @@
                                 <template v-if="scope.row.level == 'one'">{{ lc('admin_system_00111') }}</template>
                                 <template v-else-if="scope.row.level == 'two'">&emsp;{{ lc('admin_00291') }}：┗</template>
                                 <template v-else-if="scope.row.level == 'three'">&emsp;&emsp;┗</template>
-                                {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
+                                {{ catLabel(scope.row) }}<img @click="editData(scope)" class="editIcon"
                                 src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
                                 height="14">
                             </template>

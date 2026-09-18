@@ -39,7 +39,7 @@
                     </div>
                     <div class="drawerModInpt">
                         <el-select v-model="info.m_id" :placeholder="lc('admin_00014')">
-                            <el-option v-for="item in group" :key="item.id" :label="item.group_name" :value="item.id"></el-option>
+                            <el-option v-for="item in group" :key="item.id" :label="packedLog(item.group_name)" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>

@@ -5853,10 +5853,36 @@ fn dash_names(s: &str) -> Vec<String> {
         .collect()
 }
 
-fn cat_row_json(kind: &str, r: &cat_repo::CatPhpRow, level: i32) -> Value {
+fn cat_name_n(dicts: &dict_service::LocalizedDicts, kind: &str, r: &cat_repo::CatPhpRow) -> String {
+    let id = r.id as i32;
+    let n = match kind {
+        "industry" => dicts.industry(id),
+        "job" => dicts.job(id),
+        "city" => dicts.city(id),
+        "part" | "partclass" => dicts.part(id),
+        "company" | "com" | "comclass" => dicts.comclass(id),
+        "userclass" | "user" => dicts.userclass(id),
+        "question" | "qa" | "q" | "q_class" => dicts.question(id),
+        "reason" => return enum_labels::report_reason_name(r.id, &r.name),
+        _ => "",
+    };
+    if n.is_empty() {
+        r.name.clone()
+    } else {
+        n.to_string()
+    }
+}
+
+fn cat_row_json(
+    dicts: &dict_service::LocalizedDicts,
+    kind: &str,
+    r: &cat_repo::CatPhpRow,
+    level: i32,
+) -> Value {
     let mut v = json!({
         "id": r.id,
         "name": r.name,
+        "name_n": cat_name_n(dicts, kind, r),
         "sort": r.sort,
         "keyid": r.keyid,
         "variable": r.variable,
@@ -5886,6 +5912,7 @@ async fn cat_rows_json(
     rows: &[cat_repo::CatPhpRow],
     level: i32,
 ) -> AppResult<Vec<Value>> {
+    let dicts = dict_service::get(state).await?;
     let has = if kind == "city" && !rows.is_empty() {
         let ids: Vec<u64> = rows.iter().map(|r| r.id).collect();
         cat_repo::ids_with_children(state.db.reader(), kind, &ids).await?
@@ -5895,7 +5922,7 @@ async fn cat_rows_json(
     Ok(rows
         .iter()
         .map(|r| {
-            let mut v = cat_row_json(kind, r, level);
+            let mut v = cat_row_json(&dicts, kind, r, level);
             if kind == "city" {
                 v["hasChildren"] = json!(has.contains(&r.id));
             }
@@ -6040,15 +6067,23 @@ async fn cat_class_ajax(state: &AppState, body: &Value) -> AppResult<PhpOut> {
 async fn cat_class_up(state: &AppState, body: &Value) -> AppResult<Value> {
     let kind = cat_kind(body);
     let id = json_u64(body, "id");
+    let dicts = dict_service::get(state).await?;
     let roots = cat_repo::list_php(state.db.reader(), &kind, None).await?;
-    let position: Vec<Value> = roots.iter().map(|r| cat_row_json(&kind, r, 1)).collect();
+    let position: Vec<Value> = roots
+        .iter()
+        .map(|r| cat_row_json(&dicts, &kind, r, 1))
+        .collect();
     let mut class1 = Value::Null;
     let mut class2 = Value::Array(vec![]);
     if id > 0 {
         if let Some(one) = cat_repo::get_php(state.db.reader(), &kind, id).await? {
-            class1 = cat_row_json(&kind, &one, 1);
+            class1 = cat_row_json(&dicts, &kind, &one, 1);
             let kids = cat_repo::list_php(state.db.reader(), &kind, Some(id)).await?;
-            class2 = Value::Array(kids.iter().map(|r| cat_row_json(&kind, r, 2)).collect());
+            class2 = Value::Array(
+                kids.iter()
+                    .map(|r| cat_row_json(&dicts, &kind, r, 2))
+                    .collect(),
+            );
         }
     }
     Ok(json!({ "class1": class1, "class2": class2, "position": position }))
@@ -6149,9 +6184,10 @@ async fn cat_class_one(state: &AppState, body: &Value) -> AppResult<Value> {
     if id == 0 {
         return Ok(json!({}));
     }
+    let dicts = dict_service::get(state).await?;
     Ok(cat_repo::get_php(state.db.reader(), &kind, id)
         .await?
-        .map(|r| cat_row_json(&kind, &r, 1))
+        .map(|r| cat_row_json(&dicts, &kind, &r, 1))
         .unwrap_or(json!({})))
 }
 
@@ -8879,29 +8915,38 @@ async fn wx_zdkeyword_save(state: &AppState, body: &Value) -> AppResult<PhpOut> 
 }
 
 async fn job_class_roots(state: &AppState) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
     let rows = cat_repo::list_php(state.db.reader(), "job", None).await?;
     Ok(Value::Array(
-        rows.iter().map(|r| cat_row_json("job", r, 1)).collect(),
+        rows.iter()
+            .map(|r| cat_row_json(&dicts, "job", r, 1))
+            .collect(),
     ))
 }
 
 async fn job_class_up(state: &AppState, body: &Value) -> AppResult<Value> {
     let id = json_u64(body, "id");
+    let dicts = dict_service::get(state).await?;
     let position = job_class_roots(state).await?;
     let mut onejob = json!({});
     let mut twojob = Value::Array(vec![]);
     let mut threejob = serde_json::Map::new();
     if id > 0 {
         if let Some(one) = cat_repo::get_php(state.db.reader(), "job", id).await? {
-            onejob = cat_row_json("job", &one, 1);
+            onejob = cat_row_json(&dicts, "job", &one, 1);
             let twos = cat_repo::list_php(state.db.reader(), "job", Some(id)).await?;
             let mut two_arr = Vec::new();
             for two in &twos {
-                two_arr.push(cat_row_json("job", two, 2));
+                two_arr.push(cat_row_json(&dicts, "job", two, 2));
                 let threes = cat_repo::list_php(state.db.reader(), "job", Some(two.id)).await?;
                 threejob.insert(
                     two.id.to_string(),
-                    Value::Array(threes.iter().map(|t| cat_row_json("job", t, 3)).collect()),
+                    Value::Array(
+                        threes
+                            .iter()
+                            .map(|t| cat_row_json(&dicts, "job", t, 3))
+                            .collect(),
+                    ),
                 );
             }
             twojob = Value::Array(two_arr);
@@ -8917,19 +8962,20 @@ async fn job_class_up(state: &AppState, body: &Value) -> AppResult<Value> {
 }
 
 async fn job_class_classadd(state: &AppState, body: &Value) -> AppResult<Value> {
+    let dicts = dict_service::get(state).await?;
     let position = job_class_roots(state).await?;
     let id = json_u64(body, "id");
     let tid = json_u64(body, "tid");
     if id > 0 {
         let info = cat_repo::get_php(state.db.reader(), "job", id)
             .await?
-            .map(|r| cat_row_json("job", &r, 1))
+            .map(|r| cat_row_json(&dicts, "job", &r, 1))
             .unwrap_or(json!({}));
         let job_id = info.get("keyid").and_then(|v| v.as_u64()).unwrap_or(0);
         let job = if job_id > 0 {
             cat_repo::get_php(state.db.reader(), "job", job_id)
                 .await?
-                .map(|r| cat_row_json("job", &r, 1))
+                .map(|r| cat_row_json(&dicts, "job", &r, 1))
                 .unwrap_or(json!({}))
         } else {
             json!({})
@@ -8937,7 +8983,11 @@ async fn job_class_classadd(state: &AppState, body: &Value) -> AppResult<Value> 
         let class2_parent = job.get("keyid").and_then(|v| v.as_u64()).unwrap_or(0);
         let class2 = if class2_parent > 0 {
             let rows = cat_repo::list_php(state.db.reader(), "job", Some(class2_parent)).await?;
-            Value::Array(rows.iter().map(|r| cat_row_json("job", r, 2)).collect())
+            Value::Array(
+                rows.iter()
+                    .map(|r| cat_row_json(&dicts, "job", r, 2))
+                    .collect(),
+            )
         } else {
             Value::Array(vec![])
         };
@@ -8952,7 +9002,7 @@ async fn job_class_classadd(state: &AppState, body: &Value) -> AppResult<Value> 
     if tid > 0 {
         let info = cat_repo::get_php(state.db.reader(), "job", tid)
             .await?
-            .map(|r| cat_row_json("job", &r, 1))
+            .map(|r| cat_row_json(&dicts, "job", &r, 1))
             .unwrap_or(json!({}));
         return Ok(json!({
             "type": "two",

@@ -46,7 +46,7 @@
                         :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                         v-model="scope.row.name" @blur="alterData(scope)"></el-input>
                     <span v-else>
-                        {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
+                        {{ catLabel(scope.row) }}<img @click="editData(scope)" class="editIcon"
                         src="/admin/php-admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
                     </span>
                 </template>
@@ -188,9 +188,10 @@ export default {
                 if (!q) return this.tableData;
                 return this.tableData.filter((r) => {
                     const name = String(r.name || '').toLowerCase();
+                    const nn = String(r.name_n || '').toLowerCase();
                     const en = String(r.e_name || '').toLowerCase();
                     const code = String(r.code || '').toLowerCase();
-                    return name.indexOf(q) >= 0 || en.indexOf(q) >= 0 || code.indexOf(q) >= 0;
+                    return name.indexOf(q) >= 0 || nn.indexOf(q) >= 0 || en.indexOf(q) >= 0 || code.indexOf(q) >= 0;
                 });
             },
         },
@@ -402,7 +403,7 @@ export default {
             handleAddChild(scope) {
                 let levelNew = isNaN(parseInt(scope.row.level)) ? 0 + 1 : parseInt(scope.row.level) + 1;
                 this.keyid = scope.row.id;
-                this.keyid_name = scope.row.name;
+                this.keyid_name = this.catLabel(scope.row);
                 this.level = levelNew;
                 if (levelNew == 2) {
                     this.addTitle = window.lc('admin_system_00077');

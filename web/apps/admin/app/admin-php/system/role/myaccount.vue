@@ -19,7 +19,7 @@
                 <span>{{ user.last_login || '—' }}</span>
             </el-form-item>
             <el-form-item :label="lc('admin_user_company_00372')">
-                <el-tag size="small" type="warning">{{ user.group_name || '—' }}</el-tag>
+                <el-tag size="small" type="warning">{{ packedLog(user.group_name) || '—' }}</el-tag>
             </el-form-item>
             <el-form-item :label="lc('wap_user_00371')">
                 <div class="admin_item">

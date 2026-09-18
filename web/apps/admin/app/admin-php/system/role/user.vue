@@ -5,7 +5,7 @@
 			<div class="moduleSeachleft">
 				<div class="tableSeachInptsmall tableSeachFomud">
 				    <el-select style="width: 220px;" v-model="m_id" size="small" :placeholder="lc('admin_00014')" clearable @change="search">
-				        <el-option v-for="item in group" :key="item.id" :label="item.group_name" :value="item.id"></el-option>
+				        <el-option v-for="item in group" :key="item.id" :label="packedLog(item.group_name)" :value="item.id"></el-option>
 				    </el-select>
 				</div>
 				<div class="moduleInptList">
@@ -27,7 +27,7 @@
                 <el-table-column prop="username" :label="lc('admin_user_00140')"></el-table-column>
                 <el-table-column :label="lc('admin_user_company_00372')">
                     <template #default="scope">
-                        <el-tag>{{scope.row.group_name}}</el-tag>
+                        <el-tag>{{ packedLog(scope.row.group_name) }}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" :label="lc('wap_00529')"></el-table-column>

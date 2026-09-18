@@ -18,8 +18,8 @@
 //! English job names: `phpyun_dict_i18n` wins; remaining ids use bundled
 //! `data/job-en.json` then the legacy `e_name` column.
 //! City English uses `e_name` (country tree) then `dict_i18n`.
-//! `comclass` / `userclass` / remaining `industry` English: bundled
-//! `data/{comclass,userclass,industry}-en.json` then `dict_i18n`.
+//! `comclass` / `userclass` / remaining `industry` / `part` English: bundled
+//! `data/{comclass,userclass,industry,part}-en.json` then `dict_i18n`.
 //!
 //! ## Caching
 //!
@@ -741,6 +741,11 @@ async fn load_all(state: &AppState) -> AppResult<Dicts> {
         i18n.entry("industry".into()).or_default(),
         include_str!("../data/industry-en.json"),
         "industry-en.json",
+    );
+    merge_bundled_en(
+        i18n.entry("part".into()).or_default(),
+        include_str!("../data/part-en.json"),
+        "part-en.json",
     );
     let (job_ename, city_ename) = tokio::join!(
         load_ename(db, "phpyun_job_class"),
