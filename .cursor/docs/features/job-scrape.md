@@ -40,10 +40,10 @@
 
 | 页 | 行为 |
 |---|---|
-| `web/apps/site/app/pages/jobs/[id].vue` | 有 `apply_url`：未登录 → `/login?next=/jobs/{id}`（不进 quick-apply）；已登录 → POST apply，成功后 `about:blank` 再赋址新标签。CTA `ui.apply_official`。JD 包在 `.job-jd` 里，覆盖全局 CSS 重置（否则 `p`/`ul`/`h2` 没边距、列表没圆点，英文岗会挤成一条）。收藏钮文案始终 `wap_00379`，`is-fav` 只换五角星空心/实心蓝；不要切 `wap_00378` AlreadyFavorite（英文会把申请钮挤换行）。PC 顶栏不要塞 `EmailRecommendForm`（邮件推荐在 `/share/job/{id}`）。H5 申请用 `yun_czfoot_lt`，`yun_czfootfixed` 抬到全局 tab（`bottom:1.813333rem`）上面，否则会被 `wap_footerfixd` `z-index:100` 盖住 |
+| `web/apps/site/app/pages/jobs/[id].vue` | CTA 一律 `wap_00574` Apply。未登录且详情带 `apply_url` → `/login?next=/jobs/{id}`，普通岗 → quick-apply。已登录一律 `POST /v1/mcenter/apply`：返回 `apply_url` 则新标签打开官网，空则站内投递。详情 `apply_url` 只用来预开 `about:blank` 防拦截，是否外跳以接口为准。JD 包在 `.job-jd`。收藏钮始终 `wap_00379`。PC 顶栏不要塞 `EmailRecommendForm`。H5 `yun_czfootfixed` 抬到全局 tab（`bottom:1.813333rem`）上面 |
 | `user/applications.vue` / `com/applications.vue` | 有 URL 则链出去；不新增会员标签。企业侧无简历时邀请等原按钮可不可用，不强行改 |
 
-文案：site `i18n` `ui.apply_official`（去官网申请 / Apply on company site）。
+文案：申请钮用 `wap_00574`（申请 / Apply）。不要再用 `ui.apply_official` 当 CTA，英文太长会盖住 H5 底栏。
 
 ## 改代码入口
 

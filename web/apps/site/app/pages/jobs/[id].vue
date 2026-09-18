@@ -82,12 +82,9 @@ const showSnum = computed(() => {
   return snum > threshold
 })
 const applyCta = computed(() => {
-  if (officialApplyUrl.value) {
-    return { kind: 'apply' as const, label: t('ui.apply_official') }
-  }
   if (alreadyApplied.value) return { kind: 'applied' as const, label: t('ui.already_applied') }
   if (alreadyInvited.value) return { kind: 'invited' as const, label: t('wap_00291') }
-  return { kind: 'apply' as const, label: t('wap_com_00235') }
+  return { kind: 'apply' as const, label: t('wap_00574') }
 })
 const comMessageOn = computed(() => String(settings.value.com_message || '') === '1')
 const askContent = ref('')
@@ -259,9 +256,9 @@ async function apply() {
     applyMsg.value = t('wap_com_00242')
     return
   }
-  const official = officialApplyUrl.value
+  const maybeOfficial = Boolean(officialApplyUrl.value)
   if (!isLoggedIn(me.value)) {
-    if (official) {
+    if (maybeOfficial) {
       await navigateTo({ path: '/login', query: { next: `/jobs/${id}` } })
       return
     }
@@ -272,32 +269,25 @@ async function apply() {
     applyMsg.value = t('wap_00256')
     return
   }
-  if (official) {
-    const popup = window.open('about:blank', '_blank')
-    if (popup) popup.opener = null
-    try {
-      const r = await api.post<{ apply_url?: string }>('/v1/mcenter/apply', { job_id: id })
-      const url = String(r.apply_url || official)
-      if (url.startsWith('https://') || url.startsWith('http://')) {
-        if (popup) popup.location.replace(url)
-        else window.open(url, '_blank', 'noopener,noreferrer')
-      } else if (popup) {
-        popup.close()
-      }
-      appliedLocal.value = true
-      applyMsg.value = t('common.success')
-    } catch (e: unknown) {
-      if (popup) popup.close()
-      applyMsg.value = e instanceof Error ? e.message : t('common.no')
-    }
-    return
-  }
+  // 先占坑避免 await 后被拦截；是否外跳看接口返回的 apply_url
+  const popup = maybeOfficial ? window.open('about:blank', '_blank') : null
+  if (popup) popup.opener = null
   try {
-    await api.post('/v1/mcenter/apply', { job_id: id })
+    const r = await api.post<{ apply_url?: string }>('/v1/mcenter/apply', { job_id: id })
+    const url = String(r.apply_url || '')
+    if (url.startsWith('https://') || url.startsWith('http://')) {
+      if (popup) popup.location.replace(url)
+      else window.open(url, '_blank', 'noopener,noreferrer')
+    } else if (popup) {
+      popup.close()
+      await refreshContactAfterApply()
+    } else {
+      await refreshContactAfterApply()
+    }
     appliedLocal.value = true
     applyMsg.value = t('common.success')
-    await refreshContactAfterApply()
   } catch (e: unknown) {
+    if (popup) popup.close()
     applyMsg.value = e instanceof Error ? e.message : t('common.no')
     if (e instanceof ApiError) {
       if (e.key === 'default_00002') {
