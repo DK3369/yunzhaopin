@@ -37,7 +37,7 @@ export function useSiteChrome() {
   const email = computed(() => settings.value.sy_webemail || '')
   const address = computed(() => settings.value.sy_webadd || '')
   const logoPc = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_logo))
-  const logoH5 = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_wap_logo || settings.value.sy_logo))
+  const logoH5 = computed(() => mediaUrl(String(syLogo.value || '').trim() || settings.value.sy_logo || settings.value.sy_wap_logo))
 
   const navRaw = computed(() => boot.value?.nav || [])
 
