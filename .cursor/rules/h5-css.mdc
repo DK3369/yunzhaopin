@@ -35,3 +35,5 @@ H5 `/jobs` 顶栏只要 Latest，不要 Urgent Hiring，也不要 Nearby。
 ## 会员 H5 标签行
 
 `.member_c9` 不要沿用绝对定位 + `.com_member_hr_p1` 的 `padding-left: 1.866667rem`（按中文四字留白）。英文 Inquiry Job / Company Reply 会叠到内容上。H5 用三列 grid：标签左、内容右对齐，删除钮在末列。不要改 `memberwap.css`。
+
+`.m_tab` 不要沿用 `height: 2.826666rem`。两行状态/天数 tab 时卡片负 margin 会切掉第二行。H5 `height: auto`，只给最后一行 tab 留叠进蓝底的 padding。筛选项用说明字号、nowrap；天数用 `3 Days` / `7 Days` / `15 Days` / `30 Days`，不要 `Within one week` 和光秃的 `15`。职位卡标题 `.Posted_card_name` 最多 3 行。

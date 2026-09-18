@@ -61,7 +61,7 @@ const dayTabs = computed(() => [
   { v: 1, label: t('common_01940') },
   { v: 3, label: t('admin_user_00179') },
   { v: 7, label: t('wap_00339') },
-  { v: 15, label: '15' },
+  { v: 15, label: t('wap_com_00392') },
   { v: 30, label: t('member_com_00368') },
 ])
 const filterGroups = computed(() => [

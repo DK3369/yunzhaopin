@@ -2392,6 +2392,67 @@ a.sys_a {
   .member-shell .m_tab ~ .m_cardbox .m_cardbgbox {
     margin-top: -1.466666rem;
   }
+  /* 英文 tab 会折行；写死 2.82rem 会被卡片负 margin 切掉第二行 */
+  .site-h5.m_tab {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 0.08rem;
+  }
+  .site-h5.m_tab:not(:has(+ .site-h5.m_tab)) {
+    padding-bottom: 1.466666rem;
+  }
+  .site-h5 .m_tabbox {
+    padding-left: 0.16rem;
+    padding-right: 0.16rem;
+  }
+  .site-h5 .m_tabbox ul li {
+    font-size: 0.32rem;
+    line-height: 0.44rem;
+    padding-top: 0.213333rem;
+    padding-bottom: 0.213333rem;
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .site-h5 .Posted_card_top {
+    align-items: flex-start;
+  }
+  .site-h5 .Posted_card_name {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.4rem;
+    line-height: 0.56rem;
+  }
+  .site-h5 .Posted_card_state {
+    justify-content: space-between;
+    gap: 0.04rem;
+  }
+  .site-h5 .Posted_state_underway,
+  .site-h5 .Posted_state_without {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .site-h5 .Posted_state_dot,
+  .site-h5 .Posted_state_nodot {
+    flex: none;
+    font-size: 0.32rem;
+    max-width: 0.64rem;
+    overflow: hidden;
+  }
+  .site-h5 .state_underway_text,
+  .site-h5 .state_without_text {
+    font-size: 0.293333rem;
+    line-height: 0.4rem;
+    text-align: center;
+  }
   /* 标签在左、内容在右；不要绝对定位叠字 */
   .site-h5 .com_member_hr_p1:not(form) {
     padding-left: 0;
