@@ -2543,11 +2543,39 @@ html.force-pc .site-h5 {
     padding: 0.16rem 0.2rem;
     box-sizing: border-box;
   }
-  a.com_set_list,
-  a.post_body_card_job {
+  a.com_set_list {
     display: block;
     text-decoration: none;
     color: inherit;
+  }
+  a.post_body_card_job {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+  }
+  .site-h5 .member-set-lang {
+    cursor: pointer;
+  }
+  .site-h5 .member-set-list .card_job_box_post {
+    width: auto;
+    max-width: none;
+    flex: 0 1 auto;
+  }
+  .site-h5 .member-set-list .card_job_box_name {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: right;
+    padding-left: 0.16rem;
+  }
+  #Common_language_box .Common_language_box_header_right {
+    cursor: pointer;
+    color: #999;
+    font-size: 0.48rem;
+    line-height: 1;
+  }
+  #Common_language_box .Common_language_box_header_textandfall {
+    cursor: pointer;
   }
   .privacy_body_card li {
     position: relative;
