@@ -34,4 +34,4 @@ H5 `/jobs` 顶栏只要 Latest，不要 Urgent Hiring，也不要 Nearby。
 
 ## 会员 H5 标签行
 
-`.member_c9` 不要沿用绝对定位 + `.com_member_hr_p1` 的 `padding-left: 1.866667rem`（按中文四字留白）。英文 Inquiry Job / Company Reply 会叠到内容上。H5 改成 flex，标签 `position: static`。
+`.member_c9` 不要沿用绝对定位 + `.com_member_hr_p1` 的 `padding-left: 1.866667rem`（按中文四字留白）。英文 Inquiry Job / Company Reply 会叠到内容上。H5 用三列 grid：标签左、内容右对齐，删除钮在末列。不要改 `memberwap.css`。

@@ -2392,23 +2392,32 @@ a.sys_a {
   .member-shell .m_tab ~ .m_cardbox .m_cardbgbox {
     margin-top: -1.466666rem;
   }
-  /* 英文标签比中文四字长，不要绝对定位叠在内容上 */
-  .site-h5 .com_member_hr_p1 {
+  /* 标签在左、内容在右；不要绝对定位叠字 */
+  .site-h5 .com_member_hr_p1:not(form) {
     padding-left: 0;
-    padding-right: 0.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
+    padding-right: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     column-gap: 0.16rem;
-    row-gap: 0.04rem;
+    align-items: start;
     min-height: 0.56rem;
     line-height: 0.56rem;
     font-size: 0.373333rem;
+    text-align: right;
+    word-break: break-word;
   }
   .site-h5 .com_member_hr_p1 .member_c9 {
     position: static;
-    flex: none;
-    max-width: 100%;
+    grid-column: 1;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .site-h5 .com_member_hr_p1 .sx_new_icon {
+    position: static;
+    grid-column: 3;
+    top: auto;
+    right: auto;
+    align-self: start;
   }
   .verification_form_code--area {
     height: auto;
