@@ -2262,7 +2262,8 @@ html.force-pc .site-h5 {
     font-size: 0.373333rem;
   }
   .member-shell .job_list_tit,
-  .member-shell .resume_Prompt_box {
+  .member-shell .resume_Prompt_box,
+  .member-shell .chatnewcardheader {
     display: none;
   }
   .member-shell .yun_m_rightsidebar,

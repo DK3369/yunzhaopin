@@ -68,7 +68,6 @@ const total = computed(() => inferTotal(data.value))
     </div>
     <div class="site-h5">
       <div class="chatnewcardbg">
-        <div class="chatnewcardheader">{{ $t('common.message') }}</div>
         <div class="chatnewcard">
           <ul>
             <li @click="navigateTo('/user/interviews')">
