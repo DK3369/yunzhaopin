@@ -58,8 +58,8 @@
                 </el-table-column>
                 <el-table-column prop="showtime" :label="lc('admin_00808')" width="130">
                     <template #default="props">
-                        {{ lc('admin_00795') }}
-                        <div style="padding-top:5px;color:#999;">{{ lc('admin_00153') }}</div>
+                        {{ props.row.starttime_n }} {{ lc('member_com_00288') }}
+                        <div style="padding-top:5px;color:#999;">{{ newsShowEnd(props.row) }}</div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="datetime_n" :label="lc('admin_user_weipin_00030')" sortable="custom" width="135">
@@ -570,6 +570,15 @@ export default {
         destroyNewsEditor();
     },
     methods: {
+        newsShowEnd(row) {
+            const e = row && row.endtime
+            if (e === 0 || e === '0' || e == null || e === '') {
+                return lc('admin_00147')
+            }
+            const n = String(row.endtime_n || '').trim()
+            if (!n) return lc('admin_00147')
+            return n + ' ' + lc('member_com_00289')
+        },
         fpClassAllBottom() {
             if (!this.selectedItem.length) {
                 message.error(lc('admin_user_weipin_00001'));
