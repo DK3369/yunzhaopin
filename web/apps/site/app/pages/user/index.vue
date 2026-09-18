@@ -369,14 +369,6 @@ function labelOf(to: string, key: string) {
               <div class="userheader_datum_job_data">{{ h5ResumeMeta || $t('wap_user_00189') }}</div>
             </div>
           </div>
-          <NuxtLink to="/user/resume" class="userheader_datum_right">
-            <div>
-              <div class="userheader_datum_right_word">
-                <span>{{ resume?.name ? $t('wap_user_00208') : $t('wap_user_00197') }}</span>
-                <img src="/legacy/h5/images/comtop1.png" alt="" />
-              </div>
-            </div>
-          </NuxtLink>
         </div>
         <div class="userparticulars">
           <ul>
