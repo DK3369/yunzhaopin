@@ -6,7 +6,7 @@
       <NuxtLink :to="`/jobs/${job.id}`" class="site-job-card__title" :title="job.name">{{ job.name }}</NuxtLink>
       <span class="index_newjob_info_xz">{{ salary }}</span>
     </div>
-    <div class="index_newjob_info nowrap">
+    <div v-if="city || job.exp_n || job.edu_n" class="index_newjob_info nowrap">
       {{ city }}
       <template v-if="job.exp_n">
         <i class="index_newjob_info_line">|</i>{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}
@@ -28,7 +28,7 @@
           height="14"
         />
       </div>
-      <div class="index_newjob_cominfo">
+      <div v-if="job.job_hy || job.hy_n || job.mun_n" class="index_newjob_cominfo">
         {{ job.job_hy || job.hy_n || '' }}
         <template v-if="job.mun_n">
           <i class="index_newjob_info_line">|</i>{{ job.mun_n }}

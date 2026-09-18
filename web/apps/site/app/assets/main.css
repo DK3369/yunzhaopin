@@ -3077,7 +3077,7 @@ a.sys_a {
 .site-job-card .search_job_Apply_fast_ysq {
   z-index: 2;
 }
-/* JobCard 各皮标题共用 3 行；首页 PC 卡原 150px 固定高会裁掉 */
+/* JobCard 各皮标题共用 3 行 */
 .site-job-card__title,
 .site-pc .index_newjobname a,
 .site-pc .yunjoblist_newname_a,
@@ -3107,9 +3107,26 @@ a.sys_a {
 .site-pc .index_newjob_info_xz {
   flex: none;
 }
+/* 空的地区/行业行不要占位；卡高仍 150px，标题 3 行能放下 */
 .site-pc .index_newjobbox ul li {
+  height: 150px;
+  overflow: hidden;
+}
+.site-pc .index_newjob_info {
   height: auto;
-  min-height: 150px;
+  line-height: 20px;
+}
+.site-pc .index_newjob_com {
+  min-height: 0;
+  margin-top: 8px;
+  padding: 8px 0 8px 50px;
+}
+.site-pc .index_newjob_cominfo {
+  height: auto;
+  line-height: 18px;
+}
+.site-pc .index_newjob_com_tx {
+  top: 10px;
 }
 .site-pc .yunjoblist_newname {
   overflow: hidden;
