@@ -558,13 +558,10 @@ function goPage(p: number) {
     <div class="job_header_nav" style="margin-top: 0">
       <div class="job_header_nav_left category">
         <ul>
-          <li :class="{ active: !urgent }">
+          <li class="active">
             <NuxtLink :to="{ path: '/jobs', query: mergeQuery(route.query, { urgent: undefined }) }">{{
               $t('common.latest')
             }}</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/map">{{ $t('wap_00223') }}</NuxtLink>
           </li>
         </ul>
       </div>

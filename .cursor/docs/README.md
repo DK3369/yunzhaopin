@@ -33,6 +33,7 @@
 | PC/H5 会员中心套肤（求职 `/user` · 招聘 `/com`） | [features/member-center.md](./features/member-center.md)（包月 + 积分礼品） |
 | PC 页脚五列与关于我们/排行榜/订阅落地页 | [features/pc-footer.md](./features/pc-footer.md) |
 | 字段编码 UTF-8 / MySQL utf8mb4 | [`.cursor/rules/utf8.mdc`](../rules/utf8.mdc) |
+| H5 字号收口 / 公开 Nearby 先藏 | [`.cursor/rules/h5-css.mdc`](../rules/h5-css.mdc) |
 | API 标识符 / SQL 拼接 / 富文本清洗 | [`.cursor/rules/api-naming.mdc`](../rules/api-naming.mdc) |
 
 ## 不要当现状的

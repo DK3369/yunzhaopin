@@ -967,12 +967,15 @@ a.sys_a {
   padding: 0.2rem 0.32rem 0.4rem;
   max-height: 8rem;
   overflow: auto;
+  font-size: 0.373333rem;
 }
 .h5-filter-item {
   display: block;
   padding: 0.18rem 0;
   border-bottom: 1px solid #f2f2f2;
   color: #333;
+  font-size: 0.373333rem;
+  line-height: 0.56rem;
 }
 .h5-filter-item.on {
   color: #2778f8;
@@ -982,7 +985,8 @@ a.sys_a {
   border-bottom: 1px solid #f2f2f2;
 }
 .h5-filter-group-label {
-  font-size: 0.26rem;
+  font-size: 0.32rem;
+  line-height: 0.48rem;
   color: #999;
   padding: 0.16rem 0 0.08rem;
 }
@@ -2953,15 +2957,42 @@ a.sys_a {
     text-align: center;
     padding: 0 0.04rem;
   }
+  .site-h5 .job_header_nav {
+    height: auto;
+    min-height: 1.2rem;
+    flex-wrap: wrap;
+    overflow: visible;
+    align-items: stretch;
+  }
   .site-h5 .job_header_nav .job_header_nav_left {
     flex-shrink: 0;
   }
   .site-h5 .job_header_nav .h5-filter {
-    flex: 1;
-    min-width: 0;
+    display: contents;
+  }
+  /* 筛选项不要继承 body 0.9em（会吃 html 10vw 变成 30px+） */
+  .site-h5 .h5-filter-panel,
+  .site-h5 .h5-filter-item {
+    font-size: 0.373333rem;
+    line-height: 0.56rem;
+  }
+  .site-h5 .h5-filter-panel {
+    flex: 0 0 100%;
+    width: 100%;
+    position: relative;
+    z-index: 20;
+  }
+  .site-h5 .h5-filter-group-label {
+    font-size: 0.32rem;
+    line-height: 0.48rem;
+  }
+  .site-h5 .job_header_nav_right > ul > li {
+    font-size: 0.32rem;
   }
   .site-h5 .job_header_nav .job_header_nav_right {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    width: auto;
     padding-left: 0.24rem;
   }
   .site-h5 .position_body_card_bom li {

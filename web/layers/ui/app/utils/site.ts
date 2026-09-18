@@ -325,6 +325,22 @@ export const DEFAULT_NAV: NavItem[] = [
   { label: '', to: '/articles' },
 ]
 
+/** 公开 Nearby / 地图搜索入口先藏；企业 `/com/map`、职位详情看地图仍可。 */
+export function isPublicMapTo(to?: string | null): boolean {
+  const raw = String(to || '').trim()
+  if (!raw) return false
+  let path = raw
+  try {
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('//')) {
+      path = new URL(raw.startsWith('//') ? `https:${raw}` : raw).pathname
+    }
+  } catch {
+    /* keep raw */
+  }
+  const p = path.split('?')[0].split('#')[0].replace(/\/+$/, '') || '/'
+  return p === '/map'
+}
+
 export const DEFAULT_H5_NAV: NavItem[] = [
   { label: '', to: '/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
   { label: '', to: '/companies', icon: '/legacy/h5/images/company.png' },
@@ -332,7 +348,6 @@ export const DEFAULT_H5_NAV: NavItem[] = [
   { label: '', to: '/fairs', icon: '/legacy/h5/images/diy_tit4_zph.png' },
   { label: '', to: '/parts', icon: '/legacy/h5/images/Part-time_management.png' },
   { label: '', to: '/articles', icon: '/legacy/h5/images/news.png' },
-  { label: '', to: '/map', icon: '/legacy/h5/images/map_nav.png' },
   { label: '', to: '/eval', icon: '/legacy/h5/images/icon_question.png' },
 ]
 

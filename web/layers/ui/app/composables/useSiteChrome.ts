@@ -5,6 +5,7 @@ import {
   isComMemberPath,
   isMemberPath,
   isNavModuleOn,
+  isPublicMapTo,
   mapNavUrl,
   mediaUrl,
   type NavItem,
@@ -82,6 +83,7 @@ export function useSiteChrome() {
         config: n.config || '',
       }))
       .filter((n) => n.label)
+      .filter((n) => !isPublicMapTo(n.to))
       .filter((n) => isNavModuleOn(settings.value, n.to, n.config))
       .sort((a, b) => a.sort - b.sort || (a.id || 0) - (b.id || 0))
   }
@@ -98,7 +100,7 @@ export function useSiteChrome() {
           { label: t('member_com_00293'), to: '/fairs' },
           { label: t('common.article'), to: '/articles' },
         ].filter((n) => isNavModuleOn(settings.value, n.to))
-    return rows.map((n) => ({ ...n, label: labelForNav(n) }))
+    return rows.filter((n) => !isPublicMapTo(n.to)).map((n) => ({ ...n, label: labelForNav(n) }))
   })
 
   const appNav = computed<NavItem[]>(() =>
@@ -110,11 +112,13 @@ export function useSiteChrome() {
   const h5Nav = computed<NavItem[]>(() => {
     const withIcon = mappedRows().filter((n) => n.parent_id === 26 && n.icon)
     const rows = withIcon.length >= 4 ? withIcon : DEFAULT_H5_NAV.filter((n) => isNavModuleOn(settings.value, n.to))
-    return rows.map((n) => ({
-      ...n,
-      icon: mediaUrl(n.icon_n || n.icon, n.icon || ''),
-      label: labelForNav(n),
-    }))
+    return rows
+      .filter((n) => !isPublicMapTo(n.to))
+      .map((n) => ({
+        ...n,
+        icon: mediaUrl(n.icon_n || n.icon, n.icon || ''),
+        label: labelForNav(n),
+      }))
   })
 
   const descClasses = computed(() => boot.value?.footer_classes || [])
@@ -223,6 +227,11 @@ export function useSiteChrome() {
               title: labelForFooter(title, to),
               to,
             }
+          })
+          .filter((item) => {
+            if (isPublicMapTo(item.to)) return false
+            const name = String(item.title || '').trim()
+            return name !== 'Map Search' && name !== '地图搜索' && name !== 'Nearby'
           }),
       }))
       .filter((c) => c.list.length)

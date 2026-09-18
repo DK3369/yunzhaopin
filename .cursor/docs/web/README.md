@@ -39,7 +39,8 @@ pnpm gen:types:admin
 - H5 职位卡标题（`.table-card-word` / `.tab_card_job_name` / `.comnew_jobname`）最多 3 行，在 `main.css` 收口，不要改 yunwap 单行 nowrap
 - H5 首页搜索条是 `input.index_newedition_search_p`；yunwap 按 PHP `span` 写死 `5.33rem`，不要让白底截成半截灰胶囊，在 `main.css` 铺满
 - H5 首页底不要 ViewMoreJob / Contact Us / Feedback / About Us（`yun_newedition_footer` + lookmore）；底栏五项仍要
-- H5 `/jobs` 顶栏只要 Latest + Nearby，**不要** Urgent Hiring / 急聘 tab（PC 列表急聘筛选仍可）
+- H5 Country / Job function / Filter 点开列表用 `0.373333rem`（分组标签 `0.32rem`），写在 `main.css`，不要继承 `body 0.9em`
+- H5 `/jobs` 顶栏只要 Latest，**不要** Urgent Hiring / Nearby；PC 顶栏、H5 宫格、页脚也不出公开 `/map`（职位详情看地图、企业 `/com/map` 仍可）
 - 打包 CSS：`/legacy/site-pc.css` / `/legacy/site-h5.css`（见 `server/utils/legacyCss.ts`，磁盘在 `public/legacy/`）；皮肤与会员包按 `m=user|com` 拼
 - `sy_wap_web==2` 时 `html.force-pc` 强制 PC
 
