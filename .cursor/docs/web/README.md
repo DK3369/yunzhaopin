@@ -36,6 +36,7 @@ pnpm gen:types:admin
 
 - 同一 file-based 路由：`apps/site/app/pages/`
 - 模板双写 `.site-pc` / `.site-h5`；`app/assets/main.css` 用 `min-width:1200px` 显隐
+- H5 职位卡标题（`.table-card-word` / `.tab_card_job_name` / `.comnew_jobname`）最多 3 行，在 `main.css` 收口，不要改 yunwap 单行 nowrap
 - 打包 CSS：`/legacy/site-pc.css` / `/legacy/site-h5.css`（见 `server/utils/legacyCss.ts`，磁盘在 `public/legacy/`）；皮肤与会员包按 `m=user|com` 拼
 - `sy_wap_web==2` 时 `html.force-pc` 强制 PC
 

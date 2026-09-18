@@ -471,6 +471,32 @@ a.sys_a {
   .site-h5 {
     display: revert;
   }
+  /* H5 职位卡标题最多 3 行；yunwap `.table-card-word` 是 nowrap 单行 */
+  .site-h5 .card_post {
+    height: auto;
+    min-height: 0.4rem;
+    align-items: flex-start;
+  }
+  .site-h5 .tab_card_job {
+    white-space: normal;
+    height: auto;
+    overflow: visible;
+  }
+  .site-h5 .table-card-word,
+  .site-h5 .tab_card_job_name,
+  .site-h5 .comnew_jobname {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    height: auto;
+    max-height: 1.6rem;
+    line-height: 0.533333rem;
+    word-break: break-word;
+  }
   a.mqnewlist.site-h5 {
     display: inline-block;
   }
