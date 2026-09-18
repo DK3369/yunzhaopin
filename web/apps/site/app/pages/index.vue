@@ -790,19 +790,6 @@ useHead({
         </div>
         <JobCard v-for="job in h5JobList" :key="h5Tab + job.id" :job="job" />
         <p v-if="!h5JobList.length" class="muted" style="padding: 0.4rem">{{ $t('default_00033') }}</p>
-        <div class="yunheader_60lookmore" style="text-align: center; padding: 0.3rem 0 0.6rem">
-          <NuxtLink to="/jobs">{{ $t('wap_00518') }}</NuxtLink>
-        </div>
-      </div>
-
-      <div class="yun_newedition_footer">
-        <div>
-          <NuxtLink to="/pages/contact">{{ $t('wap_00220') }}</NuxtLink>
-          <span class="yun_newedition_footer_line">|</span>
-          <NuxtLink to="/advice">{{ $t('wap_user_00203') }}</NuxtLink>
-          <span class="yun_newedition_footer_line">|</span>
-          <NuxtLink to="/pages/about">{{ $t('wap_00218') }}</NuxtLink>
-        </div>
       </div>
     </div>
   </div>

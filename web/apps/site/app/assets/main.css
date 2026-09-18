@@ -909,19 +909,6 @@ a.sys_a {
     border-radius: 0.533333rem;
     opacity: 1;
   }
-  .yun_newedition_footer {
-    text-align: center;
-    padding: 0.4rem 0 1.2rem;
-    font-size: 0.28rem;
-    color: #999;
-  }
-  .yun_newedition_footer a {
-    color: #666;
-  }
-  .yun_newedition_footer_line {
-    margin: 0 0.12rem;
-    color: #ddd;
-  }
   .zd_banner img {
     width: 100%;
     display: block;
