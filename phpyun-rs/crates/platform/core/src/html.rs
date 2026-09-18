@@ -173,6 +173,187 @@ pub fn unescape_basic(s: &str) -> String {
         .replace("&nbsp;", " ")
 }
 
+/// Unwrap PHP nowrap-escaped full pages, then whitelist-sanitize.
+/// Load-time only; do not invent translations.
+pub fn recover_legacy_html(raw: &str) -> String {
+    let mut s = strip_nul(raw);
+    if s.is_empty() {
+        return s;
+    }
+    let nowrap = has_nowrap(&s);
+    if nowrap {
+        s = unwrap_nowrap_lines(&s);
+    }
+    if looks_like_full_page(&s) {
+        s = extract_article_body(&s);
+    } else if nowrap && !s.contains('<') {
+        s = s
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty())
+            .map(|l| format!("<p>{}</p>", esc(l)))
+            .collect::<Vec<_>>()
+            .join("");
+    }
+    sanitize_html(&s)
+}
+
+fn has_nowrap(s: &str) -> bool {
+    let l = s.to_ascii_lowercase();
+    l.contains("text-wrap-mode: nowrap") || l.contains("white-space:nowrap") || l.contains("white-space: nowrap")
+}
+
+fn looks_like_full_page(s: &str) -> bool {
+    let l = s.to_ascii_lowercase();
+    l.contains("<!doctype") || l.contains("<html")
+}
+
+fn unwrap_nowrap_lines(s: &str) -> String {
+    let lower = s.to_ascii_lowercase();
+    let mut lines = Vec::new();
+    let mut i = 0;
+    while let Some(rel) = lower[i..].find("<p") {
+        let start = i + rel;
+        let Some(gt_rel) = s.get(start..).and_then(|rest| rest.find('>')) else {
+            break;
+        };
+        let inner_start = start + gt_rel + 1;
+        let Some(end_rel) = lower.get(inner_start..).and_then(|rest| rest.find("</p>")) else {
+            break;
+        };
+        let inner_end = inner_start + end_rel;
+        if inner_end > s.len() || inner_start > inner_end {
+            break;
+        }
+        let inner = s[inner_start..inner_end].trim();
+        let decoded = unescape_basic(inner);
+        if !decoded.is_empty() {
+            lines.push(decoded);
+        }
+        i = inner_end + 4;
+        if i <= start {
+            break;
+        }
+    }
+    if lines.is_empty() {
+        unescape_basic(s)
+    } else {
+        lines.join("\n")
+    }
+}
+
+fn extract_article_body(s: &str) -> String {
+    for class in ["news_con", "news_content", "wap_txt", "wap_news_cont"] {
+        if let Some(inner) = extract_by_class(s, class) {
+            let t = inner.trim();
+            if !t.is_empty() {
+                return t.to_string();
+            }
+        }
+    }
+    if let Some(inner) = extract_first_tag(s, "article") {
+        let t = inner.trim();
+        if !t.is_empty() {
+            return t.to_string();
+        }
+    }
+    if let Some(inner) = extract_first_tag(s, "body") {
+        let t = inner.trim();
+        if !t.is_empty() {
+            return t.to_string();
+        }
+    }
+    s.to_string()
+}
+
+fn extract_by_class(html: &str, class: &str) -> Option<String> {
+    let tag_start = find_element_with_class(html, class)?;
+    extract_from_open_tag(html, tag_start)
+}
+
+fn find_element_with_class(html: &str, class: &str) -> Option<usize> {
+    let lower = html.to_ascii_lowercase();
+    let class_l = class.to_ascii_lowercase();
+    let mut search = 0;
+    while let Some(rel) = lower[search..].find(&class_l) {
+        let at = search + rel;
+        let before = if at == 0 {
+            b' '
+        } else {
+            lower.as_bytes()[at - 1]
+        };
+        let after = lower.as_bytes().get(at + class_l.len()).copied().unwrap_or(b' ');
+        let token = matches!(before, b'"' | b'\'' | b' ')
+            && matches!(after, b'"' | b'\'' | b' ' | b'>');
+        if token {
+            if let Some(tag_start) = html[..at].rfind('<') {
+                let rest = &html[tag_start + 1..];
+                if !rest.starts_with('/') {
+                    return Some(tag_start);
+                }
+            }
+        }
+        search = at + 1;
+    }
+    None
+}
+
+fn extract_first_tag(html: &str, tag: &str) -> Option<String> {
+    let lower = html.to_ascii_lowercase();
+    let open = format!("<{tag}");
+    let mut search = 0;
+    while let Some(rel) = lower[search..].find(&open) {
+        let tag_start = search + rel;
+        let after = tag_start + open.len();
+        let next = lower.as_bytes().get(after).copied().unwrap_or(b' ');
+        if matches!(next, b' ' | b'>' | b'\t' | b'\n' | b'/' | b'\r') {
+            return extract_from_open_tag(html, tag_start);
+        }
+        search = after;
+    }
+    None
+}
+
+fn extract_from_open_tag(html: &str, tag_start: usize) -> Option<String> {
+    let rest = html.get(tag_start + 1..)?;
+    let tag_name: String = rest
+        .chars()
+        .take_while(|c| c.is_ascii_alphabetic())
+        .collect();
+    if tag_name.is_empty() {
+        return None;
+    }
+    let gt_rel = html[tag_start..].find('>')?;
+    let inner_start = tag_start + gt_rel + 1;
+    if inner_start > html.len() {
+        return None;
+    }
+    let open_l = format!("<{tag_name}").to_ascii_lowercase();
+    let close_l = format!("</{tag_name}").to_ascii_lowercase();
+    let rest_l = html[inner_start..].to_ascii_lowercase();
+    let mut depth = 1i32;
+    let mut i = 0;
+    while i < rest_l.len() && depth > 0 {
+        if rest_l[i..].starts_with(&close_l) {
+            depth -= 1;
+            if depth == 0 {
+                return Some(html[inner_start..inner_start + i].to_string());
+            }
+            i += close_l.len();
+            continue;
+        }
+        if rest_l[i..].starts_with(&open_l) {
+            let after = i + open_l.len();
+            let next = rest_l.as_bytes().get(after).copied().unwrap_or(b' ');
+            if matches!(next, b' ' | b'>' | b'\t' | b'\n' | b'/' | b'\r') {
+                depth += 1;
+            }
+        }
+        i += 1;
+    }
+    None
+}
+
 pub fn esc(s: &str) -> String {
     s.replace('&', "&amp;")
         .replace('<', "&lt;")
@@ -240,5 +421,36 @@ mod tests {
             sanitize_html_setting("sy_webname", "A\0B"),
             "AB"
         );
+    }
+
+    #[test]
+    fn recover_unwraps_nowrap_and_picks_news_con() {
+        let raw = concat!(
+            r#"<p style="text-wrap-mode: nowrap">&lt;html&gt;&lt;body&gt;"#,
+            r#"&lt;div class=&quot;news_con&quot;&gt;&lt;p&gt;Hello trend&lt;/p&gt;&lt;/div&gt;"#,
+            r#"&lt;div class=&quot;footer&quot;&gt;壳&lt;/div&gt;"#,
+            r#"&lt;/body&gt;&lt;/html&gt;</p>"#,
+        );
+        let out = recover_legacy_html(raw);
+        assert!(out.contains("<p>Hello trend</p>"), "{out}");
+        assert!(!out.to_ascii_lowercase().contains("<html"));
+    }
+
+    #[test]
+    fn recover_plain_paragraphs_stay_paragraphs() {
+        let out = recover_legacy_html("<p>One</p><p>Two</p>");
+        assert!(out.contains("<p>One</p>"));
+        assert!(out.contains("<p>Two</p>"));
+    }
+
+    #[test]
+    fn recover_nowrap_plain_lines_become_paragraphs() {
+        let raw = concat!(
+            r#"<p style="text-wrap-mode: nowrap">First line</p>"#,
+            r#"<p style="text-wrap-mode: nowrap">Second line</p>"#,
+        );
+        let out = recover_legacy_html(raw);
+        assert!(out.contains("<p>First line</p>"), "{out}");
+        assert!(out.contains("<p>Second line</p>"), "{out}");
     }
 }

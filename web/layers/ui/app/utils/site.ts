@@ -360,6 +360,14 @@ function queryDetailId(query: URLSearchParams): string {
 }
 
 function withModuleId(moduleKey: string, base: string, query: URLSearchParams): string {
+  if (moduleKey === 'news' || moduleKey === 'article') {
+    const id = queryDetailId(query)
+    const c = (query.get('c') || '').toLowerCase()
+    if (id && c !== 'list') return `${base}/${id}`
+    const nid = String(query.get('nid') || query.get('category') || '').trim()
+    if (/^\d+$/.test(nid) && Number(nid) > 0) return `${base}?nid=${encodeURIComponent(nid)}`
+    return base
+  }
   if (!DETAIL_MODULES.has(moduleKey)) return base
   const id = queryDetailId(query)
   return id ? `${base}/${id}` : base

@@ -41,7 +41,9 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<Article> {
         let _ = article_repo::incr_hits(&pool, id).await;
     });
     let mut a = a;
-    a.content = phpyun_core::html::sanitize_opt(a.content);
+    a.content = a
+        .content
+        .map(|c| phpyun_core::html::recover_legacy_html(&c));
     Ok(a)
 }
 

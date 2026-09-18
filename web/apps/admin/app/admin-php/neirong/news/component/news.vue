@@ -468,23 +468,32 @@ function recoverNewsHtml(raw) {
     var s = String(raw || '');
     if (!s) return '';
     var html = s;
-    if (s.indexOf('text-wrap-mode: nowrap') >= 0 && typeof DOMParser !== 'undefined') {
+    var nowrap = s.indexOf('text-wrap-mode: nowrap') >= 0
+        || s.indexOf('white-space:nowrap') >= 0
+        || s.indexOf('white-space: nowrap') >= 0;
+    if (nowrap && typeof DOMParser !== 'undefined') {
         try {
             var doc = new DOMParser().parseFromString(s, 'text/html');
             var paras = doc.querySelectorAll('body > p');
             if (!paras.length) paras = doc.querySelectorAll('p');
             var lines = [];
             for (var i = 0; i < paras.length; i++) {
-                lines.push(paras[i].textContent || '');
+                var inner = paras[i].innerHTML || '';
+                var ta = document.createElement('textarea');
+                ta.innerHTML = inner;
+                lines.push(ta.value);
             }
-            var text = lines.join('\n');
-            if (text.trim()) html = text;
+            var joined = lines.join('\n');
+            if (joined.trim()) html = joined;
         } catch (e) {}
     }
     if (/<!DOCTYPE|<html[\s>]/i.test(html) && typeof DOMParser !== 'undefined') {
         try {
-            var inner = new DOMParser().parseFromString(html, 'text/html');
-            var body = inner.body ? String(inner.body.innerHTML || '').trim() : '';
+            var page = new DOMParser().parseFromString(html, 'text/html');
+            var pick = page.querySelector('.news_con, .news_content, .wap_txt, .wap_news_cont, article');
+            var body = pick
+                ? String(pick.innerHTML || '').trim()
+                : (page.body ? String(page.body.innerHTML || '').trim() : '');
             if (body) return body;
         } catch (e) {}
     }

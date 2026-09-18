@@ -20,7 +20,7 @@
 | 职位 | `/jobs` `/jobs/:id` | `/v1/wap/jobs`、`jobs/detail` 等 | 模块 `sy_job_web` |
 | 企业 | `/companies` `/companies/:uid`… | `/v1/wap/companies`、sidebar | **不是**会员 `/com` |
 | 简历（公开） | `/resumes` `/resumes/:uid` | `/v1/wap/resumes`… | |
-| 资讯 | `/articles` `/articles/:id` `/articles/channels` | `/v1/wap/articles`… | |
+| 资讯 | `/articles` `/articles/:id` `/articles/channels` | `/v1/wap/articles`… | 后台新闻标题/分类外链拼 `{WEB_BASE_URL}/articles/{id}` 与 `?nid=`，禁止 `index.php?m=news`。旧 `/index.php?m=news` 由 site `php-index.global.ts` 302 过来。 |
 | 公告 | `/announcements`… | `/v1/wap/announcements`… | |
 | 招聘会 | `/fairs` `/fairs/:id` | `/v1/wap/zph`… | 模块 `zph` |
 | 问答 | `/questions`… | `/v1/wap/qna`… | 模块 `ask` |

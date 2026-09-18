@@ -1788,8 +1788,8 @@ async fn news_index(state: &AppState, body: &Value) -> AppResult<Value> {
                 "picurl": pic_url(&base, &a.cover),
                 "name": a.category,
                 "name_n": news_label(&dicts, a.nid, &a.category),
-                "url": format!("{base}/index.php?m=news&c=show&id={}", a.id),
-                "classurl": format!("{base}/index.php?m=news&c=list&nid={}", a.nid),
+                "url": format!("{base}/articles/{}", a.id),
+                "classurl": format!("{base}/articles?nid={}", a.nid),
                 "titype": "",
             })
         })
@@ -1807,7 +1807,9 @@ async fn news_addnews(state: &AppState, user: &AuthenticatedUser, body: &Value) 
         } else {
             String::new()
         };
-        return Ok(PhpOut::Data(json!({ "content": content })));
+        return Ok(PhpOut::Data(json!({
+            "content": phpyun_core::html::recover_legacy_html(&content)
+        })));
     }
     let title = json_str(body, "title");
     let nid = json_i32(body, "nid");
