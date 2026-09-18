@@ -3,7 +3,7 @@
   <li v-if="variant === 'home'" class="site-pc site-job-card">
     <NuxtLink class="site-job-card__hit" :to="`/jobs/${job.id}`" :title="job.name" tabindex="-1" aria-hidden="true" />
     <div class="index_newjobname">
-      <NuxtLink :to="`/jobs/${job.id}`" :title="job.name">{{ job.name }}</NuxtLink>
+      <NuxtLink :to="`/jobs/${job.id}`" class="site-job-card__title" :title="job.name">{{ job.name }}</NuxtLink>
       <span class="index_newjob_info_xz">{{ salary }}</span>
     </div>
     <div class="index_newjob_info nowrap">
@@ -39,7 +39,7 @@
   <NuxtLink v-if="variant === 'home'" class="site-h5" :to="`/jobs/${job.id}`" :title="job.name">
     <div class="table-card">
       <div class="card_post">
-        <i class="table-card-word">{{ job.name }}</i>
+        <i class="table-card-word site-job-card__title">{{ job.name }}</i>
         <i class="table-card-salary">{{ salary }}</i>
       </div>
       <div class="table-card-require">
@@ -74,7 +74,7 @@
     </div>
     <div class="yunjoblist_new">
       <div class="yunjoblist_newname">
-        <NuxtLink :to="`/jobs/${job.id}`" class="yunjoblist_newname_a" :title="job.name">{{ job.name }}</NuxtLink>
+        <NuxtLink :to="`/jobs/${job.id}`" class="yunjoblist_newname_a site-job-card__title" :title="job.name">{{ job.name }}</NuxtLink>
         <span v-if="job.istop" class="lookjob">{{ $t('wap_user_00335') }}</span>
         <i v-if="job.newtime" class="job_newicon">{{ $t('common_02081') }}</i>
         <img v-if="job.is_urgent" src="/legacy/pc/images/jobjp.png" alt="" class="co_zzjp png" />
@@ -168,7 +168,7 @@
     <NuxtLink class="site-job-card__hit" :to="`/jobs/${job.id}`" :title="job.name" tabindex="-1" aria-hidden="true" />
     <div class="com_details_com_otherjob_l">
       <div class="com_details_com_otherjob_name">
-        <NuxtLink :to="`/jobs/${job.id}`">{{ job.name }}</NuxtLink>
+        <NuxtLink :to="`/jobs/${job.id}`" class="site-job-card__title">{{ job.name }}</NuxtLink>
       </div>
       <div class="com_details_com_otherjob_info">
         <template v-if="job.exp_n">{{ dictReqLabel(String(job.exp_n), $t('home.experience_suffix')) }}</template>
@@ -190,7 +190,7 @@
   <NuxtLink v-if="variant === 'com'" class="site-h5" :to="`/jobs/${job.id}`" :title="job.name">
     <div class="comnew_joblist">
       <div class="comnew_jobtop">
-        <div class="comnew_jobname">{{ job.name }}</div>
+        <div class="comnew_jobname site-job-card__title">{{ job.name }}</div>
         <span v-if="posted" class="comnew_jobinfo_time">{{ posted }}</span>
       </div>
       <div class="comnew_jobxz">{{ salary }}</div>
@@ -215,7 +215,7 @@
       </div>
       <div class="tab_card_top">
         <div class="tab_card_job">
-          <i class="tab_card_job_name">{{ job.name }}</i>
+          <i class="tab_card_job_name site-job-card__title">{{ job.name }}</i>
           <i v-if="job.istop" class="tab_card_new">{{ $t('wap_user_00335') }}</i>
           <i v-if="job.newtime" class="tab_card_new">new</i>
         </div>

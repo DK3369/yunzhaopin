@@ -516,6 +516,7 @@ a.sys_a {
     height: auto;
     overflow: visible;
   }
+  .site-h5 .site-job-card__title,
   .site-h5 .table-card-word,
   .site-h5 .tab_card_job_name,
   .site-h5 .comnew_jobname {
@@ -3076,12 +3077,11 @@ a.sys_a {
 .site-job-card .search_job_Apply_fast_ysq {
   z-index: 2;
 }
-/* PC 职位列表标题最多 3 行，对齐 H5 tab_card_job_name */
-.site-pc .yunjoblist_newname {
-  overflow: hidden;
-}
-.site-pc .yunjoblist_newname_a {
-  float: none;
+/* JobCard 各皮标题共用 3 行；首页 PC 卡原 150px 固定高会裁掉 */
+.site-job-card__title,
+.site-pc .index_newjobname a,
+.site-pc .yunjoblist_newname_a,
+.site-pc .com_details_com_otherjob_name a {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -3090,8 +3090,29 @@ a.sys_a {
   text-overflow: ellipsis;
   white-space: normal;
   word-break: break-word;
+  height: auto;
+}
+.site-pc .site-job-card__title,
+.site-pc .index_newjobname a,
+.site-pc .yunjoblist_newname_a,
+.site-pc .com_details_com_otherjob_name a {
+  float: none;
+  min-width: 0;
   max-width: 100%;
   line-height: 1.4;
+}
+.site-pc .index_newjobname {
+  align-items: flex-start;
+}
+.site-pc .index_newjob_info_xz {
+  flex: none;
+}
+.site-pc .index_newjobbox ul li {
+  height: auto;
+  min-height: 150px;
+}
+.site-pc .yunjoblist_newname {
+  overflow: hidden;
 }
 
 .site-job-card:hover .index_newjobname a,
