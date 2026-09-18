@@ -694,74 +694,74 @@ useSeoMeta({ title: t('wap_user_00204') })
     <p v-if="topMsg" class="muted">{{ topMsg }}</p>
     <p v-if="msg && openSec !== 'basic'" class="muted">{{ msg }}</p>
     <form v-if="!error && openSec === 'basic'" class="site-pc yun_resume_popup_box" @submit.prevent="saveResume">
-      <ul>
-        <li>
-          <div class="yun_resume_popup_list" style="margin-top: 0">
-            <span class="yun_resume_popup_name">{{ $t('wap_00529') }}</span>
-            <input v-model="form.name" class="yun_resume_popup_infotext" />
-            <span class="yun_resume_popup_infoname">{{ $t('common_02092') }}</span>
-            <select v-model.number="form.sex" class="yun_resume_popup_infotext">
-              <option :value="1">{{ $t('common_02092') }}</option>
-              <option :value="2">{{ $t('common_02069') }}</option>
-            </select>
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">{{ $t('ui.birthday') }}</span>
-            <input v-model="form.birthday" class="yun_resume_popup_infotext" placeholder="YYYY-MM" />
-            <span class="yun_resume_popup_infoname">{{ $t('wap_user_00242') }}</span>
-            <input v-model="form.living" class="yun_resume_popup_infotext" />
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">{{ $t('wap_00459') }}</span>
-            <div class="yun_resume_popup_info_box">
-              <select v-model.number="form.education" class="yun_resume_popup_infotext">
-                <option :value="0">{{ $t('wap_00459') }}</option>
-                <option v-for="d in eduDict || []" :key="'pc-edu-' + d.id" :value="d.id">{{ d.name }}</option>
-              </select>
-            </div>
-            <span class="yun_resume_popup_infoname">{{ $t('wap_00457') }}</span>
-            <div class="yun_resume_popup_info_box">
-              <select v-model.number="form.exp" class="yun_resume_popup_infotext">
-                <option :value="0">{{ $t('wap_00457') }}</option>
-                <option v-for="d in expDict || []" :key="'pc-exp-' + d.id" :value="d.id">{{ d.name }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">{{ $t('common.phone') }}</span>
-            <input v-model="form.telphone" class="yun_resume_popup_infotext" />
-            <span class="yun_resume_popup_infoname">{{ $t('member_user_00282') }}</span>
-            <input v-model="form.email" class="yun_resume_popup_infotext" />
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">{{ $t('member_user_00158') }}</span>
-            <input v-model="form.domicile" class="yun_resume_popup_infotext" />
-            <span class="yun_resume_popup_infoname">{{ $t('wap_user_00243') }}</span>
-            <input v-model="form.address" class="yun_resume_popup_infotext" />
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">{{ $t('member_user_00165') }}</span>
-            <input v-model="form.height" class="yun_resume_popup_infotext" placeholder="CM" />
-            <span class="yun_resume_popup_infoname">{{ $t('member_user_00160') }}</span>
-            <input v-model="form.weight" class="yun_resume_popup_infotext" placeholder="KG" />
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">QQ</span>
-            <input v-model="form.qq" class="yun_resume_popup_infotext" />
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name">{{ $t('wap_user_00102') }}</span>
+      <div class="yun_resume_popup_list">
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('wap_00529') }}</span>
+          <input v-model="form.name" class="yun_resume_popup_infotext" autocomplete="name" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('wap_com_00303') }}</span>
+          <select v-model.number="form.sex" class="yun_resume_popup_infotext">
+            <option :value="1">{{ $t('common_02092') }}</option>
+            <option :value="2">{{ $t('common_02069') }}</option>
+          </select>
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('ui.birthday') }}</span>
+          <input v-model="form.birthday" class="yun_resume_popup_infotext" placeholder="YYYY-MM" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('wap_user_00242') }}</span>
+          <input v-model="form.living" class="yun_resume_popup_infotext" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('wap_00459') }}</span>
+          <select v-model.number="form.education" class="yun_resume_popup_infotext">
+            <option :value="0">{{ $t('common.not_limited') }}</option>
+            <option v-for="d in eduDict || []" :key="'pc-edu-' + d.id" :value="d.id">{{ d.name }}</option>
+          </select>
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('wap_00457') }}</span>
+          <select v-model.number="form.exp" class="yun_resume_popup_infotext">
+            <option :value="0">{{ $t('common.not_limited') }}</option>
+            <option v-for="d in expDict || []" :key="'pc-exp-' + d.id" :value="d.id">{{ d.name }}</option>
+          </select>
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('common.phone') }}</span>
+          <input v-model="form.telphone" class="yun_resume_popup_infotext" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('member_user_00282') }}</span>
+          <input v-model="form.email" class="yun_resume_popup_infotext" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('member_user_00158') }}</span>
+          <input v-model="form.domicile" class="yun_resume_popup_infotext" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('wap_user_00243') }}</span>
+          <input v-model="form.address" class="yun_resume_popup_infotext" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('member_user_00165') }}</span>
+          <input v-model="form.height" class="yun_resume_popup_infotext" placeholder="CM" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">{{ $t('member_user_00160') }}</span>
+          <input v-model="form.weight" class="yun_resume_popup_infotext" placeholder="KG" />
+        </label>
+        <label class="yun_resume_popup_cell">
+          <span class="yun_resume_popup_name">QQ</span>
+          <input v-model="form.qq" class="yun_resume_popup_infotext" />
+        </label>
+        <div class="yun_resume_popup_cell yun_resume_popup_cell--full yun_resume_popup_cell--area">
+          <span class="yun_resume_popup_name">{{ $t('wap_user_00102') }}</span>
+          <div class="yun_resume_popup_area">
             <textarea v-model="form.description" class="infor_textarea" rows="4" />
-          </div>
-          <div class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name" />
-            <div class="look_other_tit">
-              <a href="javascript:;" class="look_other_h" @click.prevent="toggleIntroduce">{{ $t('wap_user_00062') }}</a>
-            </div>
-          </div>
-          <div v-if="showIntroduce" class="yun_resume_popup_list">
-            <span class="yun_resume_popup_name" />
-            <div class="eva_ex_list_bx">
+            <a href="javascript:;" class="look_other_h" @click.prevent="toggleIntroduce">{{ $t('wap_user_00062') }}</a>
+            <div v-if="showIntroduce" class="eva_ex_list_bx">
               <i class="eva_ex_list_bx_img" />
               <div class="eva_ex_list_ct">
                 <div class="ct_cs">
@@ -776,17 +776,17 @@ useSeoMeta({ title: t('wap_user_00204') })
               </div>
             </div>
           </div>
-        </li>
-      </ul>
+        </div>
+      </div>
       <div class="yun_resume_popup_infobot">
         <button type="submit" class="expect_test_bth">{{ $t('ui.save_resume') }}</button>
         <a href="javascript:;" class="expect_test_bth_qx" @click.prevent="openSec = ''">{{ $t('common.cancel') }}</a>
-        <span v-if="msg" class="yun_resume_popup_name" style="width: auto; float: none; margin-left: 12px">{{ msg }}</span>
+        <span v-if="msg" class="yun_resume_popup_msg">{{ msg }}</span>
       </div>
     </form>
     <form v-if="!error && openSec === 'basic'" class="site-h5 yun_createbox" @submit.prevent="saveResume">
       <MemberField wap :label="$t('wap_00529')"><input v-model="form.name" /></MemberField>
-      <MemberField wap :label="$t('common_02092')">
+      <MemberField wap :label="$t('wap_com_00303')">
         <select v-model.number="form.sex">
           <option :value="1">{{ $t('common_02092') }}</option>
           <option :value="2">{{ $t('common_02069') }}</option>
@@ -839,14 +839,15 @@ useSeoMeta({ title: t('wap_user_00204') })
     <MemberResumeSection :title="$t('home.intention')" icon="yun_resume_h1_iconyx" h5-kind="none" :open="openSec === 'expect'" @toggle="openAdd('expect')">
       <template #pc>
         <ul v-if="expectRows.length" class="yun_resume_job_intention_list">
-          <li v-for="row in expectRows" :key="row.id">
-            {{ row.name || row.id }}
-            <NuxtLink
-              v-if="Number(row.doc) === 1"
-              :to="`/user/resume/paste?id=${row.id}`"
-              class="user_resume_cz_a"
-            >{{ $t('wap_00269') }}</NuxtLink>
-          </li>
+          <template v-for="row in expectRows" :key="row.id">
+            <li>{{ $t('wap_00460') }}：{{ row.name || '—' }}</li>
+            <li v-if="row.salary_n">{{ $t('ui.expect_salary') }}：{{ row.salary_n }}</li>
+            <li v-else-if="row.salary">{{ $t('ui.expect_salary') }}：{{ row.salary }}</li>
+            <li v-if="row.city_class_n">{{ row.city_class_n }}</li>
+            <li v-if="Number(row.doc) === 1" class="yun_resume_job_intention_list_end">
+              <NuxtLink :to="`/user/resume/paste?id=${row.id}`" class="user_resume_cz_a">{{ $t('wap_00269') }}</NuxtLink>
+            </li>
+          </template>
         </ul>
         <p v-else class="muted">{{ $t('ui.no_expect') }}</p>
       </template>

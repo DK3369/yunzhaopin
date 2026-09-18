@@ -1510,14 +1510,40 @@ html.force-pc .site-h5 {
   }
   .yun_resume_joblist {
     position: relative;
+    float: none;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
     background: #fff;
     margin-bottom: 12px;
     padding: 0 20px 16px;
+  }
+  .yun_resume_joblist .yun_resume_h1 {
+    float: none;
+    width: auto;
   }
   .yun_resume_joblist .yun_resume_handle {
     position: absolute;
     right: 20px;
     top: 12px;
+    display: block;
+  }
+  .yun_resume_job_intention_list {
+    display: flex;
+    flex-wrap: wrap;
+    float: none;
+    width: auto;
+    gap: 4px 32px;
+    padding: 4px 0 0;
+  }
+  .yun_resume_job_intention_list li {
+    float: none;
+    width: auto;
+    flex: 1 1 280px;
+    line-height: 28px;
+  }
+  .yun_resume_job_intention_list .yun_resume_job_intention_list_end {
+    flex: 1 1 100%;
   }
   .member-resume-section-form {
     background: #fff;
@@ -1671,13 +1697,156 @@ html.force-pc .site-h5 {
     min-height: 88px;
   }
   .member-page .yun_resume_popup_box {
-    overflow: hidden;
+    float: none;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
     background: #fff;
-    padding: 8px 20px 16px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 20px 24px 16px;
+    margin: 0 0 16px;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px 28px;
+    float: none;
+    width: auto;
+    margin: 0;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 12px;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_cell--full {
+    grid-column: 1 / -1;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_cell--area {
+    align-items: flex-start;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_name,
+  .member-page .yun_resume_popup_box .yun_resume_popup_infoname {
+    float: none;
+    flex: 0 0 196px;
+    width: 196px;
+    max-width: 196px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    line-height: 1.35;
+    font-size: 13px;
+    color: #555;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_cell--area .yun_resume_popup_name {
+    padding-top: 10px;
   }
   .member-page .yun_resume_popup_box .yun_resume_popup_infotext,
   .member-page .yun_resume_popup_box select.yun_resume_popup_infotext {
+    float: none;
+    display: block;
+    flex: 1 1 auto;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    height: 36px;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0 10px;
+    text-indent: 0;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    background: #fff;
+    font-size: 14px;
+    line-height: 34px;
+    color: #333;
+  }
+  .member-page .yun_resume_popup_box select.yun_resume_popup_infotext {
+    padding-right: 28px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_infotext:focus,
+  .member-page .yun_resume_popup_box select.yun_resume_popup_infotext:focus,
+  .member-page .yun_resume_popup_box .infor_textarea:focus {
+    border-color: #1787fb;
+    box-shadow: 0 0 0 2px rgba(23, 135, 251, 0.15);
+    outline: none;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_area {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .member-page .yun_resume_popup_box .infor_textarea {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-height: 96px;
+    height: auto;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .member-page .yun_resume_popup_box .look_other_h {
+    position: static;
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #1787fb;
+  }
+  .member-page .yun_resume_popup_box .look_other_tit {
+    position: relative;
+    width: auto;
+    padding-bottom: 8px;
+  }
+  .member-page .yun_resume_popup_box .look_other_tit .look_other_h {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 0;
+  }
+  .member-page .yun_resume_popup_box .eva_ex_list_bx {
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
+  .member-page .yun_resume_popup_box .eva_ex_list_ct,
+  .member-page .yun_resume_popup_box .ct_cs {
+    width: auto;
+    max-width: 100%;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_infobot {
+    float: none;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 0 4px;
+    text-align: center;
+  }
+  .member-page .yun_resume_popup_box .expect_test_bth,
+  .member-page .yun_resume_popup_box .expect_test_bth_qx {
+    width: auto;
+    min-width: 88px;
+    padding: 0 18px;
+    box-sizing: border-box;
+  }
+  .member-page .yun_resume_popup_box .yun_resume_popup_msg {
+    color: #f60;
+    font-size: 13px;
   }
 }
 
