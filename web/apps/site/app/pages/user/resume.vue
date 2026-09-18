@@ -162,10 +162,23 @@ const msg = ref('')
 function fail(e: unknown) {
   return e instanceof Error ? e.message : t('ui.failed')
 }
+function resumePayload() {
+  const body: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(form)) {
+    if (typeof v === 'string') {
+      const s = v.trim()
+      if (!s) continue
+      body[k] = s
+      continue
+    }
+    body[k] = v
+  }
+  return body
+}
 async function saveResume() {
   msg.value = ''
   try {
-    await api.post('/v1/mcenter/resume', { ...form })
+    await api.post('/v1/mcenter/resume', resumePayload())
     if (!hasResume.value && expectForm.name) {
       await api.post('/v1/mcenter/resume/expects', { ...expectForm }).catch((e: unknown) => {
         msg.value = fail(e)
