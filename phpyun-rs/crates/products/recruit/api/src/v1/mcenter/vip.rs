@@ -326,11 +326,16 @@ pub async fn get_current(
     }))
 }
 
+fn default_channel() -> String {
+    "stripe".into()
+}
+
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CreateOrderForm {
     #[validate(length(min = 1, max = 32))]
     pub package_code: String,
     /// alipay / wechat / stripe / stub
+    #[serde(default = "default_channel")]
     #[validate(length(min = 1, max = 16))]
     pub channel: String,
 }
@@ -358,10 +363,13 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
 ) -> AppResult<ApiResponse<OrderCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
         return Err(ApiError::param_invalid("channel"));
     }
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
+    if f.channel == "stripe" {
+        let _ = phpyun_services::stripe_service::upsert_local(&state, &created.order_no, &ip, Some(&created.subject)).await;
+    }
     // Order is already inserted. Missing Alipay keys must not 400 the whole create —
     // the client still needs `order_no` to open cashier.
     let pay_url = if f.channel == "alipay" {
@@ -813,6 +821,7 @@ pub struct RechargeForm {
     pub price_int: i64,
     #[serde(default)]
     pub integralid: u64,
+    #[serde(default = "default_channel")]
     #[validate(length(min = 1, max = 16))]
     pub channel: String,
     #[serde(default)]
@@ -845,7 +854,7 @@ pub async fn recharge(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<RechargeForm>,
 ) -> AppResult<ApiResponse<RechargeCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
         return Err(ApiError::param_invalid("channel"));
     }
     if f.channel == "alipay" {
@@ -861,6 +870,15 @@ pub async fn recharge(
         &ip,
     )
     .await?;
+    if f.channel == "stripe" {
+        let _ = phpyun_services::stripe_service::upsert_local(
+            &state,
+            &created.order_no,
+            &ip,
+            Some(&created.subject),
+        )
+        .await;
+    }
     let pay_url = if f.channel == "alipay" {
         Some(
             payment_notify_service::build_alipay_page_url(

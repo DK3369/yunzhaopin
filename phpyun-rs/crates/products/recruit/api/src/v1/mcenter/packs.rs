@@ -132,7 +132,7 @@ pub struct PackOrderForm {
 }
 
 fn default_channel() -> String {
-    "alipay".into()
+    "stripe".into()
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -157,11 +157,14 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<PackOrderForm>,
 ) -> AppResult<ApiResponse<PackOrderCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
         return Err(ApiError::param_invalid("channel"));
     }
     let created =
         pack_service::create_order(&state, &user, f.detail_id, &f.channel, &ip).await?;
+    if f.channel == "stripe" {
+        let _ = phpyun_services::stripe_service::upsert_local(&state, &created.order_no, &ip, Some(&created.subject)).await;
+    }
     let pay_url = if f.channel == "alipay" {
         payment_notify_service::ensure_alipay_page(&state).await?;
         Some(

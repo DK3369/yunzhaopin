@@ -596,6 +596,7 @@ impl Modify for DeprecatedIndex {
         v1::mcenter::company_nav::reset,
         v1::mcenter::cashier::detail,
         v1::mcenter::cashier::pay,
+        v1::mcenter::cashier::stripe_return,
         // mcenter: resume timeline
         v1::mcenter::resume_timeline::list,
         // mcenter: referrals
@@ -1156,6 +1157,8 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::company_nav::NavPackView,
             v1::mcenter::cashier::OrderNoForm,
             v1::mcenter::cashier::PayForm,
+            v1::mcenter::cashier::StripeReturnForm,
+            v1::mcenter::cashier::StripeReturnView,
             v1::mcenter::cashier::CashierDetailView,
             v1::mcenter::cashier::CashierPayView,
             v1::mcenter::cashier::CashierBankView,

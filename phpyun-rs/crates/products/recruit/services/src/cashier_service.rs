@@ -39,6 +39,9 @@ async fn setting_nonempty(state: &AppState, key: &str) -> bool {
 }
 
 async fn available_channels(state: &AppState) -> AppResult<Vec<String>> {
+    if crate::stripe_service::stripe_enabled(state).await {
+        return Ok(vec!["stripe".to_string()]);
+    }
     let mut out = vec!["alipay".to_string()];
     if !bank_repo::list_all(state.db.reader()).await?.is_empty() {
         out.push("bank".into());
@@ -96,6 +99,7 @@ pub async fn pay(
     user: &AuthenticatedUser,
     order_no: &str,
     channel: &str,
+    client_ip: &str,
 ) -> AppResult<CashierPay> {
     phpyun_core::validators::ensure_path_token(order_no)?;
     let ch = match channel {
@@ -103,10 +107,7 @@ pub async fn pay(
         other => other,
     };
     let channels = available_channels(state).await?;
-    if ch != "alipay" && ch != "bank" && ch != "wxpay" {
-        return Err(ApiError::param_invalid("channel"));
-    }
-    if ch == "wxpay" && !channels.iter().any(|c| c == "wxpay") {
+    if !channels.iter().any(|c| c == ch) {
         return Err(ApiError::param_invalid("channel"));
     }
     let o = vip_repo::find_any_order_by_no(state.db.reader(), order_no)
@@ -121,6 +122,14 @@ pub async fn pay(
     let n = vip_repo::set_order_channel(state.db.pool(), order_no, user.uid, ch).await?;
     if n == 0 {
         return Err(ApiError::business("order_not_pending"));
+    }
+    if ch == "stripe" {
+        let pay_url = crate::stripe_service::create_checkout_url(state, user, order_no, client_ip).await?;
+        return Ok(CashierPay {
+            pay_url: Some(pay_url),
+            channel: ch.into(),
+            bank_accounts: Vec::new(),
+        });
     }
     if ch == "alipay" {
         payment_notify_service::ensure_alipay_page(state).await?;
@@ -156,4 +165,14 @@ pub async fn pay(
         channel: ch.into(),
         bank_accounts: Vec::new(),
     })
+}
+
+pub async fn stripe_return(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    order_no: &str,
+    session_id: &str,
+) -> AppResult<bool> {
+    phpyun_core::validators::ensure_path_token(order_no)?;
+    crate::stripe_service::retrieve_and_settle(state, user, order_no, session_id).await
 }

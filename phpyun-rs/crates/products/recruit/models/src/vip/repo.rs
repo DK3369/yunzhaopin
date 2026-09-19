@@ -320,6 +320,7 @@ pub async fn create_order(
     amount_cents: i32,
     channel: &str,
     now: i64,
+    usertype: i32,
 ) -> Result<u64, sqlx::Error> {
     // PHP `order_price` is DOUBLE in yuan; convert from cents.
     let price_yuan = f64::from(amount_cents) / 100.0;
@@ -335,7 +336,7 @@ pub async fn create_order(
                order_dkjf, integral, is_invoice, coupon, crm_uid, once_id,
                port, is_crm, order_bank, order_pic, order_info)
            VALUES (?, ?, ?, ?, ?, 0,
-                   ?, 1, ?, 0, 0, 0, 1,
+                   ?, 1, ?, 0, 0, ?, 1,
                    0, 0, 0, 0, 0, 0,
                    1, 0, '', '', '')"#,
     )
@@ -346,6 +347,7 @@ pub async fn create_order(
     .bind(now)
     .bind(package_code)
     .bind(rating)
+    .bind(usertype)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())

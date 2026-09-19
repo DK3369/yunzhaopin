@@ -82,53 +82,18 @@ function onCustomInput(ev: Event) {
             </div>
           </div>
           <div class="dredge_body_pay" style="padding: 0">
-            <div class="dredge_body_zfb" @click="emit('update:channel', 'alipay')">
+            <div class="dredge_body_zfb" @click="emit('update:channel', 'stripe')">
               <div class="dredge_body_wx_box">
-                <div class="wx_box_icon">
-                  <img src="/legacy/h5/images/dredge_zfb.png" alt="" width="100%" height="100%">
-                </div>
-                <div class="wx_box_name">{{ $t('wap_00627') }}</div>
+                <div class="wx_box_name">Stripe</div>
               </div>
               <div class="dredge_body_wx_icon">
                 <img
-                  :src="channel === 'alipay' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  :src="channel === 'stripe' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
                   alt=""
                   width="100%"
                   height="100%"
                 >
               </div>
-            </div>
-            <div v-if="wxPayOn" class="dredge_body_wx" @click="emit('update:channel', 'wxpay')">
-              <div class="dredge_body_wx_box">
-                <div class="wx_box_icon">
-                  <img src="/legacy/h5/images/dredge_wx.png" alt="" width="100%" height="100%">
-                </div>
-                <div class="wx_box_name">{{ $t('wap_user_00202') }}</div>
-              </div>
-              <div class="dredge_body_wx_icon">
-                <img
-                  :src="channel === 'wxpay' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
-                  alt=""
-                  width="100%"
-                  height="100%"
-                >
-              </div>
-            </div>
-            <div v-if="bankList.length" class="dredge_body_wx" @click="emit('update:channel', 'bank')">
-              <div class="dredge_body_wx_box">
-                <div class="wx_box_name">{{ $t('wap_01805') }}</div>
-              </div>
-              <div class="dredge_body_wx_icon">
-                <img
-                  :src="channel === 'bank' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
-                  alt=""
-                  width="100%"
-                  height="100%"
-                >
-              </div>
-            </div>
-            <div v-if="channel === 'bank' && bankList.length" class="site-h5-pay__banks">
-              <div v-for="b in bankList" :key="'h5b-' + b.id">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
             </div>
           </div>
         </div>

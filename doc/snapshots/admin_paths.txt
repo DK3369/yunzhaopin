@@ -264,6 +264,7 @@
 /v1/admin/site-settings/payset/alipay
 /v1/admin/site-settings/payset/bank
 /v1/admin/site-settings/payset/bank-delete
+/v1/admin/site-settings/payset/stripe
 /v1/admin/site-settings/payset/tenpay
 /v1/admin/sms-logs
 /v1/admin/specials

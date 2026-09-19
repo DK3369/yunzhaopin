@@ -29,7 +29,7 @@ const { data: orders, refresh } = await useAsyncData('com-vip-orders', () =>
   api.post('/v1/mcenter/vip/orders/list', { page: 1, page_size: 20 }),
 )
 const msg = ref('')
-const channel = ref('alipay')
+const channel = ref('stripe')
 const pickedId = ref(0)
 const custom = ref('')
 const remark = ref('')
@@ -239,9 +239,7 @@ useSeoMeta({ title: t('common_01946') })
     <div class="payment_list site-pc">
       <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
       <div class="payment_list_r">
-        <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
-        <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
-        <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+        <label><input v-model="channel" type="radio" value="stripe" /> Stripe</label>
       </div>
     </div>
     <div v-if="channel === 'bank' && bankList.length" class="wxts_box site-pc">

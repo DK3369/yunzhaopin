@@ -50,6 +50,8 @@ jsonwebtoken = { version = "10", default-features = false, features = ["rust_cry
 argon2 = "0.5"
 md-5 = "0.10"  # 0.11 changed the Digest return type with a costly migration; we keep 0.10 (only used for compat with PHPYun's legacy md5 passwords).
 sha1 = "0.10" # WeChat OA signature verification (SHA1(token+timestamp+nonce)).
+sha2 = "0.10"
+hmac = "0.12"
 
 # ---- Serialization ----
 serde = { version = "1", features = ["derive"] }

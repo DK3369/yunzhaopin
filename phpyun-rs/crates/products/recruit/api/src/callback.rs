@@ -7,7 +7,7 @@ use std::collections::{BTreeMap, HashMap};
 
 use axum::body::Bytes;
 use axum::extract::{Query, State};
-use axum::http::{header, StatusCode};
+use axum::http::{header, HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
 use axum::Form;
@@ -20,6 +20,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/alipay", post(alipay))
         .route("/wechat-pay", post(wechat_pay))
+        .route("/stripe", post(stripe))
         .route("/locoy", post(locoy))
 }
 
@@ -42,6 +43,28 @@ async fn alipay(
         Err(e) => {
             tracing::warn!(error = %e, "alipay notify rejected");
             plain(StatusCode::OK, "fail")
+        }
+    }
+}
+
+fn stripe_signature_header(headers: &HeaderMap) -> String {
+    for name in ["stripe-signature", "stripe_signature"] {
+        if let Some(v) = headers.get(name).and_then(|v| v.to_str().ok()) {
+            if !v.is_empty() {
+                return v.to_string();
+            }
+        }
+    }
+    String::new()
+}
+
+async fn stripe(State(state): State<AppState>, headers: HeaderMap, body: Bytes) -> Response {
+    let sig = stripe_signature_header(&headers);
+    match phpyun_services::stripe_service::handle_webhook(&state, &body, &sig).await {
+        Ok(body) => plain(StatusCode::OK, body),
+        Err(e) => {
+            tracing::warn!(error = %e, "stripe notify rejected");
+            plain(StatusCode::BAD_REQUEST, "fail")
         }
     }
 }

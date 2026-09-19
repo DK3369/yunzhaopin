@@ -144,6 +144,7 @@ pub use phpyun_core::html::sanitize_html;
 pub mod look_job_service;
 pub mod oauth_service;
 pub mod payment_notify_service;
+pub mod stripe_service;
 pub mod once_service;
 pub mod pack_service;
 pub mod part_service;

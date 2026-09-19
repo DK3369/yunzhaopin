@@ -176,6 +176,53 @@ impl Http {
         .await
     }
 
+    /// GET/POST with extra headers. Returns HTTP status + body even on 4xx so
+    /// callers (Stripe) can read `error.message`. Does not retry.
+    pub async fn exchange_with_headers(
+        &self,
+        method: &'static str,
+        url: &str,
+        headers: &[(&str, &str)],
+        form_body: Option<&str>,
+    ) -> AppResult<(u16, String)> {
+        let host = host_of(url);
+        let span = tracing::info_span!("http.exchange", method = method, url = %url, host = %host);
+        async move {
+            let started = Instant::now();
+            let mut req = match method {
+                "GET" => self.inner.get(url),
+                "POST" => self.inner.post(url),
+                _ => {
+                    return Err(ApiError::upstream(format!("unsupported method {method}")));
+                }
+            };
+            for (k, v) in headers {
+                req = req.header(*k, *v);
+            }
+            if let Some(body) = form_body {
+                req = req
+                    .header("content-type", "application/x-www-form-urlencoded")
+                    .body(body.to_string());
+            }
+            let res = req.send().await;
+            match res {
+                Ok(resp) => {
+                    let status = resp.status().as_u16();
+                    let text = resp.text().await.map_err(map_reqwest_err)?;
+                    m::histogram_ms(
+                        "http.client.latency_ms",
+                        started.elapsed().as_secs_f64() * 1000.0,
+                    );
+                    record_status(&host, status);
+                    Ok((status, text))
+                }
+                Err(e) => Err(map_reqwest_err(e)),
+            }
+        }
+        .instrument(span)
+        .await
+    }
+
     /// GET HTML / text (job scrape and similar). Browser-like UA so
     /// Next.js pages that ignore empty/bot UAs still return the document.
     pub async fn get_text(&self, url: &str) -> AppResult<String> {

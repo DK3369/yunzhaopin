@@ -7,6 +7,29 @@
         <div class="playModule">
             <div class="playModuleList">
                 <div class="playModuName">
+                    <span>{{ lc('admin_payset_stripe') }}</span>
+                </div>
+                <div class="playModuLay">
+                    <span>{{ lc('admin_payset_stripe_hint') }}</span>
+                </div>
+                <div class="playModuLink">
+                    <a href="https://dashboard.stripe.com" target="_blank">{{ lc('admin_payset_stripe_link') }}</a>
+                </div>
+                <div class="playModuSet">
+                    <div class="playModLogo">
+                        <span style="font-weight:700;font-size:18px;">Stripe</span>
+                    </div>
+                    <div class="playModButn" v-if="config.stripe != 1">
+                        <el-button size="small" @click="change_pay('stripe')" type="primary">{{ lc('wap_js_00105') }}</el-button>
+                    </div>
+                    <div class="playModButn" v-else>
+                        <el-button size="small" @click="change_pay_un('stripe')">{{ lc('admin_system_00535') }}</el-button>
+                        <el-button size="small" @click="stripe_config = true" type="primary">{{ lc('wap_com_00307') }}</el-button>
+                    </div>
+                </div>
+            </div>
+            <div class="playModuleList">
+                <div class="playModuName">
                     <span>{{ lc('wap_user_00319') }}</span>
                 </div>
                 <div class="playModuLay">
@@ -75,6 +98,44 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Stripe 设置弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer :title="lc('admin_payset_stripe')" v-model="stripe_config" :modal-append-to-body="false" :show-close="true"
+                       :with-header="true" size="35%">
+                <el-alert type="info" :closable="false" style="background: none;">
+                    {{ lc('admin_payset_stripe_hint') }}</el-alert>
+                <div class="drawerModInfo drawerModInfoOne">
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_payset_stripe_sk') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="stripedata.sy_stripe_sk" :placeholder="lc('admin_payset_stripe_sk_ph')"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_payset_stripe_pk') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="stripedata.sy_stripe_pk" :placeholder="lc('admin_payset_stripe_pk_ph')"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>{{ lc('admin_payset_stripe_currency') }}</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="stripedata.sy_stripe_currency" placeholder="usd"></el-input>
+                        </div>
+                    </div>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" :loading="save_load" @click="submitPayConf(5)">{{ lc('wap_user_00176') }}</el-button>
+                </div>
+            </el-drawer>
         </div>
 
         <!-- 支付宝设置弹窗 -->
@@ -340,9 +401,11 @@ export default {
                     alipay_config: false,
                     wechat_config: false,
                     tenpay_config: false,
+                    stripe_config: false,
                     bank_config: false,
                     alipaydata: {},
                     tenpaydata:{},
+                    stripedata: {sy_stripe_sk: '', sy_stripe_pk: '', sy_stripe_currency: 'usd'},
                     bankrows:[],
                     bank:{bank_name: '', bank_number: '', bank_address: '', name: '', id: ''},
 
@@ -402,6 +465,8 @@ export default {
                         that.config = data.config
                         that.alipaydata = data.alipaydata
                         that.tenpaydata = data.tenpaydata
+                        that.stripedata = data.stripedata || {sy_stripe_sk: '', sy_stripe_pk: '', sy_stripe_currency: 'usd'}
+                        if (!that.stripedata.sy_stripe_currency) that.stripedata.sy_stripe_currency = 'usd'
                         that.bankrows = data.bankrows;
                         that.loading = false;
                         if (that.bankrows.length === 0){
@@ -417,6 +482,8 @@ export default {
                         that.params.alipaytype = 1
                     } else if (paytype == "tenpay") {
                         that.params.tenpay = 1
+                    } else if (paytype == "stripe") {
+                        that.params.stripe = 1
                     } else {
                         that.params.bank = 1
                     }
@@ -429,6 +496,8 @@ export default {
                         that.params.alipay = 0
                     } else if (paytype == "tenpay") {
                         that.params.tenpay = 0
+                    } else if (paytype == "stripe") {
+                        that.params.stripe = 0
                     } else {
                         that.params.bank = 0
                     }
@@ -455,6 +524,14 @@ export default {
                             sy_tenpaycode:that.tenpaydata.sy_tenpaycode
                         }
                         var act = 'tenpay'
+                    } else if (payType == 5) {
+                        var params = {
+                            stripe: 1,
+                            sy_stripe_sk: that.stripedata.sy_stripe_sk,
+                            sy_stripe_pk: that.stripedata.sy_stripe_pk,
+                            sy_stripe_currency: that.stripedata.sy_stripe_currency || 'usd'
+                        }
+                        var act = 'stripe'
                     } else {
                         var params = that.bank
                         var act = 'bank'
@@ -490,6 +567,8 @@ export default {
                                         that.wechat_config = false
                                     } else if (payType == 3) {
                                         that.tenpay_config = false
+                                    } else if (payType == 5) {
+                                        that.stripe_config = false
                                     } else {
                                         that.bank = {bank_name: '', bank_number: '', bank_address: '', name: '', id: ''}
                                     }

@@ -606,6 +606,7 @@ export const PHP_ADMIN_MAP: Record<string, PhpAction> = {
   'system/set_payset/save': { path: '/v1/admin/site-settings/batch' },
   'system/set_payset/alipay': { path: '/v1/admin/site-settings/payset/alipay' },
   'system/set_payset/tenpay': { path: '/v1/admin/site-settings/payset/tenpay' },
+  'system/set_payset/stripe': { path: '/v1/admin/site-settings/payset/stripe' },
   'system/set_payset/bank': { path: '/v1/admin/site-settings/payset/bank' },
   'system/set_payset/del': {
     path: '/v1/admin/site-settings/payset/bank-delete',

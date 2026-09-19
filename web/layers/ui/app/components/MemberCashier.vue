@@ -18,8 +18,9 @@ type Detail = {
 const props = defineProps<{ orderNo: string }>()
 const api = useApi()
 const { t } = useI18n()
+const route = useRoute()
 const msg = ref('')
-const channel = ref('alipay')
+const channel = ref('stripe')
 const { data, error, refresh } = await useAsyncData(
   () => `cashier-${props.orderNo}`,
   () => api.post<Detail>('/v1/mcenter/orders/detail', { order_no: props.orderNo }),
@@ -38,7 +39,7 @@ function statusLabel(d: Detail) {
   if (d.status === 2) return t('common.cancel')
   return d.status_n
 }
-const channels = computed(() => detail.value?.channels || ['alipay'])
+const channels = computed(() => detail.value?.channels || ['stripe'])
 watch(channels, (list) => {
   if (!list.includes(channel.value) && list[0]) channel.value = list[0]
 }, { immediate: true })
@@ -60,6 +61,10 @@ async function pay() {
       { order_no: props.orderNo, channel: channel.value },
     )
     if (r.pay_url) {
+      if (channel.value === 'stripe') {
+        window.location.href = r.pay_url
+        return
+      }
       window.open(r.pay_url, '_blank')
       msg.value = t('common.success')
       return
@@ -75,6 +80,21 @@ async function pay() {
     msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
+
+onMounted(async () => {
+  const sid = String(route.query.session_id || '')
+  if (!sid.startsWith('cs_')) return
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/orders/stripe-return', {
+      order_no: props.orderNo,
+      session_id: sid,
+    })
+    await refresh()
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
+  }
+})
 
 async function onVoucher(ev: Event) {
   const file = (ev.target as HTMLInputElement).files?.[0]
@@ -137,6 +157,7 @@ async function submitBank() {
     <div v-if="detail.payable" class="payment_list site-pc">
       <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
       <div class="payment_list_r">
+        <label v-if="channels.includes('stripe')"><input v-model="channel" type="radio" value="stripe" /> Stripe</label>
         <label v-if="channels.includes('alipay')"><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
         <label v-if="channels.includes('wxpay')"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
         <label v-if="channels.includes('bank')"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
@@ -170,6 +191,19 @@ async function submitBank() {
             <div class="integral_body_pay_right">{{ statusLabel(detail) }}</div>
           </div>
           <div v-if="detail.payable" class="dredge_body_pay" style="padding: 0">
+            <div v-if="channels.includes('stripe')" class="dredge_body_zfb" @click="channel = 'stripe'">
+              <div class="dredge_body_wx_box">
+                <div class="wx_box_name">Stripe</div>
+              </div>
+              <div class="dredge_body_wx_icon">
+                <img
+                  :src="channel === 'stripe' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                >
+              </div>
+            </div>
             <div v-if="channels.includes('alipay')" class="dredge_body_zfb" @click="channel = 'alipay'">
               <div class="dredge_body_wx_box">
                 <div class="wx_box_icon">

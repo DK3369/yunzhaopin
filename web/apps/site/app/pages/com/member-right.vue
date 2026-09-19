@@ -32,7 +32,6 @@ type Quote = {
 
 const api = useApi()
 const { t } = useI18n()
-const { settings } = useSiteChrome()
 
 const { data: current, error, refresh: refreshCurrent } = await useAsyncData('com-vip-current', () =>
   api.post<Current>('/v1/mcenter/vip/current', {}),
@@ -52,10 +51,7 @@ const packList = computed<Pack[]>(() => {
   }
   return []
 })
-const channel = ref('alipay')
-const wxPayOn = computed(() =>
-  Boolean(settings.value.sy_wxpayid || settings.value.sy_wxpaykey || settings.value.wx_appid),
-)
+const channel = ref('stripe')
 const msg = ref('')
 const picked = ref(0)
 
@@ -144,9 +140,7 @@ useSeoMeta({ title: t('wap_com_00097') })
       <div class="payment_list site-pc">
         <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
         <div class="payment_list_r">
-          <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
-          <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
-          <label><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+          <label><input v-model="channel" type="radio" value="stripe" /> Stripe</label>
         </div>
       </div>
       <div class="vip_box site-pc">
@@ -206,9 +200,7 @@ useSeoMeta({ title: t('wap_com_00097') })
         </div>
         <div class="issue_post_body">
           <MemberField wap :label="$t('wap_user_00313')">
-            <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
-            <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
-            <label><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
+            <label><input v-model="channel" type="radio" value="stripe" /> Stripe</label>
           </MemberField>
         </div>
       </div>

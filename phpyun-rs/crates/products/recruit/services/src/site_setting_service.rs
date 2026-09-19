@@ -147,18 +147,27 @@ const TENPAY_KEYS: &[(&str, &str)] = &[
     ("sy_weburl", ""),
 ];
 
-/// PHP `set_payset::index_action`: `{config, alipaydata, tenpaydata, bankrows}`.
+const STRIPE_KEYS: &[(&str, &str)] = &[
+    ("stripe", "0"),
+    ("sy_stripe_sk", ""),
+    ("sy_stripe_pk", ""),
+    ("sy_stripe_currency", "usd"),
+];
+
+/// PHP `set_payset::index_action`: `{config, alipaydata, tenpaydata, stripedata, bankrows}`.
 pub async fn payset_index(state: &AppState, user: &AuthenticatedUser) -> AppResult<Value> {
     user.require_admin()?;
     let rows = setting_repo::list_all(state.db.reader()).await?;
     let config = cfg_map(&rows);
     let alipaydata = pick_map(&config, ALIPAY_KEYS);
     let tenpaydata = pick_map(&config, TENPAY_KEYS);
+    let stripedata = pick_map(&config, STRIPE_KEYS);
     let bankrows = bank_repo::list_all(state.db.reader()).await?;
     Ok(json!({
         "config": Value::Object(config),
         "alipaydata": Value::Object(alipaydata),
         "tenpaydata": Value::Object(tenpaydata),
+        "stripedata": Value::Object(stripedata),
         "bankrows": bankrows,
     }))
 }
@@ -239,6 +248,43 @@ pub async fn payset_alipay(
             ("sy_alipayprivatekey", str_field(body, "sy_alipayprivatekey")),
             ("sy_alipaypublickey", str_field(body, "sy_alipaypublickey")),
             ("sy_weburl", or_weburl(body, &weburl)),
+        ],
+    )
+    .await
+}
+
+/// Persist Stripe Checkout keys to `phpyun_admin_config`.
+pub async fn payset_stripe(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    body: &Value,
+) -> AppResult<()> {
+    user.require_admin()?;
+    let sk = str_field(body, "sy_stripe_sk");
+    let pk = str_field(body, "sy_stripe_pk");
+    if sk.len() > 255 || pk.len() > 255 {
+        return Err(ApiError::param_invalid("stripe_key_length"));
+    }
+    let mut cur = str_field(body, "sy_stripe_currency").trim().to_ascii_lowercase();
+    if cur.is_empty() || !phpyun_models::sql::ident_ok(&cur) {
+        cur = "usd".into();
+    }
+    let mut flag = str_field(body, "stripe");
+    if flag.is_empty() {
+        flag = if sk.trim().is_empty() {
+            "0".into()
+        } else {
+            "1".into()
+        };
+    }
+    upsert_keys(
+        state,
+        user,
+        &[
+            ("stripe", flag),
+            ("sy_stripe_sk", sk),
+            ("sy_stripe_pk", pk),
+            ("sy_stripe_currency", cur),
         ],
     )
     .await

@@ -5983,6 +5983,41 @@
         ]
       }
     },
+    "/v1/mcenter/orders/stripe-return": {
+      "post": {
+        "tags": [
+          "mcenter"
+        ],
+        "operationId": "post_v1_mcenter_orders_stripe_return",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StripeReturnForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeReturnView"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/v1/mcenter/packs/list": {
       "post": {
         "tags": [
@@ -21907,8 +21942,7 @@
       "CreateOrderForm": {
         "type": "object",
         "required": [
-          "package_code",
-          "channel"
+          "package_code"
         ],
         "properties": {
           "channel": {
@@ -25880,7 +25914,7 @@
               "string",
               "null"
             ],
-            "description": "`package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。"
+            "description": "Parsed then discarded. Catalog follows JWT `usertype` (seeker packs vs employer VIP 1–6)."
           }
         }
       },
@@ -26308,13 +26342,6 @@
             ],
             "description": "Message text (PHP `content`), 库里可能带 `<a href=\"resumetpl,1\">`。"
           },
-          "parts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MessagePart"
-            },
-            "description": "对照 PHP `content_arr`：正文拆段，内部链已换成前台路径。"
-          },
           "category": {
             "type": "string",
             "description": "Always \"system\" — kept for response-shape stability with old clients."
@@ -26337,6 +26364,13 @@
           "is_read_int": {
             "type": "integer",
             "format": "int32"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessagePart"
+            },
+            "description": "对照 PHP `content_arr`：正文拆段，内部链已换成前台路径。"
           },
           "ref_id": {
             "type": "integer",
@@ -28240,7 +28274,7 @@
           "price_yuan": {
             "type": "number",
             "format": "double",
-            "description": "price_cents / 100 (yuan, for direct rendering as ¥99.00)"
+            "description": "price_cents / 100 (numeric yuan; front-end does not prefix a currency symbol)"
           },
           "role": {
             "type": "string",
@@ -30476,8 +30510,7 @@
       "RechargeForm": {
         "type": "object",
         "required": [
-          "price_int",
-          "channel"
+          "price_int"
         ],
         "properties": {
           "channel": {
@@ -33896,6 +33929,32 @@
           }
         }
       },
+      "StripeReturnForm": {
+        "type": "object",
+        "required": [
+          "order_no",
+          "session_id"
+        ],
+        "properties": {
+          "order_no": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          }
+        }
+      },
+      "StripeReturnView": {
+        "type": "object",
+        "required": [
+          "settled"
+        ],
+        "properties": {
+          "settled": {
+            "type": "boolean"
+          }
+        }
+      },
       "SubAccountView": {
         "type": "object",
         "required": [
@@ -35512,7 +35571,7 @@
               "string",
               "null"
             ],
-            "description": "PHPYun stores `birthday` as a `YYYY-MM` string (year-month), e.g.\n`\"1995-06\"` — the legacy length-min=8 validator rejected that and\nfired silent 400s on the H5 wizard. Min 7 covers `YYYY-MM`,\nmax 10 keeps `YYYY-MM-DD` working."
+            "description": "PHPYun stores `birthday` as a `YYYY-MM` string (year-month), e.g.\n`\"1995-06\"`. Blank is omitted; filled values keep `YYYY-MM` / `YYYY-MM-DD`."
           },
           "description": {
             "type": [
@@ -35537,7 +35596,8 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Optional. Create-resume posts `email: \"\"`; empty must not 400."
           },
           "exp": {
             "type": [
@@ -35581,7 +35641,8 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Optional. Blank is omitted so create/save without a name is not 400."
           },
           "nametype": {
             "type": [
@@ -36985,7 +37046,7 @@
     },
     {
       "name": "mcenter",
-      "description": "【318 个接口】 Member center"
+      "description": "【319 个接口】 Member center"
     },
     {
       "name": "wap",

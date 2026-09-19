@@ -333,7 +333,7 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 - 兑换记录 `/user/rewards` `/com/rewards`；积分规则 `/user/integral-rules` `/com/integral-rules`（只读 `initjobs.settings`）。
 - 经典子账号 [`sub-accounts.vue`](../../../web/apps/site/app/pages/com/sub-accounts.vue)：`member.pid` 指向父企业；JWT `sub=父 uid`、可选 `hr_uid=自己`。`/com/*` 用父 uid；改密/绑定/注销/会话用 `self_uid()`。配额 `rating_type==1` 扣 `company_statis.sons_num`。`profile.is_sub`。子账号不能管子账号。
 - 兼职完整版 [`parts/index.vue`](../../../web/apps/site/app/pages/com/parts/index.vue) + [`parts/new.vue`](../../../web/apps/site/app/pages/com/parts/new.vue)：`com-parts/list` 可选 `w` 分桶+`counts`；`create` 的 `state` 对齐 `com_partjob_status` 与套餐超限下架；`batch/status`。Nuxt 列表必须放 `parts/index.vue`，不要 `parts.vue` 当父页（否则 `/com/parts/new` 渲不出表单）。
-- 收银台 [`MemberCashier`](../../../web/layers/ui/app/components/MemberCashier.vue) `/com/cashier/[order_no]` `/user/cashier/[order_no]`：`POST /orders/detail` `/orders/pay`。套餐/增值/充值下单后跳收银台，不再整页跳支付宝。待付订单「去支付」。
+- 收银台 [`MemberCashier`](../../../web/layers/ui/app/components/MemberCashier.vue) `/com/cashier/[order_no]` `/user/cashier/[order_no]`：`POST /orders/detail` `/orders/pay`。默认渠道 **Stripe**（`stripe=1` 且已配 `sy_stripe_sk` 时 `available_channels` 只返回 `["stripe"]`）。`pay` 建 Checkout Session（`ui_mode=hosted_page`，API `2026-08-26.dahlia`，`adaptive_pricing[enabled]=false` 避免展示币种金额对不上 `amount_cents`），当前页跳 `checkout.stripe.com`。回跳 `?session_id=` 调 `POST /v1/mcenter/orders/stripe-return`，webhook `POST /callback/stripe`。对账表 `phpyun_rs_stripe_order` 一行存本站订单 + Stripe 请求/回包（不改 `company_order` 列）。Session metadata 绑 `uid`/`usertype`/`order_no`；付完 `settle_paid_checked`：求职 `type=31` → `phpyun_rs_user_vip`，招聘 `apply_rating`。密钥只在 `phpyun_admin_config`，不进 git。套餐/增值/充值下单后跳收银台。待付订单「去支付」。
 - 付费展位：`POST /zph/order` 建 `company_order.type=28`（`order_info` JSON）；`settle_paid` 插 `zhaopinhui_com(status=0,price)`。公开 `/fairs/[id]` 捕获 `zph_need_pay` 去收银台。
 - 私信 [`user/chat.vue`](../../../web/apps/site/app/pages/user/chat.vue) / [`com/chat.vue`](../../../web/apps/site/app/pages/com/chat.vue)：`MemberChat` 轮询 `chat/conversations|with|send`。
 - 搜索器订阅：[`user/searches.vue`](../../../web/apps/site/app/pages/user/searches.vue)、[`com/finder.vue`](../../../web/apps/site/app/pages/com/finder.vue) 接 `saved-searches/notify`。
@@ -347,7 +347,9 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 ## 收银台 / 付费展位
 
-`POST /v1/mcenter/orders/detail|{pay}` 按 `order_id` 查任意 `company_order`（VIP/充值/增值/once/置顶/type=28）。待付 `order_state=0`；已付=1；取消=2；银行待审=3。支付宝出 `pay_url`，银行返回汇款账户；`wxpay` 仅当 `sy_wxpayid` 有值，只改渠道不给下单 URL。展位现金链不走套餐扣次：`zph/reserve` 仍可能 `zph_need_pay`，前端再 `zph/order`。
+`POST /v1/mcenter/orders/detail|{pay}|{stripe-return}` 按 `order_id` 查任意 `company_order`（VIP/充值/增值/once/置顶/type=28）。待付 `order_state=0`；已付=1；取消=2；银行待审=3。默认只开 Stripe：`available_channels` 在配置 `stripe=1` 且 `sy_stripe_sk` 有值时只返回 `["stripe"]`，支付宝/银行代码仍保留。Stripe Hosted Checkout 出 `pay_url`；回跳与 webhook 入账后升 VIP（求职/招聘分路，不交叉）。银行返回汇款账户；`wxpay` 仅当 Stripe 未开且 `sy_wxpayid` 有值。展位现金链不走套餐扣次：`zph/reserve` 仍可能 `zph_need_pay`，前端再 `zph/order`。
+
+对账：`phpyun_rs_stripe_order` 与 `company_order.order_id` 用 `order_no` 对齐。同一主键行：下单 INSERT 本站字段，创建 Session / webhook / 回跳只 UPDATE Stripe 字段。不要把 Stripe 列塞进 PHP 账本。
 
 本轮仍不做：协作「切换企业上下文」新鉴权（下游职位/应聘尚未读 `company_hrs`）、顾问 `crm_uid`、曝光量、优惠券、`lock_info`、进页「未刷新职位」遮罩首页不假装有。微信支付商户下单 URL。`/user/pay` 只充积分换礼，不要拿它当买包月；包月走 `/user/member-right` → `/v1/mcenter/vip/packages`。
 

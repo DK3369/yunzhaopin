@@ -17,6 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/site-settings/payset", post(payset))
         .route("/site-settings/payset/alipay", post(payset_alipay))
         .route("/site-settings/payset/tenpay", post(payset_tenpay))
+        .route("/site-settings/payset/stripe", post(payset_stripe))
         .route("/site-settings/payset/bank", post(payset_bank))
         .route("/site-settings/payset/bank-delete", post(payset_bank_delete))
         .route("/site-settings/php-seo", post(php_seo))
@@ -258,6 +259,23 @@ pub async fn payset_tenpay(
 ) -> AppResult<ApiResponse> {
     site_setting_service::payset_tenpay(&state, &user, &body).await?;
     Ok(ApiResponse::message("admin_01398"))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/site-settings/payset/stripe",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn payset_stripe(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<ApiResponse> {
+    site_setting_service::payset_stripe(&state, &user, &body).await?;
+    let _ = phpyun_services::stripe_service::ensure_webhook(&state, &user).await;
+    Ok(ApiResponse::message("ok"))
 }
 
 /// PHP `set_payset::bank`.

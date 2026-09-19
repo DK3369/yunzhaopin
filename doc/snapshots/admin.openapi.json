@@ -7207,6 +7207,32 @@
         ]
       }
     },
+    "/v1/admin/site-settings/payset/stripe": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_site_settings_payset_stripe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/v1/admin/site-settings/payset/tenpay": {
       "post": {
         "tags": [
@@ -13677,7 +13703,7 @@
   "tags": [
     {
       "name": "admin",
-      "description": "【327 个接口】 Admin"
+      "description": "【328 个接口】 Admin"
     }
   ]
 }

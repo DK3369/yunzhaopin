@@ -34,6 +34,8 @@ chrono.workspace = true
 dotenvy.workspace = true
 cron.workspace = true
 rust-i18n.workspace = true
+hmac.workspace = true
+sha2.workspace = true
 
 [lints]
 workspace = true

@@ -196,6 +196,7 @@
 /v1/mcenter/once-jobs/paylogs
 /v1/mcenter/orders/detail
 /v1/mcenter/orders/pay
+/v1/mcenter/orders/stripe-return
 /v1/mcenter/packs/list
 /v1/mcenter/packs/orders
 /v1/mcenter/packs/orders/list

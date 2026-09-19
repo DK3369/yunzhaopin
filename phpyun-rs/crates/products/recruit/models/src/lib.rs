@@ -94,6 +94,7 @@ pub mod sql;
 pub mod site_setting;
 pub mod soft_delete;
 pub mod special;
+pub mod stripe_order;
 pub mod stats;
 pub mod sub_account;
 pub mod talent_pool;

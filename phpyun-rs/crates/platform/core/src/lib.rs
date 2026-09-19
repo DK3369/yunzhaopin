@@ -21,6 +21,7 @@ pub mod dto;
 mod error;
 pub mod events;
 pub mod extractors;
+pub mod hmac_sha256;
 pub mod html;
 pub mod http_client;
 pub mod i18n;

@@ -1,7 +1,9 @@
 //! POST /v1/mcenter/orders/detail · /orders/pay
 
 use axum::{extract::State, routing::post, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+};
 use phpyun_services::cashier_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -11,6 +13,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/orders/detail", post(detail))
         .route("/orders/pay", post(pay))
+        .route("/orders/stripe-return", post(stripe_return))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -25,6 +28,19 @@ pub struct PayForm {
     pub order_no: String,
     #[validate(length(min = 1, max = 16))]
     pub channel: String,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct StripeReturnForm {
+    #[validate(length(min = 4, max = 64))]
+    pub order_no: String,
+    #[validate(length(min = 8, max = 255))]
+    pub session_id: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct StripeReturnView {
+    pub settled: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -99,9 +115,10 @@ pub async fn detail(
 pub async fn pay(
     State(state): State<AppState>,
     user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<PayForm>,
 ) -> AppResult<ApiResponse<CashierPayView>> {
-    let p = cashier_service::pay(&state, &user, &f.order_no, &f.channel).await?;
+    let p = cashier_service::pay(&state, &user, &f.order_no, &f.channel, &ip).await?;
     Ok(ApiResponse::data(CashierPayView {
         pay_url: p.pay_url,
         channel: p.channel,
@@ -117,4 +134,21 @@ pub async fn pay(
             })
             .collect(),
     }))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/orders/stripe-return",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = StripeReturnForm,
+    responses((status = 200, description = "ok", body = StripeReturnView))
+)]
+pub async fn stripe_return(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<StripeReturnForm>,
+) -> AppResult<ApiResponse<StripeReturnView>> {
+    let settled = cashier_service::stripe_return(&state, &user, &f.order_no, &f.session_id).await?;
+    Ok(ApiResponse::data(StripeReturnView { settled }))
 }

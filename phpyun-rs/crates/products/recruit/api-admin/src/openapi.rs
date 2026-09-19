@@ -87,6 +87,7 @@ use crate::v1;
         v1::site_settings::payset,
         v1::site_settings::payset_alipay,
         v1::site_settings::payset_tenpay,
+        v1::site_settings::payset_stripe,
         v1::site_settings::payset_bank,
         v1::site_settings::payset_bank_delete,
         v1::company_cert::list_pending,

@@ -59,6 +59,7 @@ pub async fn create_order(
         pkg.price_cents,
         channel,
         now,
+        2,
     )
     .await?;
 
