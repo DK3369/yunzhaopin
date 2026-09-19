@@ -6,7 +6,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use axum::body::Bytes;
-use axum::extract::{Query, State};
+use axum::extract::{Path, Query, State};
 use axum::http::{header, HeaderMap, HeaderName, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
@@ -22,6 +22,7 @@ pub fn router() -> Router<AppState> {
         .route("/alipay", post(alipay))
         .route("/wechat-pay", post(wechat_pay))
         .route("/stripe", post(stripe))
+        .route("/pay/{method}", post(pay_method))
         .route("/locoy", post(locoy))
 }
 
@@ -97,6 +98,18 @@ async fn stripe(State(state): State<AppState>, headers: HeaderMap, body: Bytes) 
         tracing::warn!(status = ack.status(), "stripe notify rejected");
     }
     webhook_plain(ack)
+}
+
+async fn pay_method(
+    State(state): State<AppState>,
+    Path(method): Path<String>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Response {
+    if method != "stripe" {
+        return webhook_plain(WebhookAck::BadRequest);
+    }
+    stripe(State(state), headers, body).await
 }
 
 async fn wechat_pay(State(state): State<AppState>, body: Bytes) -> Response {

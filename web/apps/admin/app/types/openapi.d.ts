@@ -3124,6 +3124,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/pay/merchants/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_merchants_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/merchants/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_merchants_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/merchants/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_merchants_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/methods/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_methods_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/methods/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_methods_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/methods/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_methods_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/methods/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_methods_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/pay/orders/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_pay_orders_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/question-classes": {
         parameters: {
             query?: never;
@@ -4318,6 +4446,22 @@ export interface paths {
         put?: never;
         /** PHP `set_payset::del`. */
         post: operations["post_v1_admin_site_settings_payset_bank_delete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/site-settings/payset/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_admin_site_settings_payset_stripe"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6226,6 +6370,16 @@ export interface components {
             statusbody?: string;
             uid?: number[];
         };
+        MerchantSaveForm: {
+            code?: string;
+            /** Format: int64 */
+            id?: number;
+            name: string;
+            notify_url?: string;
+            return_url?: string;
+            rotate_secret?: boolean;
+            status?: string;
+        };
         MergeDone: {
             /** Format: int64 */
             company_uid: number;
@@ -6237,6 +6391,24 @@ export interface components {
             company_uid: number;
             /** Format: int64 */
             user_uid: number;
+        };
+        MethodListForm: {
+            /** Format: int64 */
+            merchant_id?: number;
+        };
+        MethodSaveForm: {
+            code: string;
+            currency?: string;
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            merchant_id: number;
+            name: string;
+            secret_key?: string;
+            /** Format: int32 */
+            sort?: number;
+            status?: string;
+            webhook_secret?: string;
         };
         ModuleItem: {
             dir?: string;
@@ -6350,6 +6522,11 @@ export interface components {
             status_n: string;
             /** Format: int64 */
             uid: number;
+        };
+        OrderListForm: {
+            merchant_code?: string;
+            method_code?: string;
+            status?: string;
         };
         PackItem: {
             /** Format: int32 */
@@ -6737,11 +6914,7 @@ export interface components {
         StatusForm: {
             /** Format: int64 */
             id: number;
-            /**
-             * Format: int32
-             * @description 0=offline  1=online
-             */
-            status: number;
+            status: string;
         };
         StyleForm: {
             dir: string;
@@ -10993,6 +11166,178 @@ export interface operations {
             };
         };
     };
+    post_v1_admin_pay_merchants_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_merchants_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MerchantSaveForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_merchants_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_methods_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_methods_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MethodListForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_methods_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MethodSaveForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_methods_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_pay_orders_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderListForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     post_v1_admin_question_classes: {
         parameters: {
             query?: never;
@@ -12580,6 +12925,28 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["BankDelBody"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_admin_site_settings_payset_stripe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": unknown;
             };
         };
         responses: {

@@ -191,6 +191,14 @@
 /v1/admin/parts
 /v1/admin/parts/state
 /v1/admin/parts/statist
+/v1/admin/pay/merchants/list
+/v1/admin/pay/merchants/save
+/v1/admin/pay/merchants/status
+/v1/admin/pay/methods/delete
+/v1/admin/pay/methods/list
+/v1/admin/pay/methods/save
+/v1/admin/pay/methods/status
+/v1/admin/pay/orders/list
 /v1/admin/question-classes
 /v1/admin/question-classes/delete
 /v1/admin/question-classes/detail

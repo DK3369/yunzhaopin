@@ -3318,6 +3318,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mcenter/orders/stripe-return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_mcenter_orders_stripe_return"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mcenter/packs/list": {
         parameters: {
             query?: never;
@@ -5373,6 +5389,54 @@ export interface paths {
         put?: never;
         /** Reserve a job-fair slot */
         post: operations["post_v1_mcenter_zph_reserve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pay/methods/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_pay_methods_list"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pay/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_pay_orders"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pay/orders/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post_v1_pay_orders_detail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -10679,7 +10743,7 @@ export interface components {
         };
         CreateOrderForm: {
             /** @description alipay / wechat / stripe / stub */
-            channel: string;
+            channel?: string;
             package_code: string;
         };
         /** @description `{ id }` — used as the create-result envelope across CRUD endpoints. */
@@ -12052,7 +12116,7 @@ export interface components {
             tab?: string | null;
         };
         ListPackagesForm: {
-            /** @description `package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。 */
+            /** @description Parsed then discarded. Catalog follows JWT `usertype` (seeker packs vs employer VIP 1–6). */
             kind?: string | null;
         };
         ListTemplatesBody: {
@@ -12183,7 +12247,7 @@ export interface components {
          *     see harmless defaults.
          */
         MessageItem: {
-            /** @description Message text (PHP `content`). */
+            /** @description Message text (PHP `content`), 库里可能带 `<a href="resumetpl,1">`。 */
             body?: string | null;
             /** @description Always "system" — kept for response-shape stability with old clients. */
             category: string;
@@ -12195,6 +12259,8 @@ export interface components {
             is_read: boolean;
             /** Format: int32 */
             is_read_int: number;
+            /** @description 对照 PHP `content_arr`：正文拆段，内部链已换成前台路径。 */
+            parts: components["schemas"]["MessagePart"][];
             /**
              * Format: int64
              * @description Always 0 — kept for response-shape stability.
@@ -12222,6 +12288,10 @@ export interface components {
              * @description 1=jobseeker / 2=employer (PHP `usertype`).
              */
             usertype: number;
+        };
+        MessagePart: {
+            n: string;
+            to?: string | null;
         };
         /** @description Body carrying just `{ mid }` (job-page message id). */
         MidBody: {
@@ -12833,7 +12903,7 @@ export interface components {
             price_cents: number;
             /**
              * Format: double
-             * @description price_cents / 100 (yuan, for direct rendering as ¥99.00)
+             * @description price_cents / 100 (numeric yuan; front-end does not prefix a currency symbol)
              */
             price_yuan: number;
             /** @description `seeker` | `employer` */
@@ -13147,6 +13217,9 @@ export interface components {
              *     downstream gateway endpoint reads it.
              */
             paytype: string;
+        };
+        PayNoForm: {
+            pay_no: string;
         };
         PaylogForm: {
             fast: string;
@@ -13659,7 +13732,7 @@ export interface components {
             pay_url?: string | null;
         };
         RechargeForm: {
-            channel: string;
+            channel?: string;
             /** Format: int64 */
             integralid?: number;
             /** Format: int64 */
@@ -14822,6 +14895,13 @@ export interface components {
             /** Format: int32 */
             status?: number | null;
         };
+        StripeReturnForm: {
+            order_no: string;
+            session_id: string;
+        };
+        StripeReturnView: {
+            settled: boolean;
+        };
         SubAccountView: {
             /** Format: int64 */
             login_date: number;
@@ -15341,15 +15421,14 @@ export interface components {
             address?: string | null;
             /**
              * @description PHPYun stores `birthday` as a `YYYY-MM` string (year-month), e.g.
-             *     `"1995-06"` — the legacy length-min=8 validator rejected that and
-             *     fired silent 400s on the H5 wizard. Min 7 covers `YYYY-MM`,
-             *     max 10 keeps `YYYY-MM-DD` working.
+             *     `"1995-06"`. Blank is omitted; filled values keep `YYYY-MM` / `YYYY-MM-DD`.
              */
             birthday?: string | null;
             description?: string | null;
             domicile?: string | null;
             /** Format: int32 */
             education?: number | null;
+            /** @description Optional. Create-resume posts `email: ""`; empty must not 400. */
             email?: string | null;
             /** Format: int32 */
             exp?: number | null;
@@ -15359,6 +15438,7 @@ export interface components {
             living?: string | null;
             /** Format: int32 */
             marriage?: number | null;
+            /** @description Optional. Blank is omitted so create/save without a name is not 400. */
             name?: string | null;
             /**
              * Format: int32
@@ -20349,6 +20429,30 @@ export interface operations {
             };
         };
     };
+    post_v1_mcenter_orders_stripe_return: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StripeReturnForm"];
+            };
+        };
+        responses: {
+            /** @description ok */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StripeReturnView"];
+                };
+            };
+        };
+    };
     post_v1_mcenter_packs_list: {
         parameters: {
             query?: never;
@@ -23101,6 +23205,68 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CreatedId"];
                 };
+            };
+        };
+    };
+    post_v1_pay_methods_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description HMAC merchant methods */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_pay_orders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderForm"];
+            };
+        };
+        responses: {
+            /** @description HMAC create order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    post_v1_pay_orders_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayNoForm"];
+            };
+        };
+        responses: {
+            /** @description HMAC order detail */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

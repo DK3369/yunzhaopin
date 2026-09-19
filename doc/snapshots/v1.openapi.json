@@ -9654,6 +9654,65 @@
         ]
       }
     },
+    "/v1/pay/methods/list": {
+      "post": {
+        "tags": [
+          "pay"
+        ],
+        "operationId": "post_v1_pay_methods_list",
+        "responses": {
+          "200": {
+            "description": "HMAC merchant methods"
+          }
+        }
+      }
+    },
+    "/v1/pay/orders": {
+      "post": {
+        "tags": [
+          "pay"
+        ],
+        "operationId": "post_v1_pay_orders",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "HMAC create order"
+          }
+        }
+      }
+    },
+    "/v1/pay/orders/detail": {
+      "post": {
+        "tags": [
+          "pay"
+        ],
+        "operationId": "post_v1_pay_orders_detail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayNoForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "HMAC order detail"
+          }
+        }
+      }
+    },
     "/v1/wap/ads/click": {
       "post": {
         "tags": [
@@ -29158,6 +29217,17 @@
           }
         }
       },
+      "PayNoForm": {
+        "type": "object",
+        "required": [
+          "pay_no"
+        ],
+        "properties": {
+          "pay_no": {
+            "type": "string"
+          }
+        }
+      },
       "PaylogForm": {
         "type": "object",
         "required": [
@@ -37043,6 +37113,10 @@
     {
       "name": "upload",
       "description": "【6 个接口】 File upload"
+    },
+    {
+      "name": "pay",
+      "description": "【3 个接口】 Third-party payment gateway (HMAC merchants)"
     },
     {
       "name": "mcenter",

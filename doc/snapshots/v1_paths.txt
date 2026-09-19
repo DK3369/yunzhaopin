@@ -319,6 +319,9 @@
 /v1/mcenter/zph/my-reservation
 /v1/mcenter/zph/order
 /v1/mcenter/zph/reserve
+/v1/pay/methods/list
+/v1/pay/orders
+/v1/pay/orders/detail
 /v1/wap/ads/click
 /v1/wap/advice
 /v1/wap/announcements

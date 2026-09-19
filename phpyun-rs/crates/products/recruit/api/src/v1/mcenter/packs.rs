@@ -157,10 +157,10 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<PackOrderForm>,
 ) -> AppResult<ApiResponse<PackOrderCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" && f.channel != "gcash" && f.channel != "paymaya" {
         return Err(ApiError::param_invalid("channel"));
     }
-    phpyun_services::stripe_service::assert_create_channel(&state, &f.channel).await?;
+    phpyun_services::pay_service::assert_create_channel(&state, &f.channel).await?;
     let created =
         pack_service::create_order(&state, &user, f.detail_id, &f.channel, &ip).await?;
     if f.channel == "stripe" {

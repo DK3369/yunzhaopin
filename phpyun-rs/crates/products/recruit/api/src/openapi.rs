@@ -229,6 +229,10 @@ impl Modify for DeprecatedIndex {
         v1::wap::oauth::oauth_bind,
         v1::wap::oauth::oauth_bind_pending,
         v1::wap::oauth::oauth_fast_reg,
+        // pay gateway (HMAC merchants)
+        v1::pay::spec_methods_list,
+        v1::pay::spec_create_order,
+        v1::pay::spec_order_detail,
         // upload
         v1::wap::upload::upload_avatar,
         v1::wap::upload::upload_company_logo,
@@ -1232,6 +1236,8 @@ impl Modify for DeprecatedIndex {
             v1::mcenter::recommend::QuotaView,
             v1::wap::eval::ExamineeItem,
             // ==== Phase A: shared DTOs (deduped from per-handler files) ====
+            v1::pay::CreateOrderForm,
+            v1::pay::PayNoForm,
             phpyun_core::dto::IdBody,
             phpyun_core::dto::UidBody,
             phpyun_core::dto::EidBody,
@@ -1251,6 +1257,7 @@ impl Modify for DeprecatedIndex {
     tags(
         (name = "auth", description = "Login / Register / Refresh / Logout / Captcha / OAuth"),
         (name = "upload", description = "File upload"),
+        (name = "pay", description = "Third-party payment gateway (HMAC merchants)"),
         (name = "mcenter", description = "Member center"),
         (name = "wap", description = "Public browsing endpoints"),
     )

@@ -31,6 +31,7 @@ pub mod ops;
 pub mod ops_gap;
 pub mod orders;
 pub mod parts;
+pub mod pay;
 pub mod php_content;
 pub mod questions;
 pub mod question_classes;
@@ -96,6 +97,7 @@ pub fn router() -> Router<AppState> {
         .merge(companies::routes())
         .merge(resumes::routes())
         .merge(seeker_vip::routes())
+        .merge(pay::routes())
         .merge(finance::routes())
         .merge(rbac::routes())
         .merge(cron::routes())

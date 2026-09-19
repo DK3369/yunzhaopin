@@ -39,6 +39,10 @@ async fn setting_nonempty(state: &AppState, key: &str) -> bool {
 }
 
 async fn available_channels(state: &AppState) -> AppResult<Vec<String>> {
+    let channels = crate::pay_service::available_channels(state).await?;
+    if !channels.is_empty() {
+        return Ok(channels);
+    }
     if crate::stripe_service::stripe_enabled(state).await {
         return Ok(vec!["stripe".to_string()]);
     }
@@ -123,10 +127,10 @@ pub async fn pay(
     if n == 0 {
         return Err(ApiError::business("order_not_pending"));
     }
-    if ch == "stripe" {
-        let pay_url = crate::stripe_service::create_checkout_url(state, user, order_no, client_ip).await?;
+    if ch == "stripe" || ch == "gcash" || ch == "paymaya" {
+        let g = crate::pay_service::create_for_ov6(state, user, order_no, ch, client_ip).await?;
         return Ok(CashierPay {
-            pay_url: Some(pay_url),
+            pay_url: Some(g.pay_url),
             channel: ch.into(),
             bank_accounts: Vec::new(),
         });

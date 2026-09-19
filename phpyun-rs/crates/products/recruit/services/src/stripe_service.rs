@@ -6,6 +6,7 @@
 use phpyun_core::clock;
 use phpyun_core::hmac_sha256::{stripe_signature_timestamp, verify_stripe_signature};
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_models::pay::repo as pay_repo;
 use phpyun_models::stripe_order::entity::{EventPatch, LocalOrderIn, RequestPatch, SessionPatch};
 use phpyun_models::stripe_order::repo as stripe_repo;
 use phpyun_models::user::repo as user_repo;
@@ -69,6 +70,15 @@ async fn cfg_val(state: &AppState, key: &str) -> String {
 }
 
 pub async fn stripe_enabled(state: &AppState) -> bool {
+    if let Ok(Some(m)) = pay_repo::find_merchant_by_code(state.db.reader(), "ov6").await {
+        if m.status == "active" {
+            if let Ok(Some(method)) = pay_repo::find_method(state.db.reader(), m.id, "stripe").await {
+                if method.status == "active" {
+                    return secret_key(state).await.is_ok();
+                }
+            }
+        }
+    }
     let flag = cfg_val(state, "stripe").await;
     if flag.trim() != "1" {
         return false;
@@ -76,10 +86,24 @@ pub async fn stripe_enabled(state: &AppState) -> bool {
     !cfg_val(state, "sy_stripe_sk").await.trim().is_empty()
 }
 
+async fn ov6_method_cfg(state: &AppState) -> String {
+    pay_repo::method_config_by_merchant_code(state.db.reader(), "ov6", "stripe")
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_default()
+}
+
 fn secret_key(state: &AppState) -> impl std::future::Future<Output = AppResult<String>> + '_ {
     async move {
-        let sk = cfg_val(state, "sy_stripe_sk").await;
-        let sk = sk.trim().to_string();
+        let cfg = ov6_method_cfg(state).await;
+        let mut sk = crate::pay_config::config_str(&cfg, "secret_key");
+        if sk.is_empty() {
+            sk = crate::pay_config::config_str(&cfg, "sk");
+        }
+        if sk.is_empty() {
+            sk = cfg_val(state, "sy_stripe_sk").await.trim().to_string();
+        }
         if sk.is_empty() {
             return Err(ApiError::business("pay_not_configured"));
         }
@@ -500,6 +524,7 @@ pub async fn create_checkout_url(
     user: &AuthenticatedUser,
     order_no: &str,
     client_ip: &str,
+    pay_no: Option<&str>,
 ) -> AppResult<String> {
     let o = vip_repo::find_any_order_by_no(state.db.reader(), order_no)
         .await?
@@ -574,6 +599,9 @@ pub async fn create_checkout_url(
     form_push(&mut form, "metadata[usertype]", &ut.to_string());
     form_push(&mut form, "metadata[package_code]", &o.package_code);
     form_push(&mut form, "metadata[order_kind]", &o.order_kind.to_string());
+    if let Some(p) = pay_no.filter(|s| !s.is_empty()) {
+        form_push(&mut form, "metadata[pay_no]", p);
+    }
     form_push(&mut form, "expand[0]", "payment_intent");
     if email_ok(&email) {
         form_push(&mut form, "customer_email", email.trim());
@@ -625,6 +653,58 @@ pub async fn create_checkout_url(
     }
     stripe_repo::update_session(state.db.pool(), order_no, &patch, now).await?;
     Ok(url)
+}
+
+/// Hosted Checkout for an external gateway order (`pay_no` is the ledger key).
+pub async fn create_gateway_session(
+    state: &AppState,
+    sk: &str,
+    pay_no: &str,
+    merchant_order_no: &str,
+    amount_cents: i32,
+    currency: &str,
+    subject: &str,
+    customer_email: &str,
+    success_url: &str,
+    cancel_url: &str,
+) -> AppResult<crate::pay_adapter::CheckoutOut> {
+    let mut form = String::new();
+    form_push(&mut form, "mode", "payment");
+    form_push(&mut form, "ui_mode", "hosted_page");
+    form_push(&mut form, "client_reference_id", pay_no);
+    form_push(&mut form, "success_url", success_url);
+    form_push(&mut form, "cancel_url", cancel_url);
+    form_push(&mut form, "managed_payments[enabled]", "false");
+    form_push(&mut form, "adaptive_pricing[enabled]", "false");
+    form_push(&mut form, "line_items[0][quantity]", "1");
+    form_push(&mut form, "line_items[0][price_data][currency]", currency);
+    form_push(
+        &mut form,
+        "line_items[0][price_data][unit_amount]",
+        &amount_cents.max(0).to_string(),
+    );
+    form_push(
+        &mut form,
+        "line_items[0][price_data][product_data][name]",
+        subject,
+    );
+    form_push(&mut form, "metadata[pay_no]", pay_no);
+    form_push(&mut form, "metadata[merchant_order_no]", merchant_order_no);
+    form_push(&mut form, "expand[0]", "payment_intent");
+    if email_ok(customer_email) {
+        form_push(&mut form, "customer_email", customer_email.trim());
+    }
+    let idem = format!("gw_{pay_no}");
+    let sess = stripe_call(state, "POST", SESSIONS_URL, sk, Some(&form), Some(&idem)).await?;
+    let patch = session_patch(&sess);
+    let url = patch.stripe_url.clone();
+    if url.is_empty() {
+        return Err(ApiError::upstream("stripe_no_url"));
+    }
+    Ok(crate::pay_adapter::CheckoutOut {
+        pay_url: url,
+        channel_ref: patch.stripe_session_id,
+    })
 }
 
 async fn retrieve_session(state: &AppState, sk: &str, session_id: &str) -> AppResult<Value> {
@@ -772,7 +852,10 @@ pub async fn retrieve_and_settle(
 }
 
 pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> WebhookAck {
-    let secret = cfg_val(state, "sy_stripe_whsec").await;
+    let mut secret = crate::pay_config::config_str(&ov6_method_cfg(state).await, "webhook_secret");
+    if secret.is_empty() {
+        secret = cfg_val(state, "sy_stripe_whsec").await;
+    }
     let secret = secret.trim().trim_matches('"').to_string();
     let now = clock::now_ts();
     let signed_ok = !secret.is_empty()
@@ -828,13 +911,25 @@ pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> 
     if order_no.is_empty() {
         order_no = json_str(&sess, "client_reference_id");
     }
+    let pay_no = metadata_str(&sess, "pay_no");
+    let sid = json_str(&sess, "id");
+    crate::pay_hook::on_stripe_paid(
+        state,
+        &pay_no,
+        &order_no,
+        &sid,
+        json_opt_i32(&sess, "amount_total"),
+    )
+    .await;
     if order_no.is_empty() {
-        let sid = json_str(&sess, "id");
         if let Ok(Some(row)) = stripe_repo::find_by_session_id(state.db.reader(), &sid).await {
             order_no = row.order_no;
         }
     }
-    if order_no.is_empty() {
+    if order_no.is_empty() || order_no == pay_no {
+        if !pay_no.is_empty() {
+            return WebhookAck::Ok;
+        }
         return WebhookAck::BadRequest;
     }
     let event_json = serde_json::to_string(&event).ok();

@@ -32,7 +32,7 @@
 | 认领 / 邀请 / 订阅 | `/claim` `/invite` `/subscribe` | `/v1/wap/claim`、subscribe 等 | |
 | 分享落地 | `/share/job|company|resume/...` | wap 详情 + share token | |
 | 海报 | `/poster/...` | 详情数据拼海报 | |
-| 其它 | `/links` `/services` `/download` `/advice` `/site` `/hr` `/redeem` `/specials` `/quick-apply` `/pay/stripe` | 对应 wap 或 settings | `/advice` 登录后可进会员壳；`/pay/stripe` 是 Stripe Hosted Checkout 公开回跳 |
+| 其它 | `/links` `/services` `/download` `/advice` `/site` `/hr` `/redeem` `/specials` `/quick-apply` `/pay/stripe` | 对应 wap 或 settings | `/advice` 登录后可进会员壳；`/pay/stripe` 是 Stripe Hosted Checkout 公开回跳。网关见 [pay-gateway.md](../features/pay-gateway.md) |
 
 ## 求职会员 `/user`
 
@@ -50,6 +50,18 @@
 | 其它 | `/user/parts` `/user/recommend` `/user/searches` `/user/eval-logs` `/user/invite`… | 对应 mcenter；模块开关见 member-center |
 
 Stripe 付完回跳公开页 `/pay/stripe`（`order_no` + `session_id`），不进 `/user` `/com` 登录门闩；登录后再 `stripe-return`。
+
+## 管理后台 `/admin`
+
+Nuxt `baseURL=/admin/`。支付网关页（系统后面一级 **支付**，库菜单 1070–1073）不走 phpMap：
+
+| 页 | 路由 | API |
+|---|---|---|
+| 订单 | `/admin/payment/orders` | `POST /v1/admin/pay/orders/list` |
+| 支付方式 | `/admin/payment/methods` | `POST /v1/admin/pay/methods/{list,save,status,delete}` |
+| 商户 | `/admin/payment/merchants` | `POST /v1/admin/pay/merchants/{list,save,status}` |
+
+不要改 System `/admin/payset`。口径见 [pay-gateway.md](../features/pay-gateway.md)。
 
 ## 招聘会员 `/com`
 

@@ -3,7 +3,7 @@
 //! Services must not take a `hmac` / `sha2` dependency; call this facade.
 
 use hmac::{Hmac, Mac};
-use sha2::Sha256;
+use sha2::{Digest, Sha256};
 
 type HmacSha256 = Hmac<Sha256>;
 
@@ -49,6 +49,33 @@ fn hex_val(b: u8) -> Option<u8> {
         b'A'..=b'F' => Some(b - b'A' + 10),
         _ => None,
     }
+}
+
+pub fn sha256_hex(data: &[u8]) -> String {
+    hex_encode(&Sha256::digest(data))
+}
+
+/// Merchant HMAC: `hex(hmac(secret, ts + "\\n" + METHOD + "\\n" + path + "\\n" + body_sha256))`.
+pub fn merchant_sign(secret: &str, ts: i64, method: &str, path: &str, body: &[u8]) -> String {
+    let body_hash = sha256_hex(body);
+    let msg = format!("{ts}\n{method}\n{path}\n{body_hash}");
+    hex_encode(&hmac_sha256(secret.as_bytes(), msg.as_bytes()))
+}
+
+pub fn verify_merchant_sign(
+    secret: &str,
+    ts: i64,
+    method: &str,
+    path: &str,
+    body: &[u8],
+    expected_hex: &str,
+) -> bool {
+    if secret.is_empty() || expected_hex.is_empty() {
+        return false;
+    }
+    let body_hash = sha256_hex(body);
+    let msg = format!("{ts}\n{method}\n{path}\n{body_hash}");
+    hmac_sha256_verify(secret.as_bytes(), msg.as_bytes(), expected_hex)
 }
 
 pub fn hmac_sha256(key: &[u8], msg: &[u8]) -> Vec<u8> {
@@ -160,5 +187,31 @@ mod tests {
             stripe_signature_timestamp(&format!("v1={sig}, t={t}")),
             Some(t)
         );
+    }
+
+    #[test]
+    fn merchant_hmac_roundtrip() {
+        let secret = "s3cret";
+        let body = br#"{"a":1}"#;
+        let ts = 1_700_000_000i64;
+        let sign = merchant_sign(secret, ts, "POST", "/v1/pay/orders", body);
+        assert!(verify_merchant_sign(
+            secret,
+            ts,
+            "POST",
+            "/v1/pay/orders",
+            body,
+            &sign
+        ));
+        assert!(!verify_merchant_sign(
+            secret,
+            ts,
+            "GET",
+            "/v1/pay/orders",
+            body,
+            &sign
+        ));
+        assert!(!verify_merchant_sign("other", ts, "POST", "/v1/pay/orders", body, &sign));
+        assert_eq!(sha256_hex(b"").len(), 64);
     }
 }

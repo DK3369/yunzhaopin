@@ -158,6 +158,8 @@ async function submitBank() {
       <div class="payment_list_s mt10">{{ $t('wap_user_00313') }}：</div>
       <div class="payment_list_r">
         <label v-if="channels.includes('stripe')"><input v-model="channel" type="radio" value="stripe" /> Stripe</label>
+        <label v-if="channels.includes('gcash')"><input v-model="channel" type="radio" value="gcash" /> GCash</label>
+        <label v-if="channels.includes('paymaya')"><input v-model="channel" type="radio" value="paymaya" /> PayMaya</label>
         <label v-if="channels.includes('alipay')"><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
         <label v-if="channels.includes('wxpay')"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
         <label v-if="channels.includes('bank')"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
@@ -198,6 +200,32 @@ async function submitBank() {
               <div class="dredge_body_wx_icon">
                 <img
                   :src="channel === 'stripe' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                >
+              </div>
+            </div>
+            <div v-if="channels.includes('gcash')" class="dredge_body_zfb" @click="channel = 'gcash'">
+              <div class="dredge_body_wx_box">
+                <div class="wx_box_name">GCash</div>
+              </div>
+              <div class="dredge_body_wx_icon">
+                <img
+                  :src="channel === 'gcash' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                >
+              </div>
+            </div>
+            <div v-if="channels.includes('paymaya')" class="dredge_body_zfb" @click="channel = 'paymaya'">
+              <div class="dredge_body_wx_box">
+                <div class="wx_box_name">PayMaya</div>
+              </div>
+              <div class="dredge_body_wx_icon">
+                <img
+                  :src="channel === 'paymaya' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
                   alt=""
                   width="100%"
                   height="100%"

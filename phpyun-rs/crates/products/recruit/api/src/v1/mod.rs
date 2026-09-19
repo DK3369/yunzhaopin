@@ -3,6 +3,7 @@
 //! Admin lives in the sibling crate `phpyun-api-admin`.
 
 pub mod mcenter;
+pub mod pay;
 pub mod wap;
 
 use axum::Router;
@@ -10,6 +11,7 @@ use phpyun_core::AppState;
 
 pub fn router(state: AppState) -> Router<AppState> {
     Router::new()
+        .nest("/pay", pay::router())
         .nest("/wap", wap::router())
         .nest(
             "/mcenter",

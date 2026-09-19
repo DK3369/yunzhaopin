@@ -363,10 +363,10 @@ pub async fn create_order(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
 ) -> AppResult<ApiResponse<OrderCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" && f.channel != "gcash" && f.channel != "paymaya" {
         return Err(ApiError::param_invalid("channel"));
     }
-    phpyun_services::stripe_service::assert_create_channel(&state, &f.channel).await?;
+    phpyun_services::pay_service::assert_create_channel(&state, &f.channel).await?;
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
     if f.channel == "stripe" {
         phpyun_services::stripe_service::upsert_local(&state, &created.order_no, &ip, Some(&created.subject)).await?;
@@ -855,10 +855,10 @@ pub async fn recharge(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<RechargeForm>,
 ) -> AppResult<ApiResponse<RechargeCreated>> {
-    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
+    if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" && f.channel != "gcash" && f.channel != "paymaya" {
         return Err(ApiError::param_invalid("channel"));
     }
-    phpyun_services::stripe_service::assert_create_channel(&state, &f.channel).await?;
+    phpyun_services::pay_service::assert_create_channel(&state, &f.channel).await?;
     if f.channel == "alipay" {
         payment_notify_service::ensure_alipay_page(&state).await?;
     }

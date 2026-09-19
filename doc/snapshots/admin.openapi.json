@@ -5147,6 +5147,220 @@
         ]
       }
     },
+    "/v1/admin/pay/merchants/list": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_merchants_list",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/merchants/save": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_merchants_save",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantSaveForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/merchants/status": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_merchants_status",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/methods/delete": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_methods_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/methods/list": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_methods_list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MethodListForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/methods/save": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_methods_save",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MethodSaveForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/methods/status": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_methods_status",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/pay/orders/list": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "post_v1_admin_pay_orders_list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderListForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/v1/admin/question-classes": {
       "post": {
         "tags": [
@@ -11602,6 +11816,37 @@
           }
         }
       },
+      "MerchantSaveForm": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string"
+          },
+          "notify_url": {
+            "type": "string"
+          },
+          "return_url": {
+            "type": "string"
+          },
+          "rotate_secret": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
       "MergeDone": {
         "type": "object",
         "required": [
@@ -11637,6 +11882,58 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          }
+        }
+      },
+      "MethodListForm": {
+        "type": "object",
+        "properties": {
+          "merchant_id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "MethodSaveForm": {
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "code",
+          "name"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "merchant_id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string"
+          },
+          "secret_key": {
+            "type": "string"
+          },
+          "sort": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string"
+          },
+          "webhook_secret": {
+            "type": "string"
           }
         }
       },
@@ -11982,6 +12279,20 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          }
+        }
+      },
+      "OrderListForm": {
+        "type": "object",
+        "properties": {
+          "merchant_code": {
+            "type": "string"
+          },
+          "method_code": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
           }
         }
       },
@@ -13251,9 +13562,7 @@
             "minimum": 0
           },
           "status": {
-            "type": "integer",
-            "format": "int32",
-            "description": "0=offline  1=online"
+            "type": "string"
           }
         }
       },
@@ -13703,7 +14012,7 @@
   "tags": [
     {
       "name": "admin",
-      "description": "【328 个接口】 Admin"
+      "description": "【336 个接口】 Admin"
     }
   ]
 }
