@@ -8,8 +8,11 @@ pub fn method_ok(code: &str) -> bool {
     matches!(code, "stripe" | "gcash" | "paymaya")
 }
 
-pub fn charge_ready(code: &str) -> bool {
-    code == "stripe"
+pub fn charge_ready(code: &str, config_json: &str) -> bool {
+    if code != "stripe" {
+        return false;
+    }
+    !crate::pay_config::secret_key(config_json).is_empty()
 }
 
 pub struct CheckoutIn<'a> {
@@ -37,7 +40,7 @@ pub async fn create_checkout(
     if !method_ok(method) {
         return Err(ApiError::param_invalid("method"));
     }
-    if !charge_ready(method) {
+    if method != "stripe" {
         return Err(ApiError::business("not_configured"));
     }
     stripe::gateway_checkout(state, input).await

@@ -49,6 +49,7 @@ pub enum ApiErrorKind {
     SessionExpired,
     BadCredentials,
     Forbidden,
+    IpNotAllowed,
     RoleMismatch,
     Locked,
     RateLimit,
@@ -66,7 +67,7 @@ impl ApiErrorKind {
     fn code(&self) -> u16 {
         match self {
             Self::Unauth | Self::SessionExpired | Self::BadCredentials => CODE_UNAUTH,
-            Self::Forbidden | Self::RoleMismatch | Self::Locked => CODE_FORBIDDEN,
+            Self::Forbidden | Self::IpNotAllowed | Self::RoleMismatch | Self::Locked => CODE_FORBIDDEN,
             Self::Captcha | Self::ParamInvalid(_) | Self::ParamMissing(_) => CODE_PARAM,
             Self::RateLimit => CODE_RATE_LIMIT,
             Self::Business(_) => CODE_BUSINESS,
@@ -93,6 +94,7 @@ impl ApiErrorKind {
             Self::SessionExpired => Cow::Borrowed("session_expired"),
             Self::BadCredentials => Cow::Borrowed("bad_credentials"),
             Self::Forbidden => Cow::Borrowed("forbidden"),
+            Self::IpNotAllowed => Cow::Borrowed("ip_not_allowed"),
             Self::RoleMismatch => Cow::Borrowed("role_mismatch"),
             Self::Locked => Cow::Borrowed("locked"),
             Self::RateLimit => Cow::Borrowed("rate_limit"),
@@ -145,6 +147,10 @@ impl ApiError {
 
     pub fn forbidden() -> Self {
         Self::tagged(ApiErrorKind::Forbidden)
+    }
+
+    pub fn ip_not_allowed() -> Self {
+        Self::tagged(ApiErrorKind::IpNotAllowed)
     }
 
     pub fn role_mismatch() -> Self {

@@ -8,6 +8,7 @@
     "session_expired": "Session expired, please log in again",
     "bad_credentials": "Invalid username or password",
     "forbidden": "Permission denied",
+    "ip_not_allowed": "Client IP is not on this merchant allowlist",
     "role_mismatch": "Your current role is not allowed for this action",
     "locked": "Account is locked",
     "param_missing": "Missing required parameter: %{field}",

@@ -44,7 +44,7 @@ JWT `usertype`：`1` 求职者、`2` 企业、`3` 校园（**进不了** `/v1/ad
 | `phpyun_rs_views` | 「谁看过我」；≠ `phpyun_look_job` / `look_resume` | [api-merged.md](./api-merged.md) |
 | `phpyun_rs_user_vip` | **求职**包月真相源；企业仍信 `company_statis` | [member-center.md](../features/member-center.md) |
 | `phpyun_rs_stripe_order` | Stripe Hosted Checkout 对账（一行=本站订单+Session/Webhook；`stripe_session_id` 未建 NULL、非空 UNIQUE） | [member-center.md](../features/member-center.md) |
-| `phpyun_rs_pay_merchant` / `pay_method` / `pay_order` | 三方支付网关账本；OV6 与 HMAC 商户 | [pay-gateway.md](../features/pay-gateway.md) |
+| `phpyun_rs_pay_merchant` / `pay_method` / `pay_order` | 三方支付网关账本；OV6 + HMAC 商户（`allow_ips` 闭门） | [pay-gateway.md](../features/pay-gateway.md) |
 | `phpyun_rs_seeker_vip_pack` | 求职包月商品（月数/价/权益） | [member-center.md](../features/member-center.md) |
 | `phpyun_rs_interview_review` | 面试多维分；`yqms_id` = `userid_msg.id` | [app-api-gaps.md](./app-api-gaps.md) |
 | `phpyun_rs_article_channel_sub` | 资讯栏目订阅；≠ `/v1/wap/subscribe` | [app-api-gaps.md](./app-api-gaps.md) |

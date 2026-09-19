@@ -43,9 +43,6 @@ async fn available_channels(state: &AppState) -> AppResult<Vec<String>> {
     if !channels.is_empty() {
         return Ok(channels);
     }
-    if crate::stripe_service::stripe_enabled(state).await {
-        return Ok(vec!["stripe".to_string()]);
-    }
     let mut out = vec!["alipay".to_string()];
     if !bank_repo::list_all(state.db.reader()).await?.is_empty() {
         out.push("bank".into());

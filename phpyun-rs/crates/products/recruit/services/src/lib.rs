@@ -147,6 +147,7 @@ pub mod payment_notify_service;
 pub mod pay_adapter;
 pub mod pay_config;
 pub mod pay_hook;
+pub mod pay_ip;
 pub mod pay_service;
 pub mod stripe_service;
 pub mod once_service;

@@ -13,6 +13,7 @@ use phpyun_models::user::repo as user_repo;
 use phpyun_models::vip::repo as vip_repo;
 use serde_json::{json, Value};
 
+use crate::pay_config;
 use crate::payment_notify_service;
 use crate::site_setting_service;
 
@@ -70,20 +71,16 @@ async fn cfg_val(state: &AppState, key: &str) -> String {
 }
 
 pub async fn stripe_enabled(state: &AppState) -> bool {
-    if let Ok(Some(m)) = pay_repo::find_merchant_by_code(state.db.reader(), "ov6").await {
-        if m.status == "active" {
-            if let Ok(Some(method)) = pay_repo::find_method(state.db.reader(), m.id, "stripe").await {
-                if method.status == "active" {
-                    return secret_key(state).await.is_ok();
-                }
-            }
-        }
-    }
-    let flag = cfg_val(state, "stripe").await;
-    if flag.trim() != "1" {
+    let Ok(Some(m)) = pay_repo::find_merchant_by_code(state.db.reader(), "ov6").await else {
+        return false;
+    };
+    if m.status != "active" {
         return false;
     }
-    !cfg_val(state, "sy_stripe_sk").await.trim().is_empty()
+    let Ok(Some(method)) = pay_repo::find_method(state.db.reader(), m.id, "stripe").await else {
+        return false;
+    };
+    method.status == "active" && !pay_config::secret_key(&method.config_json).is_empty()
 }
 
 async fn ov6_method_cfg(state: &AppState) -> String {
@@ -96,14 +93,7 @@ async fn ov6_method_cfg(state: &AppState) -> String {
 
 fn secret_key(state: &AppState) -> impl std::future::Future<Output = AppResult<String>> + '_ {
     async move {
-        let cfg = ov6_method_cfg(state).await;
-        let mut sk = crate::pay_config::config_str(&cfg, "secret_key");
-        if sk.is_empty() {
-            sk = crate::pay_config::config_str(&cfg, "sk");
-        }
-        if sk.is_empty() {
-            sk = cfg_val(state, "sy_stripe_sk").await.trim().to_string();
-        }
+        let sk = pay_config::secret_key(&ov6_method_cfg(state).await);
         if sk.is_empty() {
             return Err(ApiError::business("pay_not_configured"));
         }
@@ -113,7 +103,7 @@ fn secret_key(state: &AppState) -> impl std::future::Future<Output = AppResult<S
 
 fn currency(state: &AppState) -> impl std::future::Future<Output = String> + '_ {
     async move {
-        let c = cfg_val(state, "sy_stripe_currency").await;
+        let c = pay_config::config_str(&ov6_method_cfg(state).await, "currency");
         let c = c.trim().to_ascii_lowercase();
         if c.is_empty() || !phpyun_models::sql::ident_ok(&c) {
             "usd".into()
@@ -852,10 +842,7 @@ pub async fn retrieve_and_settle(
 }
 
 pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> WebhookAck {
-    let mut secret = crate::pay_config::config_str(&ov6_method_cfg(state).await, "webhook_secret");
-    if secret.is_empty() {
-        secret = cfg_val(state, "sy_stripe_whsec").await;
-    }
+    let secret = crate::pay_config::config_str(&ov6_method_cfg(state).await, "webhook_secret");
     let secret = secret.trim().trim_matches('"').to_string();
     let now = clock::now_ts();
     let signed_ok = !secret.is_empty()
@@ -979,8 +966,16 @@ pub async fn ensure_webhook(state: &AppState, user: &AuthenticatedUser) -> AppRe
     let sk = secret_key(state).await?;
     let base = web_base(state).await;
     let url = format!("{base}/callback/stripe");
-    let existing = cfg_val(state, "sy_stripe_whsec").await;
-    if !existing.trim().is_empty() {
+    let Some(m) = pay_repo::find_merchant_by_code(state.db.reader(), "ov6").await? else {
+        return Ok(());
+    };
+    let Some(method) = pay_repo::find_method(state.db.reader(), m.id, "stripe").await? else {
+        return Ok(());
+    };
+    if !pay_config::config_str(&method.config_json, "webhook_secret")
+        .trim()
+        .is_empty()
+    {
         return Ok(());
     }
     let mut form = String::new();
@@ -996,15 +991,12 @@ pub async fn ensure_webhook(state: &AppState, user: &AuthenticatedUser) -> AppRe
         Ok(v) => {
             if let Some(sec) = v.get("secret").and_then(Value::as_str) {
                 if !sec.is_empty() {
-                    site_setting_service::admin_upsert(
-                        state,
-                        user,
-                        crate::site_setting_service::UpsertInput {
-                            key: "sy_stripe_whsec",
-                            value: sec,
-                            description: "",
-                            is_public: false,
-                        },
+                    let next = pay_config::set_str(&method.config_json, "webhook_secret", sec);
+                    pay_repo::set_method_config_json(
+                        state.db.pool(),
+                        method.id,
+                        &next,
+                        clock::now_ts(),
                     )
                     .await?;
                 }

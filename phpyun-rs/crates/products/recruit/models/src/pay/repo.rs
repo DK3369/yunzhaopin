@@ -1,7 +1,8 @@
 //! `phpyun_rs_pay_*` — gateway merchants, methods, orders.
 
 use super::entity::{
-    MerchantWrite, MethodWrite, OrderInsert, PayMerchant, PayMethod, PayOrder, PayOrderListRow,
+    MerchantWrite, MethodWrite, OrderInsert, OrderListQuery, PayMerchant, PayMethod, PayOrder,
+    PayOrderListRow,
 };
 use sqlx::MySqlPool;
 
@@ -13,6 +14,7 @@ const MERCHANT_FIELDS: &str = "\
     COALESCE(api_secret,'') AS api_secret, \
     COALESCE(notify_url,'') AS notify_url, \
     COALESCE(return_url,'') AS return_url, \
+    COALESCE(allow_ips,'') AS allow_ips, \
     COALESCE(status,'') AS status, \
     CAST(ctime AS SIGNED) AS ctime, \
     CAST(updated_at AS SIGNED) AS updated_at";
@@ -94,8 +96,8 @@ pub async fn insert_merchant(
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_rs_pay_merchant \
-         (code, name, api_key, api_secret, notify_url, return_url, status, ctime, updated_at) \
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+         (code, name, api_key, api_secret, notify_url, return_url, allow_ips, status, ctime, updated_at) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(w.code)
     .bind(w.name)
@@ -103,6 +105,7 @@ pub async fn insert_merchant(
     .bind(w.api_secret)
     .bind(w.notify_url)
     .bind(w.return_url)
+    .bind(w.allow_ips)
     .bind(w.status)
     .bind(now)
     .bind(now)
@@ -117,18 +120,20 @@ pub async fn update_merchant(
     name: &str,
     notify_url: &str,
     return_url: &str,
+    allow_ips: &str,
     status: &str,
     api_secret: Option<&str>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     if let Some(secret) = api_secret {
         let res = sqlx::query(
-            "UPDATE phpyun_rs_pay_merchant SET name=?, notify_url=?, return_url=?, status=?, \
+            "UPDATE phpyun_rs_pay_merchant SET name=?, notify_url=?, return_url=?, allow_ips=?, status=?, \
              api_secret=?, updated_at=? WHERE id=?",
         )
         .bind(name)
         .bind(notify_url)
         .bind(return_url)
+        .bind(allow_ips)
         .bind(status)
         .bind(secret)
         .bind(now)
@@ -138,12 +143,13 @@ pub async fn update_merchant(
         return Ok(res.rows_affected());
     }
     let res = sqlx::query(
-        "UPDATE phpyun_rs_pay_merchant SET name=?, notify_url=?, return_url=?, status=?, \
+        "UPDATE phpyun_rs_pay_merchant SET name=?, notify_url=?, return_url=?, allow_ips=?, status=?, \
          updated_at=? WHERE id=?",
     )
     .bind(name)
     .bind(notify_url)
     .bind(return_url)
+    .bind(allow_ips)
     .bind(status)
     .bind(now)
     .bind(id)
@@ -313,6 +319,21 @@ pub async fn set_method_status(
     Ok(res.rows_affected())
 }
 
+pub async fn set_method_config_json(
+    pool: &MySqlPool,
+    id: u64,
+    config_json: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_rs_pay_method SET config_json=?, updated_at=? WHERE id=?")
+        .bind(config_json)
+        .bind(now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn delete_method(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("DELETE FROM phpyun_rs_pay_method WHERE id=?")
         .bind(id)
@@ -464,11 +485,36 @@ pub async fn mark_status(
     Ok(res.rows_affected())
 }
 
+fn push_order_filters(sql: &mut String, q: &OrderListQuery<'_>) {
+    if q.merchant_code.is_some() {
+        sql.push_str(" AND m.code = ?");
+    }
+    if q.method_code.is_some() {
+        sql.push_str(" AND o.method_code = ?");
+    }
+    if q.status.is_some() {
+        sql.push_str(" AND o.status = ?");
+    }
+    if q.pay_no.is_some() {
+        sql.push_str(" AND o.pay_no = ?");
+    }
+    if q.merchant_order_no.is_some() {
+        sql.push_str(" AND o.merchant_order_no = ?");
+    }
+    if q.channel_ref.is_some() {
+        sql.push_str(" AND o.channel_ref = ?");
+    }
+    if q.ctime_from.is_some() {
+        sql.push_str(" AND o.ctime >= ?");
+    }
+    if q.ctime_to.is_some() {
+        sql.push_str(" AND o.ctime <= ?");
+    }
+}
+
 pub async fn list_orders(
     pool: &MySqlPool,
-    merchant_code: Option<&str>,
-    method_code: Option<&str>,
-    status: Option<&str>,
+    q: &OrderListQuery<'_>,
     offset: u64,
     limit: u64,
 ) -> Result<Vec<PayOrderListRow>, sqlx::Error> {
@@ -478,64 +524,74 @@ pub async fn list_orders(
          COALESCE(m.name,'') AS merchant_name, COALESCE(o.merchant_order_no,'') AS merchant_order_no, \
          COALESCE(o.method_code,'') AS method_code, CAST(o.amount_cents AS SIGNED) AS amount_cents, \
          COALESCE(o.currency,'') AS currency, COALESCE(o.status,'') AS status, \
-         COALESCE(o.channel_ref,'') AS channel_ref, COALESCE(o.subject,'') AS subject, \
+         COALESCE(o.channel_ref,'') AS channel_ref, COALESCE(o.pay_url,'') AS pay_url, \
+         COALESCE(o.subject,'') AS subject, \
          CAST(o.paid_at AS SIGNED) AS paid_at, CAST(o.ctime AS SIGNED) AS ctime \
          FROM phpyun_rs_pay_order o \
          INNER JOIN phpyun_rs_pay_merchant m ON m.id = o.merchant_id WHERE 1=1",
     );
-    if merchant_code.is_some() {
-        sql.push_str(" AND m.code = ?");
-    }
-    if method_code.is_some() {
-        sql.push_str(" AND o.method_code = ?");
-    }
-    if status.is_some() {
-        sql.push_str(" AND o.status = ?");
-    }
+    push_order_filters(&mut sql, q);
     sql.push_str(" ORDER BY o.id DESC LIMIT ? OFFSET ?");
-    let mut q = sqlx::query_as::<_, PayOrderListRow>(&sql);
-    if let Some(c) = merchant_code {
-        q = q.bind(c);
+    let mut qb = sqlx::query_as::<_, PayOrderListRow>(&sql);
+    if let Some(c) = q.merchant_code {
+        qb = qb.bind(c);
     }
-    if let Some(c) = method_code {
-        q = q.bind(c);
+    if let Some(c) = q.method_code {
+        qb = qb.bind(c);
     }
-    if let Some(s) = status {
-        q = q.bind(s);
+    if let Some(s) = q.status {
+        qb = qb.bind(s);
     }
-    q.bind(limit).bind(offset).fetch_all(pool).await
+    if let Some(v) = q.pay_no {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.merchant_order_no {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.channel_ref {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_from {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_to {
+        qb = qb.bind(v);
+    }
+    qb.bind(limit).bind(offset).fetch_all(pool).await
 }
 
-pub async fn count_orders(
-    pool: &MySqlPool,
-    merchant_code: Option<&str>,
-    method_code: Option<&str>,
-    status: Option<&str>,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_orders(pool: &MySqlPool, q: &OrderListQuery<'_>) -> Result<u64, sqlx::Error> {
     let mut sql = String::from(
         "SELECT COUNT(*) FROM phpyun_rs_pay_order o \
          INNER JOIN phpyun_rs_pay_merchant m ON m.id = o.merchant_id WHERE 1=1",
     );
-    if merchant_code.is_some() {
-        sql.push_str(" AND m.code = ?");
+    push_order_filters(&mut sql, q);
+    let mut qb = sqlx::query_as::<_, (i64,)>(&sql);
+    if let Some(c) = q.merchant_code {
+        qb = qb.bind(c);
     }
-    if method_code.is_some() {
-        sql.push_str(" AND o.method_code = ?");
+    if let Some(c) = q.method_code {
+        qb = qb.bind(c);
     }
-    if status.is_some() {
-        sql.push_str(" AND o.status = ?");
+    if let Some(s) = q.status {
+        qb = qb.bind(s);
     }
-    let mut q = sqlx::query_as::<_, (i64,)>(&sql);
-    if let Some(c) = merchant_code {
-        q = q.bind(c);
+    if let Some(v) = q.pay_no {
+        qb = qb.bind(v);
     }
-    if let Some(c) = method_code {
-        q = q.bind(c);
+    if let Some(v) = q.merchant_order_no {
+        qb = qb.bind(v);
     }
-    if let Some(s) = status {
-        q = q.bind(s);
+    if let Some(v) = q.channel_ref {
+        qb = qb.bind(v);
     }
-    let n = q.fetch_one(pool).await?;
+    if let Some(v) = q.ctime_from {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_to {
+        qb = qb.bind(v);
+    }
+    let n = qb.fetch_one(pool).await?;
     Ok(phpyun_core::numeric::nonnegative_count(n.0))
 }
 

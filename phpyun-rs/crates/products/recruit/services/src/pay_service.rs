@@ -5,7 +5,7 @@ use phpyun_core::hmac_sha256::verify_merchant_sign;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::pay::entity::{
-    MerchantWrite, MethodWrite, OrderInsert, PayMerchant, PayMethod, PayOrderListRow,
+    MerchantWrite, MethodWrite, OrderInsert, OrderListQuery, PayMerchant, PayMethod, PayOrderListRow,
 };
 use phpyun_models::pay::repo as pay_repo;
 use phpyun_models::sql::ident_ok;
@@ -16,6 +16,7 @@ use uuid::Uuid;
 
 use crate::pay_adapter;
 use crate::pay_config;
+use crate::pay_ip;
 use crate::site_setting_service;
 use crate::stripe_service;
 
@@ -30,6 +31,10 @@ pub struct MerchantView {
     pub api_key: String,
     pub notify_url: String,
     pub return_url: String,
+    pub allow_ips: String,
+    pub ip_count: i32,
+    pub hmac_enabled: bool,
+    pub gateway_base: String,
     pub status: String,
     pub ctime: i64,
     pub ctime_n: String,
@@ -70,8 +75,10 @@ pub struct OrderView {
     pub currency: String,
     pub status: String,
     pub channel_ref: String,
+    pub pay_url: String,
     pub subject: String,
     pub paid_at: i64,
+    pub paid_at_n: String,
     pub ctime: i64,
     pub ctime_n: String,
 }
@@ -96,7 +103,7 @@ pub fn order_status_ok(s: &str) -> bool {
     matches!(s, "pending" | "paid" | "failed" | "cancelled")
 }
 
-fn merchant_view(m: &PayMerchant) -> MerchantView {
+fn merchant_view(m: &PayMerchant, gateway_base: &str) -> MerchantView {
     MerchantView {
         id: m.id,
         code: m.code.clone(),
@@ -104,6 +111,14 @@ fn merchant_view(m: &PayMerchant) -> MerchantView {
         api_key: m.api_key.clone(),
         notify_url: m.notify_url.clone(),
         return_url: m.return_url.clone(),
+        allow_ips: m.allow_ips.clone(),
+        ip_count: m
+            .allow_ips
+            .lines()
+            .filter(|l| !l.trim().is_empty())
+            .count() as i32,
+        hmac_enabled: !m.api_secret.trim().is_empty(),
+        gateway_base: gateway_base.to_string(),
         status: m.status.clone(),
         ctime: m.ctime,
         ctime_n: fmt_dt(m.ctime),
@@ -126,7 +141,7 @@ fn method_view(m: &PayMethod) -> MethodView {
         name: m.name.clone(),
         status: m.status.clone(),
         sort: m.sort,
-        charge_ready: pay_adapter::charge_ready(&m.code),
+        charge_ready: pay_adapter::charge_ready(&m.code, &m.config_json),
         secret_key_set: !sk.is_empty(),
         webhook_secret_set: !wh.is_empty(),
         currency,
@@ -146,8 +161,14 @@ fn order_view_from_list(r: PayOrderListRow) -> OrderView {
         currency: r.currency,
         status: r.status,
         channel_ref: r.channel_ref,
+        pay_url: r.pay_url,
         subject: r.subject,
         paid_at: r.paid_at,
+        paid_at_n: if r.paid_at > 0 {
+            fmt_dt(r.paid_at)
+        } else {
+            String::new()
+        },
         ctime: r.ctime,
         ctime_n: fmt_dt(r.ctime),
     }
@@ -202,6 +223,7 @@ pub async fn authenticate(
     path: &str,
     auth_header: &str,
     body: &[u8],
+    client_ip: &str,
 ) -> AppResult<MerchantAuth> {
     let Some((key_id, ts, sign)) = parse_auth(auth_header) else {
         return Err(ApiError::unauth());
@@ -219,6 +241,9 @@ pub async fn authenticate(
     let meth = method.to_ascii_uppercase();
     if !verify_merchant_sign(&m.api_secret, ts, &meth, path, body, &sign) {
         return Err(ApiError::unauth());
+    }
+    if !pay_ip::ip_allowed(&m.allow_ips, client_ip) {
+        return Err(ApiError::ip_not_allowed());
     }
     Ok(MerchantAuth { merchant: m })
 }
@@ -255,16 +280,8 @@ pub async fn assert_create_channel(state: &AppState, channel: &str) -> AppResult
     Ok(())
 }
 
-async fn resolve_currency(state: &AppState, method: &PayMethod) -> String {
-    let mut c = pay_config::config_str(&method.config_json, "currency");
-    if c.is_empty() {
-        c = site_setting_service::get(state, "sy_stripe_currency")
-            .await
-            .ok()
-            .flatten()
-            .map(|r| r.value)
-            .unwrap_or_default();
-    }
+async fn resolve_currency(_state: &AppState, method: &PayMethod) -> String {
+    let c = pay_config::config_str(&method.config_json, "currency");
     let c = c.trim().to_ascii_lowercase();
     if c.is_empty() || !ident_ok(&c) {
         "usd".into()
@@ -317,8 +334,9 @@ fn merge_config(existing: &str, secret_key: Option<&str>, webhook_secret: Option
 }
 
 pub async fn admin_list_merchants(state: &AppState) -> AppResult<Vec<MerchantView>> {
+    let base = web_base(state).await;
     let rows = pay_repo::list_merchants(state.db.reader()).await?;
-    Ok(rows.iter().map(merchant_view).collect())
+    Ok(rows.iter().map(|m| merchant_view(m, &base)).collect())
 }
 
 pub struct MerchantSaveIn {
@@ -327,6 +345,7 @@ pub struct MerchantSaveIn {
     pub name: String,
     pub notify_url: String,
     pub return_url: String,
+    pub allow_ips: String,
     pub status: String,
     pub rotate_secret: bool,
 }
@@ -354,6 +373,13 @@ pub async fn admin_save_merchant(
         if !ident_ok(&code) {
             return Err(ApiError::param_invalid("code"));
         }
+        if code == OV6 {
+            return Err(ApiError::param_invalid("code"));
+        }
+        let allow_ips = match pay_ip::parse_allow_ips(&f.allow_ips) {
+            Ok(v) if !v.is_empty() => v,
+            _ => return Err(ApiError::param_invalid("allow_ips")),
+        };
         if pay_repo::find_merchant_by_code(state.db.reader(), &code)
             .await?
             .is_some()
@@ -371,6 +397,7 @@ pub async fn admin_save_merchant(
                 api_secret: &api_secret,
                 notify_url: f.notify_url.trim(),
                 return_url: f.return_url.trim(),
+                allow_ips: &allow_ips,
                 status: &status,
             },
             now,
@@ -386,6 +413,15 @@ pub async fn admin_save_merchant(
     let Some(old) = pay_repo::find_merchant_by_id(state.db.reader(), f.id).await? else {
         return Err(ApiError::param_invalid("id"));
     };
+    let allow_ips = match pay_ip::parse_allow_ips(&f.allow_ips) {
+        Ok(v) => {
+            if old.code != OV6 && v.is_empty() {
+                return Err(ApiError::param_invalid("allow_ips"));
+            }
+            v
+        }
+        Err(_) => return Err(ApiError::param_invalid("allow_ips")),
+    };
     let secret = if f.rotate_secret {
         Some(new_secret())
     } else {
@@ -397,6 +433,7 @@ pub async fn admin_save_merchant(
         name,
         f.notify_url.trim(),
         f.return_url.trim(),
+        &allow_ips,
         &status,
         secret.as_deref(),
         now,
@@ -550,6 +587,11 @@ pub async fn admin_list_orders(
     merchant_code: Option<&str>,
     method_code: Option<&str>,
     status: Option<&str>,
+    pay_no: Option<&str>,
+    merchant_order_no: Option<&str>,
+    channel_ref: Option<&str>,
+    ctime_from: Option<i64>,
+    ctime_to: Option<i64>,
     offset: u64,
     limit: u64,
 ) -> AppResult<(Vec<OrderView>, u64)> {
@@ -568,23 +610,41 @@ pub async fn admin_list_orders(
             return Err(ApiError::param_invalid("status"));
         }
     }
-    let total = pay_repo::count_orders(
-        state.db.reader(),
+    let pay_no = filter_val(pay_no, 64, "pay_no")?;
+    let merchant_order_no = filter_val(merchant_order_no, 64, "merchant_order_no")?;
+    let channel_ref = filter_val(channel_ref, 255, "channel_ref")?;
+    if let (Some(a), Some(b)) = (ctime_from, ctime_to) {
+        if a > b {
+            return Err(ApiError::param_invalid("ctime"));
+        }
+    }
+    let q = OrderListQuery {
         merchant_code,
         method_code,
         status,
-    )
-    .await?;
-    let rows = pay_repo::list_orders(
-        state.db.reader(),
-        merchant_code,
-        method_code,
-        status,
-        offset,
-        limit,
-    )
-    .await?;
+        pay_no,
+        merchant_order_no,
+        channel_ref,
+        ctime_from,
+        ctime_to,
+    };
+    let total = pay_repo::count_orders(state.db.reader(), &q).await?;
+    let rows = pay_repo::list_orders(state.db.reader(), &q, offset, limit).await?;
     Ok((rows.into_iter().map(order_view_from_list).collect(), total))
+}
+
+fn filter_val<'a>(v: Option<&'a str>, max: usize, field: &'static str) -> AppResult<Option<&'a str>> {
+    let Some(s) = v else {
+        return Ok(None);
+    };
+    let t = s.trim();
+    if t.is_empty() {
+        return Ok(None);
+    }
+    if t.len() > max || t.contains('\0') {
+        return Err(ApiError::param_invalid(field));
+    }
+    Ok(Some(t))
 }
 
 async fn ensure_method(
@@ -604,7 +664,10 @@ async fn ensure_method(
     if row.status != "active" {
         return Err(ApiError::business("method_paused"));
     }
-    if !pay_adapter::charge_ready(method) {
+    if !pay_adapter::charge_ready(method, &row.config_json) {
+        if method == "stripe" {
+            return Err(ApiError::business("pay_not_configured"));
+        }
         return Err(ApiError::business("not_configured"));
     }
     Ok(row)
@@ -773,7 +836,7 @@ pub async fn create_for_merchant(
                 customer_email: f.customer_email.trim(),
                 success_url: &success,
                 cancel_url: &cancel,
-                config_json: &resolved_config(state, merchant, &row).await,
+                config_json: &row.config_json,
             },
         )
         .await?;
@@ -835,7 +898,7 @@ pub async fn create_for_merchant(
             customer_email: f.customer_email.trim(),
             success_url: &success,
             cancel_url: &cancel,
-            config_json: &resolved_config(state, merchant, &row).await,
+            config_json: &row.config_json,
         },
     )
     .await?;
@@ -870,28 +933,6 @@ impl IfEmpty for String {
     }
 }
 
-async fn resolved_config(state: &AppState, merchant: &PayMerchant, method: &PayMethod) -> String {
-    let cfg = method.config_json.clone();
-    if merchant.code != OV6 {
-        return cfg;
-    }
-    let sk = pay_config::config_str(&cfg, "secret_key");
-    if !sk.is_empty() {
-        return cfg;
-    }
-    let site_sk = site_setting_service::get(state, "sy_stripe_sk")
-        .await
-        .ok()
-        .flatten()
-        .map(|r| r.value)
-        .unwrap_or_default();
-    let site_sk = site_sk.trim();
-    if site_sk.is_empty() {
-        return cfg;
-    }
-    merge_config(&cfg, Some(site_sk), None, None)
-}
-
 pub async fn merchant_methods(state: &AppState, merchant: &PayMerchant) -> AppResult<Vec<MethodView>> {
     let rows = pay_repo::list_active_methods(state.db.reader(), merchant.id).await?;
     Ok(rows.iter().map(method_view).collect())
@@ -923,8 +964,14 @@ pub async fn merchant_order(
         currency: o.currency,
         status: o.status,
         channel_ref: o.channel_ref,
+        pay_url: o.pay_url,
         subject: o.subject,
         paid_at: o.paid_at,
+        paid_at_n: if o.paid_at > 0 {
+            fmt_dt(o.paid_at)
+        } else {
+            String::new()
+        },
         ctime: o.ctime,
         ctime_n: fmt_dt(o.ctime),
     })

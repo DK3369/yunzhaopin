@@ -12,6 +12,7 @@ pub struct PayMerchant {
     pub api_secret: String,
     pub notify_url: String,
     pub return_url: String,
+    pub allow_ips: String,
     pub status: String,
     pub ctime: i64,
     pub updated_at: i64,
@@ -62,6 +63,7 @@ pub struct PayOrderListRow {
     pub currency: String,
     pub status: String,
     pub channel_ref: String,
+    pub pay_url: String,
     pub subject: String,
     pub paid_at: i64,
     pub ctime: i64,
@@ -74,7 +76,19 @@ pub struct MerchantWrite<'a> {
     pub api_secret: &'a str,
     pub notify_url: &'a str,
     pub return_url: &'a str,
+    pub allow_ips: &'a str,
     pub status: &'a str,
+}
+
+pub struct OrderListQuery<'a> {
+    pub merchant_code: Option<&'a str>,
+    pub method_code: Option<&'a str>,
+    pub status: Option<&'a str>,
+    pub pay_no: Option<&'a str>,
+    pub merchant_order_no: Option<&'a str>,
+    pub channel_ref: Option<&'a str>,
+    pub ctime_from: Option<i64>,
+    pub ctime_to: Option<i64>,
 }
 
 pub struct MethodWrite<'a> {

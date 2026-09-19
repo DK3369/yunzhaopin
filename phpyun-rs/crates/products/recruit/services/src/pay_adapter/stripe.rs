@@ -1,14 +1,11 @@
-//! Stripe adapter: Hosted Checkout using method `config_json` (fallback `sy_stripe_sk`).
+//! Stripe adapter: Hosted Checkout using method `config_json` only.
 
 use phpyun_core::{ApiError, AppResult, AppState};
 use super::{CheckoutIn, CheckoutOut};
 use crate::pay_config;
 
 pub async fn gateway_checkout(state: &AppState, input: CheckoutIn<'_>) -> AppResult<CheckoutOut> {
-    let mut sk = pay_config::config_str(input.config_json, "secret_key");
-    if sk.is_empty() {
-        sk = pay_config::config_str(input.config_json, "sk");
-    }
+    let sk = pay_config::secret_key(input.config_json);
     if sk.is_empty() {
         return Err(ApiError::business("pay_not_configured"));
     }

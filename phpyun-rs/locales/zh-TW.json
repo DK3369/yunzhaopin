@@ -8,6 +8,7 @@
     "session_expired": "工作階段已過期，請重新登入",
     "bad_credentials": "帳號或密碼錯誤",
     "forbidden": "權限不足",
+    "ip_not_allowed": "來源 IP 不在該商戶白名單",
     "role_mismatch": "目前身分不允許此操作",
     "locked": "帳號已被凍結",
     "param_missing": "缺少必填參數：%{field}",

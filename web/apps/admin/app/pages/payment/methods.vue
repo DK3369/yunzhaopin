@@ -20,6 +20,7 @@ const api = useApi()
 const loading = ref(false)
 const rows = ref<Row[]>([])
 const merchants = ref<Merchant[]>([])
+const merchantId = ref(0)
 const editOpen = ref(false)
 const form = reactive({
   id: 0,
@@ -42,7 +43,9 @@ async function load() {
   loading.value = true
   try {
     await loadMerchants()
-    const data = await api.post<Row[]>('/v1/admin/pay/methods/list', {})
+    const data = await api.post<Row[]>('/v1/admin/pay/methods/list', {
+      merchant_id: merchantId.value || undefined,
+    })
     rows.value = Array.isArray(data) ? data : []
   } catch (e: unknown) {
     ElMessage.error(e instanceof Error ? e.message : lc('admin_user_weipin_00026', null, '加载失败'))
@@ -53,6 +56,10 @@ async function load() {
 
 function merchantName(id: number) {
   return merchants.value.find((m) => m.id === id)?.name || String(id)
+}
+
+function yn(v: boolean) {
+  return v ? lc('common_02085', null, '是') : lc('common_02063', null, '否')
 }
 
 function openAdd() {
@@ -159,15 +166,21 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="moduleElenAl">
+  <div class="moduleElenAl pay-console">
     <div class="moduleSeachs">
-      <div>
-        {{ lc('admin_pay_methods_title', null, '支付方式') }}
-        <span style="margin-left: 12px; color: #909399; font-weight: 400">
-          {{ lc('admin_pay_methods_hint', null, 'Stripe 可真收。GCash / PayMaya 本轮仅配置，点支付提示未接入。密钥只保存在服务器。') }}
-        </span>
-      </div>
-      <div class="nrtopbtn">
+      <div class="pay-bar">
+        <span>{{ lc('admin_pay_methods_title', null, '支付方式') }}</span>
+        <span class="pay-hint">{{ lc('admin_pay_methods_hint', null, 'Stripe 密钥只在本页编辑。GCash / PayMaya 本轮占位。') }}</span>
+        <el-select
+          v-model="merchantId"
+          size="small"
+          clearable
+          style="width: 180px"
+          :placeholder="lc('admin_pay_merchant', null, '商户')"
+          @change="load"
+        >
+          <el-option v-for="m in merchants" :key="m.id" :label="`${m.name} (${m.code})`" :value="m.id" />
+        </el-select>
         <el-button size="small" type="primary" @click="openAdd">{{ lc('admin_00197', null, '添加') }}</el-button>
       </div>
     </div>
@@ -176,7 +189,7 @@ onMounted(load)
         v-loading="loading"
         :data="rows"
         border
-        height="100%"
+        style="width: 100%"
         row-key="id"
         :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
         :empty-text="lc('wap_js_00113', null, '暂无数据')"
@@ -185,13 +198,22 @@ onMounted(load)
         <el-table-column :label="lc('admin_pay_merchant', null, '商户')" width="140">
           <template #default="{ row }">{{ merchantName(row.merchant_id) }}</template>
         </el-table-column>
-        <el-table-column prop="code" :label="lc('admin_pay_method', null, '支付方式')" width="120" />
-        <el-table-column prop="name" :label="lc('admin_seeker_vip_col_name', null, '名称')" />
-        <el-table-column prop="status" :label="lc('admin_pay_status', null, '状态')" width="100" />
-        <el-table-column :label="lc('admin_pay_charge_ready', null, '可收款')" width="100">
+        <el-table-column prop="code" :label="lc('admin_pay_method', null, '支付方式')" width="110" />
+        <el-table-column prop="name" :label="lc('admin_seeker_vip_col_name', null, '名称')" min-width="120" />
+        <el-table-column :label="lc('admin_pay_status', null, '状态')" width="90">
           <template #default="{ row }">
-            {{ row.charge_ready ? lc('common_02085', null, '是') : lc('common_02063', null, '否') }}
+            {{ row.status === 'active' ? lc('admin_pay_enable', null, '启用') : lc('admin_pay_pause', null, '暂停') }}
           </template>
+        </el-table-column>
+        <el-table-column :label="lc('admin_pay_secret_set', null, '密钥')" width="80">
+          <template #default="{ row }">{{ yn(row.secret_key_set) }}</template>
+        </el-table-column>
+        <el-table-column :label="lc('admin_pay_webhook_set', null, 'Webhook')" width="90">
+          <template #default="{ row }">{{ yn(row.webhook_secret_set) }}</template>
+        </el-table-column>
+        <el-table-column prop="currency" :label="lc('admin_payset_stripe_currency', null, 'Currency')" width="90" />
+        <el-table-column :label="lc('admin_pay_charge_ready', null, '可收款')" width="90">
+          <template #default="{ row }">{{ yn(row.charge_ready) }}</template>
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -260,3 +282,35 @@ onMounted(load)
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+.pay-console {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.pay-console :deep(.moduleSeachs) {
+  height: auto !important;
+  min-height: 50px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.pay-console :deep(.moduleElTable) {
+  flex: 1;
+  min-height: 280px;
+  height: auto !important;
+  overflow: auto;
+}
+.pay-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.pay-hint {
+  color: #909399;
+  font-weight: 400;
+  font-size: 12px;
+}
+</style>

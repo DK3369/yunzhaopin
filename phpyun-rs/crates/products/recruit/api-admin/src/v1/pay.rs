@@ -33,6 +33,19 @@ pub struct OrderListForm {
     #[serde(default)]
     #[validate(length(max = 16))]
     pub status: String,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub pay_no: String,
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub merchant_order_no: String,
+    #[serde(default)]
+    #[validate(length(max = 255))]
+    pub channel_ref: String,
+    #[serde(default)]
+    pub ctime_from: i64,
+    #[serde(default)]
+    pub ctime_to: i64,
 }
 
 #[utoipa::path(
@@ -53,11 +66,37 @@ pub async fn orders_list(
     let merchant = f.merchant_code.trim();
     let method = f.method_code.trim();
     let status = f.status.trim();
+    let pay_no = f.pay_no.trim();
+    let merchant_order_no = f.merchant_order_no.trim();
+    let channel_ref = f.channel_ref.trim();
+    let ctime_from = if f.ctime_from > 0 {
+        Some(f.ctime_from)
+    } else {
+        None
+    };
+    let ctime_to = if f.ctime_to > 0 {
+        Some(f.ctime_to)
+    } else {
+        None
+    };
     let (list, total) = pay_service::admin_list_orders(
         &state,
         if merchant.is_empty() { None } else { Some(merchant) },
         if method.is_empty() { None } else { Some(method) },
         if status.is_empty() { None } else { Some(status) },
+        if pay_no.is_empty() { None } else { Some(pay_no) },
+        if merchant_order_no.is_empty() {
+            None
+        } else {
+            Some(merchant_order_no)
+        },
+        if channel_ref.is_empty() {
+            None
+        } else {
+            Some(channel_ref)
+        },
+        ctime_from,
+        ctime_to,
         page.offset,
         page.limit,
     )
@@ -228,6 +267,9 @@ pub struct MerchantSaveForm {
     #[validate(length(max = 512))]
     pub return_url: String,
     #[serde(default)]
+    #[validate(length(max = 2048))]
+    pub allow_ips: String,
+    #[serde(default)]
     #[validate(length(max = 16))]
     pub status: String,
     #[serde(default)]
@@ -257,6 +299,7 @@ pub async fn merchants_save(
             name: f.name,
             notify_url: f.notify_url,
             return_url: f.return_url,
+            allow_ips: f.allow_ips,
             status: f.status,
             rotate_secret: f.rotate_secret,
         },

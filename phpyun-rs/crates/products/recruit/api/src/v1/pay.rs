@@ -5,7 +5,7 @@ use axum::extract::State;
 use axum::http::{HeaderMap, Method};
 use axum::routing::post;
 use axum::Router;
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp};
 use phpyun_services::pay_service::{self, GatewayPay, MerchantOrderIn, MethodView, OrderView};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -32,8 +32,17 @@ async fn merchant_at(
     path: &str,
     headers: &HeaderMap,
     body: &[u8],
+    client_ip: &str,
 ) -> AppResult<pay_service::MerchantAuth> {
-    pay_service::authenticate(state, method.as_str(), path, &auth_header(headers), body).await
+    pay_service::authenticate(
+        state,
+        method.as_str(),
+        path,
+        &auth_header(headers),
+        body,
+        client_ip,
+    )
+    .await
 }
 
 fn parse_json<T: serde::de::DeserializeOwned + Validate>(body: &[u8]) -> AppResult<T> {
@@ -45,11 +54,12 @@ fn parse_json<T: serde::de::DeserializeOwned + Validate>(body: &[u8]) -> AppResu
 
 pub async fn methods_list(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     method: Method,
     headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<Vec<MethodView>>> {
-    let auth = merchant_at(&state, &method, "/v1/pay/methods/list", &headers, &body).await?;
+    let auth = merchant_at(&state, &method, "/v1/pay/methods/list", &headers, &body, &ip).await?;
     Ok(ApiResponse::data(
         pay_service::merchant_methods(&state, &auth.merchant).await?,
     ))
@@ -98,11 +108,12 @@ pub fn spec_create_order() {}
 
 pub async fn create_order(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     method: Method,
     headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<GatewayPay>> {
-    let auth = merchant_at(&state, &method, "/v1/pay/orders", &headers, &body).await?;
+    let auth = merchant_at(&state, &method, "/v1/pay/orders", &headers, &body, &ip).await?;
     let f: CreateOrderForm = parse_json(&body)?;
     let g = pay_service::create_for_merchant(
         &state,
@@ -139,11 +150,12 @@ pub fn spec_order_detail() {}
 
 pub async fn order_detail(
     State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
     method: Method,
     headers: HeaderMap,
     body: Bytes,
 ) -> AppResult<ApiResponse<OrderView>> {
-    let auth = merchant_at(&state, &method, "/v1/pay/orders/detail", &headers, &body).await?;
+    let auth = merchant_at(&state, &method, "/v1/pay/orders/detail", &headers, &body, &ip).await?;
     let f: PayNoForm = parse_json(&body)?;
     Ok(ApiResponse::data(
         pay_service::merchant_order(&state, &auth.merchant, &f.pay_no).await?,
