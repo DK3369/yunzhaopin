@@ -33,7 +33,7 @@ Stripe Session 缓存仍用 `phpyun_rs_stripe_order`（OV6 会员单）。**真�
 - 1074 网关（侧栏分组）
 - 1071 `/payment/orders`、1072 `/payment/methods`、1073 `/payment/merchants`
 
-点顶栏 **支付** 打开订单页，不要留在 System 的 `/payset`（支付宝/微信那张卡）。空表也要有搜索条、表头、分页。页面根节点用 `.pay-page`，不要 `.moduleElenAl`。
+点顶栏 **支付** 打开订单页，不要留在 System 的 `/payset`（支付宝/微信那张卡）。空表也要有搜索条、表头、分页。筛选项（商户/方式/状态）第一项是 **All**，选完仍能回到全部数据。页面根节点用 `.pay-page`，不要 `.moduleElenAl`。
 
 ## 调用
 

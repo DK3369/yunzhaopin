@@ -20,7 +20,7 @@ const api = useApi()
 const loading = ref(false)
 const rows = ref<Row[]>([])
 const merchants = ref<Merchant[]>([])
-const merchantId = ref<number | undefined>()
+const merchantId = ref(0)
 const editOpen = ref(false)
 const form = reactive({
   id: 0,
@@ -174,11 +174,11 @@ onMounted(load)
         <el-select
           v-model="merchantId"
           size="small"
-          clearable
           style="width: 180px"
           :placeholder="lc('admin_pay_merchant', null, '商户')"
           @change="load"
         >
+          <el-option :label="lc('admin_pay_all', null, '全部')" :value="0" />
           <el-option v-for="m in merchants" :key="m.id" :label="`${m.name} (${m.code})`" :value="m.id" />
         </el-select>
         <el-button size="small" type="primary" @click="openAdd">{{ lc('admin_00197', null, '添加') }}</el-button>

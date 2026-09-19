@@ -32,7 +32,12 @@ const page = ref(1)
 const pageSize = ref(20)
 const kwType = ref<'pay_no' | 'merchant_order_no' | 'channel_ref'>('pay_no')
 const keyword = ref('')
-const filter = reactive({ merchant_code: '', method_code: '', status: '' })
+const filter = reactive({ merchant_code: 'all', method_code: 'all', status: 'all' })
+
+function allOr(v: string) {
+  const s = (v || '').trim()
+  return !s || s === 'all' ? '' : s
+}
 const dateRange = ref<[Date, Date] | null>(null)
 const detailOpen = ref(false)
 const detail = ref<Row | null>(null)
@@ -119,9 +124,9 @@ async function load() {
     const range = unixRange()
     const kw = keyword.value.trim()
     const data = await api.post<Paged>('/v1/admin/pay/orders/list', {
-      merchant_code: filter.merchant_code.trim(),
-      method_code: filter.method_code.trim(),
-      status: filter.status.trim(),
+      merchant_code: allOr(filter.merchant_code),
+      method_code: allOr(filter.method_code),
+      status: allOr(filter.status),
       pay_no: kwType.value === 'pay_no' ? kw : '',
       merchant_order_no: kwType.value === 'merchant_order_no' ? kw : '',
       channel_ref: kwType.value === 'channel_ref' ? kw : '',
@@ -190,10 +195,11 @@ onMounted(async () => {
         <el-select
           v-model="filter.merchant_code"
           size="small"
-          clearable
           style="width: 140px"
           :placeholder="lc('admin_pay_merchant', null, '商户')"
+          @change="search"
         >
+          <el-option :label="lc('admin_pay_all', null, '全部')" value="all" />
           <el-option
             v-for="m in merchants"
             :key="m.id"
@@ -204,10 +210,11 @@ onMounted(async () => {
         <el-select
           v-model="filter.method_code"
           size="small"
-          clearable
           style="width: 130px"
           :placeholder="lc('admin_pay_method', null, '支付方式')"
+          @change="search"
         >
+          <el-option :label="lc('admin_pay_all', null, '全部')" value="all" />
           <el-option value="stripe" label="Stripe" />
           <el-option value="gcash" label="GCash" />
           <el-option value="paymaya" label="PayMaya" />
@@ -215,10 +222,11 @@ onMounted(async () => {
         <el-select
           v-model="filter.status"
           size="small"
-          clearable
           style="width: 120px"
           :placeholder="lc('admin_pay_status', null, '状态')"
+          @change="search"
         >
+          <el-option :label="lc('admin_pay_all', null, '全部')" value="all" />
           <el-option value="pending" :label="lc('admin_pay_pending', null, '待支付')" />
           <el-option value="paid" :label="lc('admin_pay_paid', null, '已支付')" />
           <el-option value="failed" :label="lc('admin_pay_failed', null, '失败')" />

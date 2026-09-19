@@ -176,6 +176,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_pay_methods_hint: 'Stripe 密钥只在本页编辑，真收不读 System 支付设置。GCash / PayMaya 本轮占位。',
     admin_pay_merchants_title: '支付商户',
     admin_pay_merchants_hint: '添加对接方、填 IP 白名单、发密钥。OV6 自用走会员 JWT，不走 HMAC。',
+    admin_pay_all: '全部',
     admin_pay_merchant: '商户',
     admin_pay_merchant_code: '商户代码',
     admin_pay_merchant_order: '商户单号',
@@ -326,6 +327,7 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_pay_merchants_title: 'Merchants',
     admin_pay_merchants_hint:
       'Add a partner, fill the IP allowlist, issue keys. OV6 cashier uses member JWT, not HMAC.',
+    admin_pay_all: 'All',
     admin_pay_merchant: 'Merchant',
     admin_pay_merchant_code: 'Merchant code',
     admin_pay_merchant_order: 'Merchant order no',
