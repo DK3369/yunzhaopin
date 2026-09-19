@@ -284,13 +284,29 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 ## 会员等级
 
-对外两样：**包月会员**（现金）和 **积分礼品**（实物或简历刷新，给自己或送给别人）。
+对外两样：**包月会员**（现金）和 **积分礼品**（实物或简历刷新，给自己或送给别人）。两套 VIP **不是同一张表**；同一条 `POST /v1/mcenter/vip/packages` 按 JWT `usertype` 分流（请求体 `kind` **解析后丢弃**），不要靠 URL 猜目录。
 
-- **招聘 VIP 0–6**：`phpyun_company_rating` `type=1`。**VIP 0**（id=3，`com_rating`）是未购买/免费；前台可买 **VIP 1–6**（现网价 199/299/399/499/599/699，各 `service_time=30` 天）。付款走 `apply_rating` → `company_statis`。有效期内发岗/下载按档位配额；`vip_etime > now` 可**发起**私聊。旧 type=2 月/季/年会员 `display=0`，不再卖。接口：`POST /v1/mcenter/vip/packages`（招聘端列出 VIP 1–6）。
-- **求职包月**：表 `phpyun_rs_seeker_vip_pack`，状态 `phpyun_rs_user_vip`，订单 `company_order.type=31`。现网可买 **1 个月 / 3 个月 / 1 年**（`month_1` / `month_3` / `month_12`）。期内：置顶、模板、刷新不限流、发起私聊。不单卖置顶/模板。后台页 `/seekerVip`（`POST /v1/admin/seeker/vip/packages*`）。接口：同一条 `POST /v1/mcenter/vip/packages`（按 usertype 分流）。
-- **积分充值档**：`POST /v1/mcenter/vip/integral-classes` 读 `phpyun_admin_integralclass`（现网 100/500/1000/3000/5000）。页面金额不要 CNY。这不是开会员。
-- **礼品**：公开 `/redeem`，扣购买人积分。`phpyun_reward.kind`=`goods`|`resume_refresh`。实物写 `phpyun_change`（加法 `to_uid`）；刷新即时 `touch_lastupdate`。不要用 `/integral/exchange` 当店。
-- 两端共用积分档 `admin_integralclass`、`company_order`、`company_pay`，按 `usertype` 分路。企业付款**不要**再 upsert `phpyun_rs_user_vip`。
+| 谁 | 后台 | 表 | 前台 |
+|---|---|---|---|
+| 招聘 VIP 1–6 | `/admin/companyvip` 套餐服务 | `phpyun_company_rating` `type=1` | `/com/member-right` |
+| 求职 1/3/12 月 | `/admin/seekerVip` 求职包月 | `phpyun_rs_seeker_vip_pack` | `/user/member-right` |
+| 套餐还是时间 | `/admin/companyset` `com_vip_type` | `phpyun_admin_config` | 前台列表**忽略**该开关，固定卖 `type=1` |
+| 100/500/1000… | `/admin/jifenset` | `phpyun_admin_integralclass` | `/user/pay` `/com/pay`，**不是开会员** |
+
+- **招聘 VIP 0–6**：`type=1`。**VIP 0**（id=3）免费不卖；前台可买 **VIP 1–6**（现网 `pkg_4`…`pkg_65`，价 199/299/399/499/599/699，各 30 天）。付款走 `apply_rating` → `company_statis`。旧 type=2 月/季/年 `display=0`。`/com/services` 只读配额。
+- **求职包月**：状态 `phpyun_rs_user_vip`，订单 `company_order.type=31`。现网 `month_1` 29 / `month_3` 79 / `month_12` 199。期内：置顶、模板、刷新不限流、发起私聊。
+- **积分充值档**：两端同一张表（现网 100/500/1000/3000/5000），余额按 `usertype` 分路。金额只显示数字，不要 CNY/¥/元（职位薪资 `common.salary_yuan`、招聘会展位、后台改档 suffix 不动）。
+- **礼品**：公开 `/redeem`，扣购买人积分。企业付款**不要**再 upsert `phpyun_rs_user_vip`。
+
+中间件 [`member-role.global.ts`](../../../web/apps/site/app/middleware/member-role.global.ts)：求职进 `/com` 打回 `/user`，招聘进 `/user` 打回 `/com`。管理员 JWT 打会员 `packages` 会 `403 role_mismatch`。
+
+已知口径冲突（走查记录，**先不修**）：
+
+- `seekerVip.vue` 提示「招聘包月仍走企业时间会员」；现网前台卖的是 VIP 1–6 套餐。
+- `list_packages` 丢弃 `kind`；`com_vip_type` 现网=2（Package Mode）与列表一致，但列表不读该开关。
+- 招聘现金 `vip/orders`：`create_order` 把 `company_rating.type` 当 `target_usertype`，要求 `==2`，列表卖的是 `type=1`，下单 **400 Invalid kind**。积分 `quote` 仍通。求职 `month_*` 走 `seeker_vip_service`，现金会卡在「Payment is not configured」。
+- 交叉买对方 code：`unknown package`（零串货）。
+- 后台 `seekerVip` 英文列名 `lc()` 撞了城市/分页 key（代码列像 Region ID），本轮不改文案。
 
 ## 全量对照（2026-09-18）
 
