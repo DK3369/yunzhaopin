@@ -375,8 +375,8 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
 
 /** Tools children id=123 数据 / id=186 短信 — do not keep the colliding pack strings. */
 const NAV_LABEL: Record<WebLocale, Record<number, string>> = {
-  zh: { 123: '数据', 186: '短信', 1070: '支付', 1071: '订单', 1072: '支付方式', 1073: '商户' },
-  en: { 123: 'Data', 186: 'SMS', 1070: 'Payment', 1071: 'Orders', 1072: 'Methods', 1073: 'Merchants' },
+  zh: { 123: '数据', 186: '短信', 1070: '支付', 1071: '订单', 1072: '支付方式', 1073: '商户', 1074: '网关' },
+  en: { 123: 'Data', 186: 'SMS', 1070: 'Payment', 1071: 'Orders', 1072: 'Methods', 1073: 'Merchants', 1074: 'Gateway' },
 }
 
 /** PHP `aliases.php` for these nav names (avoid loading the full 370KB map). */

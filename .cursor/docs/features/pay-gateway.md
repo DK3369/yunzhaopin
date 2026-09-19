@@ -8,6 +8,7 @@ OV6 自用，也给外部商户 HMAC 调用。进程仍是 Rust `:3003`，**不*
 
 1. [`phpyun-rs/migrations/sqlx/20260919000003_pay_gateway.sql`](../../phpyun-rs/migrations/sqlx/20260919000003_pay_gateway.sql)
 2. [`phpyun-rs/migrations/sqlx/20260919000004_pay_gateway_console.sql`](../../phpyun-rs/migrations/sqlx/20260919000004_pay_gateway_console.sql)（`allow_ips`、OV6 Stripe `config_json` 从 `sy_stripe_*` 拷一次、`stripe_order` 灌账本）
+3. [`phpyun-rs/migrations/sqlx/20260919000005_pay_nav_section.sql`](../../phpyun-rs/migrations/sqlx/20260919000005_pay_nav_section.sql)（菜单改三级：1070 支付 → 1074 网关 → 1071/1072/1073）
 
 `RUN_MIGRATIONS_ON_BOOT=false`。
 
@@ -26,7 +27,13 @@ Stripe Session 缓存仍用 `phpyun_rs_stripe_order`（OV6 会员单）。**真�
 | `stripe` | Hosted Checkout 真收；密钥只在 Payment Methods 编辑；`charge_ready` = `secret_key` 非空 |
 | `gcash` / `paymaya` | 可添加/暂停/删除；`create` 返回 `not_configured` |
 
-后台：一级 **支付**（系统后面，id=1070），子页订单 `/payment/orders`、支付方式 `/payment/methods`、商户 `/payment/merchants`（库里是两级：1070 → 1071/1072/1073，没有中间分组）。侧栏点「订单」本身进页；点顶栏「支付」会打开第一页订单。空表也要有搜索条、表头、分页。页面根节点用 `.pay-page`，不要 `.moduleElenAl`（绝对定位 height:100% 会把表裁成白板）。
+后台菜单必须三级（和运营→财务→充值订单一样），否则侧栏会把页面画成空文件夹：
+
+- 1070 支付（顶栏）
+- 1074 网关（侧栏分组）
+- 1071 `/payment/orders`、1072 `/payment/methods`、1073 `/payment/merchants`
+
+点顶栏 **支付** 打开订单页，不要留在 System 的 `/payset`（支付宝/微信那张卡）。空表也要有搜索条、表头、分页。页面根节点用 `.pay-page`，不要 `.moduleElenAl`。
 
 ## 调用
 

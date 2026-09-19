@@ -133,6 +133,14 @@ function shortcutLeaves(sec: MenuItem & { children?: MenuItem[] }): MenuItem[] {
   if (sec.children?.length) return sec.children
   return hrefOf(sec) ? [sec] : []
 }
+function firstPageUnder(rootId: number): { sec: MenuItem; leaf: MenuItem; href: string } | undefined {
+  for (const sec of children(rootId)) {
+    for (const leaf of pageLeaves(sec)) {
+      const href = hrefOf(leaf)
+      if (href) return { sec, leaf, href }
+    }
+  }
+}
 function onSecClick(root: MenuItem, sec: MenuItem) {
   if (isSecLeaf(sec)) {
     checkMenuTwo(root.id, sec.id, sec.id, sec.name, hrefOf(sec))
@@ -146,10 +154,10 @@ function checkMenu(val: number) {
     navigateTo('/index')
     return
   }
-  const first = children(val)[0]
-  if (first && isSecLeaf(first)) {
-    checkMenuTwo(val, first.id, first.id, first.name, hrefOf(first))
-  }
+  const hit = firstPageUnder(val)
+  if (!hit) return
+  if (!isSecLeaf(hit.sec) && !checkMenuOpen(hit.sec.id)) MenuOpen.value.push(hit.sec.id)
+  checkMenuTwo(val, hit.sec.id, hit.leaf.id, hit.leaf.name, hit.href)
 }
 function tabLabel(tab: { name: string; two_menu_id: number; path: string }) {
   void locale.value
@@ -407,29 +415,39 @@ useHead({
             </li>
           </ul>
           <ul v-for="root in roots" v-else :key="'nav-' + root.id" v-show="curMenu == root.id">
-            <li v-for="sec in children(root.id)" :key="sec.id" :class="{ subContLinkCur: curMenuOne == sec.id }">
-              <div class="subNavLinkTite" @click="onSecClick(root, sec)">
-                <div class="subNavLinkImg" :class="sec.classname">
-                  <span :class="{ curspan: isSecLeaf(sec) && curMenuTwo == sec.id }">{{ menuLabel(sec) }}</span>
-                </div>
-                <div
-                  v-if="pageLeaves(sec).length && !isSecLeaf(sec)"
-                  class="subNavLinkIcon"
-                  :class="{ subNavLinkIconCur: checkMenuOpen(sec.id) }"
-                >
-                  <i class="el-icon-arrow-up iconup" /><i class="el-icon-arrow-down icondwon" />
-                </div>
-              </div>
-              <div v-show="checkMenuOpen(sec.id) && !isSecLeaf(sec)" class="subNavLinkText">
+            <li
+              v-for="sec in children(root.id)"
+              :key="sec.id"
+              :class="{ subContLinkCur: curMenuOne == sec.id || (isSecLeaf(sec) && curMenuTwo == sec.id) }"
+            >
+              <div v-if="isSecLeaf(sec)" class="subNavLinkText" style="display: block; width: 100%; padding-left: 0">
                 <a
-                  v-for="leaf in pageLeaves(sec)"
-                  :key="leaf.id"
                   href="javascript:void(0);"
-                  @click="checkMenuTwo(root.id, sec.id, leaf.id, leaf.name, hrefOf(leaf))"
+                  @click="checkMenuTwo(root.id, sec.id, sec.id, sec.name, hrefOf(sec))"
                 >
-                  <span :class="{ curspan: curMenuTwo == leaf.id }">{{ menuLabel(leaf) }}</span>
+                  <span :class="{ curspan: curMenuTwo == sec.id }">{{ menuLabel(sec) }}</span>
                 </a>
               </div>
+              <template v-else>
+                <div class="subNavLinkTite" @click="onSecClick(root, sec)">
+                  <div class="subNavLinkImg" :class="sec.classname">
+                    <span>{{ menuLabel(sec) }}</span>
+                  </div>
+                  <div class="subNavLinkIcon" :class="{ subNavLinkIconCur: checkMenuOpen(sec.id) }">
+                    <i class="el-icon-arrow-up iconup" /><i class="el-icon-arrow-down icondwon" />
+                  </div>
+                </div>
+                <div v-show="checkMenuOpen(sec.id)" class="subNavLinkText">
+                  <a
+                    v-for="leaf in pageLeaves(sec)"
+                    :key="leaf.id"
+                    href="javascript:void(0);"
+                    @click="checkMenuTwo(root.id, sec.id, leaf.id, leaf.name, hrefOf(leaf))"
+                  >
+                    <span :class="{ curspan: curMenuTwo == leaf.id }">{{ menuLabel(leaf) }}</span>
+                  </a>
+                </div>
+              </template>
             </li>
           </ul>
         </div>
