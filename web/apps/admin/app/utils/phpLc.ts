@@ -155,6 +155,14 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00756: '职场问答',
     admin_tool_00757: '兼职职位',
     admin_tool_00758: '超级管理员',
+    admin_seeker_vip_title: '求职包月会员',
+    admin_seeker_vip_hint: '按时长卖。权益默认全开：私聊、置顶、模板、刷新不限流。招聘前台卖 VIP 1–6 套餐，不是时间会员。',
+    admin_seeker_vip_col_code: '代码',
+    admin_seeker_vip_col_name: '名称',
+    admin_seeker_vip_col_months: '月',
+    admin_seeker_vip_col_price: '价格',
+    admin_seeker_vip_edit: '编辑',
+    admin_seeker_vip_delete: '删除',
   },
   en: {
     admin_yunying_00201: 'SMS',
@@ -237,6 +245,15 @@ const LC_FIRST_WINS: Record<WebLocale, Record<string, string>> = {
     admin_tool_00756: 'Workplace Q&A',
     admin_tool_00757: 'Part-time jobs',
     admin_tool_00758: 'Super Admin',
+    admin_seeker_vip_title: 'Seeker monthly VIP',
+    admin_seeker_vip_hint:
+      'Sold by duration. Perks are all on: chat, pin, templates, unlimited refresh. Employer storefront sells VIP 1–6 packages, not time membership.',
+    admin_seeker_vip_col_code: 'Code',
+    admin_seeker_vip_col_name: 'Name',
+    admin_seeker_vip_col_months: 'Months',
+    admin_seeker_vip_col_price: 'Price',
+    admin_seeker_vip_edit: 'Edit',
+    admin_seeker_vip_delete: 'Delete',
   },
 }
 

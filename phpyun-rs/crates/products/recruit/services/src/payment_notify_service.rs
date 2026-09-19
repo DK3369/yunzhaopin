@@ -226,7 +226,8 @@ pub async fn build_alipay_page_url(
     Ok(format!("https://mapi.alipay.com/gateway.do?{}", qs.join("&")))
 }
 
-/// Fail before inserting a pending order when Alipay page pay is not configured.
+/// True when Alipay page-pay keys are present. Callers that already inserted an order
+/// should treat `Err` as "no pay_url", not fail the create.
 pub async fn ensure_alipay_page(state: &AppState) -> AppResult<()> {
     let _ = alipay_key(state)
         .await

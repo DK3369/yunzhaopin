@@ -41,8 +41,11 @@ pub async fn create_order(
     if pkg.is_active != 1 {
         return Err(ApiError::param_invalid("package_inactive"));
     }
-    // `company_rating.type` is 1=套餐 / 2=时间会员, not member.usertype.
-    if pkg.target_usertype != 2 {
+    if pkg.price_cents <= 0 {
+        return Err(ApiError::param_invalid("package_inactive"));
+    }
+    // `target_usertype` is company_rating.type: 1=套餐 / 2=时间会员, not member.usertype.
+    if pkg.target_usertype != 1 && pkg.target_usertype != 2 {
         return Err(ApiError::param_invalid("kind"));
     }
 

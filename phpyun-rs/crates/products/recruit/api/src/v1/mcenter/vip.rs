@@ -44,7 +44,7 @@ pub struct PackageItem {
     pub target_usertype: i32,
     pub duration_days: i32,
     pub price_cents: i32,
-    /// price_cents / 100 (yuan, for direct rendering as ¥99.00)
+    /// price_cents / 100 (numeric yuan; front-end does not prefix a currency symbol)
     pub price_yuan: f64,
     pub desc: Option<json::Value>,
     pub is_active: i32,
@@ -77,7 +77,7 @@ impl PackageItem {
 
 #[derive(Debug, Default, Deserialize, Validate, ToSchema)]
 pub struct ListPackagesForm {
-    /// `package` = 套餐 type=1；`time` = 时间会员 type=2；省略则跟站点 `com_vip_type`。
+    /// Parsed then discarded. Catalog follows JWT `usertype` (seeker packs vs employer VIP 1–6).
     #[serde(default)]
     #[validate(length(max = 16))]
     pub kind: Option<String>,
@@ -362,18 +362,21 @@ pub async fn create_order(
         return Err(ApiError::param_invalid("channel"));
     }
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
+    // Order is already inserted. Missing Alipay keys must not 400 the whole create —
+    // the client still needs `order_no` to open cashier.
     let pay_url = if f.channel == "alipay" {
-        payment_notify_service::ensure_alipay_page(&state).await?;
-        Some(
-            payment_notify_service::build_alipay_page_url(
+        match payment_notify_service::ensure_alipay_page(&state).await {
+            Ok(()) => payment_notify_service::build_alipay_page_url(
                 &state,
                 &created.order_no,
                 &created.subject,
                 created.amount_cents,
                 None,
             )
-            .await?,
-        )
+            .await
+            .ok(),
+            Err(_) => None,
+        }
     } else {
         None
     };

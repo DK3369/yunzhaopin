@@ -264,8 +264,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis` + `company.rating*` + 在招 `company_job.rating`**。`job_num` **赋值不累加**；`vip_etime` 日终 23:59:59。不要只 upsert `phpyun_rs_user_vip`。
 
 - `mark_paid` 与积分全额 `/v1/mcenter/vip/orders/integral` 共用 `apply_rating`。
-- 列表：`com_vip_type`（0/2 套餐 `type=1`，1 时间会员 `type=2`）+ `company.package` 白名单 + `com_package_open`。
-- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 卖 **VIP 1–6**（`company_rating.type=1` 且价格>0；VIP 0 免费不卖）。页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。`POST /v1/mcenter/vip/packages` 招聘端列出 VIP 1–6；求职端返回 `phpyun_rs_seeker_vip_pack`。加法字段 `role=seeker|employer`。`vip/current` 加法 `can_chat`、求职 `seeker_caps`。顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)：**会员 / 礼品 / 订单**（`wap_com_00097` / `wap_00398` / `common_02029`）。增值 `/com/added` 不再当购买入口。充值只从礼品页积分不足链到 `/com/pay`。
+- 前台购买列表是 `POST /v1/mcenter/vip/packages`：按 JWT 分流，**忽略** `kind` 和 `com_vip_type`，招聘固定卖 `type=1` 且价格>0。`rating_info_service::list_buyable_packages` 仍按 `com_vip_type` + 白名单选档，**没有调用方**，不要当现状。
+- [`member-right.vue`](../../../web/apps/site/app/pages/com/member-right.vue) 卖 **VIP 1–6**（`company_rating.type=1` 且价格>0；VIP 0 免费不卖）。页内 `quote`：`style` 1 现金 / 2 积分 / 3 积分不足转现金。现金 `vip/orders` 允许 `company_rating.type` 为 1 或 2；支付宝未配时仍 200 返回 `order_no`（`pay_url` 空），进收银台。求职端返回 `phpyun_rs_seeker_vip_pack`。加法字段 `role=seeker|employer`。`vip/current` 加法 `can_chat`、求职 `seeker_caps`。顶栏 [`MemberComVipTabs`](../../../web/layers/ui/app/components/MemberComVipTabs.vue)：**会员 / 礼品 / 订单**（`wap_com_00097` / `wap_00398` / `common_02029`）。增值 `/com/added` 不再当购买入口。充值只从礼品页积分不足链到 `/com/pay`。
 - [`pay.vue`](../../../web/apps/site/app/pages/com/pay.vue) 是积分充值（给礼品用），不是买 VIP：`POST /v1/mcenter/vip/integral-classes` + `recharge` + `card`。渠道不要写死 `alipay`。包月购买只留 member-right。
 - 订单页 [`orders.vue`](../../../web/apps/site/app/pages/com/orders.vue) 客户端合并 `vip/orders/list` + `packs/orders/list` + `redeem/orders`。`chat_num`/`spview_num` 现网 `company_statis` **无这两列**，不加。私聊是包月开关。
 - `vipOver`：`com_vip_done==0` 清零下架，否则降到配置等级。
@@ -300,13 +300,11 @@ VIP 付款成功必须走 PHP `rating.model::ratingInfo`：写 **`company_statis
 
 中间件 [`member-role.global.ts`](../../../web/apps/site/app/middleware/member-role.global.ts)：求职进 `/com` 打回 `/user`，招聘进 `/user` 打回 `/com`。管理员 JWT 打会员 `packages` 会 `403 role_mismatch`。
 
-已知口径冲突（走查记录，**先不修**）：
+已知口径（不要当缺口）：
 
-- `seekerVip.vue` 提示「招聘包月仍走企业时间会员」；现网前台卖的是 VIP 1–6 套餐。
 - `list_packages` 丢弃 `kind`；`com_vip_type` 现网=2（Package Mode）与列表一致，但列表不读该开关。
-- 招聘现金 `vip/orders`：`create_order` 把 `company_rating.type` 当 `target_usertype`，要求 `==2`，列表卖的是 `type=1`，下单 **400 Invalid kind**。积分 `quote` 仍通。求职 `month_*` 走 `seeker_vip_service`，现金会卡在「Payment is not configured」。
 - 交叉买对方 code：`unknown package`（零串货）。
-- 后台 `seekerVip` 英文列名 `lc()` 撞了城市/分页 key（代码列像 Region ID），本轮不改文案。
+- 支付宝商户未配时 `pay_url` 为空，订单仍创建；收银台拉起支付宝会失败。求职 `month_*` 同样建 `type=31` 单。
 
 ## 全量对照（2026-09-18）
 

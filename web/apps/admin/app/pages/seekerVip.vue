@@ -131,7 +131,7 @@ onMounted(load)
       <div>
         {{ lc('admin_seeker_vip_title', null, '求职包月会员') }}
         <span style="margin-left: 12px; color: #909399; font-weight: 400">
-          {{ lc('admin_seeker_vip_hint', null, '按时长卖。权益默认全开：私聊、置顶、模板、刷新不限流。招聘包月仍走企业时间会员。') }}
+          {{ lc('admin_seeker_vip_hint', null, '按时长卖。权益默认全开：私聊、置顶、模板、刷新不限流。招聘前台卖 VIP 1–6 套餐，不是时间会员。') }}
         </span>
       </div>
       <div class="nrtopbtn">
@@ -149,10 +149,10 @@ onMounted(load)
         :empty-text="lc('wap_js_00113', null, '暂无数据')"
       >
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="code" :label="lc('admin_system_00066', null, '代码')" width="140" />
-        <el-table-column prop="name" :label="lc('admin_system_00068', null, '名称')" />
-        <el-table-column prop="months" :label="lc('common_02067', null, '月')" width="80" />
-        <el-table-column prop="price_yuan" :label="lc('wap_00925', null, '价格')" width="100" />
+        <el-table-column prop="code" :label="lc('admin_seeker_vip_col_code', null, '代码')" width="140" />
+        <el-table-column prop="name" :label="lc('admin_seeker_vip_col_name', null, '名称')" />
+        <el-table-column prop="months" :label="lc('admin_seeker_vip_col_months', null, '月')" width="80" />
+        <el-table-column prop="price_yuan" :label="lc('admin_seeker_vip_col_price', null, '价格')" width="100" />
         <el-table-column :label="lc('member_com_00023', null, '前台显示')" width="110">
           <template #default="{ row }">
             {{ Number(row.display) === 1 ? lc('common_02085', null, '是') : lc('common_02063', null, '否') }}
@@ -165,24 +165,24 @@ onMounted(load)
           align="right"
         >
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="openEdit(row)">{{ lc('wap_js_00076', null, '编辑') }}</el-button>
-            <el-button type="danger" size="small" @click="removeRow(row)">{{ lc('wap_js_00077', null, '删除') }}</el-button>
+            <el-button type="primary" size="small" @click="openEdit(row)">{{ lc('admin_seeker_vip_edit', null, '编辑') }}</el-button>
+            <el-button type="danger" size="small" @click="removeRow(row)">{{ lc('admin_seeker_vip_delete', null, '删除') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <el-dialog v-model="editOpen" :title="lc('admin_seeker_vip_title', null, '求职包月会员')" width="460px">
       <el-form label-width="90px">
-        <el-form-item :label="lc('admin_system_00066', null, '代码')">
+        <el-form-item :label="lc('admin_seeker_vip_col_code', null, '代码')">
           <el-input v-model="form.code" maxlength="64" :disabled="form.id > 0" placeholder="month_1" />
         </el-form-item>
-        <el-form-item :label="lc('admin_system_00068', null, '名称')">
+        <el-form-item :label="lc('admin_seeker_vip_col_name', null, '名称')">
           <el-input v-model="form.name" maxlength="64" />
         </el-form-item>
-        <el-form-item :label="lc('common_02067', null, '月')">
+        <el-form-item :label="lc('admin_seeker_vip_col_months', null, '月')">
           <el-input-number v-model="form.months" :min="1" :max="36" />
         </el-form-item>
-        <el-form-item :label="lc('wap_00925', null, '价格')">
+        <el-form-item :label="lc('admin_seeker_vip_col_price', null, '价格')">
           <el-input-number v-model="form.price_yuan" :min="0.01" :precision="2" />
         </el-form-item>
         <el-form-item :label="lc('admin_system_00067', null, '排序')">
