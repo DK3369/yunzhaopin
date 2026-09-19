@@ -139,4 +139,5 @@ pub struct StripeOrderRow {
     pub stripe_url: String,
     pub stripe_status: String,
     pub stripe_expires_at: i64,
+    pub req_customer_email: String,
 }

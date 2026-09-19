@@ -460,19 +460,39 @@ pub async fn upsert_local(
 }
 
 async fn customer_email(state: &AppState, uid: u64) -> String {
-    match user_repo::find_by_uid(state.db.reader(), uid).await {
-        Ok(Some(m)) => m
-            .email
-            .unwrap_or_default()
-            .trim()
-            .to_string(),
+    let member = match user_repo::find_by_uid(state.db.reader(), uid).await {
+        Ok(Some(m)) => m.email.unwrap_or_default().trim().to_string(),
         _ => String::new(),
+    };
+    if email_ok(&member) {
+        return member;
     }
+    let site = cfg_val(state, "sy_webemail").await;
+    let site = site.trim();
+    if email_ok(site) {
+        return site.to_string();
+    }
+    String::new()
 }
 
 fn email_ok(s: &str) -> bool {
     let s = s.trim();
-    s.len() >= 5 && s.len() <= 128 && s.contains('@') && !s.contains(' ')
+    if s.len() < 5 || s.len() > 128 || s.contains(' ') {
+        return false;
+    }
+    let Some((local, host)) = s.split_once('@') else {
+        return false;
+    };
+    if local.is_empty() || host.is_empty() {
+        return false;
+    }
+    let host = host.to_ascii_lowercase();
+    if host == "localhost" || !host.contains('.') {
+        return false;
+    }
+    ![".local", ".test", ".invalid", ".example", ".localhost"]
+        .iter()
+        .any(|suf| host.ends_with(suf))
 }
 
 pub async fn create_checkout_url(
@@ -492,12 +512,15 @@ pub async fn create_checkout_url(
     }
     upsert_local(state, order_no, client_ip, None).await?;
     let sk = secret_key(state).await?;
+    let email = customer_email(state, o.uid).await;
     let now0 = clock::now_ts();
     if let Some(row) = stripe_repo::find_by_order_no(state.db.reader(), order_no).await? {
+        let email_same = row.req_customer_email.trim() == email.trim();
         if session_id_ok(&row.stripe_session_id)
             && row.stripe_status == "open"
             && row.stripe_expires_at > now0 + 60
             && !row.stripe_url.is_empty()
+            && email_same
         {
             return Ok(row.stripe_url);
         }
@@ -518,7 +541,6 @@ pub async fn create_checkout_url(
     } else {
         o.package_code.clone()
     };
-    let email = customer_email(state, o.uid).await;
     let meta = json!({
         "order_no": order_no,
         "uid": o.uid.to_string(),
@@ -579,7 +601,14 @@ pub async fn create_checkout_url(
         now,
     )
     .await?;
-    let idem = format!("checkout_{order_no}");
+    let idem = format!(
+        "checkout_{order_no}_{}",
+        if email.is_empty() {
+            "none".into()
+        } else {
+            email.replace(['@', '.'], "_")
+        }
+    );
     let sess = stripe_call(
         state,
         "POST",
@@ -929,5 +958,15 @@ mod tests {
         assert!(!event_id_ok("cs_test_xxx"));
         assert!(!event_id_ok("evt_"));
         assert!(!event_id_ok(""));
+    }
+
+    #[test]
+    fn email_ok_rejects_test_domains() {
+        assert!(!email_ok("duncan1@test.local"));
+        assert!(!email_ok("a@b.test"));
+        assert!(!email_ok("a@localhost"));
+        assert!(!email_ok("nodomain"));
+        assert!(email_ok("admin@ov6.com"));
+        assert!(email_ok("user@gmail.com"));
     }
 }

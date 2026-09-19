@@ -278,7 +278,8 @@ const LEDGER_SELECT: &str = "\
     COALESCE(stripe_payment_intent,'') AS stripe_payment_intent, \
     COALESCE(stripe_url,'') AS stripe_url, \
     COALESCE(stripe_status,'') AS stripe_status, \
-    CAST(stripe_expires_at AS SIGNED) AS stripe_expires_at";
+    CAST(stripe_expires_at AS SIGNED) AS stripe_expires_at, \
+    COALESCE(req_customer_email,'') AS req_customer_email";
 
 pub async fn find_by_order_no(
     pool: &MySqlPool,
