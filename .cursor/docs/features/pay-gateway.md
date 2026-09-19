@@ -26,7 +26,7 @@ Stripe Session 缓存仍用 `phpyun_rs_stripe_order`（OV6 会员单）。**真�
 | `stripe` | Hosted Checkout 真收；密钥只在 Payment Methods 编辑；`charge_ready` = `secret_key` 非空 |
 | `gcash` / `paymaya` | 可添加/暂停/删除；`create` 返回 `not_configured` |
 
-后台：一级 **支付**（系统后面，id=1070），子页订单 `/payment/orders`、支付方式 `/payment/methods`、商户 `/payment/merchants`。空表也要有搜索条、表头、分页。
+后台：一级 **支付**（系统后面，id=1070），子页订单 `/payment/orders`、支付方式 `/payment/methods`、商户 `/payment/merchants`（库里是两级：1070 → 1071/1072/1073，没有中间分组）。侧栏点「订单」本身进页；点顶栏「支付」会打开第一页订单。空表也要有搜索条、表头、分页。页面根节点用 `.pay-page`，不要 `.moduleElenAl`（绝对定位 height:100% 会把表裁成白板）。
 
 ## 调用
 

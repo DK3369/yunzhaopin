@@ -111,9 +111,45 @@ function MenuOpenChange(val: number) {
   if (idx > -1) MenuOpen.value.splice(idx, 1)
   else MenuOpen.value.push(val)
 }
+function isSecLeaf(sec: MenuItem) {
+  return !!hrefOf(sec) && children(sec.id).length === 0
+}
+function pageLeaves(sec: MenuItem): MenuItem[] {
+  const kids = children(sec.id)
+  if (kids.length) return kids
+  return hrefOf(sec) ? [sec] : []
+}
+function mapLeaves(sec: MenuItem): MenuItem[] {
+  const kids = filteredMapItems(sec)
+  if (kids.length) return kids
+  if (!hrefOf(sec)) return []
+  const kw = searchFormMap.keyword.trim()
+  if (!kw) return [sec]
+  const label = menuLabel(sec)
+  if ((sec.name || '').includes(kw) || label.includes(kw) || hrefOf(sec).includes(kw)) return [sec]
+  return []
+}
+function shortcutLeaves(sec: MenuItem & { children?: MenuItem[] }): MenuItem[] {
+  if (sec.children?.length) return sec.children
+  return hrefOf(sec) ? [sec] : []
+}
+function onSecClick(root: MenuItem, sec: MenuItem) {
+  if (isSecLeaf(sec)) {
+    checkMenuTwo(root.id, sec.id, sec.id, sec.name, hrefOf(sec))
+    return
+  }
+  MenuOpenChange(sec.id)
+}
 function checkMenu(val: number) {
   curMenu.value = val
-  if (val === 0) navigateTo('/index')
+  if (val === 0) {
+    navigateTo('/index')
+    return
+  }
+  const first = children(val)[0]
+  if (first && isSecLeaf(first)) {
+    checkMenuTwo(val, first.id, first.id, first.name, hrefOf(first))
+  }
 }
 function tabLabel(tab: { name: string; two_menu_id: number; path: string }) {
   void locale.value
@@ -291,6 +327,9 @@ watch(
     }
     if (cur && cur.keyid === 0) curMenu.value = cur.id
     curMenuTwo.value = hit.id
+    const parent = byId.value.get(hit.keyid)
+    if (parent && parent.keyid === 0) curMenuOne.value = hit.id
+    else if (parent) curMenuOne.value = parent.id
   },
   { immediate: true },
 )
@@ -369,17 +408,21 @@ useHead({
           </ul>
           <ul v-for="root in roots" v-else :key="'nav-' + root.id" v-show="curMenu == root.id">
             <li v-for="sec in children(root.id)" :key="sec.id" :class="{ subContLinkCur: curMenuOne == sec.id }">
-              <div class="subNavLinkTite" @click="MenuOpenChange(sec.id)">
+              <div class="subNavLinkTite" @click="onSecClick(root, sec)">
                 <div class="subNavLinkImg" :class="sec.classname">
-                  <span>{{ menuLabel(sec) }}</span>
+                  <span :class="{ curspan: isSecLeaf(sec) && curMenuTwo == sec.id }">{{ menuLabel(sec) }}</span>
                 </div>
-                <div class="subNavLinkIcon" :class="{ subNavLinkIconCur: checkMenuOpen(sec.id) }">
+                <div
+                  v-if="pageLeaves(sec).length && !isSecLeaf(sec)"
+                  class="subNavLinkIcon"
+                  :class="{ subNavLinkIconCur: checkMenuOpen(sec.id) }"
+                >
                   <i class="el-icon-arrow-up iconup" /><i class="el-icon-arrow-down icondwon" />
                 </div>
               </div>
-              <div v-show="checkMenuOpen(sec.id)" class="subNavLinkText">
+              <div v-show="checkMenuOpen(sec.id) && !isSecLeaf(sec)" class="subNavLinkText">
                 <a
-                  v-for="leaf in children(sec.id)"
+                  v-for="leaf in pageLeaves(sec)"
                   :key="leaf.id"
                   href="javascript:void(0);"
                   @click="checkMenuTwo(root.id, sec.id, leaf.id, leaf.name, hrefOf(leaf))"
@@ -547,7 +590,7 @@ useHead({
           <div v-for="sec in children(root.id)" :key="sec.id" class="homeDiaCaiLis">
             <div class="homeCaiTwoTite"><span>{{ menuLabel(sec) }}</span></div>
             <div class="homeCaiTwoNeir">
-              <div v-for="leaf in filteredMapItems(sec)" :key="leaf.id" class="homeCaiTwocheck">
+              <div v-for="leaf in mapLeaves(sec)" :key="leaf.id" class="homeCaiTwocheck">
                 <a
                   href="javascript:void(0);"
                   @click="checkMenuTwo(root.id, sec.id, leaf.id, leaf.name, hrefOf(leaf)); dialogMap = false"
@@ -565,8 +608,8 @@ useHead({
             <div class="homeDiaCaiOntite"><span>{{ menuLabel(oneSMItem) }}</span></div>
             <div v-for="twoSMItem in oneSMItem.children" :key="twoSMItem.id" class="homeDiaCaiLis">
               <div class="homeCaiTwoTite"><span>{{ menuLabel(twoSMItem) }}</span></div>
-              <div v-if="twoSMItem.children?.length" class="homeCaiTwoNeir">
-                <div v-for="threeSMItem in twoSMItem.children" :key="threeSMItem.id" class="homeCaiTwocheck">
+              <div v-if="shortcutLeaves(twoSMItem).length" class="homeCaiTwoNeir">
+                <div v-for="threeSMItem in shortcutLeaves(twoSMItem)" :key="threeSMItem.id" class="homeCaiTwocheck">
                   <el-checkbox :value="threeSMItem.id">{{ menuLabel(threeSMItem) }}</el-checkbox>
                 </div>
               </div>
@@ -640,5 +683,23 @@ useHead({
 .subContPageInfo > * {
   height: 100%;
   overflow: auto;
+}
+.pay-page {
+  position: relative !important;
+  height: auto !important;
+  min-height: 100%;
+  overflow: visible !important;
+}
+.pay-page .moduleSeachs {
+  height: auto !important;
+  flex-wrap: wrap;
+}
+.pay-page .moduleElTable {
+  height: auto !important;
+  min-height: 360px;
+  overflow: visible !important;
+}
+.pay-page .el-table {
+  min-height: 360px;
 }
 </style>

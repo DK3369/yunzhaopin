@@ -20,7 +20,7 @@ const api = useApi()
 const loading = ref(false)
 const rows = ref<Row[]>([])
 const merchants = ref<Merchant[]>([])
-const merchantId = ref(0)
+const merchantId = ref<number | undefined>()
 const editOpen = ref(false)
 const form = reactive({
   id: 0,
@@ -166,7 +166,7 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="moduleElenAl pay-console">
+  <div class="pay-page">
     <div class="moduleSeachs">
       <div class="pay-bar">
         <span>{{ lc('admin_pay_methods_title', null, '支付方式') }}</span>
@@ -284,23 +284,6 @@ onMounted(load)
 </template>
 
 <style scoped>
-.pay-console {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.pay-console :deep(.moduleSeachs) {
-  height: auto !important;
-  min-height: 50px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.pay-console :deep(.moduleElTable) {
-  flex: 1;
-  min-height: 280px;
-  height: auto !important;
-  overflow: auto;
-}
 .pay-bar {
   display: flex;
   flex-wrap: wrap;

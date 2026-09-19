@@ -168,7 +168,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="moduleElenAl pay-console">
+  <div class="pay-page">
     <div class="moduleSeachs">
       <div class="pay-bar">
         <el-input
@@ -234,7 +234,7 @@ onMounted(async () => {
           :start-placeholder="lc('admin_00343', null, '开始日期')"
           :end-placeholder="lc('admin_00344', null, '结束日期')"
         />
-        <el-button size="small" type="primary" @click="search">{{ lc('admin_00004', null, '搜索') }}</el-button>
+        <el-button size="small" type="primary" @click="search">{{ lc('admin_user_weipin_00049', null, '搜索') }}</el-button>
       </div>
     </div>
     <div class="moduleElTable">
@@ -303,23 +303,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.pay-console {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.pay-console :deep(.moduleSeachs) {
-  height: auto !important;
-  min-height: 50px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.pay-console :deep(.moduleElTable) {
-  flex: 1;
-  min-height: 280px;
-  height: auto !important;
-  overflow: auto;
-}
 .pay-bar {
   display: flex;
   flex-wrap: wrap;

@@ -3,5 +3,5 @@ await navigateTo('/payment/orders', { replace: true })
 </script>
 
 <template>
-  <div />
+  <div class="pay-page" style="padding: 16px">…</div>
 </template>
