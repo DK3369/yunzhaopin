@@ -2375,6 +2375,7 @@ a.sys_a {
   /* 漏网 PC 字不要吃 html 10vw；PHP rem 组件仍相对 html */
   .member-shell .member-page {
     font-size: 0.373333rem;
+    overflow: visible;
   }
   .member-shell .job_list_tit,
   .member-shell .resume_Prompt_box,
@@ -2883,18 +2884,170 @@ a.sys_a {
     font-weight: 600;
     box-sizing: border-box;
   }
-  .member-page .financial_management_header {
-    height: auto;
-    min-height: 4.586667rem;
+  /* 财务金卡：不要把 header/card 改成 relative/auto，否则 Recharge Now 会掉成蓝条 */
+  .site-h5.financial_management_header {
+    height: 4.586667rem;
+    overflow: visible;
+    margin-left: calc(-1 * var(--h5-gutter));
+    margin-right: calc(-1 * var(--h5-gutter));
+    margin-top: calc(-1 * var(--h5-gutter));
+    width: calc(100% + 2 * var(--h5-gutter));
+  }
+  .site-h5 .management_header_card {
+    position: absolute;
+    top: 0.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8.8rem;
+    max-width: calc(100% - 0.64rem);
+    height: 4rem;
+    margin: 0;
+    padding-top: 0.533333rem;
+    box-sizing: border-box;
+  }
+  a.site-h5.management_card_btn,
+  .site-h5 a.management_card_btn {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 2;
+    transform: translate(-50%, 120%);
+    width: auto;
+    min-width: 5.333333rem;
+    padding: 0 0.4rem;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #fae4c5;
+    white-space: nowrap;
+  }
+  .site-h5 .management_data_top {
+    font-size: 0.32rem;
+    line-height: 0.48rem;
+    text-align: center;
+    padding: 0 0.08rem;
+  }
+  .site-h5 .management_data_cen {
+    font-size: 0.64rem;
+    line-height: 0.88rem;
+  }
+  a.site-h5.management_data_bom,
+  .site-h5 a.management_data_bom,
+  .site-h5 .management_data_bom {
+    width: auto;
+    max-width: 3.6rem;
+    min-width: 1.866667rem;
+    padding: 0 0.16rem;
+    font-size: 0.32rem;
+    line-height: 0.64rem;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #2e2f32;
+    box-sizing: border-box;
+  }
+  .site-h5.financial_management_body {
+    padding-top: 1.866666rem;
+    padding-bottom: 0.32rem;
+  }
+  .site-h5 .task_header_nav {
+    text-decoration: none;
+  }
+  .site-h5 button.task_subject_box_btn,
+  .site-h5 button.task_subject_box_btn_accomplish,
+  a.site-h5.task_subject_box_btn,
+  .site-h5 a.task_subject_box_btn,
+  .site-h5 .task_subject_box_btn,
+  .site-h5 .task_subject_box_btn_accomplish {
+    width: auto;
+    min-width: 2.133333rem;
+    padding: 0 0.16rem;
+    margin: 0;
+    white-space: nowrap;
+    text-decoration: none;
+    background: transparent;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .member-shell-user .site-h5-pay {
+    margin-left: calc(-1 * var(--h5-gutter));
+    margin-right: calc(-1 * var(--h5-gutter));
+    margin-top: calc(-1 * var(--h5-gutter));
+  }
+  .site-h5 .pay_header_p {
+    font-size: 0.32rem;
+    line-height: 0.48rem;
+    color: #fff;
+    padding-left: 0.8rem;
+  }
+  .site-h5 .pay_header_icon {
+    width: 0.48rem;
+    height: 0.48rem;
+    top: 0.04rem;
+  }
+  .site-h5-pay__card {
+    display: inline-block;
+    margin-left: 0.16rem;
+    color: #e3b36b;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .site-h5 .integral_body_card {
     overflow: visible;
   }
-  .member-page .management_header_card {
-    position: relative;
-    top: auto;
-    left: auto;
+  .site-h5 .integral_body_card > ul > li {
+    overflow: visible;
+    font-size: 0.32rem;
+    cursor: pointer;
+  }
+  .site-h5 .body_card_bumber_discount {
     width: auto;
-    height: auto;
-    margin: 0.32rem;
+    min-width: 0.8rem;
+    padding: 0 0.1rem;
+    font-size: 0.24rem;
+    line-height: 0.4rem;
+    z-index: 1;
+  }
+  .site-h5 .integral_body_card .currcolor {
+    color: #e3b36b;
+  }
+  .site-h5 .integral_body_pay_left,
+  .site-h5 .wx_box_name {
+    font-size: 0.373333rem;
+    line-height: 0.56rem;
+  }
+  .site-h5 .integral_body_pay_right {
+    flex: 1;
+    text-align: right;
+    font-size: 0.32rem;
+    line-height: 0.56rem;
+  }
+  .site-h5 .integral_body_pay_right input {
+    float: none;
+    width: 100%;
+    min-height: 0.64rem;
+    font-size: 0.4rem;
+    text-align: right;
+    border: 0;
+    background: transparent;
+    padding: 0;
+  }
+  .site-h5 button.integral_body_btn {
+    border: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: inherit;
+    cursor: pointer;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .site-h5-pay__banks {
+    font-size: 0.32rem;
+    line-height: 0.48rem;
+    color: #666;
+    padding-bottom: 0.32rem;
+  }
+  .site-h5-pay__cancel {
+    display: flex;
+    margin: 0.32rem auto 0 !important;
   }
   a.taskbar_enterprise,
   a.taskbar_enterprise_last {

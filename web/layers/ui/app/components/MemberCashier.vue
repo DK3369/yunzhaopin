@@ -148,18 +148,77 @@ async function submitBank() {
         <input type="button" class="payment_list_other" :value="$t('wap_00401')" @click="pay">
       </div>
     </div>
-    <div class="site-h5 issue_post_body">
-      <div class="yun_createbox">
-        <MemberField wap :label="$t('ui.order_no')"><span>{{ detail.order_no }}</span></MemberField>
-        <MemberField wap :label="$t('member_user_00039')">{{ detail.subject }}</MemberField>
-        <MemberField wap :label="$t('ui.amount')">{{ detail.amount_yuan }} {{ $t('common_02056') }}</MemberField>
-        <MemberField wap :label="$t('member_user_00181')">{{ statusLabel(detail) }}</MemberField>
-        <MemberField wap v-if="detail.payable" :label="$t('wap_user_00313')">
-          <label v-if="channels.includes('alipay')"><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
-          <label v-if="channels.includes('wxpay')"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
-          <label v-if="channels.includes('bank')"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
-        </MemberField>
-        <button v-if="detail.payable" type="button" class="issue_post_body_btn" @click="pay">{{ $t('wap_00401') }}</button>
+    <div class="site-h5 site-h5-pay">
+      <div class="integral_body">
+        <div class="integral_body_card">
+          <div class="integral_body_pay">
+            <div class="integral_body_pay_left">{{ $t('ui.order_no') }}</div>
+            <div class="integral_body_pay_right">{{ detail.order_no }}</div>
+          </div>
+          <div class="integral_body_pay">
+            <div class="integral_body_pay_left">{{ $t('member_user_00039') }}</div>
+            <div class="integral_body_pay_right">{{ detail.subject }}</div>
+          </div>
+          <div class="integral_body_pay">
+            <div class="integral_body_pay_left">{{ $t('ui.amount') }}</div>
+            <div class="integral_body_pay_right">
+              <i class="pay_right_icon">{{ $t('common_02056') }}</i>
+              <i class="pay_right_number">{{ detail.amount_yuan }}</i>
+            </div>
+          </div>
+          <div class="integral_body_pay">
+            <div class="integral_body_pay_left">{{ $t('member_user_00181') }}</div>
+            <div class="integral_body_pay_right">{{ statusLabel(detail) }}</div>
+          </div>
+          <div v-if="detail.payable" class="dredge_body_pay" style="padding: 0">
+            <div v-if="channels.includes('alipay')" class="dredge_body_zfb" @click="channel = 'alipay'">
+              <div class="dredge_body_wx_box">
+                <div class="wx_box_icon">
+                  <img src="/legacy/h5/images/dredge_zfb.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="wx_box_name">{{ $t('wap_00627') }}</div>
+              </div>
+              <div class="dredge_body_wx_icon">
+                <img
+                  :src="channel === 'alipay' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                >
+              </div>
+            </div>
+            <div v-if="channels.includes('wxpay')" class="dredge_body_wx" @click="channel = 'wxpay'">
+              <div class="dredge_body_wx_box">
+                <div class="wx_box_icon">
+                  <img src="/legacy/h5/images/dredge_wx.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="wx_box_name">{{ $t('wap_user_00202') }}</div>
+              </div>
+              <div class="dredge_body_wx_icon">
+                <img
+                  :src="channel === 'wxpay' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                >
+              </div>
+            </div>
+            <div v-if="channels.includes('bank')" class="dredge_body_wx" @click="channel = 'bank'">
+              <div class="dredge_body_wx_box">
+                <div class="wx_box_name">{{ $t('wap_01805') }}</div>
+              </div>
+              <div class="dredge_body_wx_icon">
+                <img
+                  :src="channel === 'bank' ? '/legacy/h5/images/dredge_affirm.png' : '/legacy/h5/images/dredge_To_confirm.png'"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <button v-if="detail.payable" type="button" class="integral_body_btn" @click="pay">{{ $t('wap_00401') }}</button>
       </div>
     </div>
     <div v-if="bankList.length" class="wxts_box">

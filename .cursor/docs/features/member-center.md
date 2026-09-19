@@ -124,7 +124,9 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 - 会员 `/user` `/com` 仍打前台 `nav` / `descriptions` / `hot-searches`（页脚和公开顶栏用的，会员壳不渲染）
 - 左栏「更多」继续用未拆开的 `.user_more`（PC 打包里企业 `m_style` 会盖掉求职白底；80px 浮动格叠英文会穿层）
 - `.yun_m_left_cur a` 打到 `.user_more a`（当前页在「更多」里时浮层每条都变选中态）
+- 财务 H5 把 `.management_header_card` 改成 `position:relative` / `height:auto`（Recharge Now 会掉到蓝条上）；金卡芯片写死 `1.866667rem`（英文 Redemption Records 会被裁）
 - 财务 H5 `financial_management_*` 不包 `.site-h5`（PC 会露出一块没皮的头图）
+- 把 `/user/pay` `/com/pay` 当买包月（那是积分充值：`vip/integral-classes` + `recharge`）；开会员走 `/user/member-right` `/com/member-right` → `vip/packages` + `vip/orders` + `vip/current`
 - 订单列 class 写成 `paylist_span_dh`（PHP 是 `paylist_span paylist_dh` / `paylist_money` / `paylist_zt`）
 - 求职前台 `pc-topbar` 挂「发布职位」或链到 `/com`；`MemberShell` `kind` 只看路径不看 `usertype`
 - 会员左栏/宫格写死兼职、招聘会、专题、测评，不看首页 `sy_*_web`
@@ -170,8 +172,8 @@ PHP 的标题族和 body 包层不是同一件事，不要再用单一 `list | r
 | 认证与绑定 | `/user/ident` | `/com/cert` | WAP `ident.htm`（`issue_post_body_card`） / `comcert.htm` | 否 |
 | 账户设置 | `/user/set` | `/com/set` | H5 入口汇总（求职 `issue_post_body_card` / 招聘 `com_set_list`）。语言行在列表最底。求职 **不要**同时链 `/user/messages` 和 `/user/chat`（英文都叫 Messages；私信已在消息页 `chatnewcard`） | **否**（仅 H5） |
 | 积分 | `/user/integral` | `/com/integral` | `integral.htm` / WAP `mission_body`；标题 `member_right_index_h1` | 求职「更多」 |
-| 财务管理 | `/user/finance` | `/com/orders` 等 | `paylist.htm` / H5 `financial_management_*` | 求职「更多」 |
-| 充值 | `/user/pay` | `/com/pay` | `pay.htm`（`payment_list_*`） | 否 |
+| 财务管理 | `/user/finance` | `/com/orders` 等 | PC `paylist.htm`；H5 对照 WAP `finance.htm`：金卡 `financial_management_*` + 任务中心，**不要**蓝条 `verification_form_btn` 冒充 Recharge，也不要把消耗列表当任务中心 | 求职「更多」 |
+| 充值 | `/user/pay` | `/com/pay` | PC `payment_list_*`；H5 `pay_header` + `integral_body_*`（[`MemberIntegralPayH5`](../../../web/layers/ui/app/components/MemberIntegralPayH5.vue)），**不要**发职位 `issue_post_body`/`yun_createbox`，不要给 `payment_list` 加媒体查询 | 否 |
 | 简历外发 | `/user/outbox` | 无 | `resumeout.htm` | 求职「更多」 |
 | 兼职 | `/user/parts` 报名 | `/com/parts` 发布 | `partapply.htm` / `partlist.htm` | 求职「更多」 |
 | 意见反馈 | `/advice` | `/advice` | `member/user/message.htm`（PC `resume_fk_box` / `message_box`；H5 `verification_form`）。**登录后进会员壳** | 否 |

@@ -231,7 +231,7 @@ useSeoMeta({ title: t('common_01946') })
     <template #pcTabs><MemberComVipTabs /></template>
     <template #h5Tabs><MemberComVipTabs /></template>
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
-    <div class="com_new_tip">
+    <div class="com_new_tip site-pc">
       <span class="com_new_tip_h">{{ $t('member_com_00040') }}</span>
       {{ $t('common_01984') }}{{ priceName }}{{ balance }}，1{{ $t('common_02056') }}={{ proportion }}{{ priceUnit }}{{ priceName }}
       <template v-if="minRecharge > 0">，{{ $t('default_00088') }}{{ minRecharge }}{{ priceName }}</template>
@@ -298,38 +298,29 @@ useSeoMeta({ title: t('common_01946') })
         <input type="button" class="payment_list_other" :value="$t('member_user_00238')" @click="buy">
       </div>
     </div>
-    <div class="site-h5 issue_post_body">
-      <form class="yun_createbox" @submit.prevent="buy">
-        <MemberField wap :label="$t('wap_user_00313')">
-          <label><input v-model="channel" type="radio" value="alipay" /> {{ $t('wap_00627') }}</label>
-          <label v-if="wxPayOn"><input v-model="channel" type="radio" value="wxpay" /> {{ $t('wap_user_00202') }}</label>
-          <label v-if="bankList.length"><input v-model="channel" type="radio" value="bank" /> {{ $t('wap_01805') }}</label>
-        </MemberField>
-        <div v-if="channel === 'bank' && bankList.length" class="issue_post_body_card">
-          <div v-for="b in bankList" :key="'h5b-' + b.id">{{ b.name }} {{ b.bank_name }} {{ b.bank_number }}</div>
-        </div>
-        <div
-          v-for="c in classes"
-          :key="'h5c-' + c.id"
-          class="issue_post_body_card"
-          :class="{ payment_list_cur: pickedId === c.id && !custom }"
-          @click="pickClass(c)"
-        >
-          <div class="Posted_card_top">
-            <div class="Posted_card_name">{{ c.integral }} {{ priceName }}</div>
-            <div v-if="c.discount" class="Posted_card_pay">{{ c.discount / 10 }}{{ $t('common_02080') }}</div>
-          </div>
-        </div>
-        <MemberField wap :label="$t('wap_user_00309')">
-          <input v-model="custom" type="text" maxlength="6" @focus="pickedId = 0" @blur="onCustom" @input="custom = custom.replace(/[^0-9]/g, '')">
-        </MemberField>
-        <MemberField wap :label="$t('wap_01032')">{{ payYuan }} {{ $t('common_02056') }}</MemberField>
-        <MemberField wap :label="$t('member_com_00317')"><textarea v-model="remark" /></MemberField>
-        <button type="submit" class="issue_post_body_btn">{{ $t('member_user_00238') }}</button>
-        <p><a href="javascript:;" @click="showCard = true">{{ $t('member_com_00485') }}</a></p>
-      </form>
-    </div>
-    <form v-if="showCard" class="com_release_box" @submit.prevent="submitCard">
+    <MemberIntegralPayH5
+      :classes="classes"
+      :picked-id="pickedId"
+      :custom="custom"
+      :pay-yuan="payYuan"
+      :price-name="priceName"
+      :channel="channel"
+      :wx-pay-on="wxPayOn"
+      :bank-list="bankList"
+      @pick="pickClass"
+      @custom="pickedId = 0"
+      @update:custom="custom = $event"
+      @custom-blur="onCustom"
+      @update:channel="channel = $event"
+      @buy="buy"
+      @card="showCard = true"
+    >
+      <template #tip>
+        {{ $t('common_01984') }} {{ priceName }} {{ balance }}{{ $t('wap_01145') }}1{{ $t('common_02056') }}={{ proportion }}{{ priceUnit }}{{ priceName }}
+        <template v-if="minRecharge > 0">{{ $t('wap_01035') }}{{ minRecharge }}{{ priceUnit }}{{ priceName }}</template>
+      </template>
+    </MemberIntegralPayH5>
+    <form v-if="showCard" class="com_release_box site-pc" @submit.prevent="submitCard">
       <ul>
         <MemberReleaseRow :label="$t('admin_system_00534')" required>
           <input v-model="cardNo" class="com_release_textnew_text" required @input="cardNo = cardNo.replace(/[^0-9]/g, '')">
@@ -341,6 +332,24 @@ useSeoMeta({ title: t('common_01946') })
       <button type="submit" class="btn_01">{{ $t('common.confirm') }}</button>
       <button type="button" class="btn_02" @click="showCard = false">{{ $t('common.cancel') }}</button>
     </form>
+    <div v-if="showCard" class="site-h5 integral_body">
+      <form class="integral_body_card" @submit.prevent="submitCard">
+        <div class="integral_body_pay">
+          <div class="integral_body_pay_left">{{ $t('admin_system_00534') }}</div>
+          <div class="integral_body_pay_right">
+            <input v-model="cardNo" required @input="cardNo = cardNo.replace(/[^0-9]/g, '')">
+          </div>
+        </div>
+        <div class="integral_body_pay">
+          <div class="integral_body_pay_left">{{ $t('wap_user_00371') }}</div>
+          <div class="integral_body_pay_right">
+            <input v-model="cardPw" required @input="cardPw = cardPw.replace(/[^0-9]/g, '')">
+          </div>
+        </div>
+        <button type="submit" class="integral_body_btn">{{ $t('common.confirm') }}</button>
+        <button type="button" class="task_subject_box_btn site-h5-pay__cancel" @click="showCard = false">{{ $t('common.cancel') }}</button>
+      </form>
+    </div>
     <form v-if="bankOrderNo" class="com_release_box site-pc" @submit.prevent="submitBank">
       <ul>
         <MemberReleaseRow :label="$t('ui.order_no')"><span>{{ bankOrderNo }}</span></MemberReleaseRow>
@@ -365,7 +374,9 @@ useSeoMeta({ title: t('common_01946') })
         <button type="submit" class="issue_post_body_btn">{{ $t('common.submit') }}</button>
       </form>
     </div>
-    <MemberResumeH1 :title="$t('common_02029')" />
+    <div class="site-pc">
+      <MemberResumeH1 :title="$t('common_02029')" />
+    </div>
     <div v-if="rechargeOrders.length" class="site-pc paylist_tit">
       <span class="paylist_span paylist_dh">{{ $t('ui.order_no') }}</span>
       <span class="paylist_span paylist_money">{{ $t('wap_00925') }}</span>
@@ -400,6 +411,6 @@ useSeoMeta({ title: t('common_01946') })
       </div>
     </div>
     <p v-if="msg">{{ msg }}</p>
-    <p><NuxtLink to="/com/integral-rules">{{ $t('wap_user_00008') }}</NuxtLink></p>
+    <p class="site-pc"><NuxtLink to="/com/integral-rules">{{ $t('wap_user_00008') }}</NuxtLink></p>
   </MemberPanel>
 </template>
