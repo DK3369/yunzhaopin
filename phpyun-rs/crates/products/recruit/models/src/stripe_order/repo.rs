@@ -127,7 +127,7 @@ pub async fn update_session(
               updated_at = ?
            WHERE order_no = ?"#,
     )
-    .bind(&p.stripe_session_id)
+    .bind(empty_to_null(&p.stripe_session_id))
     .bind(&p.stripe_object)
     .bind(p.stripe_livemode)
     .bind(p.stripe_created)
@@ -246,7 +246,7 @@ pub async fn mark_settled(
     sqlx::query(
         r#"UPDATE phpyun_rs_stripe_order SET
               settled = 1, pay_tx_id = ?, order_state = 1, paid_at = ?, updated_at = ?
-           WHERE order_no = ?"#,
+           WHERE order_no = ? AND settled = 0"#,
     )
     .bind(pay_tx_id)
     .bind(now)
@@ -255,6 +255,15 @@ pub async fn mark_settled(
     .execute(pool)
     .await?;
     Ok(())
+}
+
+fn empty_to_null(s: &str) -> Option<&str> {
+    let t = s.trim();
+    if t.is_empty() {
+        None
+    } else {
+        Some(t)
+    }
 }
 
 const LEDGER_SELECT: &str = "\
@@ -266,7 +275,10 @@ const LEDGER_SELECT: &str = "\
     COALESCE(stripe_session_id,'') AS stripe_session_id, \
     COALESCE(stripe_payment_status,'') AS stripe_payment_status, \
     stripe_amount_total, \
-    COALESCE(stripe_payment_intent,'') AS stripe_payment_intent";
+    COALESCE(stripe_payment_intent,'') AS stripe_payment_intent, \
+    COALESCE(stripe_url,'') AS stripe_url, \
+    COALESCE(stripe_status,'') AS stripe_status, \
+    CAST(stripe_expires_at AS SIGNED) AS stripe_expires_at";
 
 pub async fn find_by_order_no(
     pool: &MySqlPool,
@@ -283,6 +295,9 @@ pub async fn find_by_session_id(
     pool: &MySqlPool,
     session_id: &str,
 ) -> Result<Option<StripeOrderRow>, sqlx::Error> {
+    if session_id.trim().is_empty() {
+        return Ok(None);
+    }
     let sql = format!(
         "SELECT {LEDGER_SELECT} FROM phpyun_rs_stripe_order WHERE stripe_session_id = ? LIMIT 1"
     );

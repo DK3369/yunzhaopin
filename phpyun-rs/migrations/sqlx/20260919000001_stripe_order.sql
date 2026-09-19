@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `phpyun_rs_stripe_order` (
     `req_body`                              MEDIUMTEXT      NULL,
     `req_stripe_version`                    VARCHAR(64)     NOT NULL DEFAULT '',
     `req_at`                                INT UNSIGNED    NOT NULL DEFAULT 0,
-    `stripe_session_id`                     VARCHAR(255)    NOT NULL DEFAULT '',
+    `stripe_session_id`                     VARCHAR(255)    NULL DEFAULT NULL,
     `stripe_object`                         VARCHAR(64)     NOT NULL DEFAULT '',
     `stripe_livemode`                       TINYINT         NOT NULL DEFAULT 0,
     `stripe_created`                        INT UNSIGNED    NOT NULL DEFAULT 0,
@@ -122,6 +122,6 @@ CREATE TABLE IF NOT EXISTS `phpyun_rs_stripe_order` (
     `stripe_session_json`                   JSON            NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_order_no` (`order_no`),
-    KEY `ix_uid` (`uid`),
-    KEY `ix_session` (`stripe_session_id`)
+    UNIQUE KEY `uk_session` (`stripe_session_id`),
+    KEY `ix_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -4,7 +4,7 @@
 //! `phpyun_rs_stripe_order` (one row per site order).
 
 use phpyun_core::clock;
-use phpyun_core::hmac_sha256::verify_stripe_signature;
+use phpyun_core::hmac_sha256::{stripe_signature_timestamp, verify_stripe_signature};
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::stripe_order::entity::{EventPatch, LocalOrderIn, RequestPatch, SessionPatch};
 use phpyun_models::stripe_order::repo as stripe_repo;
@@ -18,7 +18,46 @@ use crate::site_setting_service;
 pub const STRIPE_API_VERSION: &str = "2026-08-26.dahlia";
 const SESSIONS_URL: &str = "https://api.stripe.com/v1/checkout/sessions";
 const WEBHOOKS_URL: &str = "https://api.stripe.com/v1/webhook_endpoints";
+const EVENTS_URL: &str = "https://api.stripe.com/v1/events";
 const SIG_TOLERANCE: i64 = 300;
+
+/// HTTP ack for Stripe webhooks: 2xx stops retries; 5xx asks Stripe to retry.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WebhookAck {
+    Ok,
+    Ignored,
+    BadRequest,
+    Retry,
+}
+
+impl WebhookAck {
+    pub fn status(self) -> u16 {
+        match self {
+            Self::Ok | Self::Ignored => 200,
+            Self::BadRequest => 400,
+            Self::Retry => 500,
+        }
+    }
+
+    pub fn body(self) -> &'static str {
+        match self {
+            Self::Ok => "ok",
+            Self::Ignored => "ignored",
+            Self::BadRequest | Self::Retry => "fail",
+        }
+    }
+
+    pub fn is_ok_status(self) -> bool {
+        self.status() < 300
+    }
+}
+
+pub async fn assert_create_channel(state: &AppState, channel: &str) -> AppResult<()> {
+    if stripe_enabled(state).await && channel != "stripe" {
+        return Err(ApiError::param_invalid("channel"));
+    }
+    Ok(())
+}
 
 async fn cfg_val(state: &AppState, key: &str) -> String {
     site_setting_service::get(state, key)
@@ -109,18 +148,34 @@ pub fn session_id_ok(s: &str) -> bool {
         .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
 }
 
+pub fn event_id_ok(s: &str) -> bool {
+    let n = s.len();
+    if n < 8 || n > 255 {
+        return false;
+    }
+    let Some(rest) = s.strip_prefix("evt_") else {
+        return false;
+    };
+    rest.bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+}
+
 async fn stripe_call(
     state: &AppState,
     method: &'static str,
     url: &str,
     sk: &str,
     form: Option<&str>,
+    idempotency_key: Option<&str>,
 ) -> AppResult<Value> {
     let auth = format!("Bearer {sk}");
-    let headers = [
+    let mut headers: Vec<(&str, &str)> = vec![
         ("authorization", auth.as_str()),
         ("stripe-version", STRIPE_API_VERSION),
     ];
+    if let Some(k) = idempotency_key.filter(|s| !s.is_empty()) {
+        headers.push(("idempotency-key", k));
+    }
     let (status, text) = state
         .http
         .exchange_with_headers(method, url, &headers, form)
@@ -350,6 +405,14 @@ fn success_path_for(usertype: i32, order_no: &str) -> String {
     }
 }
 
+fn hosted_return_urls(base: &str, order_no: &str) -> (String, String) {
+    let success = format!(
+        "{base}/pay/stripe?order_no={order_no}&session_id={{CHECKOUT_SESSION_ID}}"
+    );
+    let cancel = format!("{base}/pay/stripe?order_no={order_no}&canceled=1");
+    (success, cancel)
+}
+
 pub async fn upsert_local(
     state: &AppState,
     order_no: &str,
@@ -429,6 +492,19 @@ pub async fn create_checkout_url(
     }
     upsert_local(state, order_no, client_ip, None).await?;
     let sk = secret_key(state).await?;
+    let now0 = clock::now_ts();
+    if let Some(row) = stripe_repo::find_by_order_no(state.db.reader(), order_no).await? {
+        if session_id_ok(&row.stripe_session_id)
+            && row.stripe_status == "open"
+            && row.stripe_expires_at > now0 + 60
+            && !row.stripe_url.is_empty()
+        {
+            return Ok(row.stripe_url);
+        }
+        if session_id_ok(&row.stripe_session_id) && row.stripe_status == "open" {
+            expire_session(state, &sk, &row.stripe_session_id).await?;
+        }
+    }
     let cur = currency(state).await;
     let base = web_base(state).await;
     let ut = member_ut(if o.usertype > 0 {
@@ -436,9 +512,7 @@ pub async fn create_checkout_url(
     } else {
         i32::from(user.usertype)
     });
-    let path = success_path_for(ut, order_no);
-    let success_url = format!("{base}{path}?session_id={{CHECKOUT_SESSION_ID}}");
-    let cancel_url = format!("{base}{path}");
+    let (success_url, cancel_url) = hosted_return_urls(&base, order_no);
     let subject = if o.package_code.trim().is_empty() {
         format!("order-{}", o.order_kind)
     } else {
@@ -505,7 +579,16 @@ pub async fn create_checkout_url(
         now,
     )
     .await?;
-    let sess = stripe_call(state, "POST", SESSIONS_URL, &sk, Some(&form)).await?;
+    let idem = format!("checkout_{order_no}");
+    let sess = stripe_call(
+        state,
+        "POST",
+        SESSIONS_URL,
+        &sk,
+        Some(&form),
+        Some(&idem),
+    )
+    .await?;
     let patch = session_patch(&sess);
     let url = patch.stripe_url.clone();
     if url.is_empty() {
@@ -520,7 +603,47 @@ async fn retrieve_session(state: &AppState, sk: &str, session_id: &str) -> AppRe
         "{SESSIONS_URL}/{}?expand[0]=payment_intent",
         form_encode(session_id)
     );
-    stripe_call(state, "GET", &url, sk, None).await
+    stripe_call(state, "GET", &url, sk, None, None).await
+}
+
+async fn expire_session(state: &AppState, sk: &str, session_id: &str) -> AppResult<()> {
+    let url = format!("{SESSIONS_URL}/{}/expire", form_encode(session_id));
+    match stripe_call(state, "POST", &url, sk, Some(""), None).await {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            tracing::warn!(error = %e, session_id, "stripe expire skipped");
+            Ok(())
+        }
+    }
+}
+
+async fn fetch_event_from_body(state: &AppState, body: &[u8]) -> AppResult<Value> {
+    let hint: Value = serde_json::from_slice(body).map_err(|_| ApiError::param_invalid("json"))?;
+    let id = json_str(&hint, "id");
+    if !event_id_ok(&id) {
+        return Err(ApiError::param_invalid("event_id"));
+    }
+    let sk = secret_key(state).await?;
+    let url = format!("{EVENTS_URL}/{}", form_encode(&id));
+    let auth = format!("Bearer {sk}");
+    let headers = [
+        ("authorization", auth.as_str()),
+        ("stripe-version", STRIPE_API_VERSION),
+    ];
+    let (status, text) = state
+        .http
+        .exchange_with_headers("GET", &url, &headers, None)
+        .await?;
+    if status == 404 {
+        return Err(ApiError::param_invalid("event_id"));
+    }
+    if !(200..300).contains(&status) {
+        return Err(ApiError::upstream(format!("stripe {status}")));
+    }
+    if text.is_empty() {
+        return Err(ApiError::upstream("stripe_json"));
+    }
+    serde_json::from_str(&text).map_err(|_| ApiError::upstream("stripe_json"))
 }
 
 fn metadata_str(sess: &Value, k: &str) -> String {
@@ -619,29 +742,50 @@ pub async fn retrieve_and_settle(
     apply_session_and_maybe_settle(state, order_no, Some(user.uid), &sess).await
 }
 
-pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> AppResult<&'static str> {
+pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> WebhookAck {
     let secret = cfg_val(state, "sy_stripe_whsec").await;
-    let secret = secret.trim().to_string();
-    if secret.is_empty() {
-        tracing::warn!("stripe webhook missing sy_stripe_whsec");
-        return Err(ApiError::unauth());
-    }
+    let secret = secret.trim().trim_matches('"').to_string();
     let now = clock::now_ts();
-    if !verify_stripe_signature(&secret, body, sig_header, now, SIG_TOLERANCE) {
+    let signed_ok = !secret.is_empty()
+        && verify_stripe_signature(&secret, body, sig_header, now, SIG_TOLERANCE);
+    let event = if signed_ok {
+        match serde_json::from_slice(body) {
+            Ok(v) => v,
+            Err(_) => return WebhookAck::BadRequest,
+        }
+    } else {
+        let t = stripe_signature_timestamp(sig_header);
+        let delta = t.map(|ts| now.abs_diff(ts));
         tracing::warn!(
             sig_len = sig_header.len(),
             body_len = body.len(),
             secret_len = secret.len(),
+            secret_kind = if secret.starts_with("whsec_") {
+                "whsec"
+            } else {
+                "other"
+            },
             now,
-            "stripe webhook signature mismatch"
+            stripe_t = t,
+            delta_secs = delta,
+            "stripe webhook signature mismatch; fetch event"
         );
-        return Err(ApiError::unauth());
-    }
-    let event: Value = serde_json::from_slice(body).map_err(|_| ApiError::param_invalid("json"))?;
+        match fetch_event_from_body(state, body).await {
+            Ok(v) => v,
+            Err(e) => {
+                tracing::warn!(error = %e, "stripe webhook event fetch failed");
+                return if e.code() >= 500 {
+                    WebhookAck::Retry
+                } else {
+                    WebhookAck::BadRequest
+                };
+            }
+        }
+    };
     let etype = json_str(&event, "type");
     if etype != "checkout.session.completed" && etype != "checkout.session.async_payment_succeeded"
     {
-        return Ok("ignored");
+        return WebhookAck::Ignored;
     }
     let sess = event
         .get("data")
@@ -649,7 +793,7 @@ pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> 
         .cloned()
         .unwrap_or(Value::Null);
     if !sess.is_object() {
-        return Err(ApiError::param_invalid("session"));
+        return WebhookAck::BadRequest;
     }
     let mut order_no = metadata_str(&sess, "order_no");
     if order_no.is_empty() {
@@ -662,10 +806,10 @@ pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> 
         }
     }
     if order_no.is_empty() {
-        return Err(ApiError::param_invalid("order_no"));
+        return WebhookAck::BadRequest;
     }
     let event_json = serde_json::to_string(&event).ok();
-    stripe_repo::update_event(
+    if let Err(e) = stripe_repo::update_event(
         state.db.pool(),
         &order_no,
         EventPatch {
@@ -677,11 +821,33 @@ pub async fn handle_webhook(state: &AppState, body: &[u8], sig_header: &str) -> 
         },
         now,
     )
-    .await?;
-    if let Err(e) = apply_session_and_maybe_settle(state, &order_no, None, &sess).await {
-        tracing::warn!(error = %e, order_no, "stripe webhook settle skipped");
+    .await
+    {
+        tracing::warn!(error = %e, order_no, "stripe webhook event persist failed");
+        return WebhookAck::Retry;
     }
-    Ok("ok")
+    match apply_session_and_maybe_settle(state, &order_no, None, &sess).await {
+        Ok(_) => WebhookAck::Ok,
+        Err(e) => {
+            tracing::warn!(error = %e, order_no, "stripe webhook settle");
+            webhook_ack_for_settle(&e)
+        }
+    }
+}
+
+fn webhook_ack_for_settle(e: &ApiError) -> WebhookAck {
+    let tag = e.tag();
+    if tag == "param_invalid: amount_mismatch"
+        || tag == "param_invalid: order_already_processed"
+        || tag == "param_invalid: order_mismatch"
+        || tag == "order_already_processed"
+    {
+        return WebhookAck::Ok;
+    }
+    if tag == "unauth" {
+        return WebhookAck::BadRequest;
+    }
+    WebhookAck::Retry
 }
 
 pub async fn ensure_webhook(state: &AppState, user: &AuthenticatedUser) -> AppResult<()> {
@@ -702,7 +868,7 @@ pub async fn ensure_webhook(state: &AppState, user: &AuthenticatedUser) -> AppRe
         "checkout.session.async_payment_succeeded",
     );
     form_push(&mut form, "api_version", STRIPE_API_VERSION);
-    match stripe_call(state, "POST", WEBHOOKS_URL, &sk, Some(&form)).await {
+    match stripe_call(state, "POST", WEBHOOKS_URL, &sk, Some(&form), None).await {
         Ok(v) => {
             if let Some(sec) = v.get("secret").and_then(Value::as_str) {
                 if !sec.is_empty() {
@@ -725,5 +891,43 @@ pub async fn ensure_webhook(state: &AppState, user: &AuthenticatedUser) -> AppRe
             tracing::warn!(error = %e, "stripe webhook endpoint create skipped");
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn settle_amount_mismatch_is_terminal_ok() {
+        let e = ApiError::param_invalid("amount_mismatch");
+        assert_eq!(webhook_ack_for_settle(&e), WebhookAck::Ok);
+        assert_eq!(WebhookAck::Ok.status(), 200);
+    }
+
+    #[test]
+    fn settle_already_processed_is_terminal_ok() {
+        let e = ApiError::param_invalid("order_already_processed");
+        assert_eq!(webhook_ack_for_settle(&e), WebhookAck::Ok);
+    }
+
+    #[test]
+    fn settle_db_asks_stripe_to_retry() {
+        let e = ApiError::internal(std::io::Error::other("db"));
+        assert_eq!(webhook_ack_for_settle(&e), WebhookAck::Retry);
+        assert_eq!(WebhookAck::Retry.status(), 500);
+    }
+
+    #[test]
+    fn bad_signature_is_400() {
+        assert_eq!(WebhookAck::BadRequest.status(), 400);
+    }
+
+    #[test]
+    fn event_id_ok_accepts_stripe_ids() {
+        assert!(event_id_ok("evt_1UHIF9GmplYRPH5s1kiFpvX1"));
+        assert!(!event_id_ok("cs_test_xxx"));
+        assert!(!event_id_ok("evt_"));
+        assert!(!event_id_ok(""));
     }
 }

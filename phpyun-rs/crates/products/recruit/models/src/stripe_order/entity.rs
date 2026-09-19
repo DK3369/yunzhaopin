@@ -136,4 +136,7 @@ pub struct StripeOrderRow {
     pub stripe_payment_status: String,
     pub stripe_amount_total: Option<i32>,
     pub stripe_payment_intent: String,
+    pub stripe_url: String,
+    pub stripe_status: String,
+    pub stripe_expires_at: i64,
 }

@@ -7,12 +7,13 @@ use std::collections::{BTreeMap, HashMap};
 
 use axum::body::Bytes;
 use axum::extract::{Query, State};
-use axum::http::{header, HeaderMap, StatusCode};
+use axum::http::{header, HeaderMap, HeaderName, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
 use axum::Form;
 use axum::Router;
 use phpyun_core::{AppState, ClientIp};
+use phpyun_services::stripe_service::WebhookAck;
 use serde::Deserialize;
 use validator::Validate;
 
@@ -49,24 +50,53 @@ async fn alipay(
 
 fn stripe_signature_header(headers: &HeaderMap) -> String {
     for name in ["stripe-signature", "stripe_signature"] {
-        if let Some(v) = headers.get(name).and_then(|v| v.to_str().ok()) {
-            if !v.is_empty() {
-                return v.to_string();
+        if let Ok(n) = HeaderName::from_bytes(name.as_bytes()) {
+            if let Some(v) = headers.get(&n).and_then(|v| v.to_str().ok()) {
+                if !v.is_empty() {
+                    return v.to_string();
+                }
+            }
+        }
+    }
+    for (name, value) in headers.iter() {
+        let n = name.as_str();
+        if n.eq_ignore_ascii_case("stripe-signature") || n.eq_ignore_ascii_case("stripe_signature")
+        {
+            if let Ok(v) = value.to_str() {
+                if !v.is_empty() {
+                    return v.to_string();
+                }
             }
         }
     }
     String::new()
 }
 
+fn header_names(headers: &HeaderMap) -> String {
+    let mut names: Vec<&str> = headers.keys().map(|k| k.as_str()).collect();
+    names.sort_unstable();
+    names.join(",")
+}
+
+fn webhook_plain(ack: WebhookAck) -> Response {
+    let status = StatusCode::from_u16(ack.status()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+    plain(status, ack.body())
+}
+
 async fn stripe(State(state): State<AppState>, headers: HeaderMap, body: Bytes) -> Response {
     let sig = stripe_signature_header(&headers);
-    match phpyun_services::stripe_service::handle_webhook(&state, &body, &sig).await {
-        Ok(body) => plain(StatusCode::OK, body),
-        Err(e) => {
-            tracing::warn!(error = %e, "stripe notify rejected");
-            plain(StatusCode::BAD_REQUEST, "fail")
-        }
+    if sig.is_empty() {
+        tracing::warn!(
+            headers = %header_names(&headers),
+            body_len = body.len(),
+            "stripe webhook missing Stripe-Signature"
+        );
     }
+    let ack = phpyun_services::stripe_service::handle_webhook(&state, &body, &sig).await;
+    if !ack.is_ok_status() {
+        tracing::warn!(status = ack.status(), "stripe notify rejected");
+    }
+    webhook_plain(ack)
 }
 
 async fn wechat_pay(State(state): State<AppState>, body: Bytes) -> Response {

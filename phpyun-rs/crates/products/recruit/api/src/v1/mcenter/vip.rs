@@ -366,9 +366,10 @@ pub async fn create_order(
     if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
         return Err(ApiError::param_invalid("channel"));
     }
+    phpyun_services::stripe_service::assert_create_channel(&state, &f.channel).await?;
     let created = vip_service::create_order_ex(&state, &user, &f.package_code, &f.channel, &ip).await?;
     if f.channel == "stripe" {
-        let _ = phpyun_services::stripe_service::upsert_local(&state, &created.order_no, &ip, Some(&created.subject)).await;
+        phpyun_services::stripe_service::upsert_local(&state, &created.order_no, &ip, Some(&created.subject)).await?;
     }
     // Order is already inserted. Missing Alipay keys must not 400 the whole create —
     // the client still needs `order_no` to open cashier.
@@ -857,6 +858,7 @@ pub async fn recharge(
     if f.channel != "alipay" && f.channel != "wxpay" && f.channel != "wxh5" && f.channel != "bank" && f.channel != "stripe" {
         return Err(ApiError::param_invalid("channel"));
     }
+    phpyun_services::stripe_service::assert_create_channel(&state, &f.channel).await?;
     if f.channel == "alipay" {
         payment_notify_service::ensure_alipay_page(&state).await?;
     }
@@ -871,13 +873,13 @@ pub async fn recharge(
     )
     .await?;
     if f.channel == "stripe" {
-        let _ = phpyun_services::stripe_service::upsert_local(
+        phpyun_services::stripe_service::upsert_local(
             &state,
             &created.order_no,
             &ip,
             Some(&created.subject),
         )
-        .await;
+        .await?;
     }
     let pay_url = if f.channel == "alipay" {
         Some(

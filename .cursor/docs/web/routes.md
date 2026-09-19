@@ -32,7 +32,7 @@
 | 认领 / 邀请 / 订阅 | `/claim` `/invite` `/subscribe` | `/v1/wap/claim`、subscribe 等 | |
 | 分享落地 | `/share/job|company|resume/...` | wap 详情 + share token | |
 | 海报 | `/poster/...` | 详情数据拼海报 | |
-| 其它 | `/links` `/services` `/download` `/advice` `/site` `/hr` `/redeem` `/specials` `/quick-apply` | 对应 wap 或 settings | `/advice` 登录后可进会员壳 |
+| 其它 | `/links` `/services` `/download` `/advice` `/site` `/hr` `/redeem` `/specials` `/quick-apply` `/pay/stripe` | 对应 wap 或 settings | `/advice` 登录后可进会员壳；`/pay/stripe` 是 Stripe Hosted Checkout 公开回跳 |
 
 ## 求职会员 `/user`
 
@@ -48,6 +48,8 @@
 | 财务 | `/user/pay` `/user/cashier` `/user/finance` `/user/integral`… | pay、integral、orders |
 | 账号 | `/user/account` `/user/password` `/user/binding` `/user/set` `/user/privacy` `/user/ident` | account、sessions、password、blacklist |
 | 其它 | `/user/parts` `/user/recommend` `/user/searches` `/user/eval-logs` `/user/invite`… | 对应 mcenter；模块开关见 member-center |
+
+Stripe 付完回跳公开页 `/pay/stripe`（`order_no` + `session_id`），不进 `/user` `/com` 登录门闩；登录后再 `stripe-return`。
 
 ## 招聘会员 `/com`
 

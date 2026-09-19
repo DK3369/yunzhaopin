@@ -68,6 +68,17 @@ pub fn hmac_sha256_verify(key: &[u8], msg: &[u8], expected_hex: &str) -> bool {
     mac.verify_slice(&expected).is_ok()
 }
 
+/// First `t=` unix timestamp in a Stripe-Signature header, if present.
+pub fn stripe_signature_timestamp(header: &str) -> Option<i64> {
+    for part in header.split(',') {
+        let part = part.trim();
+        if let Some(rest) = part.strip_prefix("t=") {
+            return rest.parse().ok();
+        }
+    }
+    None
+}
+
 /// Stripe-Signature: `t=<unix>,v1=<hex>[,v1=...]`.
 /// Signed payload is `{t}.{raw_body}`. Any matching `v1` is accepted (key rotation).
 pub fn verify_stripe_signature(
@@ -144,5 +155,10 @@ mod tests {
         assert!(verify_stripe_signature(secret, body, &header, t, 300));
         assert!(!verify_stripe_signature(secret, body, &header, t + 400, 300));
         assert!(!verify_stripe_signature("other", body, &header, t, 300));
+        assert_eq!(stripe_signature_timestamp(&header), Some(t));
+        assert_eq!(
+            stripe_signature_timestamp(&format!("v1={sig}, t={t}")),
+            Some(t)
+        );
     }
 }
