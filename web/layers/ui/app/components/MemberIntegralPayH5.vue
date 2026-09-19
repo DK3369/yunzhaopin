@@ -78,7 +78,6 @@ function onCustomInput(ev: Event) {
           <div class="integral_body_pay">
             <div class="integral_body_pay_left">{{ $t('wap_01032') }}</div>
             <div class="integral_body_pay_right">
-              <i class="pay_right_icon">{{ $t('common_02056') }}</i>
               <i class="pay_right_number">{{ payYuan }}</i>
             </div>
           </div>

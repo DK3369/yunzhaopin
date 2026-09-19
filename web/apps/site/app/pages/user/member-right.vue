@@ -26,10 +26,19 @@ const { settings } = useSiteChrome()
 const { data: current, error, refresh: refreshCurrent } = await useAsyncData('user-vip-current', () =>
   api.post<Current>('/v1/mcenter/vip/current', {}),
 )
-const { data: packs } = await useAsyncData('user-vip-packages', () =>
-  api.post<Pack[]>('/v1/mcenter/vip/packages', {}).catch(() => [] as Pack[]),
+const { data: packs, error: packErr } = await useAsyncData('user-vip-packages', () =>
+  api.post<Pack[]>('/v1/mcenter/vip/packages', {}),
 )
-const packList = computed<Pack[]>(() => (Array.isArray(packs.value) ? packs.value : []))
+const packList = computed<Pack[]>(() => {
+  const v = packs.value as unknown
+  if (Array.isArray(v)) return v
+  if (v && typeof v === 'object') {
+    const o = v as Record<string, unknown>
+    if (Array.isArray(o.list)) return o.list as Pack[]
+    if (Array.isArray(o.data)) return o.data as Pack[]
+  }
+  return []
+})
 const channel = ref('alipay')
 const wxPayOn = computed(() =>
   Boolean(settings.value.sy_wxpayid || settings.value.sy_wxpaykey || settings.value.wx_appid),
@@ -37,16 +46,23 @@ const wxPayOn = computed(() =>
 const msg = ref('')
 const picked = ref(0)
 
-function descLines(desc: unknown): string[] {
-  if (!desc) return []
-  if (Array.isArray(desc)) return desc.map((d) => String(d))
-  if (typeof desc === 'string') return [desc]
-  if (typeof desc === 'object') {
-    return Object.entries(desc as Record<string, unknown>)
-      .filter(([, v]) => v !== 0 && v !== '0' && v !== '')
-      .map(([k, v]) => `${k}: ${v}`)
+function packMonths(p: Pack): number {
+  if (p.desc && typeof p.desc === 'object' && !Array.isArray(p.desc)) {
+    const m = Number((p.desc as { months?: unknown }).months)
+    if (Number.isFinite(m) && m > 0) return m
   }
-  return []
+  if (p.duration_days >= 330) return 12
+  if (p.duration_days >= 80) return 3
+  if (p.duration_days >= 20) return 1
+  return 0
+}
+
+function packTitle(p: Pack): string {
+  const m = packMonths(p)
+  if (m === 1) return t('ui.pack_1_month')
+  if (m === 3) return t('ui.pack_3_months')
+  if (m === 12) return t('ui.pack_1_year')
+  return p.name
 }
 
 function payChannel() {
@@ -102,22 +118,20 @@ useSeoMeta({ title: t('wap_com_00097') })
         </div>
       </div>
       <div class="vip_box site-pc">
-        <div class="vip_box_db">{{ $t('ui.monthly_vip') }}</div>
-        <p v-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
+        <div class="vip_box_db">{{ $t('wap_com_00097') }}</div>
+        <p v-if="packErr" class="muted">{{ isUnauthErr(packErr) ? $t('common_01153') : $t('ui.load_failed') }}</p>
+        <p v-else-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
         <div v-else class="vip_timebox">
           <ul>
             <li v-for="p in packList" :key="'t-' + p.id" class="vip_time_list">
               <div class="vip_time_left">
                 <div class="vip_time_leftname">
-                  {{ p.name }}<i class="vip_box_left_name_line" />
+                  {{ packTitle(p) }}<i class="vip_box_left_name_line" />
                 </div>
                 <div class="vip_box_left_money_n">
-                  <span>{{ p.price_yuan }} / {{ p.duration_days }}{{ $t('common_02067') }}</span>
+                  <span>{{ p.price_yuan }}</span>
                 </div>
               </div>
-              <ul v-if="descLines(p.desc).length">
-                <li v-for="(line, i) in descLines(p.desc)" :key="i">{{ line }}</li>
-              </ul>
               <input type="button" class="btn_01" :value="$t('common.submit')" @click="buy(p)" />
             </li>
           </ul>
@@ -126,7 +140,8 @@ useSeoMeta({ title: t('wap_com_00097') })
       <div class="dredge_body site-h5">
         <div class="dredge_body_tab">
           <div class="dredge_body_tab_body">
-            <p v-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
+            <p v-if="packErr" class="muted">{{ isUnauthErr(packErr) ? $t('common_01153') : $t('ui.load_failed') }}</p>
+            <p v-else-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
             <ul v-else>
               <li v-for="p in packList" :key="'h5-' + p.id">
                 <div class="dredge_body_tab_body_box" @click="buy(p)">
@@ -138,8 +153,7 @@ useSeoMeta({ title: t('wap_com_00097') })
                     </div>
                     <div class="tab_body_left_text">
                       <div class="tab_body_left_text_top">
-                        <div class="left_text_top_vip">{{ p.name }}</div>
-                        <div class="left_text_top_time">{{ p.duration_days }}{{ $t('common_02067') }}</div>
+                        <div class="left_text_top_vip">{{ packTitle(p) }}</div>
                       </div>
                     </div>
                   </div>

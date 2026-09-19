@@ -65,7 +65,6 @@ const classes = computed(() => pack.value?.list || [])
 const minRecharge = computed(() => Number(pack.value?.min_recharge || settings.value.integral_min_recharge || 0))
 const proportion = computed(() => Math.max(1, Number(pack.value?.proportion || settings.value.integral_proportion || 1)))
 const priceName = computed(() => String(pack.value?.pricename || settings.value.integral_pricename || t('wap_user_00008')))
-const priceUnit = computed(() => String(pack.value?.priceunit || settings.value.integral_priceunit || ''))
 const balance = computed(() => Number(pack.value?.balance || 0))
 const picked = computed(() => classes.value.find((c) => c.id === pickedId.value) || null)
 const priceInt = computed(() => {
@@ -233,7 +232,7 @@ useSeoMeta({ title: t('common_01946') })
     <p v-if="error" class="muted">{{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}</p>
     <div class="com_new_tip site-pc">
       <span class="com_new_tip_h">{{ $t('member_com_00040') }}</span>
-      {{ $t('common_01984') }}{{ priceName }}{{ balance }}，1{{ $t('common_02056') }}={{ proportion }}{{ priceUnit }}{{ priceName }}
+      {{ $t('common_01984') }} {{ priceName }} {{ balance }}，1={{ proportion }} {{ priceName }}
       <template v-if="minRecharge > 0">，{{ $t('default_00088') }}{{ minRecharge }}{{ priceName }}</template>
       <a href="javascript:;" class="cblue" @click="showCard = true">{{ $t('member_com_00485') }}</a>
     </div>
@@ -283,7 +282,7 @@ useSeoMeta({ title: t('common_01946') })
     <div class="payment_list site-pc">
       <div class="payment_list_s">{{ $t('wap_01032') }}</div>
       <div class="payment_list_r">
-        <span class="payintegral">{{ payYuan }}</span>{{ $t('common_02056') }}
+        <span class="payintegral">{{ payYuan }}</span>
       </div>
     </div>
     <div class="payment_list site-pc">
@@ -316,8 +315,8 @@ useSeoMeta({ title: t('common_01946') })
       @card="showCard = true"
     >
       <template #tip>
-        {{ $t('common_01984') }} {{ priceName }} {{ balance }}{{ $t('wap_01145') }}1{{ $t('common_02056') }}={{ proportion }}{{ priceUnit }}{{ priceName }}
-        <template v-if="minRecharge > 0">{{ $t('wap_01035') }}{{ minRecharge }}{{ priceUnit }}{{ priceName }}</template>
+        {{ $t('common_01984') }} {{ priceName }} {{ balance }}，1={{ proportion }} {{ priceName }}
+        <template v-if="minRecharge > 0">{{ $t('wap_01035') }}{{ minRecharge }}{{ priceName }}</template>
       </template>
     </MemberIntegralPayH5>
     <form v-if="showCard" class="com_release_box site-pc" @submit.prevent="submitCard">

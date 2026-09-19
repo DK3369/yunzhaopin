@@ -128,7 +128,7 @@ async function submitBank() {
     </div>
     <div class="payment_list site-pc">
       <div class="payment_list_s">{{ $t('ui.amount') }}</div>
-      <div class="payment_list_r"><span class="payintegral">{{ detail.amount_yuan }}</span>{{ $t('common_02056') }}</div>
+      <div class="payment_list_r"><span class="payintegral">{{ detail.amount_yuan }}</span></div>
     </div>
     <div class="payment_list site-pc">
       <div class="payment_list_s">{{ $t('member_user_00181') }}</div>
@@ -162,7 +162,6 @@ async function submitBank() {
           <div class="integral_body_pay">
             <div class="integral_body_pay_left">{{ $t('ui.amount') }}</div>
             <div class="integral_body_pay_right">
-              <i class="pay_right_icon">{{ $t('common_02056') }}</i>
               <i class="pay_right_number">{{ detail.amount_yuan }}</i>
             </div>
           </div>

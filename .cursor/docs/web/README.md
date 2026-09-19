@@ -43,7 +43,7 @@ pnpm gen:types:admin
 - H5 首页底不要 ViewMoreJob / Contact Us / Feedback / About Us（`yun_newedition_footer` + lookmore）；底栏五项仍要
 - H5 Country / Job function / Filter 点开列表用 `0.373333rem`（分组标签 `0.32rem`），写在 `main.css`，不要继承 `body 0.9em`。顶栏标签不要用 yunwap `1.1rem` 宽，否则英文截成 Cou…
 - H5 `/jobs` 顶栏只要 Latest，**不要** Urgent Hiring / Nearby；PC 顶栏、H5 宫格、页脚也不出公开 `/map`（职位详情看地图、企业 `/com/map` 仍可）
-- H5 财务 `/user/finance` 金卡 + 暗色 Recharge Now + 任务中心（不要蓝条签到钮、不要把消耗列表当主内容）；充值 `/user/pay` `/com/pay` 用 `pay_header`/`integral_body_*`，不要发职位表单皮。开会员是 `/user/member-right` `/com/member-right`，不是 Recharge
+- H5 财务 `/user/finance` 金卡 + 暗色 Recharge Now + 任务中心（不要蓝条签到钮、不要把消耗列表当主内容）；充值 `/user/pay` `/com/pay` 用 `pay_header`/`integral_body_*`，不要发职位表单皮。金额不要 CNY。档位来自 `vip/integral-classes`。开会员是 `/user/member-right` `/com/member-right`，不是 Recharge
 - 打包 CSS：`/legacy/site-pc.css` / `/legacy/site-h5.css`（见 `server/utils/legacyCss.ts`，磁盘在 `public/legacy/`）；皮肤与会员包按 `m=user|com` 拼。`useHead` 里 stylesheet 要稳定 `key`（`legacy-pc` / `legacy-h5`），**不要**跟 canonical 捆在同一个会随 path 重建的 `link: () => []` 里，否则 H5 切页会卸 CSS，站标/banner 闪成大图
 - H5 顶栏 `AppHeader` 用 `v-show` 不要 `v-if` 卸 logo；公开 `NuxtPage` `:keepalive="{ max: 5 }"`，底栏来回切不要把整页（含隐藏的 PC 树）卸掉再挂。职位详情滚动监听用 `onActivated`/`onDeactivated`
 - `sy_wap_web==2` 时 `html.force-pc` 强制 PC

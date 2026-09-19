@@ -38,11 +38,20 @@ const { data: current, error, refresh: refreshCurrent } = await useAsyncData('co
   api.post<Current>('/v1/mcenter/vip/current', {}),
 )
 
-const { data: packs } = await useAsyncData('com-vip-packages-time', () =>
-  api.post<Pack[]>('/v1/mcenter/vip/packages', { kind: 'time' }).catch(() => [] as Pack[]),
+const { data: packs, error: packErr } = await useAsyncData('com-vip-packages', () =>
+  api.post<Pack[]>('/v1/mcenter/vip/packages', {}),
 )
 
-const packList = computed<Pack[]>(() => (Array.isArray(packs.value) ? packs.value : []))
+const packList = computed<Pack[]>(() => {
+  const v = packs.value as unknown
+  if (Array.isArray(v)) return v
+  if (v && typeof v === 'object') {
+    const o = v as Record<string, unknown>
+    if (Array.isArray(o.list)) return o.list as Pack[]
+    if (Array.isArray(o.data)) return o.data as Pack[]
+  }
+  return []
+})
 const channel = ref('alipay')
 const wxPayOn = computed(() =>
   Boolean(settings.value.sy_wxpayid || settings.value.sy_wxpaykey || settings.value.wx_appid),
@@ -112,7 +121,7 @@ useSeoMeta({ title: t('wap_com_00097') })
       {{ isUnauthErr(error) ? $t('common_01153') : $t('ui.load_failed') }}
     </p>
     <template v-else>
-      <MemberComScreen :tabs="[{ value: 'time', label: $t('ui.monthly_vip'), on: true, select: () => {} }]" />
+      <MemberComScreen :tabs="[{ value: 'time', label: $t('wap_com_00097'), on: true, select: () => {} }]" />
       <div class="com_new_tip site-pc">
         <span class="com_new_tip_h">{{ $t('member_com_00040') }}</span>
         {{ current?.rating_name || current?.package_code || $t('ui.no_data') }}
@@ -141,8 +150,9 @@ useSeoMeta({ title: t('wap_com_00097') })
         </div>
       </div>
       <div class="vip_box site-pc">
-        <div class="vip_box_db">{{ $t('ui.monthly_vip') }}</div>
-        <p v-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
+        <div class="vip_box_db">{{ $t('wap_com_00097') }}</div>
+        <p v-if="packErr" class="muted">{{ isUnauthErr(packErr) ? $t('common_01153') : $t('ui.load_failed') }}</p>
+        <p v-else-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
         <div v-else class="vip_timebox">
           <ul>
             <li v-for="p in packList" :key="'t-' + p.id" class="vip_time_list">
@@ -165,7 +175,8 @@ useSeoMeta({ title: t('wap_com_00097') })
       <div class="dredge_body site-h5">
         <div class="dredge_body_tab">
           <div class="dredge_body_tab_body">
-            <p v-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
+            <p v-if="packErr" class="muted">{{ isUnauthErr(packErr) ? $t('common_01153') : $t('ui.load_failed') }}</p>
+            <p v-else-if="!packList.length" class="muted">{{ $t('ui.no_packages') }}</p>
             <ul v-else>
               <li v-for="p in packList" :key="'h5-' + p.id">
                 <div class="dredge_body_tab_body_box" @click="buy(p)">

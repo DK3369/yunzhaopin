@@ -57,4 +57,4 @@ H5 `/jobs` 顶栏只要 Latest，不要 Urgent Hiring，也不要 Nearby。
 
 ## 财务 / 充值 H5
 
-`/user/finance` 金卡保持 `position:absolute`（对照 WAP `finance.htm`），Recharge Now 用暗色椭圆 `.management_card_btn` 挂在卡下。**不要**把 `.management_header_card` 改成 relative/auto，也不要再叠一条 `verification_form_btn`。芯片 `.management_data_bom`、任务钮不要写死中文宽度。H5 充值 `/user/pay` `/com/pay` 用 `pay_header` + `integral_body_*`，收银台 H5 同一套，**不要**发职位表单皮。PC 仍 `payment_list_*`。Recharge 是积分充值，开会员是 `/user/member-right` `/com/member-right`。
+`/user/finance` 金卡保持 `position:absolute`（对照 WAP `finance.htm`），Recharge Now 用暗色椭圆 `.management_card_btn` 挂在卡下。**不要**把 `.management_header_card` 改成 relative/auto，也不要再叠一条 `verification_form_btn`。芯片 `.management_data_bom`、任务钮不要写死中文宽度。H5 充值 `/user/pay` `/com/pay` 用 `pay_header` + `integral_body_*`，收银台 H5 同一套，**不要**发职位表单皮。PC 仍 `payment_list_*`。金额不要 CNY。档位来自 `POST /v1/mcenter/vip/integral-classes`。Recharge 是积分充值，开会员是 `/user/member-right` `/com/member-right`。
