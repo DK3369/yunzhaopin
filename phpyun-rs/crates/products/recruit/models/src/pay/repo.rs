@@ -1,8 +1,8 @@
 //! `phpyun_rs_pay_*` — gateway merchants, methods, orders.
 
 use super::entity::{
-    MerchantWrite, MethodWrite, OrderInsert, OrderListQuery, PayMerchant, PayMethod, PayOrder,
-    PayOrderListRow,
+    MerchantWrite, MethodWrite, NotifyInsert, NotifyListQuery, OrderInsert, OrderListQuery,
+    PayMerchant, PayMethod, PayNotify, PayOrder, PayOrderListRow, StatusCountRow,
 };
 use sqlx::MySqlPool;
 
@@ -602,4 +602,177 @@ fn empty_to_null(s: &str) -> Option<&str> {
     } else {
         Some(t)
     }
+}
+
+pub async fn mark_refunded(pool: &MySqlPool, pay_no: &str, now: i64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_rs_pay_order SET status='refunded', updated_at=? \
+         WHERE pay_no=? AND status='paid'",
+    )
+    .bind(now)
+    .bind(pay_no)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn status_counts(pool: &MySqlPool) -> Result<Vec<StatusCountRow>, sqlx::Error> {
+    sqlx::query_as::<_, StatusCountRow>(
+        "SELECT COALESCE(status,'') AS status, COUNT(*) AS n, \
+         CAST(COALESCE(SUM(amount_cents),0) AS SIGNED) AS cents \
+         FROM phpyun_rs_pay_order GROUP BY status",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn count_paid_between(
+    pool: &MySqlPool,
+    from_ts: i64,
+    to_ts: i64,
+) -> Result<(i64, i64), sqlx::Error> {
+    let row: (i64, i64) = sqlx::query_as(
+        "SELECT COUNT(*), CAST(COALESCE(SUM(amount_cents),0) AS SIGNED) \
+         FROM phpyun_rs_pay_order \
+         WHERE paid_at >= ? AND paid_at <= ? AND status IN ('paid','refunded')",
+    )
+    .bind(from_ts)
+    .bind(to_ts)
+    .fetch_one(pool)
+    .await?;
+    Ok(row)
+}
+
+const NOTIFY_SELECT: &str = "\
+    CAST(n.id AS UNSIGNED) AS id, \
+    COALESCE(n.pay_no,'') AS pay_no, \
+    CAST(n.merchant_id AS UNSIGNED) AS merchant_id, \
+    COALESCE(m.code,'') AS merchant_code, \
+    COALESCE(n.event,'') AS event, \
+    COALESCE(n.url,'') AS url, \
+    COALESCE(n.body,'') AS body, \
+    CAST(n.http_status AS SIGNED) AS http_status, \
+    CAST(n.ok AS SIGNED) AS ok, \
+    COALESCE(n.error,'') AS error, \
+    CAST(n.ctime AS SIGNED) AS ctime";
+
+pub async fn insert_notify(
+    pool: &MySqlPool,
+    w: NotifyInsert<'_>,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_rs_pay_notify \
+         (pay_no, merchant_id, event, url, body, http_status, ok, error, ctime) \
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(w.pay_no)
+    .bind(w.merchant_id)
+    .bind(w.event)
+    .bind(w.url)
+    .bind(w.body)
+    .bind(w.http_status)
+    .bind(w.ok)
+    .bind(w.error)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn update_notify(
+    pool: &MySqlPool,
+    id: u64,
+    http_status: i32,
+    ok: i32,
+    error: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_rs_pay_notify SET http_status=?, ok=?, error=? WHERE id=?",
+    )
+    .bind(http_status)
+    .bind(ok)
+    .bind(error)
+    .bind(id)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn find_notify_by_id(
+    pool: &MySqlPool,
+    id: u64,
+) -> Result<Option<PayNotify>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {NOTIFY_SELECT} FROM phpyun_rs_pay_notify n \
+         LEFT JOIN phpyun_rs_pay_merchant m ON m.id = n.merchant_id \
+         WHERE n.id = ? LIMIT 1"
+    );
+    sqlx::query_as::<_, PayNotify>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
+fn push_notify_filters(sql: &mut String, q: &NotifyListQuery<'_>) {
+    if q.pay_no.is_some() {
+        sql.push_str(" AND n.pay_no = ?");
+    }
+    if q.ok.is_some() {
+        sql.push_str(" AND n.ok = ?");
+    }
+    if q.ctime_from.is_some() {
+        sql.push_str(" AND n.ctime >= ?");
+    }
+    if q.ctime_to.is_some() {
+        sql.push_str(" AND n.ctime <= ?");
+    }
+}
+
+pub async fn list_notifies(
+    pool: &MySqlPool,
+    q: &NotifyListQuery<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PayNotify>, sqlx::Error> {
+    let mut sql = format!(
+        "SELECT {NOTIFY_SELECT} FROM phpyun_rs_pay_notify n \
+         LEFT JOIN phpyun_rs_pay_merchant m ON m.id = n.merchant_id WHERE 1=1"
+    );
+    push_notify_filters(&mut sql, q);
+    sql.push_str(" ORDER BY n.id DESC LIMIT ? OFFSET ?");
+    let mut qb = sqlx::query_as::<_, PayNotify>(&sql);
+    if let Some(v) = q.pay_no {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ok {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_from {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_to {
+        qb = qb.bind(v);
+    }
+    qb.bind(limit).bind(offset).fetch_all(pool).await
+}
+
+pub async fn count_notifies(pool: &MySqlPool, q: &NotifyListQuery<'_>) -> Result<u64, sqlx::Error> {
+    let mut sql = String::from("SELECT COUNT(*) FROM phpyun_rs_pay_notify n WHERE 1=1");
+    push_notify_filters(&mut sql, q);
+    let mut qb = sqlx::query_as::<_, (i64,)>(&sql);
+    if let Some(v) = q.pay_no {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ok {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_from {
+        qb = qb.bind(v);
+    }
+    if let Some(v) = q.ctime_to {
+        qb = qb.bind(v);
+    }
+    let n = qb.fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
 }

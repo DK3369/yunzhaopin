@@ -321,7 +321,9 @@
 /v1/mcenter/zph/reserve
 /v1/pay/methods/list
 /v1/pay/orders
+/v1/pay/orders/close
 /v1/pay/orders/detail
+/v1/pay/orders/refund
 /v1/wap/ads/click
 /v1/wap/advice
 /v1/wap/announcements

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { lc } from '~/utils/phpLc'
 
 type Row = {
@@ -21,12 +21,15 @@ type Row = {
 }
 
 type Merchant = { id: number; code: string; name: string }
+type Channel = { code: string; name: string; live: boolean }
 type Paged = { list: Row[]; total: number; page: number; page_size: number }
 
 const api = useApi()
+const route = useRoute()
 const loading = ref(false)
 const rows = ref<Row[]>([])
 const merchants = ref<Merchant[]>([])
+const channels = ref<Channel[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
@@ -118,6 +121,11 @@ async function loadMerchants() {
   merchants.value = Array.isArray(data) ? data : []
 }
 
+async function loadChannels() {
+  const data = await api.post<Channel[]>('/v1/admin/pay/channels/list', {})
+  channels.value = Array.isArray(data) ? data : []
+}
+
 async function load() {
   loading.value = true
   try {
@@ -159,14 +167,64 @@ function statusText(s: string) {
   if (s === 'paid') return lc('admin_pay_paid', null, '已支付')
   if (s === 'failed') return lc('admin_pay_failed', null, '失败')
   if (s === 'cancelled') return lc('admin_pay_cancelled', null, '已取消')
+  if (s === 'refunded') return lc('admin_pay_refunded', null, '已退款')
   return s
 }
 
-onMounted(async () => {
+async function closeRow(row: Row) {
   try {
-    await loadMerchants()
+    await ElMessageBox.confirm(
+      lc('admin_pay_close_confirm', [row.pay_no], `关闭订单 ${row.pay_no}？`),
+      lc('common_01520', null, '提示'),
+      { type: 'warning' },
+    )
+  } catch {
+    return
+  }
+  loading.value = true
+  try {
+    await api.post('/v1/admin/pay/orders/close', { pay_no: row.pay_no })
+    ElMessage.success(lc('wap_00225', null, '已保存'))
+    await load()
+  } catch (e: unknown) {
+    ElMessage.error(e instanceof Error ? e.message : lc('wap_00225', null, '保存失败'))
+  } finally {
+    loading.value = false
+  }
+}
+
+async function refundRow(row: Row) {
+  try {
+    await ElMessageBox.confirm(
+      lc('admin_pay_refund_confirm', [row.pay_no], `退款 ${row.pay_no}？不会冲会员套餐。`),
+      lc('common_01520', null, '提示'),
+      { type: 'warning' },
+    )
+  } catch {
+    return
+  }
+  loading.value = true
+  try {
+    await api.post('/v1/admin/pay/orders/refund', { pay_no: row.pay_no })
+    ElMessage.success(lc('wap_00225', null, '已保存'))
+    await load()
+  } catch (e: unknown) {
+    ElMessage.error(e instanceof Error ? e.message : lc('wap_00225', null, '保存失败'))
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(async () => {
+  const st = String(route.query.status || '')
+  if (['pending', 'paid', 'failed', 'cancelled', 'refunded'].includes(st)) {
+    filter.status = st
+  }
+  try {
+    await Promise.all([loadMerchants(), loadChannels()])
   } catch {
     merchants.value = []
+    channels.value = []
   }
   await load()
 })
@@ -215,9 +273,7 @@ onMounted(async () => {
           @change="search"
         >
           <el-option :label="lc('admin_pay_all', null, '全部')" value="all" />
-          <el-option value="stripe" label="Stripe" />
-          <el-option value="gcash" label="GCash" />
-          <el-option value="paymaya" label="PayMaya" />
+          <el-option v-for="c in channels" :key="c.code" :label="c.name" :value="c.code" />
         </el-select>
         <el-select
           v-model="filter.status"
@@ -231,6 +287,7 @@ onMounted(async () => {
           <el-option value="paid" :label="lc('admin_pay_paid', null, '已支付')" />
           <el-option value="failed" :label="lc('admin_pay_failed', null, '失败')" />
           <el-option value="cancelled" :label="lc('admin_pay_cancelled', null, '已取消')" />
+          <el-option value="refunded" :label="lc('admin_pay_refunded', null, '已退款')" />
         </el-select>
         <el-date-picker
           v-model="dateRange"
@@ -273,9 +330,20 @@ onMounted(async () => {
             {{ row.merchant_name }} ({{ row.merchant_code }})
           </template>
         </el-table-column>
-        <el-table-column :label="lc('member_user_00048', null, '操作')" width="90" fixed="right">
+        <el-table-column :label="lc('member_user_00048', null, '操作')" width="220" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="openDetail(row)">{{ lc('admin_pay_detail', null, '详情') }}</el-button>
+            <el-button
+              v-if="row.status === 'pending'"
+              size="small"
+              @click="closeRow(row)"
+            >{{ lc('admin_pay_close', null, '关闭') }}</el-button>
+            <el-button
+              v-if="row.status === 'paid' && row.method_code === 'stripe'"
+              size="small"
+              type="danger"
+              @click="refundRow(row)"
+            >{{ lc('admin_pay_refund', null, '退款') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -304,6 +372,7 @@ onMounted(async () => {
           <span style="word-break: break-all">{{ detail.pay_url || '—' }}</span>
         </el-descriptions-item>
         <el-descriptions-item :label="lc('admin_pay_paid_at', null, '支付时间')">{{ detail.paid_at_n || '—' }}</el-descriptions-item>
+        <el-descriptions-item :label="lc('admin_pay_status', null, '状态')">{{ statusText(detail.status) }}</el-descriptions-item>
         <el-descriptions-item :label="lc('admin_pay_ctime', null, '订单创建时间')">{{ detail.ctime_n }}</el-descriptions-item>
       </el-descriptions>
     </el-drawer>

@@ -43,7 +43,7 @@ admin-php 页 httpPost('m=…&c=…&a=…', body)
 
 侧栏数据来自 `POST /v1/admin/menu`（库表），不是只改前端路由。新页面若要在后台导航出现，还需库侧菜单 / 权限（对照 PHP 后台菜单配置）。
 
-支付网关三页 `pages/payment/{orders,methods,merchants}.vue` 直接 `useApi()` 调 `/v1/admin/pay/*`，**不要**套 `admin-php/system` 或改 `payset.vue`。菜单 id 1070→1074 网关→1071/1072/1073（三级）。点顶栏支付进 `/payment/orders`，不要 `/payset`。见 [pay-gateway.md](../features/pay-gateway.md)。
+支付网关页 `pages/payment/{overview,orders,methods,merchants,notifies}.vue` 直接 `useApi()` 调 `/v1/admin/pay/*`，**不要**套 `admin-php/system` 或改 `payset.vue`。菜单 id 1070→1074 网关→1075 概览 / 1071 订单 / 1072 方式 / 1073 商户 / 1076 回调（三级）。点顶栏支付进 `/payment/overview`，不要 `/payset`。见 [pay-gateway.md](../features/pay-gateway.md)。
 
 ## 本机 vs 现网
 

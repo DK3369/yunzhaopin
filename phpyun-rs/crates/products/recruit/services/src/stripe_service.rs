@@ -174,6 +174,18 @@ pub fn event_id_ok(s: &str) -> bool {
         .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
 }
 
+pub fn payment_intent_ok(s: &str) -> bool {
+    let n = s.len();
+    if n < 8 || n > 255 {
+        return false;
+    }
+    let Some(rest) = s.strip_prefix("pi_") else {
+        return false;
+    };
+    rest.bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+}
+
 async fn stripe_call(
     state: &AppState,
     method: &'static str,
@@ -714,6 +726,50 @@ async fn expire_session(state: &AppState, sk: &str, session_id: &str) -> AppResu
             Ok(())
         }
     }
+}
+
+pub async fn expire_checkout_session(state: &AppState, sk: &str, session_id: &str) -> AppResult<()> {
+    if !session_id_ok(session_id) {
+        return Ok(());
+    }
+    expire_session(state, sk, session_id).await
+}
+
+pub async fn payment_intent_from_session(
+    state: &AppState,
+    sk: &str,
+    session_id: &str,
+) -> AppResult<String> {
+    if !session_id_ok(session_id) {
+        return Err(ApiError::business("refund_unavailable"));
+    }
+    let sess = retrieve_session(state, sk, session_id).await?;
+    let pi = id_or_expand(&sess, "payment_intent");
+    if !payment_intent_ok(&pi) {
+        return Err(ApiError::business("refund_unavailable"));
+    }
+    Ok(pi)
+}
+
+pub async fn refund_payment_intent(
+    state: &AppState,
+    sk: &str,
+    payment_intent: &str,
+    idempotency_key: &str,
+) -> AppResult<()> {
+    if !payment_intent_ok(payment_intent) {
+        return Err(ApiError::business("refund_unavailable"));
+    }
+    const REFUNDS_URL: &str = "https://api.stripe.com/v1/refunds";
+    let mut form = String::new();
+    form_push(&mut form, "payment_intent", payment_intent);
+    let idem = if idempotency_key.is_empty() {
+        None
+    } else {
+        Some(idempotency_key)
+    };
+    let _ = stripe_call(state, "POST", REFUNDS_URL, sk, Some(&form), idem).await?;
+    Ok(())
 }
 
 async fn fetch_event_from_body(state: &AppState, body: &[u8]) -> AppResult<Value> {

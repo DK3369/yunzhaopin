@@ -109,3 +109,43 @@ pub struct OrderInsert<'a> {
     pub currency: &'a str,
     pub subject: &'a str,
 }
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct PayNotify {
+    pub id: u64,
+    pub pay_no: String,
+    pub merchant_id: u64,
+    pub merchant_code: String,
+    pub event: String,
+    pub url: String,
+    pub body: String,
+    pub http_status: i32,
+    pub ok: i32,
+    pub error: String,
+    pub ctime: i64,
+}
+
+pub struct NotifyInsert<'a> {
+    pub pay_no: &'a str,
+    pub merchant_id: u64,
+    pub event: &'a str,
+    pub url: &'a str,
+    pub body: &'a str,
+    pub http_status: i32,
+    pub ok: i32,
+    pub error: &'a str,
+}
+
+pub struct NotifyListQuery<'a> {
+    pub pay_no: Option<&'a str>,
+    pub ok: Option<i32>,
+    pub ctime_from: Option<i64>,
+    pub ctime_to: Option<i64>,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct StatusCountRow {
+    pub status: String,
+    pub n: i64,
+    pub cents: i64,
+}

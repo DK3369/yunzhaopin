@@ -53,13 +53,15 @@ Stripe 付完回跳公开页 `/pay/stripe`（`order_no` + `session_id`），不�
 
 ## 管理后台 `/admin`
 
-Nuxt `baseURL=/admin/`。支付网关页（系统后面一级 **支付**，库菜单 1070–1073）不走 phpMap：
+Nuxt `baseURL=/admin/`。支付网关页（系统后面一级 **支付**，库菜单 1070 / 1074 / 1071–1076）不走 phpMap：
 
 | 页 | 路由 | API |
 |---|---|---|
-| 订单 | `/admin/payment/orders` | `POST /v1/admin/pay/orders/list` |
-| 支付方式 | `/admin/payment/methods` | `POST /v1/admin/pay/methods/{list,save,status,delete}` |
+| 概览 | `/admin/payment/overview` | `POST /v1/admin/pay/overview` |
+| 订单 | `/admin/payment/orders` | `POST /v1/admin/pay/orders/{list,close,refund}` |
+| 支付方式 | `/admin/payment/methods` | `POST /v1/admin/pay/methods/{list,save,status,delete}`；下拉 `POST /v1/admin/pay/channels/list` |
 | 商户 | `/admin/payment/merchants` | `POST /v1/admin/pay/merchants/{list,save,status}` |
+| 回调 | `/admin/payment/notifies` | `POST /v1/admin/pay/notifies/{list,retry}` |
 
 不要改 System `/admin/payset`。口径见 [pay-gateway.md](../features/pay-gateway.md)。
 

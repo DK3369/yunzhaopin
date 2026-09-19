@@ -233,6 +233,8 @@ impl Modify for DeprecatedIndex {
         v1::pay::spec_methods_list,
         v1::pay::spec_create_order,
         v1::pay::spec_order_detail,
+        v1::pay::spec_order_close,
+        v1::pay::spec_order_refund,
         // upload
         v1::wap::upload::upload_avatar,
         v1::wap::upload::upload_company_logo,

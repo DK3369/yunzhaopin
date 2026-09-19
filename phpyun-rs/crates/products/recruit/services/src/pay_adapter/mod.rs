@@ -1,11 +1,31 @@
-//! Channel adapters. Stripe is live; GCash / PayMaya return `not_configured`.
+//! Channel adapters. Stripe is live; others in the catalog return `not_configured`.
 
 pub mod stripe;
 
 use phpyun_core::{ApiError, AppResult, AppState};
 
+/// Static catalog: `code` is matched to a `&'static str` (never interpolated into SQL).
+pub const CHANNELS: &[(&str, &str, bool)] = &[
+    ("stripe", "Stripe", true),
+    ("gcash", "GCash", false),
+    ("paymaya", "PayMaya", false),
+    ("paypal", "PayPal", false),
+    ("grabpay", "GrabPay", false),
+];
+
 pub fn method_ok(code: &str) -> bool {
-    matches!(code, "stripe" | "gcash" | "paymaya")
+    catalog_name(code).is_some()
+}
+
+pub fn catalog_name(code: &str) -> Option<&'static str> {
+    match code {
+        "stripe" => Some("Stripe"),
+        "gcash" => Some("GCash"),
+        "paymaya" => Some("PayMaya"),
+        "paypal" => Some("PayPal"),
+        "grabpay" => Some("GrabPay"),
+        _ => None,
+    }
 }
 
 pub fn charge_ready(code: &str, config_json: &str) -> bool {

@@ -5,10 +5,12 @@ use phpyun_core::hmac_sha256::verify_merchant_sign;
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::pay::entity::{
-    MerchantWrite, MethodWrite, OrderInsert, OrderListQuery, PayMerchant, PayMethod, PayOrderListRow,
+    MerchantWrite, MethodWrite, NotifyListQuery, OrderInsert, OrderListQuery, PayMerchant, PayMethod,
+    PayNotify, PayOrder, PayOrderListRow,
 };
 use phpyun_models::pay::repo as pay_repo;
 use phpyun_models::sql::ident_ok;
+use phpyun_models::stripe_order::repo as stripe_repo;
 use phpyun_models::vip::repo as vip_repo;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -16,6 +18,7 @@ use uuid::Uuid;
 
 use crate::pay_adapter;
 use crate::pay_config;
+use crate::pay_hook;
 use crate::pay_ip;
 use crate::site_setting_service;
 use crate::stripe_service;
@@ -84,6 +87,43 @@ pub struct OrderView {
 }
 
 #[derive(Debug, Clone, Serialize)]
+pub struct ChannelView {
+    pub code: String,
+    pub name: String,
+    pub live: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct OverviewView {
+    pub paid_today_n: i64,
+    pub paid_today_cents: i64,
+    pub paid_7d_n: i64,
+    pub paid_7d_cents: i64,
+    pub pending_n: i64,
+    pub paid_n: i64,
+    pub failed_n: i64,
+    pub cancelled_n: i64,
+    pub refunded_n: i64,
+    pub charge_ready_n: i64,
+    pub notify_fail_n: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct NotifyView {
+    pub id: u64,
+    pub pay_no: String,
+    pub merchant_id: u64,
+    pub merchant_code: String,
+    pub event: String,
+    pub url: String,
+    pub http_status: i32,
+    pub ok: i32,
+    pub error: String,
+    pub ctime: i64,
+    pub ctime_n: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct GatewayPay {
     pub pay_no: String,
     pub pay_url: String,
@@ -100,7 +140,7 @@ pub fn status_ok(s: &str) -> bool {
 }
 
 pub fn order_status_ok(s: &str) -> bool {
-    matches!(s, "pending" | "paid" | "failed" | "cancelled")
+    matches!(s, "pending" | "paid" | "failed" | "cancelled" | "refunded")
 }
 
 fn merchant_view(m: &PayMerchant, gateway_base: &str) -> MerchantView {
@@ -983,4 +1023,213 @@ pub async fn stripe_config_for_ov6(state: &AppState) -> String {
         .ok()
         .flatten()
         .unwrap_or_default()
+}
+
+pub fn admin_list_channels() -> Vec<ChannelView> {
+    pay_adapter::CHANNELS
+        .iter()
+        .map(|(code, name, live)| ChannelView {
+            code: (*code).into(),
+            name: (*name).into(),
+            live: *live,
+        })
+        .collect()
+}
+
+fn shanghai_day_start(now: i64) -> i64 {
+    const TZ: i64 = 8 * 3600;
+    now - (now + TZ).rem_euclid(86_400)
+}
+
+fn n_for(rows: &[phpyun_models::pay::entity::StatusCountRow], status: &str) -> i64 {
+    rows.iter()
+        .find(|r| r.status == status)
+        .map(|r| r.n)
+        .unwrap_or(0)
+}
+
+pub async fn admin_overview(state: &AppState) -> AppResult<OverviewView> {
+    let now = clock::now_ts();
+    let today = shanghai_day_start(now);
+    let week = today - 6 * 86_400;
+    let (paid_today_n, paid_today_cents) =
+        pay_repo::count_paid_between(state.db.reader(), today, now).await?;
+    let (paid_7d_n, paid_7d_cents) =
+        pay_repo::count_paid_between(state.db.reader(), week, now).await?;
+    let counts = pay_repo::status_counts(state.db.reader()).await?;
+    let methods = pay_repo::list_methods(state.db.reader(), None).await?;
+    let charge_ready_n = methods
+        .iter()
+        .filter(|m| pay_adapter::charge_ready(&m.code, &m.config_json))
+        .count() as i64;
+    let notify_fail_n = pay_repo::count_notifies(
+        state.db.reader(),
+        &NotifyListQuery {
+            pay_no: None,
+            ok: Some(0),
+            ctime_from: None,
+            ctime_to: None,
+        },
+    )
+    .await? as i64;
+    Ok(OverviewView {
+        paid_today_n,
+        paid_today_cents,
+        paid_7d_n,
+        paid_7d_cents,
+        pending_n: n_for(&counts, "pending"),
+        paid_n: n_for(&counts, "paid"),
+        failed_n: n_for(&counts, "failed"),
+        cancelled_n: n_for(&counts, "cancelled"),
+        refunded_n: n_for(&counts, "refunded"),
+        charge_ready_n,
+        notify_fail_n,
+    })
+}
+
+fn notify_view(r: PayNotify) -> NotifyView {
+    NotifyView {
+        id: r.id,
+        pay_no: r.pay_no,
+        merchant_id: r.merchant_id,
+        merchant_code: r.merchant_code,
+        event: r.event,
+        url: r.url,
+        http_status: r.http_status,
+        ok: r.ok,
+        error: r.error,
+        ctime: r.ctime,
+        ctime_n: fmt_dt(r.ctime),
+    }
+}
+
+pub async fn admin_list_notifies(
+    state: &AppState,
+    pay_no: Option<&str>,
+    ok: Option<i32>,
+    ctime_from: Option<i64>,
+    ctime_to: Option<i64>,
+    offset: u64,
+    limit: u64,
+) -> AppResult<(Vec<NotifyView>, u64)> {
+    let pay_no = filter_val(pay_no, 64, "pay_no")?;
+    if let Some(v) = ok {
+        if v != 0 && v != 1 {
+            return Err(ApiError::param_invalid("ok"));
+        }
+    }
+    if let (Some(a), Some(b)) = (ctime_from, ctime_to) {
+        if a > b {
+            return Err(ApiError::param_invalid("ctime"));
+        }
+    }
+    let q = NotifyListQuery {
+        pay_no,
+        ok,
+        ctime_from,
+        ctime_to,
+    };
+    let total = pay_repo::count_notifies(state.db.reader(), &q).await?;
+    let rows = pay_repo::list_notifies(state.db.reader(), &q, offset, limit).await?;
+    Ok((rows.into_iter().map(notify_view).collect(), total))
+}
+
+pub async fn admin_retry_notify(state: &AppState, id: u64) -> AppResult<()> {
+    if id == 0 {
+        return Err(ApiError::param_invalid("id"));
+    }
+    pay_hook::retry_notify(state, id).await
+}
+
+async fn load_owned_order(
+    state: &AppState,
+    merchant: Option<&PayMerchant>,
+    pay_no: &str,
+) -> AppResult<PayOrder> {
+    let t = pay_no.trim();
+    if t.is_empty() || t.len() > 64 || t.contains('\0') {
+        return Err(ApiError::param_invalid("pay_no"));
+    }
+    if merchant.is_some() && !ident_ok(t) {
+        return Err(ApiError::param_invalid("pay_no"));
+    }
+    let Some(o) = pay_repo::find_order_by_pay_no(state.db.reader(), t).await? else {
+        return Err(ApiError::param_invalid("order_not_found"));
+    };
+    if let Some(m) = merchant {
+        if o.merchant_id != m.id {
+            return Err(ApiError::param_invalid("order_not_found"));
+        }
+    }
+    Ok(o)
+}
+
+async fn stripe_sk_for_merchant(state: &AppState, merchant_id: u64) -> AppResult<String> {
+    let Some(row) = pay_repo::find_method(state.db.reader(), merchant_id, "stripe").await? else {
+        return Err(ApiError::business("pay_not_configured"));
+    };
+    let sk = pay_config::secret_key(&row.config_json);
+    if sk.is_empty() {
+        return Err(ApiError::business("pay_not_configured"));
+    }
+    Ok(sk)
+}
+
+pub async fn close_order(
+    state: &AppState,
+    merchant: Option<&PayMerchant>,
+    pay_no: &str,
+) -> AppResult<()> {
+    let o = load_owned_order(state, merchant, pay_no).await?;
+    if o.status != "pending" {
+        return Err(ApiError::business("order_not_pending"));
+    }
+    if o.method_code == "stripe" && stripe_service::session_id_ok(&o.channel_ref) {
+        if let Ok(sk) = stripe_sk_for_merchant(state, o.merchant_id).await {
+            let _ = stripe_service::expire_checkout_session(state, &sk, &o.channel_ref).await;
+        }
+    }
+    let n = pay_repo::mark_status(state.db.pool(), &o.pay_no, "cancelled", clock::now_ts()).await?;
+    if n == 0 {
+        return Err(ApiError::business("order_not_pending"));
+    }
+    Ok(())
+}
+
+pub async fn refund_order(
+    state: &AppState,
+    merchant: Option<&PayMerchant>,
+    pay_no: &str,
+) -> AppResult<()> {
+    let o = load_owned_order(state, merchant, pay_no).await?;
+    if o.status == "refunded" {
+        return Err(ApiError::business("order_already_processed"));
+    }
+    if o.status != "paid" {
+        return Err(ApiError::business("order_not_paid"));
+    }
+    if o.method_code != "stripe" {
+        return Err(ApiError::business("not_configured"));
+    }
+    let sk = stripe_sk_for_merchant(state, o.merchant_id).await?;
+    let mut pi = String::new();
+    if stripe_service::session_id_ok(&o.channel_ref) {
+        if let Some(so) = stripe_repo::find_by_session_id(state.db.reader(), &o.channel_ref).await? {
+            pi = so.stripe_payment_intent;
+        }
+        if !stripe_service::payment_intent_ok(&pi) {
+            pi = stripe_service::payment_intent_from_session(state, &sk, &o.channel_ref).await?;
+        }
+    }
+    if !stripe_service::payment_intent_ok(&pi) {
+        return Err(ApiError::business("refund_unavailable"));
+    }
+    let idem = format!("rf_{}", o.pay_no);
+    stripe_service::refund_payment_intent(state, &sk, &pi, &idem).await?;
+    let n = pay_repo::mark_refunded(state.db.pool(), &o.pay_no, clock::now_ts()).await?;
+    if n == 0 {
+        return Err(ApiError::business("order_already_processed"));
+    }
+    pay_hook::notify_status(state, &o, "refunded", &o.channel_ref).await;
+    Ok(())
 }

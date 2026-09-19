@@ -5,14 +5,23 @@ use phpyun_core::dto::IdBody;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::pay_service::{self, MerchantCreated, MerchantSaveIn, MethodSaveIn, MethodView, MerchantView, OrderView};
+use phpyun_services::pay_service::{
+    self, ChannelView, MerchantCreated, MerchantSaveIn, MerchantView, MethodSaveIn, MethodView,
+    NotifyView, OrderView, OverviewView,
+};
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
+        .route("/pay/overview", post(overview))
+        .route("/pay/channels/list", post(channels_list))
         .route("/pay/orders/list", post(orders_list))
+        .route("/pay/orders/close", post(orders_close))
+        .route("/pay/orders/refund", post(orders_refund))
+        .route("/pay/notifies/list", post(notifies_list))
+        .route("/pay/notifies/retry", post(notifies_retry))
         .route("/pay/methods/list", post(methods_list))
         .route("/pay/methods/save", post(methods_save))
         .route("/pay/methods/status", post(methods_status))
@@ -20,6 +29,155 @@ pub fn routes() -> Router<AppState> {
         .route("/pay/merchants/list", post(merchants_list))
         .route("/pay/merchants/save", post(merchants_save))
         .route("/pay/merchants/status", post(merchants_status))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PayNoForm {
+    #[validate(length(min = 1, max = 64))]
+    pub pay_no: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/pay/overview",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn overview(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<OverviewView>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(pay_service::admin_overview(&state).await?))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/pay/channels/list",
+    tag = "admin",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn channels_list(
+    State(_state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiResponse<Vec<ChannelView>>> {
+    user.require_admin()?;
+    Ok(ApiResponse::data(pay_service::admin_list_channels()))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/pay/orders/close",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = PayNoForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn orders_close(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<PayNoForm>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    user.require_admin()?;
+    pay_service::close_order(&state, None, &f.pay_no).await?;
+    Ok(ApiResponse::data(serde_json::json!({ "ok": true })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/pay/orders/refund",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = PayNoForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn orders_refund(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<PayNoForm>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    user.require_admin()?;
+    pay_service::refund_order(&state, None, &f.pay_no).await?;
+    Ok(ApiResponse::data(serde_json::json!({ "ok": true })))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct NotifyListForm {
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub pay_no: String,
+    #[serde(default)]
+    #[validate(length(max = 8))]
+    pub ok: String,
+    #[serde(default)]
+    pub ctime_from: i64,
+    #[serde(default)]
+    pub ctime_to: i64,
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/pay/notifies/list",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = NotifyListForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn notifies_list(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    ValidatedJson(f): ValidatedJson<NotifyListForm>,
+) -> AppResult<ApiResponse<Paged<NotifyView>>> {
+    user.require_admin()?;
+    let ok = match f.ok.trim() {
+        "" | "all" => None,
+        "0" => Some(0),
+        "1" => Some(1),
+        _ => return Err(phpyun_core::ApiError::param_invalid("ok")),
+    };
+    let pay_no = f.pay_no.trim();
+    let ctime_from = if f.ctime_from > 0 {
+        Some(f.ctime_from)
+    } else {
+        None
+    };
+    let ctime_to = if f.ctime_to > 0 {
+        Some(f.ctime_to)
+    } else {
+        None
+    };
+    let (list, total) = pay_service::admin_list_notifies(
+        &state,
+        if pay_no.is_empty() { None } else { Some(pay_no) },
+        ok,
+        ctime_from,
+        ctime_to,
+        page.offset,
+        page.limit,
+    )
+    .await?;
+    Ok(ApiResponse::data(Paged::from_listing(list, total, page)))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/admin/pay/notifies/retry",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = IdBody,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn notifies_retry(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    user.require_admin()?;
+    pay_service::admin_retry_notify(&state, b.id).await?;
+    Ok(ApiResponse::data(serde_json::json!({ "ok": true })))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

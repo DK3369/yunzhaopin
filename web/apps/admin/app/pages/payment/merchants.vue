@@ -88,6 +88,8 @@ function guideText(row: Row) {
     `POST ${base}/v1/pay/methods/list`,
     `POST ${base}/v1/pay/orders`,
     `POST ${base}/v1/pay/orders/detail`,
+    `POST ${base}/v1/pay/orders/close`,
+    `POST ${base}/v1/pay/orders/refund`,
     'Authorization: HMAC-SHA256 key_id=... ts=... sign=hex(hmac(secret, ts + "\\n" + POST + "\\n" + path + "\\n" + sha256hex(body)))',
     lc('admin_pay_hmac_clock', null, '时钟差不超过 300 秒'),
     lc('admin_pay_hmac_ip', null, '必须从白名单 IP 出站；名单为空则拒绝'),

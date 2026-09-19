@@ -2,6 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { lc } from '~/utils/phpLc'
 
+type Channel = { code: string; name: string; live: boolean }
 type Merchant = { id: number; code: string; name: string }
 type Row = {
   id: number
@@ -20,6 +21,7 @@ const api = useApi()
 const loading = ref(false)
 const rows = ref<Row[]>([])
 const merchants = ref<Merchant[]>([])
+const channels = ref<Channel[]>([])
 const merchantId = ref(0)
 const editOpen = ref(false)
 const form = reactive({
@@ -39,10 +41,16 @@ async function loadMerchants() {
   merchants.value = Array.isArray(data) ? data : []
 }
 
+async function loadChannels() {
+  const data = await api.post<Channel[]>('/v1/admin/pay/channels/list', {})
+  channels.value = Array.isArray(data) ? data : []
+}
+
 async function load() {
   loading.value = true
   try {
     await loadMerchants()
+    await loadChannels()
     const data = await api.post<Row[]>('/v1/admin/pay/methods/list', {
       merchant_id: merchantId.value || undefined,
     })
@@ -64,10 +72,11 @@ function yn(v: boolean) {
 
 function openAdd() {
   const first = merchants.value[0]
+  const ch = channels.value[0]
   form.id = 0
   form.merchant_id = first?.id || 0
-  form.code = 'stripe'
-  form.name = 'Stripe'
+  form.code = ch?.code || 'stripe'
+  form.name = ch?.name || 'Stripe'
   form.status = 'paused'
   form.sort = 0
   form.secret_key = ''
@@ -93,9 +102,8 @@ watch(
   () => form.code,
   (code) => {
     if (form.id > 0) return
-    if (code === 'stripe') form.name = 'Stripe'
-    if (code === 'gcash') form.name = 'GCash'
-    if (code === 'paymaya') form.name = 'PayMaya'
+    const ch = channels.value.find((c) => c.code === code)
+    if (ch) form.name = ch.name
   },
 )
 
@@ -170,7 +178,7 @@ onMounted(load)
     <div class="moduleSeachs">
       <div class="pay-bar">
         <span>{{ lc('admin_pay_methods_title', null, '支付方式') }}</span>
-        <span class="pay-hint">{{ lc('admin_pay_methods_hint', null, 'Stripe 密钥只在本页编辑。GCash / PayMaya 本轮占位。') }}</span>
+        <span class="pay-hint">{{ lc('admin_pay_methods_hint', null, 'Stripe 密钥只在本页编辑。PayPal / GrabPay / GCash / PayMaya 目录占位，不真收。') }}</span>
         <el-select
           v-model="merchantId"
           size="small"
@@ -248,9 +256,7 @@ onMounted(load)
         </el-form-item>
         <el-form-item :label="lc('admin_pay_method', null, '支付方式')">
           <el-select v-model="form.code" :disabled="form.id > 0" style="width: 100%">
-            <el-option value="stripe" label="Stripe" />
-            <el-option value="gcash" label="GCash" />
-            <el-option value="paymaya" label="PayMaya" />
+            <el-option v-for="c in channels" :key="c.code" :label="c.name" :value="c.code" />
           </el-select>
         </el-form-item>
         <el-form-item :label="lc('admin_seeker_vip_col_name', null, '名称')">
@@ -265,13 +271,16 @@ onMounted(load)
         <el-form-item :label="lc('admin_system_00067', null, '排序')">
           <el-input-number v-model="form.sort" :min="0" />
         </el-form-item>
-        <el-form-item :label="lc('admin_payset_stripe_sk', null, 'Secret key')">
+        <el-form-item v-if="form.code !== 'stripe'">
+          <span class="pay-hint">{{ lc('admin_pay_placeholder', null, '此渠道仅目录占位，create 返回 not_configured。') }}</span>
+        </el-form-item>
+        <el-form-item v-if="form.code === 'stripe'" :label="lc('admin_payset_stripe_sk', null, 'Secret key')">
           <el-input v-model="form.secret_key" type="password" show-password maxlength="256" :placeholder="lc('admin_pay_secret_keep', null, '留空则不改')" />
         </el-form-item>
-        <el-form-item :label="lc('admin_pay_webhook_secret', null, 'Webhook secret')">
+        <el-form-item v-if="form.code === 'stripe'" :label="lc('admin_pay_webhook_secret', null, 'Webhook secret')">
           <el-input v-model="form.webhook_secret" type="password" show-password maxlength="256" :placeholder="lc('admin_pay_secret_keep', null, '留空则不改')" />
         </el-form-item>
-        <el-form-item :label="lc('admin_payset_stripe_currency', null, 'Currency')">
+        <el-form-item v-if="form.code === 'stripe'" :label="lc('admin_payset_stripe_currency', null, 'Currency')">
           <el-input v-model="form.currency" maxlength="16" placeholder="usd" />
         </el-form-item>
       </el-form>

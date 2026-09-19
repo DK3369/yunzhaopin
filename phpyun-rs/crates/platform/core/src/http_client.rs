@@ -323,6 +323,42 @@ impl Http {
         .await
     }
 
+    /// POST a body and return HTTP status even on 4xx (merchant notify).
+    pub async fn post_body_status(
+        &self,
+        url: &str,
+        content_type: &'static str,
+        body: String,
+    ) -> AppResult<(u16, String)> {
+        let host = host_of(url);
+        let span = tracing::info_span!("http.post_body_status", url = %url, host = %host);
+        async move {
+            let started = Instant::now();
+            let res = self
+                .inner
+                .post(url)
+                .header("content-type", content_type)
+                .body(body)
+                .send()
+                .await;
+            match res {
+                Ok(resp) => {
+                    let status = resp.status().as_u16();
+                    let text = resp.text().await.map_err(map_reqwest_err)?;
+                    m::histogram_ms(
+                        "http.client.latency_ms",
+                        started.elapsed().as_secs_f64() * 1000.0,
+                    );
+                    record_status(&host, status);
+                    Ok((status, text))
+                }
+                Err(e) => Err(map_reqwest_err(e)),
+            }
+        }
+        .instrument(span)
+        .await
+    }
+
     /// Internal: send a JSON body with retries and read a text response.
     async fn send_with_retry<B: Serialize + ?Sized>(
         &self,

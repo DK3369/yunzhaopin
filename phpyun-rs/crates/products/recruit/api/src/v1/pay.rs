@@ -16,6 +16,8 @@ pub fn router() -> Router<AppState> {
         .route("/methods/list", post(methods_list))
         .route("/orders", post(create_order))
         .route("/orders/detail", post(order_detail))
+        .route("/orders/close", post(order_close))
+        .route("/orders/refund", post(order_refund))
 }
 
 fn auth_header(headers: &HeaderMap) -> String {
@@ -160,4 +162,48 @@ pub async fn order_detail(
     Ok(ApiResponse::data(
         pay_service::merchant_order(&state, &auth.merchant, &f.pay_no).await?,
     ))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/pay/orders/close",
+    tag = "pay",
+    request_body = PayNoForm,
+    responses((status = 200, description = "HMAC close pending order"))
+)]
+pub fn spec_order_close() {}
+
+pub async fn order_close(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    method: Method,
+    headers: HeaderMap,
+    body: Bytes,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let auth = merchant_at(&state, &method, "/v1/pay/orders/close", &headers, &body, &ip).await?;
+    let f: PayNoForm = parse_json(&body)?;
+    pay_service::close_order(&state, Some(&auth.merchant), &f.pay_no).await?;
+    Ok(ApiResponse::data(serde_json::json!({ "ok": true })))
+}
+
+#[utoipa::path(
+    post,
+    path = "/v1/pay/orders/refund",
+    tag = "pay",
+    request_body = PayNoForm,
+    responses((status = 200, description = "HMAC refund paid Stripe order"))
+)]
+pub fn spec_order_refund() {}
+
+pub async fn order_refund(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    method: Method,
+    headers: HeaderMap,
+    body: Bytes,
+) -> AppResult<ApiResponse<serde_json::Value>> {
+    let auth = merchant_at(&state, &method, "/v1/pay/orders/refund", &headers, &body, &ip).await?;
+    let f: PayNoForm = parse_json(&body)?;
+    pay_service::refund_order(&state, Some(&auth.merchant), &f.pay_no).await?;
+    Ok(ApiResponse::data(serde_json::json!({ "ok": true })))
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-await navigateTo('/payment/orders', { replace: true })
+await navigateTo('/payment/overview', { replace: true })
 </script>
 
 <template>
